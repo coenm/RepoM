@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("g","G"))</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\grr\ConsoleExtensions.cs" Link="ConsoleExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Terminal.Gui" Version="0.81.0" />
+    <PackageReference Include="TextCopy" Version="4.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
+    <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SendKeys">
+      <HintPath>..\..\_ref\SendKeys.exe</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

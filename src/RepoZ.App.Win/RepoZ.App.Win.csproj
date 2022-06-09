@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>RepoZ</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>True</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>App.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
+    <ProjectReference Include="..\RepoZ.Api.Win\RepoZ.Api.Win.csproj" />
+    <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.LuceneSearch\RepoZ.Plugin.LuceneSearch.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.EverythingFileSearch\RepoZ.Plugin.EverythingFileSearch.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.IpcService\RepoZ.Plugin.IpcService.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.WindowsExplorerGitInfo\RepoZ.Plugin.WindowsExplorerGitInfo.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="App.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SimpleInjector" Version="5.3.3" />
+    <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
+    <PackageReference Include="System.IO.Abstractions" Version="17.0.12" />
+    <PackageReference Include="System.ServiceModel.Federation" Version="4.8.1" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+    <PackageReference Include="DotNetEnv" Version="2.3.0" />
+    <PackageReference Include="ExpressionStringEvaluator" Version="0.1.14" />
+    <PackageReference Include="FluentWPF" Version="0.8.0" />
+    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
+    <PackageReference Include="MahApps.Metro" Version="2.0.1" />
+    <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.1.4" />
+    <PackageReference Include="NetMQ" Version="4.0.0.207" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+  <PropertyGroup />
+</Project>

@@ -1,0 +1,26 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionBrowserV1,
+        Type: browser@1,
+        Name: {OpenIn} Windows File Explorer,
+        Active: false,
+        MultiSelectEnabled: true,
+        Variables: [
+          {
+            Name: name,
+            Value: {StringContains({Repository.SafePath}, "abc")}
+          }
+        ]
+      },
+      {
+        $type: RepositoryActionBrowserV1,
+        Type: browser@1,
+        Name: {OpenIn} Windows File Explorer,
+        Active: False
+      }
+    ]
+  }
+}

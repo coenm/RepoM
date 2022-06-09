@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="2.3.0" />
+    <PackageReference Include="ExpressionStringEvaluator" Version="0.1.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
+    <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
+  </ItemGroup>
+</Project>
