@@ -56,8 +56,8 @@ public class IpcClient
     {
         var isRepoZRunning = Process.GetProcessesByName("RepoM").Any();
         return isRepoZRunning
-            ? $"RepoM seems to be running but does not answer.\nIt seems that it could not listen on {EndpointProvider.Address}.\nI don't know anything better than recommending a reboot. Sorry."
-            : "RepoM seems not to be running :(";
+            ? $"RepoZ seems to be running but does not answer.\nIt seems that it could not listen on {EndpointProvider.Address}.\nI don't know anything better than recommending a reboot. Sorry."
+            : "RepoZ seems not to be running :(";
     }
 
     private void ClientOnReceiveReady(object sender, NetMQSocketEventArgs e)

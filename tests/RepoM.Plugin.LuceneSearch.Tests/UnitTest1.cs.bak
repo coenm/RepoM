@@ -28,7 +28,7 @@ public class UnitTest1
         var sut = new RepositoryIndex(new LuceneDirectoryInstance(new RamLuceneDirectoryFactory()));
         var item = new RepositorySearchModel(
             "c:/a/b/c",
-            "RepoM",
+            "RepoZ",
             new List<string>()
                 {
                     "repositories",

@@ -1,4 +1,4 @@
-namespace RepoZ.App.Win.Controls;
+namespace RepoM.App.Controls;
 
 using System;
 using System.Windows;

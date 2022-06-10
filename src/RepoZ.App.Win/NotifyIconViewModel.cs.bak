@@ -24,15 +24,15 @@ public class NotifyIconViewModel
     public ICommand StartWithWindows =>
         new DelegateCommand
             {
-                CanExecuteFunc = () => !AutoStart.IsStartup("RepoM"),
-                CommandAction = () => AutoStart.SetStartup("RepoM", true),
+                CanExecuteFunc = () => !AutoStart.IsStartup("RepoZ"),
+                CommandAction = () => AutoStart.SetStartup("RepoZ", true),
             };
 
     public ICommand DoNotStartWithWindows =>
         new DelegateCommand
             {
-                CanExecuteFunc = () => AutoStart.IsStartup("RepoM"),
-                CommandAction = () => AutoStart.SetStartup("RepoM", false),
+                CanExecuteFunc = () => AutoStart.IsStartup("RepoZ"),
+                CommandAction = () => AutoStart.SetStartup("RepoZ", false),
             };
 
     /// <summary>

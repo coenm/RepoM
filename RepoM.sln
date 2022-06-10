@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "tests\Tests\Tests.csproj", "{A6B79146-761A-40C3-951D-7415297792FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.App.Win", "src\RepoZ.App.Win\RepoZ.App.Win.csproj", "{15B095B0-474F-46EE-A880-70EFA4204579}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoM.App", "src\RepoM.App\RepoM.App.csproj", "{15B095B0-474F-46EE-A880-70EFA4204579}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Specs", "tests\Specs\Specs.csproj", "{C91C3255-637F-45D4-93C0-6A26B4E99FC1}"
 EndProject

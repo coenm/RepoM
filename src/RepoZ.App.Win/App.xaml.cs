@@ -1,22 +1,20 @@
 [assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
 
-namespace RepoZ.App.Win;
+namespace RepoM.App;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Hardcodet.Wpf.TaskbarNotification;
-using RepoZ.App.Win.i18n;
-using SimpleInjector;
-using System.IO;
-using System.Reflection;
-using System.IO.Abstractions;
-using ExpressionStringEvaluator.VariableProviders;
 using ExpressionStringEvaluator.Methods;
+using ExpressionStringEvaluator.VariableProviders;
 using ExpressionStringEvaluator.VariableProviders.DateTime;
+using Hardcodet.Wpf.TaskbarNotification;
 using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Common.Common;
@@ -31,7 +29,9 @@ using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.Api.Win.IO;
+using RepoM.App.i18n;
 using RepoM.Ipc;
+using SimpleInjector;
 using Repository = RepoM.Ipc.Repository;
 
 /// <summary>

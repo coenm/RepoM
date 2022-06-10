@@ -46,20 +46,20 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
-Section "RepoZ"
+Section "RepoM"
   SetOutPath "$INSTDIR"
   SetOverwrite on
   
   File /r ..\_output\win\Assemblies\*.*
-  File ..\_ref\PathEd.exe ; Add PathEd.exe to add the RepoZ directory to the system's PATH easily
-  File ..\_ref\SendKeys.exe ; Add SendKeys.exe to add the RepoZ directory for grr and grrui
+  File ..\_ref\PathEd.exe ; Add PathEd.exe to add the RepoM directory to the system's PATH easily
+  File ..\_ref\SendKeys.exe ; Add SendKeys.exe to add the RepoM directory for grr and grrui
   File ..\_ref\RepositoryActions.json ; Can be copied in-app for the default settings
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}.lnk" $INSTDIR\${PRODUCT_NAME}.exe
   
   ; Add the installation folder to the system PATH -> to enable grr.exe
   ExecWait '$INSTDIR\PathEd.exe add "$INSTDIR"' ; put the path in quotes because of possible spaces
   
-  ; Write RepoZ executable to Windows AutoStart: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
+  ; Write RepoM executable to Windows AutoStart: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}" '"$INSTDIR\${PRODUCT_NAME}.exe"'
 SectionEnd
 
@@ -86,7 +86,7 @@ FunctionEnd
 
 Section Uninstall
 
-  ; Remove RepoZ from the Windows AutoStart
+  ; Remove RepoM from the Windows AutoStart
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}"
   
   ; Remove the installation folder from the system PATH -> was required for grr.exe

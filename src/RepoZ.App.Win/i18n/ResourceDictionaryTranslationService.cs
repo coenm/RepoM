@@ -1,5 +1,5 @@
 #pragma warning disable IDE1006 // Naming Styles
-namespace RepoZ.App.Win.i18n;
+namespace RepoM.App.i18n;
 #pragma warning restore IDE1006 // Naming Styles
 using System;
 using System.IO;

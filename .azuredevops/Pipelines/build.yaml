@@ -154,12 +154,12 @@ stages:
           name: CodeCov               
 
         - task: DotNetCoreCLI@2
-          displayName: "Dotnet Publish RepoZ"
+          displayName: "Dotnet Publish RepoM"
           inputs:
             command: publish
             # arguments: "--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/${{ variables.SystemTestsArtifactName }}/bin/Release/publish --no-build --self-contained true"
             arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies"
-            projects: "**/RepoZ.App.Win.csproj"
+            projects: "**/RepoM.App.csproj"
             publishWebProjects: false
             modifyOutputPath: false
             zipAfterPublish: false

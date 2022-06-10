@@ -1,4 +1,4 @@
-namespace RepoZ.App.Win;
+namespace RepoM.App;
 
 using System.Windows;
 using RepoM.Api.Common;

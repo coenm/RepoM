@@ -1,9 +1,9 @@
-namespace RepoZ.App.Win;
+namespace RepoM.App;
 
 using System;
-using System.Windows.Interop;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Interop;
 
 internal class HotKey
 {

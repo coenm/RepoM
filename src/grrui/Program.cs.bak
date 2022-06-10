@@ -59,7 +59,7 @@ static class Program
                 Height = Dim.Fill() - 2,
             };
 
-        var win = new KeyPreviewWindow("grr: Git repositories of RepoM")
+        var win = new KeyPreviewWindow("grr: Git repositories of RepoZ")
             {
                 filterLabel,
                 _filterField,

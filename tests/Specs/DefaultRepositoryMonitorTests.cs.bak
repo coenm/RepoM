@@ -42,7 +42,7 @@ public class DefaultRepositoryMonitorTests
     public void OneTimeSetUp()
     {
         var fileSystem = new FileSystem();
-        _rootPath = Path.Combine(Path.GetTempPath(), "RepoM_Test_Repositories");
+        _rootPath = Path.Combine(Path.GetTempPath(), "RepoZ_Test_Repositories");
 
         TryCreateRootPath(_rootPath);
 

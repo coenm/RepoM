@@ -81,7 +81,7 @@ public class FileHistoryRepository : IHistoryRepository
 
     private static string GetFileName()
     {
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoM", "state.grr");
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ", "state.grr");
     }
 
     private static string Serialize(IEnumerable<Repository> repositories)

@@ -320,7 +320,7 @@ public partial class MainWindow : Window
 
     private void StarButton_Click(object sender, RoutedEventArgs e)
     {
-        Navigate("https://github.com/coenm/RepoM");
+        Navigate("https://github.com/awaescher/RepoZ");
     }
 
     private void FollowButton_Click(object sender, RoutedEventArgs e)
