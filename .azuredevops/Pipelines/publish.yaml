@@ -4,7 +4,7 @@ pr: none
 resources:
   pipelines:
   - pipeline: CI
-    source: RepoZ.Build
+    source: RepoM.Build
     trigger:
       tags:
       - auto-release
