@@ -26,7 +26,7 @@
     <ProjectReference Include="..\RepoZ.Plugin.LuceneSearch\RepoZ.Plugin.LuceneSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.EverythingFileSearch\RepoM.Plugin.EverythingFileSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.IpcService\RepoM.Plugin.IpcService.csproj" />
-    <ProjectReference Include="..\RepoZ.Plugin.WindowsExplorerGitInfo\RepoZ.Plugin.WindowsExplorerGitInfo.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.WindowsExplorerGitInfo\RepoM.Plugin.WindowsExplorerGitInfo.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="App.ico" />

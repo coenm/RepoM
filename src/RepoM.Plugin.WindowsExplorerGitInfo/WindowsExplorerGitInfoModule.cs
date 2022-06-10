@@ -1,8 +1,8 @@
-namespace RepoZ.Plugin.WindowsExplorerGitInfo;
+namespace RepoM.Plugin.WindowsExplorerGitInfo;
 
 using JetBrains.Annotations;
+using RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 using RepoZ.Api;
-using RepoZ.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 using SimpleInjector;
 using SimpleInjector.Packaging;
 

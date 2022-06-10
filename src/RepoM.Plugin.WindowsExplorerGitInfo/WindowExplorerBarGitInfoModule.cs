@@ -1,11 +1,11 @@
-namespace RepoZ.Plugin.WindowsExplorerGitInfo;
+namespace RepoM.Plugin.WindowsExplorerGitInfo;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 using RepoZ.Api;
-using RepoZ.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 
 [UsedImplicitly] 
 internal class WindowExplorerBarGitInfoModule : IModule

@@ -1,4 +1,4 @@
-namespace RepoZ.Plugin.WindowsExplorerGitInfo.PInvoke;
+namespace RepoM.Plugin.WindowsExplorerGitInfo.PInvoke;
 
 using System;
 using System.Diagnostics.CodeAnalysis;

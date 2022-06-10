@@ -1,4 +1,4 @@
-namespace RepoZ.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
+namespace RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 
 using System;
 

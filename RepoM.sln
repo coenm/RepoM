@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Plugin.LuceneSearch",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Plugin.LuceneSearch.Tests", "tests\RepoZ.Plugin.LuceneSearch.Tests\RepoZ.Plugin.LuceneSearch.Tests.csproj", "{48ED60BB-E01F-4395-978E-D25C11C25E52}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Plugin.WindowsExplorerGitInfo", "src\RepoZ.Plugin.WindowsExplorerGitInfo\RepoZ.Plugin.WindowsExplorerGitInfo.csproj", "{6214312F-61F1-4F4C-A9E2-3383987DE266}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoM.Plugin.WindowsExplorerGitInfo", "src\RepoM.Plugin.WindowsExplorerGitInfo\RepoM.Plugin.WindowsExplorerGitInfo.csproj", "{6214312F-61F1-4F4C-A9E2-3383987DE266}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{D6E372DC-10D3-4997-9DFC-568B4666635A}"
 EndProject
