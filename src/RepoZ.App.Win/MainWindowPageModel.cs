@@ -1,10 +1,10 @@
 namespace RepoZ.App.Win;
 
-using RepoZ.Api.Common.Common;
-using RepoZ.Api.Common.Git.AutoFetch;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using RepoM.Api.Common.Common;
+using RepoM.Api.Common.Git.AutoFetch;
 
 public class MainWindowPageModel : INotifyPropertyChanged
 {

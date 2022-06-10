@@ -14,11 +14,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using RepoM.Api;
+using RepoM.Api.Common.Common;
+using RepoM.Api.Common.Git;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoZ.Api;
-using RepoZ.Api.Common.Common;
-using RepoZ.Api.Common.Git;
 using RepoZ.App.Win.Controls;
 using SourceChord.FluentWPF;
 

@@ -1,7 +1,6 @@
 namespace RepoZ.App.Win;
 
 using System;
-using RepoZ.Api.Common;
 using System.Windows;
 using RepoM.Api.Common;
 

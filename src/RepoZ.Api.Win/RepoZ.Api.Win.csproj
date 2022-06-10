@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
+    <ProjectReference Include="..\RepoM.Api.Common\RepoM.Api.Common.csproj" />
     <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
   </ItemGroup>
 </Project>

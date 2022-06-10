@@ -1,12 +1,11 @@
 #pragma warning disable IDE1006 // Naming Styles
 namespace RepoZ.App.Win.i18n;
 #pragma warning restore IDE1006 // Naming Styles
-
-using RepoZ.Api.Common.Common;
 using System;
 using System.IO;
 using System.Threading;
 using System.Windows;
+using RepoM.Api.Common.Common;
 
 public class ResourceDictionaryTranslationService : ITranslationService
 {

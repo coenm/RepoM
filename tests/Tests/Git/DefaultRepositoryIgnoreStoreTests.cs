@@ -5,9 +5,8 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using RepoM.Api.Common;
+using RepoM.Api.Common.Git;
 using RepoM.Api.IO;
-using RepoZ.Api.Common;
-using RepoZ.Api.Common.Git;
 
 public class DefaultRepositoryIgnoreStoreTests
 {
