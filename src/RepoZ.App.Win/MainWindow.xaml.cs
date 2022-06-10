@@ -18,7 +18,6 @@ using RepoM.Api.Common.Common;
 using RepoM.Api.Common.Git;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
-using RepoZ.Api;
 using RepoZ.App.Win.Controls;
 using SourceChord.FluentWPF;
 

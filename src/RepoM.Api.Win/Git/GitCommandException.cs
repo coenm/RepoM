@@ -1,4 +1,4 @@
-namespace RepoZ.Api.Win.Git;
+namespace RepoM.Api.Win.Git;
 
 using System;
 using System.Diagnostics;

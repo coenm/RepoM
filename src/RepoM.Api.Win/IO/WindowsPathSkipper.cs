@@ -1,4 +1,4 @@
-namespace RepoZ.Api.Win.IO;
+namespace RepoM.Api.Win.IO;
 
 using System;
 using System.Collections.Generic;

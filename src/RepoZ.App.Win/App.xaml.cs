@@ -8,12 +8,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using RepoZ.Api.Win.IO;
 using Hardcodet.Wpf.TaskbarNotification;
 using RepoZ.App.Win.i18n;
-using RepoZ.Api;
 using SimpleInjector;
-using Container = SimpleInjector.Container;
 using System.IO;
 using System.Reflection;
 using System.IO.Abstractions;
@@ -33,6 +30,7 @@ using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializer
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
+using RepoM.Api.Win.IO;
 using RepoM.Ipc;
 using Repository = RepoM.Ipc.Repository;
 

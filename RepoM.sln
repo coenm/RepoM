@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "grr", "src\grr\grr.csproj",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoM.Api", "src\RepoM.Api\RepoM.Api.csproj", "{699FA61D-A44D-4710-A6DD-52016DAC51D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api.Win", "src\RepoZ.Api.Win\RepoZ.Api.Win.csproj", "{8CA82EB1-0240-4744-A40E-BEF454BF11B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoM.Api.Win", "src\RepoM.Api.Win\RepoM.Api.Win.csproj", "{8CA82EB1-0240-4744-A40E-BEF454BF11B5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoM.Api.Common", "src\RepoM.Api.Common\RepoM.Api.Common.csproj", "{469C750E-7E80-472B-8C16-A7AD221DAE86}"
 EndProject
