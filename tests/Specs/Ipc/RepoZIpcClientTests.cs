@@ -29,7 +29,7 @@ public class RepoZIpcClientTests
             _server.Stop();
 
             IpcClient.Result result = _client.GetRepositories();
-            result.Answer.Should().StartWith("RepoZ seems"); // ... to be running but ... -> indicates an error
+            result.Answer.Should().StartWith("RepoM seems"); // ... to be running but ... -> indicates an error
         }
 
         [Test]
