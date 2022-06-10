@@ -297,7 +297,6 @@ public partial class MainWindow : Window
 
     private void CustomizeContextMenu_Click(object sender, RoutedEventArgs e)
     {
-        // Navigate("https://github.com/awaescher/RepoZ-RepositoryActions");
         var directoryName = _appDataPathProvider.GetAppDataPath();
 
         if (_fileSystem.Directory.Exists(directoryName))

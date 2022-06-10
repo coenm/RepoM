@@ -9,7 +9,7 @@ using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using Repository = RepoM.Api.Git.Repository;
 
-public static class RepoZEnvironmentVariableStore
+public static class EnvironmentVariableStore
 {
     private static readonly AsyncLocal<Dictionary<string, string>> _envVars = new();
 
@@ -45,7 +45,7 @@ public class ExecuteOnDisposed : IDisposable
     }
 }
 
-public static class RepoZVariableProviderStore
+public static class RepoMVariableProviderStore
 {
     public static readonly AsyncLocal<Scope?> VariableScope = new();
 
@@ -84,13 +84,13 @@ public class Scope : IDisposable
     {
         if (!_isDisposed)
         {
-            RepoZVariableProviderStore.VariableScope.Value = Parent;
+            RepoMVariableProviderStore.VariableScope.Value = Parent;
             _isDisposed = true;
         }
     }
 }
 
-public class RepoZVariableProvider : IVariableProvider
+public class RepoMVariableProvider : IVariableProvider
 {
     private const string PREFIX = "var.";
 
@@ -119,7 +119,7 @@ public class RepoZVariableProvider : IVariableProvider
         var prefixLength = PREFIX.Length;
         var envKey = key.Substring(prefixLength, key.Length - prefixLength);
 
-        Scope? scope = RepoZVariableProviderStore.VariableScope.Value;
+        Scope? scope = RepoMVariableProviderStore.VariableScope.Value;
 
         while (true)
         {
@@ -220,6 +220,6 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
 
     private static Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
     {
-        return RepoZEnvironmentVariableStore.Get(repository);
+        return EnvironmentVariableStore.Get(repository);
     }
 }

@@ -14,6 +14,6 @@ public class IpcServiceModule : IPackage
         //IRepositorySource
         container.Register<IIpcEndpoint, DefaultIpcEndpoint>(Lifestyle.Singleton);
         container.Register<IpcServer>(Lifestyle.Singleton);
-        container.Collection.Append<IModule, RepozIpcServerModule>(Lifestyle.Singleton);
+        container.Collection.Append<IModule, IpcServerModule>(Lifestyle.Singleton);
     }
 }

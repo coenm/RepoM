@@ -1,16 +1,16 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RepoZ")]
+[assembly: AssemblyTitle("RepoM")]
 [assembly: AssemblyDescription("Git repository information aggregator with Windows Explorer- & CLI-enhancements")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RepoZ")]
-[assembly: AssemblyCopyright("Andreas Wäscher")]
+[assembly: AssemblyProduct("RepoM")]
+[assembly: AssemblyCopyright("Coen van den Munckhof, Andreas Wäscher")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

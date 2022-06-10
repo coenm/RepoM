@@ -1,4 +1,4 @@
-namespace RepoZ.Api.Common.Tests.IO;
+namespace RepoM.Api.Common.Tests.IO;
 
 using System;
 using System.Collections.Generic;
@@ -68,7 +68,7 @@ public class DefaultRepositoryActionProviderTest
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
                 new CustomEnvironmentVariableVariableProvider(),
-                new RepoZVariableProvider(),
+                new RepoMVariableProvider(),
                 new RepositoryVariableProvider(),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
@@ -130,7 +130,7 @@ public class DefaultRepositoryActionProviderTest
                 Path = "C:\\",
                 Branches = new[] { "develop", "main", },
                 LocalBranches = new[] { "develop", },
-                RemoteUrls = new[] { "https://github.com/coenm/RepoZ.git", },
+                RemoteUrls = new[] { "https://github.com/coenm/Repo.git", },
             };
 
         // act

@@ -2,13 +2,15 @@ namespace RepoM.Plugin.IpcService;
 
 using System;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using RepoM.Api;
 
-internal class RepozIpcServerModule : IModule, IDisposable
+[UsedImplicitly]
+internal class IpcServerModule : IModule, IDisposable
 {
     private readonly IpcServer _server;
 
-    public RepozIpcServerModule(IpcServer server)
+    public IpcServerModule(IpcServer server)
     {
         _server = server ?? throw new ArgumentNullException(nameof(server));
     }

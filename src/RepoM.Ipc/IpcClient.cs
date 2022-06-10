@@ -54,8 +54,8 @@ public class IpcClient
 
     private string GetErrorMessage()
     {
-        var isRepoZRunning = Process.GetProcessesByName("RepoM").Any();
-        return isRepoZRunning
+        var isRepoMRunning = Process.GetProcessesByName("RepoM").Any();
+        return isRepoMRunning
             ? $"RepoM seems to be running but does not answer.\nIt seems that it could not listen on {EndpointProvider.Address}.\nI don't know anything better than recommending a reboot. Sorry."
             : "RepoM seems not to be running :(";
     }

@@ -14,7 +14,7 @@
 						TextOptions.TextFormattingMode="Ideal"
 						TextOptions.TextRenderingMode="Auto"
 						BorderThickness="0"
-						Title="RepoZ"
+						Title="RepoM"
 						Height="540"
 						Width="350"
 						ShowInTaskbar="False"

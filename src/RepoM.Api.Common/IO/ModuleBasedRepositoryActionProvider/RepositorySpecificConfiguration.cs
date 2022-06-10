@@ -176,7 +176,7 @@ public class RepositoryConfigurationReader
 
         List<Variable> list = EvaluateVariables(rootFile.Variables);
         variables.AddRange(list);
-        using IDisposable rootVariables = RepoZVariableProviderStore.Push(list);
+        using IDisposable rootVariables = RepoMVariableProviderStore.Push(list);
 
         if (!multipleRepositoriesSelected)
         {
@@ -211,7 +211,7 @@ public class RepositoryConfigurationReader
             }
         }
 
-        using IDisposable repoSpecificEnvVariables = RepoZEnvironmentVariableStore.Set(envVars ?? new Dictionary<string, string>(0));
+        using IDisposable repoSpecificEnvVariables = EnvironmentVariableStore.Set(envVars ?? new Dictionary<string, string>(0));
 
         if (!multipleRepositoriesSelected)
         {
@@ -251,7 +251,7 @@ public class RepositoryConfigurationReader
         
         List<Variable> list2 = EvaluateVariables(repoSpecificConfig?.Variables);
         variables.AddRange(list2);
-        using IDisposable repoSepecificVariables = RepoZVariableProviderStore.Push(list2);
+        using IDisposable repoSepecificVariables = RepoMVariableProviderStore.Push(list2);
 
         actions.Add(rootFile.ActionsCollection);
         if (repoSpecificConfig?.ActionsCollection != null)
@@ -339,12 +339,12 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
              yield break;
         }
 
-        using IDisposable d1 = RepoZVariableProviderStore.Push(EvaluateVariables(variables));
-        using IDisposable d2 = RepoZEnvironmentVariableStore.Set(repositoryEnvVars);
+        using IDisposable d1 = RepoMVariableProviderStore.Push(EvaluateVariables(variables));
+        using IDisposable d2 = EnvironmentVariableStore.Set(repositoryEnvVars);
 
         foreach (TagsCollection tagsCollection in tags?.Where(t => t != null) ?? Array.Empty<TagsCollection>())
         {
-            using IDisposable d3 = RepoZVariableProviderStore.Push(EvaluateVariables(tagsCollection.Variables));
+            using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(tagsCollection.Variables));
 
             foreach (RepositoryActionTag action in tagsCollection.Tags)
             {
@@ -452,17 +452,17 @@ public class RepositorySpecificConfiguration
             yield break;
         }
 
-        using IDisposable d1 = RepoZVariableProviderStore.Push(EvaluateVariables(variables, singleRepository));
-        using IDisposable d2 = RepoZEnvironmentVariableStore.Set(repositoryEnvVars ?? new Dictionary<string, string>());
+        using IDisposable d1 = RepoMVariableProviderStore.Push(EvaluateVariables(variables, singleRepository));
+        using IDisposable d2 = EnvironmentVariableStore.Set(repositoryEnvVars ?? new Dictionary<string, string>());
 
         // load variables global
         foreach (ActionsCollection actionsCollection in actions?.Where(action => action != null) ?? Array.Empty<ActionsCollection>())
         {
-            using IDisposable d3 = RepoZVariableProviderStore.Push(EvaluateVariables(actionsCollection.Variables, singleRepository));
+            using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(actionsCollection.Variables, singleRepository));
 
             foreach (Data.RepositoryAction action in actionsCollection.Actions)
             {
-                using IDisposable d4 = RepoZVariableProviderStore.Push(EvaluateVariables(action.Variables, singleRepository));
+                using IDisposable d4 = RepoMVariableProviderStore.Push(EvaluateVariables(action.Variables, singleRepository));
 
                 if (multiSelectRequired)
                 {

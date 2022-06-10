@@ -11,7 +11,7 @@
     <system:String x:Key="Help">帮助</system:String>
     <system:String x:Key="Donate">捐赠</system:String>
     <system:String x:Key="Follow">关注 @Waescher</system:String>
-    <system:String x:Key="Star">在 GitHub 上 为RepoZ 点赞</system:String>
+    <system:String x:Key="Star">在 GitHub 上 为RepoM 点赞</system:String>
     <system:String x:Key="PingBack">反馈 ♥︎</system:String>
     <system:String x:Key="Aggressive">积极</system:String>
     <system:String x:Key="Adequate">适中</system:String>
@@ -40,7 +40,7 @@
     <system:String x:Key="Ignore">忽略</system:String>
     <system:String x:Key="Update hint">新版本可用: {0}</system:String>
     <system:String x:Key="Help Detail" xml:space="preserve">
-RepoZ 显示了本地驱动器上的所有Git仓库， 并将按如下格式展示每个仓库的状态：
+RepoM 显示了本地驱动器上的所有Git仓库， 并将按如下格式展示每个仓库的状态：
 
 master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
 
@@ -69,7 +69,7 @@ master
 
 请注意：
 此信息反映了最后一次 "git fetch" 之后远程跟踪分支的状态。
-您可以通过 RepoZ 菜单启用 "自动获取" 以使状态保持最新。
+您可以通过 RepoM 菜单启用 "自动获取" 以使状态保持最新。
 
 如果可能，将会使用短状态来提高可读性。
     </system:String>

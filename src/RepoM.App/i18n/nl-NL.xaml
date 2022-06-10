@@ -6,13 +6,13 @@
 	<system:String x:Key="EmptyHint"
 				   xml:space="preserve">Er zijn nog geen repositories gevonden 😐
 		
-Verander van Git branch, of pas een bestand aan in een repository op de computer. RepoZ zal dit opmerken en de repository opnemen in de lijst.
+Verander van Git branch, of pas een bestand aan in een repository op de computer. RepoM zal dit opmerken en de repository opnemen in de lijst.
 		
 Handmatig zoeken naar Git repositories is ook mogelijk via het instellingen menu rechts boven.</system:String>
 	<system:String x:Key="Help">Help</system:String>
 	<system:String x:Key="Donate">Sponsor mij op GitHub</system:String>
 	<system:String x:Key="Follow">Volg mij op Twitter: @Waescher</system:String>
-	<system:String x:Key="Star">Geef RepoZ een ster op GitHub</system:String>
+	<system:String x:Key="Star">Geef RepoM een ster op GitHub</system:String>
 	<system:String x:Key="PingBack">Ping back ♥︎</system:String>
     <system:String x:Key="Aggressive">Agressief</system:String>
     <system:String x:Key="Adequate">Adequaat</system:String>
@@ -41,7 +41,7 @@ Handmatig zoeken naar Git repositories is ook mogelijk via het instellingen menu
 	<system:String x:Key="Ignore">Negeer</system:String>
 	<system:String x:Key="Update hint">Version {0} is beschikbaar.</system:String>
     <system:String x:Key="Help Detail" xml:space="preserve">
-RepoZ laat alle gevonden git repositories zien. Elke repository bevat een status die er als volgt uit kan zien:
+RepoM laat alle gevonden git repositories zien. Elke repository bevat een status die er als volgt uit kan zien:
 
 master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
 

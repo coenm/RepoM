@@ -6,13 +6,13 @@
 	<system:String x:Key="EmptyHint"
 				   xml:space="preserve">There are no repositories yet 😐
 		
-Go ahead and switch a branch or change a file in any repository on your computer. RepoZ will notice the change and list the repository here.
+Go ahead and switch a branch or change a file in any repository on your computer. RepoM will notice the change and list the repository here.
 		
 Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
 	<system:String x:Key="Help">Help</system:String>
 	<system:String x:Key="Donate">Sponsor me on GitHub</system:String>
 	<system:String x:Key="Follow">Follow me on Twitter: @Waescher</system:String>
-	<system:String x:Key="Star">Star RepoZ on GitHub</system:String>
+	<system:String x:Key="Star">Star RepoM on GitHub</system:String>
 	<system:String x:Key="PingBack">Ping back ♥︎</system:String>
 	<system:String x:Key="Aggressive">Aggressive</system:String>
 	<system:String x:Key="Adequate">Adequate</system:String>
@@ -41,7 +41,7 @@ Alternatively, you can scan your computer manually for repositories in the setti
 	<system:String x:Key="Ignore">Ignore</system:String>
 	<system:String x:Key="Update hint">Version {0} is available.</system:String>
 	<system:String x:Key="Help Detail" xml:space="preserve">
-RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
+RepoM is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
 
 master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
 
@@ -71,7 +71,7 @@ The numbers after the pipe sign represent added (+4), modified (~5) and removed 
 
 Please note:
 This information reflects the state of the remote tracked branch after the last "git fetch".
-You can enable Auto fetch in the RepoZ menu to keep the information up to date.
+You can enable Auto fetch in the RepoM menu to keep the information up to date.
 
 Note that the status might be shorter if possible to improve readability.
 </system:String>

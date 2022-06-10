@@ -6,10 +6,7 @@
     <Authors>Andreas Wäscher</Authors>
     <Product>Git Repositories of RepoM</Product>
     <Description>Command line interface to query repository information from RepoM</Description>
-    <PackageProjectUrl>https://github.com/awaescher/RepoZ</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/awaescher/RepoZ/master/grr/grr.ico</PackageIconUrl>
-    <!-- <RepositoryUrl>https://github.com/awaescher/RepoZ</RepositoryUrl> -->
-    <!-- <RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace("g","G"))</RootNamespace> -->
     <AssemblyName>grr</AssemblyName>
 </PropertyGroup>
 

@@ -72,7 +72,7 @@ public class DefaultRepositoryActionProvider : IRepositoryActionProvider
     //             {
     //                 try
     //                 {
-    //                     var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
+    //                     var repomEnvFile = Path.Combine(repository.Path, ".git", "repom.env");
     //
     //                     var psi = new ProcessStartInfo(command, arguments)
     //                     {
@@ -84,9 +84,9 @@ public class DefaultRepositoryActionProvider : IRepositoryActionProvider
     //                         RedirectStandardError = true,
     //                     };
     //
-    //                     if (_fileSystem.File.Exists(repozEnvFile))
+    //                     if (_fileSystem.File.Exists(repomEnvFile))
     //                     {
-    //                         foreach (KeyValuePair<string, string> item in DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)))
+    //                         foreach (KeyValuePair<string, string> item in DotNetEnv.Env.Load(repomEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)))
     //                         {
     //                             psi.EnvironmentVariables.Add(item.Key, item.Value);
     //                         }

@@ -6,11 +6,11 @@ using RepoM.Api.IO;
 
 public class DefaultAppDataPathProvider : IAppDataPathProvider
 {
-    private static readonly string _applicationDataRepoZ = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoM");
+    private static readonly string _applicationDataRepoM = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoM");
 
     public string GetAppDataPath() 
     {
-        return _applicationDataRepoZ ;
+        return _applicationDataRepoM ;
     }
 
     public string GetAppResourcesPath()

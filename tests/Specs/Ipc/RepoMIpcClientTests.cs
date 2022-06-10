@@ -6,7 +6,7 @@ using FluentAssertions;
 using RepoM.Ipc;
 using RepoM.Plugin.IpcService;
 
-public class RepoZIpcClientTests
+public class RepoMIpcClientTests
 {
     private readonly Mock<IRepositorySource> _repositorySource = new Mock<IRepositorySource>();
     private IpcClient _client = null!;
@@ -21,10 +21,10 @@ public class RepoZIpcClientTests
         _server = new IpcServer(endpoint, _repositorySource.Object);
     }
 
-    public class GetRepositoriesMethod : RepoZIpcClientTests
+    public class GetRepositoriesMethod : RepoMIpcClientTests
     {
         [Test]
-        public void Returns_An_Error_Message_If_RepoZ_Is_Not_Reachable()
+        public void Returns_An_Error_Message_If_RepoM_Is_Not_Reachable()
         {
             _server.Stop();
 

@@ -25,7 +25,7 @@ public class DefaultRepositoryIgnoreStoreTests
         _store.IgnoreByPath(@"C:\data\repos\first");
         _store.IgnoreByPath(@"C:\data\repox*");
         _store.IgnoreByPath(@"*repoy*");
-        _store.IgnoreByPath(@"*repoz\sub");
+        _store.IgnoreByPath(@"*repom\sub");
         _store.IgnoreByPath(@"a*c");
     }
 
@@ -52,12 +52,12 @@ public class DefaultRepositoryIgnoreStoreTests
         [Test]
         public void Respects_Wildcards_At_Start()
         {
-            _store.IsIgnored(@"C:\data\repoz").Should().BeFalse();
-            _store.IsIgnored(@"C:\data\repoz\").Should().BeFalse();
-            _store.IsIgnored(@"C:\data\repoz\sub").Should().BeTrue();
-            _store.IsIgnored(@"C:\data\repoz\sub\first").Should().BeFalse();
+            _store.IsIgnored(@"C:\data\repom").Should().BeFalse();
+            _store.IsIgnored(@"C:\data\repom\").Should().BeFalse();
+            _store.IsIgnored(@"C:\data\repom\sub").Should().BeTrue();
+            _store.IsIgnored(@"C:\data\repom\sub\first").Should().BeFalse();
 
-            _store.IsIgnored(@"C:\DATA\repoz\sub").Should().BeTrue();
+            _store.IsIgnored(@"C:\DATA\repom\sub").Should().BeTrue();
         }
 
         [Test]
