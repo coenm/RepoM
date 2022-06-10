@@ -1,9 +1,9 @@
-namespace RepoZ.Plugin.LuceneSearch.Tests;
+namespace RepoM.Plugin.LuceneSearch.Tests;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using RepoZ.Plugin.LuceneSearch;
+using RepoM.Plugin.LuceneSearch;
 using Xunit;
 
 public class UnitTest1
@@ -15,7 +15,7 @@ public class UnitTest1
         var sut = new RepositoryIndex(new LuceneDirectoryInstance(new RamLuceneDirectoryFactory()));
 
         // act
-        List<RepositorySearchResult> results = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
+        _ = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
 
         // assert
         hits.Should().Be(0);
@@ -37,7 +37,7 @@ public class UnitTest1
         await sut.ReIndexMediaFileAsync(item).ConfigureAwait(false);
 
         // act
-        List<RepositorySearchResult> result = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
+        _ = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
 
         // assert
         hits.Should().Be(1);

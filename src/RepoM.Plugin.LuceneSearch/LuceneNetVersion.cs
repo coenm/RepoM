@@ -1,4 +1,4 @@
-namespace RepoZ.Plugin.LuceneSearch;
+namespace RepoM.Plugin.LuceneSearch;
 
 internal static class LuceneNetVersion
 {

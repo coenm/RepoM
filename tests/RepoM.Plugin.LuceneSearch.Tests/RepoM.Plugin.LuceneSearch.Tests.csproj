@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RepoZ.Plugin.LuceneSearch\RepoZ.Plugin.LuceneSearch.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.Plugin.LuceneSearch\RepoM.Plugin.LuceneSearch.csproj" />
   </ItemGroup>
 
 </Project>

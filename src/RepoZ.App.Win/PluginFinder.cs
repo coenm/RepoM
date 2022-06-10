@@ -45,7 +45,7 @@ internal static class PluginFinder
         return new DirectoryInfo(baseDirectory)
             .GetFiles()
             .Where(file =>
-                (file.Name.StartsWith("RepoZ.Plugin.") || file.Name.StartsWith("RepoM.Plugin."))
+                file.Name.StartsWith("RepoM.Plugin.")
                 &&
                 file.Extension.ToLower() == ".dll");
             // .Select(file => Assembly.Load(AssemblyName.GetAssemblyName(file.FullName)));
