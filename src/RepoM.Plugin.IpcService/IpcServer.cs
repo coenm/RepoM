@@ -1,4 +1,4 @@
-namespace RepoZ.Plugin.IpcService;
+namespace RepoM.Plugin.IpcService;
 
 using System;
 using System.Collections.Generic;
@@ -49,7 +49,7 @@ internal class IpcServer : IDisposable
                 var answer = "(no repositories found)";
                 try
                 {
-                    Ipc.Repository[] repos = _repositorySource.GetMatchingRepositories(repositoryNamePattern);
+                    RepoZ.Ipc.Repository[] repos = _repositorySource.GetMatchingRepositories(repositoryNamePattern);
                     if (repos.Any())
                     {
                         IEnumerable<string> serializedRepositories = repos

@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Moq;
 using RepoZ.Ipc;
 using FluentAssertions;
-using RepoZ.Plugin.IpcService;
+using RepoM.Plugin.IpcService;
 
 public class RepoZIpcClientTests
 {
