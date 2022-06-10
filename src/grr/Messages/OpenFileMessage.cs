@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Runtime.InteropServices;
-using RepoZ.Ipc;
+using RepoM.Ipc;
 
 [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 public class OpenFileMessage : FileMessage

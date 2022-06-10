@@ -2,7 +2,7 @@ namespace Grrui.Model;
 
 using System;
 using RepoZ.Api.Git;
-using Repository = RepoZ.Ipc.Repository;
+using Repository = RepoM.Ipc.Repository;
 
 public class RepositoryView : IRepositoryView
 {
@@ -17,7 +17,7 @@ public class RepositoryView : IRepositoryView
         return DisplayText;
     }
 
-    public RepoZ.Ipc.Repository Repository { get; }
+    public Repository Repository { get; }
 
     public string DisplayText { get; }
 

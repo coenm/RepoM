@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Grrui.Model;
 using Grrui.UI;
-using RepoZ.Ipc;
+using RepoM.Ipc;
 using Terminal.Gui;
 
 static class Program

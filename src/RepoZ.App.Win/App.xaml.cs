@@ -18,7 +18,6 @@ using Hardcodet.Wpf.TaskbarNotification;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git.AutoFetch;
 using RepoZ.Api.Common.Git.ProcessExecution;
-using RepoZ.Ipc;
 using RepoZ.App.Win.i18n;
 using RepoZ.Api;
 using SimpleInjector;
@@ -30,9 +29,11 @@ using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using ExpressionStringEvaluator.VariableProviders;
 using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.VariableProviders.DateTime;
+using RepoM.Ipc;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using Repository = RepoM.Ipc.Repository;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -270,12 +271,12 @@ public partial class App : Application, IRepositorySource
         (Application.Current.MainWindow as MainWindow)?.ShowAndActivate();
     }
 
-    public Ipc.Repository[] GetMatchingRepositories(string repositoryNamePattern)
+    public Repository[] GetMatchingRepositories(string repositoryNamePattern)
     {
         IRepositoryInformationAggregator aggregator = _container.GetInstance<IRepositoryInformationAggregator>();
         return aggregator.Repositories
                          .Where(r => r.MatchesRegexFilter(repositoryNamePattern))
-                         .Select(r => new Ipc.Repository(r.Name)
+                         .Select(r => new Repository(r.Name)
                              {
                                  BranchWithStatus = r.BranchWithStatus,
                                  HasUnpushedChanges = r.HasUnpushedChanges,

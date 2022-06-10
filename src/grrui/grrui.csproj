@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
-    <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj" />
+    <ProjectReference Include="..\RepoM.Ipc\RepoM.Ipc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

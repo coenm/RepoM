@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
-using RepoZ.Ipc;
+using RepoM.Ipc;
 
 [DebuggerDisplay("{GetRemoteCommand()}")]
 public class ChangeToDirectoryMessage : DirectoryMessage

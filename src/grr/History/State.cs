@@ -1,6 +1,6 @@
 namespace Grr.History;
 
-using RepoZ.Ipc;
+using RepoM.Ipc;
 
 public class State
 {

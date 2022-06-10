@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
-using RepoZ.Ipc;
+using RepoM.Ipc;
 
 internal class IpcServer : IDisposable
 {
@@ -49,7 +49,7 @@ internal class IpcServer : IDisposable
                 var answer = "(no repositories found)";
                 try
                 {
-                    RepoZ.Ipc.Repository[] repos = _repositorySource.GetMatchingRepositories(repositoryNamePattern);
+                    Repository[] repos = _repositorySource.GetMatchingRepositories(repositoryNamePattern);
                     if (repos.Any())
                     {
                         IEnumerable<string> serializedRepositories = repos

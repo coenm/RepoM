@@ -1,4 +1,4 @@
-namespace RepoZ.Ipc;
+namespace RepoM.Ipc;
 
 public class DefaultIpcEndpoint : IIpcEndpoint
 {

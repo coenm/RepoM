@@ -1,8 +1,8 @@
 namespace Tests.Ipc;
 
 using NUnit.Framework;
-using RepoZ.Ipc;
 using FluentAssertions;
+using RepoM.Ipc;
 
 public class RepositoryTests
 {

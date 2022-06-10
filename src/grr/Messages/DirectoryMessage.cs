@@ -2,7 +2,7 @@ namespace Grr.Messages;
 
 using System;
 using System.IO.Abstractions;
-using RepoZ.Ipc;
+using RepoM.Ipc;
 
 [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 public abstract class DirectoryMessage : IMessage

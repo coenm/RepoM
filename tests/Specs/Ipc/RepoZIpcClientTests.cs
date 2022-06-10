@@ -2,8 +2,8 @@ namespace Specs.Ipc;
 
 using NUnit.Framework;
 using Moq;
-using RepoZ.Ipc;
 using FluentAssertions;
+using RepoM.Ipc;
 using RepoM.Plugin.IpcService;
 
 public class RepoZIpcClientTests

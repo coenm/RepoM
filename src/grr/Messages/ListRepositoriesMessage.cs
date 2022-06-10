@@ -1,6 +1,6 @@
 namespace Grr.Messages;
 
-using RepoZ.Ipc;
+using RepoM.Ipc;
 
 [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 public class ListRepositoriesMessage : IMessage

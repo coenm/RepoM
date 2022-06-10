@@ -9,7 +9,7 @@ using System.Text;
 using CommandLine;
 using Grr.Messages;
 using Grr.Messages.Filters;
-using RepoZ.Ipc;
+using RepoM.Ipc;
 
 static class Program
 {

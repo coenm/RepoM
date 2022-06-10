@@ -6,7 +6,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
-using RepoZ.Ipc;
+using RepoM.Ipc;
 
 public class FileHistoryRepository : IHistoryRepository
 {

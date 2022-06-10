@@ -4,14 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RepoZ.Api.Git;
-using Repository = RepoZ.Ipc.Repository;
+using Repository = RepoM.Ipc.Repository;
 
 public class RepositoriesView
 {
     private const int MAX_REPO_NAME_LENGTH = 35;
     private readonly RepositoryView[] _repositoryViews;
 
-    public RepositoriesView(IEnumerable<RepoZ.Ipc.Repository> repositories)
+    public RepositoriesView(IEnumerable<Repository> repositories)
     {
         Repository[] repos = repositories as Repository[] ?? repositories.ToArray();
 

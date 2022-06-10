@@ -1,6 +1,6 @@
 namespace Specs.Ipc;
 
-using RepoZ.Ipc;
+using RepoM.Ipc;
 
 class TestIpcEndpoint : IIpcEndpoint
 {
