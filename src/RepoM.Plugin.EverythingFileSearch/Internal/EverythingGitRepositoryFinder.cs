@@ -1,4 +1,4 @@
-namespace RepoZ.Plugin.EverythingFileSearch.Internal;
+namespace RepoM.Plugin.EverythingFileSearch.Internal;
 
 using System;
 using System.Collections.Generic;

@@ -1,9 +1,9 @@
-namespace RepoZ.Plugin.EverythingFileSearch;
+namespace RepoM.Plugin.EverythingFileSearch;
 
 using System;
 using JetBrains.Annotations;
+using RepoM.Plugin.EverythingFileSearch.Internal;
 using RepoZ.Api.IO;
-using RepoZ.Plugin.EverythingFileSearch.Internal;
 
 [UsedImplicitly]
 public class EverythingGitRepositoryFinderFactory : ISingleGitRepositoryFinderFactory

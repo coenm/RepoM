@@ -1,4 +1,4 @@
-namespace RepoZ.Plugin.EverythingFileSearch;
+namespace RepoM.Plugin.EverythingFileSearch;
 
 using JetBrains.Annotations;
 using RepoZ.Api.IO;
