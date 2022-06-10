@@ -3,10 +3,10 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
-using RepoZ.Api.Git;
-using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
+using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class ActionMapperComposition
 {
@@ -19,7 +19,7 @@ public class ActionMapperComposition
         _deserializers = deserializers.Where(x => x != null).ToArray() ?? throw new ArgumentNullException(nameof(deserializers));
     }
 
-    public IEnumerable<RepositoryActionBase> Map(RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction action, params RepoZ.Api.Git.Repository[] repositories)
+    public IEnumerable<RepositoryActionBase> Map(RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction action, params Repository[] repositories)
     {
         Repository? singleRepository = repositories.Length <= 1 ? repositories.SingleOrDefault() : null;
         

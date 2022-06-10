@@ -6,11 +6,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 using JetBrains.Annotations;
+using RepoM.Api.Common;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
-using RepoZ.Api.Git;
-using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
+using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
 {
@@ -40,7 +41,7 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionBrowserV1, repository.First());
     }
 
-    private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionBrowserV1? action, Repository repository)
+    private IEnumerable<RepositoryAction> Map(RepositoryActionBrowserV1? action, Repository repository)
     {
         if (action == null)
         {

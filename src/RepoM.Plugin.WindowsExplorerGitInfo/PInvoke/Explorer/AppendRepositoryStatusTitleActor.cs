@@ -1,7 +1,7 @@
 namespace RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 
 using System;
-using RepoZ.Api.Git;
+using RepoM.Api.Git;
 
 internal class AppendRepositoryStatusTitleActor : ExplorerWindowActor
 {

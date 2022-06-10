@@ -1,7 +1,7 @@
 namespace RepoM.Plugin.LuceneSearch;
 
 using JetBrains.Annotations;
-using RepoZ.Api;
+using RepoM.Api;
 using SimpleInjector;
 using SimpleInjector.Packaging;
 

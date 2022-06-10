@@ -8,14 +8,15 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using DotNetEnv;
+using RepoM.Api.Common;
+using RepoM.Api.Git;
+using RepoM.Api.IO;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
-using RepoZ.Api.Git;
-using RepoZ.Api.IO;
-using Repository = RepoZ.Api.Git.Repository;
-using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
+using Repository = RepoM.Api.Git.Repository;
+using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class ConfigurationFileNotFoundException : Exception
 {
@@ -89,7 +90,7 @@ public class RepositoryConfigurationReader
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
     }
 
-    public (Dictionary<string, string>? envVars, List<Variable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params RepoZ.Api.Git.Repository[] repositories)
+    public (Dictionary<string, string>? envVars, List<Variable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params Repository[] repositories)
     {
         if (!repositories.Any())
         {
@@ -299,12 +300,12 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         _repoConfigReader = repoConfigReader ?? throw new ArgumentNullException(nameof(repoConfigReader));
     }
 
-    public IEnumerable<string> GetTags(RepoZ.Api.Git.Repository repository)
+    public IEnumerable<string> GetTags(Repository repository)
     {
         return GetTagsInner(repository).Distinct();
     }
 
-    private IEnumerable<string> GetTagsInner(RepoZ.Api.Git.Repository repository)
+    private IEnumerable<string> GetTagsInner(Repository repository)
     {
         List<Variable> EvaluateVariables(IEnumerable<Variable>? vars)
         {
@@ -404,7 +405,7 @@ public class RepositorySpecificConfiguration
         _repoConfigReader = repoConfigReader ?? throw new ArgumentNullException(nameof(repoConfigReader));
     }
 
-    public IEnumerable<RepositoryActionBase> CreateActions(params RepoZ.Api.Git.Repository[] repositories)
+    public IEnumerable<RepositoryActionBase> CreateActions(params Repository[] repositories)
     {
         if (repositories == null)
         {

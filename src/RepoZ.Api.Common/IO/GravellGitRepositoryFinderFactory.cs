@@ -3,7 +3,7 @@ namespace RepoZ.Api.Common.IO;
 using System;
 using System.IO.Abstractions;
 using JetBrains.Annotations;
-using RepoZ.Api.IO;
+using RepoM.Api.IO;
 
 public class GravellGitRepositoryFinderFactory : ISingleGitRepositoryFinderFactory
 {

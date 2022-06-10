@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using RepoM.Api.Common;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
-using RepoZ.Api.Git;
 using RepositoryAction = RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
@@ -38,7 +39,7 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionAssociateFileV1, repository.First());
     }
 
-    private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionAssociateFileV1? action, Repository repository)
+    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionAssociateFileV1? action, Repository repository)
     {
         if (action == null)
         {
@@ -61,7 +62,7 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        Api.Git.RepositoryAction? menuItem = CreateFileAssociationSubMenu(
+        RepoM.Api.Git.RepositoryAction? menuItem = CreateFileAssociationSubMenu(
             repository,
             name,
             action.Extension);
@@ -72,22 +73,22 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         }
     }
 
-    private Api.Git.RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+    private RepoM.Api.Git.RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
     {
-        return new Api.Git.RepositoryAction(name)
+        return new RepoM.Api.Git.RepositoryAction(name)
         {
             Action = (_, _) => ProcessHelper.StartProcess(process, arguments, _errorHandler),
         };
     }
 
-    private Api.Git.RepositoryAction? CreateFileAssociationSubMenu(Repository repository, string actionName, string filePattern)
+    private RepoM.Api.Git.RepositoryAction? CreateFileAssociationSubMenu(Repository repository, string actionName, string filePattern)
     {
         if (!HasFiles(repository, filePattern))
         {
             return null;
         }
 
-        return new Api.Git.RepositoryAction(actionName)
+        return new RepoM.Api.Git.RepositoryAction(actionName)
             {
                 DeferredSubActionsEnumerator = () =>
                     GetFiles(repository, filePattern)

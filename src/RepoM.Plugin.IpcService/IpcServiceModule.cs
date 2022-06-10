@@ -1,8 +1,8 @@
 namespace RepoM.Plugin.IpcService;
 
 using JetBrains.Annotations;
+using RepoM.Api;
 using RepoM.Ipc;
-using RepoZ.Api;
 using SimpleInjector;
 using SimpleInjector.Packaging;
 

@@ -3,7 +3,7 @@ namespace RepoZ.Api.Common.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using RepoZ.Api.Git;
+using RepoM.Api.Git;
 
 public static class MultipleRepositoryActionHelper
 {

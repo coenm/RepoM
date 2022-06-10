@@ -1,6 +1,6 @@
 namespace RepoZ.Api.Common.Git;
 
-using RepoZ.Api.Git;
+using RepoM.Api.Git;
 
 public class DefaultRepositoryDetectorFactory : IRepositoryDetectorFactory
 {

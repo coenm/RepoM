@@ -3,7 +3,7 @@ namespace RepoM.Plugin.LuceneSearch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using RepoZ.Api;
+using RepoM.Api;
 
 internal class SearchAdapter : IRepositorySearch
 {

@@ -1,6 +1,7 @@
 namespace RepoZ.App.Win;
 
 using System.Windows;
+using RepoM.Api.Common;
 using RepoZ.Api.Common;
 
 public class UIErrorHandler : IErrorHandler

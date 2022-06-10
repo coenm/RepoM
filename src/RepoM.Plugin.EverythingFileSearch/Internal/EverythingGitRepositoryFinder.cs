@@ -3,7 +3,7 @@ namespace RepoM.Plugin.EverythingFileSearch.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using RepoZ.Api.IO;
+using RepoM.Api.IO;
 
 internal class EverythingGitRepositoryFinder : IGitRepositoryFinder
 {

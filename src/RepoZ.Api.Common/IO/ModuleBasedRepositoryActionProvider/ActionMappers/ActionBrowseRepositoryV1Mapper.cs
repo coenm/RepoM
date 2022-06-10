@@ -3,10 +3,11 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RepoM.Api.Common;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
-using RepoZ.Api.Git;
 
 public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
 {
@@ -36,7 +37,7 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionBrowseRepositoryV1, repository.First());
     }
 
-    private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionBrowseRepositoryV1? action, Repository repository)
+    private IEnumerable<RepositoryAction> Map(RepositoryActionBrowseRepositoryV1? action, Repository repository)
     {
         if (action == null)
         {

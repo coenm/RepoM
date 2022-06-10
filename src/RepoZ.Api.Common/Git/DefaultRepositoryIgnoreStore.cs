@@ -1,12 +1,13 @@
 namespace RepoZ.Api.Common.Git;
 
-using RepoZ.Api.Git;
-using RepoZ.Api.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using RepoM.Api.Common;
+using RepoM.Api.Git;
+using RepoM.Api.IO;
 
 public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgnoreStore
 {

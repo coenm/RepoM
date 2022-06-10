@@ -2,10 +2,10 @@ namespace RepoZ.Api.Common.Git;
 
 using System.Linq;
 using LibGit2Sharp;
-using RepoZ.Api.Git;
 using System.IO;
 using System;
-using Repository = RepoZ.Api.Git.Repository;
+using RepoM.Api.Git;
+using Repository = RepoM.Api.Git.Repository;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 
 public class DefaultRepositoryReader : IRepositoryReader
@@ -17,7 +17,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         _resolver = resolver;
     }
 
-    public Api.Git.Repository? ReadRepository(string path)
+    public Repository? ReadRepository(string path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -40,9 +40,9 @@ public class DefaultRepositoryReader : IRepositoryReader
         return result;
     }
 
-    private Api.Git.Repository? ReadRepositoryWithRetries(string repoPath, int maxRetries)
+    private Repository? ReadRepositoryWithRetries(string repoPath, int maxRetries)
     {
-        Api.Git.Repository? repository = null;
+        Repository? repository = null;
         var currentTry = 1;
 
         while (repository == null && currentTry <= maxRetries)
@@ -69,7 +69,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         return repository;
     }
 
-    private static Api.Git.Repository? ReadRepositoryInternal(string repoPath)
+    private static Repository? ReadRepositoryInternal(string repoPath)
     {
         try
         {
@@ -80,7 +80,7 @@ public class DefaultRepositoryReader : IRepositoryReader
 
             HeadDetails headDetails = GetHeadDetails(repo);
 
-            return new Api.Git.Repository()
+            return new Repository()
                 {
                     Name = workingDirectory.Name,
                     Path = workingDirectory.FullName,

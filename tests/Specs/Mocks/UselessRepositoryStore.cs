@@ -1,8 +1,8 @@
 namespace Specs.Mocks;
 
 using System.Collections.Generic;
-using RepoZ.Api.Git;
 using System;
+using RepoM.Api.Git;
 
 internal class UselessRepositoryStore : IRepositoryStore
 {

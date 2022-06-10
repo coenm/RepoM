@@ -4,8 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
+using RepoM.Api.Common;
+using RepoM.Api.Git;
 using RepoZ.Api.Common;
-using RepoZ.Api.Git;
 
 public abstract class FileRepositoryStore : IRepositoryStore
 {

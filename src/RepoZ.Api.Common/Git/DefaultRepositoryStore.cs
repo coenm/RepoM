@@ -3,7 +3,8 @@ namespace RepoZ.Api.Common.Git;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using RepoZ.Api.IO;
+using RepoM.Api.Common;
+using RepoM.Api.IO;
 
 public class DefaultRepositoryStore : FileRepositoryStore
 {

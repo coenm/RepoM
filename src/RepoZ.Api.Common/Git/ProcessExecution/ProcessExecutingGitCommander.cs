@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Linq;
 using System.Threading;
+using RepoM.Api.Git;
 
 public class ProcessExecutingGitCommander : IGitCommander
 {
@@ -19,7 +20,7 @@ public class ProcessExecutingGitCommander : IGitCommander
     /// <summary>
     /// Runs the given git command, and returns the contents of its STDOUT.
     /// </summary>
-    public string Command(Api.Git.Repository repository, params string[] command)
+    public string Command(Repository repository, params string[] command)
     {
         var retVal = string.Empty;
         CommandOutputPipe(repository, output => retVal = output, command);
@@ -29,7 +30,7 @@ public class ProcessExecutingGitCommander : IGitCommander
     /// <summary>
     /// Runs the given git command, and returns the first line of its STDOUT.
     /// </summary>
-    public string CommandOneline(Api.Git.Repository repository, params string[] command)
+    public string CommandOneline(Repository repository, params string[] command)
     {
         var retVal = string.Empty;
         CommandOutputPipe(repository, output => retVal = output, command);
@@ -39,7 +40,7 @@ public class ProcessExecutingGitCommander : IGitCommander
     /// <summary>
     /// Runs the given git command, and passes STDOUT through to the current process's STDOUT.
     /// </summary>
-    public void CommandNoisy(Api.Git.Repository repository, params string[] command)
+    public void CommandNoisy(Repository repository, params string[] command)
     {
         CommandOutputPipe(repository, output => Trace.TraceInformation(output), command);
     }
@@ -47,7 +48,7 @@ public class ProcessExecutingGitCommander : IGitCommander
     /// <summary>
     /// Runs the given git command, and redirects STDOUT to the provided action.
     /// </summary>
-    public void CommandOutputPipe(Api.Git.Repository repository, Action<string> handleOutput, params string[] command)
+    public void CommandOutputPipe(Repository repository, Action<string> handleOutput, params string[] command)
     {
         Time(command, () =>
             {
@@ -106,7 +107,7 @@ public class ProcessExecutingGitCommander : IGitCommander
         startInfo.StandardErrorEncoding = _encoding;
     }
 
-    private string Start(Api.Git.Repository repository, string[] command, Action<ProcessStartInfo> initialize)
+    private string Start(Repository repository, string[] command, Action<ProcessStartInfo> initialize)
     {
         var timeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
 

@@ -1,9 +1,9 @@
 namespace RepoZ.Api.Common.Git;
 
-using RepoZ.Api.Git;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using RepoM.Api.Git;
 
 public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 {

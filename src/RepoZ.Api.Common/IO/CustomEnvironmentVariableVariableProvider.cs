@@ -7,7 +7,7 @@ using System.Threading;
 using ExpressionStringEvaluator.VariableProviders;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
-using Repository = RepoZ.Api.Git.Repository;
+using Repository = RepoM.Api.Git.Repository;
 
 public static class RepoZEnvironmentVariableStore
 {

@@ -1,7 +1,7 @@
 namespace RepoZ.App.Win;
 
 using System.Collections;
-using RepoZ.Api.Git;
+using RepoM.Api.Git;
 
 internal class CustomRepositoryViewSortBehavior : IComparer
 {

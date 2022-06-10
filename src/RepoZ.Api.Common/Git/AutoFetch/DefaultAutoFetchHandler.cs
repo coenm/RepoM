@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.Common;
-using RepoZ.Api.Git;
 
 public class DefaultAutoFetchHandler : IAutoFetchHandler
 {

@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
-using RepoZ.Api.Git;
 using RepositoryAction = RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionSeparatorV1Mapper : IActionToRepositoryActionMapper
@@ -32,17 +32,17 @@ public class ActionSeparatorV1Mapper : IActionToRepositoryActionMapper
     {
         foreach (Repository r in repository)
         {
-            Api.Git.RepositoryActionBase[] result = Map(action as RepositoryActionSeparatorV1, r).ToArray();
+            RepositoryActionBase[] result = Map(action as RepositoryActionSeparatorV1, r).ToArray();
             if (result.Any())
             {
                 return result;
             }
         }
 
-        return Array.Empty<Api.Git.RepositoryAction>();
+        return Array.Empty<RepoM.Api.Git.RepositoryAction>();
     }
 
-    private IEnumerable<Api.Git.RepositoryActionBase> Map(RepositoryActionSeparatorV1? action, Repository repository)
+    private IEnumerable<RepositoryActionBase> Map(RepositoryActionSeparatorV1? action, Repository repository)
     {
         if (action == null)
         {
@@ -54,6 +54,6 @@ public class ActionSeparatorV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        yield return new Api.Git.RepositorySeparatorAction();
+        yield return new RepositorySeparatorAction();
     }
 }

@@ -3,10 +3,10 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
-using RepoZ.Api.Git;
 using RepositoryAction = RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
@@ -35,7 +35,7 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionFolderV1, repository.First(), actionMapperComposition);
     }
 
-    private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionFolderV1? action, Repository repository, ActionMapperComposition actionMapperComposition)
+    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionFolderV1? action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
         if (action == null)
         {
@@ -57,7 +57,7 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
 
         if (deferred)
         {
-            yield return new Api.Git.RepositoryAction(name)
+            yield return new RepoM.Api.Git.RepositoryAction(name)
                 {
                     CanExecute = true,
                     DeferredSubActionsEnumerator = () =>
@@ -69,7 +69,7 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
         }
         else
         {
-            yield return new Api.Git.RepositoryAction(name)
+            yield return new RepoM.Api.Git.RepositoryAction(name)
                 {
                     CanExecute = true,
                     SubActions = action.Items

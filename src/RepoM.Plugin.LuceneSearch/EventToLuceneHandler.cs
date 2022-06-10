@@ -4,8 +4,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoZ.Api;
-using RepoZ.Api.Git;
+using RepoM.Api;
+using RepoM.Api.Git;
 
 [UsedImplicitly]
 internal class EventToLuceneHandler : IModule, IDisposable

@@ -3,7 +3,7 @@ namespace Grrui.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using RepoZ.Api.Git;
+using RepoM.Api.Git;
 using Repository = RepoM.Ipc.Repository;
 
 public class RepositoriesView

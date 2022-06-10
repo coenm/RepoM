@@ -1,7 +1,7 @@
 namespace Grrui.Model;
 
 using System;
-using RepoZ.Api.Git;
+using RepoM.Api.Git;
 using Repository = RepoM.Ipc.Repository;
 
 public class RepositoryView : IRepositoryView

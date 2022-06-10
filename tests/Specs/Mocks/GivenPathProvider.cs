@@ -1,6 +1,6 @@
 namespace Specs.Mocks;
 
-using RepoZ.Api.IO;
+using RepoM.Api.IO;
 
 internal class GivenPathProvider : IPathProvider
 {

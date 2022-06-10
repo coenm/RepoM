@@ -4,6 +4,7 @@ namespace Specs;
 using System;
 using System.Threading;
 using FluentAssertions;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.Git;
 
 public static class AssertionHelper
@@ -36,7 +37,7 @@ public static class AssertionHelper
     {
         var trackedChanges = 0;
         var trackedDeletes = 0;
-        EventHandler<RepoZ.Api.Git.Repository> trackedChangesInc = (s, e) => trackedChanges++;
+        EventHandler<Repository> trackedChangesInc = (s, e) => trackedChanges++;
         EventHandler<string> trackedDeletesInc = (s, e) => trackedDeletes++;
 
         try

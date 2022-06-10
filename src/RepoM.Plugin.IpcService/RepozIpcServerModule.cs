@@ -2,7 +2,7 @@ namespace RepoM.Plugin.IpcService;
 
 using System;
 using System.Threading.Tasks;
-using RepoZ.Api;
+using RepoM.Api;
 
 internal class RepozIpcServerModule : IModule, IDisposable
 {

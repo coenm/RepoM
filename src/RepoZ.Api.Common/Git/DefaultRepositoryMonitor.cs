@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RepoZ.Api.Git;
-using RepoZ.Api.IO;
 using System.Threading;
 using System.IO.Abstractions;
+using RepoM.Api.Git;
+using RepoM.Api.IO;
 using RepoZ.Api.Common.Git.AutoFetch;
 
 public class DefaultRepositoryMonitor : IRepositoryMonitor

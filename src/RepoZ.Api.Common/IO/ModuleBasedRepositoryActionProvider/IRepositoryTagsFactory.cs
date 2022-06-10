@@ -1,8 +1,9 @@
 namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 
 using System.Collections.Generic;
+using RepoM.Api.Git;
 
 public interface IRepositoryTagsFactory
 {
-    IEnumerable<string> GetTags(RepoZ.Api.Git.Repository repository);
+    IEnumerable<string> GetTags(Repository repository);
 }

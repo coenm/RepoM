@@ -6,7 +6,7 @@ using ExpressionStringEvaluator.VariableProviders;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using RepoZ.Api.Git;
+using RepoM.Api.Git;
 
 public class RepositoryContext
 {

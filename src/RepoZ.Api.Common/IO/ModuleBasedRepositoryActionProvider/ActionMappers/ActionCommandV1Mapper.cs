@@ -3,10 +3,11 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RepoM.Api.Common;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
-using RepoZ.Api.Git;
 using RepositoryAction = RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
@@ -37,7 +38,7 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionCommandV1, repository.First());
     }
 
-    private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionCommandV1? action, Repository repository)
+    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionCommandV1? action, Repository repository)
     {
         if (action == null)
         {
@@ -53,7 +54,7 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
         var command = _expressionEvaluator.EvaluateStringExpression(action.Command ?? string.Empty, repository);
         var arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments ?? string.Empty, repository); 
 
-        yield return new Api.Git.RepositoryAction(name)
+        yield return new RepoM.Api.Git.RepositoryAction(name)
             {
                 Action = (_, _) => ProcessHelper.StartProcess(command, arguments, _errorHandler),
             };

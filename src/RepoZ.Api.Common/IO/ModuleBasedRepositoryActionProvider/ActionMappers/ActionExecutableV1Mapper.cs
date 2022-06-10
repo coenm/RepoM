@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using JetBrains.Annotations;
+using RepoM.Api.Common;
+using RepoM.Api.Git;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
-using RepoZ.Api.Git;
 using RepositoryAction = RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
@@ -41,7 +42,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionExecutableV1, repository.First());
     }
 
-    private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionExecutableV1? action, Repository repository)
+    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionExecutableV1? action, Repository repository)
     {
         if (action == null)
         {
@@ -79,7 +80,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
                 arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
             }
 
-            yield return new Api.Git.RepositoryAction(name)
+            yield return new RepoM.Api.Git.RepositoryAction(name)
                 {
                     Action = (_, _) => ProcessHelper.StartProcess(normalized, arguments, _errorHandler),
                 };

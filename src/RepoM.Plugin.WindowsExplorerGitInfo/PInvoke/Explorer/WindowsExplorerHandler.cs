@@ -1,7 +1,7 @@
 namespace RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 
 using JetBrains.Annotations;
-using RepoZ.Api.Git;
+using RepoM.Api.Git;
 
 internal class WindowsExplorerHandler
 {

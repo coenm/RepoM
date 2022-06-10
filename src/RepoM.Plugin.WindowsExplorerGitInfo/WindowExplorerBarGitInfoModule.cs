@@ -4,8 +4,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using RepoM.Api;
 using RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
-using RepoZ.Api;
 
 [UsedImplicitly] 
 internal class WindowExplorerBarGitInfoModule : IModule
