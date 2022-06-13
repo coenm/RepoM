@@ -3,7 +3,7 @@ namespace Tests.UI;
 using System;
 using FluentAssertions;
 using NUnit.Framework;
-using RepoZ.Api.Git;
+using RepoM.Api.Git;
 using Tests.Helper;
 
 public class RepositoryViewTests

@@ -18,13 +18,13 @@ using ExpressionStringEvaluator.VariableProviders;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using RepoZ.Api.Common.Common;
-using RepoZ.Api.Common.Git;
-using RepoZ.Api.Common.Git.AutoFetch;
-using RepoZ.Api.Common.IO;
-using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
-using RepoZ.Api.Git;
-using RepoZ.Api.IO;
+using RepoM.Api.Common.Common;
+using RepoM.Api.Common.Git;
+using RepoM.Api.Common.Git.AutoFetch;
+using RepoM.Api.Common.IO;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.Git;
+using RepoM.Api.IO;
 using Specs.IO;
 using Specs.Mocks;
 
@@ -42,7 +42,7 @@ public class DefaultRepositoryMonitorTests
     public void OneTimeSetUp()
     {
         var fileSystem = new FileSystem();
-        _rootPath = Path.Combine(Path.GetTempPath(), "RepoZ_Test_Repositories");
+        _rootPath = Path.Combine(Path.GetTempPath(), "RepoM_Test_Repositories");
 
         TryCreateRootPath(_rootPath);
 

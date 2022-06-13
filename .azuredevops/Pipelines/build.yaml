@@ -154,34 +154,32 @@ stages:
           name: CodeCov               
 
         - task: DotNetCoreCLI@2
-          displayName: "Dotnet Publish RepoZ"
+          displayName: "Dotnet Publish RepoM"
           inputs:
             command: publish
             # arguments: "--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/${{ variables.SystemTestsArtifactName }}/bin/Release/publish --no-build --self-contained true"
             arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies"
-            projects: "**/RepoZ.App.Win.csproj"
+            projects: "**/RepoM.App.csproj"
             publishWebProjects: false
             modifyOutputPath: false
             zipAfterPublish: false
 
         - task: DotNetCoreCLI@2
-          displayName: "Dotnet Publish Grr"
+          displayName: "Dotnet Publish grr tool"
           inputs:
             command: publish
-            # arguments: "--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/${{ variables.SystemTestsArtifactName }}/bin/Release/publish --no-build --self-contained true"
             arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies --self-contained true --runtime win-x64"
-            projects: "**/grr.csproj"
+            projects: "**/Grr.App.csproj"
             publishWebProjects: false
             modifyOutputPath: false
             zipAfterPublish: false
 
         - task: DotNetCoreCLI@2
-          displayName: "Dotnet Publish grrui"
+          displayName: "Dotnet Publish grrui tool"
           inputs:
             command: publish
-            # arguments: "--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/${{ variables.SystemTestsArtifactName }}/bin/Release/publish --no-build --self-contained true"
             arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies --self-contained true --runtime win-x64"
-            projects: "**/grrui.csproj"
+            projects: "**/GrrUi.App.csproj"
             publishWebProjects: false
             modifyOutputPath: false
             zipAfterPublish: false    
@@ -196,7 +194,7 @@ stages:
 
         - pwsh: |
             nuget install NSIS -OutputDirectory ./packages
-            makensis.exe /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 _setup/RepoZ.nsi 
+            makensis.exe /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 _setup/RepoM.nsi 
           displayName: Create installer
           
         - task: DeleteFiles@1

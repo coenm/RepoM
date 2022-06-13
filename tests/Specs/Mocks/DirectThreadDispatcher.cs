@@ -1,7 +1,7 @@
 namespace Specs.Mocks;
 
 using System;
-using RepoZ.Api.Common;
+using RepoM.Api.Common;
 
 internal class DirectThreadDispatcher : IThreadDispatcher
 {

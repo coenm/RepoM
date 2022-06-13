@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="2.3.0" />
+    <PackageReference Include="ExpressionStringEvaluator" Version="0.1.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RepoM.Api.Common\RepoM.Api.Common.csproj" />
+    <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
+  </ItemGroup>
+</Project>
