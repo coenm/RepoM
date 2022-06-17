@@ -19,6 +19,7 @@ using RepoM.Api.Common.Common;
 using RepoM.Api.Common.IO;
 using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.Common.Tests;
 using RepoM.Api.Common.Tests.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.Git;
@@ -97,51 +98,5 @@ public class DefaultRepositoryActionProviderTest
                 new StringReplaceMethod(),
                 new SubstringMethod(),
             };
-    }
-
-    [Fact(Skip = "refactor")]
-    public async Task GetPrimaryAction_ShouldReturnFirstActiveAction_WhenConfigIsValid()
-    {
-        // arrange
-        var repositoryExpressionEvaluator = new RepositoryExpressionEvaluator(_providers, _methods);
-        JsonDynamicRepositoryActionDeserializer jsonDynamicRepositoryActionDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
-        var sut = new DefaultRepositoryActionProvider(
-            _fileSystem,
-            new RepositorySpecificConfiguration(
-                _fileSystem,
-                repositoryExpressionEvaluator,
-                ActionMapperCompositionFactory.Create(
-                    repositoryExpressionEvaluator,
-                    _translationService,
-                    _errorHandler,
-                    _fileSystem,
-                    _repositoryWriter,
-                    _repositoryMonitor),
-                _translationService,
-                _errorHandler,
-                new RepositoryConfigurationReader(
-                    _appDataPathProvider,
-                    _fileSystem,
-                    jsonDynamicRepositoryActionDeserializer,
-                    repositoryExpressionEvaluator)));
-        // await using Stream stream = await EasyTestFile.LoadAsStream();
-        var repository = new Repository()
-            {
-                Path = "C:\\",
-                Branches = new[] { "develop", "main", },
-                LocalBranches = new[] { "develop", },
-                RemoteUrls = new[] { "https://github.com/coenm/Repo.git", },
-            };
-
-        // act
-        RepositoryActionBase? result = sut.GetPrimaryAction(repository)!;
-        
-        // assert
-        A.CallTo(_errorHandler).MustNotHaveHappened();
-        await Verifier.Verify(new
-            {
-                result.CanExecute,
-                result.ExecutionCausesSynchronizing,
-            }).ModifySerialization(s => s.DontIgnoreFalse());
     }
 }

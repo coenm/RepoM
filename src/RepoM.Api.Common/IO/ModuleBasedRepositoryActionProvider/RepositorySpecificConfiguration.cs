@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using DotNetEnv;
 using RepoM.Api.Common;
@@ -13,60 +12,12 @@ using RepoM.Api.Common.Common;
 using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Exceptions;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using Repository = RepoM.Api.Git.Repository;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
-
-public class ConfigurationFileNotFoundException : Exception
-{
-    public ConfigurationFileNotFoundException(string filename)
-    {
-        Filename = filename;
-    }
-
-    protected ConfigurationFileNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        Filename = string.Empty; //todo
-    }
-
-    public ConfigurationFileNotFoundException(string filename, string message) : base(message)
-    {
-        Filename = filename;
-    }
-
-    public ConfigurationFileNotFoundException(string filename, string message, Exception innerException) : base(message, innerException)
-    {
-        Filename = filename;
-    }
-
-    public string Filename { get; private set; }
-}
-
-public class InvalidConfigurationException : Exception
-{
-    public InvalidConfigurationException(string filename)
-    {
-        Filename = filename;
-    }
-
-    protected InvalidConfigurationException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        Filename = string.Empty; //todo
-    }
-
-    public InvalidConfigurationException(string filename, string message) : base(message)
-    {
-        Filename = filename;
-    }
-
-    public InvalidConfigurationException(string filename, string message, Exception innerException) : base(message, innerException)
-    {
-        Filename = filename;
-    }
-
-    public string Filename { get; private set; }
-}
 
 public class RepositoryConfigurationReader
 {

@@ -1,4 +1,4 @@
-namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 
 using System;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;

@@ -26,6 +26,7 @@ using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.Api.Win.IO;

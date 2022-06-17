@@ -1,56 +1,21 @@
-namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 
-
-internal class BoolStringConverter : JsonConverter
-{
-    public override bool CanConvert(Type objectType)
-    {
-        return (typeof(string) == objectType);
-    }
-
-    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-    {
-        var token = JToken.Load(reader);
-        var str = token.Value<string>();
-
-        if ("true".Equals(str, StringComparison.OrdinalIgnoreCase))
-        {
-            return "true";
-        }
-
-        if ("false".Equals(str, StringComparison.OrdinalIgnoreCase))
-        {
-            return "false";
-        }
-
-        return str;
-    }
-
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-    {
-        // intentionally
-        throw new NotImplementedException();
-    }
-}
-
 public class JsonDynamicRepositoryActionDeserializer
 {
     private readonly ActionDeserializerComposition _deserializers;
-    private static readonly JsonSerializer _jsonSerializer = new JsonSerializer()
+    private static readonly JsonSerializer _jsonSerializer = new()
         {
             Converters =
                 {
-                    new BoolStringConverter(),
+                    new BoolToStringJsonConverter(),
                 },
         };
     private static readonly JsonLoadSettings _jsonLoadSettings = new()

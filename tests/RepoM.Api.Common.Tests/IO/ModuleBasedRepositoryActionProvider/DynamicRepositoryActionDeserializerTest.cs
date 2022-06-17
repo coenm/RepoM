@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;

@@ -2,6 +2,7 @@ namespace RepoM.Api.Common.Tests;
 
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 
 internal static class DynamicRepositoryActionDeserializerFactory
 {
