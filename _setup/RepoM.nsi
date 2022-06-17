@@ -54,6 +54,7 @@ Section "RepoM"
   File ..\_ref\PathEd.exe ; Add PathEd.exe to add the RepoM directory to the system's PATH easily
   File ..\_ref\SendKeys.exe ; Add SendKeys.exe to add the RepoM directory for grr and grrui
   File ..\_ref\RepositoryActions.json ; Can be copied in-app for the default settings
+  File ..\_ref\RepositoryActions.yaml ; Can be copied in-app for the default settings
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}.lnk" $INSTDIR\${PRODUCT_NAME}.exe
   
   ; Add the installation folder to the system PATH -> to enable grr.exe
