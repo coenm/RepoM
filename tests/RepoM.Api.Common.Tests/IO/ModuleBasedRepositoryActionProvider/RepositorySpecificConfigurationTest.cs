@@ -139,7 +139,7 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,
@@ -166,7 +166,7 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,
@@ -193,7 +193,7 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActions1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,
@@ -220,7 +220,7 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsWithSeparator1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,

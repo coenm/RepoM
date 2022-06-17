@@ -27,7 +27,8 @@ public class RepositoryConfigurationReader
     private readonly YamlDynamicRepositoryActionDeserializer _yamlAppSettingsDeserializer;
     private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
 
-    public const string FILENAME = "RepositoryActions.json";
+    private const string FILENAME = "RepositoryActions.";
+    public const string FILENAME_JSON = FILENAME + "json";
 
     public RepositoryConfigurationReader(
         IAppDataPathProvider appDataPathProvider,
@@ -41,6 +42,25 @@ public class RepositoryConfigurationReader
         _jsonAppSettingsDeserializer = jsonAppsettingsDeserializer ?? throw new ArgumentNullException(nameof(jsonAppsettingsDeserializer));
         _yamlAppSettingsDeserializer = yamlAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(yamlAppSettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
+    }
+
+    private string GetRepositoryActionsFilename(string basePath)
+    {
+        var exts = new [] { "yml", "yaml", "json", };
+
+        var path = Path.Combine(basePath, FILENAME);
+        foreach (var ext in exts)
+        {
+            var filename = path + ext;
+            if (_fileSystem.File.Exists(filename))
+            {
+                return filename;
+            }
+        }
+
+        var f = path + "{" +  string.Join(",",exts)+ "}";
+
+        throw new ConfigurationFileNotFoundException(f);
     }
 
     public (Dictionary<string, string>? envVars, List<Variable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params Repository[] repositories)
@@ -67,7 +87,7 @@ public class RepositoryConfigurationReader
         RepositoryActionConfiguration? rootFile = null;
         RepositoryActionConfiguration? repoSpecificConfig = null;
 
-        var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), FILENAME);
+        var filename = GetRepositoryActionsFilename(_appDataPathProvider.GetAppDataPath());
         if (!_fileSystem.File.Exists(filename))
         {
             throw new ConfigurationFileNotFoundException(filename);
