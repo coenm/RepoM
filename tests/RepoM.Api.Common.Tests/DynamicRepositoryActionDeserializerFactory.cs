@@ -5,9 +5,9 @@ using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializer
 
 internal static class DynamicRepositoryActionDeserializerFactory
 {
-    public static DynamicRepositoryActionDeserializer Create()
+    public static JsonDynamicRepositoryActionDeserializer Create()
     {
-        return new DynamicRepositoryActionDeserializer(
+        return new JsonDynamicRepositoryActionDeserializer(
             new ActionDeserializerComposition(
                 new IActionDeserializer[]
                     {
@@ -26,8 +26,8 @@ internal static class DynamicRepositoryActionDeserializerFactory
                     }));
     }
 
-    public static DynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
+    public static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }));
+        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }));
     }
 }

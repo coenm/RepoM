@@ -3,6 +3,7 @@ namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserial
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
@@ -14,12 +15,12 @@ public class ActionFolderV1Deserializer : IActionDeserializer
         return "folder@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer)
+    RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
     {
-        return Deserialize(jToken, actionDeserializer);
+        return Deserialize(jToken, actionDeserializer, jsonSerializer);
     }
 
-    private static RepositoryActionFolderV1? Deserialize(JToken token, ActionDeserializerComposition actionDeserializer)
+    private static RepositoryActionFolderV1? Deserialize(JToken token, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
     {
         RepositoryActionFolderV1? result = token.ToObject<RepositoryActionFolderV1>();
 
@@ -62,7 +63,7 @@ public class ActionFolderV1Deserializer : IActionDeserializer
                 continue;
             }
 
-            RepositoryAction? customAction = actionDeserializer.DeserializeSingleAction(typeValue!, variable);
+            RepositoryAction? customAction = actionDeserializer.DeserializeSingleAction(typeValue!, variable, jsonSerializer);
             if (customAction == null)
             {
                 continue;

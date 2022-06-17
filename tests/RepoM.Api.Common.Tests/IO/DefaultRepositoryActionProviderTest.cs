@@ -104,7 +104,7 @@ public class DefaultRepositoryActionProviderTest
     {
         // arrange
         var repositoryExpressionEvaluator = new RepositoryExpressionEvaluator(_providers, _methods);
-        DynamicRepositoryActionDeserializer dynamicRepositoryActionDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
+        JsonDynamicRepositoryActionDeserializer jsonDynamicRepositoryActionDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
         var sut = new DefaultRepositoryActionProvider(
             _fileSystem,
             new RepositorySpecificConfiguration(
@@ -122,7 +122,7 @@ public class DefaultRepositoryActionProviderTest
                 new RepositoryConfigurationReader(
                     _appDataPathProvider,
                     _fileSystem,
-                    dynamicRepositoryActionDeserializer,
+                    jsonDynamicRepositoryActionDeserializer,
                     repositoryExpressionEvaluator)));
         // await using Stream stream = await EasyTestFile.LoadAsStream();
         var repository = new Repository()

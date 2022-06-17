@@ -15,7 +15,7 @@ using Xunit;
 [UsesVerify]
 public class GitPullV1Test
 {
-    private readonly DynamicRepositoryActionDeserializer _sut;
+    private readonly JsonDynamicRepositoryActionDeserializer _sut;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
 

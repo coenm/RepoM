@@ -3,6 +3,7 @@ namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserial
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 
@@ -15,11 +16,11 @@ public class ActionDeserializerComposition
         _deserializers = deserializers?.Where(x => x != null).ToArray() ?? throw new ArgumentNullException(nameof(deserializers));
     }
 
-    public RepositoryAction? DeserializeSingleAction(string type, JToken jToken)
+    public RepositoryAction? DeserializeSingleAction(string type, JToken jToken, JsonSerializer jsonSerializer)
     {
         IActionDeserializer? deserializer = _deserializers.FirstOrDefault(x => x.CanDeserialize(type));
 
-        RepositoryAction? result = deserializer?.Deserialize(jToken, this);
+        RepositoryAction? result = deserializer?.Deserialize(jToken, this, jsonSerializer);
 
         if (result == null)
         {
@@ -30,11 +31,7 @@ public class ActionDeserializerComposition
 
         if (multiSelectEnabledToken != null)
         {
-            var multiSelectEnabledValue = multiSelectEnabledToken.Value<string>();
-            if (!string.IsNullOrWhiteSpace(multiSelectEnabledValue))
-            {
-                result.MultiSelectEnabled = multiSelectEnabledValue!;
-            }
+            result.MultiSelectEnabled = multiSelectEnabledToken.Value<string>();
         }
 
         return result;

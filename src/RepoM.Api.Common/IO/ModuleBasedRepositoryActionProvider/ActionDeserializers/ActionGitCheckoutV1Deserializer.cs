@@ -1,6 +1,7 @@
 namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 
 using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
@@ -12,13 +13,13 @@ public class ActionGitCheckoutV1Deserializer : IActionDeserializer
         return "git-checkout@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer)
+    RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
     {
-        return Deserialize(jToken);
+        return Deserialize(jToken, jsonSerializer);
     }
 
-    private static RepositoryActionGitCheckoutV1? Deserialize(JToken jToken)
+    private static RepositoryActionGitCheckoutV1? Deserialize(JToken jToken, JsonSerializer jsonSerializer)
     {
-        return jToken.ToObject<RepositoryActionGitCheckoutV1>();
+        return jToken.ToObject<RepositoryActionGitCheckoutV1>(jsonSerializer);
     }
 }

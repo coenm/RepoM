@@ -3,6 +3,7 @@ namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserial
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
@@ -14,14 +15,14 @@ public class ActionExecutableV1Deserializer : IActionDeserializer
         return "executable@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer)
+    RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
     {
-        return Deserialize(jToken);
+        return Deserialize(jToken, jsonSerializer);
     }
 
-    private static RepositoryActionExecutableV1? Deserialize(JToken jToken)
+    private static RepositoryActionExecutableV1? Deserialize(JToken jToken, JsonSerializer jsonSerializer)
     {
-        RepositoryActionExecutableV1? result = jToken.ToObject<RepositoryActionExecutableV1>();
+        RepositoryActionExecutableV1? result = jToken.ToObject<RepositoryActionExecutableV1>(jsonSerializer);
 
         if (result == null)
         {

@@ -5,12 +5,12 @@
       {
         Name: work_repo,
         Value: {StringContains({Repository.SafePath}, "work")},
-        Enabled: True
+        Enabled: true
       },
       {
         Name: work_repo_1,
         Value: true,
-        Enabled: False
+        Enabled: false
       }
     ],
     Actions: [
@@ -32,7 +32,7 @@
         $type: RepositoryActionBrowserV1,
         Type: browser@1,
         Name: {OpenIn} Windows File Explorer,
-        Active: False
+        Active: false
       }
     ]
   }

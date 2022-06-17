@@ -36,7 +36,7 @@ public class RepositorySpecificConfigurationTest
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly MockFileSystem _fileSystem;
-    private readonly DynamicRepositoryActionDeserializer _appsettingsDeserializer;
+    private readonly JsonDynamicRepositoryActionDeserializer _appsettingsDeserializer;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
     private readonly string _tempPath;
