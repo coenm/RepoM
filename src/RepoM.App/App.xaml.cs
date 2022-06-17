@@ -32,12 +32,11 @@ using RepoM.Api.Win.IO;
 using RepoM.App.i18n;
 using RepoM.Ipc;
 using SimpleInjector;
-using Repository = RepoM.Ipc.Repository;
 
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
-public partial class App : Application, IRepositorySource
+public partial class App : Application
 {
     private static Timer? _updateTimer;
     private HotKey? _hotkey;
@@ -74,7 +73,7 @@ public partial class App : Application, IRepositorySource
         UseRepositoryMonitor(_container);
         _container.Verify(VerificationOption.VerifyAndDiagnose);
 
-        _updateTimer = new Timer(async state => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
+        _updateTimer = new Timer(async _ => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
 
         // We noticed that the hotkey registration causes a high CPU utilization if the window was not shown before.
         // To fix this, we need to make the window visible in EnsureWindowHandle() but we set the opacity to 0.0 to prevent flickering
@@ -132,9 +131,9 @@ public partial class App : Application, IRepositorySource
         base.OnExit(e);
     }
 
-    private void RegisterServices(Container container)
+    private static void RegisterServices(Container container)
     {
-        container.RegisterInstance<IRepositorySource>(this);
+        container.Register<IRepositorySource, RepositorySource>(Lifestyle.Singleton);
 
         container.Register<MainWindow>(Lifestyle.Singleton);
         container.Register<StatusCharacterMap>(Lifestyle.Singleton);
@@ -208,7 +207,8 @@ public partial class App : Application, IRepositorySource
             Lifestyle.Singleton);
 
 
-        container.Register<DynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
+        container.Register<JsonDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
+        container.Register<YamlDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
         container.Register<RepositorySpecificConfiguration>(Lifestyle.Singleton);
 
 
@@ -268,20 +268,6 @@ public partial class App : Application, IRepositorySource
     private static void OnHotKeyPressed()
     {
         (Application.Current.MainWindow as MainWindow)?.ShowAndActivate();
-    }
-
-    public Repository[] GetMatchingRepositories(string repositoryNamePattern)
-    {
-        IRepositoryInformationAggregator aggregator = _container.GetInstance<IRepositoryInformationAggregator>();
-        return aggregator.Repositories
-                         .Where(r => r.MatchesRegexFilter(repositoryNamePattern))
-                         .Select(r => new Repository(r.Name)
-                             {
-                                 BranchWithStatus = r.BranchWithStatus,
-                                 HasUnpushedChanges = r.HasUnpushedChanges,
-                                 Path = r.Path,
-                             })
-                         .ToArray();
     }
 
     public static string? AvailableUpdate { get; private set; }

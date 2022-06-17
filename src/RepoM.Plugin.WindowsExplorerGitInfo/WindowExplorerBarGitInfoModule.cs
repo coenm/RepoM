@@ -22,7 +22,6 @@ internal class WindowExplorerBarGitInfoModule : IModule
     public Task StartAsync()
     {
         _explorerUpdateTimer.Change(1000, Timeout.Infinite);
-        // _explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
         return Task.CompletedTask;
     }
 
