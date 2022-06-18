@@ -7,6 +7,7 @@ using FluentAssertions;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -15,7 +16,7 @@ using Xunit;
 [UsesVerify]
 public class GitPushV1Test
 {
-    private readonly DynamicRepositoryActionDeserializer _sut;
+    private readonly JsonDynamicRepositoryActionDeserializer _sut;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
 

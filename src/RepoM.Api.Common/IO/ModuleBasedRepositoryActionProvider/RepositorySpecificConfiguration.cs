@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using DotNetEnv;
 using RepoM.Api.Common;
@@ -13,81 +12,55 @@ using RepoM.Api.Common.Common;
 using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Exceptions;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using Repository = RepoM.Api.Git.Repository;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
-public class ConfigurationFileNotFoundException : Exception
-{
-    public ConfigurationFileNotFoundException(string filename)
-    {
-        Filename = filename;
-    }
-
-    protected ConfigurationFileNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        Filename = string.Empty; //todo
-    }
-
-    public ConfigurationFileNotFoundException(string filename, string message) : base(message)
-    {
-        Filename = filename;
-    }
-
-    public ConfigurationFileNotFoundException(string filename, string message, Exception innerException) : base(message, innerException)
-    {
-        Filename = filename;
-    }
-
-    public string Filename { get; private set; }
-}
-
-public class InvalidConfigurationException : Exception
-{
-    public InvalidConfigurationException(string filename)
-    {
-        Filename = filename;
-    }
-
-    protected InvalidConfigurationException(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        Filename = string.Empty; //todo
-    }
-
-    public InvalidConfigurationException(string filename, string message) : base(message)
-    {
-        Filename = filename;
-    }
-
-    public InvalidConfigurationException(string filename, string message, Exception innerException) : base(message, innerException)
-    {
-        Filename = filename;
-    }
-
-    public string Filename { get; private set; }
-}
-
 public class RepositoryConfigurationReader
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly IFileSystem _fileSystem;
-    private readonly DynamicRepositoryActionDeserializer _appSettingsDeserializer;
+    private readonly JsonDynamicRepositoryActionDeserializer _jsonAppSettingsDeserializer;
+    private readonly YamlDynamicRepositoryActionDeserializer _yamlAppSettingsDeserializer;
     private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
 
-    public const string FILENAME = "RepositoryActionsV2.json";
+    private const string FILENAME = "RepositoryActions.";
+    public const string FILENAME_JSON = FILENAME + "json";
 
     public RepositoryConfigurationReader(
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem,
-        DynamicRepositoryActionDeserializer appsettingsDeserializer,
-        RepositoryExpressionEvaluator repoExpressionEvaluator
-        )
+        JsonDynamicRepositoryActionDeserializer jsonAppsettingsDeserializer,
+        YamlDynamicRepositoryActionDeserializer yamlAppSettingsDeserializer,
+        RepositoryExpressionEvaluator repoExpressionEvaluator)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _appSettingsDeserializer = appsettingsDeserializer ?? throw new ArgumentNullException(nameof(appsettingsDeserializer));
+        _jsonAppSettingsDeserializer = jsonAppsettingsDeserializer ?? throw new ArgumentNullException(nameof(jsonAppsettingsDeserializer));
+        _yamlAppSettingsDeserializer = yamlAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(yamlAppSettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
+    }
+
+    private string GetRepositoryActionsFilename(string basePath)
+    {
+        var exts = new [] { "yml", "yaml", "json", };
+
+        var path = Path.Combine(basePath, FILENAME);
+        foreach (var ext in exts)
+        {
+            var filename = path + ext;
+            if (_fileSystem.File.Exists(filename))
+            {
+                return filename;
+            }
+        }
+
+        var f = path + "{" +  string.Join(",",exts)+ "}";
+
+        throw new ConfigurationFileNotFoundException(f);
     }
 
     public (Dictionary<string, string>? envVars, List<Variable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params Repository[] repositories)
@@ -114,7 +87,7 @@ public class RepositoryConfigurationReader
         RepositoryActionConfiguration? rootFile = null;
         RepositoryActionConfiguration? repoSpecificConfig = null;
 
-        var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), FILENAME);
+        var filename = GetRepositoryActionsFilename(_appDataPathProvider.GetAppDataPath());
         if (!_fileSystem.File.Exists(filename))
         {
             throw new ConfigurationFileNotFoundException(filename);
@@ -123,7 +96,7 @@ public class RepositoryConfigurationReader
         try
         {
             var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
-            rootFile = _appSettingsDeserializer.Deserialize(content);
+            rootFile = Deserialize(Path.GetExtension(filename), content);
         }
         catch (Exception e)
         {
@@ -141,7 +114,7 @@ public class RepositoryConfigurationReader
                     try
                     {
                         var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
-                        rootFile = _appSettingsDeserializer.Deserialize(content);
+                        rootFile = Deserialize(Path.GetExtension(filename), content);
                     }
                     catch (Exception e)
                     {
@@ -240,7 +213,7 @@ public class RepositoryConfigurationReader
                 try
                 {
                     var content = _fileSystem.File.ReadAllText(f, Encoding.UTF8);
-                    repoSpecificConfig = _appSettingsDeserializer.Deserialize(content);
+                    repoSpecificConfig = Deserialize(Path.GetExtension(f), content);
                 }
                 catch (Exception)
                 {
@@ -284,6 +257,26 @@ public class RepositoryConfigurationReader
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty
             : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression!, repository);
+    }
+
+    private RepositoryActionConfiguration Deserialize(string extension, string rawContent)
+    {
+        if (extension.StartsWith("."))
+        {
+            extension = extension.Substring(1);
+        }
+
+        if ("json".Equals(extension, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return _jsonAppSettingsDeserializer.Deserialize(rawContent);
+        }
+
+        if ("yaml".Equals(extension, StringComparison.CurrentCultureIgnoreCase) || "yml".Equals(extension, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return _yamlAppSettingsDeserializer.Deserialize(rawContent);
+        }
+
+        throw new NotImplementedException("Unknown extension");
     }
 }
 

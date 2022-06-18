@@ -2,6 +2,7 @@ namespace RepoM.Api.Common.IO;
 
 using System;
 using System.Linq;
+using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Git;
@@ -13,7 +14,17 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
         return !string.IsNullOrWhiteSpace(key) && key.StartsWith("Repository.", StringComparison.CurrentCultureIgnoreCase);
     }
 
-    public string Provide(RepositoryContext context, string key, string? arg)
+    public CombinedTypeContainer? Provide(string key, string? arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    public CombinedTypeContainer? Provide(RepositoryContext context, string key, string? arg)
+    {
+        return new CombinedTypeContainer(ProvideInner(context, key, arg));
+    }
+
+    private string ProvideInner(RepositoryContext context, string key, string? arg)
     {
         Repository? repository = context.Repositories.SingleOrDefault();
         if (repository == null)
@@ -64,11 +75,6 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
             return string.Join("|", repository.RemoteUrls);
         }
 
-        throw new NotImplementedException();
-    }
-
-    public string Provide(string key, string? arg)
-    {
         throw new NotImplementedException();
     }
 }

@@ -1,0 +1,6 @@
+repository-tags:
+- tag: work1
+  when: '{StringContains({Repository.SafePath}, "work")}'
+- tag: private1
+  when: '{StringContains({Repository.SafePath}, "Private")}'
+- tag: always-tag1

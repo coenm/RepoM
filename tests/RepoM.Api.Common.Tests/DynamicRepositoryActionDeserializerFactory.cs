@@ -2,12 +2,13 @@ namespace RepoM.Api.Common.Tests;
 
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 
 internal static class DynamicRepositoryActionDeserializerFactory
 {
-    public static DynamicRepositoryActionDeserializer Create()
+    public static JsonDynamicRepositoryActionDeserializer Create()
     {
-        return new DynamicRepositoryActionDeserializer(
+        return new JsonDynamicRepositoryActionDeserializer(
             new ActionDeserializerComposition(
                 new IActionDeserializer[]
                     {
@@ -26,8 +27,8 @@ internal static class DynamicRepositoryActionDeserializerFactory
                     }));
     }
 
-    public static DynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
+    public static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }));
+        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }));
     }
 }

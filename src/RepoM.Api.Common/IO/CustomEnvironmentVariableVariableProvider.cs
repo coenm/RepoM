@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -114,7 +115,7 @@ public class RepoMVariableProvider : IVariableProvider
     }
 
     /// <inheritdoc cref="IVariableProvider.Provide"/>
-    public string Provide(string key, string? arg)
+    public CombinedTypeContainer Provide(string key, string? arg)
     {
         var prefixLength = PREFIX.Length;
         var envKey = key.Substring(prefixLength, key.Length - prefixLength);
@@ -125,12 +126,12 @@ public class RepoMVariableProvider : IVariableProvider
         {
             if (scope == null)
             {
-                return string.Empty;
+                return CombinedTypeContainer.NullInstance;
             }
 
             if (TryGetValueFromScope(scope, envKey, out var result))
             {
-                return result;
+                return new CombinedTypeContainer(result);
             }
 
             scope = scope.Parent;
@@ -187,7 +188,7 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
         return !string.IsNullOrWhiteSpace(envKey);
     }
 
-    public string Provide(RepositoryContext context, string key, string? arg)
+    public CombinedTypeContainer Provide(RepositoryContext context, string key, string? arg)
     {
         var prefixLength = PREFIX.Length;
         var envKey = key.Substring(prefixLength, key.Length - prefixLength);
@@ -196,26 +197,26 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
 
         if (singleContext == null)
         {
-            return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
+            return new CombinedTypeContainer(Environment.GetEnvironmentVariable(envKey) ?? string.Empty);
         }
 
         Dictionary<string, string> envVars = GetRepoEnvironmentVariables(singleContext);
 
         if (envVars.ContainsKey(envKey))
         {
-            return envVars[envKey];
+            return new CombinedTypeContainer(envVars[envKey]);
         }
 
-        return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
+        return new CombinedTypeContainer(Environment.GetEnvironmentVariable(envKey) ?? string.Empty);
     }
 
     /// <inheritdoc cref="IVariableProvider.Provide"/>
-    public string Provide(string key, string? arg)
+    public CombinedTypeContainer Provide(string key, string? arg)
     {
         var prefixLength = PREFIX.Length;
         var envKey = key.Substring(prefixLength, key.Length - prefixLength);
         var result = Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
-        return result;
+        return new CombinedTypeContainer(result);
     }
 
     private static Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)

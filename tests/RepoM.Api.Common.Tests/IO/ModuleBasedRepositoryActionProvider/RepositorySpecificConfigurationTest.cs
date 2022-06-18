@@ -24,6 +24,7 @@ using RepoM.Api.Common.IO;
 using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using VerifyTests;
@@ -36,7 +37,8 @@ public class RepositorySpecificConfigurationTest
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly MockFileSystem _fileSystem;
-    private readonly DynamicRepositoryActionDeserializer _appsettingsDeserializer;
+    private readonly JsonDynamicRepositoryActionDeserializer _jsonAppsettingsDeserializer;
+    private readonly YamlDynamicRepositoryActionDeserializer _yamlAppsettingsDeserializer;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
     private readonly string _tempPath;
@@ -60,7 +62,8 @@ public class RepositorySpecificConfigurationTest
         _appDataPathProvider = A.Fake<IAppDataPathProvider>();
         A.CallTo(() => _appDataPathProvider.GetAppDataPath()).Returns(_tempPath);
 
-        _appsettingsDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
+        _jsonAppsettingsDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
+        _yamlAppsettingsDeserializer = new YamlDynamicRepositoryActionDeserializer(_jsonAppsettingsDeserializer);
 
         var dateTimeTimeVariableProviderOptions = new DateTimeVariableProviderOptions()
         {
@@ -136,7 +139,7 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,
@@ -146,7 +149,8 @@ public class RepositorySpecificConfigurationTest
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
-                _appsettingsDeserializer,
+                _jsonAppsettingsDeserializer,
+                _yamlAppsettingsDeserializer,
                 _repositoryExpressionEvaluator));
 
         // act
@@ -162,7 +166,7 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,
@@ -172,7 +176,8 @@ public class RepositorySpecificConfigurationTest
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
-                _appsettingsDeserializer,
+                _jsonAppsettingsDeserializer,
+                _yamlAppsettingsDeserializer,
                 _repositoryExpressionEvaluator));
 
         // act
@@ -188,7 +193,7 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActions1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,
@@ -198,7 +203,8 @@ public class RepositorySpecificConfigurationTest
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
-                _appsettingsDeserializer,
+                _jsonAppsettingsDeserializer,
+                _yamlAppsettingsDeserializer,
                 _repositoryExpressionEvaluator));
 
         // act
@@ -214,7 +220,7 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsWithSeparator1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,
@@ -224,7 +230,8 @@ public class RepositorySpecificConfigurationTest
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
-                _appsettingsDeserializer,
+                _jsonAppsettingsDeserializer,
+                _yamlAppsettingsDeserializer,
                 _repositoryExpressionEvaluator));
 
         // act

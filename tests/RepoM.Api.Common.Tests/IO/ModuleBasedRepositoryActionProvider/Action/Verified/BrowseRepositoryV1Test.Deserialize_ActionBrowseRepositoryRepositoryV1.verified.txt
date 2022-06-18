@@ -4,13 +4,13 @@
     Actions: [
       {
         $type: RepositoryActionBrowseRepositoryV1,
-        FirstOnly: True,
+        FirstOnly: true,
         Type: browse-repository@1,
         Name: fo true
       },
       {
         $type: RepositoryActionBrowseRepositoryV1,
-        FirstOnly: False,
+        FirstOnly: false,
         Type: browse-repository@1,
         Name: fo false
       },

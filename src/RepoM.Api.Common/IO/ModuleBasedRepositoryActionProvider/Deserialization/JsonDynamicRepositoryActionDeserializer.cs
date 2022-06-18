@@ -1,21 +1,29 @@
-namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 
-public class DynamicRepositoryActionDeserializer
+public class JsonDynamicRepositoryActionDeserializer
 {
     private readonly ActionDeserializerComposition _deserializers;
+    private static readonly JsonSerializer _jsonSerializer = new()
+        {
+            Converters =
+                {
+                    new BoolToStringJsonConverter(),
+                },
+        };
     private static readonly JsonLoadSettings _jsonLoadSettings = new()
         {
             CommentHandling = CommentHandling.Ignore,
         };
 
-    public DynamicRepositoryActionDeserializer(ActionDeserializerComposition deserializers)
+    public JsonDynamicRepositoryActionDeserializer(ActionDeserializerComposition deserializers)
     {
         _deserializers = deserializers ?? throw new ArgumentNullException(nameof(deserializers));
     }
@@ -26,23 +34,29 @@ public class DynamicRepositoryActionDeserializer
 
         var configuration = new RepositoryActionConfiguration();
 
-        JToken? token = jsonObject["redirect"];
-        configuration.Redirect = DeserializeRedirect(token);
+        JToken? token = jsonObject["version"];
+        var version = DeserializeVersion(token);
 
-        token = jsonObject["repository-specific-env-files"];
-        configuration.RepositorySpecificEnvironmentFiles.AddRange(TryDeserializeEnumerable<FileReference>(token));
+        if (version == 1)
+        {
+            token = jsonObject["redirect"];
+            configuration.Redirect = DeserializeRedirect(token);
 
-        token = jsonObject["repository-specific-config-files"];
-        configuration.RepositorySpecificConfigFiles.AddRange(TryDeserializeEnumerable<FileReference>(token));
+            token = jsonObject["repository-specific-env-files"];
+            configuration.RepositorySpecificEnvironmentFiles.AddRange(TryDeserializeEnumerable<FileReference>(token));
 
-        token = jsonObject["variables"];
-        configuration.Variables.AddRange(TryDeserializeEnumerable<Variable>(token));
+            token = jsonObject["repository-specific-config-files"];
+            configuration.RepositorySpecificConfigFiles.AddRange(TryDeserializeEnumerable<FileReference>(token));
 
-        token = jsonObject["repository-tags"];
-        DeserializeRepositoryTags(token, ref configuration);
+            token = jsonObject["variables"];
+            configuration.Variables.AddRange(TryDeserializeEnumerable<Variable>(token));
 
-        token = jsonObject["repository-actions"];
-        DeserializeRepositoryActions(token, configuration);
+            token = jsonObject["repository-tags"];
+            DeserializeRepositoryTags(token, ref configuration);
+
+            token = jsonObject["repository-actions"];
+            DeserializeRepositoryActions(token, configuration);
+        }
 
         return configuration;
     }
@@ -77,7 +91,7 @@ public class DynamicRepositoryActionDeserializer
                 continue;
             }
 
-            RepositoryAction? customAction = _deserializers.DeserializeSingleAction(typeValue!, variable);
+            RepositoryAction? customAction = _deserializers.DeserializeSingleAction(typeValue!, variable, _jsonSerializer);
             if (customAction == null)
             {
                 continue;
@@ -117,7 +131,7 @@ public class DynamicRepositoryActionDeserializer
         IList<JToken> files = token.Children().ToList();
         foreach (JToken file in files)
         {
-            T? obj = file.ToObject<T>();
+            T? obj = file.ToObject<T>(_jsonSerializer);
             if (obj != null)
             {
                 yield return obj;
@@ -134,7 +148,7 @@ public class DynamicRepositoryActionDeserializer
 
         if (redirectToken.Type != JTokenType.String)
         {
-            return redirectToken.ToObject<Redirect>();
+            return redirectToken.ToObject<Redirect>(_jsonSerializer);
         }
 
         var redirectValue = redirectToken.Value<string>();
@@ -143,5 +157,38 @@ public class DynamicRepositoryActionDeserializer
             {
                 Filename = redirectValue ?? string.Empty,
             };
+    }
+
+    private static int DeserializeVersion(JToken? versionToken)
+    {
+        const int DEFAULT_VERSION = 1;
+        if (versionToken == null)
+        {
+            return DEFAULT_VERSION;
+        }
+
+        var version = DEFAULT_VERSION;
+
+        if (versionToken.Type == JTokenType.Integer)
+        {
+            version = versionToken.Value<int>();
+            return version < 1 ? DEFAULT_VERSION : version;
+        }
+
+        if (versionToken.Type == JTokenType.String)
+        {
+            var versionString = versionToken.Value<string>();
+            if (string.IsNullOrWhiteSpace(versionString))
+            {
+                return DEFAULT_VERSION;
+            }
+
+            if (int.TryParse(versionString, out version))
+            {
+                return version < 1 ? DEFAULT_VERSION : version;
+            }
+        }
+
+        return DEFAULT_VERSION;
     }
 }

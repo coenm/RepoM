@@ -1,0 +1,57 @@
+variables:
+- name: work_repo
+  value: '{StringContains({Repository.SafePath}, "work")}'
+  enabled: true
+- name: work_repo_1
+  value: true
+  enabled: false
+- name: work_repo_2
+  value: '{StringContains({Repository.SafePath}, "work")}'
+  enabled: false
+- name: is_private_repo
+  value: false
+- name: x
+  value: y
+  dummy: value
+repository-specific-config-files:
+- filename: '{Repostitory.Path}\RepositoryActions.json'
+  when: false
+- filename: '{Repostitory.Path}\.git\RepositoryActions.json'
+repository-specific-env-files:
+- filename: ab1.env
+  when: false
+- filename: ab.env
+repository-tags:
+  tags:
+  - tag: work
+    # optional, default true
+    when: '{StringContains({Repository.SafePath}, "work")}'
+  - tag: private
+    when: '{StringContains({Repository.SafePath}, "Private")}'
+  - tag: always-tag
+  variables:
+  - name: work_repo
+    value: '{StringContains({Repository.SafePath}, "work")}'
+    enabled: true
+  - name: work_repo_1
+    value: true
+    enabled: false
+repository-actions:
+  variables:
+  - name: work_repo
+    value: '{StringContains({Repository.SafePath}, "work")}'
+    enabled: true
+  - name: work_repo_1
+    value: true
+    enabled: false
+  actions:
+  - type: browser@1
+    name: '{OpenIn} Windows File Explorer'
+    active: false
+    multi-select-enabled: true
+    variables:
+    - name: name
+      value: '{StringContains({Repository.SafePath}, "abc")}'
+  - type: browser@1
+    name: '{OpenIn} Windows File Explorer'
+    active: false

@@ -1,0 +1,20 @@
+repository-actions:
+  variables:
+  - name: work_repo
+    value: '{StringContains({Repository.SafePath}, "work")}'
+    enabled: true
+  - name: work_repo_1
+    value: true
+    enabled: false
+  actions:
+  - type: browser@1
+    name: '{OpenIn} Windows File Explorer'
+    active: false
+    multi-select-enabled: true
+    variables:
+    - name: name
+      value: '{StringContains({Repository.SafePath}, "abc")}'
+    url: https://google.com
+  - type: browser@1
+    name: '{OpenIn} Windows File Explorer'
+    active: false
