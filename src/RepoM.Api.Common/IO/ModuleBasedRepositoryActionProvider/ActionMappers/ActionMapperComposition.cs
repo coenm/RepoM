@@ -3,6 +3,7 @@ namespace RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ExpressionStringEvaluator.Methods;
 using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.Git;
@@ -23,19 +24,19 @@ public class ActionMapperComposition
     {
         Repository? singleRepository = repositories.Length <= 1 ? repositories.SingleOrDefault() : null;
         
-        List<Variable> EvaluateVariables(IEnumerable<Variable> vars)
+        List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable> vars)
         {
             if (singleRepository == null)
             {
-                return new List<Variable>(0);
+                return new List<EvaluatedVariable>(0);
             }
 
             return vars
                    .Where(v => IsEnabled(v.Enabled, true, singleRepository))
-                   .Select(v => new Variable()
+                   .Select(v => new EvaluatedVariable()
                        {
                            Name = v.Name,
-                           Enabled = "true",
+                           Enabled = true,
                            Value = Evaluate(v.Value, singleRepository),
                        })
                    .ToList();
@@ -51,14 +52,14 @@ public class ActionMapperComposition
 
     }
 
-    private string? Evaluate(string? input, Repository repository)
+    private CombinedTypeContainer Evaluate(string? input, Repository repository)
     {
         if (input == null)
         {
-            return null;
+            return CombinedTypeContainer.NullInstance;
         }
 
-        return _repoExpressionEvaluator.EvaluateStringExpression(input, repository);
+        return _repoExpressionEvaluator.EvaluateValueExpression(input, repository);
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)

@@ -7,6 +7,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using DotNetEnv;
+using ExpressionStringEvaluator.Methods;
 using RepoM.Api.Common;
 using RepoM.Api.Common.Common;
 using RepoM.Api.Common.IO.ExpressionEvaluator;
@@ -63,7 +64,7 @@ public class RepositoryConfigurationReader
         throw new ConfigurationFileNotFoundException(f);
     }
 
-    public (Dictionary<string, string>? envVars, List<Variable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params Repository[] repositories)
+    public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params Repository[] repositories)
     {
         if (!repositories.Any())
         {
@@ -78,7 +79,7 @@ public class RepositoryConfigurationReader
 
         var multipleRepositoriesSelected = repositories.Length > 1;
 
-        var variables = new List<Variable>();
+        var variables = new List<EvaluatedVariable>();
         Dictionary<string, string>? envVars = null;
         var actions = new List<ActionsCollection>();
         var tags = new List<TagsCollection>();
@@ -108,7 +109,7 @@ public class RepositoryConfigurationReader
         {
             if (IsEnabled(redirect?.Enabled, true, null))
             {
-                filename = Evaluate(redirect?.Filename, null);
+                filename = EvaluateString(redirect?.Filename, null);
                 if (_fileSystem.File.Exists(filename))
                 {
                     try
@@ -129,25 +130,25 @@ public class RepositoryConfigurationReader
             return (null, null, null, null);
         }
 
-        List<Variable> EvaluateVariables(IEnumerable<Variable>? vars)
+        List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars)
         {
             if (vars == null)
             {
-                return new List<Variable>(0);
+                return new List<EvaluatedVariable>(0);
             }
 
             return vars
                    .Where(v => IsEnabled(v.Enabled, true, repository))
-                   .Select(v => new Variable()
+                   .Select(v => new EvaluatedVariable()
                    {
                        Name = v.Name,
-                       Enabled = "true",
+                       Enabled = true,
                        Value = Evaluate(v.Value, repository),
                    })
                    .ToList();
         }
 
-        List<Variable> list = EvaluateVariables(rootFile.Variables);
+        List<EvaluatedVariable> list = EvaluateVariables(rootFile.Variables);
         variables.AddRange(list);
         using IDisposable rootVariables = RepoMVariableProviderStore.Push(list);
 
@@ -166,7 +167,7 @@ public class RepositoryConfigurationReader
                     continue;
                 }
 
-                var f = Evaluate(fileRef.Filename, repository);
+                var f = EvaluateString(fileRef.Filename, repository);
                 if (!_fileSystem.File.Exists(f))
                 {
                     // log warning?
@@ -201,7 +202,7 @@ public class RepositoryConfigurationReader
                     continue;
                 }
 
-                var f = Evaluate(fileRef.Filename, repository);
+                var f = EvaluateString(fileRef.Filename, repository);
                 if (!_fileSystem.File.Exists(f))
                 {
                     // warning
@@ -222,7 +223,7 @@ public class RepositoryConfigurationReader
             }
         }
         
-        List<Variable> list2 = EvaluateVariables(repoSpecificConfig?.Variables);
+        List<EvaluatedVariable> list2 = EvaluateVariables(repoSpecificConfig?.Variables);
         variables.AddRange(list2);
         using IDisposable repoSepecificVariables = RepoMVariableProviderStore.Push(list2);
 
@@ -241,15 +242,27 @@ public class RepositoryConfigurationReader
         return (envVars, variables, actions, tags);
     }
 
-    private string Evaluate(string? input, Repository? repository)
+    private CombinedTypeContainer Evaluate(string? input, Repository? repository)
     {
         if (string.IsNullOrWhiteSpace(input))
         {
-            return input ?? string.Empty;
+            return new CombinedTypeContainer(string.Empty);
         }
 
         Repository[] repositories = repository == null ? Array.Empty<Repository>() : new Repository[] { repository, };
-        return _repoExpressionEvaluator.EvaluateStringExpression(input!, repositories);
+        return _repoExpressionEvaluator.EvaluateValueExpression(input!, repositories);
+    }
+
+
+    private string EvaluateString(string? input, Repository? repository)
+    {
+        var v = Evaluate(input, repository);
+        if (v == CombinedTypeContainer.NullInstance)
+        {
+            return string.Empty;
+        }
+
+        return v.ToString();
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository? repository)
@@ -300,26 +313,26 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
 
     private IEnumerable<string> GetTagsInner(Repository repository)
     {
-        List<Variable> EvaluateVariables(IEnumerable<Variable>? vars)
+        List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars)
         {
             if (vars == null)
             {
-                return new List<Variable>(0);
+                return new List<EvaluatedVariable>(0);
             }
 
             return vars
                    .Where(v => IsEnabled(v.Enabled, true, repository))
-                   .Select(v => new Variable()
+                   .Select(v => new EvaluatedVariable()
                        {
                            Name = v.Name,
-                           Enabled = "true",
+                           Enabled = true,
                            Value = Evaluate(v.Value, repository),
                        })
                    .ToList();
         }
 
         Dictionary<string, string>? repositoryEnvVars;
-        List<Variable>? variables;
+        List<EvaluatedVariable>? variables;
         List<TagsCollection>? tags;
 
         try
@@ -332,7 +345,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
              yield break;
         }
 
-        using IDisposable d1 = RepoMVariableProviderStore.Push(EvaluateVariables(variables));
+        using IDisposable d1 = RepoMVariableProviderStore.Push(variables ?? new List<EvaluatedVariable>(0));
         using IDisposable d2 = EnvironmentVariableStore.Set(repositoryEnvVars);
 
         foreach (TagsCollection tagsCollection in tags?.Where(t => t != null) ?? Array.Empty<TagsCollection>())
@@ -354,14 +367,14 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         }
     }
 
-    private string? Evaluate(string? input, Repository repository)
+    private CombinedTypeContainer Evaluate(string? input, Repository repository)
     {
         if (input == null)
         {
-            return null;
+            return CombinedTypeContainer.NullInstance;
         }
 
-        return _repoExpressionEvaluator.EvaluateStringExpression(input, repository);
+        return _repoExpressionEvaluator.EvaluateValueExpression(input, repository);
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
@@ -413,7 +426,7 @@ public class RepositorySpecificConfiguration
         }
 
         Dictionary<string, string>? repositoryEnvVars = null;
-        List<Variable>? variables = null;
+        List<EvaluatedVariable>? variables = null;
         List<ActionsCollection>? actions = null;
         Exception? ex = null;
         try
@@ -445,7 +458,7 @@ public class RepositorySpecificConfiguration
             yield break;
         }
 
-        using IDisposable d1 = RepoMVariableProviderStore.Push(EvaluateVariables(variables, singleRepository));
+        using IDisposable d1 = RepoMVariableProviderStore.Push(variables ?? new List<EvaluatedVariable>(0));
         using IDisposable d2 = EnvironmentVariableStore.Set(repositoryEnvVars ?? new Dictionary<string, string>());
 
         // load variables global
@@ -476,19 +489,19 @@ public class RepositorySpecificConfiguration
         }
     }
 
-    private List<Variable> EvaluateVariables(IEnumerable<Variable>? vars, Repository? repository)
+    private List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars, Repository? repository)
     {
         if (vars == null || repository == null)
         {
-            return new List<Variable>(0);
+            return new List<EvaluatedVariable>(0);
         }
 
         return vars
                .Where(v => IsEnabled(v.Enabled, true, repository))
-               .Select(v => new Variable()
+               .Select(v => new EvaluatedVariable()
                    {
                        Name = v.Name,
-                       Enabled = "true",
+                       Enabled = true,
                        Value = Evaluate(v.Value, repository),
                    })
                .ToList();
@@ -515,14 +528,14 @@ public class RepositorySpecificConfiguration
         }
     }
 
-    private string? Evaluate(string? input, Repository repository)
+    private CombinedTypeContainer Evaluate(string? input, Repository repository)
     {
         if (input == null)
         {
-            return null;
+            return CombinedTypeContainer.NullInstance;
         }
 
-        return _repoExpressionEvaluator.EvaluateStringExpression(input, repository);
+        return _repoExpressionEvaluator.EvaluateValueExpression(input, repository);
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
