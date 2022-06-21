@@ -20,7 +20,7 @@ public class ActionMapperComposition
         _deserializers = deserializers.Where(x => x != null).ToArray() ?? throw new ArgumentNullException(nameof(deserializers));
     }
 
-    public IEnumerable<RepositoryActionBase> Map(Data.RepositoryAction action, params Repository[] repositories)
+    public RepositoryActionBase[] Map(Data.RepositoryAction action, params Repository[] repositories)
     {
         Repository? singleRepository = repositories.Length <= 1 ? repositories.SingleOrDefault() : null;
         
@@ -48,8 +48,7 @@ public class ActionMapperComposition
 
         IEnumerable<RepositoryActionBase> result = deserializer?.Map(action, repositories, this) ?? Enumerable.Empty<RepositoryAction>();
 
-        return result;
-
+        return result.ToArray();
     }
 
     private CombinedTypeContainer Evaluate(string? input, Repository repository)
