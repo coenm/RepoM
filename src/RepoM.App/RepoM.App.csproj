@@ -34,7 +34,7 @@
   <ItemGroup>
     <PackageReference Include="SimpleInjector" Version="5.3.3" />
     <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
-    <PackageReference Include="System.IO.Abstractions" Version="17.0.12" />
+    <PackageReference Include="System.IO.Abstractions" Version="17.0.18" />
     <PackageReference Include="System.ServiceModel.Federation" Version="4.8.1" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
