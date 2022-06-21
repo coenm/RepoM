@@ -5,7 +5,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="2.3.0" />
-    <PackageReference Include="ExpressionStringEvaluator" Version="0.2.4" />
+    <PackageReference Include="ExpressionStringEvaluator" Version="0.2.5" />
   </ItemGroup>
 
   <ItemGroup>
