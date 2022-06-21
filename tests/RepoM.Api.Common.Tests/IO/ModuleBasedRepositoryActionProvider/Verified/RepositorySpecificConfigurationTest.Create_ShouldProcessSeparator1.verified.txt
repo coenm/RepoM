@@ -7,10 +7,12 @@
       Target: ActionBrowserV1Mapper.<>c__DisplayClass7_0,
       Method: Void Map(System.Object, System.Object)
     },
+    ExecutionCausesSynchronizing: false,
     CanExecute: true
   },
   {
     $type: RepositorySeparatorAction,
+    ExecutionCausesSynchronizing: false,
     CanExecute: true
   },
   {
@@ -21,6 +23,7 @@
       Target: ActionBrowserV1Mapper.<>c__DisplayClass7_0,
       Method: Void Map(System.Object, System.Object)
     },
+    ExecutionCausesSynchronizing: false,
     CanExecute: true
   }
 ]

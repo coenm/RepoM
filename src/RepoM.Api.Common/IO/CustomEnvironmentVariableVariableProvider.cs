@@ -50,7 +50,7 @@ public static class RepoMVariableProviderStore
 {
     public static readonly AsyncLocal<Scope?> VariableScope = new();
 
-    public static IDisposable Push(List<Variable> vars)
+    public static IDisposable Push(List<EvaluatedVariable> vars)
     {
         VariableScope.Value = new Scope(VariableScope.Value, vars);
         return VariableScope.Value;
@@ -65,10 +65,10 @@ public class Scope : IDisposable
     private Scope()
     {
         Parent = null;
-        Variables = new List<Variable>(0);
+        Variables = new List<EvaluatedVariable>(0);
     }
 
-    public Scope(Scope? parent, List<Variable> variables)
+    public Scope(Scope? parent, List<EvaluatedVariable> variables)
     {
         // _provider = provider;
         Parent = parent;
@@ -79,7 +79,7 @@ public class Scope : IDisposable
 
     public Scope? Parent { get; }
 
-    public List<Variable> Variables { get; }
+    public List<EvaluatedVariable> Variables { get; }
 
     public void Dispose()
     {
@@ -131,28 +131,28 @@ public class RepoMVariableProvider : IVariableProvider
 
             if (TryGetValueFromScope(scope, envKey, out var result))
             {
-                return new CombinedTypeContainer(result);
+                return result;
             }
 
             scope = scope.Parent;
         }
     }
 
-    private static bool TryGetValueFromScope(in Scope scope, string key, out string value)
+    private static bool TryGetValueFromScope(in Scope scope, string key, out CombinedTypeContainer value)
     {
-        Variable? var = scope.Variables.FirstOrDefault(x => key.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase));
+        EvaluatedVariable? var = scope.Variables.FirstOrDefault(x => key.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase));
 
         if (var != null)
         {
-            if ("false".Equals(var.Enabled, StringComparison.CurrentCultureIgnoreCase))
+            if (var.Enabled == false)
             {
-                value = string.Empty;
+                value = CombinedTypeContainer.NullInstance;
                 return true;
             }
 
-            if (var.Value == null)
+            if (var.Value == CombinedTypeContainer.NullInstance)
             {
-                value = string.Empty;
+                value = CombinedTypeContainer.NullInstance;
                 return false;
             }
 
@@ -160,7 +160,7 @@ public class RepoMVariableProvider : IVariableProvider
             return true;
         }
 
-        value = string.Empty;
+        value = CombinedTypeContainer.NullInstance;
         return false;
     }
 }
@@ -210,7 +210,6 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
         return new CombinedTypeContainer(Environment.GetEnvironmentVariable(envKey) ?? string.Empty);
     }
 
-    /// <inheritdoc cref="IVariableProvider.Provide"/>
     public CombinedTypeContainer Provide(string key, string? arg)
     {
         var prefixLength = PREFIX.Length;

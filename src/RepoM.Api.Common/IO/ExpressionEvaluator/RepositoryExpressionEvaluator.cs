@@ -45,6 +45,23 @@ public class RepositoryExpressionEvaluator
         return EvaluateStringExpression(value, repository.AsEnumerable());
     }
 
+    public CombinedTypeContainer EvaluateValueExpression(string value, params Repository[] repository)
+    {
+        return EvaluateValueExpression(value, repository.AsEnumerable());
+    }
+
+    internal CombinedTypeContainer EvaluateValueExpression(string value, IEnumerable<Repository> repository)
+    {
+        try
+        {
+            return _expressionExecutor.Execute<RepositoryContext>(new RepositoryContext(repository), value);
+        }
+        catch (Exception)
+        {
+            return CombinedTypeContainer.NullInstance;
+        }
+    }
+
     private string EvaluateStringExpression(string value, IEnumerable<Repository> repository)
     {
         try
