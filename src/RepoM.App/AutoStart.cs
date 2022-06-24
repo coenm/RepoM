@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 using Microsoft.Win32;
 
-public static class AutoStart
+internal static class AutoStart
 {
     private const string REG_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
 
@@ -42,6 +42,14 @@ public static class AutoStart
 
     private static string GetAppPath()
     {
-        return $"\"{Assembly.GetEntryAssembly()!.Location}\"";
+        var path = Assembly.GetEntryAssembly()!.Location;
+
+        // Dirty hack. We need the exe instead of dll (this has probably something to do with the upgrade to net6)
+        if (path.EndsWith(".dll", StringComparison.CurrentCultureIgnoreCase))
+        {
+            path = path[..^4] + ".exe";
+        }
+
+        return $"\"{path}\"";
     }
 }
