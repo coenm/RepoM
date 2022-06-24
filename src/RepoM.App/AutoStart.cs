@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 using Microsoft.Win32;
 
-public static class AutoStart
+internal static class AutoStart
 {
     private const string REG_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
 
