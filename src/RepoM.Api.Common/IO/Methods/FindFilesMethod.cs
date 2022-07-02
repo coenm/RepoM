@@ -42,12 +42,10 @@ public class FindFilesMethod : IMethod
             var files = GetFileEnumerator(rootPath, searchPattern).ToArray();
             return new CombinedTypeContainer(files.Select(f => new CombinedTypeContainer(f)).ToArray());
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return new CombinedTypeContainer(Enumerable.Range(0,100).Select(f => new CombinedTypeContainer(f)).ToArray());
-
             // not sure if we shouldn't throw.
-            // return CombinedTypeContainer.NullInstance;
+            return CombinedTypeContainer.NullInstance;
         }
     }
 
