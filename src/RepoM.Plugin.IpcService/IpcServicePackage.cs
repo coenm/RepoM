@@ -7,7 +7,7 @@ using SimpleInjector;
 using SimpleInjector.Packaging;
 
 [UsedImplicitly]
-public class IpcServiceModule : IPackage
+public class IpcServicePackage : IPackage
 {
     public void RegisterServices(Container container)
     {

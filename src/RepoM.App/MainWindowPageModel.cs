@@ -92,7 +92,6 @@ public class MainWindowPageModel : INotifyPropertyChanged
                     _appSettingsService.EnabledSearchProviders = list;
                 }
             }
-                
         }
     }
 }
