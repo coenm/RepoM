@@ -152,6 +152,23 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
+    public string SonarCloudPersonalAccessToken
+    {
+        get => Settings.SonarCloudPersonalAccessToken;
+        set
+        {
+            if (value.Equals(Settings.SonarCloudPersonalAccessToken, StringComparison.InvariantCulture))
+            {
+                return;
+            }
+
+            Settings.SonarCloudPersonalAccessToken = value;
+
+            NotifyChange();
+            Save();
+        }
+    }
+
     public void RegisterInvalidationHandler(Action handler)
     {
         _invalidationHandlers.Add(handler);

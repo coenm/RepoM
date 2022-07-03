@@ -26,6 +26,7 @@
     <ProjectReference Include="..\RepoM.Plugin.LuceneSearch\RepoM.Plugin.LuceneSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.EverythingFileSearch\RepoM.Plugin.EverythingFileSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.IpcService\RepoM.Plugin.IpcService.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.WindowsExplorerGitInfo\RepoM.Plugin.WindowsExplorerGitInfo.csproj" />
   </ItemGroup>
   <ItemGroup>

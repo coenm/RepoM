@@ -16,5 +16,7 @@ public interface IAppSettingsService
 
     List<string> EnabledSearchProviders { get; set; }
 
+    string SonarCloudPersonalAccessToken { get; set; }
+
     void RegisterInvalidationHandler(Action handler);
 }

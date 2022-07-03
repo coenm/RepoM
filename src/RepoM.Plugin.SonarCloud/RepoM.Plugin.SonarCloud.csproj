@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ExpressionStringEvaluator" Version="0.2.6" />
+    <PackageReference Include="SonarQube.Net" Version="1.0.5" />
+    <PackageReference Include="SimpleInjector" Version="5.3.3" />
+    <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RepoM.Api.Common\RepoM.Api.Common.csproj" />
+    <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
+    <ProjectReference Include="..\RepoM.Ipc\RepoM.Ipc.csproj" />
+  </ItemGroup>
+
+</Project>
