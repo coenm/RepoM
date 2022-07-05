@@ -9,6 +9,7 @@ public class AppSettings
     {
         MenuSize = Size.Default;
         EnabledSearchProviders = new List<string>();
+        SonarCloudPersonalAccessToken = string.Empty;
     }
 
     public AutoFetchMode AutoFetchMode { get; set; }
@@ -19,13 +20,16 @@ public class AppSettings
 
     public List<string> EnabledSearchProviders { get; set; }
 
+    public string SonarCloudPersonalAccessToken { get; set; }
+
     public static AppSettings Default => new()
         {
             AutoFetchMode = AutoFetchMode.Off,
             PruneOnFetch = false,
             MenuSize = Size.Default,
             EnabledSearchProviders = new List<string>(1),
-        };
+            SonarCloudPersonalAccessToken = string.Empty,
+    };
 }
 
 public class Size

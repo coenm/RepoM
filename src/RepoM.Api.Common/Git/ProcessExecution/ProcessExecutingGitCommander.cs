@@ -107,7 +107,7 @@ public class ProcessExecutingGitCommander : IGitCommander
         startInfo.StandardErrorEncoding = _encoding;
     }
 
-    private string Start(Repository repository, string[] command, Action<ProcessStartInfo> initialize)
+    private static string Start(Repository repository, string[] command, Action<ProcessStartInfo> initialize)
     {
         var timeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
 
