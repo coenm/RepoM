@@ -29,7 +29,7 @@ public class Remote
         {
             var fi = new FileInfo(url);
             name = fi.Name.Trim();
-            name = StripDotGit(name);
+            name = Sanitize(name);
         }
         catch (Exception)
         {
@@ -45,7 +45,7 @@ public class Remote
         {
             var parts = url.Split('/', '\\');
             name = parts[parts.Length - 1];
-            name = StripDotGit(name);
+            name = Sanitize(name);
         }
         catch (Exception)
         {
@@ -55,7 +55,7 @@ public class Remote
         return name;
     }
 
-    private static string StripDotGit(string input)
+    private static string Sanitize(string input)
     {
         var output = input;
 
@@ -64,6 +64,6 @@ public class Remote
             output = output.Substring(0, output.Length - ".git".Length);
         }
 
-        return output;
+        return output.Replace("%20", " ");
     }
 }
