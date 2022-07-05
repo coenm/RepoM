@@ -92,7 +92,6 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             {
                 DeferredSubActionsEnumerator = () =>
                     GetFiles(repository, filePattern)
-                        .Select(solutionFile => NameHelper.ReplaceVariables(solutionFile, repository))
                         .Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), solutionFile))
                         .ToArray(),
             };

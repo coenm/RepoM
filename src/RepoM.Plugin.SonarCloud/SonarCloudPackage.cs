@@ -12,7 +12,7 @@ public class SonarCloudPackage : IPackage
 {
     public void RegisterServices(Container container)
     {
-        container.Collection.Append<IActionDeserializer, ActionSonarCloudV1Deserializer>(Lifestyle.Singleton);
+        container.Collection.Append<IActionDeserializer, ActionSonarCloudSetFavoriteV1Deserializer>(Lifestyle.Singleton);
         container.Collection.Append<IActionToRepositoryActionMapper, ActionSonarCloudV1Mapper>(Lifestyle.Singleton);
         container.Collection.Append<IMethod, SonarCloudIsFavoriteMethod>(Lifestyle.Singleton);
 

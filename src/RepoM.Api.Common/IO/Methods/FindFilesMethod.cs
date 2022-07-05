@@ -48,8 +48,7 @@ public class FindFilesMethod : IMethod
             return CombinedTypeContainer.NullInstance;
         }
     }
-
-
+    
     private static IEnumerable<string> GetFileEnumerator(string path, string searchPattern)
     {
         // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like

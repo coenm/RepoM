@@ -2,7 +2,7 @@ namespace RepoM.Api.Common.Tests.IO.ModuleBasedRepositoryActionProvider;
 
 using EasyTestFile;
 
-internal static class EasyTestFileSettingsExtensions
+public static class EasyTestFileSettingsExtensions
 {
     public static EasyTestFileSettings SetExtension(this EasyTestFileSettings @this, SerializationType type)
     {

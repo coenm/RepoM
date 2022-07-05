@@ -1,6 +1,7 @@
 namespace RepoM.Api.Git;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 [DebuggerDisplay("{Name} @{Path}")]
@@ -107,7 +108,7 @@ public class Repository
 
     public int? StashCount { get; set; }
 
-    public string[] RemoteUrls { get; set; } = Array.Empty<string>();
+    public List<Remote> Remotes { get; } = new List<Remote>(1);
 
     public string SafePath
     {

@@ -80,7 +80,7 @@ public class DefaultRepositoryReader : IRepositoryReader
 
             HeadDetails headDetails = GetHeadDetails(repo);
 
-            return new Repository()
+            var repository = new Repository()
                 {
                     Name = workingDirectory.Name,
                     Path = workingDirectory.FullName,
@@ -101,10 +101,20 @@ public class DefaultRepositoryReader : IRepositoryReader
                     LocalStaged = status?.Staged.Count(),
                     LocalRemoved = status?.Removed.Count(),
                     LocalIgnored = status?.Ignored.Count(),
-                    RemoteUrls = repo.Network?.Remotes?.Select(r => r.Url).Where(url => !string.IsNullOrEmpty(url)).ToArray() ?? Array.Empty<string>(),
                     StashCount = repo.Stashes?.Count() ?? 0,
                     Tags = Array.Empty<string>(),
                 };
+
+            RemoteCollection? remoteCollection = repo.Network?.Remotes;
+            if (remoteCollection != null)
+            {
+                foreach (LibGit2Sharp.Remote r in remoteCollection.Where(r => !string.IsNullOrWhiteSpace(r.Name) && !string.IsNullOrWhiteSpace(r.Url)))
+                {
+                    repository.Remotes.Add(new Api.Git.Remote(r.Name.Trim(), r.Url.Trim()));
+                }
+            }
+
+            return repository;
         }
         catch (Exception)
         {

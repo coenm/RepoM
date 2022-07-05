@@ -1,0 +1,14 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionSonarCloudSetFavoriteV1,
+        Project: project-a,
+        Type: sonarcloud-set-favorite@1,
+        Name: Star project,
+        Active: true
+      }
+    ]
+  }
+}
