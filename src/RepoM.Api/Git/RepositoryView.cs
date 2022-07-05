@@ -83,8 +83,6 @@ public class RepositoryView : IRepositoryView, INotifyPropertyChanged
 
     public string LocalIgnored => Repository.LocalIgnored?.ToString() ?? string.Empty;
 
-    public string[] RemoteUrls => Repository.RemoteUrls ?? Array.Empty<string>();
-
     public string StashCount => Repository.StashCount?.ToString() ?? string.Empty;
 
     public bool WasFound => Repository.WasFound;

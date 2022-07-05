@@ -1,6 +1,5 @@
 namespace RepoM.Api.Common.IO;
 
-using System;
 using RepoM.Api.Common.Common;
 using RepoM.Api.Common.IO.ExpressionEvaluator;
 using RepoM.Api.Git;
@@ -15,25 +14,6 @@ public static class NameHelper
                 translationService.Translate(input ?? string.Empty),
                 translationService),
             repository);
-    }
-
-    public static string ReplaceVariables(string? value, Repository repository)
-    {
-        if (value is null)
-        {
-            return string.Empty;
-        }
-
-        return Environment.ExpandEnvironmentVariables(
-            value
-                .Replace("{Repository.Name}", repository.Name)
-                .Replace("{Repository.Path}", repository.Path)
-                .Replace("{Repository.SafePath}", repository.SafePath)
-                .Replace("{Repository.Location}", repository.Location)
-                .Replace("{Repository.CurrentBranch}", repository.CurrentBranch)
-                .Replace("{Repository.Branches}", string.Join("|", repository.Branches ?? Array.Empty<string>()))
-                .Replace("{Repository.LocalBranches}", string.Join("|", repository.LocalBranches ?? Array.Empty<string>()))
-                .Replace("{Repository.RemoteUrls}", string.Join("|", repository.RemoteUrls ?? Array.Empty<string>())));
     }
 
     private static string ReplaceTranslatables(string? value, ITranslationService translationService)

@@ -70,9 +70,47 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
             return string.Join("|", repository.LocalBranches);
         }
 
+        // legacy
         if ("RemoteUrls".Equals(keySuffix, StringComparison.CurrentCultureIgnoreCase))
         {
-            return string.Join("|", repository.RemoteUrls);
+            return string.Join("|", repository.Remotes.Select(x => x.Url));
+        }
+
+        if (keySuffix.StartsWith("Remote.", StringComparison.CurrentCultureIgnoreCase))
+        {
+            var subKey = keySuffix.Substring(2);
+
+            startIndex = "Remote.".Length;
+            keySuffix = keySuffix.Substring(startIndex, keySuffix.Length - startIndex);
+
+            var splits = keySuffix.Split('.');
+            if (splits.Length != 2)
+            {
+                return string.Empty;
+            }
+
+            Remote? remote = repository.Remotes.FirstOrDefault(x => x.Key.Equals(splits[0], StringComparison.CurrentCultureIgnoreCase));
+            if (remote == null)
+            {
+                return string.Empty;
+            }
+
+            if ("url".Equals(splits[1], StringComparison.CurrentCultureIgnoreCase))
+            {
+                return remote.Url;
+            }
+
+            if ("key".Equals(splits[1], StringComparison.CurrentCultureIgnoreCase))
+            {
+                return remote.Key;
+            }
+
+            if ("name".Equals(splits[1], StringComparison.CurrentCultureIgnoreCase))
+            {
+                return remote.Name;
+            }
+
+            return string.Empty;
         }
 
         throw new NotImplementedException();

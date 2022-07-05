@@ -58,7 +58,7 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
 
     private RepositoryAction? CreateBrowseRemoteAction(Repository repository, RepositoryActionBrowseRepositoryV1 action)
     {
-        if (repository.RemoteUrls.Length == 0)
+        if (repository.Remotes.Count == 0)
         {
             return null;
         }
@@ -71,16 +71,16 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
 
         var actionName = _translationService.Translate("Browse remote");
 
-        if (repository.RemoteUrls.Length == 1 || forceSingle)
+        if (repository.Remotes.Count == 1 || forceSingle)
         {
-            return CreateProcessRunnerAction(actionName, repository.RemoteUrls[0]);
+            return CreateProcessRunnerAction(actionName, repository.Remotes[0].Url);
         }
 
         return new RepositoryAction(actionName)
             {
-                DeferredSubActionsEnumerator = () => repository.RemoteUrls
+                DeferredSubActionsEnumerator = () => repository.Remotes
                                                                .Take(50)
-                                                               .Select(url => CreateProcessRunnerAction(url, url))
+                                                               .Select(remote => CreateProcessRunnerAction(remote.Name, remote.Url))
                                                                .ToArray(),
             };
     }
