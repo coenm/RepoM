@@ -11,7 +11,7 @@ using RepoM.Api.Git;
 using RepositoryAction = RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
-internal class ActionSonarCloudV1Deserializer : IActionDeserializer
+internal class ActionSonarCloudSetFavoriteV1Deserializer : IActionDeserializer
 {
     public bool CanDeserialize(string type)
     {
