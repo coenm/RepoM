@@ -18,5 +18,9 @@ public interface IAppSettingsService
 
     string SonarCloudPersonalAccessToken { get; set; }
 
+    string AzureDevOpsPersonalAccessToken { get; set; }
+
+    string AzureDevOpsBaseUrl { get; set; }
+
     void RegisterInvalidationHandler(Action handler);
 }
