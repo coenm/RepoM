@@ -78,7 +78,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         List<PullRequest> pullRequests;
         try
         {
-            pullRequests = _service.GetPullRequests3(repository, projectId, repoId);
+            pullRequests = _service.GetPullRequests(repository, projectId, repoId);
         }
         catch (Exception e)
         {
@@ -89,7 +89,6 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
                 };
             return new[] { notificationItem, };
         }
-        
 
         if (pullRequests.Any())
         {
@@ -104,7 +103,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
 
         // no pr's found
         // check if user wants a notification
-        if (action.ShowWhenEmpty)
+        if (_expressionEvaluator.EvaluateBooleanExpression(action.ShowWhenEmpty, repository))
         {
             var notificationItem = new Api.Git.RepositoryAction("No PRs found.")
                 {

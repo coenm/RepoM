@@ -10,5 +10,5 @@ public class RepositoryActionAzureDevOpsPullRequestsV1 : RepositoryAction
 
     public string? RepoId { get; set; }
 
-    public bool ShowWhenEmpty { get; set; }
+    public string? ShowWhenEmpty { get; set; }
 }
