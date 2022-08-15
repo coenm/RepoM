@@ -18,8 +18,8 @@
     </PackageReference>
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
-    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
+    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.3.0" />
     <PackageReference Include="Moq" Version="4.18.1" />
     <PackageReference Include="NetMQ" Version="4.0.1.8" />
     <PackageReference Include="NUnit" Version="3.13.3" />
