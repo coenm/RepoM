@@ -2,14 +2,17 @@
   TagsCollection: {
     Tags: [
       {
+        $type: RepositoryActionTag,
         Tag: work,
         When: {StringContains({Repository.SafePath}, "work")}
       },
       {
+        $type: RepositoryActionTag,
         Tag: private,
         When: {StringContains({Repository.SafePath}, "Private")}
       },
       {
+        $type: RepositoryActionTag,
         Tag: always-tag
       }
     ]

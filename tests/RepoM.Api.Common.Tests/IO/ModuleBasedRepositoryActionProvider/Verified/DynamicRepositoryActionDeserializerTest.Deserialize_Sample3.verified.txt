@@ -1,43 +1,52 @@
 ﻿{
   RepositorySpecificEnvironmentFiles: [
     {
+      $type: FileReference,
       Filename: ab1.env,
       When: false
     },
     {
+      $type: FileReference,
       Filename: ab.env
     }
   ],
   RepositorySpecificConfigFiles: [
     {
+      $type: FileReference,
       Filename: {Repostitory.Path}\RepositoryActions.json,
       When: false
     },
     {
+      $type: FileReference,
       Filename: {Repostitory.Path}\.git\RepositoryActions.json
     }
   ],
   Variables: [
     {
+      $type: Variable,
       Name: work_repo,
       Value: {StringContains({Repository.SafePath}, "work")},
       Enabled: true
     },
     {
+      $type: Variable,
       Name: work_repo_1,
       Value: true,
       Enabled: false
     },
     {
+      $type: Variable,
       Name: work_repo_2,
       Value: {StringContains({Repository.SafePath}, "work")},
       Enabled: false
     },
     {
+      $type: Variable,
       Name: is_private_repo,
       Value: false
     },
     {
+      $type: Variable,
       Name: x,
       Value: y
     }
@@ -45,11 +54,13 @@
   TagsCollection: {
     Variables: [
       {
+        $type: Variable,
         Name: work_repo,
         Value: {StringContains({Repository.SafePath}, "work")},
         Enabled: true
       },
       {
+        $type: Variable,
         Name: work_repo_1,
         Value: true,
         Enabled: false
@@ -57,14 +68,17 @@
     ],
     Tags: [
       {
+        $type: RepositoryActionTag,
         Tag: work,
         When: {StringContains({Repository.SafePath}, "work")}
       },
       {
+        $type: RepositoryActionTag,
         Tag: private,
         When: {StringContains({Repository.SafePath}, "Private")}
       },
       {
+        $type: RepositoryActionTag,
         Tag: always-tag
       }
     ]
@@ -72,11 +86,13 @@
   ActionsCollection: {
     Variables: [
       {
+        $type: Variable,
         Name: work_repo,
         Value: {StringContains({Repository.SafePath}, "work")},
         Enabled: true
       },
       {
+        $type: Variable,
         Name: work_repo_1,
         Value: true,
         Enabled: false
@@ -91,6 +107,7 @@
         MultiSelectEnabled: true,
         Variables: [
           {
+            $type: Variable,
             Name: name,
             Value: {StringContains({Repository.SafePath}, "abc")}
           }
