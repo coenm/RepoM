@@ -1,25 +1,30 @@
 ﻿{
   Variables: [
     {
+      $type: Variable,
       Name: work_repo,
       Value: {StringContains({Repository.SafePath}, "work")},
       Enabled: true
     },
     {
+      $type: Variable,
       Name: work_repo_1,
       Value: true,
       Enabled: false
     },
     {
+      $type: Variable,
       Name: work_repo_2,
       Value: {StringContains({Repository.SafePath}, "work")},
       Enabled: false
     },
     {
+      $type: Variable,
       Name: is_private_repo,
       Value: false
     },
     {
+      $type: Variable,
       Name: x,
       Value: y
     }

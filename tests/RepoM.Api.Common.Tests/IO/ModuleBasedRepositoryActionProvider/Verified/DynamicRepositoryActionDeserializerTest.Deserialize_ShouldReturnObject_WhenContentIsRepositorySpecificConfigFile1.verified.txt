@@ -1,10 +1,12 @@
 ﻿{
   RepositorySpecificConfigFiles: [
     {
+      $type: FileReference,
       Filename: ab1.env,
       When: false
     },
     {
+      $type: FileReference,
       Filename: ab.env
     }
   ],

@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,9 +27,17 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+
+    <PackageReference Include="SonarQube.Net" Version="1.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RepoM.Api.Common\RepoM.Api.Common.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
+    <ProjectReference Include="..\RepoM.Api.Common.Tests\RepoM.Api.Common.Tests.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Verified\" />
+  </ItemGroup>
+
 </Project>

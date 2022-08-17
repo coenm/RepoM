@@ -169,6 +169,40 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
+    public string AzureDevOpsPersonalAccessToken
+    {
+        get => Settings.AzureDevOps.PersonalAccessToken;
+        set
+        {
+            if (value.Equals(Settings.AzureDevOps.PersonalAccessToken, StringComparison.InvariantCulture))
+            {
+                return;
+            }
+
+            Settings.AzureDevOps.PersonalAccessToken = value;
+
+            NotifyChange();
+            Save();
+        }
+    }
+
+    public string AzureDevOpsBaseUrl
+    {
+        get => Settings.AzureDevOps.BaseUrl;
+        set
+        {
+            if (value.Equals(Settings.AzureDevOps.BaseUrl, StringComparison.InvariantCulture))
+            {
+                return;
+            }
+
+            Settings.AzureDevOps.BaseUrl = value;
+
+            NotifyChange();
+            Save();
+        }
+    }
+
     public void RegisterInvalidationHandler(Action handler)
     {
         _invalidationHandlers.Add(handler);

@@ -1,0 +1,21 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "azure-devops-get-prs@1",
+        "show-when-empty": true,
+        "repository-id": "repo_id_guid",
+        "project-id": "{var.AzureDevOpsProjectId}"
+      },
+      {
+        "type": "azure-devops-get-prs@1",
+        "show-when-empty": "false",
+        "project-id": "abc"
+      },
+      {
+        "type": "azure-devops-get-prs@1",
+        "active": false
+      }
+    ]
+  }
+}
