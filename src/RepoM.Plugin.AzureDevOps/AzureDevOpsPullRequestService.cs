@@ -15,7 +15,6 @@ internal class AzureDevOpsPullRequestService : IDisposable
     private readonly IAppSettingsService _appSettingsService;
     private readonly VssConnection? _connection;
     private GitHttpClient? _gitClient;
-    // private List<Favorite> _favorites = new(0);
     private readonly List<PullRequest> _emptyList = new(0);
 
     public AzureDevOpsPullRequestService(IAppSettingsService appSettingsService)
@@ -79,6 +78,7 @@ internal class AzureDevOpsPullRequestService : IDisposable
             List<GitPullRequest> prs = await GetPullRequests(_gitClient, repoIdGuid);
             return prs
                    .Select(pr => new PullRequest(
+                       repoIdGuid,
                        pr.Title,
                        CreatePullRequestUrl(repo, pr)))
                    .ToList();
@@ -95,7 +95,7 @@ internal class AzureDevOpsPullRequestService : IDisposable
         List<GitRepository> repositories;
         try
         {
-            repositories = await _gitClient.GetRepositoriesAsync(projectId, true, true, false);
+            repositories = await _gitClient.GetRepositoriesAsync(projectId, includeLinks:true, includeAllUrls:true, includeHidden:true);
         }
         catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
         {
@@ -108,7 +108,9 @@ internal class AzureDevOpsPullRequestService : IDisposable
 
         var searchRepoUrl = url.Scheme + "://" + url.Host + url.LocalPath;
 
-        var selectedRepos = repositories.Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase))).ToArray();
+        GitRepository[] selectedRepos = repositories
+                                        .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
+                                        .ToArray();
 
         if (selectedRepos.Length == 0)
         {
@@ -124,12 +126,10 @@ internal class AzureDevOpsPullRequestService : IDisposable
             List<GitPullRequest> prs = await GetPullRequests(_gitClient, repo.Id);
             return prs
                    .Select(pr => new PullRequest(
+                       repo.Id,
                        pr.Title,
                        CreatePullRequestUrl(repo, pr)))
                    .ToList();
-
-            // todo cache
-            Console.WriteLine($"# repo id: {repo.Id}");
         }
     }
 
@@ -145,7 +145,7 @@ internal class AzureDevOpsPullRequestService : IDisposable
 
     public void Dispose()
     {
-        // _task.Dispose();
+        _gitClient?.Dispose();
         _connection?.Dispose();
     }
 

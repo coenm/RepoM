@@ -30,12 +30,28 @@ internal class ActionAzureDevOpsPullRequestsV1Deserializer : IActionDeserializer
         {
             if (showWhenEmpty.Type == JTokenType.Boolean)
             {
-                result.ShowWhenEmpty = showWhenEmpty.Value<bool>().ToString();
+                var value = showWhenEmpty.Value<bool>();
+                result.ShowWhenEmpty = value ? "true" : "false";
             }
 
             if (showWhenEmpty.Type == JTokenType.String)
             {
-                result.ShowWhenEmpty = showWhenEmpty.Value<string>();
+                var value = showWhenEmpty.Value<string>();
+                result.ShowWhenEmpty = value;
+
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    value = value.Trim();
+                    if (string.Equals("true", value, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        result.ShowWhenEmpty = "true";
+                    }
+
+                    if (string.Equals("false", value, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        result.ShowWhenEmpty = "false";
+                    }
+                }
             }
         }
 
