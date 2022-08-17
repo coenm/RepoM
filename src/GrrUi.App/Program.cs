@@ -64,11 +64,6 @@ static class Program
         win.Add(filterLabel);
         win.Add(_filterField);
         win.Add(_repositoryList);
-            // {
-            //     filterLabel,
-            //     _filterField,
-            //     _repositoryList,
-            // };
 
         var buttonX = Pos.Left(filterLabel);
 
