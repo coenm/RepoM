@@ -10,7 +10,7 @@ public static class TimelyMessage
     {
         var width = message.Length + 6;
         var height = 5;
-        var lines = Label.MeasureLines(message, width);
+        // var lines = Label.MeasureLines(message, width);
 
         var dialog = new Dialog(null, width, height);
 

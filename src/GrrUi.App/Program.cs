@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using GrrUi.App.Model;
 using GrrUi.App.UI;
+using NStack;
 using RepoM.Ipc;
 using Terminal.Gui;
 
@@ -49,7 +50,7 @@ static class Program
                 Y = Pos.Top(filterLabel),
                 Width = Dim.Fill(margin: 1),
             };
-        _filterField.Changed += FilterField_Changed;
+        _filterField.TextChanged += FilterFieldOnTextChanged;
 
         _repositoryList = new ListView(_repositoriesView.Repositories)
             {
@@ -59,57 +60,58 @@ static class Program
                 Height = Dim.Fill() - 2,
             };
 
-        var win = new KeyPreviewWindow("grr: Git repositories of RepoM")
-            {
-                filterLabel,
-                _filterField,
-                _repositoryList,
-            };
+        var win = new KeyPreviewWindow("grr: Git repositories of RepoM");
+        win.Add(filterLabel);
+        win.Add(_filterField);
+        win.Add(_repositoryList);
 
         var buttonX = Pos.Left(filterLabel);
 
         var navigationButton = new Button("Navigate")
             {
-                Clicked = Navigate,
                 X = buttonX,
                 Y = Pos.AnchorEnd(1),
                 CanFocus = false,
             };
-
-        if (!CanNavigate)
+        if (CanNavigate)
         {
-            navigationButton.Clicked = CopyNavigationCommandAndQuit;
+            navigationButton.Clicked += Navigate;
+        }
+        else
+        {
+            navigationButton.Clicked += CopyNavigationCommandAndQuit;
         }
 
         buttonX = buttonX + navigationButton.Text.Length + BUTTON_BORDER + BUTTON_DISTANCE;
         var copyPathButton = new Button("Copy")
             {
-                Clicked = Copy,
                 X = buttonX,
                 Y = Pos.AnchorEnd(1),
                 CanFocus = false,
             };
+        copyPathButton.Clicked += Copy;
 
         buttonX = buttonX + copyPathButton.Text.Length + BUTTON_BORDER + BUTTON_DISTANCE;
         var browseButton = new Button("Browse")
             {
-                Clicked = Browse,
+                
                 X = buttonX,
                 Y = Pos.AnchorEnd(1),
                 CanFocus = false,
             };
+        browseButton.Clicked += Browse;
 
         var quitButton = new Button("Quit")
             {
-                Clicked = Application.RequestStop,
                 X = Pos.AnchorEnd("Quit".Length + BUTTON_BORDER + BUTTON_DISTANCE),
                 Y = Pos.AnchorEnd(1),
                 CanFocus = false,
             };
+        quitButton.Clicked += QuitButtonOnClicked;
 
         win.Add(navigationButton, copyPathButton, browseButton, quitButton);
 
-        win.DefineKeyAction(Key.Enter, () => win.SetFocus(_repositoryList));
+        win.DefineKeyAction(Key.Enter, () => _repositoryList.SetFocus());
         win.DefineKeyAction(Key.Esc, () =>
             {
                 if (_filterField.HasFocus)
@@ -118,7 +120,7 @@ static class Program
                 }
                 else
                 {
-                    win.SetFocus(_filterField);
+                    _filterField.SetFocus();
                 }
             });
 
@@ -131,6 +133,11 @@ static class Program
         Application.Run();
     }
 
+    private static void QuitButtonOnClicked()
+    {
+        Application.RequestStop();
+    }
+    
     private static void SetFilterText(string filter)
     {
         if (_filterField == null)
@@ -198,6 +205,11 @@ static class Program
 
         RepositoryView current = repositories[_repositoryList.SelectedItem];
         action(current.Repository);
+    }
+
+    private static void FilterFieldOnTextChanged(ustring obj)
+    {
+        FilterField_Changed(_filterField, obj);
     }
 
     private static void FilterField_Changed(object? sender, NStack.ustring e)

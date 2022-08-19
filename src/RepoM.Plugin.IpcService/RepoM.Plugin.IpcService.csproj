@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetMQ" Version="4.0.1.8" />
-    <PackageReference Include="SimpleInjector" Version="5.3.3" />
+    <PackageReference Include="NetMQ" Version="4.0.1.9" />
+    <PackageReference Include="SimpleInjector" Version="5.4.0" />
     <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
   </ItemGroup>
 
