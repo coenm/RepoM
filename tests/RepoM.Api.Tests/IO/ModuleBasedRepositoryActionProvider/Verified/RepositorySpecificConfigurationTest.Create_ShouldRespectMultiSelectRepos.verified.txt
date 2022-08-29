@@ -4,7 +4,7 @@
     Name: Google 1,
     Action: {
       Type: Action<object, object>,
-      Target: ActionBrowserV1Mapper.<>c__DisplayClass7_0,
+      Target: ActionBrowserV1Mapper.<>c__DisplayClass6_0,
       Method: Void Map(System.Object, System.Object)
     },
     ExecutionCausesSynchronizing: false,
@@ -15,7 +15,7 @@
     Name: Google 5,
     Action: {
       Type: Action<object, object>,
-      Target: ActionBrowserV1Mapper.<>c__DisplayClass7_0,
+      Target: ActionBrowserV1Mapper.<>c__DisplayClass6_0,
       Method: Void Map(System.Object, System.Object)
     },
     ExecutionCausesSynchronizing: false,
