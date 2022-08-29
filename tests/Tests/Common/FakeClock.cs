@@ -3,14 +3,12 @@ namespace Tests.Common;
 using System;
 using RepoM.Api.Common;
 
-public class FakeClock : IClock
+internal class FakeClock : IClock
 {
     public FakeClock(DateTime fakeValue)
     {
-        FakeValue = fakeValue;
+        Now = fakeValue;
     }
 
-    public DateTime Now => FakeValue;
-
-    public DateTime FakeValue { get; }
+    public DateTime Now { get; }
 }
