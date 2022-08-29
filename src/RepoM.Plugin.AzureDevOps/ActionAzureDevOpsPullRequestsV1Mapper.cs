@@ -5,13 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using RepoM.Api.Common;
-using RepoM.Api.Common.Common;
-using RepoM.Api.Common.IO;
-using RepoM.Api.Common.IO.ExpressionEvaluator;
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.Git;
-using RepositoryAction = RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
+using RepoM.Api.IO;
+using RepoM.Api.IO.ExpressionEvaluator;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
 internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryActionMapper

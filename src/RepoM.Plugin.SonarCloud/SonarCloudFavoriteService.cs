@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RepoM.Api.Common.Common;
+using RepoM.Api.Common;
 using SonarQube.Net;
 using SonarQube.Net.Common.Authentication;
 using SonarQube.Net.Models;

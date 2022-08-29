@@ -33,7 +33,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
-    <ProjectReference Include="..\RepoM.Api.Common.Tests\RepoM.Api.Common.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

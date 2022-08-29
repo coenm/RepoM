@@ -18,13 +18,11 @@ using ExpressionStringEvaluator.VariableProviders;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using RepoM.Api.Common.Common;
-using RepoM.Api.Common.Git;
-using RepoM.Api.Common.Git.AutoFetch;
-using RepoM.Api.Common.IO;
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.Common;
 using RepoM.Api.Git;
+using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using Specs.IO;
 using Specs.Mocks;
 

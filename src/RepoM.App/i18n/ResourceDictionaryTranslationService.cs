@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Windows;
-using RepoM.Api.Common.Common;
+using RepoM.Api.Common;
 
 public class ResourceDictionaryTranslationService : ITranslationService
 {

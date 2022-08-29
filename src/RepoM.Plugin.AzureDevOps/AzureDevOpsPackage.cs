@@ -3,7 +3,7 @@ namespace RepoM.Plugin.AzureDevOps;
 using ExpressionStringEvaluator.Methods;
 using JetBrains.Annotations;
 using RepoM.Api;
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using SimpleInjector;
 using SimpleInjector.Packaging;
 

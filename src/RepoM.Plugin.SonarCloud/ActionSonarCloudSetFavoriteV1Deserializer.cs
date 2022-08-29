@@ -4,11 +4,10 @@ using System;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.Git;
-using RepositoryAction = RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
 internal class ActionSonarCloudSetFavoriteV1Deserializer : IActionDeserializer

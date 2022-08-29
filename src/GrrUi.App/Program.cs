@@ -212,7 +212,7 @@ static class Program
         FilterField_Changed(_filterField, obj);
     }
 
-    private static void FilterField_Changed(object? sender, NStack.ustring e)
+    private static void FilterField_Changed(object? sender, NStack.ustring _)
     {
         if (_repositoriesView == null)
         {
