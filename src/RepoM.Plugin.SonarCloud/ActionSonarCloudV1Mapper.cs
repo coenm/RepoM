@@ -18,14 +18,12 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
     private readonly SonarCloudFavoriteService _service;
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
-    private readonly IErrorHandler _errorHandler;
 
-    public ActionSonarCloudV1Mapper(SonarCloudFavoriteService service, RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IErrorHandler errorHandler)
+    public ActionSonarCloudV1Mapper(SonarCloudFavoriteService service, RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)

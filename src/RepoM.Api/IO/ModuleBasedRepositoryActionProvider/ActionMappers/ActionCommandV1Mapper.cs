@@ -12,14 +12,12 @@ using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.R
 public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly IErrorHandler _errorHandler;
     private readonly ITranslationService _translationService;
 
-    public ActionCommandV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IErrorHandler errorHandler)
+    public ActionCommandV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
@@ -55,7 +53,7 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
 
         yield return new RepoM.Api.Git.RepositoryAction(name)
             {
-                Action = (_, _) => ProcessHelper.StartProcess(command, arguments, _errorHandler),
+                Action = (_, _) => ProcessHelper.StartProcess(command, arguments),
             };
     }
 }

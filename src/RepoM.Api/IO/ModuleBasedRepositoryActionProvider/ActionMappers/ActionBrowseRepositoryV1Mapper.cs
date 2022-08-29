@@ -12,13 +12,11 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
-    private readonly IErrorHandler _errorHandler;
 
-    public ActionBrowseRepositoryV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IErrorHandler errorHandler)
+    public ActionBrowseRepositoryV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(Data.RepositoryAction action)
@@ -88,7 +86,7 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
     {
         return new RepositoryAction(name)
             {
-                Action = (_, _) => ProcessHelper.StartProcess(process, arguments, _errorHandler),
+                Action = (_, _) => ProcessHelper.StartProcess(process, arguments),
             };
     }
 }

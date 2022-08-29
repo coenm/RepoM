@@ -389,7 +389,6 @@ public class RepositorySpecificConfiguration
     private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ActionMapperComposition _actionMapper;
     private readonly ITranslationService _translationService;
-    private readonly IErrorHandler _errorHandler;
     private readonly RepositoryConfigurationReader _repoConfigReader;
 
     public RepositorySpecificConfiguration(
@@ -397,15 +396,12 @@ public class RepositorySpecificConfiguration
         RepositoryExpressionEvaluator repoExpressionEvaluator,
         ActionMapperComposition actionMapper,
         ITranslationService translationService,
-        IErrorHandler errorHandler,
         RepositoryConfigurationReader repoConfigReader)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _actionMapper = actionMapper ?? throw new ArgumentNullException(nameof(actionMapper));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
-
         _repoConfigReader = repoConfigReader ?? throw new ArgumentNullException(nameof(repoConfigReader));
     }
 
@@ -521,7 +517,7 @@ public class RepositorySpecificConfiguration
         {
             yield return new RepositoryAction(_translationService.Translate("Fix"))
                 {
-                    Action = (_, _) => ProcessHelper.StartProcess(_fileSystem.Path.GetDirectoryName(filename), string.Empty, _errorHandler),
+                    Action = (_, _) => ProcessHelper.StartProcess(_fileSystem.Path.GetDirectoryName(filename), string.Empty),
                 };
         }
     }

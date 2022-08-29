@@ -14,14 +14,12 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
-    private readonly IErrorHandler _errorHandler;
     private readonly IFileSystem _fileSystem;
 
-    public ActionExecutableV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IErrorHandler errorHandler, IFileSystem fileSystem)
+    public ActionExecutableV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IFileSystem fileSystem)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 
@@ -80,7 +78,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
 
             yield return new RepoM.Api.Git.RepositoryAction(name)
                 {
-                    Action = (_, _) => ProcessHelper.StartProcess(normalized, arguments, _errorHandler),
+                    Action = (_, _) => ProcessHelper.StartProcess(normalized, arguments),
                 };
             found = true;
         }

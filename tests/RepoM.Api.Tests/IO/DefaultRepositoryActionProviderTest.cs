@@ -15,7 +15,6 @@ using ExpressionStringEvaluator.VariableProviders.DateTime;
 using ExpressionStringEvaluator.VariableProviders;
 using FakeItEasy;
 using RepoM.Api.Common;
-using RepoM.Api.Common.Tests;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using VerifyXunit;
@@ -25,7 +24,6 @@ using Xunit;
 [UsesVerify]
 public class DefaultRepositoryActionProviderTest
 {
-    private readonly IErrorHandler _errorHandler = A.Fake<IErrorHandler>();
     private readonly IAppDataPathProvider _appDataPathProvider = A.Fake<IAppDataPathProvider>();
     private readonly IRepositoryWriter _repositoryWriter = A.Fake<IRepositoryWriter>();
     private readonly IRepositoryMonitor _repositoryMonitor = A.Fake<IRepositoryMonitor>();

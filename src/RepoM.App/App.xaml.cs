@@ -141,7 +141,6 @@ public partial class App : Application
         container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>(Lifestyle.Singleton);
         container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>(Lifestyle.Singleton);
         container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>(Lifestyle.Singleton);
-        container.Register<IErrorHandler, UIErrorHandler>(Lifestyle.Singleton);
         container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>(Lifestyle.Singleton);
         container.Register<IRepositoryReader, DefaultRepositoryReader>(Lifestyle.Singleton);
         container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);

@@ -43,7 +43,6 @@ public class RepositorySpecificConfigurationTest
     private readonly RepositoryExpressionEvaluator _repositoryExpressionEvaluator;
     private readonly ActionMapperComposition _actionMapperComposition;
     private readonly ITranslationService _translationService;
-    private readonly IErrorHandler _errorHandler;
 
     public RepositorySpecificConfigurationTest()
     {
@@ -118,14 +117,12 @@ public class RepositorySpecificConfigurationTest
 
         _translationService = A.Fake<ITranslationService>();
         A.CallTo(() => _translationService.Translate(A<string>._)).ReturnsLazily(call => (call.Arguments[0] as string)!);
-        _errorHandler = A.Fake<IErrorHandler>();
         IRepositoryWriter repositoryWriter = A.Fake<IRepositoryWriter>();
         IRepositoryMonitor repositoryMonitor = A.Fake<IRepositoryMonitor>();
 
         _actionMapperComposition = ActionMapperCompositionFactory.Create(
             _repositoryExpressionEvaluator,
             _translationService,
-            _errorHandler,
             _fileSystem,
             repositoryWriter,
             repositoryMonitor);
@@ -143,7 +140,6 @@ public class RepositorySpecificConfigurationTest
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
             _translationService,
-            _errorHandler,
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
@@ -170,7 +166,6 @@ public class RepositorySpecificConfigurationTest
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
             _translationService,
-            _errorHandler,
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
@@ -197,7 +192,6 @@ public class RepositorySpecificConfigurationTest
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
             _translationService,
-            _errorHandler,
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
@@ -224,7 +218,6 @@ public class RepositorySpecificConfigurationTest
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
             _translationService,
-            _errorHandler,
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,

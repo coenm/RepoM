@@ -10,8 +10,8 @@ public class DefaultRepositoryStore : FileRepositoryStore
 {
     private readonly string _fullFilename;
 
-    public DefaultRepositoryStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem)
-        : base(errorHandler, fileSystem)
+    public DefaultRepositoryStore(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem)
+        : base(fileSystem)
     {
         AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fullFilename = Path.Combine(AppDataPathProvider.GetAppDataPath(), "Repositories.cache");

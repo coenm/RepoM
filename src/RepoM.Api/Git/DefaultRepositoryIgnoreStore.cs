@@ -16,10 +16,9 @@ public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgno
     private readonly string _fullFilename;
 
     public DefaultRepositoryIgnoreStore(
-        IErrorHandler errorHandler,
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem)
-        : base(errorHandler, fileSystem)
+        : base(fileSystem)
     {
         AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fullFilename = Path.Combine(AppDataPathProvider.GetAppDataPath(), "Repositories.ignore");

@@ -12,13 +12,11 @@ using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly IErrorHandler _errorHandler;
     private readonly ITranslationService _translationService;
 
-    public ActionBrowserV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IErrorHandler errorHandler)
+    public ActionBrowserV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
     }
 
@@ -58,7 +56,7 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
         var url = _expressionEvaluator.EvaluateStringExpression(action.Url, repository);
         yield return new RepositoryAction(name)
             {
-                Action = (_, _) => ProcessHelper.StartProcess(url, string.Empty, _errorHandler),
+                Action = (_, _) => ProcessHelper.StartProcess(url, string.Empty),
             };
     }
 }

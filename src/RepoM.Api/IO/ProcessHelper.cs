@@ -6,7 +6,7 @@ using RepoM.Api.Common;
 
 public static class ProcessHelper
 {
-    public static void StartProcess(string process, string arguments, IErrorHandler errorHandler)
+    public static void StartProcess(string process, string arguments)
     {
         try
         {
@@ -27,9 +27,9 @@ public static class ProcessHelper
                 };
             Process.Start(psi);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            errorHandler.Handle(ex.Message);
+            // swallow for now.
         }
     }
 }

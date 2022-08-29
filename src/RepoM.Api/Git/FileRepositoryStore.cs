@@ -8,12 +8,10 @@ using RepoM.Api.Common;
 
 public abstract class FileRepositoryStore : IRepositoryStore
 {
-    private readonly IErrorHandler _errorHandler;
     private protected readonly IFileSystem FileSystem;
 
-    protected FileRepositoryStore(IErrorHandler errorHandler, IFileSystem fileSystem)
+    protected FileRepositoryStore(IFileSystem fileSystem)
     {
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
         FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 
@@ -34,7 +32,7 @@ public abstract class FileRepositoryStore : IRepositoryStore
             }
             catch (Exception ex)
             {
-                _errorHandler.Handle(ex.Message);
+                // swallow for now.
             }
         }
 
@@ -68,7 +66,7 @@ public abstract class FileRepositoryStore : IRepositoryStore
         }
         catch (Exception ex)
         {
-            _errorHandler.Handle(ex.Message);
+            // swallow for now.
         }
     }
 
