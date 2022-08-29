@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.Ipc;
+using RepoM.Ipc.Tests.Internals;
 using RepoM.Plugin.IpcService;
 using VerifyTests;
 using VerifyXunit;

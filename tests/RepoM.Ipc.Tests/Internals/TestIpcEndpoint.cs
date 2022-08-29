@@ -1,4 +1,4 @@
-namespace RepoM.Ipc.Tests;
+namespace RepoM.Ipc.Tests.Internals;
 
 using RepoM.Ipc;
 
