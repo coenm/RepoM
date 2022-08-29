@@ -1,4 +1,4 @@
-namespace Tests.Common;
+namespace Tests.Helper;
 
 using System;
 using RepoM.Api.Common;

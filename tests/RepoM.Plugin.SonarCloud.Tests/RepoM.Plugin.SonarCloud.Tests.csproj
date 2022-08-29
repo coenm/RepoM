@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />
+    <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
