@@ -15,4 +15,10 @@
     <ProjectReference Include="..\RepoM.Ipc\RepoM.Ipc.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>RepoM.Ipc.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>

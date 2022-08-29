@@ -1,0 +1,10 @@
+﻿[
+  {
+    $type: Repository,
+    Name: N,
+    BranchWithStatus: B,
+    Path: P,
+    HasUnpushedChanges: false,
+    SafePath: P
+  }
+]

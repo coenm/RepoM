@@ -5,8 +5,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.Api\RepoM.Api.csproj" />
-    <ProjectReference Include="..\..\src\RepoM.Ipc\RepoM.Ipc.csproj" />
-    <ProjectReference Include="..\..\src\RepoM.Plugin.IpcService\RepoM.Plugin.IpcService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
