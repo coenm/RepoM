@@ -20,9 +20,8 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RepoM.Api.Common\RepoM.Api.Common.csproj" />
-    <ProjectReference Include="..\RepoM.Api.Win\RepoM.Api.Win.csproj" />
     <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
+    <ProjectReference Include="..\RepoM.Ipc\RepoM.Ipc.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.LuceneSearch\RepoM.Plugin.LuceneSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.EverythingFileSearch\RepoM.Plugin.EverythingFileSearch.csproj" />

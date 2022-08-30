@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RepoM.Api.Common\RepoM.Api.Common.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Api\RepoM.Api.csproj" />
-    <ProjectReference Include="..\..\src\RepoM.Ipc\RepoM.Ipc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

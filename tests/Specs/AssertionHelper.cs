@@ -4,7 +4,6 @@ namespace Specs;
 using System;
 using System.Threading;
 using FluentAssertions;
-using RepoM.Api.Common.Git;
 using RepoM.Api.Git;
 
 public static class AssertionHelper

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
-using RepoM.Api.Common.Common;
+using RepoM.Api.Common;
 using RepoM.Api.Git;
 
 internal class AzureDevOpsPullRequestService : IDisposable

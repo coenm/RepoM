@@ -5,13 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using RepoM.Api.Common;
-using RepoM.Api.Common.Common;
-using RepoM.Api.Common.IO;
-using RepoM.Api.Common.IO.ExpressionEvaluator;
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.Git;
-using RepositoryAction = RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
+using RepoM.Api.IO;
+using RepoM.Api.IO.ExpressionEvaluator;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
 internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryActionMapper
@@ -19,14 +18,12 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
     private readonly AzureDevOpsPullRequestService _service;
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
-    private readonly IErrorHandler _errorHandler;
 
-    public ActionAzureDevOpsPullRequestsV1Mapper(AzureDevOpsPullRequestService service, RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IErrorHandler errorHandler)
+    public ActionAzureDevOpsPullRequestsV1Mapper(AzureDevOpsPullRequestService service, RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
@@ -95,7 +92,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
             var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
             results.AddRange(pullRequests.Select(pr => new RepoM.Api.Git.RepositoryAction(pr.Name)
                 {
-                    Action = (_, _) => ProcessHelper.StartProcess(pr.Url, string.Empty, _errorHandler),
+                    Action = (_, _) => ProcessHelper.StartProcess(pr.Url, string.Empty),
                 }));
 
             return results.ToArray();

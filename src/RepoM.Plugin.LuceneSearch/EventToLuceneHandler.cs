@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api;
 using RepoM.Api.Git;
+using RepoM.Core.Plugin;
 
 [UsedImplicitly]
 internal class EventToLuceneHandler : IModule, IDisposable

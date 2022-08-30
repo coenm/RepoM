@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api;
+using RepoM.Core.Plugin;
 
 internal class SearchAdapter : IRepositorySearch
 {

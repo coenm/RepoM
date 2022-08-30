@@ -3,8 +3,8 @@ namespace RepoM.App;
 using System;
 using System.ComponentModel;
 using System.Linq;
-using RepoM.Api.Common.Common;
-using RepoM.Api.Common.Git.AutoFetch;
+using RepoM.Api.Common;
+using RepoM.Api.Git.AutoFetch;
 
 public class MainWindowPageModel : INotifyPropertyChanged
 {

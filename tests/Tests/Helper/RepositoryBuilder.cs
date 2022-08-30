@@ -2,7 +2,7 @@ namespace Tests.Helper;
 
 using RepoM.Api.Git;
 
-public class RepositoryBuilder
+internal class RepositoryBuilder
 {
     private readonly Repository _repository;
 

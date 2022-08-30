@@ -4,17 +4,18 @@ using FluentAssertions;
 using NUnit.Framework;
 using System;
 using RepoM.Api.Common;
+using Tests.Helper;
 
 public class HardcodedMiniHumanizerTests
 {
     private FakeClock _clock = null!;
-    private IHumanizer _humanizer = null!;
+    private HardcodededMiniHumanizer _sut = null!;
 
     [SetUp]
     public void Setup()
     {
         _clock = new FakeClock(new DateTime(2020, 01, 01, 10, 00, 00));
-        _humanizer = new HardcodededMiniHumanizer(_clock);
+        _sut = new HardcodededMiniHumanizer(_clock);
     }
 
     public class HumanizeTimestampMethod : HardcodedMiniHumanizerTests
@@ -22,7 +23,7 @@ public class HardcodedMiniHumanizerTests
         [Test]
         public void Returns_Speaking_Now()
         {
-            var value = _humanizer.HumanizeTimestamp(_clock.Now);
+            var value = _sut.HumanizeTimestamp(_clock.Now);
             value.Should().Be("Just now");
         }
 
@@ -49,7 +50,7 @@ public class HardcodedMiniHumanizerTests
         [TestCase(300, "In 5 minutes")]
         public void Seconds(double seconds, string expected)
         {
-            var value = _humanizer.HumanizeTimestamp(_clock.Now.AddSeconds(seconds));
+            var value = _sut.HumanizeTimestamp(_clock.Now.AddSeconds(seconds));
             value.Should().Be(expected);
         }
 
@@ -79,7 +80,7 @@ public class HardcodedMiniHumanizerTests
         [TestCase(300, "In 5 hours")]
         public void Minutes(double minutes, string expected)
         {
-            var value = _humanizer.HumanizeTimestamp(_clock.Now.AddMinutes(minutes));
+            var value = _sut.HumanizeTimestamp(_clock.Now.AddMinutes(minutes));
             value.Should().Be(expected);
         }
 
@@ -106,17 +107,17 @@ public class HardcodedMiniHumanizerTests
         [TestCase(62, "In 3 days")]
         public void Hours(double hours, string expected)
         {
-            var value = _humanizer.HumanizeTimestamp(_clock.Now.AddHours(hours));
+            var value = _sut.HumanizeTimestamp(_clock.Now.AddHours(hours));
             value.Should().Be(expected);
         }
 
         [Test]
         public void Date_Fallback()
         {
-            var value = _humanizer.HumanizeTimestamp(_clock.Now.AddHours(-300));
+            var value = _sut.HumanizeTimestamp(_clock.Now.AddHours(-300));
             value.Should().Be(new DateTime(2019, 12, 19, 22, 00, 00).ToString("g"));
 
-            value = _humanizer.HumanizeTimestamp(_clock.Now.AddHours(300));
+            value = _sut.HumanizeTimestamp(_clock.Now.AddHours(300));
             value.Should().Be(new DateTime(2020, 01, 13, 22, 00, 00).ToString("g"));
         }
     }

@@ -1,6 +1,6 @@
 namespace RepoM.Plugin.AzureDevOps;
 
-using RepoM.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 public class RepositoryActionAzureDevOpsPullRequestsV1 : RepositoryAction
 {
