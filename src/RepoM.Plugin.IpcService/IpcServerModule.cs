@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api;
+using RepoM.Core.Plugin;
 
 [UsedImplicitly]
 internal class IpcServerModule : IModule, IDisposable

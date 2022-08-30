@@ -18,6 +18,7 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.App.Controls;
+using RepoM.Core.Plugin;
 using SourceChord.FluentWPF;
 
 /// <summary>

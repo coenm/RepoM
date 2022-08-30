@@ -4,6 +4,7 @@ using ExpressionStringEvaluator.Methods;
 using JetBrains.Annotations;
 using RepoM.Api;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Core.Plugin;
 using SimpleInjector;
 using SimpleInjector.Packaging;
 

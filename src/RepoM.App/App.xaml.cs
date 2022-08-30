@@ -27,6 +27,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.App.i18n;
+using RepoM.Core.Plugin;
 using RepoM.Ipc;
 using SimpleInjector;
 

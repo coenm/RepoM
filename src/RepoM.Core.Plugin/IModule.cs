@@ -1,4 +1,4 @@
-namespace RepoM.Api;
+namespace RepoM.Core.Plugin;
 
 using System.Threading.Tasks;
 
