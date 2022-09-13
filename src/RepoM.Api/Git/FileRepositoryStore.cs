@@ -30,7 +30,7 @@ public abstract class FileRepositoryStore : IRepositoryStore
             {
                 return FileSystem.File.ReadAllLines(file);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // swallow for now.
             }
@@ -64,7 +64,7 @@ public abstract class FileRepositoryStore : IRepositoryStore
         {
             FileSystem.File.WriteAllLines(GetFileName(), paths.ToArray());
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // swallow for now.
         }
