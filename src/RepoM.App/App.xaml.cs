@@ -15,7 +15,6 @@ using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.VariableProviders;
 using ExpressionStringEvaluator.VariableProviders.DateTime;
 using Hardcodet.Wpf.TaskbarNotification;
-using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.Git.AutoFetch;

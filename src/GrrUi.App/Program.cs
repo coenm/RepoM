@@ -198,7 +198,7 @@ static class Program
             return;
         }
 
-        if (!(repositories.Length > _repositoryList.SelectedItem))
+        if (repositories.Length <= _repositoryList.SelectedItem)
         {
             return;
         }
