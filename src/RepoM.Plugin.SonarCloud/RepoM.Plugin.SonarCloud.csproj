@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExpressionStringEvaluator" Version="0.2.6" />
+    <PackageReference Include="ExpressionStringEvaluator" Version="0.2.8" />
     <PackageReference Include="SonarQube.Net" Version="1.0.5" />
     <PackageReference Include="SimpleInjector" Version="5.4.0" />
     <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />

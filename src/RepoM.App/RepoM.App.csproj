@@ -35,11 +35,11 @@
   <ItemGroup>
     <PackageReference Include="SimpleInjector" Version="5.4.0" />
     <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
-    <PackageReference Include="System.IO.Abstractions" Version="17.1.1" />
+    <PackageReference Include="System.IO.Abstractions" Version="17.2.1" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
     <PackageReference Include="DotNetEnv" Version="2.3.0" />
-    <PackageReference Include="ExpressionStringEvaluator" Version="0.2.6" />
+    <PackageReference Include="ExpressionStringEvaluator" Version="0.2.8" />
     <PackageReference Include="FluentWPF" Version="0.9.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.2.2" />
