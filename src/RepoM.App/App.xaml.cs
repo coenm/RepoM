@@ -143,7 +143,7 @@ public partial class App : Application
                                         //.SetBasePath(Directory.GetCurrentDirectory())
                                         //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                                         //.AddJsonFile("logging.json", optional: true, reloadOnChange: false)
-                                        //.AddEnvironmentVariables()
+                                        .AddEnvironmentVariables()
                                         ;
 
         return builder.Build();
@@ -174,7 +174,7 @@ public partial class App : Application
         _container.RegisterConditional(
             typeof(ILogger),
             c => c.Consumer == null
-                ? typeof(Logger)
+                ? typeof(Logger<object>) // not sure if this works.
                 : typeof(Logger<>).MakeGenericType(c.Consumer.ImplementationType),
             Lifestyle.Singleton,
             _ => true);
