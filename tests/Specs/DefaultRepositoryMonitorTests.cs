@@ -16,6 +16,7 @@ using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.VariableProviders.DateTime;
 using ExpressionStringEvaluator.VariableProviders;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework;
 using RepoM.Api.Common;
@@ -101,7 +102,7 @@ public class DefaultRepositoryMonitorTests
                 new SubstringMethod(),
             };
 
-        var defaultRepositoryReader = new DefaultRepositoryReader(new Mock<IRepositoryTagsFactory>().Object);
+        var defaultRepositoryReader = new DefaultRepositoryReader(new Mock<IRepositoryTagsFactory>().Object, NullLogger.Instance);
         _monitor = new DefaultRepositoryMonitor(
             new GivenPathProvider(new string[] { repoPath, }),
             defaultRepositoryReader,

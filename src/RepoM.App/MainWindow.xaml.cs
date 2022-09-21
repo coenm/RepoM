@@ -13,13 +13,11 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using Microsoft.Extensions.Logging;
 using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.App.Controls;
-using RepoM.Core.Plugin;
 using SourceChord.FluentWPF;
 
 /// <summary>
@@ -70,7 +68,6 @@ public partial class MainWindow : Window
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _repositorySearch = repositorySearch ?? throw new ArgumentNullException(nameof(repositorySearch));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         lstRepositories.ItemsSource = aggregator.Repositories;
 
@@ -79,7 +76,7 @@ public partial class MainWindow : Window
         view.Filter = FilterRepositories;
         view.CustomSort = new CustomRepositoryViewSortBehavior();
 
-        AssemblyName? appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName();
+        AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);
         txtHelp.Text = GetHelp(statusCharacterMap);
 
