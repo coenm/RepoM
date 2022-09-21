@@ -231,15 +231,15 @@ public partial class App : Application
         container.Collection.Append<IVariableProvider, BackslashVariableProvider>(Lifestyle.Singleton);
 
         container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);
-        container.RegisterInstance(new DateTimeVariableProviderOptions()
+        container.RegisterInstance(new DateTimeVariableProviderOptions
             {
                 DateTimeProvider = () => DateTime.Now,
             });
-        container.RegisterInstance(new DateTimeNowVariableProviderOptions()
+        container.RegisterInstance(new DateTimeNowVariableProviderOptions
             {
                 DateTimeProvider = () => DateTime.Now,
             });
-        container.RegisterInstance(new DateTimeDateVariableProviderOptions()
+        container.RegisterInstance(new DateTimeDateVariableProviderOptions
             {
                 DateTimeProvider = () => DateTime.Now,
             });
