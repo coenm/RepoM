@@ -13,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using Microsoft.Extensions.Logging;
 using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
@@ -69,6 +70,7 @@ public partial class MainWindow : Window
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _repositorySearch = repositorySearch ?? throw new ArgumentNullException(nameof(repositorySearch));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         lstRepositories.ItemsSource = aggregator.Repositories;
 

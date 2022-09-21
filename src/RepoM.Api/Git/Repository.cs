@@ -34,8 +34,8 @@ public class Repository
 
     private static string? Normalize(string path)
     {
-        // yeah not that beautiful but we have to add a blackslash
-        // or slash (depending on the OS) and on Mono, I dont have Path.PathSeparator.
+        // yeah not that beautiful but we have to add a backslash
+        // or slash (depending on the OS) and on Mono, I don't have Path.PathSeparator.
         // so we add a random char with Path.Combine() and remove it again
         path = System.IO.Path.Combine(path, "_");
         path = path.Substring(0, path.Length - 1);

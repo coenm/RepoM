@@ -29,6 +29,11 @@ using RepoM.App.i18n;
 using RepoM.Core.Plugin;
 using RepoM.Ipc;
 using SimpleInjector;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Core;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -66,8 +71,12 @@ public partial class App : Application
 
         _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
 
+        IConfiguration config = SetupConfiguration();
+        ILoggerFactory loggerFactory = CreateLoggerFactory(config);
+        RegisterLogging(loggerFactory);
         RegisterServices(_container);
         UseRepositoryMonitor(_container);
+
         _container.Verify(VerificationOption.VerifyAndDiagnose);
 
         _updateTimer = new Timer(async _ => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
@@ -126,6 +135,48 @@ public partial class App : Application
 #pragma warning restore CA1416 // Validate platform compatibility
 
         base.OnExit(e);
+    }
+
+    private static IConfiguration SetupConfiguration()
+    {
+        IConfigurationBuilder builder = new ConfigurationBuilder()
+                                        //.SetBasePath(Directory.GetCurrentDirectory())
+                                        //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                                        //.AddJsonFile("logging.json", optional: true, reloadOnChange: false)
+                                        //.AddEnvironmentVariables()
+                                        ;
+
+        return builder.Build();
+    }
+
+    private static ILoggerFactory CreateLoggerFactory(IConfiguration config)
+    {
+        ILoggerFactory loggerFactory = new LoggerFactory();
+
+        LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
+                                                  .ReadFrom.Configuration(config)
+                                                  // .WriteTo.Console(LogEventLevel.Verbose)
+            .WriteTo.File("repom.logging.txt");
+
+        Logger logger = loggerConfiguration.CreateLogger();
+
+        _ = loggerFactory.AddSerilog(logger);
+
+        return loggerFactory;
+    }
+
+    private static void RegisterLogging(ILoggerFactory loggerFactory)
+    {
+        // https://stackoverflow.com/questions/41243485/simple-injector-register-iloggert-by-using-iloggerfactory-createloggert
+
+        _container.RegisterInstance<ILoggerFactory>(loggerFactory);
+        _container.RegisterSingleton(typeof(ILogger<>), typeof(Logger<>));
+
+        _container.RegisterConditional(
+            typeof(ILogger),
+            c => typeof(Logger<>).MakeGenericType(c.Consumer.ImplementationType),
+            Lifestyle.Singleton,
+            _ => true);
     }
 
     private static void RegisterServices(Container container)
