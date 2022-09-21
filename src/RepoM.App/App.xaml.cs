@@ -174,7 +174,7 @@ public partial class App : Application
         _container.RegisterConditional(
             typeof(ILogger),
             c => c.Consumer == null
-                ? typeof(Logger<object>) // not sure if this works.
+                ? typeof(Logger<object>)
                 : typeof(Logger<>).MakeGenericType(c.Consumer.ImplementationType),
             Lifestyle.Singleton,
             _ => true);
