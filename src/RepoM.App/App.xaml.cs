@@ -154,8 +154,7 @@ public partial class App : Application
         ILoggerFactory loggerFactory = new LoggerFactory();
 
         LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
-                                                  .ReadFrom.Configuration(config)
-                                                  // .WriteTo.Console(LogEventLevel.Verbose)
+            .ReadFrom.Configuration(config)
             .WriteTo.File("repom.logging.txt");
 
         Logger logger = loggerConfiguration.CreateLogger();
@@ -174,7 +173,9 @@ public partial class App : Application
 
         _container.RegisterConditional(
             typeof(ILogger),
-            c => typeof(Logger<>).MakeGenericType(c.Consumer.ImplementationType),
+            c => c.Consumer == null
+                ? typeof(Logger)
+                : typeof(Logger<>).MakeGenericType(c.Consumer.ImplementationType),
             Lifestyle.Singleton,
             _ => true);
     }
