@@ -17,9 +17,9 @@ internal class EventToLuceneHandler : IModule, IDisposable
 
     public EventToLuceneHandler(IRepositoryMonitor monitor, IRepositoryIndex index, IRepositorySearch search)
     {
-        _monitor = monitor;
-        _index = index;
-        _search = search;
+        _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+        _index = index ?? throw new ArgumentNullException(nameof(index));
+        _search = search ?? throw new ArgumentNullException(nameof(search));
     }
 
     public Task StartAsync()

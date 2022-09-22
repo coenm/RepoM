@@ -8,7 +8,6 @@ using FluentAssertions;
 using RepoM.Ipc;
 using RepoM.Ipc.Tests.Internals;
 using RepoM.Plugin.IpcService;
-using VerifyTests;
 using VerifyXunit;
 using Xunit;
 

@@ -3,7 +3,6 @@ namespace RepoM.Api.Common.Tests.IO;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
-using System.Threading.Tasks;
 using EasyTestFileXunit;
 using ExpressionStringEvaluator.Methods.BooleanToBoolean;
 using ExpressionStringEvaluator.Methods.Flow;
@@ -18,7 +17,6 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using VerifyXunit;
-using Xunit;
 
 [UsesEasyTestFile]
 [UsesVerify]

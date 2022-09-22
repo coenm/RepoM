@@ -1,7 +1,6 @@
 namespace RepoM.Plugin.WindowsExplorerGitInfo;
 
 using JetBrains.Annotations;
-using RepoM.Api;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 using SimpleInjector;

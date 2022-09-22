@@ -3,7 +3,6 @@ namespace RepoM.Api.Git;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Xml.Linq;
 
 [DebuggerDisplay("{Key}/{Name}")]
 public class Remote

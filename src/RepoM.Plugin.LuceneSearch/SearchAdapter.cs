@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api;
-using RepoM.Core.Plugin;
 
 internal class SearchAdapter : IRepositorySearch
 {
@@ -12,31 +11,25 @@ internal class SearchAdapter : IRepositorySearch
     private List<RepositorySearchResult> _cache  = new();
     private string _query = string.Empty;
     private DateTime _now = DateTime.MinValue;
-    private readonly object _l = new();
+    private readonly object _lock = new();
 
     public SearchAdapter(IRepositoryIndex index)
     {
-        _index = index;
+        _index = index ?? throw new ArgumentNullException(nameof(index));
     }
 
     public IEnumerable<string> Search(string query)
     {
-        if (_now > DateTime.UtcNow)
+        if (_now > DateTime.UtcNow && _query.Equals(query))
         {
-            if (_query.Equals(query))
-            {
-                return _cache.Select(x => x.Path);
-            }
+            return _cache.Select(x => x.Path);
         }
 
-        lock (_l)
+        lock (_lock)
         {
-            if (_now > DateTime.UtcNow)
+            if (_now > DateTime.UtcNow && _query.Equals(query))
             {
-                if (_query.Equals(query))
-                {
-                    return _cache.Select(x => x.Path);
-                }
+                return _cache.Select(x => x.Path);
             }
 
             List<RepositorySearchResult> results = _index.Search(query, SearchOperator.And, out var _);
