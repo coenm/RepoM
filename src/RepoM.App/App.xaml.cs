@@ -257,12 +257,10 @@ public partial class App : Application
         container.Collection.Register<IActionToRepositoryActionMapper>(
             new[] { typeof(IActionToRepositoryActionMapper).Assembly, },
             Lifestyle.Singleton);
-
-
+        
         container.Register<JsonDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
         container.Register<YamlDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
         container.Register<RepositorySpecificConfiguration>(Lifestyle.Singleton);
-
 
         IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
         IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
