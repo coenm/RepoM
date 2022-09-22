@@ -45,10 +45,10 @@ public class RepositoryConfigurationReader
 
     private string GetRepositoryActionsFilename(string basePath)
     {
-        var exts = new [] { "yml", "yaml", "json", };
+        var extensions = new [] { "yml", "yaml", "json", };
 
         var path = Path.Combine(basePath, FILENAME);
-        foreach (var ext in exts)
+        foreach (var ext in extensions)
         {
             var filename = path + ext;
             if (_fileSystem.File.Exists(filename))
@@ -57,9 +57,8 @@ public class RepositoryConfigurationReader
             }
         }
 
-        var f = path + "{" +  string.Join(",",exts) + "}";
-
-        throw new ConfigurationFileNotFoundException(f);
+        var failingFilename = path + "{" +  string.Join(",",extensions) + "}";
+        throw new ConfigurationFileNotFoundException(failingFilename);
     }
 
     public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params Repository[] repositories)
