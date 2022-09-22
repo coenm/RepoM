@@ -71,10 +71,12 @@ public partial class App : Application
 
         _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
 
-        IConfiguration config = SetupConfiguration();
+        var fileSystem = new FileSystem();
+
+        IConfiguration config = SetupConfiguration(fileSystem);
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
         RegisterLogging(loggerFactory);
-        RegisterServices(_container);
+        RegisterServices(_container, fileSystem);
         UseRepositoryMonitor(_container);
 
         _container.Verify(VerificationOption.VerifyAndDiagnose);
@@ -137,19 +139,19 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    private static IConfiguration SetupConfiguration()
+    private static IConfiguration SetupConfiguration(IFileSystem fileSystem)
     {
-#if DEBUG
-        var currentDirectory = Directory.GetCurrentDirectory();
-#else
-        var currentDirectory = DefaultAppDataPathProvider.Instance.GetAppDataPath();
-#endif
+        const string FILENAME = "appsettings.serilog.json";
+        var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.GetAppDataPath(), FILENAME);
+        if (!fileSystem.File.Exists(fullFilename))
+        {
+            fullFilename = FILENAME;
+        }
 
         IConfigurationBuilder builder = new ConfigurationBuilder()
-                                        .SetBasePath(currentDirectory)
-                                        .AddJsonFile("appsettings.serilog.json", optional: true, reloadOnChange: false)
+                                        .SetBasePath(Directory.GetCurrentDirectory())
+                                        .AddJsonFile(fullFilename, optional: true, reloadOnChange: false)
                                         .AddEnvironmentVariables();
-
         return builder.Build();
     }
 
@@ -183,7 +185,7 @@ public partial class App : Application
             _ => true);
     }
 
-    private static void RegisterServices(Container container)
+    private static void RegisterServices(Container container, IFileSystem fileSystem)
     {
         container.Register<IRepositorySource, RepositorySource>(Lifestyle.Singleton);
 
@@ -213,7 +215,6 @@ public partial class App : Application
         container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
         container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
-        var fileSystem = new FileSystem();
         container.RegisterInstance<IFileSystem>(fileSystem);
 
         container.Register<RepositoryExpressionEvaluator>(Lifestyle.Singleton);
