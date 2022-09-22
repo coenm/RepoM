@@ -75,6 +75,8 @@ public partial class App : Application
 
         IConfiguration config = SetupConfiguration(fileSystem);
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
+        ILogger logger = loggerFactory.CreateLogger(nameof(App));
+        logger.LogInformation("Started");
         RegisterLogging(loggerFactory);
         RegisterServices(_container, fileSystem);
         UseRepositoryMonitor(_container);
