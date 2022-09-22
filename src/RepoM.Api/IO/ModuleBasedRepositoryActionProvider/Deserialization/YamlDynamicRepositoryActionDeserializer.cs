@@ -28,5 +28,5 @@ public class YamlDynamicRepositoryActionDeserializer
 
         var json = _serializer.Serialize(yamlObject);
         return _jsonDynamicRepositoryActionDeserializer.Deserialize(json);
- }
+    }
 }

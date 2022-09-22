@@ -51,10 +51,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
         _repositoryIgnoreStore = repositoryIgnoreStore;
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-
-        _storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
-
         _autoFetchHandler = autoFetchHandler ?? throw new ArgumentNullException(nameof(autoFetchHandler));
+        _storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
     }
 
     public Task ScanForLocalRepositoriesAsync()

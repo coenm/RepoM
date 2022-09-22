@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using RepoM.Api.Common;
 using RepoM.Api.IO;
 
 public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgnoreStore
@@ -20,8 +19,8 @@ public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgno
         IFileSystem fileSystem)
         : base(fileSystem)
     {
-        AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-        _fullFilename = Path.Combine(AppDataPathProvider.GetAppDataPath(), "Repositories.ignore");
+        _ = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        _fullFilename = Path.Combine(appDataPathProvider.GetAppDataPath(), "Repositories.ignore");
     }
 
     public override string GetFileName()
@@ -71,7 +70,7 @@ public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgno
                     return _ignores;
                 }
 
-                _ignores = Get()?.ToList() ?? new List<string>();
+                _ignores = Get().ToList();
                 UpdateRules();
             }
 
@@ -83,6 +82,4 @@ public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgno
     {
         _rules = Ignores.Select(i => new IgnoreRule(i));
     }
-
-    public IAppDataPathProvider AppDataPathProvider { get; }
 }

@@ -139,12 +139,16 @@ public partial class App : Application
 
     private static IConfiguration SetupConfiguration()
     {
+#if DEBUG
+        var currentDirectory = Directory.GetCurrentDirectory();
+#else
+        var currentDirectory = DefaultAppDataPathProvider.Instance.GetAppDataPath();
+#endif
+
         IConfigurationBuilder builder = new ConfigurationBuilder()
-                                        //.SetBasePath(Directory.GetCurrentDirectory())
-                                        //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                                        //.AddJsonFile("logging.json", optional: true, reloadOnChange: false)
-                                        .AddEnvironmentVariables()
-                                        ;
+                                        .SetBasePath(currentDirectory)
+                                        .AddJsonFile("appsettings.serilog.json", optional: true, reloadOnChange: false)
+                                        .AddEnvironmentVariables();
 
         return builder.Build();
     }
@@ -154,8 +158,7 @@ public partial class App : Application
         ILoggerFactory loggerFactory = new LoggerFactory();
 
         LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
-            .ReadFrom.Configuration(config)
-            .WriteTo.File("repom.logging.txt");
+            .ReadFrom.Configuration(config);
 
         Logger logger = loggerConfiguration.CreateLogger();
 
@@ -192,7 +195,7 @@ public partial class App : Application
         container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>(Lifestyle.Singleton);
         container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>(Lifestyle.Singleton);
         container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>(Lifestyle.Singleton);
-        container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>(Lifestyle.Singleton);
+        container.RegisterInstance<IAppDataPathProvider>(DefaultAppDataPathProvider.Instance);
         container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>(Lifestyle.Singleton);
         container.Register<IRepositoryReader, DefaultRepositoryReader>(Lifestyle.Singleton);
         container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);
@@ -214,7 +217,7 @@ public partial class App : Application
         container.RegisterInstance<IFileSystem>(fileSystem);
 
         container.Register<RepositoryExpressionEvaluator>(Lifestyle.Singleton);
-        Assembly[] repoExpressionEvaluators = new[]
+        Assembly[] repoExpressionEvaluators =
             {
                 typeof(IVariableProvider).Assembly,
                 typeof(RepositoryExpressionEvaluator).Assembly,

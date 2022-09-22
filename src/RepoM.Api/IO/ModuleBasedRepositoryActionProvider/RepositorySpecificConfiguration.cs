@@ -32,13 +32,13 @@ public class RepositoryConfigurationReader
     public RepositoryConfigurationReader(
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem,
-        JsonDynamicRepositoryActionDeserializer jsonAppsettingsDeserializer,
+        JsonDynamicRepositoryActionDeserializer jsonAppSettingsDeserializer,
         YamlDynamicRepositoryActionDeserializer yamlAppSettingsDeserializer,
         RepositoryExpressionEvaluator repoExpressionEvaluator)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _jsonAppSettingsDeserializer = jsonAppsettingsDeserializer ?? throw new ArgumentNullException(nameof(jsonAppsettingsDeserializer));
+        _jsonAppSettingsDeserializer = jsonAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(jsonAppSettingsDeserializer));
         _yamlAppSettingsDeserializer = yamlAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(yamlAppSettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
     }
@@ -57,7 +57,7 @@ public class RepositoryConfigurationReader
             }
         }
 
-        var f = path + "{" +  string.Join(",",exts)+ "}";
+        var f = path + "{" +  string.Join(",",exts) + "}";
 
         throw new ConfigurationFileNotFoundException(f);
     }
@@ -102,7 +102,7 @@ public class RepositoryConfigurationReader
             throw new InvalidConfigurationException(filename, e.Message, e);
         }
         
-        Redirect? redirect = rootFile?.Redirect;
+        Redirect? redirect = rootFile.Redirect;
         if (!string.IsNullOrWhiteSpace(redirect?.Filename))
         {
             if (IsEnabled(redirect?.Enabled, true, null))
@@ -123,11 +123,6 @@ public class RepositoryConfigurationReader
             }
         }
 
-        if (rootFile == null)
-        {
-            return (null, null, null, null);
-        }
-
         List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars)
         {
             if (vars == null)
@@ -137,12 +132,12 @@ public class RepositoryConfigurationReader
 
             return vars
                    .Where(v => IsEnabled(v.Enabled, true, repository))
-                   .Select(v => new EvaluatedVariable()
-                   {
-                       Name = v.Name,
-                       Enabled = true,
-                       Value = Evaluate(v.Value, repository),
-                   })
+                   .Select(v => new EvaluatedVariable
+                       {
+                           Name = v.Name,
+                           Enabled = true,
+                           Value = Evaluate(v.Value, repository),
+                       })
                    .ToList();
         }
 
@@ -223,7 +218,7 @@ public class RepositoryConfigurationReader
         
         List<EvaluatedVariable> list2 = EvaluateVariables(repoSpecificConfig?.Variables);
         variables.AddRange(list2);
-        using IDisposable repoSepecificVariables = RepoMVariableProviderStore.Push(list2);
+        using IDisposable repoSpecificVariables = RepoMVariableProviderStore.Push(list2);
 
         actions.Add(rootFile.ActionsCollection);
         if (repoSpecificConfig?.ActionsCollection != null)
@@ -247,14 +242,13 @@ public class RepositoryConfigurationReader
             return new CombinedTypeContainer(string.Empty);
         }
 
-        Repository[] repositories = repository == null ? Array.Empty<Repository>() : new Repository[] { repository, };
+        Repository[] repositories = repository == null ? Array.Empty<Repository>() : new[] { repository, };
         return _repoExpressionEvaluator.EvaluateValueExpression(input!, repositories);
     }
 
-
     private string EvaluateString(string? input, Repository? repository)
     {
-        var v = Evaluate(input, repository);
+        CombinedTypeContainer v = Evaluate(input, repository);
         if (v == CombinedTypeContainer.NullInstance)
         {
             return string.Empty;
@@ -320,7 +314,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
 
             return vars
                    .Where(v => IsEnabled(v.Enabled, true, repository))
-                   .Select(v => new EvaluatedVariable()
+                   .Select(v => new EvaluatedVariable
                        {
                            Name = v.Name,
                            Enabled = true,
@@ -492,7 +486,7 @@ public class RepositorySpecificConfiguration
 
         return vars
                .Where(v => IsEnabled(v.Enabled, true, repository))
-               .Select(v => new EvaluatedVariable()
+               .Select(v => new EvaluatedVariable
                    {
                        Name = v.Name,
                        Enabled = true,
