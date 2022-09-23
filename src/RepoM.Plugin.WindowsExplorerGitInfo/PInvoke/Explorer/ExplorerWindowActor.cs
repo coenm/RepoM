@@ -42,6 +42,7 @@ internal abstract class ExplorerWindowActor
                 using var window = new ComBridge(comWindow);
                 var fullName = window.GetPropertyValue<string>("FullName");
                 var executable = Path.GetFileName(fullName);
+
                 if (string.Equals(executable, "explorer.exe", StringComparison.OrdinalIgnoreCase))
                 {
                     // thanks http://docwiki.embarcadero.com/Libraries/Seattle/en/SHDocVw.IWebBrowser2_Properties

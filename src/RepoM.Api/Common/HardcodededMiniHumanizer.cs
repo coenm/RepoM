@@ -7,7 +7,9 @@ public class HardcodededMiniHumanizer : IHumanizer
     private readonly IClock _clock;
 
     public HardcodededMiniHumanizer()
-        : this(new SystemClock()) { }
+        : this(new SystemClock())
+    {
+    }
 
     public HardcodededMiniHumanizer(IClock clock)
     {

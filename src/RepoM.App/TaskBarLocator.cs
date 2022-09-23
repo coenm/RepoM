@@ -2,7 +2,7 @@ namespace RepoM.App;
 
 using System.Windows.Forms;
 
-public static class TaskbarLocator
+public static class TaskBarLocator
 {
     public enum TaskBarLocation
     {

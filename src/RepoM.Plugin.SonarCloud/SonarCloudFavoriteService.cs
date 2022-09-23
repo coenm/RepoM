@@ -18,7 +18,7 @@ internal class SonarCloudFavoriteService
 
     public SonarCloudFavoriteService(IAppSettingsService appSettingsService)
     {
-        _appSettingsService = appSettingsService;
+        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
     }
 
     public Task InitializeAsync()
@@ -28,6 +28,7 @@ internal class SonarCloudFavoriteService
         {
             return Task.CompletedTask;
         }
+
         _client = new SonarQubeClient(
             "https://sonarcloud.io",
             new BasicAuthentication(key, string.Empty));

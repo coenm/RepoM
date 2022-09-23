@@ -18,7 +18,6 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.App.Controls;
-using RepoM.Core.Plugin;
 using SourceChord.FluentWPF;
 
 /// <summary>
@@ -77,11 +76,11 @@ public partial class MainWindow : Window
         view.Filter = FilterRepositories;
         view.CustomSort = new CustomRepositoryViewSortBehavior();
 
-        AssemblyName? appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName();
+        AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);
         txtHelp.Text = GetHelp(statusCharacterMap);
 
-        PlaceFormByTaskbarLocation();
+        PlaceFormByTaskBarLocation();
     }
 
     private void View_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -135,7 +134,7 @@ public partial class MainWindow : Window
     {
         Dispatcher.Invoke(() =>
             {
-                PlaceFormByTaskbarLocation();
+                PlaceFormByTaskBarLocation();
 
                 if (!IsShown)
                 {
@@ -340,28 +339,28 @@ public partial class MainWindow : Window
             });
     }
 
-    private void PlaceFormByTaskbarLocation()
+    private void PlaceFormByTaskBarLocation()
     {
         var topY = SystemParameters.WorkArea.Top;
         var bottomY = SystemParameters.WorkArea.Height - Height;
         var leftX = SystemParameters.WorkArea.Left;
         var rightX = SystemParameters.WorkArea.Width - Width;
 
-        switch (TaskbarLocator.GetTaskBarLocation())
+        switch (TaskBarLocator.GetTaskBarLocation())
         {
-            case TaskbarLocator.TaskBarLocation.Top:
+            case TaskBarLocator.TaskBarLocation.Top:
                 Top = topY;
                 Left = rightX;
                 break;
-            case TaskbarLocator.TaskBarLocation.Bottom:
+            case TaskBarLocator.TaskBarLocation.Bottom:
                 Top = bottomY;
                 Left = rightX;
                 break;
-            case TaskbarLocator.TaskBarLocation.Left:
+            case TaskBarLocator.TaskBarLocation.Left:
                 Top = bottomY;
                 Left = leftX;
                 break;
-            case TaskbarLocator.TaskBarLocation.Right:
+            case TaskBarLocator.TaskBarLocation.Right:
                 Top = bottomY;
                 Left = rightX;
                 break;

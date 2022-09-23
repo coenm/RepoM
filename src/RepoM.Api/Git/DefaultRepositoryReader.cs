@@ -4,15 +4,18 @@ using System;
 using System.IO;
 using System.Linq;
 using LibGit2Sharp;
+using Microsoft.Extensions.Logging;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 
 public class DefaultRepositoryReader : IRepositoryReader
 {
     private readonly IRepositoryTagsFactory _resolver;
+    private readonly ILogger _logger;
 
-    public DefaultRepositoryReader(IRepositoryTagsFactory resolver)
+    public DefaultRepositoryReader(IRepositoryTagsFactory resolver, ILogger logger)
     {
-        _resolver = resolver;
+        _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public Git.Repository? ReadRepository(string path)
@@ -26,6 +29,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         var repoPath = LibGit2Sharp.Repository.Discover(path);
         if (string.IsNullOrEmpty(repoPath))
         {
+            _logger.LogWarning("Could not Discover git repo in path {path}", path);
             return null;
             // return Api.Git.Repository.Empty;
         }
@@ -35,6 +39,11 @@ public class DefaultRepositoryReader : IRepositoryReader
         {
             result.Tags = _resolver.GetTags(result).ToArray();
         }
+        else
+        {
+            _logger.LogWarning("Could not read git repo in path {path}", repoPath);
+        }
+
         return result;
     }
 
@@ -51,14 +60,14 @@ public class DefaultRepositoryReader : IRepositoryReader
             }
             catch (LockedFileException)
             {
+                _logger.LogWarning("LockedFileException {path}", repoPath);
+
                 if (currentTry >= maxRetries)
                 {
                     throw;
                 }
-                else
-                {
-                    System.Threading.Thread.Sleep(500);
-                }
+
+                System.Threading.Thread.Sleep(500);
             }
 
             currentTry++;
@@ -67,7 +76,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         return repository;
     }
 
-    private static Git.Repository? ReadRepositoryInternal(string repoPath)
+    private Git.Repository? ReadRepositoryInternal(string repoPath)
     {
         try
         {
@@ -78,7 +87,7 @@ public class DefaultRepositoryReader : IRepositoryReader
 
             HeadDetails headDetails = GetHeadDetails(repo);
 
-            var repository = new Git.Repository()
+            var repository = new Git.Repository
                 {
                     Name = workingDirectory.Name,
                     Path = workingDirectory.FullName,
@@ -114,8 +123,9 @@ public class DefaultRepositoryReader : IRepositoryReader
 
             return repository;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            _logger.LogError(e, "Could not read (LibGit2Sharp) repo in {path}.", repoPath);
             return null;
             // return Api.Git.Repository.Empty;
         }

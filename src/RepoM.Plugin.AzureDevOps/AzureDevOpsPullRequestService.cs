@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
@@ -13,23 +14,29 @@ using RepoM.Api.Git;
 internal class AzureDevOpsPullRequestService : IDisposable
 {
     private readonly IAppSettingsService _appSettingsService;
+    private readonly ILogger _logger;
     private readonly VssConnection? _connection;
     private GitHttpClient? _gitClient;
     private readonly List<PullRequest> _emptyList = new(0);
 
-    public AzureDevOpsPullRequestService(IAppSettingsService appSettingsService)
+    public AzureDevOpsPullRequestService(
+        IAppSettingsService appSettingsService,
+        ILogger logger)
     {
-        _appSettingsService = appSettingsService;
+        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         var token = _appSettingsService.AzureDevOpsPersonalAccessToken;
 
         try
         {
-            _connection = new VssConnection(new Uri(_appSettingsService.AzureDevOpsBaseUrl), new VssBasicCredential(string.Empty, token));
+            _connection = new VssConnection(
+                new Uri(_appSettingsService.AzureDevOpsBaseUrl),
+                new VssBasicCredential(string.Empty, token));
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // swallow for now;
+            _logger.LogError(e, "Could not connect to Vss. Module will not be enabled.");
         }
     }
 
@@ -43,6 +50,7 @@ internal class AzureDevOpsPullRequestService : IDisposable
         var key = _appSettingsService.AzureDevOpsPersonalAccessToken;
         if (string.IsNullOrWhiteSpace(key))
         {
+            _logger.LogInformation($"'{nameof(_appSettingsService.AzureDevOpsPersonalAccessToken)}' was null or empty. Module will not be enabled.");
             return Task.CompletedTask;
         }
 
@@ -52,7 +60,7 @@ internal class AzureDevOpsPullRequestService : IDisposable
         }
         catch (Exception e)
         {
-            throw new ApplicationException("Could not open GitClient from connection.", e);
+            _logger.LogError(e, "Could not retrieve GitHttpClient from connection.");
         }
 
         return Task.CompletedTask;
@@ -99,10 +107,12 @@ internal class AzureDevOpsPullRequestService : IDisposable
         }
         catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
         {
+            _logger.LogWarning(e, "Project does not exist (repository: {repository.Name} projectId {projectId})", repository.Name, projectId);
             throw new ApplicationException(e.Message, e);
         }
         catch (Exception e)
         {
+            _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
             throw new ApplicationException("Could retrieve repositories Check your PAT", e);
         }
 
@@ -114,13 +124,16 @@ internal class AzureDevOpsPullRequestService : IDisposable
 
         if (selectedRepos.Length == 0)
         {
+            _logger.LogWarning("No repository found for url {searchRepoUrl}", searchRepoUrl);
             throw new ApplicationException($"No repositories found for url {searchRepoUrl}");
         }
-        else if (selectedRepos.Length > 1)
+
+        if (selectedRepos.Length > 1)
         {
+            _logger.LogWarning("Multiple repositories found for url {searchRepoUrl}", searchRepoUrl);
             throw new ApplicationException($"Multiple repositories found for url {searchRepoUrl}");
         }
-        else
+
         {
             GitRepository repo = selectedRepos.Single();
             List<GitPullRequest> prs = await GetPullRequests(_gitClient, repo.Id);
@@ -137,7 +150,7 @@ internal class AzureDevOpsPullRequestService : IDisposable
     {
         return gitClient.GetPullRequestsAsync(
             repoId,
-            new GitPullRequestSearchCriteria()
+            new GitPullRequestSearchCriteria
                 {
                     Status = PullRequestStatus.Active,
                 });

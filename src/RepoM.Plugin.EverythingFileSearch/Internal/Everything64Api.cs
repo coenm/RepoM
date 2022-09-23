@@ -63,14 +63,14 @@ internal static class Everything64Api
                     return Enumerable.Empty<string>();
                 }
 
-                var buf = new StringBuilder(BUFFER_SIZE);
+                var buffer = new StringBuilder(BUFFER_SIZE);
                 var result = new List<string>((int)nrResults);
 
                 for (uint i = 0; i < nrResults; i++)
                 {
-                    buf.Clear();
-                    Everything_GetResultFullPathName(i, buf, BUFFER_SIZE);
-                    result.Add(buf.ToString());
+                    buffer.Clear();
+                    Everything_GetResultFullPathName(i, buffer, BUFFER_SIZE);
+                    result.Add(buffer.ToString());
                 }
 
                 return result;

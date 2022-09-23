@@ -29,6 +29,11 @@ using RepoM.App.i18n;
 using RepoM.Core.Plugin;
 using RepoM.Ipc;
 using SimpleInjector;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Core;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -66,8 +71,16 @@ public partial class App : Application
 
         _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
 
-        RegisterServices(_container);
+        var fileSystem = new FileSystem();
+
+        IConfiguration config = SetupConfiguration(fileSystem);
+        ILoggerFactory loggerFactory = CreateLoggerFactory(config);
+        ILogger logger = loggerFactory.CreateLogger(nameof(App));
+        logger.LogInformation("Started");
+        RegisterLogging(loggerFactory);
+        RegisterServices(_container, fileSystem);
         UseRepositoryMonitor(_container);
+
         _container.Verify(VerificationOption.VerifyAndDiagnose);
 
         _updateTimer = new Timer(async _ => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
@@ -128,7 +141,53 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    private static void RegisterServices(Container container)
+    private static IConfiguration SetupConfiguration(IFileSystem fileSystem)
+    {
+        const string FILENAME = "appsettings.serilog.json";
+        var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.GetAppDataPath(), FILENAME);
+        if (!fileSystem.File.Exists(fullFilename))
+        {
+            fullFilename = FILENAME;
+        }
+
+        IConfigurationBuilder builder = new ConfigurationBuilder()
+                                        .SetBasePath(Directory.GetCurrentDirectory())
+                                        .AddJsonFile(fullFilename, optional: true, reloadOnChange: false)
+                                        .AddEnvironmentVariables();
+        return builder.Build();
+    }
+
+    private static ILoggerFactory CreateLoggerFactory(IConfiguration config)
+    {
+        ILoggerFactory loggerFactory = new LoggerFactory();
+
+        LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
+            .ReadFrom.Configuration(config);
+
+        Logger logger = loggerConfiguration.CreateLogger();
+
+        _ = loggerFactory.AddSerilog(logger);
+
+        return loggerFactory;
+    }
+
+    private static void RegisterLogging(ILoggerFactory loggerFactory)
+    {
+        // https://stackoverflow.com/questions/41243485/simple-injector-register-iloggert-by-using-iloggerfactory-createloggert
+
+        _container.RegisterInstance<ILoggerFactory>(loggerFactory);
+        _container.RegisterSingleton(typeof(ILogger<>), typeof(Logger<>));
+
+        _container.RegisterConditional(
+            typeof(ILogger),
+            c => c.Consumer == null
+                ? typeof(Logger<object>)
+                : typeof(Logger<>).MakeGenericType(c.Consumer.ImplementationType),
+            Lifestyle.Singleton,
+            _ => true);
+    }
+
+    private static void RegisterServices(Container container, IFileSystem fileSystem)
     {
         container.Register<IRepositorySource, RepositorySource>(Lifestyle.Singleton);
 
@@ -140,7 +199,7 @@ public partial class App : Application
         container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>(Lifestyle.Singleton);
         container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>(Lifestyle.Singleton);
         container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>(Lifestyle.Singleton);
-        container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>(Lifestyle.Singleton);
+        container.RegisterInstance<IAppDataPathProvider>(DefaultAppDataPathProvider.Instance);
         container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>(Lifestyle.Singleton);
         container.Register<IRepositoryReader, DefaultRepositoryReader>(Lifestyle.Singleton);
         container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);
@@ -158,11 +217,10 @@ public partial class App : Application
         container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
         container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
-        var fileSystem = new FileSystem();
         container.RegisterInstance<IFileSystem>(fileSystem);
 
         container.Register<RepositoryExpressionEvaluator>(Lifestyle.Singleton);
-        Assembly[] repoExpressionEvaluators = new[]
+        Assembly[] repoExpressionEvaluators =
             {
                 typeof(IVariableProvider).Assembly,
                 typeof(RepositoryExpressionEvaluator).Assembly,
@@ -179,15 +237,15 @@ public partial class App : Application
         container.Collection.Append<IVariableProvider, BackslashVariableProvider>(Lifestyle.Singleton);
 
         container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);
-        container.RegisterInstance(new DateTimeVariableProviderOptions()
+        container.RegisterInstance(new DateTimeVariableProviderOptions
             {
                 DateTimeProvider = () => DateTime.Now,
             });
-        container.RegisterInstance(new DateTimeNowVariableProviderOptions()
+        container.RegisterInstance(new DateTimeNowVariableProviderOptions
             {
                 DateTimeProvider = () => DateTime.Now,
             });
-        container.RegisterInstance(new DateTimeDateVariableProviderOptions()
+        container.RegisterInstance(new DateTimeDateVariableProviderOptions
             {
                 DateTimeProvider = () => DateTime.Now,
             });
@@ -201,12 +259,10 @@ public partial class App : Application
         container.Collection.Register<IActionToRepositoryActionMapper>(
             new[] { typeof(IActionToRepositoryActionMapper).Assembly, },
             Lifestyle.Singleton);
-
-
+        
         container.Register<JsonDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
         container.Register<YamlDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
         container.Register<RepositorySpecificConfiguration>(Lifestyle.Singleton);
-
 
         IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
         IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));

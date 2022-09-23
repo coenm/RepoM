@@ -4,15 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
-using RepoM.Api.Common;
 
 public abstract class FileRepositoryStore : IRepositoryStore
 {
-    private protected readonly IFileSystem FileSystem;
+    private readonly IFileSystem _fileSystem;
 
     protected FileRepositoryStore(IFileSystem fileSystem)
     {
-        FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 
     public abstract string GetFileName();
@@ -24,11 +23,11 @@ public abstract class FileRepositoryStore : IRepositoryStore
             return Array.Empty<string>();
         }
 
-        if (FileSystem.File.Exists(file))
+        if (_fileSystem.File.Exists(file))
         {
             try
             {
-                return FileSystem.File.ReadAllLines(file);
+                return _fileSystem.File.ReadAllLines(file);
             }
             catch (Exception)
             {
@@ -53,16 +52,16 @@ public abstract class FileRepositoryStore : IRepositoryStore
         }
 
         var file = GetFileName();
-        var path = FileSystem.Directory.GetParent(file).FullName;
+        var path = _fileSystem.Directory.GetParent(file).FullName;
 
-        if (!FileSystem.Directory.Exists(path))
+        if (!_fileSystem.Directory.Exists(path))
         {
-            FileSystem.Directory.CreateDirectory(path);
+            _fileSystem.Directory.CreateDirectory(path);
         }
 
         try
         {
-            FileSystem.File.WriteAllLines(GetFileName(), paths.ToArray());
+            _fileSystem.File.WriteAllLines(GetFileName(), paths.ToArray());
         }
         catch (Exception)
         {
@@ -70,5 +69,6 @@ public abstract class FileRepositoryStore : IRepositoryStore
         }
     }
 
+    // todo remove
     public bool UseFilePersistence { get; set; } = true;
 }
