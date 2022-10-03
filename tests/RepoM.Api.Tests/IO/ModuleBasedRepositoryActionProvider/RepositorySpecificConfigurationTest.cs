@@ -18,6 +18,7 @@ using ExpressionStringEvaluator.VariableProviders;
 using ExpressionStringEvaluator.VariableProviders.DateTime;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
@@ -145,7 +146,8 @@ public class RepositorySpecificConfigurationTest
                 _fileSystem,
                 _jsonAppsettingsDeserializer,
                 _yamlAppsettingsDeserializer,
-                _repositoryExpressionEvaluator));
+                _repositoryExpressionEvaluator,
+                NullLogger.Instance));
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository(), new Repository());
@@ -171,7 +173,8 @@ public class RepositorySpecificConfigurationTest
                 _fileSystem,
                 _jsonAppsettingsDeserializer,
                 _yamlAppsettingsDeserializer,
-                _repositoryExpressionEvaluator));
+                _repositoryExpressionEvaluator,
+                NullLogger.Instance));
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository());
@@ -197,7 +200,8 @@ public class RepositorySpecificConfigurationTest
                 _fileSystem,
                 _jsonAppsettingsDeserializer,
                 _yamlAppsettingsDeserializer,
-                _repositoryExpressionEvaluator));
+                _repositoryExpressionEvaluator,
+                NullLogger.Instance));
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository());
@@ -223,7 +227,8 @@ public class RepositorySpecificConfigurationTest
                 _fileSystem,
                 _jsonAppsettingsDeserializer,
                 _yamlAppsettingsDeserializer,
-                _repositoryExpressionEvaluator));
+                _repositoryExpressionEvaluator,
+                NullLogger.Instance));
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository());

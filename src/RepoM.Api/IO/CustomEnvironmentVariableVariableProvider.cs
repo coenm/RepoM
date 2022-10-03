@@ -29,20 +29,20 @@ public static class EnvironmentVariableStore
     {
         return _envVars.Value ?? new Dictionary<string, string>(0);
     }
-}
 
-public class ExecuteOnDisposed : IDisposable
-{
-    private readonly Func<Dictionary<string, string>>? _func;
-
-    public ExecuteOnDisposed(Func<Dictionary<string, string>>? func)
+    private sealed class ExecuteOnDisposed : IDisposable
     {
-        _func = func;
-    }
+        private readonly Func<Dictionary<string, string>>? _func;
 
-    public void Dispose()
-    {
-        _func?.Invoke();
+        public ExecuteOnDisposed(Func<Dictionary<string, string>>? func)
+        {
+            _func = func;
+        }
+
+        public void Dispose()
+        {
+            _func?.Invoke();
+        }
     }
 }
 

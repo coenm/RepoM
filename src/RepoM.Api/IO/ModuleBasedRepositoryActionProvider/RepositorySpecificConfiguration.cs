@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using DotNetEnv;
 using ExpressionStringEvaluator.Methods;
+using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
@@ -25,6 +26,7 @@ public class RepositoryConfigurationReader
     private readonly JsonDynamicRepositoryActionDeserializer _jsonAppSettingsDeserializer;
     private readonly YamlDynamicRepositoryActionDeserializer _yamlAppSettingsDeserializer;
     private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
+    private readonly ILogger _logger;
 
     private const string FILENAME = "RepositoryActions.";
     public const string FILENAME_JSON = FILENAME + "json";
@@ -34,13 +36,15 @@ public class RepositoryConfigurationReader
         IFileSystem fileSystem,
         JsonDynamicRepositoryActionDeserializer jsonAppSettingsDeserializer,
         YamlDynamicRepositoryActionDeserializer yamlAppSettingsDeserializer,
-        RepositoryExpressionEvaluator repoExpressionEvaluator)
+        RepositoryExpressionEvaluator repoExpressionEvaluator,
+        ILogger logger)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _jsonAppSettingsDeserializer = jsonAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(jsonAppSettingsDeserializer));
         _yamlAppSettingsDeserializer = yamlAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(yamlAppSettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     private string GetRepositoryActionsFilename(string basePath)
@@ -116,6 +120,7 @@ public class RepositoryConfigurationReader
                     }
                     catch (Exception e)
                     {
+                        _logger.LogWarning(e, "Could not read and deserialize file '{file}'", filename);
                         throw new InvalidConfigurationException(filename, e.Message, e);
                     }
                 }
@@ -149,11 +154,6 @@ public class RepositoryConfigurationReader
             // load repo specific environment variables
             foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles.Where(fileRef => fileRef != null))
             {
-                if (envVars != null)
-                {
-                    continue;
-                }
-
                 if (!IsEnabled(fileRef.When, true, repository))
                 {
                     continue;
@@ -168,11 +168,28 @@ public class RepositoryConfigurationReader
 
                 try
                 {
-                    envVars = DotNetEnv.Env.Load(f, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
+                    IEnumerable<KeyValuePair<string, string>>? currentEnvVars = Env.Load(f, new LoadOptions(setEnvVars: false));
+                    if (envVars == null || !envVars.Any())
+                    {
+                        envVars = currentEnvVars.ToDictionary();
+                        continue;
+                    }
+
+                    foreach (KeyValuePair<string, string> item in currentEnvVars)
+                    {
+                        if (!envVars.ContainsKey(item.Key))
+                        {
+                            envVars.Add(item.Key, item.Value);
+                        }
+                        else
+                        {
+                            _logger.LogTrace("Environment key was '{Key}' already set.", item.Key);
+                        }
+                    }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // log warning
+                    _logger.LogWarning(e, "Something went wrong loading an environment file");
                 }
             }
         }
