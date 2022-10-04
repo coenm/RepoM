@@ -41,21 +41,21 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         return Map(action as RepositoryActionAzureDevOpsPullRequestsV1, repository.First());
     }
 
-    private RepoM.Api.Git.RepositoryAction[] Map(RepositoryActionAzureDevOpsPullRequestsV1? action, Repository repository)
+    private Api.Git.RepositoryAction[] Map(RepositoryActionAzureDevOpsPullRequestsV1? action, Repository repository)
     {
         if (action == null)
         {
-            return Array.Empty<RepoM.Api.Git.RepositoryAction>();
+            return Array.Empty<Api.Git.RepositoryAction>();
         }
 
         if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
         {
-            return Array.Empty<RepoM.Api.Git.RepositoryAction>();
+            return Array.Empty<Api.Git.RepositoryAction>();
         }
 
         if (string.IsNullOrWhiteSpace(action.ProjectId))
         {
-            return Array.Empty<RepoM.Api.Git.RepositoryAction>();
+            return Array.Empty<Api.Git.RepositoryAction>();
         }
 
         var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
@@ -64,6 +64,11 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         if (action.ProjectId != null)
         {
             projectId = _expressionEvaluator.EvaluateStringExpression(action.ProjectId!, repository);
+        }
+
+        if (string.IsNullOrWhiteSpace(projectId))
+        {
+            return Array.Empty<Api.Git.RepositoryAction>();
         }
 
         string? repoId = null;
@@ -90,7 +95,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         if (pullRequests.Any())
         {
             var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
-            results.AddRange(pullRequests.Select(pr => new RepoM.Api.Git.RepositoryAction(pr.Name)
+            results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name)
                 {
                     Action = (_, _) => ProcessHelper.StartProcess(pr.Url, string.Empty),
                 }));
