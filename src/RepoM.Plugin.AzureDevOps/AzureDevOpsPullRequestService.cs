@@ -21,9 +21,11 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
     private GitHttpClient? _gitClient;
     private readonly List<PullRequest> _emptyList = new(0);
 
-    private Timer? _updateTimer;
+    private Timer? _updateTimer1;
+    private Timer? _updateTimer2;
     private readonly ConcurrentDictionary<string, Guid> _repositoryDirectoryDevOpsRepoIdMapping = new();
-    private readonly ConcurrentDictionary<string, PullRequest[]> _projectIds = new();
+    private readonly ConcurrentDictionary<string, PullRequest[]> _pullRequestsPerProject = new();
+    private readonly ConcurrentDictionary<string, GitRepository[]> _gitRepositoriesPerProject = new();
 
     public AzureDevOpsPullRequestService(
         IAppSettingsService appSettingsService,
@@ -70,7 +72,8 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
             _logger.LogError(e, "Could not retrieve GitHttpClient from connection.");
         }
 
-        _updateTimer = new Timer(async _ => await UpdatePullRequests(_gitClient!), null, TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(10));
+        _updateTimer1 = new Timer(async _ => await UpdatePullRequests(_gitClient!), null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(4));
+        _updateTimer2 = new Timer(async _ => await UpdateProjects(_gitClient!), null, TimeSpan.FromSeconds(7), TimeSpan.FromMinutes(10));
 
         return Task.CompletedTask;
     }
@@ -82,47 +85,112 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
             return;
         }
 
-        if (_projectIds.ContainsKey(projectId))
+        if (!_gitRepositoriesPerProject.ContainsKey(projectId))
         {
-            return;
+            _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, gitRepositories) => gitRepositories);
+            _ = UpdateProjects(_gitClient!);
         }
 
-        _projectIds.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, prs) => prs);
+        if (!_pullRequestsPerProject.ContainsKey(projectId))
+        {
+            _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, prs) => prs);
+            _ = UpdatePullRequests(_gitClient!);
+        }
     }
 
-    private async Task UpdatePullRequests(GitHttpClient gitClient)
+    private async Task UpdateProjects(GitHttpClient gitClient)
     {
-        var projectIds = _projectIds.Keys.ToArray();
+        var projectIds = _gitRepositoriesPerProject.Keys.ToArray();
+
+        if (projectIds.Length == 0)
+        {
+            _logger.LogWarning("No projects for grabbing repositories.");
+        }
 
         foreach (var projectId in projectIds)
         {
             try
             {
+                List<GitRepository>? repositories = null;
+                try
+                {
+                    _logger.LogInformation("Grabbing repositories for project {projectId}.", projectId);
+                    repositories = await gitClient.GetRepositoriesAsync(projectId, includeLinks: true, includeAllUrls: true, includeHidden: true);
+                }
+                catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
+                {
+                    _logger.LogWarning(e, "Project does not exist (projectId {projectId})", projectId);
+                    //throw new ApplicationException(e.Message, e);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
+                    //throw new ApplicationException("Could retrieve repositories Check your PAT", e);
+                }
+                
+                if (repositories == null || repositories.Count == 0)
+                {
+                    _logger.LogInformation("No repositories found for project {projectId}.", projectId);
+                    _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, _) => Array.Empty<GitRepository>());
+                    continue;
+                }
+
+                _logger.LogInformation("Updating repositories {count}", projectId.Length);
+                _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => repositories.ToArray(), (_, _) => repositories.ToArray());
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not fetch repositories for project {project}. {message}", projectId, e.Message);
+                _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, _) => Array.Empty<GitRepository>());
+            }
+        }
+    }
+
+    private async Task UpdatePullRequests(GitHttpClient gitClient)
+    {
+        var projectIds = _pullRequestsPerProject.Keys.ToArray();
+
+        if (projectIds.Length == 0)
+        {
+            _logger.LogWarning("No projects for grabbing PRs.");
+        }
+
+        foreach (var projectId in projectIds)
+        {
+            try
+            {
+                _logger.LogInformation("Grabbing PRs for project {projectId}.", projectId);
+
                 List<GitPullRequest> result = await gitClient.GetPullRequestsByProjectAsync(
                     projectId,
                     new GitPullRequestSearchCriteria
                         {
                             Status = PullRequestStatus.Active,
+                            IncludeLinks = true,
                         });
 
                 if (!result.Any())
                 {
-                    _projectIds.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
+                    _logger.LogInformation("No PRs found for project {projectId}.", projectId);
+                    _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
                     continue;
                 }
 
+                _gitRepositoriesPerProject.TryGetValue(projectId, out GitRepository[]? repos);
+                
                 PullRequest[] pullRequests = result
                                              .Select(pr => new PullRequest(
                                                  pr.Repository.Id,
                                                  pr.Title,
-                                                 CreatePullRequestUrl(pr.Repository, pr)))
-                                             .ToArray() ;
-                _projectIds.AddOrUpdate(projectId, _ => pullRequests, (_, _) => pullRequests);
+                                                 CreatePullRequestUrl(repos?.SingleOrDefault(r => r.Id == pr.Repository.Id) ?? pr.Repository, pr)))
+                                             .ToArray();
+                _logger.LogInformation("Updating PRs {Count}", pullRequests.Length);
+                _pullRequestsPerProject.AddOrUpdate(projectId, _ => pullRequests, (_, _) => pullRequests);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not fetch pull requests for project {project}. {message}", projectId, e.Message);
-                _projectIds.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
+                _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
             }
         }
     }
@@ -130,6 +198,11 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
     public List<PullRequest> GetPullRequests(Repository repository, string projectId, string? repoId)
     {
         RegisterProjectId(projectId);
+        if (_gitRepositoriesPerProject.Count == 0)
+        {
+            _ = UpdateProjects(_gitClient!);
+        }
+
         return Task.Run(() => GetPullRequestsTask(repository, projectId, repoId)).GetAwaiter().GetResult();
     }
 
@@ -210,7 +283,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
             return _emptyList;
         }
 
-        if (_projectIds.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Any())
+        if (_pullRequestsPerProject.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Any())
         {
             _logger.LogTrace("Returning pull requests from cache where repo id was given.");
             return projectPrs.Where(x => x.RepoId.Equals(repoIdGuid)).ToList();
@@ -233,7 +306,8 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
 
     public void Dispose()
     {
-        _updateTimer?.Dispose();
+        _updateTimer1?.Dispose();
+        _updateTimer2?.Dispose();
         _gitClient?.Dispose();
         _connection?.Dispose();
     }

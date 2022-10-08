@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
@@ -18,12 +19,18 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
     private readonly AzureDevOpsPullRequestService _service;
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
+    private readonly ILogger _logger;
 
-    public ActionAzureDevOpsPullRequestsV1Mapper(AzureDevOpsPullRequestService service, RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
+    public ActionAzureDevOpsPullRequestsV1Mapper(
+        AzureDevOpsPullRequestService service,
+        RepositoryExpressionEvaluator expressionEvaluator,
+        ITranslationService translationService,
+        ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
@@ -97,7 +104,11 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
             var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
             results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name)
                 {
-                    Action = (_, _) => ProcessHelper.StartProcess(pr.Url, string.Empty),
+                    Action = (_, _) =>
+                        {
+                            _logger.LogInformation("PullRequest {Url}", pr.Url);
+                            ProcessHelper.StartProcess(pr.Url, string.Empty);
+                        },
                 }));
 
             return results.ToArray();
