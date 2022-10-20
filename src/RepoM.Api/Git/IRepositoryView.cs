@@ -8,7 +8,7 @@ public interface IRepositoryView
 
     string Path { get; }
 
-    string[] ReadAllBranches();
+    bool IsPinned { get; }
 
     bool HasUnpushedChanges { get; }
 }

@@ -23,7 +23,7 @@ using SourceChord.FluentWPF;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow
 {
     private readonly IRepositoryActionProvider _repositoryActionProvider;
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
@@ -556,6 +556,11 @@ public partial class MainWindow : Window
             return false;
         }
 
+        if (item is not RepositoryView viewModelItem)
+        {
+            return false;
+        }
+
         if (string.IsNullOrWhiteSpace(query))
         {
             return true;
@@ -563,6 +568,24 @@ public partial class MainWindow : Window
 
         query = query.Trim();
 
+
+        if (string.Equals("is:pinned", query, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return viewModelItem.IsPinned;
+        }
+
+        if (string.Equals("is:unpinned", query, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return !viewModelItem.IsPinned;
+        }
+
+        // always show pinned.
+        if (viewModelItem.IsPinned)
+        {
+            // pinned should always be visible
+            return true;
+        }
+        
         if (query.StartsWith("!"))
         {
             var sanitizedQuery = query[1..];
@@ -572,12 +595,10 @@ public partial class MainWindow : Window
             }
 
             var results = _repositorySearch.Search(sanitizedQuery).ToArray();
-            return results.Contains((item as RepositoryView)?.Path);
+            return results.Contains(viewModelItem.Path);
         }
-        else
-        {
-            return !_refreshDelayed && ((item as RepositoryView)?.MatchesFilter(txtFilter.Text) ?? false);
-        }
+
+        return !_refreshDelayed && viewModelItem.MatchesFilter(txtFilter.Text);
     }
 
     private void TxtFilter_Finish(object sender, EventArgs e)

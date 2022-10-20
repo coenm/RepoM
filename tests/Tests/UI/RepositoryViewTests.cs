@@ -1,6 +1,7 @@
 namespace Tests.UI;
 
 using System;
+using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
 using RepoM.Api.Git;
@@ -16,7 +17,7 @@ public class RepositoryViewTests
     public void Setup()
     {
         _repo = new RepositoryBuilder().BuildFullFeatured();
-        _view = new RepositoryView(_repo);
+        _view = new RepositoryView(_repo, A.Dummy<IRepositoryMonitor>());
         _statusCharacterMap = new StatusCharacterMap();
     }
 
@@ -25,7 +26,7 @@ public class RepositoryViewTests
         [Test]
         public void Throws_If_Null_Is_Passed_As_Argument()
         {
-            Action act = () => _ = new RepositoryView(null!);
+            Action act = () => _ = new RepositoryView(null!, A.Dummy<IRepositoryMonitor>());
             act.Should().Throw<ArgumentNullException>();
         }
     }
@@ -324,7 +325,7 @@ public class RepositoryViewTests
         {
             _repo = new Repository();
             _repo.HasUnpushedChanges.Should().Be(false);
-            new RepositoryView(_repo).MatchesFilter("todo").Should().Be(false);
+            new RepositoryView(_repo, A.Dummy<IRepositoryMonitor>()).MatchesFilter("todo").Should().Be(false);
         }
     }
 

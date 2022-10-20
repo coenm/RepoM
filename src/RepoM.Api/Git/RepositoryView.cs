@@ -8,6 +8,7 @@ using System.Linq;
 [DebuggerDisplay("{Name} @{Path}")]
 public class RepositoryView : IRepositoryView, INotifyPropertyChanged
 {
+    private readonly IRepositoryMonitor _monitor;
     private string? _cachedRepositoryStatusCode;
     private string? _cachedRepositoryStatus;
     private string? _cachedRepositoryStatusWithBranch;
@@ -15,8 +16,9 @@ public class RepositoryView : IRepositoryView, INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public RepositoryView(Repository repository)
+    public RepositoryView(Repository repository, IRepositoryMonitor monitor)
     {
+        _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         UpdateStampUtc = DateTime.UtcNow;
     }
@@ -28,7 +30,7 @@ public class RepositoryView : IRepositoryView, INotifyPropertyChanged
             return other.Repository.Equals(Repository);
         }
 
-        return object.ReferenceEquals(this, obj);
+        return ReferenceEquals(this, obj);
     }
 
     private void EnsureStatusCache()
@@ -50,6 +52,8 @@ public class RepositoryView : IRepositoryView, INotifyPropertyChanged
         _cachedRepositoryStatusCode = repositoryStatusCode;
     }
 
+    public bool IsPinned => _monitor.IsPinned(Repository);
+
     public string Name => (Repository.Name ?? string.Empty) + (IsSynchronizing ? SyncAppendix : string.Empty);
 
     public string Path => Repository.Path ?? string.Empty;
@@ -57,11 +61,6 @@ public class RepositoryView : IRepositoryView, INotifyPropertyChanged
     public string Location => Repository.Location ?? string.Empty;
 
     public string CurrentBranch => Repository.CurrentBranch ?? string.Empty;
-
-    public string[] ReadAllBranches()
-    {
-        return Repository.ReadAllBranches() ?? Array.Empty<string>();
-    }
 
     public string AheadBy => Repository.AheadBy?.ToString() ?? string.Empty;
 

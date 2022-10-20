@@ -17,7 +17,7 @@ public class RepositoryExpressionEvaluator
         List<IVariableProvider> v = variableProviders?.ToList() ?? throw new ArgumentNullException(nameof(variableProviders));
         List<IMethod> m = methods?.ToList() ?? throw new ArgumentNullException(nameof(methods));
 
-        _expressionExecutor = new ExpressionStringEvaluator.Parser.ExpressionExecutor(v, m);
+        _expressionExecutor = new ExpressionExecutor(v, m);
     }
 
     public string EvaluateStringExpression(string value, params Repository[] repository)
@@ -76,7 +76,7 @@ public class RepositoryExpressionEvaluator
 
         try
         {
-            Repository[] repositories = (repository == null) ? Array.Empty<Repository>() : new Repository[1] { repository };
+            Repository[] repositories = (repository == null) ? Array.Empty<Repository>() : new[] { repository, };
 
             CombinedTypeContainer result = _expressionExecutor.Execute<RepositoryContext>(new RepositoryContext(repositories), value!);
             if (result.IsBool(out var b))

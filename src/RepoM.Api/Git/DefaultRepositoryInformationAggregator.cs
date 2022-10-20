@@ -18,11 +18,11 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
 
     public ObservableCollection<RepositoryView> Repositories { get; }
 
-    public void Add(Repository repository)
+    public void Add(Repository repository, IRepositoryMonitor repositoryMonitor)
     {
         _dispatcher.Invoke(() =>
             {
-                var view = new RepositoryView(repository);
+                var view = new RepositoryView(repository, repositoryMonitor);
 
                 Repositories.Remove(view);
                 Repositories.Add(view);

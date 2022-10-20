@@ -2,15 +2,15 @@ namespace RepoM.Api.Git;
 
 public class StatusCharacterMap
 {
-    public virtual string IdenticalSign => "\u2261";
+    public string IdenticalSign => "\u2261";
 
-    public virtual string NoUpstreamSign => "\u2302";
+    public string NoUpstreamSign => "\u2302";
 
-    public virtual string ArrowUpSign => "\u2191";
+    public string ArrowUpSign => "\u2191";
 
-    public virtual string ArrowDownSign => "\u2193";
+    public string ArrowDownSign => "\u2193";
 
-    public virtual string EllipsesSign => "\u2026";
+    public string EllipsesSign => "\u2026";
 
-    public virtual string StashSign => "\u205E";
+    public string StashSign => "\u205E";
 }

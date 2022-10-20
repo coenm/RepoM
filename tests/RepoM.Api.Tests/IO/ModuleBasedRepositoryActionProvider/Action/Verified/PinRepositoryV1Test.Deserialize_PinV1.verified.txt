@@ -1,0 +1,26 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionPinRepositoryV1,
+        Type: pin-repository@1
+      },
+      {
+        $type: RepositoryActionPinRepositoryV1,
+        Mode: Toggle,
+        Type: pin-repository@1
+      },
+      {
+        $type: RepositoryActionPinRepositoryV1,
+        Mode: Pin,
+        Type: pin-repository@1
+      },
+      {
+        $type: RepositoryActionPinRepositoryV1,
+        Mode: UnPin,
+        Type: pin-repository@1
+      }
+    ]
+  }
+}

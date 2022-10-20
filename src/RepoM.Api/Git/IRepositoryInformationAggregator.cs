@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 public interface IRepositoryInformationAggregator
 {
-    void Add(Repository repository);
+    void Add(Repository repository, IRepositoryMonitor repositoryMonitor);
 
     void RemoveByPath(string path);
 
