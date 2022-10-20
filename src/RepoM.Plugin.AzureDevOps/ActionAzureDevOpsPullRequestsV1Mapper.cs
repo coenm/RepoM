@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
@@ -18,12 +19,18 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
     private readonly AzureDevOpsPullRequestService _service;
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
+    private readonly ILogger _logger;
 
-    public ActionAzureDevOpsPullRequestsV1Mapper(AzureDevOpsPullRequestService service, RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
+    public ActionAzureDevOpsPullRequestsV1Mapper(
+        AzureDevOpsPullRequestService service,
+        RepositoryExpressionEvaluator expressionEvaluator,
+        ITranslationService translationService,
+        ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
@@ -41,21 +48,21 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         return Map(action as RepositoryActionAzureDevOpsPullRequestsV1, repository.First());
     }
 
-    private RepoM.Api.Git.RepositoryAction[] Map(RepositoryActionAzureDevOpsPullRequestsV1? action, Repository repository)
+    private Api.Git.RepositoryAction[] Map(RepositoryActionAzureDevOpsPullRequestsV1? action, Repository repository)
     {
         if (action == null)
         {
-            return Array.Empty<RepoM.Api.Git.RepositoryAction>();
+            return Array.Empty<Api.Git.RepositoryAction>();
         }
 
         if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
         {
-            return Array.Empty<RepoM.Api.Git.RepositoryAction>();
+            return Array.Empty<Api.Git.RepositoryAction>();
         }
 
         if (string.IsNullOrWhiteSpace(action.ProjectId))
         {
-            return Array.Empty<RepoM.Api.Git.RepositoryAction>();
+            return Array.Empty<Api.Git.RepositoryAction>();
         }
 
         var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
@@ -64,6 +71,11 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         if (action.ProjectId != null)
         {
             projectId = _expressionEvaluator.EvaluateStringExpression(action.ProjectId!, repository);
+        }
+
+        if (string.IsNullOrWhiteSpace(projectId))
+        {
+            return Array.Empty<Api.Git.RepositoryAction>();
         }
 
         string? repoId = null;
@@ -90,9 +102,13 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         if (pullRequests.Any())
         {
             var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
-            results.AddRange(pullRequests.Select(pr => new RepoM.Api.Git.RepositoryAction(pr.Name)
+            results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name)
                 {
-                    Action = (_, _) => ProcessHelper.StartProcess(pr.Url, string.Empty),
+                    Action = (_, _) =>
+                        {
+                            _logger.LogInformation("PullRequest {Url}", pr.Url);
+                            ProcessHelper.StartProcess(pr.Url, string.Empty);
+                        },
                 }));
 
             return results.ToArray();

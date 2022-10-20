@@ -1,8 +1,10 @@
 namespace RepoM.Plugin.AzureDevOps;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
@@ -11,13 +13,19 @@ using Microsoft.VisualStudio.Services.WebApi;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 
-internal class AzureDevOpsPullRequestService : IDisposable
+internal sealed class AzureDevOpsPullRequestService : IDisposable
 {
     private readonly IAppSettingsService _appSettingsService;
     private readonly ILogger _logger;
     private readonly VssConnection? _connection;
     private GitHttpClient? _gitClient;
     private readonly List<PullRequest> _emptyList = new(0);
+
+    private Timer? _updateTimer1;
+    private Timer? _updateTimer2;
+    private readonly ConcurrentDictionary<string, Guid> _repositoryDirectoryDevOpsRepoIdMapping = new();
+    private readonly ConcurrentDictionary<string, PullRequest[]> _pullRequestsPerProject = new();
+    private readonly ConcurrentDictionary<string, GitRepository[]> _gitRepositoriesPerProject = new();
 
     public AzureDevOpsPullRequestService(
         IAppSettingsService appSettingsService,
@@ -44,6 +52,7 @@ internal class AzureDevOpsPullRequestService : IDisposable
     {
         if (_connection == null)
         {
+            _logger.LogWarning("No connection was established to Vss. No need to initialize.");
             return Task.CompletedTask;
         }
 
@@ -63,101 +72,242 @@ internal class AzureDevOpsPullRequestService : IDisposable
             _logger.LogError(e, "Could not retrieve GitHttpClient from connection.");
         }
 
+        _updateTimer1 = new Timer(async _ => await UpdatePullRequests(_gitClient!), null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(4));
+        _updateTimer2 = new Timer(async _ => await UpdateProjects(_gitClient!), null, TimeSpan.FromSeconds(7), TimeSpan.FromMinutes(10));
+
         return Task.CompletedTask;
     }
 
-    public List<PullRequest> GetPullRequests(Repository repository, string? projectId, string? repoId)
+    private void RegisterProjectId(string? projectId)
     {
+        if (string.IsNullOrWhiteSpace(projectId))
+        {
+            return;
+        }
+
+        if (!_gitRepositoriesPerProject.ContainsKey(projectId))
+        {
+            _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, gitRepositories) => gitRepositories);
+            _ = UpdateProjects(_gitClient!);
+        }
+
+        if (!_pullRequestsPerProject.ContainsKey(projectId))
+        {
+            _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, prs) => prs);
+            _ = UpdatePullRequests(_gitClient!);
+        }
+    }
+
+    private async Task UpdateProjects(GitHttpClient gitClient)
+    {
+        var projectIds = _gitRepositoriesPerProject.Keys.ToArray();
+
+        if (projectIds.Length == 0)
+        {
+            _logger.LogWarning("No projects for grabbing repositories.");
+        }
+
+        foreach (var projectId in projectIds)
+        {
+            try
+            {
+                List<GitRepository>? repositories = null;
+                try
+                {
+                    _logger.LogInformation("Grabbing repositories for project {projectId}.", projectId);
+                    repositories = await gitClient.GetRepositoriesAsync(projectId, includeLinks: true, includeAllUrls: true, includeHidden: true);
+                }
+                catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
+                {
+                    _logger.LogWarning(e, "Project does not exist (projectId {projectId})", projectId);
+                    //throw new ApplicationException(e.Message, e);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
+                    //throw new ApplicationException("Could retrieve repositories Check your PAT", e);
+                }
+                
+                if (repositories == null || repositories.Count == 0)
+                {
+                    _logger.LogInformation("No repositories found for project {projectId}.", projectId);
+                    _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, _) => Array.Empty<GitRepository>());
+                    continue;
+                }
+
+                _logger.LogInformation("Updating repositories {count}", projectId.Length);
+                _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => repositories.ToArray(), (_, _) => repositories.ToArray());
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not fetch repositories for project {project}. {message}", projectId, e.Message);
+                _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, _) => Array.Empty<GitRepository>());
+            }
+        }
+    }
+
+    private async Task UpdatePullRequests(GitHttpClient gitClient)
+    {
+        var projectIds = _pullRequestsPerProject.Keys.ToArray();
+
+        if (projectIds.Length == 0)
+        {
+            _logger.LogWarning("No projects for grabbing PRs.");
+        }
+
+        foreach (var projectId in projectIds)
+        {
+            try
+            {
+                _logger.LogInformation("Grabbing PRs for project {projectId}.", projectId);
+
+                List<GitPullRequest> result = await gitClient.GetPullRequestsByProjectAsync(
+                    projectId,
+                    new GitPullRequestSearchCriteria
+                        {
+                            Status = PullRequestStatus.Active,
+                            IncludeLinks = true,
+                        });
+
+                if (!result.Any())
+                {
+                    _logger.LogInformation("No PRs found for project {projectId}.", projectId);
+                    _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
+                    continue;
+                }
+
+                _gitRepositoriesPerProject.TryGetValue(projectId, out GitRepository[]? repos);
+                
+                PullRequest[] pullRequests = result
+                                             .Select(pr => new PullRequest(
+                                                 pr.Repository.Id,
+                                                 pr.Title,
+                                                 CreatePullRequestUrl(repos?.SingleOrDefault(r => r.Id == pr.Repository.Id) ?? pr.Repository, pr)))
+                                             .ToArray();
+                _logger.LogInformation("Updating PRs {Count}", pullRequests.Length);
+                _pullRequestsPerProject.AddOrUpdate(projectId, _ => pullRequests, (_, _) => pullRequests);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not fetch pull requests for project {project}. {message}", projectId, e.Message);
+                _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
+            }
+        }
+    }
+
+    public List<PullRequest> GetPullRequests(Repository repository, string projectId, string? repoId)
+    {
+        RegisterProjectId(projectId);
+        if (_gitRepositoriesPerProject.Count == 0)
+        {
+            _ = UpdateProjects(_gitClient!);
+        }
+
         return Task.Run(() => GetPullRequestsTask(repository, projectId, repoId)).GetAwaiter().GetResult();
     }
 
-    private async Task<List<PullRequest>> GetPullRequestsTask(Repository repository, string? projectId, string? repoId)
+    private async Task<List<PullRequest>> GetPullRequestsTask(Repository repository, string projectId, string? repoId)
     {
         if (_gitClient == null)
         {
             return _emptyList;
         }
 
-        if (!string.IsNullOrWhiteSpace(repoId) && Guid.TryParse(repoId, out Guid repoIdGuid))
-        {
-            // can throw.
-            GitRepository repo = await _gitClient.GetRepositoryAsync(repoIdGuid);
+        Guid repoIdGuid = Guid.Empty;
 
-            List<GitPullRequest> prs = await GetPullRequests(_gitClient, repoIdGuid);
-            return prs
-                   .Select(pr => new PullRequest(
-                       repoIdGuid,
-                       pr.Title,
-                       CreatePullRequestUrl(repo, pr)))
-                   .ToList();
+        // first get repo id
+        if (repoIdGuid == Guid.Empty && !string.IsNullOrWhiteSpace(repoId))
+        {
+            _ = Guid.TryParse(repoId, out repoIdGuid);
         }
 
-        var urlString = repository.Remotes.SingleOrDefault(x => x.Key.Equals("Origin", StringComparison.CurrentCultureIgnoreCase))?.Url ?? string.Empty;
-        if (string.IsNullOrWhiteSpace(urlString))
+        if (repoIdGuid == Guid.Empty && !string.IsNullOrWhiteSpace(repoId))
+        {
+            _ = _repositoryDirectoryDevOpsRepoIdMapping.TryGetValue(repository.SafePath, out repoIdGuid);
+        }
+
+        if (repoIdGuid == Guid.Empty)
+        {
+            var urlString = repository.Remotes.SingleOrDefault(x => x.Key.Equals("Origin", StringComparison.CurrentCultureIgnoreCase))?.Url ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(urlString))
+            {
+                return _emptyList;
+            }
+
+            var url = new Uri(urlString);
+
+            List<GitRepository> repositories;
+            try
+            {
+                repositories = await _gitClient.GetRepositoriesAsync(projectId, includeLinks: true, includeAllUrls: true, includeHidden: true);
+            }
+            catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
+            {
+                _logger.LogWarning(e, "Project does not exist (repository: {repository.Name} projectId {projectId})", repository.Name, projectId);
+                throw new ApplicationException(e.Message, e);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
+                throw new ApplicationException("Could retrieve repositories Check your PAT", e);
+            }
+
+            var searchRepoUrl = url.Scheme + "://" + url.Host + url.LocalPath;
+
+            GitRepository[] selectedRepos = repositories
+                                            .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
+                                            .ToArray();
+
+            if (selectedRepos.Length == 0)
+            {
+                _logger.LogWarning("No repository found for url {searchRepoUrl}", searchRepoUrl);
+                throw new ApplicationException($"No repositories found for url {searchRepoUrl}");
+            }
+
+            if (selectedRepos.Length > 1)
+            {
+                _logger.LogWarning("Multiple repositories found for url {searchRepoUrl}", searchRepoUrl);
+                throw new ApplicationException($"Multiple repositories found for url {searchRepoUrl}");
+            }
+
+            repoIdGuid = selectedRepos.Single().Id;
+
+            // update mapping.
+            _logger.LogTrace("Update mapping");
+            _repositoryDirectoryDevOpsRepoIdMapping.AddOrUpdate(repository.SafePath, _ => repoIdGuid, (_, _) => repoIdGuid);
+        }
+
+        // at this point, we should have a repoGuid
+        if (repoIdGuid == Guid.Empty)
         {
             return _emptyList;
         }
 
-        var url = new Uri(urlString);
-
-        List<GitRepository> repositories;
-        try
+        if (_pullRequestsPerProject.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Any())
         {
-            repositories = await _gitClient.GetRepositoriesAsync(projectId, includeLinks:true, includeAllUrls:true, includeHidden:true);
-        }
-        catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
-        {
-            _logger.LogWarning(e, "Project does not exist (repository: {repository.Name} projectId {projectId})", repository.Name, projectId);
-            throw new ApplicationException(e.Message, e);
-        }
-        catch (Exception e)
-        {
-            _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
-            throw new ApplicationException("Could retrieve repositories Check your PAT", e);
+            _logger.LogTrace("Returning pull requests from cache where repo id was given.");
+            return projectPrs.Where(x => x.RepoId.Equals(repoIdGuid)).ToList();
         }
 
-        var searchRepoUrl = url.Scheme + "://" + url.Host + url.LocalPath;
-
-        GitRepository[] selectedRepos = repositories
-                                        .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
-                                        .ToArray();
-
-        if (selectedRepos.Length == 0)
-        {
-            _logger.LogWarning("No repository found for url {searchRepoUrl}", searchRepoUrl);
-            throw new ApplicationException($"No repositories found for url {searchRepoUrl}");
-        }
-
-        if (selectedRepos.Length > 1)
-        {
-            _logger.LogWarning("Multiple repositories found for url {searchRepoUrl}", searchRepoUrl);
-            throw new ApplicationException($"Multiple repositories found for url {searchRepoUrl}");
-        }
-
-        {
-            GitRepository repo = selectedRepos.Single();
-            List<GitPullRequest> prs = await GetPullRequests(_gitClient, repo.Id);
-            return prs
-                   .Select(pr => new PullRequest(
-                       repo.Id,
-                       pr.Title,
-                       CreatePullRequestUrl(repo, pr)))
-                   .ToList();
-        }
+        _logger.LogTrace("No cache available for PRs");
+        return _emptyList;
     }
 
-    private static Task<List<GitPullRequest>> GetPullRequests(GitHttpClientBase gitClient, Guid repoId)
-    {
-        return gitClient.GetPullRequestsAsync(
-            repoId,
-            new GitPullRequestSearchCriteria
-                {
-                    Status = PullRequestStatus.Active,
-                });
-    }
+    //
+    // private static Task<List<GitPullRequest>> GetPullRequests(GitHttpClientBase gitClient, Guid repoId)
+    // {
+    //     return gitClient.GetPullRequestsAsync(
+    //         repoId,
+    //         new GitPullRequestSearchCriteria
+    //             {
+    //                 Status = PullRequestStatus.Active,
+    //             });
+    // }
 
     public void Dispose()
     {
+        _updateTimer1?.Dispose();
+        _updateTimer2?.Dispose();
         _gitClient?.Dispose();
         _connection?.Dispose();
     }
