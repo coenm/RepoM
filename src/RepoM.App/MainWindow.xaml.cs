@@ -23,7 +23,7 @@ using SourceChord.FluentWPF;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow
 {
     private readonly IRepositoryActionProvider _repositoryActionProvider;
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;

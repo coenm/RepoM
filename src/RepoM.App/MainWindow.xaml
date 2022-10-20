@@ -186,11 +186,15 @@
 						<ListBox.ItemTemplate>
 							<DataTemplate>
 								<StackPanel>
-									<TextBlock Text="{Binding Name}"
-											   ToolTip="{Binding Path}"
-											   TextElement.FontSize="17"
-											   Foreground="{DynamicResource AccentColorBrush}"
-											   Margin="8, 3, 8, 3" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="8,3,0,3" TextElement.FontSize="14" Text="📌" 
+                                                   Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        <TextBlock Text="{Binding Name}"
+                                                   ToolTip="{Binding Path}"
+                                                   TextElement.FontSize="17"
+                                                   Foreground="{DynamicResource AccentColorBrush}"
+                                                   Margin="8, 3, 8, 3" />
+                                    </StackPanel>
 									<TextBlock Text="{Binding CurrentBranch}"
                                                FontSize="13.5"
                                                Margin="8, 3, 8, 3" />
