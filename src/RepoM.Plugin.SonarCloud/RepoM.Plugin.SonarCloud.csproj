@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,7 +8,7 @@
     <PackageReference Include="ExpressionStringEvaluator" Version="0.2.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
     <PackageReference Include="SonarQube.Net" Version="1.0.5" />
-    <PackageReference Include="SimpleInjector" Version="5.4.0" />
+    <PackageReference Include="SimpleInjector" Version="5.4.1" />
     <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
   </ItemGroup>
 
