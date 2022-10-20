@@ -9,9 +9,20 @@ internal class CustomRepositoryViewSortBehavior : IComparer
     {
         if (x is RepositoryView xView && y is RepositoryView yView)
         {
-            return string.CompareOrdinal(xView.Name, yView.Name);
+            return Compare(xView, yView);
         }
 
         return 0;
+    }
+
+    private static int Compare(RepositoryView x, RepositoryView y)
+    {
+        if (x.IsPinned == y.IsPinned)
+        {
+            return string.CompareOrdinal(x.Name, y.Name);
+        }
+
+        // pinned should be first ;-)
+        return x.IsPinned ? -1 : 1;
     }
 }

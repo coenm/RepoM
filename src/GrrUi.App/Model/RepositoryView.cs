@@ -21,14 +21,11 @@ public class RepositoryView : IRepositoryView
 
     public string DisplayText { get; }
 
-    public string Name => Repository?.Name ?? "";
+    public string Name => Repository.Name ?? "";
 
-    public string CurrentBranch => Repository?.BranchWithStatus ?? string.Empty;
+    public string CurrentBranch => Repository.BranchWithStatus ?? string.Empty;
 
-    public string[] ReadAllBranches()
-    {
-        return Repository.ReadAllBranches() ?? Array.Empty<string>();
-    }
+    public bool IsPinned { get; } = false;
 
     public string Path => Repository.Path ?? string.Empty;
 

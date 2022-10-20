@@ -7,7 +7,7 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
-using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
+using RepositoryAction = Data.RepositoryAction;
 
 public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
 {
@@ -60,12 +60,12 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
             name = _translationService.Translate("Checkout");
         }
 
-        yield return new RepoM.Api.Git.RepositoryAction(_translationService.Translate("Checkout"))
+        yield return new Git.RepositoryAction(_translationService.Translate("Checkout"))
             {
                 DeferredSubActionsEnumerator = () =>
                     repository.LocalBranches
                               .Take(50)
-                              .Select(branch => new RepoM.Api.Git.RepositoryAction(branch)
+                              .Select(branch => new Git.RepositoryAction(branch)
                                   {
                                       Action = (_, _) => _repositoryWriter.Checkout(repository, branch),
                                       CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
@@ -73,17 +73,18 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
                               .Union(new RepositoryActionBase[]
                                   {
                                       new RepositorySeparatorAction(), // doesn't work todo
-                                      new RepoM.Api.Git.RepositoryAction(_translationService.Translate("Remote branches"))
+                                      new Git.RepositoryAction(_translationService.Translate("Remote branches"))
                                           {
                                               DeferredSubActionsEnumerator = () =>
                                                   {
-                                                      RepoM.Api.Git.RepositoryAction[] remoteBranches = repository.ReadAllBranches()
-                                                                                                                  .Select(branch => new RepoM.Api.Git.RepositoryAction(branch)
-                                                                                                                      {
-                                                                                                                          Action = (_, _) => _repositoryWriter.Checkout(repository, branch),
-                                                                                                                          CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
-                                                                                                                      })
-                                                                                                                  .ToArray();
+                                                      Git.RepositoryAction[] remoteBranches = repository
+                                                                                              .ReadAllBranches()
+                                                                                              .Select(branch => new Git.RepositoryAction(branch)
+                                                                                                  {
+                                                                                                      Action = (_, _) => _repositoryWriter.Checkout(repository, branch),
+                                                                                                      CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
+                                                                                                  })
+                                                                                              .ToArray();
 
                                                       if (remoteBranches.Any())
                                                       {
@@ -92,11 +93,11 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
 
                                                       return new RepositoryActionBase[]
                                                           {
-                                                              new RepoM.Api.Git.RepositoryAction(_translationService.Translate("No remote branches found"))
+                                                              new Git.RepositoryAction(_translationService.Translate("No remote branches found"))
                                                                   {
                                                                       CanExecute = false,
                                                                   },
-                                                              new RepoM.Api.Git.RepositoryAction(_translationService.Translate("Try to fetch changes if you're expecting remote branches"))
+                                                              new Git.RepositoryAction(_translationService.Translate("Try to fetch changes if you're expecting remote branches"))
                                                                   {
                                                                       CanExecute = false,
                                                                   },

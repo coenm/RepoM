@@ -20,4 +20,8 @@ public interface IRepositoryMonitor
     Task ScanForLocalRepositoriesAsync();
 
     void IgnoreByPath(string path);
+
+    void SetPinned(bool newValue, Repository repository);
+
+    bool IsPinned(Repository repository);
 }

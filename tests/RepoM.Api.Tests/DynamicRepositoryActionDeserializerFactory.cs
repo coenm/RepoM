@@ -24,11 +24,12 @@ internal static class DynamicRepositoryActionDeserializerFactory
                         new ActionBrowseRepositoryV1Deserializer(),
                         new ActionIgnoreRepositoriesV1Deserializer(),
                         new ActionAssociateFileV1Deserializer(),
+                        new ActionPinRepositoryV1Deserializer(),
                     }));
     }
 
     public static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }));
+        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }));
     }
 }

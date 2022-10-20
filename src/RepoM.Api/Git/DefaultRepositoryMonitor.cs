@@ -1,6 +1,7 @@
 namespace RepoM.Api.Git;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
@@ -28,6 +29,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
     private readonly Dictionary<string, IRepositoryObserver> _repositoryObservers;
     private readonly IFileSystem _fileSystem;
     private readonly IAutoFetchHandler _autoFetchHandler;
+
+    private readonly ConcurrentDictionary<string, bool> _pinned = new();
 
     public DefaultRepositoryMonitor(
         IPathProvider pathProvider,
@@ -191,6 +194,26 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _repositoryInformationAggregator.RemoveByPath(path);
     }
 
+    public void SetPinned(bool newValue, Repository repository)
+    {
+        if (newValue && !_pinned.ContainsKey(repository.SafePath))
+        {
+            _pinned.AddOrUpdate(repository.SafePath, _ => true, (_, _) => true);
+            Task.Run(() => OnRepositoryChangeDetected(repository));
+        }
+
+        if (!newValue && _pinned.ContainsKey(repository.SafePath))
+        {
+            _pinned.TryRemove(repository.SafePath, out var _);
+            Task.Run(() => OnRepositoryChangeDetected(repository));
+        }
+    }
+
+    public bool IsPinned(Repository repository)
+    {
+        return _pinned.ContainsKey(repository.SafePath);
+    }
+
     private void CreateRepositoryObserver(Repository repo, string path)
     {
         if (!_repositoryObservers.ContainsKey(path))
@@ -230,7 +253,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
         OnChangeDetected?.Invoke(this, repo);
 
-        _repositoryInformationAggregator.Add(repo);
+        _repositoryInformationAggregator.Add(repo, this);
     }
 
     private void OnRepositoryObserverChange(Repository repository)
