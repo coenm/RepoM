@@ -1,4 +1,4 @@
-namespace RepoM.App;
+namespace RepoM.App.Services;
 
 using System.Collections.Generic;
 using System.IO;
@@ -7,22 +7,14 @@ using System.Linq;
 
 internal static class PluginFinder
 {
-    // private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
     public static IEnumerable<FileInfo> FindPluginAssemblies(string baseDirectory,IFileSystem fileSystem)
     {
-        // Guard.NotNullOrWhiteSpace(baseDirectory, nameof(baseDirectory));
-
-        // Logger.Debug(() => $"Plugin base directory {baseDirectory}");
-
         IEnumerable<FileInfo> assemblies = GetPluginAssembliesInDirectory(baseDirectory);
 
         foreach (var dir in GetPluginDirectories(baseDirectory, fileSystem))
         {
             assemblies = assemblies.Concat(GetPluginAssembliesInDirectory(dir));
         }
-
-        // LogFoundAssemblies(assemblies);
 
         return assemblies;
     }

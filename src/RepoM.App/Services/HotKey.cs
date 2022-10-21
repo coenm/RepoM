@@ -1,4 +1,4 @@
-namespace RepoM.App;
+namespace RepoM.App.Services;
 
 using System;
 using System.Runtime.InteropServices;

@@ -174,16 +174,6 @@ stages:
             modifyOutputPath: false
             zipAfterPublish: false
 
-        - task: DotNetCoreCLI@2
-          displayName: "Dotnet Publish grrui tool"
-          inputs:
-            command: publish
-            arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies --self-contained true --runtime win-x64"
-            projects: "**/GrrUi.App.csproj"
-            publishWebProjects: false
-            modifyOutputPath: false
-            zipAfterPublish: false    
-
         - task: DeleteFiles@1
           displayName: 'Remove unneeded files'
           inputs:

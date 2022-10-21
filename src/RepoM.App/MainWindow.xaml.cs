@@ -18,6 +18,7 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.App.Controls;
+using RepoM.App.Services;
 using SourceChord.FluentWPF;
 
 /// <summary>
@@ -74,7 +75,7 @@ public partial class MainWindow
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
         ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
         view.Filter = FilterRepositories;
-        view.CustomSort = new CustomRepositoryViewSortBehavior();
+        view.CustomSort = new CustomRepositoryViewSortComparer();
 
         AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);

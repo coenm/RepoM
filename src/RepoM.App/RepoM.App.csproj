@@ -52,8 +52,8 @@
     <PackageReference Include="ExpressionStringEvaluator" Version="0.2.8" />
     <PackageReference Include="FluentWPF" Version="0.9.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
-    <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.2.2" />
-    <PackageReference Include="NetMQ" Version="4.0.1.9" />
+    <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.2.5" />
+    <PackageReference Include="NetMQ" Version="4.0.1.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +71,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\" />
   </ItemGroup>
   <PropertyGroup />
 </Project>
