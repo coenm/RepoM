@@ -1,7 +1,7 @@
 namespace RepoM.Api.Tests.TestFramework;
 
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
+using Argon;
 using VerifyTests;
 
 public static class VerifierInitializer

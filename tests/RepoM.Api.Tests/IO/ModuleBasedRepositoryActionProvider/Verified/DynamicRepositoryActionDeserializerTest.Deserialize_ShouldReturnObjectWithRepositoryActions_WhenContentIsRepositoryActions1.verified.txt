@@ -10,7 +10,6 @@
         MultiSelectEnabled: true,
         Variables: [
           {
-            $type: Variable,
             Name: name,
             Value: {StringContains({Repository.SafePath}, "abc")}
           }

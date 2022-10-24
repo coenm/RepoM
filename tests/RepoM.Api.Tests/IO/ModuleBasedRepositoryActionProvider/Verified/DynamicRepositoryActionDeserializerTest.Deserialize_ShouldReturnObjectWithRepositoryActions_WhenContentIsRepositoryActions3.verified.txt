@@ -3,13 +3,11 @@
   ActionsCollection: {
     Variables: [
       {
-        $type: Variable,
         Name: work_repo,
         Value: {StringContains({Repository.SafePath}, "work")},
         Enabled: true
       },
       {
-        $type: Variable,
         Name: work_repo_1,
         Value: true,
         Enabled: false
@@ -25,7 +23,6 @@
         MultiSelectEnabled: true,
         Variables: [
           {
-            $type: Variable,
             Name: name,
             Value: {StringContains({Repository.SafePath}, "abc")}
           }
