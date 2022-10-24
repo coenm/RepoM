@@ -157,22 +157,21 @@ stages:
           displayName: "Dotnet Publish RepoM"
           inputs:
             command: publish
-            # arguments: "--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/${{ variables.SystemTestsArtifactName }}/bin/Release/publish --no-build --self-contained true"
             arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies"
             projects: "**/RepoM.App.csproj"
             publishWebProjects: false
             modifyOutputPath: false
             zipAfterPublish: false
 
-        - task: DotNetCoreCLI@2
-          displayName: "Dotnet Publish grr tool"
-          inputs:
-            command: publish
-            arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies --self-contained true --runtime win-x64"
-            projects: "**/Grr.App.csproj"
-            publishWebProjects: false
-            modifyOutputPath: false
-            zipAfterPublish: false
+        # - task: DotNetCoreCLI@2
+        #   displayName: "Dotnet Publish grr tool"
+        #   inputs:
+        #     command: publish
+        #     arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies --self-contained true --runtime win-x64"
+        #     projects: "**/Grr.App.csproj"
+        #     publishWebProjects: false
+        #     modifyOutputPath: false
+        #     zipAfterPublish: false
 
         - task: DeleteFiles@1
           displayName: 'Remove unneeded files'

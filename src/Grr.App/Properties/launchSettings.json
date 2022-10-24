@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "grr": {
-      "commandName": "Project",
-      "commandLineArgs": "cd repom"
-    }
-  }
-}

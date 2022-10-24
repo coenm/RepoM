@@ -27,7 +27,6 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.App.i18n;
 using RepoM.Core.Plugin;
-using RepoM.Ipc;
 using SimpleInjector;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -190,8 +189,6 @@ public partial class App : Application
 
     private static void RegisterServices(Container container, IFileSystem fileSystem)
     {
-        container.Register<IRepositorySource, RepositorySource>(Lifestyle.Singleton);
-
         container.Register<MainWindow>(Lifestyle.Singleton);
         container.Register<StatusCharacterMap>(Lifestyle.Singleton);
         container.Register<StatusCompressor>(Lifestyle.Singleton);
