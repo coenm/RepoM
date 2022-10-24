@@ -3,11 +3,11 @@ namespace RepoM.App;
 using System.Collections;
 using RepoM.Api.Git;
 
-internal class CustomRepositoryViewSortBehavior : IComparer
+internal class CustomRepositoryViewSortComparer : IComparer
 {
     public int Compare(object? x, object? y)
     {
-        if (x is RepositoryView xView && y is RepositoryView yView)
+        if (x is IRepositoryView xView && y is IRepositoryView yView)
         {
             return Compare(xView, yView);
         }
@@ -15,7 +15,7 @@ internal class CustomRepositoryViewSortBehavior : IComparer
         return 0;
     }
 
-    private static int Compare(RepositoryView x, RepositoryView y)
+    private static int Compare(IRepositoryView x, IRepositoryView y)
     {
         if (x.IsPinned == y.IsPinned)
         {
