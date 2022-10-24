@@ -345,6 +345,21 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
+    [Theory]
+    [EnumMemberData(typeof(SerializationType))]
+    public async Task Deserialize_VariableObject1(SerializationType type)
+    {
+        // arrange
+        _testFileSettings.UseFileName("VariableObject1");
+        var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
+
+        // act
+        RepositoryActionConfiguration result = SutDeserialize(content, type);
+
+        // assert
+        await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
+    }
+
     [Fact]
     public void EmptyFile_ShouldThrow()
     {

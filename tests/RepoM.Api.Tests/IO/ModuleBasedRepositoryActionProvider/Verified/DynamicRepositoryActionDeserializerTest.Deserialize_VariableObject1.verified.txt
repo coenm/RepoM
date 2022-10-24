@@ -1,0 +1,38 @@
+﻿{
+  Variables: [
+    {
+      Name: varObject,
+      Value: {
+        $type: ExpandoObject,
+        age: 12,
+        brothers: {
+          $type: List<object>,
+          $values: [
+            BatMan,
+            SupeMan
+          ]
+        },
+        isSupeMan: true,
+        name: abc,
+        subs: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: ExpandoObject,
+              index: 1,
+              name: Uno
+            },
+            {
+              $type: ExpandoObject,
+              index: 2,
+              name: Twice
+            }
+          ]
+        }
+      },
+      Enabled: true
+    }
+  ],
+  TagsCollection: {},
+  ActionsCollection: {}
+}

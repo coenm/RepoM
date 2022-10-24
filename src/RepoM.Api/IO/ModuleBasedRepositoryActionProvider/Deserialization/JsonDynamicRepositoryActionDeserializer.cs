@@ -2,6 +2,7 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -49,7 +50,7 @@ public class JsonDynamicRepositoryActionDeserializer
             configuration.RepositorySpecificConfigFiles.AddRange(TryDeserializeEnumerable<FileReference>(token));
 
             token = jsonObject["variables"];
-            configuration.Variables.AddRange(TryDeserializeEnumerable<Variable>(token));
+            configuration.Variables.AddRange(TryDeserializeEnumerableVariable(token));
 
             token = jsonObject["repository-tags"];
             DeserializeRepositoryTags(token, ref configuration);
@@ -136,6 +137,45 @@ public class JsonDynamicRepositoryActionDeserializer
             {
                 yield return obj;
             }
+        }
+    }
+
+    private static IEnumerable<Variable> TryDeserializeEnumerableVariable(JToken? token)
+    {
+        if (token == null)
+        {
+            yield break;
+        }
+
+        IList<JToken> files = token.Children().ToList();
+        foreach (JToken file in files)
+        {
+            Variable? obj = file.ToObject<Variable>(_jsonSerializer);
+            if (obj == null)
+            {
+                continue;
+            }
+
+            JToken? valueToken = file["value"];
+            if (valueToken == null)
+            {
+                continue;
+            }
+
+            if (valueToken.Type == JTokenType.String)
+            {
+                obj.Value = valueToken.Value<string>();
+            }
+            else if (valueToken.Type == JTokenType.Integer)
+            {
+                obj.Value = valueToken.Value<int>();
+            }
+            else
+            {
+                obj.Value = valueToken.ToObject<ExpandoObject>();
+            }
+
+            yield return obj;
         }
     }
 

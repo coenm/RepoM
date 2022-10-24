@@ -139,7 +139,6 @@ public class RepositoryConfigurationReader
                    .Select(v => new EvaluatedVariable
                        {
                            Name = v.Name,
-                           Enabled = true,
                            Value = Evaluate(v.Value, repository),
                        })
                    .ToList();
@@ -251,15 +250,21 @@ public class RepositoryConfigurationReader
         return (envVars, variables, actions, tags);
     }
 
-    private CombinedTypeContainer Evaluate(string? input, Repository? repository)
+    private CombinedTypeContainer Evaluate(object? input, Repository? repository)
     {
-        if (string.IsNullOrWhiteSpace(input))
+        if (input is not string s)
+        {
+            return CombinedTypeContainer.NullInstance;
+        }
+
+        if (string.IsNullOrWhiteSpace(s))
         {
             return new CombinedTypeContainer(string.Empty);
         }
 
         Repository[] repositories = repository == null ? Array.Empty<Repository>() : new[] { repository, };
-        return _repoExpressionEvaluator.EvaluateValueExpression(input!, repositories);
+        return _repoExpressionEvaluator.EvaluateValueExpression(s!, repositories);
+
     }
 
     private string EvaluateString(string? input, Repository? repository)
@@ -333,7 +338,6 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
                    .Select(v => new EvaluatedVariable
                        {
                            Name = v.Name,
-                           Enabled = true,
                            Value = Evaluate(v.Value, repository),
                        })
                    .ToList();
@@ -375,14 +379,14 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         }
     }
 
-    private CombinedTypeContainer Evaluate(string? input, Repository repository)
+    private CombinedTypeContainer Evaluate(object? input, Repository repository)
     {
-        if (input == null)
+        if (input is string s)
         {
-            return CombinedTypeContainer.NullInstance;
+            return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
         }
 
-        return _repoExpressionEvaluator.EvaluateValueExpression(input, repository);
+        return CombinedTypeContainer.NullInstance;
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
@@ -505,7 +509,6 @@ public class RepositorySpecificConfiguration
                .Select(v => new EvaluatedVariable
                    {
                        Name = v.Name,
-                       Enabled = true,
                        Value = Evaluate(v.Value, repository),
                    })
                .ToList();
@@ -532,14 +535,14 @@ public class RepositorySpecificConfiguration
         }
     }
 
-    private CombinedTypeContainer Evaluate(string? input, Repository repository)
+    private CombinedTypeContainer Evaluate(object? input, Repository repository)
     {
-        if (input == null)
+        if (input is string s)
         {
-            return CombinedTypeContainer.NullInstance;
+            return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
         }
 
-        return _repoExpressionEvaluator.EvaluateValueExpression(input, repository);
+        return CombinedTypeContainer.NullInstance;
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)

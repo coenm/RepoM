@@ -144,12 +144,6 @@ public class RepoMVariableProvider : IVariableProvider
 
         if (var != null)
         {
-            if (var.Enabled == false)
-            {
-                value = CombinedTypeContainer.NullInstance;
-                return true;
-            }
-
             if (var.Value == CombinedTypeContainer.NullInstance)
             {
                 value = CombinedTypeContainer.NullInstance;

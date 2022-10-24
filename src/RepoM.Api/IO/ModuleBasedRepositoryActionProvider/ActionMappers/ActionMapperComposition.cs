@@ -33,10 +33,9 @@ public class ActionMapperComposition
 
             return vars
                    .Where(v => IsEnabled(v.Enabled, true, singleRepository))
-                   .Select(v => new EvaluatedVariable()
+                   .Select(v => new EvaluatedVariable
                        {
                            Name = v.Name,
-                           Enabled = true,
                            Value = Evaluate(v.Value, singleRepository),
                        })
                    .ToList();
@@ -51,14 +50,19 @@ public class ActionMapperComposition
         return result.ToArray();
     }
 
-    private CombinedTypeContainer Evaluate(string? input, Repository repository)
+    private CombinedTypeContainer Evaluate(object? input, Repository repository)
     {
         if (input == null)
         {
             return CombinedTypeContainer.NullInstance;
         }
 
-        return _repoExpressionEvaluator.EvaluateValueExpression(input, repository);
+        if (input is string s)
+        {
+            return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
+        }
+
+        return CombinedTypeContainer.NullInstance;
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
