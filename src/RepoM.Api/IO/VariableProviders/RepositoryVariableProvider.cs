@@ -1,4 +1,4 @@
-namespace RepoM.Api.IO;
+namespace RepoM.Api.IO.VariableProviders;
 
 using System;
 using System.Linq;

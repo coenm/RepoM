@@ -34,6 +34,7 @@ using Serilog;
 using Serilog.Core;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using RepoM.App.Services;
+using RepoM.Api.IO.VariableProviders;
 
 /// <summary>
 /// Interaction logic for App.xaml

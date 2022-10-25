@@ -5,9 +5,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ExpressionStringEvaluator.Methods;
+using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
+[UsedImplicitly]
 public class FindFilesMethod : IMethod
 {
+    private readonly ILogger _logger;
+
+    public FindFilesMethod(ILogger logger)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
     public bool CanHandle(string method)
     {
         return "FindFiles".Equals(method, StringComparison.CurrentCultureIgnoreCase);
@@ -42,9 +52,10 @@ public class FindFilesMethod : IMethod
             var files = GetFileEnumerator(rootPath, searchPattern).ToArray();
             return new CombinedTypeContainer(files.Select(f => new CombinedTypeContainer(f)).ToArray());
         }
-        catch (Exception)
+        catch (Exception e)
         {
             // not sure if we shouldn't throw.
+            _logger.LogError(e, "Could nog find files according to path {rootPath} and searchPattern {searchPattern}. {message}", rootPath, searchPattern, e.Message);
             return CombinedTypeContainer.NullInstance;
         }
     }

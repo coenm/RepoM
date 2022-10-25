@@ -7,6 +7,7 @@ using ExpressionStringEvaluator.Methods;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.Api.IO.Variables;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class ActionMapperComposition

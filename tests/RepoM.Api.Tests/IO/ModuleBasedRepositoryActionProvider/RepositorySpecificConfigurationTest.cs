@@ -26,6 +26,7 @@ using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
+using RepoM.Api.IO.VariableProviders;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -85,6 +86,7 @@ public class RepositorySpecificConfigurationTest
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
                 new CustomEnvironmentVariableVariableProvider(),
+                new RepoMVariableProvider(),
                 new RepositoryVariableProvider(),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
