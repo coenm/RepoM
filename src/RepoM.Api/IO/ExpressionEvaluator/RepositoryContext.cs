@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api.Git;
 
-public class RepositoryContext
+public sealed class RepositoryContext
 {
     public RepositoryContext()
     {

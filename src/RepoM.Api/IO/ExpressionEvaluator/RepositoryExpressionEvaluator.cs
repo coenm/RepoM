@@ -14,8 +14,8 @@ public class RepositoryExpressionEvaluator
 
     public RepositoryExpressionEvaluator(IEnumerable<IVariableProvider> variableProviders, IEnumerable<IMethod> methods)
     {
-        List<IVariableProvider> v = variableProviders?.ToList() ?? throw new ArgumentNullException(nameof(variableProviders));
-        List<IMethod> m = methods?.ToList() ?? throw new ArgumentNullException(nameof(methods));
+        List<IVariableProvider> v = variableProviders.ToList() ?? throw new ArgumentNullException(nameof(variableProviders));
+        List<IMethod> m = methods.ToList() ?? throw new ArgumentNullException(nameof(methods));
 
         _expressionExecutor = new ExpressionExecutor(v, m);
     }
@@ -30,11 +30,11 @@ public class RepositoryExpressionEvaluator
         return EvaluateValueExpression(value, repository.AsEnumerable());
     }
 
-    internal CombinedTypeContainer EvaluateValueExpression(string value, IEnumerable<Repository> repository)
+    private CombinedTypeContainer EvaluateValueExpression(string value, IEnumerable<Repository> repository)
     {
         try
         {
-            return _expressionExecutor.Execute<RepositoryContext>(new RepositoryContext(repository), value);
+            return _expressionExecutor.Execute(new RepositoryContext(repository), value);
         }
         catch (Exception)
         {
@@ -46,7 +46,7 @@ public class RepositoryExpressionEvaluator
     {
         try
         {
-            CombinedTypeContainer result = _expressionExecutor.Execute<RepositoryContext>(new RepositoryContext(repository), value);
+            CombinedTypeContainer result = _expressionExecutor.Execute(new RepositoryContext(repository), value);
 
             // seems to be possible
             if (result == null)
@@ -78,7 +78,7 @@ public class RepositoryExpressionEvaluator
         {
             Repository[] repositories = (repository == null) ? Array.Empty<Repository>() : new[] { repository, };
 
-            CombinedTypeContainer result = _expressionExecutor.Execute<RepositoryContext>(new RepositoryContext(repositories), value!);
+            CombinedTypeContainer result = _expressionExecutor.Execute(new RepositoryContext(repositories), value!);
             if (result.IsBool(out var b))
             {
                 return b.Value;
