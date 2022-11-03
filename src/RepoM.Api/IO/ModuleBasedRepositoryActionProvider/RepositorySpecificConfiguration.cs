@@ -7,7 +7,6 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using DotNetEnv;
-using ExpressionStringEvaluator.Methods;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
@@ -251,27 +250,22 @@ public class RepositoryConfigurationReader
         return (envVars, variables, actions, tags);
     }
 
-    private CombinedTypeContainer Evaluate(object? input, Repository? repository)
+    private object? Evaluate(object? input, Repository? repository)
     {
         if (input is not string s)
         {
-            return CombinedTypeContainer.NullInstance;
-        }
-
-        if (string.IsNullOrWhiteSpace(s))
-        {
-            return new CombinedTypeContainer(string.Empty);
+            return input;
         }
 
         Repository[] repositories = repository == null ? Array.Empty<Repository>() : new[] { repository, };
-        return _repoExpressionEvaluator.EvaluateValueExpression(s!, repositories);
+        return _repoExpressionEvaluator.EvaluateValueExpression(s, repositories);
 
     }
 
     private string EvaluateString(string? input, Repository? repository)
     {
-        CombinedTypeContainer v = Evaluate(input, repository);
-        if (v == CombinedTypeContainer.NullInstance)
+        object? v = Evaluate(input, repository);
+        if (v == null)
         {
             return string.Empty;
         }
@@ -380,14 +374,14 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         }
     }
 
-    private CombinedTypeContainer Evaluate(object? input, Repository repository)
+    private object? Evaluate(object? input, Repository repository)
     {
         if (input is string s)
         {
             return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
         }
 
-        return CombinedTypeContainer.NullInstance;
+        return input;
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
@@ -536,14 +530,14 @@ public class RepositorySpecificConfiguration
         }
     }
 
-    private CombinedTypeContainer Evaluate(object? input, Repository repository)
+    private object? Evaluate(object? input, Repository repository)
     {
         if (input is string s)
         {
             return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
         }
 
-        return CombinedTypeContainer.NullInstance;
+        return input;
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)

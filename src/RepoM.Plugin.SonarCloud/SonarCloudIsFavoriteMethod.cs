@@ -19,23 +19,20 @@ internal class SonarCloudIsFavoriteMethod : IMethod
         return "SonarCloud.IsFavorite".Equals(method, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    public CombinedTypeContainer Handle(string method, params CombinedTypeContainer[] args)
+    public object? Handle(string method, params object?[] args)
     {
         if (args.Length != 1)
         {
             // not sure if we shouldn't throw.
-            return CombinedTypeContainer.NullInstance;
+            return null;
         }
 
-        CombinedTypeContainer keyArg = args[0];
-        if (!keyArg.IsString(out var key))
+        if (args[0] is not string key)
         {
             // not sure if we shouldn't throw.
-            return CombinedTypeContainer.NullInstance;
+            return null;
         }
 
-        return _service.IsFavorite(key)
-            ? CombinedTypeContainer.TrueInstance
-            : CombinedTypeContainer.FalseInstance;
+        return _service.IsFavorite(key);
     }
 }

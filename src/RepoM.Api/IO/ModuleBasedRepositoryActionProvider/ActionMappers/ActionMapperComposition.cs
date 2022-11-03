@@ -3,7 +3,6 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ExpressionStringEvaluator.Methods;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -51,19 +50,14 @@ public class ActionMapperComposition
         return result.ToArray();
     }
 
-    private CombinedTypeContainer Evaluate(object? input, Repository repository)
+    private object? Evaluate(object? input, Repository repository)
     {
-        if (input == null)
-        {
-            return CombinedTypeContainer.NullInstance;
-        }
-
         if (input is string s)
         {
             return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
         }
 
-        return CombinedTypeContainer.NullInstance;
+        return input;
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)

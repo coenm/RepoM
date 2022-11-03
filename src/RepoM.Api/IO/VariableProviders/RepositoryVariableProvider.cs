@@ -2,7 +2,6 @@ namespace RepoM.Api.IO.VariableProviders;
 
 using System;
 using System.Linq;
-using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
@@ -14,14 +13,14 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
         return !string.IsNullOrWhiteSpace(key) && key.StartsWith("Repository.", StringComparison.CurrentCultureIgnoreCase);
     }
 
-    public CombinedTypeContainer? Provide(string key, string? arg)
+    public object? Provide(string key, string? arg)
     {
         throw new NotImplementedException();
     }
 
-    public CombinedTypeContainer? Provide(RepositoryContext context, string key, string? arg)
+    public object? Provide(RepositoryContext context, string key, string? arg)
     {
-        return new CombinedTypeContainer(ProvideString(context, key, arg));
+        return ProvideString(context, key, arg);
     }
 
     private static string ProvideString(RepositoryContext context, string key, string? arg)

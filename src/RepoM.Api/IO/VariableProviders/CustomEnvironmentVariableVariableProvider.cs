@@ -1,14 +1,12 @@
-using RepoM.Api.IO.Variables;
-
 namespace RepoM.Api.IO.VariableProviders;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.VariableProviders;
 using JetBrains.Annotations;
 using RepoM.Api.IO.ExpressionEvaluator;
+using RepoM.Api.IO.Variables;
 using Repository = Git.Repository;
 
 [UsedImplicitly]
@@ -35,7 +33,7 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
         return !string.IsNullOrWhiteSpace(envKey);
     }
 
-    public CombinedTypeContainer Provide(RepositoryContext context, string key, string? arg)
+    public object? Provide(RepositoryContext context, string key, string? arg)
     {
         var prefixLength = PREFIX.Length;
         var envKey = key.Substring(prefixLength, key.Length - prefixLength);
@@ -44,25 +42,25 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
 
         if (singleContext == null)
         {
-            return new CombinedTypeContainer(Environment.GetEnvironmentVariable(envKey) ?? string.Empty);
+            return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
         }
 
         Dictionary<string, string> envVars = GetRepoEnvironmentVariables(singleContext);
 
         if (envVars.ContainsKey(envKey))
         {
-            return new CombinedTypeContainer(envVars[envKey]);
+            return envVars[envKey];
         }
 
-        return new CombinedTypeContainer(Environment.GetEnvironmentVariable(envKey) ?? string.Empty);
+        return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
     }
 
-    public CombinedTypeContainer Provide(string key, string? arg)
+    public object? Provide(string key, string? arg)
     {
         var prefixLength = PREFIX.Length;
         var envKey = key.Substring(prefixLength, key.Length - prefixLength);
         var result = Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
-        return new CombinedTypeContainer(result);
+        return result;
     }
 
     private static Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)

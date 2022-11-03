@@ -1,10 +1,11 @@
-using RepoM.Api.IO.Variables;
 
 namespace RepoM.Api.IO.VariableProviders;
 
 using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
-using ExpressionStringEvaluator.Methods;
+using RepoM.Api.IO.Variables;
 using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
@@ -32,10 +33,16 @@ public class RepoMVariableProvider : IVariableProvider
     }
 
     /// <inheritdoc cref="IVariableProvider.Provide"/>
-    public CombinedTypeContainer Provide(string key, string? arg)
+    public object? Provide(string key, string? arg)
     {
         var prefixLength = PREFIX.Length;
         var envKey = key.Substring(prefixLength, key.Length - prefixLength);
+        var envSearchKey = envKey;
+        var index = envKey.IndexOfAny(new [] { '.', '[', });
+        if (index > 0)
+        {
+            envSearchKey = envKey.Substring(0, index);
+        }
 
         Scope? scope = RepoMVariableProviderStore.VariableScope.Value;
 
@@ -43,11 +50,24 @@ public class RepoMVariableProvider : IVariableProvider
         {
             if (scope == null)
             {
-                return CombinedTypeContainer.NullInstance;
+                return null;
             }
 
-            if (TryGetValueFromScope(scope, envKey, out var result))
+            if (TryGetValueFromScope(scope, envSearchKey, out var result))
             {
+                if (result is ExpandoObject eo)
+                {
+                    var selector = envKey.Substring(index, envKey.Length - index);
+                    if (selector.StartsWith("."))
+                    {
+                        selector = selector.TrimStart('.');
+                        KeyValuePair<string, object> x = eo.SingleOrDefault(pair => pair.Key == selector);
+                        return x.Value;
+                    }
+
+                    return result;
+                }
+
                 return result;
             }
 
@@ -55,23 +75,17 @@ public class RepoMVariableProvider : IVariableProvider
         }
     }
 
-    private static bool TryGetValueFromScope(in Scope scope, string key, out CombinedTypeContainer value)
+    private static bool TryGetValueFromScope(in Scope scope, string key, out object? value)
     {
         EvaluatedVariable? var = scope.Variables.FirstOrDefault(x => key.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase));
 
         if (var != null)
         {
-            if (var.Value == CombinedTypeContainer.NullInstance)
-            {
-                value = CombinedTypeContainer.NullInstance;
-                return false;
-            }
-
             value = var.Value;
-            return true;
+            return var.Value != null;
         }
 
-        value = CombinedTypeContainer.NullInstance;
+        value = null;
         return false;
     }
 }

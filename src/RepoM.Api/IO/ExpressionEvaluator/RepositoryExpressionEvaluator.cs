@@ -25,12 +25,12 @@ public class RepositoryExpressionEvaluator
         return EvaluateStringExpression(value, repository.AsEnumerable());
     }
 
-    public CombinedTypeContainer EvaluateValueExpression(string value, params Repository[] repository)
+    public object? EvaluateValueExpression(string value, params Repository[] repository)
     {
         return EvaluateValueExpression(value, repository.AsEnumerable());
     }
 
-    private CombinedTypeContainer EvaluateValueExpression(string value, IEnumerable<Repository> repository)
+    private object? EvaluateValueExpression(string value, IEnumerable<Repository> repository)
     {
         try
         {
@@ -38,7 +38,7 @@ public class RepositoryExpressionEvaluator
         }
         catch (Exception)
         {
-            return CombinedTypeContainer.NullInstance;
+            return null;
         }
     }
 
@@ -46,7 +46,7 @@ public class RepositoryExpressionEvaluator
     {
         try
         {
-            CombinedTypeContainer result = _expressionExecutor.Execute(new RepositoryContext(repository), value);
+            object? result = _expressionExecutor.Execute(new RepositoryContext(repository), value);
 
             // seems to be possible
             if (result == null)
@@ -54,7 +54,7 @@ public class RepositoryExpressionEvaluator
                 return string.Empty;
             }
 
-            if (result.IsString(out var s))
+            if (result is string s)
             {
                 return s;
             }
@@ -76,17 +76,23 @@ public class RepositoryExpressionEvaluator
 
         try
         {
-            Repository[] repositories = (repository == null) ? Array.Empty<Repository>() : new[] { repository, };
+            Repository[] repositories = repository == null ? Array.Empty<Repository>() : new[] { repository, };
 
-            CombinedTypeContainer result = _expressionExecutor.Execute(new RepositoryContext(repositories), value!);
-            if (result.IsBool(out var b))
+            object? result = _expressionExecutor.Execute(new RepositoryContext(repositories), value!);
+
+            if (result is null)
             {
-                return b.Value;
+                return false;
             }
 
-            if ("true".Equals(result.ToString(), StringComparison.CurrentCultureIgnoreCase))
+            if (result is bool b)
             {
-                return true;
+                return b;
+            }
+
+            if (result is string s)
+            {
+                return "true".Equals(s, StringComparison.CurrentCultureIgnoreCase);
             }
 
             return false;

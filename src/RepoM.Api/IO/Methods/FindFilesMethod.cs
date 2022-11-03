@@ -23,40 +23,37 @@ public class FindFilesMethod : IMethod
         return "FindFiles".Equals(method, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    public CombinedTypeContainer Handle(string method, params CombinedTypeContainer[] args)
+    public object? Handle(string method, params object?[] args)
     {
         if (args.Length < 2)
         {
             // not sure if we shouldn't throw.
-            return CombinedTypeContainer.NullInstance;
+            return null;
         }
 
         // first arg = root path
-        CombinedTypeContainer rootPathArg = args[0];
-        if (!rootPathArg.IsString(out var rootPath))
+        if (args[0] is not string rootPath)
         {
             // not sure if we shouldn't throw.
-            return CombinedTypeContainer.NullInstance;
+            return null;
         }
 
         // second arg = *.ext
-        CombinedTypeContainer searchPatternArg = args[1];
-        if (!searchPatternArg.IsString(out var searchPattern))
+        if (args[1] is not string searchPattern)
         {
             // not sure if we shouldn't throw.
-            return CombinedTypeContainer.NullInstance;
+            return null;
         }
 
         try
         {
-            var files = GetFileEnumerator(rootPath, searchPattern).ToArray();
-            return new CombinedTypeContainer(files.Select(f => new CombinedTypeContainer(f)).ToArray());
+            return GetFileEnumerator(rootPath, searchPattern).ToArray();
         }
         catch (Exception e)
         {
             // not sure if we shouldn't throw.
             _logger.LogError(e, "Could nog find files according to path {rootPath} and searchPattern {searchPattern}. {message}", rootPath, searchPattern, e.Message);
-            return CombinedTypeContainer.NullInstance;
+            return null;
         }
     }
     
