@@ -74,6 +74,16 @@ public class RepositoryExpressionEvaluator
             return true;
         }
 
+        if ("true".Equals(value, StringComparison.InvariantCulture))
+        {
+            return true;
+        }
+
+        if ("false".Equals(value, StringComparison.InvariantCulture))
+        {
+            return false;
+        }
+
         try
         {
             Repository[] repositories = repository == null ? Array.Empty<Repository>() : new[] { repository, };
