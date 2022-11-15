@@ -24,6 +24,7 @@ internal static class ActionMapperCompositionFactory
                 new ActionCommandV1Mapper(expressionEvaluator, translationService),
                 new ActionExecutableV1Mapper(expressionEvaluator,translationService, fileSystem),
                 new ActionFolderV1Mapper(expressionEvaluator, translationService),
+                new ActionForEachV1Mapper(expressionEvaluator),
                 new ActionGitCheckoutV1Mapper(expressionEvaluator, translationService, repositoryWriter),
                 new ActionGitFetchV1Mapper(expressionEvaluator, translationService, repositoryWriter),
                 new ActionGitPullV1Mapper(expressionEvaluator, translationService, repositoryWriter),

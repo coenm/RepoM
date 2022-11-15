@@ -1,0 +1,13 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionForEachV1,
+        Variable: environment,
+        Loop: {var.DTAP},
+        Type: foreach@1
+      }
+    ]
+  }
+}

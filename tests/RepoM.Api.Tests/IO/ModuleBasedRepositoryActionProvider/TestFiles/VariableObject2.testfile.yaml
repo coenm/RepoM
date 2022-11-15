@@ -1,0 +1,9 @@
+version: 1
+variables:
+- name: devopsEnvironments
+  value:
+  - name: D
+    url: https://www.google.com
+  - name: T
+    url: https://github.com
+  enabled: true

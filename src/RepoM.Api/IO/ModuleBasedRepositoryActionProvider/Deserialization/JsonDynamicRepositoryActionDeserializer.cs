@@ -73,7 +73,7 @@ public class JsonDynamicRepositoryActionDeserializer
         if (actions != null)
         {
             JToken? jTokenVariables = repositoryActionsToken.SelectToken("variables");
-            configuration.ActionsCollection.Variables.AddRange(TryDeserializeEnumerable<Variable>(jTokenVariables));
+            configuration.ActionsCollection.Variables.AddRange(TryDeserializeEnumerableVariable(jTokenVariables));
             repositoryActionsToken = actions;
         }
 
@@ -113,7 +113,7 @@ public class JsonDynamicRepositoryActionDeserializer
         if (tagsToken != null)
         {
             JToken? token = repositoryTagsToken.SelectToken("variables");
-            configuration.TagsCollection.Variables.AddRange(TryDeserializeEnumerable<Variable>(token));
+            configuration.TagsCollection.Variables.AddRange(TryDeserializeEnumerableVariable(token));
             configuration.TagsCollection.Tags.AddRange(TryDeserializeEnumerable<RepositoryActionTag>(tagsToken));
         }
         else
@@ -162,19 +162,35 @@ public class JsonDynamicRepositoryActionDeserializer
                 continue;
             }
 
-            if (valueToken.Type == JTokenType.String)
+            static object? Convert(JToken jToken)
             {
-                obj.Value = valueToken.Value<string>();
-            }
-            else if (valueToken.Type == JTokenType.Integer)
-            {
-                obj.Value = valueToken.Value<int>();
-            }
-            else
-            {
-                obj.Value = valueToken.ToObject<ExpandoObject>();
+                if (jToken.Type == JTokenType.String)
+                {
+                    return jToken.Value<string>();
+                }
+
+                if (jToken.Type == JTokenType.Integer)
+                {
+                    return jToken.Value<int>();
+                }
+
+                if (jToken.Type == JTokenType.Array)
+                {
+                    return jToken
+                           .Children()
+                           .Select(Convert)
+                           .ToArray();
+                }
+
+                if (jToken.Type == JTokenType.Object)
+                {
+                    return jToken.ToObject<ExpandoObject>();
+                }
+
+                return null;
             }
 
+            obj.Value = Convert(valueToken);
             yield return obj;
         }
     }
@@ -193,7 +209,7 @@ public class JsonDynamicRepositoryActionDeserializer
 
         var redirectValue = redirectToken.Value<string>();
 
-        return new Redirect()
+        return new Redirect
             {
                 Filename = redirectValue ?? string.Empty,
             };

@@ -360,6 +360,51 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
+    [Theory]
+    [EnumMemberData(typeof(SerializationType))]
+    public async Task Deserialize_VariableObject2(SerializationType type)
+    {
+        // arrange
+        _testFileSettings.UseFileName("VariableObject2");
+        var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
+
+        // act
+        RepositoryActionConfiguration result = SutDeserialize(content, type);
+
+        // assert
+        await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
+    }
+
+    [Theory]
+    [EnumMemberData(typeof(SerializationType))]
+    public async Task Deserialize_ForEach1(SerializationType type)
+    {
+        // arrange
+        _testFileSettings.UseFileName("ForEach1");
+        var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
+
+        // act
+        RepositoryActionConfiguration result = SutDeserialize(content, type);
+
+        // assert
+        await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
+    }
+
+    [Theory]
+    [EnumMemberData(typeof(SerializationType))]
+    public async Task Deserialize_ForEach2(SerializationType type)
+    {
+        // arrange
+        _testFileSettings.UseFileName("ForEach2");
+        var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
+
+        // act
+        RepositoryActionConfiguration result = SutDeserialize(content, type);
+
+        // assert
+        await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
+    }
+
     [Fact]
     public void EmptyFile_ShouldThrow()
     {
