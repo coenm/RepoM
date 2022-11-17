@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class TagsCollection
 {
-    public List<Variable> Variables { get; set; } = new List<Variable>();
+    public List<Variable> Variables { get; set; } = new();
 
-    public List<RepositoryActionTag> Tags { get; set; } = new List<RepositoryActionTag>();
+    public List<RepositoryActionTag> Tags { get; set; } = new();
 }

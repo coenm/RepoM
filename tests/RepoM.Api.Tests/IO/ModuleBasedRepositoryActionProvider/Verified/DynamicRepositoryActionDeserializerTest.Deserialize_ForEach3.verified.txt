@@ -1,0 +1,52 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Variables: [
+      {
+        Name: DTAP,
+        Value: {
+          $type: object[],
+          $values: [
+            {
+              $type: ExpandoObject,
+              key: D,
+              url: https://develop.local
+            },
+            {
+              $type: ExpandoObject,
+              key: T,
+              url: https://test.local
+            },
+            {
+              $type: ExpandoObject,
+              key: A,
+              url: https://acceptance.local
+            },
+            {
+              $type: ExpandoObject,
+              key: p,
+              url: https://production.local
+            }
+          ]
+        }
+      }
+    ],
+    Actions: [
+      {
+        $type: RepositoryActionForEachV1,
+        Actions: [
+          {
+            $type: RepositoryActionBrowserV1,
+            Url: {var.environment.url},
+            Type: browser@1,
+            Name: {var.environment.key}
+          }
+        ],
+        Variable: environment,
+        Enumerable: {var.DTAP},
+        Skip: {IsNull({var.environment.x})},
+        Type: foreach@1
+      }
+    ]
+  }
+}

@@ -24,6 +24,7 @@ using RepoM.Api.Git;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.VariableProviders;
 using Specs.IO;
 using Specs.Mocks;
 
@@ -73,6 +74,7 @@ public class DefaultRepositoryMonitorTests
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
                 new CustomEnvironmentVariableVariableProvider(),
+                new RepoMVariableProvider(),
                 new RepositoryVariableProvider(),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),

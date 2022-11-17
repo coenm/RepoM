@@ -16,6 +16,7 @@ using FakeItEasy;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
+using RepoM.Api.IO.VariableProviders;
 using VerifyXunit;
 
 [UsesEasyTestFile]

@@ -1,0 +1,16 @@
+version: 1
+variables:
+- name: varObject
+  value:
+    name: abc
+    age: 12
+    isSupeMan: true
+    brothers:
+    - BatMan
+    - SupeMan
+    subs:
+    - index: 1
+      name: Uno
+    - index: 2
+      name: Twice
+  enabled: true

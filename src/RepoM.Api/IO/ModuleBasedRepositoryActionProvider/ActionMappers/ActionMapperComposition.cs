@@ -3,10 +3,10 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ExpressionStringEvaluator.Methods;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.Api.IO.Variables;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class ActionMapperComposition
@@ -33,10 +33,9 @@ public class ActionMapperComposition
 
             return vars
                    .Where(v => IsEnabled(v.Enabled, true, singleRepository))
-                   .Select(v => new EvaluatedVariable()
+                   .Select(v => new EvaluatedVariable
                        {
                            Name = v.Name,
-                           Enabled = true,
                            Value = Evaluate(v.Value, singleRepository),
                        })
                    .ToList();
@@ -51,14 +50,14 @@ public class ActionMapperComposition
         return result.ToArray();
     }
 
-    private CombinedTypeContainer Evaluate(string? input, Repository repository)
+    private object? Evaluate(object? input, Repository repository)
     {
-        if (input == null)
+        if (input is string s)
         {
-            return CombinedTypeContainer.NullInstance;
+            return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
         }
 
-        return _repoExpressionEvaluator.EvaluateValueExpression(input, repository);
+        return input;
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)

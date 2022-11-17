@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2022.1.0"  PrivateAssets="all"/>
+    <PackageReference Include="JetBrains.Annotations" Version="2022.3.1"  PrivateAssets="all"/>
   </ItemGroup>
 
   <!-- Each production project automatically makes internals visible to testproject with same name (suffixed with ".Tests"). -->
