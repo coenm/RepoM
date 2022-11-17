@@ -45,6 +45,13 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
         return input;
     }
 
+    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
+    {
+        return string.IsNullOrWhiteSpace(booleanExpression)
+            ? defaultWhenNullOrEmpty
+            : _expressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
+    }
+
     private IEnumerable<RepoM.Api.Git.RepositoryActionBase> Map(RepositoryActionForEachV1? action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
         if (action == null)
@@ -73,7 +80,19 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
         {
             yield break;
         }
-        
+
+        List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable> vars)
+        {
+            return vars
+                   .Where(v => IsEnabled(v.Enabled, true, repository))
+                   .Select(v => new EvaluatedVariable
+                       {
+                           Name = v.Name,
+                           Value = Evaluate(v.Value, repository),
+                       })
+                   .ToList();
+        }
+
         foreach (var item in list)
         {
             if (item is null)
@@ -81,7 +100,7 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
                 break;
             }
 
-            using IDisposable disposable = RepoMVariableProviderStore.Push(new List<EvaluatedVariable>(1)
+            using IDisposable disposableIterationItem = RepoMVariableProviderStore.Push(new List<EvaluatedVariable>(1)
                 {
                     new()
                         {
@@ -90,7 +109,8 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
                         },
                 });
 
-
+            using IDisposable disposableDefinedVariables = RepoMVariableProviderStore.Push(EvaluateVariables(action.Variables));
+            
             foreach (RepositoryActionBase? repoAction in action.Actions.SelectMany(repositoryAction => actionMapperComposition.Map(repositoryAction, repository)))
             {
                 yield return repoAction;
