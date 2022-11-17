@@ -70,6 +70,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         catch (Exception e)
         {
             _logger.LogError(e, "Could not retrieve GitHttpClient from connection.");
+            return Task.CompletedTask;
         }
 
         _updateTimer1 = new Timer(async _ => await UpdatePullRequests(_gitClient!), null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(4));
