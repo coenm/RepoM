@@ -69,9 +69,9 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var loop = Evaluate(action.Loop, repository);
+        var enumerable = Evaluate(action.Enumerable, repository);
 
-        if (loop is not IList list)
+        if (enumerable is not IList list)
         {
             yield break;
         }
@@ -93,11 +93,16 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
                    .ToList();
         }
 
+        bool ShouldSkip(string? booleanExpression)
+        {
+            return !string.IsNullOrWhiteSpace(booleanExpression) && _expressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
+        }
+
         foreach (var item in list)
         {
             if (item is null)
             {
-                break;
+                continue;
             }
 
             using IDisposable disposableIterationItem = RepoMVariableProviderStore.Push(new List<EvaluatedVariable>(1)
@@ -109,8 +114,13 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
                         },
                 });
 
+            if (ShouldSkip(action.Skip))
+            {
+                continue;
+            }
+
             using IDisposable disposableDefinedVariables = RepoMVariableProviderStore.Push(EvaluateVariables(action.Variables));
-            
+
             foreach (RepositoryActionBase? repoAction in action.Actions.SelectMany(repositoryAction => actionMapperComposition.Map(repositoryAction, repository)))
             {
                 yield return repoAction;

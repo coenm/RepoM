@@ -44,6 +44,7 @@
         ],
         Variable: environment,
         Enumerable: {var.DTAP},
+        Skip: {IsNull({var.environment.x})},
         Type: foreach@1
       }
     ]

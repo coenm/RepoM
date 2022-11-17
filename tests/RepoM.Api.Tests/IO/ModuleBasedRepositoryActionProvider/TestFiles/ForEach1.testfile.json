@@ -27,7 +27,7 @@
     "actions": [
       {
         "type": "foreach@1",
-        "loop": "{var.DTAP}",
+        "enumerable": "{var.DTAP}",
         "variable": "environment",
         "actions": [
           {

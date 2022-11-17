@@ -14,6 +14,7 @@ repository-actions:
   - type: foreach@1
     enumerable: '{var.DTAP}'
     variable: environment
+    skip: '{IsNull({var.environment.x})}'
     actions:
     - type: browser@1
       name: '{var.environment.key}'

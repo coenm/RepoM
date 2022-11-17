@@ -34,12 +34,11 @@ public class ActionForEachV1Deserializer : IActionDeserializer
             return null;
         }
 
-        if (string.IsNullOrWhiteSpace(result.Loop))
+        if (string.IsNullOrWhiteSpace(result.Enumerable))
         {
             return null;
         }
-
-
+        
         JToken? actions = token.SelectToken("actions");
         if (actions == null)
         {

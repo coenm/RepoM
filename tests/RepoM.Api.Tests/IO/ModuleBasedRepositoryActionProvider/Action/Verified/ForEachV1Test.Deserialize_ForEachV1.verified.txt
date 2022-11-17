@@ -5,7 +5,7 @@
       {
         $type: RepositoryActionForEachV1,
         Variable: environment,
-        Loop: {var.DTAP},
+        Enumerable: {var.DTAP},
         Type: foreach@1
       }
     ]

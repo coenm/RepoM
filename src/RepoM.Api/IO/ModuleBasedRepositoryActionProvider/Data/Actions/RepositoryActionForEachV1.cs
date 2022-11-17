@@ -8,5 +8,7 @@ public class RepositoryActionForEachV1 : RepositoryAction
 
     public string? Variable { get; set; }
 
-    public string? Loop { get; set; }
+    public string? Enumerable { get; set; }
+
+    public string? Skip { get; set; }
 }
