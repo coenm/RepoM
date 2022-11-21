@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoM.Api.Tests", "tests\Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoM.Core.Plugin", "src\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj", "{E38D9928-A0A6-4978-BD7E-C7F2E2B6BC9B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yaml.Poc.Tests", "tests\Yaml.Poc.Tests\Yaml.Poc.Tests.csproj", "{C5A65FD2-CD65-47EA-A521-8B7C756AC986}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -327,6 +329,26 @@ Global
 		{E38D9928-A0A6-4978-BD7E-C7F2E2B6BC9B}.Release|x64.Build.0 = Release|Any CPU
 		{E38D9928-A0A6-4978-BD7E-C7F2E2B6BC9B}.Release|x86.ActiveCfg = Release|Any CPU
 		{E38D9928-A0A6-4978-BD7E-C7F2E2B6BC9B}.Release|x86.Build.0 = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|ARM.Build.0 = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|x64.Build.0 = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Debug|x86.Build.0 = Debug|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|ARM.ActiveCfg = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|ARM.Build.0 = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|ARM64.Build.0 = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|x64.ActiveCfg = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|x64.Build.0 = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|x86.ActiveCfg = Release|Any CPU
+		{C5A65FD2-CD65-47EA-A521-8B7C756AC986}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

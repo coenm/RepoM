@@ -3,11 +3,62 @@ namespace RepoM.Core.Plugin.RepositoryViewSort;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Transactions;
 
 public interface IRepositoryComparer : IComparer<IPluginRepository>
 {
 }
+
+public interface IRepositoryScoreCalculator
+{
+    int Score(IPluginRepository repository);
+}
+
+public class IsPinnedScoreCalculator : IRepositoryScoreCalculator
+{
+    private readonly int _weight;
+
+    public IsPinnedScoreCalculator(int weight)
+    {
+        _weight = weight;
+    }
+    
+    public int Score(IPluginRepository repository)
+    {
+        return repository.IsPinned ? _weight : 0;
+    }
+}
+
+
+public class ScoreComparer : IRepositoryComparer
+{
+    private readonly IRepositoryScoreCalculator _calculator;
+
+    public ScoreComparer(IRepositoryScoreCalculator calculator)
+    {
+        _calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
+    }
+
+    public int Compare(IPluginRepository x, IPluginRepository y)
+    {
+        if (ReferenceEquals(x, y))
+        {
+            return 0;
+        }
+
+        if (ReferenceEquals(null, y))
+        {
+            return 1;
+        }
+
+        if (ReferenceEquals(null, x))
+        {
+            return -1;
+        }
+
+        return _calculator.Score(x) - _calculator.Score(y);
+    }
+}
+
 
 public class SumCompositionComparer : IRepositoryComparer
 {
@@ -68,8 +119,6 @@ public class CompositionComparer : IRepositoryComparer
         return _comparers.Select(c => c.Compare(x, y)).FirstOrDefault(result => result != 0);
     }
 }
-
-
 
 
 public class IsPinnedComparer : IRepositoryComparer
