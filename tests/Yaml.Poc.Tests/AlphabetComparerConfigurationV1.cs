@@ -2,7 +2,7 @@ namespace Yaml.Poc.Tests;
 
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
-public class AlphabetComparerConfigurationV1 : IRepositoriesCompareConfiguration
+public class AlphabetComparerConfigurationV1 : IRepositoriesComparerConfiguration
 {
     public string? Property { get; set; }
 

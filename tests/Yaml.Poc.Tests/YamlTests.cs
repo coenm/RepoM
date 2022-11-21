@@ -34,7 +34,7 @@ public class YamlTests
             .WithTagMapping("!is-pinned-scorer@1", typeof(IsPinnedScorerConfigurationV1))
             .Build();
 
-        var result = deserializer.Deserialize<IRepositoriesCompareConfiguration>(yml);
+        var result = deserializer.Deserialize<IRepositoriesComparerConfiguration>(yml);
 
         await Verifier.Verify(result);
     }
