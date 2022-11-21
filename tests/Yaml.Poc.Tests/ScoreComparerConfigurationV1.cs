@@ -1,8 +1,8 @@
 namespace Yaml.Poc.Tests;
 
-using RepoM.Core.Plugin.RepositoryOrdering;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
-public class ScoreComparerConfigurationV1 : ICompareReposConfiguration
+public class ScoreComparerConfigurationV1 : IRepositoriesCompareConfiguration
 {
-    public IRepoScorerConfiguration? ScoreProvider { get; set; }
+    public IRepositoryScorerConfiguration? ScoreProvider { get; set; }
 }

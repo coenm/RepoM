@@ -1,7 +1,7 @@
 namespace Yaml.Poc.Tests;
 
 using System.Threading.Tasks;
-using RepoM.Core.Plugin.RepositoryOrdering;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using VerifyXunit;
 using Xunit;
 using YamlDotNet.Serialization;
@@ -34,7 +34,7 @@ public class YamlTests
             .WithTagMapping("!is-pinned-scorer@1", typeof(IsPinnedScorerConfigurationV1))
             .Build();
 
-        var result = deserializer.Deserialize<ICompareReposConfiguration>(yml);
+        var result = deserializer.Deserialize<IRepositoriesCompareConfiguration>(yml);
 
         await Verifier.Verify(result);
     }
