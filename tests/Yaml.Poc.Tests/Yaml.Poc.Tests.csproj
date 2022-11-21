@@ -35,4 +35,8 @@
     <Folder Include="TestFiles\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj" />
+  </ItemGroup>
+
 </Project>
