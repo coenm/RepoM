@@ -7,15 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using RepoM.Core.Plugin.RepositoryOrdering;
 using SimpleInjector;
-
-public interface IQueryHandler<T1, T2> where T1: IQuery<T2>
-{
-
-}
 public interface IQuery<T1>
 {
-
 }
 
 [DebuggerDisplay("{QueryType.Name,nq}")]
@@ -56,7 +51,7 @@ public class QueryProcessor
 
     public async Task<TResult> ExecuteQueryAsync<TResult>(IQuery<TResult> query, CancellationToken ct = default)
     {
-        Type handlerType = typeof(IQueryHandler<,>).MakeGenericType(query.GetType(), typeof(TResult));
+        Type handlerType = typeof(IRepositoryScoreCalculatorFactory<>).MakeGenericType(query.GetType());
 
         dynamic handler = _container.GetInstance(handlerType);
 

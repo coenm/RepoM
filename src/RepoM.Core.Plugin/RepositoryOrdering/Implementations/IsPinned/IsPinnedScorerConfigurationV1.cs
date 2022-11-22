@@ -1,4 +1,4 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations;
+namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.IsPinned;
 
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 

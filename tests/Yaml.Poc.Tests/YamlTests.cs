@@ -2,7 +2,10 @@ namespace Yaml.Poc.Tests;
 
 using System.Threading.Tasks;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations;
+using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Az;
+using RepoM.Core.Plugin.RepositoryOrdering.Implementations.IsPinned;
+using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Score;
+using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Sum;
 using VerifyXunit;
 using Xunit;
 using YamlDotNet.Serialization;

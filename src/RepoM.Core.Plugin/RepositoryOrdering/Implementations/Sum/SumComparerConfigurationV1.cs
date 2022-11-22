@@ -1,4 +1,4 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations;
+namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Sum;
 
 using System.Collections.Generic;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
