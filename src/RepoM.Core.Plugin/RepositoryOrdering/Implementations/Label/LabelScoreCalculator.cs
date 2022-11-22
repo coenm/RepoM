@@ -1,4 +1,4 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.IsPinned;
+namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Label;
 
 public class LabelScoreCalculator : IRepositoryScoreCalculator
 {
