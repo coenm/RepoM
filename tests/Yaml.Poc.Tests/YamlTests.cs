@@ -2,6 +2,7 @@ namespace Yaml.Poc.Tests;
 
 using System.Threading.Tasks;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+using RepoM.Core.Plugin.RepositoryOrdering.Implementations;
 using VerifyXunit;
 using Xunit;
 using YamlDotNet.Serialization;

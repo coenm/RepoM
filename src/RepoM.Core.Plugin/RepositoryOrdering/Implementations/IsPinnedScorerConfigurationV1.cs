@@ -1,4 +1,4 @@
-namespace Yaml.Poc.Tests;
+namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations;
 
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
