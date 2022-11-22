@@ -34,4 +34,4 @@ As an extra goodie for Windows users, RepoZ automatically detects open File Expl
 
 ## Credits
 
-RepoM is a fork of the amazing RepoZ, which was created by [Screenshot](https://github.com/awaescher/RepoZ).
+RepoM is a fork of the amazing RepoZ, which was created by [Andreas Wäscher](https://github.com/awaescher/RepoZ).
