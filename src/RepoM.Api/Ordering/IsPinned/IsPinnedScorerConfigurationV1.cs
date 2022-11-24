@@ -1,7 +1,6 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.IsPinned;
+namespace RepoM.Api.Ordering.IsPinned;
 
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Composition;
 
 public class IsPinnedScorerConfigurationV1 : IRepositoryScorerConfiguration
 {

@@ -12,7 +12,7 @@ public class SumCompositionComparer : IRepositoryComparer
         _comparers = comparers.ToArray();
     }
 
-    public int Compare(IPluginRepository x, IPluginRepository y)
+    public int Compare(IRepository x, IRepository y)
     {
         if (ReferenceEquals(x, y))
         {

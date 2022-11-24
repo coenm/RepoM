@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\RepoM.Api\RepoM.Api.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj" />
   </ItemGroup>
 

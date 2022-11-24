@@ -85,14 +85,14 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
             _lastFetchRepository = 0;
         }
 
-        RepositoryView repositoryView = repositories[_lastFetchRepository];
+        RepositoryViewModel repositoryViewModel = repositories[_lastFetchRepository];
 
-        Console.WriteLine($"Auto-fetching {repositoryView.Name} (index {_lastFetchRepository} of {repositories.Count})");
+        Console.WriteLine($"Auto-fetching {repositoryViewModel.Name} (index {_lastFetchRepository} of {repositories.Count})");
 
-        repositoryView.IsSynchronizing = true;
+        repositoryViewModel.IsSynchronizing = true;
         try
         {
-            RepositoryWriter.Fetch(repositoryView.Repository);
+            RepositoryWriter.Fetch(repositoryViewModel.Repository);
         }
         catch
         {
@@ -103,7 +103,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
             // re-enable the timer to get to the next fetch
             UpdateBehavior();
 
-            repositoryView.IsSynchronizing = false;
+            repositoryViewModel.IsSynchronizing = false;
         }
     }
 

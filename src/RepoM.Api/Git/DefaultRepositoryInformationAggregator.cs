@@ -13,16 +13,16 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
     public DefaultRepositoryInformationAggregator(IThreadDispatcher dispatcher)
     {
         _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
-        Repositories = new ObservableCollection<RepositoryView>();
+        Repositories = new ObservableCollection<RepositoryViewModel>();
     }
 
-    public ObservableCollection<RepositoryView> Repositories { get; }
+    public ObservableCollection<RepositoryViewModel> Repositories { get; }
 
     public void Add(Repository repository, IRepositoryMonitor repositoryMonitor)
     {
         _dispatcher.Invoke(() =>
             {
-                var view = new RepositoryView(repository, repositoryMonitor);
+                var view = new RepositoryViewModel(repository, repositoryMonitor);
 
                 Repositories.Remove(view);
                 Repositories.Add(view);
@@ -33,7 +33,7 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
     {
         _dispatcher.Invoke(() =>
             {
-                RepositoryView[] viewsToRemove = Repositories.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
+                RepositoryViewModel[] viewsToRemove = Repositories.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
 
                 for (var i = viewsToRemove.Length - 1; i >= 0; i--)
                 {
@@ -44,18 +44,18 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
 
     public string? GetStatusByPath(string path)
     {
-        RepositoryView? view = GetRepositoryByPath(path);
+        RepositoryViewModel? view = GetRepositoryByPath(path);
         return view?.BranchWithStatus;
     }
 
-    private RepositoryView? GetRepositoryByPath(string path)
+    private RepositoryViewModel? GetRepositoryByPath(string path)
     {
         if (string.IsNullOrEmpty(path))
         {
             return null;
         }
 
-        List<RepositoryView>? views = null;
+        List<RepositoryViewModel>? views = null;
         try
         {
             views = Repositories.ToList();
@@ -76,7 +76,7 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
             path += "\\";
         }
 
-        RepositoryView[] viewsByPath = views!
+        RepositoryViewModel[] viewsByPath = views!
                                        .Where(r =>
                                            r?.Path != null
                                            &&

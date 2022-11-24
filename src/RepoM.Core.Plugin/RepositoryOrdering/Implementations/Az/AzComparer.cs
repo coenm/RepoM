@@ -4,7 +4,16 @@ using System;
 
 public class AzComparer : IRepositoryComparer
 {
-    public int Compare(IPluginRepository x, IPluginRepository y)
+    private readonly int _weight;
+    private readonly string? _property;
+
+    public AzComparer(int weight, string? property)
+    {
+        _weight = weight;
+        _property = property;
+    }
+
+    public int Compare(IRepository x, IRepository y)
     {
         if (ReferenceEquals(x, y))
         {
@@ -13,51 +22,35 @@ public class AzComparer : IRepositoryComparer
 
         if (ReferenceEquals(null, y))
         {
-            return 1;
+            return _weight;
         }
 
         if (ReferenceEquals(null, x))
         {
-            return -1;
+            return -1 * _weight;
         }
 
-        var nameComparison = string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+        var comparisonValue = 0;
 
-        if (nameComparison < 0)
+        if ("Name".Equals(_property, StringComparison.InvariantCultureIgnoreCase))
         {
-            return -1;
+            comparisonValue = string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+        }
+        else if ("Location".Equals(_property, StringComparison.InvariantCultureIgnoreCase))
+        {
+            comparisonValue = string.Compare(x.Location, y.Location, StringComparison.Ordinal);
         }
 
-        if (nameComparison == 0)
+        if (comparisonValue < 0)
+        {
+            return -1 * _weight;
+        }
+
+        if (comparisonValue == 0)
         {
             return 0;
         }
 
-        return 1;
-
-        if (nameComparison != 0)
-        {
-            return nameComparison;
-        }
-
-        // var currentBranchComparison = string.Compare(x.CurrentBranch, y.CurrentBranch, StringComparison.Ordinal);
-        // if (currentBranchComparison != 0)
-        // {
-        //     return currentBranchComparison;
-        // }
-        //
-        // var pathComparison = string.Compare(x.Path, y.Path, StringComparison.Ordinal);
-        // if (pathComparison != 0)
-        // {
-        //     return pathComparison;
-        // }
-        //
-        // var isPinnedComparison = x.IsPinned.CompareTo(y.IsPinned);
-        // if (isPinnedComparison != 0)
-        // {
-        //     return isPinnedComparison;
-        // }
-        //
-        // return x.HasUnpushedChanges.CompareTo(y.HasUnpushedChanges);
+        return _weight;
     }
 }

@@ -2,5 +2,5 @@ namespace RepoM.Core.Plugin.RepositoryOrdering;
 
 public interface IRepositoryScoreCalculator
 {
-    int Score(IPluginRepository repository);
+    int Score(IRepository repository);
 }

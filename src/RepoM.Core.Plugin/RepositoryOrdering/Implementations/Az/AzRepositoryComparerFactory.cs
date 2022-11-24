@@ -4,6 +4,6 @@ public class AzRepositoryComparerFactory : IRepositoryComparerFactory<AlphabetCo
 {
     public IRepositoryComparer Create(AlphabetComparerConfigurationV1 configuration)
     {
-        return new AzComparer();
+        return new AzComparer(configuration.Weight, configuration.Property);
     }
 }

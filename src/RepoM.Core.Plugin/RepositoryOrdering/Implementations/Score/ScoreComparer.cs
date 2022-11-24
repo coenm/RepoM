@@ -11,7 +11,7 @@ public class ScoreComparer : IRepositoryComparer
         _calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
     }
 
-    public int Compare(IPluginRepository x, IPluginRepository y)
+    public int Compare(IRepository x, IRepository y)
     {
         if (ReferenceEquals(x, y))
         {
@@ -28,6 +28,7 @@ public class ScoreComparer : IRepositoryComparer
             return -1;
         }
 
-        return _calculator.Score(x) - _calculator.Score(y);
+        var result = _calculator.Score(y) - _calculator.Score(x);
+        return result;
     }
 }

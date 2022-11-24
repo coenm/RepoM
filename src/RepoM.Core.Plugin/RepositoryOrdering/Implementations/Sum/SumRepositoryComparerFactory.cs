@@ -1,12 +1,19 @@
 namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Sum;
 
-using System.Collections.Generic;
+using System;
+using System.Linq;
 
 public class SumRepositoryComparerFactory : IRepositoryComparerFactory<SumComparerConfigurationV1>
 {
+    private readonly IRepositoryComparerFactory _factory;
+
+    public SumRepositoryComparerFactory(IRepositoryComparerFactory factory)
+    {
+        _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+    }
+
     public IRepositoryComparer Create(SumComparerConfigurationV1 configuration)
     {
-        // configuration.ScoreProvider
-        return new SumCompositionComparer(new List<IRepositoryComparer>());
+        return new SumCompositionComparer(configuration.Comparers.Select(c => _factory.Create(c)));
     }
 }

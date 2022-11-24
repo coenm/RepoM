@@ -17,8 +17,15 @@ using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
+using RepoM.Api.Ordering.IsPinned;
 using RepoM.App.Controls;
 using RepoM.App.Services;
+using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.RepositoryOrdering;
+using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Az;
+using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Composition;
+using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Label;
+using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Score;
 using SourceChord.FluentWPF;
 
 /// <summary>
@@ -75,7 +82,15 @@ public partial class MainWindow
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
         ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
         view.Filter = FilterRepositories;
-        view.CustomSort = new CustomRepositoryViewSortComparer();
+        view.CustomSort = new RepositoryComparerAdapter(
+            new CompositionComparer(
+                new IRepositoryComparer[]
+                    {
+                        new ScoreComparer(new IsPinnedScoreCalculator(repositoryMonitor, 1)),
+                        // new ScoreComparer(new LabelScoreCalculator("Prive", 1)),
+                        new AzComparer(1, nameof(IRepository.Name)),
+                    }
+                ));
 
         AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);
@@ -87,7 +102,7 @@ public partial class MainWindow
     private void View_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         // use the list's itemsource directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
-        var hasRepositories = lstRepositories.ItemsSource.OfType<RepositoryView>().Any();
+        var hasRepositories = lstRepositories.ItemsSource.OfType<RepositoryViewModel>().Any();
         tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible;
     }
 
@@ -178,7 +193,7 @@ public partial class MainWindow
 
     private bool LstRepositoriesContextMenuOpening(object sender, ContextMenu ctxMenu)
     {
-        RepositoryView[] selectedViews = lstRepositories.SelectedItems.OfType<RepositoryView>().ToArray();
+        RepositoryViewModel[] selectedViews = lstRepositories.SelectedItems.OfType<RepositoryViewModel>().ToArray();
 
         if (!selectedViews.Any())
         {
@@ -243,7 +258,7 @@ public partial class MainWindow
 
     private void InvokeActionOnCurrentRepository()
     {
-        if (lstRepositories.SelectedItem is not RepositoryView selectedView)
+        if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
         {
             return;
         }
@@ -380,7 +395,7 @@ public partial class MainWindow
         parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
     }
 
-    private static Control? /*MenuItem*/ CreateMenuItem(object sender, RepositoryActionBase action, IEnumerable<RepositoryView>? affectedViews = null)
+    private static Control? /*MenuItem*/ CreateMenuItem(object sender, RepositoryActionBase action, IEnumerable<RepositoryViewModel>? affectedViews = null)
     {
         if (action is RepositorySeparatorAction)
         {
@@ -465,14 +480,14 @@ public partial class MainWindow
         return item;
     }
 
-    private static void SetViewsSynchronizing(IEnumerable<RepositoryView>? affectedViews, bool synchronizing)
+    private static void SetViewsSynchronizing(IEnumerable<RepositoryViewModel>? affectedViews, bool synchronizing)
     {
         if (affectedViews == null)
         {
             return;
         }
 
-        foreach (RepositoryView view in affectedViews)
+        foreach (RepositoryViewModel view in affectedViews)
         {
             view.IsSynchronizing = synchronizing;
         }
@@ -557,7 +572,7 @@ public partial class MainWindow
             return false;
         }
 
-        if (item is not RepositoryView viewModelItem)
+        if (item is not RepositoryViewModel viewModelItem)
         {
             return false;
         }

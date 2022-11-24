@@ -11,4 +11,6 @@ public interface IRepositoryView
     bool IsPinned { get; }
 
     bool HasUnpushedChanges { get; }
+
+    Repository Repository { get; }
 }

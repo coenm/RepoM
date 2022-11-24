@@ -10,14 +10,14 @@ using Tests.Helper;
 public class RepositoryViewTests
 {
     private Repository _repo = null!;
-    private RepositoryView _view = null!;
+    private RepositoryViewModel _viewModel = null!;
     private StatusCharacterMap _statusCharacterMap = null!;
 
     [SetUp]
     public void Setup()
     {
         _repo = new RepositoryBuilder().BuildFullFeatured();
-        _view = new RepositoryView(_repo, A.Dummy<IRepositoryMonitor>());
+        _viewModel = new RepositoryViewModel(_repo, A.Dummy<IRepositoryMonitor>());
         _statusCharacterMap = new StatusCharacterMap();
     }
 
@@ -26,7 +26,7 @@ public class RepositoryViewTests
         [Test]
         public void Throws_If_Null_Is_Passed_As_Argument()
         {
-            Action act = () => _ = new RepositoryView(null!, A.Dummy<IRepositoryMonitor>());
+            Action act = () => _ = new RepositoryViewModel(null!, A.Dummy<IRepositoryMonitor>());
             act.Should().Throw<ArgumentNullException>();
         }
     }
@@ -36,14 +36,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.AheadBy.Should().Be(_repo.AheadBy.ToString());
+            _viewModel.AheadBy.Should().Be(_repo.AheadBy.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.AheadBy = null;
-            _view.AheadBy.Should().BeEmpty();
+            _viewModel.AheadBy.Should().BeEmpty();
         }
     }
 
@@ -52,14 +52,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.BehindBy.Should().Be(_repo.BehindBy.ToString());
+            _viewModel.BehindBy.Should().Be(_repo.BehindBy.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.BehindBy = null;
-            _view.BehindBy.Should().BeEmpty();
+            _viewModel.BehindBy.Should().BeEmpty();
         }
     }
 
@@ -68,14 +68,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.Branches.Should().ContainInOrder("master", "feature-one", "feature-two");
+            _viewModel.Branches.Should().ContainInOrder("master", "feature-one", "feature-two");
         }
 
         [Test]
         public void Returns_An_Empty_Array_For_Null()
         {
             _repo.Branches = null!;
-            _view.Branches.Length.Should().Be(0);
+            _viewModel.Branches.Length.Should().Be(0);
         }
     }
 
@@ -84,14 +84,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value()
         {
-            _view.CurrentBranch.Should().Be(_repo.CurrentBranch);
+            _viewModel.CurrentBranch.Should().Be(_repo.CurrentBranch);
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.CurrentBranch = null!;
-            _view.CurrentBranch.Should().BeEmpty();
+            _viewModel.CurrentBranch.Should().BeEmpty();
         }
     }
 
@@ -100,14 +100,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.LocalAdded.Should().Be(_repo.LocalAdded.ToString());
+            _viewModel.LocalAdded.Should().Be(_repo.LocalAdded.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.LocalAdded = null;
-            _view.LocalAdded.Should().BeEmpty();
+            _viewModel.LocalAdded.Should().BeEmpty();
         }
     }
 
@@ -116,14 +116,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.LocalIgnored.Should().Be(_repo.LocalIgnored.ToString());
+            _viewModel.LocalIgnored.Should().Be(_repo.LocalIgnored.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.LocalIgnored = null;
-            _view.LocalIgnored.Should().BeEmpty();
+            _viewModel.LocalIgnored.Should().BeEmpty();
         }
     }
 
@@ -132,14 +132,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.StashCount.Should().Be(_repo.StashCount.ToString());
+            _viewModel.StashCount.Should().Be(_repo.StashCount.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.StashCount = null;
-            _view.StashCount.Should().BeEmpty();
+            _viewModel.StashCount.Should().BeEmpty();
         }
     }
 
@@ -148,14 +148,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.LocalMissing.Should().Be(_repo.LocalMissing.ToString());
+            _viewModel.LocalMissing.Should().Be(_repo.LocalMissing.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.LocalMissing = null;
-            _view.LocalMissing.Should().BeEmpty();
+            _viewModel.LocalMissing.Should().BeEmpty();
         }
     }
 
@@ -164,14 +164,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.LocalModified.Should().Be(_repo.LocalModified.ToString());
+            _viewModel.LocalModified.Should().Be(_repo.LocalModified.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.LocalModified = null;
-            _view.LocalModified.Should().BeEmpty();
+            _viewModel.LocalModified.Should().BeEmpty();
         }
     }
 
@@ -180,14 +180,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.LocalRemoved.Should().Be(_repo.LocalRemoved.ToString());
+            _viewModel.LocalRemoved.Should().Be(_repo.LocalRemoved.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.LocalRemoved = null;
-            _view.LocalRemoved.Should().BeEmpty();
+            _viewModel.LocalRemoved.Should().BeEmpty();
         }
     }
 
@@ -196,14 +196,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.LocalStaged.Should().Be(_repo.LocalStaged.ToString());
+            _viewModel.LocalStaged.Should().Be(_repo.LocalStaged.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.LocalStaged = null;
-            _view.LocalStaged.Should().BeEmpty();
+            _viewModel.LocalStaged.Should().BeEmpty();
         }
     }
 
@@ -212,14 +212,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value_As_String()
         {
-            _view.LocalUntracked.Should().Be(_repo.LocalUntracked.ToString());
+            _viewModel.LocalUntracked.Should().Be(_repo.LocalUntracked.ToString());
         }
 
         [Test]
         public void Returns_An_Empty_String_For_Null()
         {
             _repo.LocalUntracked = null;
-            _view.LocalUntracked.Should().BeEmpty();
+            _viewModel.LocalUntracked.Should().BeEmpty();
         }
     }
 
@@ -228,7 +228,7 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value()
         {
-            _view.Name.Should().Be(_repo.Name);
+            _viewModel.Name.Should().Be(_repo.Name);
         }
     }
 
@@ -237,7 +237,7 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value()
         {
-            _view.Path.Should().Be(_repo.Path);
+            _viewModel.Path.Should().Be(_repo.Path);
         }
     }
 
@@ -247,7 +247,7 @@ public class RepositoryViewTests
         public void Returns_The_Compressed_String_From_The_StatusCompressor_Helper_Class()
         {
             var expected = new StatusCompressor(_statusCharacterMap).Compress(_repo);
-            _view.Status.Should().Be(expected);
+            _viewModel.Status.Should().Be(expected);
         }
     }
 
@@ -256,21 +256,21 @@ public class RepositoryViewTests
         [Test]
         public void Returns_True_If_Filter_Is_Empty()
         {
-            _view.MatchesFilter("").Should().Be(true);
+            _viewModel.MatchesFilter("").Should().Be(true);
         }
 
         [Test]
         public void Can_Filter_By_Name_Implicit()
         {
             _repo.Name = "Hello World";
-            _view.MatchesFilter("lo wo").Should().Be(true);
+            _viewModel.MatchesFilter("lo wo").Should().Be(true);
         }
 
         [Test]
         public void Can_Filter_By_Name_Explicit()
         {
             _repo.Name = "Hello World";
-            _view.MatchesFilter("n lo wo").Should().Be(true);
+            _viewModel.MatchesFilter("n lo wo").Should().Be(true);
         }
 
         [Test]
@@ -278,7 +278,7 @@ public class RepositoryViewTests
         {
             _repo.Name = "No Match Here";
             _repo.CurrentBranch = "feature/Test";
-            _view.MatchesFilter("b feat").Should().Be(true);
+            _viewModel.MatchesFilter("b feat").Should().Be(true);
         }
 
         [Test]
@@ -286,14 +286,14 @@ public class RepositoryViewTests
         {
             _repo.Name = "No Match Here";
             _repo.Path = @"C:\Test\Path";
-            _view.MatchesFilter(@"p C:\").Should().Be(true);
+            _viewModel.MatchesFilter(@"p C:\").Should().Be(true);
         }
 
         [Test]
         public void Returns_True_If_Filter_Is_Empty_Except_Prefix()
         {
             // "n ", "b ", "p " can be used to filter for name, branch and path
-            _view.MatchesFilter("b ").Should().Be(true);
+            _viewModel.MatchesFilter("b ").Should().Be(true);
         }
 
         [Test]
@@ -301,7 +301,7 @@ public class RepositoryViewTests
         {
             // should be interpreted as "b" search term without prefix
             _repo.Name = "xyz";
-            _view.MatchesFilter("b").Should().Be(false);
+            _viewModel.MatchesFilter("b").Should().Be(false);
         }
 
         [Test]
@@ -309,7 +309,7 @@ public class RepositoryViewTests
         {
             // trimming "b " leads to " master" which is not trimmed by design
             _repo.CurrentBranch = "master";
-            _view.MatchesFilter("b  master").Should().Be(false);
+            _viewModel.MatchesFilter("b  master").Should().Be(false);
         }
 
         [Test]
@@ -317,7 +317,7 @@ public class RepositoryViewTests
         {
             _repo.StashCount = 1;
             _repo.HasUnpushedChanges.Should().Be(true);
-            _view.MatchesFilter("todo").Should().Be(true);
+            _viewModel.MatchesFilter("todo").Should().Be(true);
         }
 
         [Test]
@@ -325,7 +325,7 @@ public class RepositoryViewTests
         {
             _repo = new Repository();
             _repo.HasUnpushedChanges.Should().Be(false);
-            new RepositoryView(_repo, A.Dummy<IRepositoryMonitor>()).MatchesFilter("todo").Should().Be(false);
+            new RepositoryViewModel(_repo, A.Dummy<IRepositoryMonitor>()).MatchesFilter("todo").Should().Be(false);
         }
     }
 
@@ -334,14 +334,14 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value()
         {
-            _view.WasFound.Should().Be(_repo.WasFound);
+            _viewModel.WasFound.Should().Be(_repo.WasFound);
         }
 
         [Test]
         public void Returns_False_If_Path_Is_Empty()
         {
             _repo.Path = "";
-            _view.WasFound.Should().BeFalse();
+            _viewModel.WasFound.Should().BeFalse();
         }
     }
 
@@ -350,7 +350,7 @@ public class RepositoryViewTests
         [Test]
         public void Returns_The_Repository_Value()
         {
-            _view.GetHashCode().Should().Be(_repo.GetHashCode());
+            _viewModel.GetHashCode().Should().Be(_repo.GetHashCode());
         }
     }
 }
