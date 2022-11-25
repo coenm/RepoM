@@ -61,20 +61,30 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
         var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
         var key = _expressionEvaluator.EvaluateStringExpression(action.Project!, repository);
 
-        yield return new Api.Git.RepositoryAction(name)
-            {
-                Action = (_, _) =>
-                    {
-                        try
+        if (_service.IsInitialized)
+        {
+            yield return new Api.Git.RepositoryAction(name)
+                {
+                    Action = (_, _) =>
                         {
-                            _ = _service.SetFavorite(key);
-                        }
-                        catch (Exception)
-                        {
-                            // ignore
-                        }
-                    },
-                ExecutionCausesSynchronizing = false,
-            };
+                            try
+                            {
+                                _ = _service.SetFavorite(key);
+                            }
+                            catch (Exception)
+                            {
+                                // ignore
+                            }
+                        },
+                    ExecutionCausesSynchronizing = false,
+                };
+        }
+        else
+        {
+            yield return new Api.Git.RepositoryAction(name)
+                {
+                    CanExecute = false,
+                };
+        }
     }
 }

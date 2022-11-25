@@ -419,7 +419,7 @@ public partial class MainWindow
                 }
             };
 
-        var item = new AcrylicMenuItem()
+        var item = new AcrylicMenuItem
             {
                 Header = repositoryAction.Name,
                 IsEnabled = repositoryAction.CanExecute,
