@@ -45,7 +45,7 @@ internal class SonarCloudFavoriteService
         return Task.CompletedTask;
     }
 
-    public bool IsInitialized => (_client != null);
+    public bool IsInitialized => _client != null;
 
     public async Task SetFavorite(string repoKey)
     {
