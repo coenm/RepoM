@@ -17,15 +17,9 @@ using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
-using RepoM.Api.Ordering.IsPinned;
 using RepoM.App.Controls;
 using RepoM.App.Services;
-using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryOrdering;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Az;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Composition;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Label;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Score;
 using SourceChord.FluentWPF;
 
 /// <summary>
@@ -54,7 +48,9 @@ public partial class MainWindow
         ITranslationService translationService,
         IAppDataPathProvider appDataPathProvider,
         IRepositorySearch repositorySearch,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        ICompareSettingsService compareSettingsService,
+        IRepositoryComparerFactory repositoryComparerFactory)
     {
         _translationService = translationService;
         InitializeComponent();
@@ -82,15 +78,8 @@ public partial class MainWindow
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
         ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
         view.Filter = FilterRepositories;
-        view.CustomSort = new RepositoryComparerAdapter(
-            new CompositionComparer(
-                new IRepositoryComparer[]
-                    {
-                        new ScoreComparer(new IsPinnedScoreCalculator(repositoryMonitor, 1)),
-                        // new ScoreComparer(new LabelScoreCalculator("Prive", 1)),
-                        new AzComparer(1, nameof(IRepository.Name)),
-                    }
-                ));
+        view.CustomSort = new RepositoryComparerAdapter(repositoryComparerFactory.Create(compareSettingsService.Configuration));
+
 
         AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);

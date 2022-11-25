@@ -3,6 +3,12 @@ namespace RepoM.Api.Common;
 using System;
 using System.Collections.Generic;
 using RepoM.Api.Git.AutoFetch;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+
+public interface ICompareSettingsService
+{
+    IRepositoriesComparerConfiguration Configuration { get; }
+}
 
 public interface IAppSettingsService
 {

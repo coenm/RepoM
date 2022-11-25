@@ -111,9 +111,9 @@ internal static class Bootstrapper
         container.Collection.Append<IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>, IsPinnedScorerFactory>(Lifestyle.Singleton);
         container.Register<IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>, IsPinnedScorerFactory>(Lifestyle.Singleton);
 
-        container.Collection.Append<IConfigurationRegistration, LabelScorerConfigurationV1Registration>(Lifestyle.Singleton);
-        container.Collection.Append<IRepositoryScoreCalculatorFactory<LabelScorerConfigurationV1>, LabelScorerFactory>(Lifestyle.Singleton);
-        container.Register<IRepositoryScoreCalculatorFactory<LabelScorerConfigurationV1>, LabelScorerFactory>(Lifestyle.Singleton);
+        container.Collection.Append<IConfigurationRegistration, TagScorerConfigurationV1Registration>(Lifestyle.Singleton);
+        container.Collection.Append<IRepositoryScoreCalculatorFactory<TagScorerConfigurationV1>, TagScorerFactory>(Lifestyle.Singleton);
+        container.Register<IRepositoryScoreCalculatorFactory<TagScorerConfigurationV1>, TagScorerFactory>(Lifestyle.Singleton);
 
         container.Collection.Append<IConfigurationRegistration, ScoreComparerConfigurationV1Registration>(Lifestyle.Singleton);
         container.Collection.Append<IRepositoryComparerFactory<ScoreComparerConfigurationV1>, ScoreRepositoryComparerFactory>(Lifestyle.Singleton);

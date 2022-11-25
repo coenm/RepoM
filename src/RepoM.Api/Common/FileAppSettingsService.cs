@@ -8,6 +8,66 @@ using System.Linq;
 using Newtonsoft.Json;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+
+public class FilesICompareSettingsService : ICompareSettingsService
+{
+    private readonly IFileSystem _fileSystem;
+    private readonly IEnumerable<IConfigurationRegistration> _registrations;
+    private readonly IAppDataPathProvider _appDataPathProvider;
+    private IRepositoriesComparerConfiguration? _settings;
+
+    public FilesICompareSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, IEnumerable<IConfigurationRegistration> registrations)
+    {
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _registrations = registrations.ToList();
+        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+    }
+
+    public IRepositoriesComparerConfiguration Configuration => _settings ??= Load();
+
+    private string GetFileName()
+    {
+        return Path.Combine(_appDataPathProvider.GetAppDataPath(), "RepoM.Ordering.yaml");
+    }
+
+    private IRepositoriesComparerConfiguration Load()
+    {
+        var file = GetFileName();
+
+        if (!_fileSystem.File.Exists(file))
+        {
+            throw new Exception("File doesnot exist");
+        }
+
+        try
+        {
+            var yml = _fileSystem.File.ReadAllText(file);
+
+
+            DeserializerBuilder builder = new DeserializerBuilder()
+                .WithNamingConvention(HyphenatedNamingConvention.Instance);
+
+            foreach (IConfigurationRegistration instance in _registrations)
+            {
+                var tag = instance.Tag.TrimStart('!');
+                builder.WithTagMapping("!" + tag, instance.ConfigurationType);
+            }
+
+            IDeserializer deserializer = builder.Build();
+
+            return deserializer.Deserialize<IRepositoriesComparerConfiguration>(yml);
+        }
+        catch
+        {
+            throw;
+            /* Our app settings are not critical. For our purposes, we want to ignore IO exceptions */
+        }
+
+    }
+}
 
 public class FileAppSettingsService : IAppSettingsService
 {
