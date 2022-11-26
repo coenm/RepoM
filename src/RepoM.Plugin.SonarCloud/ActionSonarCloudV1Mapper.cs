@@ -64,7 +64,7 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
 
         if (_service.IsInitialized)
         {
-            yield return new Api.Git.RepositoryAction(name)
+            yield return new Api.Git.RepositoryAction(name, repository)
                 {
                     Action = new DelegateAction((_, _) =>
                         {
@@ -82,7 +82,7 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
         }
         else
         {
-            yield return new Api.Git.RepositoryAction(name)
+            yield return new Api.Git.RepositoryAction(name, repository)
                 {
                     CanExecute = false,
                 };

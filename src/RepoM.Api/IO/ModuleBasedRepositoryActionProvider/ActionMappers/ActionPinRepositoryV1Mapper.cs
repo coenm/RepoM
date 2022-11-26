@@ -86,7 +86,7 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
 
         Git.RepositoryAction CreateAction(string name, Repository repository, bool newPinnedValue)
         {
-            return new Git.RepositoryAction(name)
+            return new Git.RepositoryAction(name, repository)
                 {
                     Action = new DelegateAction((_, _) => _repositoryMonitor.SetPinned(newPinnedValue, repository)),
                 };

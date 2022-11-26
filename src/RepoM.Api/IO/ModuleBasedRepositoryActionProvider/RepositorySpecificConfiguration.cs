@@ -7,6 +7,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using DotNetEnv;
+using LibGit2Sharp;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
@@ -16,7 +17,9 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Exceptions;
 using RepoM.Api.IO.Variables;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
+using IRepository = RepoM.Core.Plugin.IRepository;
 using Repository = RepoM.Api.Git.Repository;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
@@ -446,14 +449,14 @@ public class RepositorySpecificConfiguration
         {
             if (ex is ConfigurationFileNotFoundException configurationFileNotFoundException)
             {
-                foreach (RepositoryAction failingItem in CreateFailing(configurationFileNotFoundException, configurationFileNotFoundException.Filename))
+                foreach (RepositoryAction failingItem in CreateFailing(configurationFileNotFoundException, configurationFileNotFoundException.Filename, singleRepository!)) // todo coenm
                 {
                     yield return failingItem;
                 }
             }
             else
             {
-                foreach (RepositoryAction failingItem in CreateFailing(ex, null))
+                foreach (RepositoryAction failingItem in CreateFailing(ex, null, singleRepository!)) // todo coenm
                 {
                     yield return failingItem;
                 }
@@ -510,21 +513,21 @@ public class RepositorySpecificConfiguration
                .ToList();
     }
 
-    private IEnumerable<RepositoryAction> CreateFailing(Exception ex, string? filename)
+    private IEnumerable<RepositoryAction> CreateFailing(Exception ex, string? filename, IRepository repository)
     {
-        yield return new RepositoryAction(_translationService.Translate("Could not read repository actions"))
+        yield return new RepositoryAction(_translationService.Translate("Could not read repository actions"), repository)
             {
                 CanExecute = false,
             };
 
-        yield return new RepositoryAction(ex.Message)
+        yield return new RepositoryAction(ex.Message, repository)
             {
                 CanExecute = false,
             };
 
         if (!string.IsNullOrWhiteSpace(filename))
         {
-            yield return new RepositoryAction(_translationService.Translate("Fix"))
+            yield return new RepositoryAction(_translationService.Translate("Fix"), repository)
                 {
                     Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(_fileSystem.Path.GetDirectoryName(filename), string.Empty)),
                 };

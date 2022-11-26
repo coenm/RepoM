@@ -53,6 +53,6 @@ public class ActionSeparatorV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        yield return new RepositorySeparatorAction();
+        yield return new RepositorySeparatorAction(repository);
     }
 }

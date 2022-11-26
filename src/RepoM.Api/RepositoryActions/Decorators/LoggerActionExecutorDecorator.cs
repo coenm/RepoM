@@ -1,5 +1,6 @@
 namespace RepoM.Api.RepositoryActions.Decorators;
 
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 
 public class LoggerActionExecutorDecorator<T> : IActionExecutor<T> where T : IAction
@@ -11,8 +12,8 @@ public class LoggerActionExecutorDecorator<T> : IActionExecutor<T> where T : IAc
         _decoratee = decoratee;
     }
 
-    public void Execute(T action)
+    public void Execute(IRepository repository, T action)
     {
-        _decoratee.Execute(action);
+        _decoratee.Execute(repository, action);
     }
 }

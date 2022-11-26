@@ -272,7 +272,7 @@ public partial class MainWindow
 
         if (action?.Action is DelegateAction da)
         {
-            DelegateActionExecutor.Instance.Execute(da);
+            DelegateActionExecutor.Instance.Execute(action.Repository, da);
         }
     }
 
@@ -410,25 +410,24 @@ public partial class MainWindow
                 }
 
                 var coords = new float[] { 0, 0, };
-
+                
                 // run actions in the UI async to not block it
                 if (repositoryAction.Action is DelegateAction da)
                 {
                     if (repositoryAction.ExecutionCausesSynchronizing)
                     {
                         Task.Run(() => SetViewsSynchronizing(affectedViews, true))
-                            .ContinueWith(t => DelegateActionExecutor.Instance.Execute(da)) //repositoryAction.Action(null, coords))
+                            .ContinueWith(t => DelegateActionExecutor.Instance.Execute(repositoryAction.Repository, da)) //repositoryAction.Action(null, coords))
                             .ContinueWith(t => SetViewsSynchronizing(affectedViews, false));
                     }
                     else
                     {
-
-                        if (action?.Action != null)
-                        {
-                            // Task.Run(() => repositoryAction.Action(null, coords));
-                            Task.Run(() => DelegateActionExecutor.Instance.Execute(da));
-                        }
+                        Task.Run(() => DelegateActionExecutor.Instance.Execute(repositoryAction.Repository, da));
                     }
+                }
+                else
+                {
+                    throw new NotImplementedException();
                 }
             };
 

@@ -92,7 +92,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         }
         catch (Exception e)
         {
-            var notificationItem = new Api.Git.RepositoryAction($"An error occurred grabbing pull requests. {e.Message}")
+            var notificationItem = new Api.Git.RepositoryAction($"An error occurred grabbing pull requests. {e.Message}", repository)
                 {
                     CanExecute = false,
                     ExecutionCausesSynchronizing = false,
@@ -103,7 +103,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         if (pullRequests.Any())
         {
             var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
-            results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name)
+            results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name, repository)
                 {
                     Action = new DelegateAction((_, _) =>
                         {
@@ -119,7 +119,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         // check if user wants a notification
         if (_expressionEvaluator.EvaluateBooleanExpression(action.ShowWhenEmpty, repository))
         {
-            var notificationItem = new Api.Git.RepositoryAction("No PRs found.")
+            var notificationItem = new Api.Git.RepositoryAction("No PRs found.", repository)
                 {
                     CanExecute = false,
                     ExecutionCausesSynchronizing = false,

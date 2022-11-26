@@ -55,7 +55,7 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
 
         var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
         var url = _expressionEvaluator.EvaluateStringExpression(action.Url, repository);
-        yield return new RepositoryAction(name)
+        yield return new RepositoryAction(name, repository)
             {
                 Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(url, string.Empty)),
             };

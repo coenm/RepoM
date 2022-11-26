@@ -14,7 +14,8 @@ public static class MultipleRepositoryActionHelper
         Action<Repository> action,
         bool executionCausesSynchronizing = false)
     {
-        return new RepositoryAction(name)
+        // todo coen, fix
+        return new RepositoryAction(name, repositories.First()) 
             {
                 Action = new DelegateAction((_, _) =>
                     {
