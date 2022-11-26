@@ -3,9 +3,12 @@
     $type: RepositoryAction,
     Name: Google 1,
     Action: {
-      Type: Action<object, object>,
-      Target: ActionBrowserV1Mapper.<>c__DisplayClass6_0,
-      Method: Void Map(System.Object, System.Object)
+      $type: DelegateAction,
+      Action: {
+        Type: Action<object, object>,
+        Target: ActionBrowserV1Mapper.<>c__DisplayClass6_0,
+        Method: Void Map(System.Object, System.Object)
+      }
     },
     ExecutionCausesSynchronizing: false,
     CanExecute: true
@@ -14,9 +17,12 @@
     $type: RepositoryAction,
     Name: Google 5,
     Action: {
-      Type: Action<object, object>,
-      Target: ActionBrowserV1Mapper.<>c__DisplayClass6_0,
-      Method: Void Map(System.Object, System.Object)
+      $type: DelegateAction,
+      Action: {
+        Type: Action<object, object>,
+        Target: ActionBrowserV1Mapper.<>c__DisplayClass6_0,
+        Method: Void Map(System.Object, System.Object)
+      }
     },
     ExecutionCausesSynchronizing: false,
     CanExecute: true

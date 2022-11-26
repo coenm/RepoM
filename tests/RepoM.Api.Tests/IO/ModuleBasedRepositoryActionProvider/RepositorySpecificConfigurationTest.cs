@@ -54,6 +54,7 @@ public class RepositorySpecificConfigurationTest
 
         _verifySettings = new VerifySettings();
         _verifySettings.UseDirectory("Verified");
+        _verifySettings.IgnoreMember(nameof(Repository));
 
         _tempPath = Path.GetTempPath();
         _fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>(), "C:\\");
