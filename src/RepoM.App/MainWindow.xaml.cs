@@ -17,8 +17,10 @@ using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
+using RepoM.Api.RepositoryActions.Executors.Delegate;
 using RepoM.App.Controls;
 using RepoM.App.Services;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using SourceChord.FluentWPF;
 
@@ -268,7 +270,10 @@ public partial class MainWindow
             action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
         }
 
-        action?.Action?.Invoke(this, EventArgs.Empty);
+        if (action?.Action is DelegateAction da)
+        {
+            DelegateActionExecutor.Instance.Execute(da);
+        }
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
@@ -407,15 +412,23 @@ public partial class MainWindow
                 var coords = new float[] { 0, 0, };
 
                 // run actions in the UI async to not block it
-                if (repositoryAction.ExecutionCausesSynchronizing)
+                if (repositoryAction.Action is DelegateAction da)
                 {
-                    Task.Run(() => SetViewsSynchronizing(affectedViews, true))
-                        .ContinueWith(t => repositoryAction.Action(null, coords))
-                        .ContinueWith(t => SetViewsSynchronizing(affectedViews, false));
-                }
-                else
-                {
-                    Task.Run(() => repositoryAction.Action(null, coords));
+                    if (repositoryAction.ExecutionCausesSynchronizing)
+                    {
+                        Task.Run(() => SetViewsSynchronizing(affectedViews, true))
+                            .ContinueWith(t => DelegateActionExecutor.Instance.Execute(da)) //repositoryAction.Action(null, coords))
+                            .ContinueWith(t => SetViewsSynchronizing(affectedViews, false));
+                    }
+                    else
+                    {
+
+                        if (action?.Action != null)
+                        {
+                            // Task.Run(() => repositoryAction.Action(null, coords));
+                            Task.Run(() => DelegateActionExecutor.Instance.Execute(da));
+                        }
+                    }
                 }
             };
 

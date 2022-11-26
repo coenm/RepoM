@@ -7,6 +7,8 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions.Executors.Delegate;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
@@ -56,7 +58,7 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
         var url = _expressionEvaluator.EvaluateStringExpression(action.Url, repository);
         yield return new RepositoryAction(name)
             {
-                Action = (_, _) => ProcessHelper.StartProcess(url, string.Empty),
+                Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(url, string.Empty)),
             };
     }
 }

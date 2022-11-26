@@ -10,6 +10,8 @@ using RepoM.Api.IO;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.RepositoryActions.Executors.Delegate;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
@@ -65,7 +67,7 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
         {
             yield return new Api.Git.RepositoryAction(name)
                 {
-                    Action = (_, _) =>
+                    Action = new DelegateAction((_, _) =>
                         {
                             try
                             {
@@ -75,7 +77,7 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
                             {
                                 // ignore
                             }
-                        },
+                        }),
                     ExecutionCausesSynchronizing = false,
                 };
         }

@@ -11,6 +11,8 @@ using RepoM.Api.IO;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.RepositoryActions.Executors.Delegate;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
@@ -104,11 +106,11 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
             var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
             results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name)
                 {
-                    Action = (_, _) =>
+                    Action = new DelegateAction((_, _) =>
                         {
                             _logger.LogInformation("PullRequest {Url}", pr.Url);
                             ProcessHelper.StartProcess(pr.Url, string.Empty);
-                        },
+                        }),
                 }));
 
             return results.ToArray();

@@ -16,6 +16,8 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Exceptions;
 using RepoM.Api.IO.Variables;
+using RepoM.Api.RepositoryActions.Executors.Delegate;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using Repository = RepoM.Api.Git.Repository;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
@@ -525,7 +527,7 @@ public class RepositorySpecificConfiguration
         {
             yield return new RepositoryAction(_translationService.Translate("Fix"))
                 {
-                    Action = (_, _) => ProcessHelper.StartProcess(_fileSystem.Path.GetDirectoryName(filename), string.Empty),
+                    Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(_fileSystem.Path.GetDirectoryName(filename), string.Empty)),
                 };
         }
     }

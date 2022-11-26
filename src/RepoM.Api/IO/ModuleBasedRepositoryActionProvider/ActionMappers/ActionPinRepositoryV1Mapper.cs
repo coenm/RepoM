@@ -7,6 +7,8 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions.Executors.Delegate;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
@@ -87,7 +89,7 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
         {
             return new Git.RepositoryAction(name)
                 {
-                    Action = (_, _) => _repositoryMonitor.SetPinned(newPinnedValue, repository),
+                    Action = new DelegateAction((_, _) => _repositoryMonitor.SetPinned(newPinnedValue, repository)),
                 };
         }
 

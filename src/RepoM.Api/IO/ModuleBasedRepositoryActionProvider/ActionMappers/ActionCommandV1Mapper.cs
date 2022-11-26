@@ -7,6 +7,8 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions.Executors.Delegate;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
@@ -35,7 +37,7 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionCommandV1, repository.First());
     }
 
-    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionCommandV1? action, Repository repository)
+    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionCommandV1? action, Repository repository)
     {
         if (action == null)
         {
@@ -51,9 +53,9 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
         var command = _expressionEvaluator.EvaluateStringExpression(action.Command ?? string.Empty, repository);
         var arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments ?? string.Empty, repository); 
 
-        yield return new RepoM.Api.Git.RepositoryAction(name)
+        yield return new Git.RepositoryAction(name)
             {
-                Action = (_, _) => ProcessHelper.StartProcess(command, arguments),
+                Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(command, arguments)),
             };
     }
 }

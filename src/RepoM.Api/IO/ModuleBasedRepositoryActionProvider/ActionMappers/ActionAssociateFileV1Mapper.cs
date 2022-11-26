@@ -8,6 +8,8 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions.Executors.Delegate;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
@@ -70,11 +72,11 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         }
     }
 
-    private RepoM.Api.Git.RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+    private Git.RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
     {
-        return new RepoM.Api.Git.RepositoryAction(name)
+        return new Git.RepositoryAction(name)
         {
-            Action = (_, _) => ProcessHelper.StartProcess(process, arguments),
+            Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(process, arguments)),
         };
     }
 

@@ -7,6 +7,8 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions.Executors.Delegate;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = Data.RepositoryAction;
 
 public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
@@ -67,7 +69,7 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
                               .Take(50)
                               .Select(branch => new Git.RepositoryAction(branch)
                                   {
-                                      Action = (_, _) => _repositoryWriter.Checkout(repository, branch),
+                                      Action = new DelegateAction((_, _) => _repositoryWriter.Checkout(repository, branch)),
                                       CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
                                   })
                               .Union(new RepositoryActionBase[]
@@ -81,7 +83,7 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
                                                                                               .ReadAllBranches()
                                                                                               .Select(branch => new Git.RepositoryAction(branch)
                                                                                                   {
-                                                                                                      Action = (_, _) => _repositoryWriter.Checkout(repository, branch),
+                                                                                                      Action = new DelegateAction((_, _) => _repositoryWriter.Checkout(repository, branch)),
                                                                                                       CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
                                                                                                   })
                                                                                               .ToArray();

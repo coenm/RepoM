@@ -2,10 +2,13 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.Collections.Generic;
+using RepoM.Core.Plugin.RepositoryActions;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 
 public class RepositorySeparatorAction : RepositoryActionBase
 {
 }
+
 
 public class RepositoryAction : RepositoryActionBase
 {
@@ -19,7 +22,7 @@ public class RepositoryAction : RepositoryActionBase
 
 public abstract class RepositoryActionBase
 {
-    public Action<object?, object>? Action { get; set; }
+    public IAction Action { get; set; } = NullAction.Instance;
 
     public bool ExecutionCausesSynchronizing { get; set; }
 
