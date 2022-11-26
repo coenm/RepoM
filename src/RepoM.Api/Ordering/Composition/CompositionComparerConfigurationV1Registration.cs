@@ -1,4 +1,4 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Composition;
+namespace RepoM.Api.Ordering.Composition;
 
 using System;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;

@@ -37,13 +37,13 @@ using RepoM.App.Services;
 using RepoM.Api.IO.VariableProviders;
 using RepoM.Api.Ordering.IsPinned;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Az;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Composition;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Label;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Score;
-using RepoM.Core.Plugin.RepositoryOrdering.Implementations.Sum;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using System.ComponentModel;
+using RepoM.Api.Ordering.Az;
+using RepoM.Api.Ordering.Composition;
+using RepoM.Api.Ordering.Label;
+using RepoM.Api.Ordering.Score;
+using RepoM.Api.Ordering.Sum;
 using Container = SimpleInjector.Container;
 
 internal class RepositoryComparerCompositionFactory : IRepositoryComparerFactory

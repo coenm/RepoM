@@ -1,6 +1,7 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Score;
+namespace RepoM.Api.Ordering.Score;
 
 using System;
+using RepoM.Core.Plugin.RepositoryOrdering;
 
 public class ScoreRepositoryComparerFactory : IRepositoryComparerFactory<ScoreComparerConfigurationV1>
 {

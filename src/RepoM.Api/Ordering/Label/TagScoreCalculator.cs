@@ -1,6 +1,8 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Label;
+namespace RepoM.Api.Ordering.Label;
 
 using System.Linq;
+using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.RepositoryOrdering;
 
 public class TagScoreCalculator : IRepositoryScoreCalculator
 {

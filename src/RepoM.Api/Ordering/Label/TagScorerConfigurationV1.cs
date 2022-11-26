@@ -1,4 +1,4 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Label;
+namespace RepoM.Api.Ordering.Label;
 
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 

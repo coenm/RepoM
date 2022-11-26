@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api.Git;
-using RepoM.Api.RepositoryActions.Executors.Delegate;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 
 public static class MultipleRepositoryActionHelper

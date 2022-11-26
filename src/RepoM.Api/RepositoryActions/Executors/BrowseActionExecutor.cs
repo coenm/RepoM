@@ -1,4 +1,4 @@
-namespace RepoM.Api.RepositoryActions.Executors.Browse;
+namespace RepoM.Api.RepositoryActions.Executors;
 
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;

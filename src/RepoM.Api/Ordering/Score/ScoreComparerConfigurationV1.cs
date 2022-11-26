@@ -1,4 +1,4 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Score;
+namespace RepoM.Api.Ordering.Score;
 
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 

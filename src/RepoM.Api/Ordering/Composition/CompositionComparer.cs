@@ -1,7 +1,9 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Composition;
+namespace RepoM.Api.Ordering.Composition;
 
 using System.Collections.Generic;
 using System.Linq;
+using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.RepositoryOrdering;
 
 public class CompositionComparer : IRepositoryComparer
 {

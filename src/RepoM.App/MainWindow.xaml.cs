@@ -17,7 +17,7 @@ using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
-using RepoM.Api.RepositoryActions.Executors.Delegate;
+using RepoM.Api.RepositoryActions.Executors;
 using RepoM.App.Controls;
 using RepoM.App.Services;
 using RepoM.Core.Plugin.RepositoryActions.Actions;

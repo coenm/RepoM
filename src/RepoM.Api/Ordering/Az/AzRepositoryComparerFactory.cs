@@ -1,4 +1,6 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Az;
+namespace RepoM.Api.Ordering.Az;
+
+using RepoM.Core.Plugin.RepositoryOrdering;
 
 public class AzRepositoryComparerFactory : IRepositoryComparerFactory<AlphabetComparerConfigurationV1>
 {

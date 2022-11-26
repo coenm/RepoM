@@ -1,7 +1,8 @@
-namespace RepoM.Core.Plugin.RepositoryOrdering.Implementations.Sum;
+namespace RepoM.Api.Ordering.Sum;
 
 using System;
 using System.Linq;
+using RepoM.Core.Plugin.RepositoryOrdering;
 
 public class SumRepositoryComparerFactory : IRepositoryComparerFactory<SumComparerConfigurationV1>
 {
