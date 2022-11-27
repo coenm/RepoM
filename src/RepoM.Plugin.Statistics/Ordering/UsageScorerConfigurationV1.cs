@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Statistics.Ordering;
 
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
-public class UsageScorerConfigurationV1 : IRepositoryScorerConfiguration
+public sealed class UsageScorerConfigurationV1 : IRepositoryScorerConfiguration
 {
     public UsageScorerConfigurationV1()
     {

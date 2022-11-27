@@ -3,7 +3,7 @@ namespace RepoM.Plugin.Statistics.Ordering;
 using System;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-public class UsageScorerFactory : IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>
+public sealed class UsageScorerFactory : IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>
 {
     private readonly StatisticsService _service;
 

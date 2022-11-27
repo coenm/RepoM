@@ -281,50 +281,21 @@ public partial class App : Application
         container.Register<YamlDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
         container.Register<RepositorySpecificConfiguration>(Lifestyle.Singleton);
 
-       
-        
-
 
         container.RegisterSingleton<IRepositoryComparerFactory, RepositoryComparerCompositionFactory>();
         container.RegisterSingleton<IRepositoryScoreCalculatorFactory, RepositoryScoreCalculatorFactory>();
 
-        Assembly[] xxx =
-            {
-                typeof(IConfigurationRegistration).Assembly,
-                typeof(IsPinnedScorerConfigurationV1Registration).Assembly,
-                typeof(StatisticsPackage).Assembly,
-            };
-        container.Collection.Register(typeof(IConfigurationRegistration), xxx, Lifestyle.Singleton);
+        container.Collection.Register(
+            typeof(IConfigurationRegistration),
+            new[] { typeof(IConfigurationRegistration).Assembly, typeof(IsPinnedScorerConfigurationV1Registration).Assembly, },
+            Lifestyle.Singleton);
 
-        
-        container.Collection.Append<IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>, UsageScorerFactory>(Lifestyle.Singleton);
-        container.Register<IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>, UsageScorerFactory>(Lifestyle.Singleton);
-
-
-        // _container.Collection.Append<IConfigurationRegistration, AlphabetComparerConfigurationV1Registration>(Lifestyle.Singleton);
-        container.Collection.Append<IRepositoryComparerFactory<AlphabetComparerConfigurationV1>, AzRepositoryComparerFactory>(Lifestyle.Singleton);
-        container.Register<IRepositoryComparerFactory<AlphabetComparerConfigurationV1>, AzRepositoryComparerFactory>(Lifestyle.Singleton);
-
-        // _container.Collection.Append<IConfigurationRegistration, CompositionComparerConfigurationV1Registration>(Lifestyle.Singleton);
-        container.Collection.Append<IRepositoryComparerFactory<CompositionComparerConfigurationV1>, CompositionRepositoryComparerFactory>(Lifestyle.Singleton);
-        container.Register<IRepositoryComparerFactory<CompositionComparerConfigurationV1>, CompositionRepositoryComparerFactory>(Lifestyle.Singleton);
-
-        // _container.Collection.Append<IConfigurationRegistration, IsPinnedScorerConfigurationV1Registration>(Lifestyle.Singleton);
-        container.Collection.Append<IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>, IsPinnedScorerFactory>(Lifestyle.Singleton);
         container.Register<IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>, IsPinnedScorerFactory>(Lifestyle.Singleton);
-
-        // _container.Collection.Append<IConfigurationRegistration, TagScorerConfigurationV1Registration>(Lifestyle.Singleton);
-        container.Collection.Append<IRepositoryScoreCalculatorFactory<TagScorerConfigurationV1>, TagScorerFactory>(Lifestyle.Singleton);
         container.Register<IRepositoryScoreCalculatorFactory<TagScorerConfigurationV1>, TagScorerFactory>(Lifestyle.Singleton);
-
-        // _container.Collection.Append<IConfigurationRegistration, ScoreComparerConfigurationV1Registration>(Lifestyle.Singleton);
-        container.Collection.Append<IRepositoryComparerFactory<ScoreComparerConfigurationV1>, ScoreRepositoryComparerFactory>(Lifestyle.Singleton);
+        container.Register<IRepositoryComparerFactory<AlphabetComparerConfigurationV1>, AzRepositoryComparerFactory>(Lifestyle.Singleton);
+        container.Register<IRepositoryComparerFactory<CompositionComparerConfigurationV1>, CompositionRepositoryComparerFactory>(Lifestyle.Singleton);
         container.Register<IRepositoryComparerFactory<ScoreComparerConfigurationV1>, ScoreRepositoryComparerFactory>(Lifestyle.Singleton);
-
-        // _container.Collection.Append<IConfigurationRegistration, SumComparerConfigurationV1Registration>(Lifestyle.Singleton);
-        container.Collection.Append<IRepositoryComparerFactory<SumComparerConfigurationV1>, SumRepositoryComparerFactory>(Lifestyle.Singleton);
         container.Register<IRepositoryComparerFactory<SumComparerConfigurationV1>, SumRepositoryComparerFactory>(Lifestyle.Singleton);
-
 
         container.RegisterSingleton<ActionExecutor>();
         container.Register(typeof(IActionExecutor<>), new [] { typeof(BrowseActionExecutor).Assembly, }, Lifestyle.Singleton);

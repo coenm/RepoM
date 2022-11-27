@@ -6,7 +6,7 @@ using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 
 [UsedImplicitly]
-public class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor<T> where T : IAction
+public sealed class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor<T> where T : IAction
 {
     private readonly IActionExecutor<T> _decoratee;
     private readonly StatisticsService _service;

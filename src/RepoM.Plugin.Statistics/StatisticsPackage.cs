@@ -15,19 +15,13 @@ public class StatisticsPackage : IPackage
 {
     public void RegisterServices(Container container)
     {
-        // container.Collection.Append<IConfigurationRegistration, UsageScorerConfigurationV1Registration>(Lifestyle.Singleton);
-
-        // container.Collection.Append<IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>, IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>>(Lifestyle.Singleton);
-
-        // container.Collection.Append<IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>, UsageScorerFactory>(Lifestyle.Singleton);
-        // container.Register<IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>, UsageScorerFactory>(Lifestyle.Singleton);
-
-        container.RegisterDecorator(
-            typeof(IActionExecutor<>),
-            typeof(RecordStatisticsActionExecutorDecorator<>),
-            Lifestyle.Singleton);
-
-        container.Register<StatisticsService>(Lifestyle.Singleton);
+        // Plugin registrations
+        container.Collection.Append<IConfigurationRegistration, UsageScorerConfigurationV1Registration>(Lifestyle.Singleton);
+        container.Register<IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>, UsageScorerFactory>(Lifestyle.Singleton);
+        container.RegisterDecorator(typeof(IActionExecutor<>), typeof(RecordStatisticsActionExecutorDecorator<>), Lifestyle.Singleton);
         container.Collection.Append<IModule, StatisticsModule>(Lifestyle.Singleton);
+
+        // Internal registrations
+        container.Register<StatisticsService>(Lifestyle.Singleton);
     }
 }
