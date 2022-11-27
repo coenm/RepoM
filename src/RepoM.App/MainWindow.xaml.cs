@@ -17,10 +17,9 @@ using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
-using RepoM.Api.RepositoryActions.Executors;
 using RepoM.App.Controls;
+using RepoM.App.RepositoryActions;
 using RepoM.App.Services;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using SourceChord.FluentWPF;
 
@@ -38,6 +37,7 @@ public partial class MainWindow
     private bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
     private readonly IFileSystem _fileSystem;
+    private readonly ActionExecutor _executor;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     public MainWindow(
@@ -52,7 +52,8 @@ public partial class MainWindow
         IRepositorySearch repositorySearch,
         IFileSystem fileSystem,
         ICompareSettingsService compareSettingsService,
-        IRepositoryComparerFactory repositoryComparerFactory)
+        IRepositoryComparerFactory repositoryComparerFactory,
+        ActionExecutor executor)
     {
         _translationService = translationService;
         InitializeComponent();
@@ -74,6 +75,7 @@ public partial class MainWindow
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _repositorySearch = repositorySearch ?? throw new ArgumentNullException(nameof(repositorySearch));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _executor = executor ?? throw new ArgumentNullException(nameof(executor));
 
         lstRepositories.ItemsSource = aggregator.Repositories;
 
@@ -81,8 +83,8 @@ public partial class MainWindow
         ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
         view.Filter = FilterRepositories;
         view.CustomSort = new RepositoryComparerAdapter(repositoryComparerFactory.Create(compareSettingsService.Configuration));
-
-
+        // view.Refresh(); // todo refresh on change of value in on of the characteristics sorting is based on.
+        
         AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);
         txtHelp.Text = GetHelp(statusCharacterMap);
@@ -270,9 +272,9 @@ public partial class MainWindow
             action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
         }
 
-        if (action?.Action is DelegateAction da)
+        if (action != null)
         {
-            DelegateActionExecutor.Instance.Execute(action.Repository, da);
+            _executor.Execute(action.Repository, action.Action);
         }
     }
 
@@ -389,7 +391,7 @@ public partial class MainWindow
         parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
     }
 
-    private static Control? /*MenuItem*/ CreateMenuItem(object sender, RepositoryActionBase action, IEnumerable<RepositoryViewModel>? affectedViews = null)
+    private Control? /*MenuItem*/ CreateMenuItem(object sender, RepositoryActionBase action, IEnumerable<RepositoryViewModel>? affectedViews = null)
     {
         if (action is RepositorySeparatorAction)
         {
@@ -412,22 +414,18 @@ public partial class MainWindow
                 var coords = new float[] { 0, 0, };
                 
                 // run actions in the UI async to not block it
-                if (repositoryAction.Action is DelegateAction da)
+                if (repositoryAction.ExecutionCausesSynchronizing)
                 {
-                    if (repositoryAction.ExecutionCausesSynchronizing)
-                    {
-                        Task.Run(() => SetViewsSynchronizing(affectedViews, true))
-                            .ContinueWith(t => DelegateActionExecutor.Instance.Execute(repositoryAction.Repository, da)) //repositoryAction.Action(null, coords))
-                            .ContinueWith(t => SetViewsSynchronizing(affectedViews, false));
-                    }
-                    else
-                    {
-                        Task.Run(() => DelegateActionExecutor.Instance.Execute(repositoryAction.Repository, da));
-                    }
+                    Task.Run(() => SetViewsSynchronizing(affectedViews, true))
+                        .ContinueWith(t =>
+                            _executor.Execute(action.Repository, action.Action)) //repositoryAction.Action(null, coords))
+                        // .ContinueWith(t => DelegateActionExecutor.Instance.Execute(repositoryAction.Repository, da)) //repositoryAction.Action(null, coords))
+                        .ContinueWith(t => SetViewsSynchronizing(affectedViews, false));
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    Task.Run(() =>
+                        _executor.Execute(action.Repository, action.Action));
                 }
             };
 

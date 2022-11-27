@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using RepoM.Core.Plugin;
 
-internal class StatisticsService
+public class StatisticsService
 {
-    private ReadOnlyCollection<DateTime> _empty = new List<DateTime>(0).AsReadOnly();
-    private Dictionary<string, List<DateTime>> _recordings = new();
+    private readonly ReadOnlyCollection<DateTime> _empty = new List<DateTime>(0).AsReadOnly();
+    private readonly Dictionary<string, List<DateTime>> _recordings = new();
 
     public void Record(IRepository repository)
     {

@@ -1,16 +1,15 @@
 namespace RepoM.Plugin.Statistics.Ordering;
 
 using System;
-using RepoM.Api.Git;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-internal class UsageScorerFactory : IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>
+public class UsageScorerFactory : IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>
 {
     private readonly StatisticsService _service;
 
-    public UsageScorerFactory(StatisticsService monitor)
+    public UsageScorerFactory(StatisticsService service)
     {
-        _service = monitor ?? throw new ArgumentNullException(nameof(monitor));
+        _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
     public IRepositoryScoreCalculator Create(UsageScorerConfigurationV1 config)

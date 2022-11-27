@@ -1,10 +1,12 @@
 namespace RepoM.Plugin.Statistics.RepositoryActions;
 
 using System;
+using JetBrains.Annotations;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 
-internal class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor<T> where T : IAction
+[UsedImplicitly]
+public class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor<T> where T : IAction
 {
     private readonly IActionExecutor<T> _decoratee;
     private readonly StatisticsService _service;

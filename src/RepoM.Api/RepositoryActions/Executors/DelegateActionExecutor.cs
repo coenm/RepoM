@@ -6,12 +6,9 @@ using RepoM.Core.Plugin.RepositoryActions.Actions;
 
 public class DelegateActionExecutor : IActionExecutor<DelegateAction>
 {
-    private DelegateActionExecutor()
+    public DelegateActionExecutor()
     {
     }
-
-    public static DelegateActionExecutor Instance { get; } = new DelegateActionExecutor();
-
 
     public void Execute(IRepository repository, DelegateAction action)
     {
