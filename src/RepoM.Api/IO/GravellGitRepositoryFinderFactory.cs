@@ -18,7 +18,7 @@ public class GravellGitRepositoryFinderFactory : ISingleGitRepositoryFinderFacto
 
     public string Name => FACTORY_NAME;
 
-    public bool IsActive { get; } = true;
+    public bool IsActive => true;
 
     public IGitRepositoryFinder Create()
     {

@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ExpressionStringEvaluator.VariableProviders;
 using JetBrains.Annotations;
-using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.Variables;
-using Repository = Git.Repository;
+using RepoM.Core.Plugin.Repository;
 
 [UsedImplicitly]
 public class CustomEnvironmentVariableVariableProvider : IVariableProvider<RepositoryContext>
@@ -38,7 +37,7 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
         var prefixLength = PREFIX.Length;
         var envKey = key.Substring(prefixLength, key.Length - prefixLength);
 
-        Repository? singleContext = context.Repositories.SingleOrDefault();
+        IRepository? singleContext = context.Repositories.SingleOrDefault();
 
         if (singleContext == null)
         {
@@ -63,7 +62,7 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
         return result;
     }
 
-    private static Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
+    private static Dictionary<string, string> GetRepoEnvironmentVariables(IRepository repository)
     {
         return EnvironmentVariableStore.Get(repository);
     }

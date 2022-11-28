@@ -1,7 +1,7 @@
 namespace RepoM.Api.RepositoryActions.Executors;
 
 using System;
-using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 

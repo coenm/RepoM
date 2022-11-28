@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Statistics.RepositoryActions;
 
 using System;
 using JetBrains.Annotations;
-using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 
 [UsedImplicitly]

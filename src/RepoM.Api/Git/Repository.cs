@@ -3,7 +3,7 @@ namespace RepoM.Api.Git;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.Repository;
 
 [DebuggerDisplay("{Name} @{Path}")]
 public class Repository : IRepository

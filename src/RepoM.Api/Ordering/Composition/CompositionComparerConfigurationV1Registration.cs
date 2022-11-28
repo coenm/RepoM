@@ -7,5 +7,5 @@ public class CompositionComparerConfigurationV1Registration : IConfigurationRegi
 {
     public Type ConfigurationType { get; } = typeof(CompositionComparerConfigurationV1);
 
-    public string Tag { get; } = "composition@1";
+    public string Tag => "composition@1";
 }

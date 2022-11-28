@@ -3,8 +3,7 @@ namespace RepoM.Api.IO.VariableProviders;
 using System;
 using System.Linq;
 using ExpressionStringEvaluator.VariableProviders;
-using RepoM.Api.Git;
-using RepoM.Api.IO.ExpressionEvaluator;
+using RepoM.Core.Plugin.Repository;
 
 public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
 {
@@ -25,7 +24,7 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
 
     private static string ProvideString(RepositoryContext context, string key, string? arg)
     {
-        Repository? repository = context.Repositories.SingleOrDefault();
+        IRepository? repository = context.Repositories.SingleOrDefault();
         if (repository == null)
         {
             return string.Empty;

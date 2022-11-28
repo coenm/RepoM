@@ -9,5 +9,5 @@ public class IsPinnedScorerConfigurationV1Registration : IConfigurationRegistrat
 {
     public Type ConfigurationType { get; } = typeof(IsPinnedScorerConfigurationV1);
 
-    public string Tag { get; } = "is-pinned-scorer@1";
+    public string Tag => "is-pinned-scorer@1";
 }

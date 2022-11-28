@@ -2,7 +2,7 @@ namespace RepoM.Api.Ordering.IsPinned;
 
 using System;
 using RepoM.Api.Git;
-using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
 public class IsPinnedScoreCalculator : IRepositoryScoreCalculator

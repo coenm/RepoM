@@ -2,7 +2,7 @@ namespace RepoM.Api.Ordering.Sum;
 
 using System.Collections.Generic;
 using System.Linq;
-using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
 public class SumCompositionComparer : IRepositoryComparer

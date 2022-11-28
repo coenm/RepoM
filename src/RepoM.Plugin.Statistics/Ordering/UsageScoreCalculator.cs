@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Statistics.Ordering;
 
 using System;
 using System.Collections.Generic;
-using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
 internal class UsageScoreCalculator : IRepositoryScoreCalculator

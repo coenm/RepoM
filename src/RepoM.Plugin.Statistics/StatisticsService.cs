@@ -3,7 +3,7 @@ namespace RepoM.Plugin.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.Repository;
 
 public class StatisticsService
 {

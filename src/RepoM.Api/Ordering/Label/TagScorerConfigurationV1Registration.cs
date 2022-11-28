@@ -7,5 +7,5 @@ public class TagScorerConfigurationV1Registration : IConfigurationRegistration
 {
     public Type ConfigurationType { get; } = typeof(TagScorerConfigurationV1);
 
-    public string Tag { get; } = "tag-scorer@1";
+    public string Tag => "tag-scorer@1";
 }

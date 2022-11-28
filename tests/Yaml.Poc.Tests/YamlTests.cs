@@ -7,7 +7,7 @@ using RepoM.Api.Ordering.Az;
 using RepoM.Api.Ordering.IsPinned;
 using RepoM.Api.Ordering.Score;
 using RepoM.Api.Ordering.Sum;
-using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using SimpleInjector;
@@ -88,7 +88,7 @@ public class YamlTests
          IRepositoryComparerFactory factory = container.GetInstance<IRepositoryComparerFactory>();
          var comparer = factory.Create(result);
 
-         var repo = new R { Name = "Rian", IsPinned = true,};
+         var repo = new R { Name = "rrrr", IsPinned = true,};
          var repo2 = new R { Name = "Coen", IsPinned = false, };
 
          int r = comparer.Compare(repo, repo2);
@@ -107,4 +107,5 @@ public class R : IRepository
     public bool IsPinned { get; set; }
     public bool HasUnpushedChanges { get; set; }
     public string[] Tags { get; set; } = Array.Empty<string>();
+    public List<Remote> Remotes { get; } = new(0);
 }

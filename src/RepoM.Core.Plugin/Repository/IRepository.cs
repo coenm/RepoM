@@ -1,4 +1,6 @@
-namespace RepoM.Core.Plugin;
+namespace RepoM.Core.Plugin.Repository;
+
+using System.Collections.Generic;
 
 public interface IRepository
 {
@@ -17,4 +19,6 @@ public interface IRepository
     string[] Tags { get; }
 
     string SafePath { get; }
+
+    List<Remote> Remotes { get; }
 }

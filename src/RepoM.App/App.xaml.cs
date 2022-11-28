@@ -49,10 +49,6 @@ using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Api.RepositoryActions.Executors;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryOrdering;
-using RepoM.Plugin.Statistics;
-using RepoM.Plugin.Statistics.Ordering;
-
-
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -242,7 +238,7 @@ public partial class App : Application
                 typeof(IVariableProvider).Assembly,
                 typeof(RepositoryExpressionEvaluator).Assembly,
             };
-        // container.Collection.Register(typeof(IVariableProvider), repoExpressionEvaluators, Lifestyle.Singleton);
+        
         container.Collection.Append<IVariableProvider, DateTimeNowVariableProvider>(Lifestyle.Singleton);
         container.Collection.Append<IVariableProvider, DateTimeTimeVariableProvider>(Lifestyle.Singleton);
         container.Collection.Append<IVariableProvider, DateTimeDateVariableProvider>(Lifestyle.Singleton);
@@ -252,6 +248,7 @@ public partial class App : Application
         container.Collection.Append<IVariableProvider, RepositoryVariableProvider>(Lifestyle.Singleton);
         container.Collection.Append<IVariableProvider, SlashVariableProvider>(Lifestyle.Singleton);
         container.Collection.Append<IVariableProvider, BackslashVariableProvider>(Lifestyle.Singleton);
+        container.Collection.Append<IVariableProvider, VariableProviderAdapter>(Lifestyle.Singleton);
 
         container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);
         container.RegisterInstance(new DateTimeVariableProviderOptions

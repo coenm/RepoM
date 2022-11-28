@@ -7,6 +7,7 @@ using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.Parser;
 using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Api.Git;
+using RepoM.Core.Plugin.Repository;
 
 public class RepositoryExpressionEvaluator
 {
