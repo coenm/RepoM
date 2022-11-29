@@ -8,37 +8,66 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-internal class RepositoryComparerManager
+public interface IRepositoryComparerManager
+{
+    event EventHandler<string>? SelectedRepositoryComparerKeyChanged;
+
+    IComparer Comparer { get; }
+
+    IReadOnlyList<string> RepositoryComparerKeys { get; }
+
+    bool SetRepositoryComparer(string key);
+}
+
+internal class RepositoryComparerManager : IRepositoryComparerManager
 {
     private readonly IAppSettingsService _appSettingsService;
-    private ComparerComposition _comparer;
+    private readonly ComparerComposition _comparer;
+    private readonly List<string> _repositoryComparerKeys;
 
     public RepositoryComparerManager(IAppSettingsService appSettingsService)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         _comparer = new ComparerComposition(new Dictionary<string, IComparer>());
-        ViewModel = new OrderingsViewModel(appSettingsService);
+        SelectedRepositoryComparerKey = string.Empty;
+        _repositoryComparerKeys = new List<string>();
     }
+
+    public event EventHandler<string>? SelectedRepositoryComparerKeyChanged;
 
     public IComparer Comparer => _comparer;
 
-    public OrderingsViewModel ViewModel { get; }
+    public string SelectedRepositoryComparerKey { get; private set; }
+
+    public IReadOnlyList<string> RepositoryComparerKeys => _repositoryComparerKeys;
+
+    public bool SetRepositoryComparer(string key)
+    {
+        if (_comparer.SetComparer(key))
+        {
+            SelectedRepositoryComparerKey = key;
+            SelectedRepositoryComparerKeyChanged?.Invoke(this, key);
+            return true;
+        }
+
+        return false;
+    }
 }
 
 internal class ComparerComposition : IComparer
 {
-    private readonly Dictionary<string, IComparer> _comparers;
+    private readonly Dictionary<string, IComparer> _namedComparers;
     private IComparer _selected;
 
-    public ComparerComposition(Dictionary<string, IComparer> namedComparers)
+    public ComparerComposition(Dictionary<string, IComparer> namedNamedComparers)
     {
-        _comparers = namedComparers;
-        _selected = _comparers.First().Value;
+        _namedComparers = namedNamedComparers;
+        _selected = _namedComparers.First().Value;
     }
 
     public bool SetComparer(string key)
     {
-        if (_comparers.TryGetValue(key, out IComparer? value))
+        if (_namedComparers.TryGetValue(key, out IComparer? value))
         {
             _selected = value;
             return true;
@@ -53,6 +82,7 @@ internal class ComparerComposition : IComparer
         return comparer.Compare(x, y);
     }
 }
+
 internal class RepositoryComparerAdapter : IComparer
 {
     private readonly IRepositoryComparer _comparer;
