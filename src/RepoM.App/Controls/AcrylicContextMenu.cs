@@ -12,4 +12,6 @@ public class AcrylicContextMenu : ContextMenu
 
         AcrylicHelper.EnableBlur(this);
     }
+
+
 }

@@ -132,6 +132,24 @@ public class FileAppSettingsService : IAppSettingsService
 
     private AppSettings Settings => _settings ??= Load();
 
+
+    public string SortKey
+    {
+        get => Settings.SortKey;
+        set
+        {
+            if (value == Settings.SortKey)
+            {
+                return;
+            }
+
+            Settings.SortKey = value;
+
+            NotifyChange();
+            Save();
+        }
+    }
+
     public AutoFetchMode AutoFetchMode
     {
         get => Settings.AutoFetchMode;

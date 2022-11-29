@@ -1,10 +1,100 @@
 namespace RepoM.App;
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using Lucene.Net.Util.Packed;
+using Microsoft.Xaml.Behaviors.Core;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
+using RepoM.App.ViewModels;
+
+
+public class SortMenuItemViewModel : MenuItemViewModel
+{
+    private readonly IAppSettingsService _appSettingsService;
+    private readonly string _title;
+
+    public SortMenuItemViewModel(
+        IAppSettingsService appSettingsService,
+        string title)
+    {
+        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        _title = title;
+
+        Header = title;
+        Command = new DelegateCommand
+            {
+                CommandAction = () =>
+                    {
+                        _appSettingsService.SortKey = title;
+                    },
+                CanExecuteFunc = () => _appSettingsService.SortKey != title,
+            };
+        IsCheckable = true;
+        IsChecked = _appSettingsService.SortKey == title;
+    }
+
+    public override bool IsChecked
+    {
+        get => _appSettingsService.SortKey == _title;
+        set => Command?.Execute(null);
+    }
+}
+
+public class OrderingsViewModel : List<MenuItemViewModel>
+{
+    private readonly IAppSettingsService _appSettingsService;
+
+    public OrderingsViewModel(IAppSettingsService appSettingsService)
+    {
+        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+
+        Add(new SortMenuItemViewModel(_appSettingsService, "DRC First")
+        {
+                Header = "DRC first",
+                IsCheckable = false,
+                IsChecked = false,
+                Command = new DelegateCommand
+                    {
+                        CommandAction = () => _appSettingsService.SortKey = "",
+                        CanExecuteFunc = () => _appSettingsService.SortKey != "",
+                    }
+            });
+        Add(new()
+            {
+                Header = "Private 1",
+                IsCheckable = true,
+                IsChecked = true,
+            });
+        Add(new()
+            {
+                Header = "Private 2",
+                IsCheckable = true,
+                IsChecked = false,
+            });
+
+
+    // public AutoFetchMode AutoFetchMode
+    // {
+    //     get => _appSettingsService.AutoFetchMode;
+    //     set
+    //     {
+    //         _appSettingsService.AutoFetchMode = value;
+    //
+    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchMode)));
+    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchOff)));
+    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchDiscretely)));
+    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAdequate)));
+    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAggressive)));
+    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnabledSearchRepoEverything)));
+    //     }
+    // }
+    // };
+}
+}
 
 public class MainWindowPageModel : INotifyPropertyChanged
 {
@@ -14,8 +104,11 @@ public class MainWindowPageModel : INotifyPropertyChanged
     public MainWindowPageModel(IAppSettingsService appSettingsService)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        Orderings = new OrderingsViewModel(_appSettingsService);
     }
 
+    public OrderingsViewModel Orderings { get; }
+    
     public AutoFetchMode AutoFetchMode
     {
         get => _appSettingsService.AutoFetchMode;

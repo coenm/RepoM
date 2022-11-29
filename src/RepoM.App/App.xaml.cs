@@ -49,6 +49,7 @@ using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Api.RepositoryActions.Executors;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryOrdering;
+using RepoM.Core.Plugin.Common;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -225,7 +226,7 @@ public partial class App : Application
         container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>(Lifestyle.Singleton);
         container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>(Lifestyle.Singleton);
         container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
-
+        container.RegisterInstance<IClock>(SystemClock.Instance);
         container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
         container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
         container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);

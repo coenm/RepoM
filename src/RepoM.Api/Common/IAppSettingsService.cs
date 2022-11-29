@@ -28,5 +28,7 @@ public interface IAppSettingsService
 
     string AzureDevOpsBaseUrl { get; set; }
 
+    string SortKey { get; set; }
+
     void RegisterInvalidationHandler(Action handler);
 }
