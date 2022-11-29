@@ -11,7 +11,7 @@ public class UtcToHumanizedLocalDateTimeConverter : IValueConverter
 
     public UtcToHumanizedLocalDateTimeConverter()
     {
-        _humanizer = new HardcodededMiniHumanizer();
+        _humanizer = new HardcodededMiniHumanizer(SystemClock.Instance);
     }
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

@@ -67,14 +67,14 @@ public class RepositoryConfigurationReader
         throw new ConfigurationFileNotFoundException(failingFilename);
     }
 
-    public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params Repository[] repositories)
+    public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params IRepository[] repositories)
     {
         if (!repositories.Any())
         {
             return (null, null, null, null);
         }
 
-        Repository? repository = repositories.FirstOrDefault(); //todo
+        IRepository? repository = repositories.FirstOrDefault(); //todo
         if (repository == null)
         {
             return (null, null, null, null);
@@ -252,19 +252,19 @@ public class RepositoryConfigurationReader
         return (envVars, variables, actions, tags);
     }
 
-    private object? Evaluate(object? input, Repository? repository)
+    private object? Evaluate(object? input, IRepository? repository)
     {
         if (input is not string s)
         {
             return input;
         }
 
-        Repository[] repositories = repository == null ? Array.Empty<Repository>() : new[] { repository, };
+        IRepository[] repositories = repository == null ? Array.Empty<IRepository>() : new[] { repository, };
         return _repoExpressionEvaluator.EvaluateValueExpression(s, repositories);
 
     }
 
-    private string EvaluateString(string? input, Repository? repository)
+    private string EvaluateString(string? input, IRepository? repository)
     {
         object? v = Evaluate(input, repository);
         if (v == null)
@@ -275,7 +275,7 @@ public class RepositoryConfigurationReader
         return v.ToString();
     }
 
-    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository? repository)
+    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository? repository)
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty
@@ -321,7 +321,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         return GetTagsInner(repository).Distinct();
     }
 
-    private IEnumerable<string> GetTagsInner(Repository repository)
+    private IEnumerable<string> GetTagsInner(IRepository repository)
     {
         List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars)
         {
@@ -376,7 +376,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         }
     }
 
-    private object? Evaluate(object? input, Repository repository)
+    private object? Evaluate(object? input, IRepository repository)
     {
         if (input is string s)
         {
@@ -386,7 +386,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         return input;
     }
 
-    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
+    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository repository)
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty
