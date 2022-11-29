@@ -15,7 +15,7 @@ public interface IRepositoryComparerManager
     IComparer Comparer { get; }
 
     IReadOnlyList<string> RepositoryComparerKeys { get; }
-
+    string SelectedRepositoryComparerKey { get; }
     bool SetRepositoryComparer(string key);
 }
 

@@ -16,8 +16,6 @@ public class MenuItemViewModel : INotifyPropertyChanged
 
     public virtual bool IsChecked { get; set; }
 
-    public ICommand Command { get; set; }
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

@@ -2,11 +2,8 @@ namespace RepoM.App;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using Lucene.Net.Util.Packed;
-using Microsoft.Xaml.Behaviors.Core;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.App.ViewModels;
@@ -14,67 +11,53 @@ using RepoM.App.ViewModels;
 
 public class SortMenuItemViewModel : MenuItemViewModel
 {
-    private readonly IAppSettingsService _appSettingsService;
-    private readonly string _title;
+    private readonly Func<bool> _isSelectedFunc;
+    private readonly Action _setKeyFunc;
 
     public SortMenuItemViewModel(
-        IAppSettingsService appSettingsService,
+        Func<bool> isSelectedFunc,
+        Action setKeyFunc,
         string title)
     {
-        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-        _title = title;
+        _isSelectedFunc = isSelectedFunc ?? throw new ArgumentNullException(nameof(isSelectedFunc));
+        _setKeyFunc = setKeyFunc ?? throw new ArgumentNullException(nameof(setKeyFunc));
 
         Header = title;
-        Command = new DelegateCommand
-            {
-                CommandAction = () =>
-                    {
-                        _appSettingsService.SortKey = title;
-                    },
-                CanExecuteFunc = () => _appSettingsService.SortKey != title,
-            };
         IsCheckable = true;
-        IsChecked = _appSettingsService.SortKey == title;
     }
 
     public override bool IsChecked
     {
-        get => _appSettingsService.SortKey == _title;
-        set => Command?.Execute(null);
+        get => _isSelectedFunc.Invoke();
+        set => _setKeyFunc.Invoke();
     }
 }
 
 public class OrderingsViewModel : List<MenuItemViewModel>
 {
+    private readonly IRepositoryComparerManager _repositoryComparerManager;
     private readonly IAppSettingsService _appSettingsService;
 
-    public OrderingsViewModel(IAppSettingsService appSettingsService)
+    public OrderingsViewModel(
+        IRepositoryComparerManager repositoryComparerManager,
+        IAppSettingsService appSettingsService)
     {
+        _repositoryComparerManager = repositoryComparerManager ?? throw new ArgumentNullException(nameof(repositoryComparerManager));
+
+
+        _repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (sender, key) =>
+            {
+
+            };
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
 
-        Add(new SortMenuItemViewModel(_appSettingsService, "DRC First")
-        {
-                Header = "DRC first",
-                IsCheckable = false,
-                IsChecked = false,
-                Command = new DelegateCommand
-                    {
-                        CommandAction = () => _appSettingsService.SortKey = "",
-                        CanExecuteFunc = () => _appSettingsService.SortKey != "",
-                    }
-            });
-        Add(new()
-            {
-                Header = "Private 1",
-                IsCheckable = true,
-                IsChecked = true,
-            });
-        Add(new()
-            {
-                Header = "Private 2",
-                IsCheckable = true,
-                IsChecked = false,
-            });
+        AddRange(
+            _repositoryComparerManager
+                .RepositoryComparerKeys
+                .Select(name => new SortMenuItemViewModel(
+                    () => _repositoryComparerManager.SelectedRepositoryComparerKey == name,
+                    () => _repositoryComparerManager.SetRepositoryComparer(name),
+                    name)));
 
 
     // public AutoFetchMode AutoFetchMode
