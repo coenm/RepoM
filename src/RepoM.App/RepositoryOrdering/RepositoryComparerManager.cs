@@ -3,12 +3,11 @@ namespace RepoM.App.RepositoryOrdering;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using RepoM.Api.Common;
 using RepoM.Api.Ordering.Az;
-using RepoM.Api.Ordering.Composition;
-using RepoM.Api.Ordering.Label;
-using RepoM.Api.Ordering.Score;
 using RepoM.Core.Plugin.RepositoryOrdering;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 internal class RepositoryComparerManager : IRepositoryComparerManager
 {
@@ -33,29 +32,43 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
             throw new ArgumentNullException(nameof(repositoryComparerFactory));
         }
         
-        _repositoryComparerKeys = new List<string>
-            {
-                "Default",
-                "Prive",
-                "Config",
-            };
+        Dictionary<string, IRepositoriesComparerConfiguration> multipleConfigurations = new ();
+        var comparers = new Dictionary<string, IComparer>();
 
-        _comparer = new ComparerComposition(
-            new Dictionary<string, IComparer>
+        try
+        {
+            multipleConfigurations = compareSettingsService.Configuration;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        
+        foreach ((var key, IRepositoriesComparerConfiguration config) in multipleConfigurations)
+        {
+            try
             {
-                { "Default", new RepositoryComparerAdapter(new AzComparer(1, "Name")) },
-                { "Prive", new RepositoryComparerAdapter(
-                    new CompositionComparer(
-                        new IRepositoryComparer[]
-                            {
-                                new ScoreComparer(new TagScoreCalculator("Prive", 1)),
-                                new ScoreComparer(new TagScoreCalculator("TIS", 1)),
-                                new AzComparer(1, "Name"),
-                            }))},
-                { "Config", new RepositoryComparerAdapter(repositoryComparerFactory.Create(compareSettingsService.Configuration)) },
-            });
+                if (!comparers.TryAdd(key, new RepositoryComparerAdapter(repositoryComparerFactory.Create(config))))
+                {
+                    // swallow
+                }
+            }
+            catch (Exception)
+            {
+                // swallow
+            }
+        }
 
-        SelectedRepositoryComparerKey = "Default";
+        if (comparers.Count == 0)
+        {
+            comparers.Add("Default", new RepositoryComparerAdapter(new AzComparer(1, "Name")));
+        }
+        
+        _comparer = new ComparerComposition(comparers);
+
+        _repositoryComparerKeys = comparers.Select(x => x.Key).ToList();
+
+        SelectedRepositoryComparerKey = _repositoryComparerKeys.First();
     }
 
     public event EventHandler<string>? SelectedRepositoryComparerKeyChanged;

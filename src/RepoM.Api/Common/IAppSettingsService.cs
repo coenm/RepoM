@@ -7,7 +7,7 @@ using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 public interface ICompareSettingsService
 {
-    IRepositoriesComparerConfiguration Configuration { get; }
+    Dictionary<string, IRepositoriesComparerConfiguration> Configuration { get; }
 }
 
 public interface IAppSettingsService
