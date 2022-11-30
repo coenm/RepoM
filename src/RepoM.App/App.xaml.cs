@@ -229,6 +229,7 @@ public partial class App : Application
         container.RegisterInstance<IClock>(SystemClock.Instance);
         container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
         container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
+        container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
         container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
         container.RegisterInstance<IFileSystem>(fileSystem);

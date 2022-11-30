@@ -19,6 +19,7 @@ using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.App.Controls;
 using RepoM.App.RepositoryActions;
+using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using SourceChord.FluentWPF;
@@ -51,16 +52,17 @@ public partial class MainWindow
         IAppDataPathProvider appDataPathProvider,
         IRepositorySearch repositorySearch,
         IFileSystem fileSystem,
-        ICompareSettingsService compareSettingsService,
-        IRepositoryComparerFactory repositoryComparerFactory,
-        ActionExecutor executor)
+        ActionExecutor executor,
+        IRepositoryComparerManager repositoryComparerManager,
+        IThreadDispatcher threadDispatcher)
     {
         _translationService = translationService;
         InitializeComponent();
 
         AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
-        DataContext = new MainWindowPageModel(appSettingsService);
+        var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
+        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;
@@ -82,8 +84,8 @@ public partial class MainWindow
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
         ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
         view.Filter = FilterRepositories;
-        view.CustomSort = new RepositoryComparerAdapter(repositoryComparerFactory.Create(compareSettingsService.Configuration));
-        // view.Refresh(); // todo refresh on change of value in on of the characteristics sorting is based on.
+        view.CustomSort = repositoryComparerManager.Comparer;
+        repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
         
         AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);

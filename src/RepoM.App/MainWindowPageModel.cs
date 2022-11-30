@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
+using RepoM.App.RepositoryOrdering;
 using RepoM.App.ViewModels;
 
 
@@ -31,52 +32,44 @@ public class SortMenuItemViewModel : MenuItemViewModel
         get => _isSelectedFunc.Invoke();
         set => _setKeyFunc.Invoke();
     }
+
+    public void Poke()
+    {
+        OnPropertyChanged(nameof(IsChecked));
+    }
 }
 
 public class OrderingsViewModel : List<MenuItemViewModel>
 {
-    private readonly IRepositoryComparerManager _repositoryComparerManager;
-    private readonly IAppSettingsService _appSettingsService;
-
-    public OrderingsViewModel(
-        IRepositoryComparerManager repositoryComparerManager,
-        IAppSettingsService appSettingsService)
+    public OrderingsViewModel(IRepositoryComparerManager repositoryComparerManager, IThreadDispatcher threadDispatcher)
     {
-        _repositoryComparerManager = repositoryComparerManager ?? throw new ArgumentNullException(nameof(repositoryComparerManager));
+        if (repositoryComparerManager == null)
+        {
+            throw new ArgumentNullException(nameof(repositoryComparerManager));
+        }
 
+        if (threadDispatcher == null)
+        {
+            throw new ArgumentNullException(nameof(threadDispatcher));
+        }
 
-        _repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (sender, key) =>
+        repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) =>
             {
-
+                foreach (MenuItemViewModel item in this)
+                {
+                    if (item is SortMenuItemViewModel sortMenuItemViewModel)
+                    {
+                        threadDispatcher.Invoke(() => sortMenuItemViewModel.Poke());
+                    }
+                }
             };
-        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
 
-        AddRange(
-            _repositoryComparerManager
-                .RepositoryComparerKeys
-                .Select(name => new SortMenuItemViewModel(
-                    () => _repositoryComparerManager.SelectedRepositoryComparerKey == name,
-                    () => _repositoryComparerManager.SetRepositoryComparer(name),
-                    name)));
-
-
-    // public AutoFetchMode AutoFetchMode
-    // {
-    //     get => _appSettingsService.AutoFetchMode;
-    //     set
-    //     {
-    //         _appSettingsService.AutoFetchMode = value;
-    //
-    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchMode)));
-    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchOff)));
-    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchDiscretely)));
-    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAdequate)));
-    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAggressive)));
-    //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnabledSearchRepoEverything)));
-    //     }
-    // }
-    // };
-}
+        AddRange(repositoryComparerManager.RepositoryComparerKeys.Select(name =>
+            new SortMenuItemViewModel(
+                () => repositoryComparerManager.SelectedRepositoryComparerKey == name,
+                () => repositoryComparerManager.SetRepositoryComparer(name),
+                name)));
+    }
 }
 
 public class MainWindowPageModel : INotifyPropertyChanged
@@ -84,10 +77,10 @@ public class MainWindowPageModel : INotifyPropertyChanged
     private readonly IAppSettingsService _appSettingsService;
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public MainWindowPageModel(IAppSettingsService appSettingsService)
+    public MainWindowPageModel(IAppSettingsService appSettingsService, OrderingsViewModel orderingsViewModel)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-        Orderings = new OrderingsViewModel(_appSettingsService);
+        Orderings = orderingsViewModel;
     }
 
     public OrderingsViewModel Orderings { get; }
