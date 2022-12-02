@@ -26,6 +26,7 @@ internal static class DynamicRepositoryActionDeserializerFactory
                         new ActionAssociateFileV1Deserializer(),
                         new ActionPinRepositoryV1Deserializer(),
                         new ActionForEachV1Deserializer(),
+                        new ActionJustTextV1Deserializer(),
                     }));
     }
 

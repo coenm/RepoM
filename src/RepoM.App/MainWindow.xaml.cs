@@ -21,6 +21,7 @@ using RepoM.App.Controls;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using SourceChord.FluentWPF;
 
@@ -408,7 +409,7 @@ public partial class MainWindow
 
         Action<object, object> clickAction = (object clickSender, object clickArgs) =>
             {
-                if (repositoryAction?.Action == null)
+                if (repositoryAction?.Action == null || repositoryAction.Action is NullAction)
                 {
                     return;
                 }
@@ -419,15 +420,12 @@ public partial class MainWindow
                 if (repositoryAction.ExecutionCausesSynchronizing)
                 {
                     Task.Run(() => SetViewsSynchronizing(affectedViews, true))
-                        .ContinueWith(t =>
-                            _executor.Execute(action.Repository, action.Action)) //repositoryAction.Action(null, coords))
-                        // .ContinueWith(t => DelegateActionExecutor.Instance.Execute(repositoryAction.Repository, da)) //repositoryAction.Action(null, coords))
+                        .ContinueWith(t => _executor.Execute(action.Repository, action.Action))
                         .ContinueWith(t => SetViewsSynchronizing(affectedViews, false));
                 }
                 else
                 {
-                    Task.Run(() =>
-                        _executor.Execute(action.Repository, action.Action));
+                    Task.Run(() => _executor.Execute(action.Repository, action.Action));
                 }
             };
 

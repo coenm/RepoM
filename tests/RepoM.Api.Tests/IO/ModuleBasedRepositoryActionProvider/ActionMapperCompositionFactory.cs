@@ -32,6 +32,7 @@ internal static class ActionMapperCompositionFactory
                 new ActionIgnoreRepositoriesV1Mapper(expressionEvaluator, translationService, repositoryMonitor),
                 new ActionSeparatorV1Mapper(expressionEvaluator),
                 new ActionAssociateFileV1Mapper(expressionEvaluator, translationService),
+                new ActionJustTextV1Mapper(expressionEvaluator, translationService),
             };
 
         return new ActionMapperComposition(list, expressionEvaluator);
