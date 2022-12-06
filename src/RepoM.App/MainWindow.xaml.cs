@@ -16,13 +16,12 @@ using System.Windows.Input;
 using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO;
 using RepoM.App.Controls;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
+using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
-using RepoM.Core.Plugin.RepositoryOrdering;
 using SourceChord.FluentWPF;
 
 /// <summary>

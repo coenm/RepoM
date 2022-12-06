@@ -15,8 +15,8 @@ using ExpressionStringEvaluator.VariableProviders;
 using FakeItEasy;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO;
 using RepoM.Api.IO.VariableProviders;
+using RepoM.Core.Plugin.Common;
 using VerifyXunit;
 
 [UsesEasyTestFile]

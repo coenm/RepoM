@@ -27,6 +27,9 @@ public class StatisticsPackage : IPackage
         container.Collection.Append<IConfigurationRegistration, UsageScorerConfigurationV1Registration>(Lifestyle.Singleton);
         container.Register<IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>, UsageScorerFactory>(Lifestyle.Singleton);
 
+        container.Collection.Append<IConfigurationRegistration, LastOpenedConfigurationV1Registration>(Lifestyle.Singleton);
+        container.Register<IRepositoryComparerFactory<LastOpenedConfigurationV1>, LastOpenedComparerFactory>(Lifestyle.Singleton);
+
         // action executor
         container.RegisterDecorator(typeof(IActionExecutor<>), typeof(RecordStatisticsActionExecutorDecorator<>), Lifestyle.Singleton);
 

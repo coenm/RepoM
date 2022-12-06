@@ -3,7 +3,6 @@ namespace RepoM.Api.IO.Variables;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
 
 public static class EnvironmentVariableStore

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using RepoM.Api.IO;
+using RepoM.Core.Plugin.Common;
 
 public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgnoreStore
 {

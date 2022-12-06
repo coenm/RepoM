@@ -7,7 +7,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using Newtonsoft.Json;
 using RepoM.Api.Git.AutoFetch;
-using RepoM.Api.IO;
+using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
