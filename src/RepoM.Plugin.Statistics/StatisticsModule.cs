@@ -1,7 +1,7 @@
 namespace RepoM.Plugin.Statistics;
 
 using System;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -20,16 +20,23 @@ internal class StatisticsModule : IModule
     private readonly StatisticsService _service;
     private readonly IClock _clock;
     private readonly IAppDataPathProvider _pathProvider;
+    private readonly IFileSystem _fileSystem;
     private readonly ILogger<StatisticsModule> _logger;
     private string _basePath = string.Empty;
     private IDisposable? _disposable;
     private readonly JsonSerializerSettings _settings;
 
-    public StatisticsModule(StatisticsService service, IClock clock, IAppDataPathProvider pathProvider, ILogger<StatisticsModule> logger)
+    public StatisticsModule(
+        StatisticsService service,
+        IClock clock,
+        IAppDataPathProvider pathProvider,
+        IFileSystem fileSystem,
+        ILogger<StatisticsModule> logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _settings = new JsonSerializerSettings
@@ -42,7 +49,7 @@ internal class StatisticsModule : IModule
 
     public async Task StartAsync()
     {
-        _basePath = Path.Combine(_pathProvider.GetAppDataPath(), "Module", "Statistics");
+        _basePath = _fileSystem.Path.Combine(_pathProvider.GetAppDataPath(), "Module", "Statistics");
         
         _disposable = WriteEventsToFile();
 
@@ -51,7 +58,7 @@ internal class StatisticsModule : IModule
 
     private async Task ProcessEventsFromFile()
     {
-        IOrderedEnumerable<string> orderedEnumerable = Directory.GetFiles(_basePath, "statistics.v1.*.json").OrderBy(f => f);
+        IOrderedEnumerable<string> orderedEnumerable = _fileSystem.Directory.GetFiles(_basePath, "statistics.v1.*.json").OrderBy(f => f);
 
         foreach (var file in orderedEnumerable)
         {
@@ -59,7 +66,7 @@ internal class StatisticsModule : IModule
 
             try
             {
-                var json = await File.ReadAllTextAsync(file, CancellationToken.None).ConfigureAwait(false);
+                var json = await _fileSystem.File.ReadAllTextAsync(file, CancellationToken.None).ConfigureAwait(false);
                 list = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? Array.Empty<IEvent>();
             }
             catch (Exception e)
@@ -89,14 +96,14 @@ internal class StatisticsModule : IModule
                        }
                     
                        var json = JsonConvert.SerializeObject(events, _settings);
-                       var filename = Path.Combine(_basePath, $"statistics.v1.{_clock.Now:yyyy-MM-dd HH.mm.ss}.json");
+                       var filename = _fileSystem.Path.Combine(_basePath, $"statistics.v1.{_clock.Now:yyyy-MM-dd HH.mm.ss}.json");
 
-                       if (!Directory.Exists(_basePath))
+                       if (!_fileSystem.Directory.Exists(_basePath))
                        {
                            try
                            {
                                _logger.LogDebug("Try Create directory '{basePath}'.", _basePath);
-                               Directory.CreateDirectory(_basePath);
+                               _fileSystem.Directory.CreateDirectory(_basePath);
                            }
                            catch (Exception e)
                            {
@@ -104,11 +111,11 @@ internal class StatisticsModule : IModule
                            }
                        }
 
-                       if (Directory.Exists(_basePath))
+                       if (_fileSystem.Directory.Exists(_basePath))
                        {
                            try
                            {
-                               File.WriteAllText(filename, json);
+                               _fileSystem.File.WriteAllText(filename, json);
                            }
                            catch (Exception e)
                            {

@@ -9,7 +9,6 @@ using RepoM.Api.Git.AutoFetch;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.ViewModels;
 
-
 public class SortMenuItemViewModel : MenuItemViewModel
 {
     private readonly Func<bool> _isSelectedFunc;

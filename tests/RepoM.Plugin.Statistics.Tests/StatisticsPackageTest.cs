@@ -1,6 +1,7 @@
 namespace RepoM.Plugin.Statistics.Tests;
 
 using System;
+using System.IO.Abstractions;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Common;
@@ -44,5 +45,6 @@ public class StatisticsPackageTest
         container.RegisterSingleton(A.Dummy<IClock>);
         container.RegisterSingleton(A.Dummy<IAppDataPathProvider>);
         container.RegisterSingleton(A.Dummy<ILogger<StatisticsModule>>);
+        container.RegisterSingleton(A.Dummy<IFileSystem>);
     }
 }

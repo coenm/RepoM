@@ -528,7 +528,14 @@ public class RepositorySpecificConfiguration
         {
             yield return new RepositoryAction(_translationService.Translate("Fix"), repository)
                 {
-                    Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(_fileSystem.Path.GetDirectoryName(filename), string.Empty)),
+                    Action = new DelegateAction((_, _) =>
+                        {
+                            var directoryName = _fileSystem.Path.GetDirectoryName(filename);
+                            if (directoryName != null)
+                            {
+                                ProcessHelper.StartProcess(directoryName, string.Empty);
+                            }
+                        }),
                 };
         }
     }
