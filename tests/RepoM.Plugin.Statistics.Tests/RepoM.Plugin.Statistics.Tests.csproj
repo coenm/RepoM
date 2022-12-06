@@ -34,4 +34,8 @@
     <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="RepositoryActions\" />
+  </ItemGroup>
+
 </Project>
