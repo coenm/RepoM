@@ -18,7 +18,7 @@ public class UsageVariableProvider : IVariableProvider<RepositoryContext>
 
     public bool CanProvide(string key)
     {
-        return !string.IsNullOrWhiteSpace(key) && key.StartsWith("usage", StringComparison.CurrentCultureIgnoreCase);
+        return !string.IsNullOrWhiteSpace(key) && key.Equals("usage", StringComparison.CurrentCultureIgnoreCase);
     }
 
     public object? Provide(RepositoryContext context, string key, string? arg)
