@@ -12,17 +12,25 @@ using IClock = RepoM.Core.Plugin.Common.IClock;
 
 public class StatisticsModuleTest
 {
+    private readonly IClock _clock;
+    private readonly IAppDataPathProvider _pathProvider;
+    private readonly ILogger _logger;
+
+    public StatisticsModuleTest()
+    {
+        _clock = A.Fake<IClock>();
+        _pathProvider = A.Fake<IAppDataPathProvider>();
+        A.CallTo(() => _pathProvider.GetAppDataPath()).Returns("C:\\data");
+        _logger = A.Fake<ILogger>();
+    }
+
     [Fact]
     public async Task StartAsync_ShouldInitialize()
     {
         // arrange
-        IClock clock = A.Fake<IClock>();
-        IAppDataPathProvider pathProvider = A.Fake<IAppDataPathProvider>();
-        A.CallTo(() => pathProvider.GetAppDataPath()).Returns("C:\\data");
         IFileSystem fileSystem = new MockFileSystem();
-        ILogger logger = A.Fake<ILogger>();
-        var statisticsService = new StatisticsService(clock);
-        var sut = new StatisticsModule(statisticsService, clock, pathProvider, fileSystem, logger);
+        var statisticsService = new StatisticsService(_clock);
+        var sut = new StatisticsModule(statisticsService, _clock, _pathProvider, fileSystem, _logger);
 
         // act
         await sut.StartAsync();

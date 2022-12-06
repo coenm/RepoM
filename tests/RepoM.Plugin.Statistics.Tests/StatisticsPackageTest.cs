@@ -44,7 +44,7 @@ public class StatisticsPackageTest
     {
         container.RegisterSingleton(A.Dummy<IClock>);
         container.RegisterSingleton(A.Dummy<IAppDataPathProvider>);
-        container.RegisterSingleton(A.Dummy<ILogger<StatisticsModule>>);
+        container.RegisterSingleton(A.Dummy<ILogger>);
         container.RegisterSingleton(A.Dummy<IFileSystem>);
     }
 }
