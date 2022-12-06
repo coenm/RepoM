@@ -21,7 +21,7 @@ internal class StatisticsModule : IModule
     private readonly IClock _clock;
     private readonly IAppDataPathProvider _pathProvider;
     private readonly IFileSystem _fileSystem;
-    private readonly ILogger<StatisticsModule> _logger;
+    private readonly ILogger _logger;
     private string _basePath = string.Empty;
     private IDisposable? _disposable;
     private readonly JsonSerializerSettings _settings;
@@ -31,7 +31,7 @@ internal class StatisticsModule : IModule
         IClock clock,
         IAppDataPathProvider pathProvider,
         IFileSystem fileSystem,
-        ILogger<StatisticsModule> logger)
+        ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
@@ -56,8 +56,19 @@ internal class StatisticsModule : IModule
         await ProcessEventsFromFile().ConfigureAwait(false);
     }
 
+    public Task StopAsync()
+    {
+        _disposable?.Dispose();
+        return Task.CompletedTask;
+    }
+
     private async Task ProcessEventsFromFile()
     {
+        if (!_fileSystem.Directory.Exists(_basePath))
+        {
+            return;
+        }
+
         IOrderedEnumerable<string> orderedEnumerable = _fileSystem.Directory.GetFiles(_basePath, "statistics.v1.*.json").OrderBy(f => f);
 
         foreach (var file in orderedEnumerable)
@@ -123,11 +134,5 @@ internal class StatisticsModule : IModule
                            }
                        }
                    });
-    }
-
-    public Task StopAsync()
-    {
-        _disposable?.Dispose();
-        return Task.CompletedTask;
     }
 }

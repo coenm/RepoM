@@ -3,7 +3,9 @@ namespace RepoM.Plugin.Statistics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Subjects;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
@@ -34,6 +36,11 @@ public class StatisticsService
 
         IEvent evt = repositoryStatistics.Record();
         _events.OnNext(evt);
+    }
+
+    public IReadOnlyList<string> GetRepositories()
+    {
+        return _recordings.Select(x => x.Key).ToImmutableArray();
     }
 
     public IReadOnlyList<DateTime> GetRecordings(IRepository repository)
