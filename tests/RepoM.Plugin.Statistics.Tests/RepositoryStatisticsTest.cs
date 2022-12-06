@@ -82,8 +82,7 @@ public class RepositoryStatisticsTest
         // assert
         act.Should().Throw<NotImplementedException>();
     }
-
-
+    
     [Fact]
     public void Record_ShouldAddTimestampToRecording()
     {

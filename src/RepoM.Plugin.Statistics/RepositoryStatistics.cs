@@ -7,15 +7,14 @@ using RepoM.Plugin.Statistics.Interface;
 
 internal class RepositoryStatistics
 {
+    private readonly string _repositoryPath;
     private readonly IClock _clock;
-
+    
     public RepositoryStatistics(string repositoryPath, IClock clock)
     {
-        RepositoryPath = repositoryPath ?? throw new ArgumentNullException(nameof(repositoryPath));
+        _repositoryPath = repositoryPath ?? throw new ArgumentNullException(nameof(repositoryPath));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
     }
-
-    public string RepositoryPath { get; }
 
     public List<DateTime> Recordings { get; } = new();
 
@@ -23,7 +22,7 @@ internal class RepositoryStatistics
     {
         var evt = new RepositoryActionRecordedEvent
             {
-                Repository = RepositoryPath,
+                Repository = _repositoryPath,
                 Timestamp = _clock.Now,
             };
 
