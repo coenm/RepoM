@@ -32,7 +32,7 @@ public class FilesICompareSettingsService : ICompareSettingsService
 
     private string GetFileName()
     {
-        return Path.Combine(_appDataPathProvider.GetAppDataPath(), "RepoM.Ordering.yaml");
+        return _fileSystem.Path.Combine(_appDataPathProvider.GetAppDataPath(), "RepoM.Ordering.yaml");
     }
 
     private Dictionary<string, IRepositoriesComparerConfiguration> Load()

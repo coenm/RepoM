@@ -1,0 +1,6 @@
+﻿{
+  Name1: {
+    $type: LastOpenedConfigurationV1,
+    Weight: 1
+  }
+}
