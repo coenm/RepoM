@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.Ordering.Az;
 using RepoM.Core.Plugin.RepositoryOrdering;
@@ -12,15 +13,18 @@ using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 internal class RepositoryComparerManager : IRepositoryComparerManager
 {
     private readonly IAppSettingsService _appSettingsService;
+    private readonly ILogger _logger;
     private readonly ComparerComposition _comparer;
     private readonly List<string> _repositoryComparerKeys;
 
     public RepositoryComparerManager(
         IAppSettingsService appSettingsService,
         ICompareSettingsService compareSettingsService,
-        IRepositoryComparerFactory repositoryComparerFactory)
+        IRepositoryComparerFactory repositoryComparerFactory,
+        ILogger logger)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         if (compareSettingsService == null)
         {
@@ -68,7 +72,10 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
 
         _repositoryComparerKeys = comparers.Select(x => x.Key).ToList();
 
-        SelectedRepositoryComparerKey = _repositoryComparerKeys.First();
+        if (!SetRepositoryComparer(_appSettingsService.SortKey))
+        {
+            SetRepositoryComparer(_repositoryComparerKeys.First());
+        }
     }
 
     public event EventHandler<string>? SelectedRepositoryComparerKeyChanged;
@@ -86,9 +93,9 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
             return false;
         }
 
+        _appSettingsService.SortKey = key;
         SelectedRepositoryComparerKey = key;
         SelectedRepositoryComparerKeyChanged?.Invoke(this, key);
         return true;
-
     }
 }
