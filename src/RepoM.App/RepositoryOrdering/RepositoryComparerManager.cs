@@ -82,7 +82,7 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
 
     public IComparer Comparer => _comparer;
 
-    public string SelectedRepositoryComparerKey { get; private set; }
+    public string SelectedRepositoryComparerKey { get; private set; } = "Default";
 
     public IReadOnlyList<string> RepositoryComparerKeys => _repositoryComparerKeys;
 
