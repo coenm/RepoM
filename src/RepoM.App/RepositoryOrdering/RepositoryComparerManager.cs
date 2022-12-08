@@ -24,18 +24,10 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
         ILogger logger)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        _ = compareSettingsService ?? throw new ArgumentNullException(nameof(compareSettingsService));
+        _ = repositoryComparerFactory ?? throw new ArgumentNullException(nameof(repositoryComparerFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        if (compareSettingsService == null)
-        {
-            throw new ArgumentNullException(nameof(compareSettingsService));
-        }
-
-        if (repositoryComparerFactory == null)
-        {
-            throw new ArgumentNullException(nameof(repositoryComparerFactory));
-        }
-        
         Dictionary<string, IRepositoriesComparerConfiguration> multipleConfigurations = new ();
         var comparers = new Dictionary<string, IComparer>();
 
@@ -45,7 +37,7 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError(e, "Could not get comparer configuration. Falling back to default. {message}", e.Message);
         }
         
         foreach ((var key, IRepositoriesComparerConfiguration config) in multipleConfigurations)
@@ -54,26 +46,33 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
             {
                 if (!comparers.TryAdd(key, new RepositoryComparerAdapter(repositoryComparerFactory.Create(config))))
                 {
-                    // swallow
+                    _logger.LogWarning("Could not add comparer for key '{key}'.", key);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // swallow
+                _logger.LogError(e, "Could not create a repository comparer for key '{key}'. {message}", key, e.Message);
             }
         }
 
         if (comparers.Count == 0)
         {
             comparers.Add("Default", new RepositoryComparerAdapter(new AzComparer(1, "Name")));
+            _logger.LogInformation("No custom comparers added, add default comparer");
         }
         
         _comparer = new ComparerComposition(comparers);
 
         _repositoryComparerKeys = comparers.Select(x => x.Key).ToList();
 
-        if (!SetRepositoryComparer(_appSettingsService.SortKey))
+        if (string.IsNullOrWhiteSpace(_appSettingsService.SortKey))
         {
+            _logger.LogInformation("Custom sorter key was not set. Pick first one.");
+            SetRepositoryComparer(_repositoryComparerKeys.First());
+        }
+        else if (!SetRepositoryComparer(_appSettingsService.SortKey))
+        {
+            _logger.LogInformation("Could not set comparer '{key}'. Falling back to first comparer.", _appSettingsService.SortKey);
             SetRepositoryComparer(_repositoryComparerKeys.First());
         }
     }
@@ -90,6 +89,7 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
     {
         if (!_comparer.SetComparer(key))
         {
+            _logger.LogWarning("Could not update/set the comparer key {key}.", key);
             return false;
         }
 

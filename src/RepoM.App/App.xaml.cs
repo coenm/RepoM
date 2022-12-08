@@ -94,7 +94,10 @@ public partial class App : Application
         logger.LogInformation("Started");
         RegisterLogging(loggerFactory);
         RegisterServices(_container, fileSystem);
+
+#if DEBUG
         _container.Verify(VerificationOption.VerifyAndDiagnose);
+#endif
 
         UseRepositoryMonitor(_container);
 
@@ -149,9 +152,9 @@ public partial class App : Application
 
         _hotkey?.Unregister();
 
-#pragma warning disable CA1416 // Validate platform compatibility
+// #pragma warning disable CA1416 // Validate platform compatibility
         _notifyIcon?.Dispose();
-#pragma warning restore CA1416 // Validate platform compatibility
+// #pragma warning restore CA1416 // Validate platform compatibility
 
         base.OnExit(e);
     }
@@ -302,8 +305,7 @@ public partial class App : Application
             typeof(IActionExecutor<>),
             typeof(LoggerActionExecutorDecorator<>),
             Lifestyle.Singleton);
-
-
+        
         IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
         IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
         container.RegisterPackages(assemblies);
