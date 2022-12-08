@@ -71,23 +71,23 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         // 2. makes sure that no repository is jumped over because the list
         //    of repositories is constantly changed and not sorted in any way in memory.
         //    So we cannot guarantuee that each repository is fetched on each iteration if we do not sort.
-        var repositories = RepositoryInformationAggregator.Repositories
+        var repositories = RepositoryInformationAggregator.Repositories?
                                                           .OrderBy(r => r.Name)
-                                                          .ToList();
+                                                          .ToArray() ?? Array.Empty<RepositoryViewModel>();
 
         // temporarily disable the timer to prevent parallel fetch executions
         UpdateBehavior(AutoFetchMode.Off);
 
         _lastFetchRepository++;
 
-        if (repositories.Count <= _lastFetchRepository)
+        if (repositories.Length <= _lastFetchRepository)
         {
             _lastFetchRepository = 0;
         }
 
         RepositoryViewModel repositoryViewModel = repositories[_lastFetchRepository];
 
-        Console.WriteLine($"Auto-fetching {repositoryViewModel.Name} (index {_lastFetchRepository} of {repositories.Count})");
+        Console.WriteLine($"Auto-fetching {repositoryViewModel.Name} (index {_lastFetchRepository} of {repositories.Length})");
 
         repositoryViewModel.IsSynchronizing = true;
         try
