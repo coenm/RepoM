@@ -93,6 +93,7 @@ internal class StatisticsModule : IModule
             {
                 try
                 {
+                    _logger.LogDebug("Remove old Statistics file '{filename}'", file);
                     _fileSystem.File.Delete(file);
                 }
                 catch (Exception e)
