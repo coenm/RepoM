@@ -25,6 +25,7 @@ internal class StatisticsModule : IModule
     private string _basePath = string.Empty;
     private IDisposable? _disposable;
     private readonly JsonSerializerSettings _settings;
+    private Task _task;
 
     public StatisticsModule(
         StatisticsService service,
@@ -54,12 +55,53 @@ internal class StatisticsModule : IModule
         _disposable = WriteEventsToFile();
 
         await ProcessEventsFromFile().ConfigureAwait(false);
+
+        _task = Task.Run(RemoveOldFilesAsync);
     }
 
     public Task StopAsync()
     {
         _disposable?.Dispose();
         return Task.CompletedTask;
+    }
+
+    private async Task RemoveOldFilesAsync()
+    {
+        if (!_fileSystem.Directory.Exists(_basePath))
+        {
+            return;
+        }
+
+        IOrderedEnumerable<string> orderedEnumerable = _fileSystem.Directory.GetFiles(_basePath, "statistics.v1.*.json").OrderBy(f => f);
+
+        DateTime threshold = _clock.Now.AddDays(-30);
+
+        foreach (var file in orderedEnumerable)
+        {
+            IEvent[] list = Array.Empty<IEvent>();
+
+            try
+            {
+                var json = await _fileSystem.File.ReadAllTextAsync(file, CancellationToken.None).ConfigureAwait(false);
+                list = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? Array.Empty<IEvent>();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not read or deserialize data from '{filename}'. {message}", file, e.Message);
+            }
+
+            if (list.All(item => item.Timestamp <= threshold))
+            {
+                try
+                {
+                    _fileSystem.File.Delete(file);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Could not delete '{filename}'. {message}", file, e.Message);
+                }
+            }
+        }
     }
 
     private async Task ProcessEventsFromFile()
