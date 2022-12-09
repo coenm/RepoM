@@ -9,7 +9,7 @@ using RepoM.Api.Common;
 public class DefaultAutoFetchHandler : IAutoFetchHandler
 {
     private bool _active;
-    private AutoFetchMode? _mode = null;
+    private AutoFetchMode? _mode;
     private readonly Timer _timer;
     private readonly Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
     private int _lastFetchRepository = -1;
@@ -26,10 +26,10 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
         _profiles = new Dictionary<AutoFetchMode, AutoFetchProfile>
             {
-                { AutoFetchMode.Off, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.MaxValue, } },
-                { AutoFetchMode.Discretely, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromMinutes(5), } },
-                { AutoFetchMode.Adequate, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromMinutes(1), } },
-                { AutoFetchMode.Aggressive, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromSeconds(2), } },
+                { AutoFetchMode.Off, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.MaxValue, } },
+                { AutoFetchMode.Discretely, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromMinutes(5), } },
+                { AutoFetchMode.Adequate, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromMinutes(1), } },
+                { AutoFetchMode.Aggressive, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromSeconds(2), } },
             };
 
         _timer = new Timer(FetchNext, null, Timeout.Infinite, Timeout.Infinite);
@@ -134,7 +134,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
             }
 
             _mode = value;
-            Console.WriteLine("Auto fetch is: " + _mode.GetValueOrDefault().ToString());
+            Console.WriteLine("Auto fetch is: " + _mode.GetValueOrDefault());
 
             UpdateBehavior();
         }

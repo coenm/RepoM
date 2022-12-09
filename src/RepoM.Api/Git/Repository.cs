@@ -18,7 +18,7 @@ public class Repository : IRepository
         Location = string.Empty;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not Repository other)
         {
