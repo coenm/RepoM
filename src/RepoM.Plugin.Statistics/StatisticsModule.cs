@@ -25,7 +25,6 @@ internal class StatisticsModule : IModule
     private string _basePath = string.Empty;
     private IDisposable? _disposable;
     private readonly JsonSerializerSettings _settings;
-    private Task _task;
 
     public StatisticsModule(
         StatisticsService service,
@@ -56,7 +55,7 @@ internal class StatisticsModule : IModule
 
         await ProcessEventsFromFile().ConfigureAwait(false);
 
-        _task = Task.Run(RemoveOldFilesAsync);
+        _ = Task.Run(RemoveOldFilesAsync);
     }
 
     public Task StopAsync()
