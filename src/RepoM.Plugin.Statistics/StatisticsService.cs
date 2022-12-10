@@ -43,6 +43,13 @@ public class StatisticsService
         return _recordings.Select(x => x.Key).ToImmutableArray();
     }
 
+    internal IReadOnlyRepositoryStatistics? GetRepositoryRecording(IRepository repository)
+    {
+        return !_recordings.TryGetValue(repository.SafePath, out RepositoryStatistics? repositoryStatistics)
+            ? null
+            : repositoryStatistics;
+    }
+
     public IReadOnlyList<DateTime> GetRecordings(IRepository repository)
     {
         if (_recordings.TryGetValue(repository.SafePath, out RepositoryStatistics? repositoryStatistics))

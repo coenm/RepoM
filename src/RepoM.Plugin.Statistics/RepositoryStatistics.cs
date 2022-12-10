@@ -2,10 +2,11 @@ namespace RepoM.Plugin.Statistics;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using RepoM.Core.Plugin.Common;
 using RepoM.Plugin.Statistics.Interface;
 
-internal class RepositoryStatistics
+internal class RepositoryStatistics : IReadOnlyRepositoryStatistics
 {
     private readonly string _repositoryPath;
     private readonly IClock _clock;
@@ -29,6 +30,21 @@ internal class RepositoryStatistics
         Apply(evt);
 
         return evt;
+    }
+
+    int IReadOnlyRepositoryStatistics.GetRecordingCount(DateTime from, DateTime to)
+    {
+        return Recordings.Count(recordingDate => recordingDate < to && recordingDate >= from);
+    }
+
+    int IReadOnlyRepositoryStatistics.GetRecordingCountFrom(DateTime from)
+    {
+        return Recordings.Count(recordingDate => recordingDate >= from);
+    }
+
+    int IReadOnlyRepositoryStatistics.GetRecordingCountBefore(DateTime to)
+    {
+        return Recordings.Count(recordingDate => recordingDate < to);
     }
 
     public void Apply(IEvent evt)

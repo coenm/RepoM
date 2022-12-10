@@ -10,17 +10,19 @@ using Xunit;
 public class UsageScorerFactoryTest
 {
     private readonly StatisticsService _service;
+    private readonly IClock _clock;
 
     public UsageScorerFactoryTest()
     {
-        _service = new StatisticsService(A.Fake<IClock>());
+        _clock = A.Fake<IClock>();
+        _service = new StatisticsService(_clock);
     }
 
     [Fact]
     public void Create_ShouldReturnInstanceOfUsageScoreCalculator()
     {
         // arrange
-        var sut = new UsageScorerFactory(_service);
+        var sut = new UsageScorerFactory(_service, _clock);
         var config = new UsageScorerConfigurationV1();
 
         // act
