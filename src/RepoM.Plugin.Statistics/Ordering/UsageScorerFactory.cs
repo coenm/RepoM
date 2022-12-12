@@ -10,13 +10,11 @@ public sealed class UsageScorerFactory : IRepositoryScoreCalculatorFactory<Usage
 {
     private readonly StatisticsService _service;
     private readonly IClock _clock;
-    private readonly ILoggerFactory _loggerFactory;
 
-    public UsageScorerFactory(StatisticsService service, IClock clock, ILoggerFactory loggerFactory)
+    public UsageScorerFactory(StatisticsService service, IClock clock)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
     }
 
     public IRepositoryScoreCalculator Create(UsageScorerConfigurationV1 config)
@@ -38,7 +36,6 @@ public sealed class UsageScorerFactory : IRepositoryScoreCalculatorFactory<Usage
         return new UsageScoreCalculator(
             _service,
             _clock,
-            scoreCalculatorConfig,
-            _loggerFactory.CreateLogger(typeof(UsageScoreCalculator)));
+            scoreCalculatorConfig);
     }
 }
