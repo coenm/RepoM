@@ -2,6 +2,7 @@ namespace RepoM.Plugin.Statistics.Tests.Ordering;
 
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using RepoM.Plugin.Statistics.Ordering;
@@ -22,7 +23,7 @@ public class UsageScorerFactoryTest
     public void Create_ShouldReturnInstanceOfUsageScoreCalculator()
     {
         // arrange
-        var sut = new UsageScorerFactory(_service, _clock);
+        var sut = new UsageScorerFactory(_service, _clock, new NullLoggerFactory());
         var config = new UsageScorerConfigurationV1();
 
         // act

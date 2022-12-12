@@ -45,9 +45,9 @@ public class StatisticsService
 
     internal IReadOnlyRepositoryStatistics? GetRepositoryRecording(IRepository repository)
     {
-        return !_recordings.TryGetValue(repository.SafePath, out RepositoryStatistics? repositoryStatistics)
-            ? null
-            : repositoryStatistics;
+        return _recordings.TryGetValue(repository.SafePath, out RepositoryStatistics? repositoryStatistics)
+            ? repositoryStatistics
+            : null;
     }
 
     public IReadOnlyList<DateTime> GetRecordings(IRepository repository)
