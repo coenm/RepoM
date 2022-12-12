@@ -23,7 +23,7 @@ public sealed class UsageScorerFactory : IRepositoryScoreCalculatorFactory<Usage
             {
                 MaxScore = config.MaxScore ?? int.MaxValue,
                 Ranges = config.Windows
-                               .Select(x => new RangeConfig
+                               .Select(x => new ScoreCalculatorRangeConfig
                                    {
                                        Score = x.Weight,
                                        MaxItems = x.MaxItems,

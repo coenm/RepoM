@@ -3,12 +3,11 @@ namespace RepoM.Plugin.Statistics.Ordering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-internal class RangeConfig
+internal class ScoreCalculatorRangeConfig
 {
     public TimeSpan MaxAge { get; set; }
 
@@ -19,7 +18,7 @@ internal class RangeConfig
 
 internal class ScoreCalculatorConfig
 {
-    public List<RangeConfig> Ranges { get; set; } = new();
+    public List<ScoreCalculatorRangeConfig> Ranges { get; set; } = new();
 
     public int MaxScore { get; set; } = int.MaxValue;
 }
@@ -29,7 +28,7 @@ internal class UsageScoreCalculator : IRepositoryScoreCalculator
     private readonly StatisticsService _service;
     private readonly IClock _clock;
     private readonly ScoreCalculatorConfig _config;
-    private readonly List<RangeConfig> _ranges;
+    private readonly List<ScoreCalculatorRangeConfig> _ranges;
 
     public UsageScoreCalculator(StatisticsService service, IClock clock, ScoreCalculatorConfig config)
     {
@@ -76,12 +75,12 @@ internal class UsageScoreCalculator : IRepositoryScoreCalculator
 
     private int CalculateScore(DateTime now, IReadOnlyRepositoryStatistics repositoryRecording)
     {
-        int score = 0;
-        int unused = 0;
-        int currentCount = 0;
+        var score = 0;
+        var unused = 0;
+        var currentCount = 0;
 
-        var previousRange = _ranges[0];
-        var currentRange = _ranges[0];
+        ScoreCalculatorRangeConfig previousRange = _ranges[0];
+        ScoreCalculatorRangeConfig currentRange = _ranges[0];
 
         DateTime dateTime = now.Subtract(currentRange.MaxAge);
 

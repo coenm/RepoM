@@ -32,7 +32,7 @@ public class UsageScoreCalculatorTest
         _defaultConfig = new ScoreCalculatorConfig
             {
                 MaxScore = 100,
-                Ranges = new List<RangeConfig>
+                Ranges = new List<ScoreCalculatorRangeConfig>
                     {
                         new()
                             {
