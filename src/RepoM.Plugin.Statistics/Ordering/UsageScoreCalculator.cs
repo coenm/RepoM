@@ -7,22 +7,6 @@ using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-internal class ScoreCalculatorRangeConfig
-{
-    public TimeSpan MaxAge { get; set; }
-
-    public int Score { get; set;}
-
-    public int MaxItems { get; set; } = int.MaxValue;
-}
-
-internal class ScoreCalculatorConfig
-{
-    public List<ScoreCalculatorRangeConfig> Ranges { get; set; } = new();
-
-    public int MaxScore { get; set; } = int.MaxValue;
-}
-
 internal class UsageScoreCalculator : IRepositoryScoreCalculator
 {
     private readonly StatisticsService _service;
