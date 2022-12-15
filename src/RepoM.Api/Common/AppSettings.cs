@@ -11,7 +11,9 @@ public class AppSettings
         EnabledSearchProviders = new List<string>();
         SonarCloudPersonalAccessToken = string.Empty;
         AzureDevOps = AzureDevOpsOptions.Default;
+        SortKey = string.Empty;
     }
+    public string SortKey { get; set; }
 
     public AutoFetchMode AutoFetchMode { get; set; }
 

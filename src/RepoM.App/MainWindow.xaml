@@ -8,6 +8,7 @@
 						xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 						xmlns:converters="clr-namespace:RepoM.App.Converters"
 						xmlns:controls="clr-namespace:RepoM.App.Controls"
+						xmlns:app="clr-namespace:RepoM.App"
 						TextElement.Foreground="{DynamicResource MaterialDesignBody}"
 						TextElement.FontWeight="Regular"
 						TextElement.FontSize="12"
@@ -107,10 +108,15 @@
 							Grid.Column="1"
 							Foreground="{DynamicResource MaterialDesignBody}"
 							Style="{DynamicResource MaterialDesignFlatButton}">
-							<Button.ContextMenu>
-								<controls:AcrylicContextMenu x:Name="SettingsMenu" >
-
-									<controls:AcrylicMenuItem Header="{DynamicResource ManageRepos}"  >
+							<Button.Resources>
+                                <Style x:Key="DatePickerStyle" TargetType="{x:Type controls:AcrylicMenuItem}">
+                                    <Setter Property="IsChecked" Value="{Binding Selected2}"/>
+                                    <Setter Property="Header" Value="coen"/>
+                                </Style>
+                            </Button.Resources>
+                            <Button.ContextMenu>
+                                <controls:AcrylicContextMenu x:Name="SettingsMenu" >
+                                    <controls:AcrylicMenuItem Header="{DynamicResource ManageRepos}"  >
 										<controls:AcrylicMenuItem Header="{DynamicResource ScanComputer}" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Clear}" Click="ClearButton_Click"/>
 										<Separator/>
@@ -119,10 +125,58 @@
 										<controls:AcrylicMenuItem Header="{DynamicResource ResetIgnoreRules}" Click="ResetIgnoreRulesButton_Click" />
 									</controls:AcrylicMenuItem>
 
-									<controls:AcrylicMenuItem Header="{DynamicResource AutoFetch}" x:Name="AutoFetchMenuItem" >
+                                    <controls:AcrylicMenuItem Header="Ordering"
+                                                              ItemsSource="{Binding Path=Orderings}"
+                                                              >
+                                        <!-- <controls:AcrylicMenuItem.Template> -->
+                                        <!--     <ControlTemplate TargetType="{x:Type MenuItem}"> -->
+                                        <!--         ~1~ <Separator Style="{DynamicResource {x:Static MenuItem.SeparatorStyleKey}}"/> @1@ -->
+                                        <!--         <controls:AcrylicMenuItem Header="xxxxxxx" -->
+                                        <!--                                    -->
+                                        <!--         /> -->
+                                        <!--     </ControlTemplate> -->
+                                        <!-- </controls:AcrylicMenuItem.Template> -->
+                                        <controls:AcrylicMenuItem.ItemContainerStyle>
+                                            <Style>
+                                                <Setter Property="controls:AcrylicMenuItem.Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type MenuItem}">
+                                                            <!-- <Separator/> -->
+                                                            <controls:AcrylicMenuItem 
+                                                                Header="{Binding Header}"
+                                                                IsCheckable="{Binding IsCheckable}"
+																IsChecked="{Binding IsChecked}"
+                                                               
+                                                                />
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                                    <!--     ~1~ <Style TargetType="{x:Type MenuItem}"> @1@ -->
+                                        <!--     ~1~   @1@ -->
+                                        <!--     ~1~ </Style> @1@ -->
+                                        </controls:AcrylicMenuItem.ItemContainerStyle>
+                                        <!-- <controls:AcrylicMenuItem.ItemTemplate> -->
+                                        <!--     <DataTemplate> -->
+                                        <!--         ~1~ <controls:AcrylicMenuItem Header="{Binding}" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/> @1@ -->
+                                        <!-- -->
+                                        <!--         ~1~ <controls:AcrylicMenuItem Header="{Binding}" Click="ResetIgnoreRulesButton_Click" /> @1@ -->
+                                        <!--         ~1~ <TextBlock Text="{Binding }"></TextBlock > @1@ -->
+                                        <!--     </DataTemplate> -->
+                                        <!-- </controls:AcrylicMenuItem.ItemTemplate> -->
+
+                                        <!-- <controls:AcrylicMenuItem Header="{DynamicResource ScanComputer}" Click="ScanButton_Click" x:Name=""/> -->
+                                        <!-- <controls:AcrylicMenuItem Header="{DynamicResource Clear}" Click="ClearButton_Click"/> -->
+                                        <!-- <Separator/> -->
+                                        <!-- <controls:AcrylicMenuItem Header="{DynamicResource CustomizeRepositoryActions}" Click="CustomizeContextMenu_Click" /> -->
+                                        <!-- <Separator/> -->
+                                        <!-- <controls:AcrylicMenuItem Header="{DynamicResource ResetIgnoreRules}" Click="ResetIgnoreRulesButton_Click" /> -->
+                                    </controls:AcrylicMenuItem>
+
+                                    <controls:AcrylicMenuItem Header="{DynamicResource AutoFetch}" x:Name="AutoFetchMenuItem" >
 										<controls:AcrylicMenuItem Header="{DynamicResource Off}" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
 										<Separator/>
-										<controls:AcrylicMenuItem Header="{DynamicResource Discretely}" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
+										<MenuItem Header="{DynamicResource Discretely}" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Adequate}" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Aggressive}" IsCheckable="True" IsChecked="{Binding AutoFetchAggressive}"/>
 									</controls:AcrylicMenuItem>

@@ -8,6 +8,8 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
@@ -70,11 +72,11 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         }
     }
 
-    private RepoM.Api.Git.RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+    private static Git.RepositoryAction CreateProcessRunnerAction(string name, string process, IRepository repository, string arguments = "")
     {
-        return new RepoM.Api.Git.RepositoryAction(name)
+        return new Git.RepositoryAction(name, repository)
         {
-            Action = (_, _) => ProcessHelper.StartProcess(process, arguments),
+            Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(process, arguments)),
         };
     }
 
@@ -85,11 +87,11 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             return null;
         }
 
-        return new RepoM.Api.Git.RepositoryAction(actionName)
+        return new RepoM.Api.Git.RepositoryAction(actionName, repository)
             {
                 DeferredSubActionsEnumerator = () =>
                     GetFiles(repository, filePattern)
-                        .Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), solutionFile))
+                        .Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), solutionFile, repository))
                         .ToArray(),
             };
     }

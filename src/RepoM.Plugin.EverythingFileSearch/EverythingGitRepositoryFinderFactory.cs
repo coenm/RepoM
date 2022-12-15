@@ -17,7 +17,7 @@ public class EverythingGitRepositoryFinderFactory : ISingleGitRepositoryFinderFa
         _pathSkipper = pathSkipper ?? throw new ArgumentNullException(nameof(pathSkipper));
     }
 
-    public string Name { get; } = "Everything";
+    public string Name => "Everything";
 
     public bool IsActive => _isInstalled.Value;
 

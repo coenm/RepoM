@@ -1,4 +1,4 @@
-namespace RepoM.Api.Git;
+namespace RepoM.Core.Plugin.Repository;
 
 using System;
 using System.Diagnostics;
@@ -16,7 +16,7 @@ public class Remote
 
     public string Key { get; }
 
-    public string Name { get; set; }
+    public string Name { get; }
 
     public string Url { get; }
 
@@ -39,7 +39,7 @@ public class Remote
         {
             return name;
         }
-        
+
         try
         {
             var parts = url.Split('/', '\\');

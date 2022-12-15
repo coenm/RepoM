@@ -16,9 +16,12 @@ using System.Windows.Input;
 using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO;
 using RepoM.App.Controls;
+using RepoM.App.RepositoryActions;
+using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
+using RepoM.Core.Plugin.Common;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using SourceChord.FluentWPF;
 
 /// <summary>
@@ -35,6 +38,7 @@ public partial class MainWindow
     private bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
     private readonly IFileSystem _fileSystem;
+    private readonly ActionExecutor _executor;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     public MainWindow(
@@ -47,14 +51,18 @@ public partial class MainWindow
         ITranslationService translationService,
         IAppDataPathProvider appDataPathProvider,
         IRepositorySearch repositorySearch,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        ActionExecutor executor,
+        IRepositoryComparerManager repositoryComparerManager,
+        IThreadDispatcher threadDispatcher)
     {
         _translationService = translationService;
         InitializeComponent();
 
         AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
-        DataContext = new MainWindowPageModel(appSettingsService);
+        var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
+        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;
@@ -69,14 +77,16 @@ public partial class MainWindow
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _repositorySearch = repositorySearch ?? throw new ArgumentNullException(nameof(repositorySearch));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _executor = executor ?? throw new ArgumentNullException(nameof(executor));
 
         lstRepositories.ItemsSource = aggregator.Repositories;
 
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
         ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
         view.Filter = FilterRepositories;
-        view.CustomSort = new CustomRepositoryViewSortComparer();
-
+        view.CustomSort = repositoryComparerManager.Comparer;
+        repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
+        
         AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);
         txtHelp.Text = GetHelp(statusCharacterMap);
@@ -87,7 +97,7 @@ public partial class MainWindow
     private void View_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         // use the list's itemsource directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
-        var hasRepositories = lstRepositories.ItemsSource.OfType<RepositoryView>().Any();
+        var hasRepositories = lstRepositories.ItemsSource.OfType<RepositoryViewModel>().Any();
         tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible;
     }
 
@@ -178,7 +188,7 @@ public partial class MainWindow
 
     private bool LstRepositoriesContextMenuOpening(object sender, ContextMenu ctxMenu)
     {
-        RepositoryView[] selectedViews = lstRepositories.SelectedItems.OfType<RepositoryView>().ToArray();
+        RepositoryViewModel[] selectedViews = lstRepositories.SelectedItems.OfType<RepositoryViewModel>().ToArray();
 
         if (!selectedViews.Any())
         {
@@ -243,7 +253,7 @@ public partial class MainWindow
 
     private void InvokeActionOnCurrentRepository()
     {
-        if (lstRepositories.SelectedItem is not RepositoryView selectedView)
+        if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
         {
             return;
         }
@@ -264,7 +274,10 @@ public partial class MainWindow
             action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
         }
 
-        action?.Action?.Invoke(this, EventArgs.Empty);
+        if (action != null)
+        {
+            _executor.Execute(action.Repository, action.Action);
+        }
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
@@ -380,7 +393,7 @@ public partial class MainWindow
         parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
     }
 
-    private static Control? /*MenuItem*/ CreateMenuItem(object sender, RepositoryActionBase action, IEnumerable<RepositoryView>? affectedViews = null)
+    private Control? /*MenuItem*/ CreateMenuItem(object sender, RepositoryActionBase action, IEnumerable<RepositoryViewModel>? affectedViews = null)
     {
         if (action is RepositorySeparatorAction)
         {
@@ -395,27 +408,27 @@ public partial class MainWindow
 
         Action<object, object> clickAction = (object clickSender, object clickArgs) =>
             {
-                if (repositoryAction?.Action == null)
+                if (repositoryAction?.Action == null || repositoryAction.Action is NullAction)
                 {
                     return;
                 }
 
                 var coords = new float[] { 0, 0, };
-
+                
                 // run actions in the UI async to not block it
                 if (repositoryAction.ExecutionCausesSynchronizing)
                 {
                     Task.Run(() => SetViewsSynchronizing(affectedViews, true))
-                        .ContinueWith(t => repositoryAction.Action(null, coords))
+                        .ContinueWith(t => _executor.Execute(action.Repository, action.Action))
                         .ContinueWith(t => SetViewsSynchronizing(affectedViews, false));
                 }
                 else
                 {
-                    Task.Run(() => repositoryAction.Action(null, coords));
+                    Task.Run(() => _executor.Execute(action.Repository, action.Action));
                 }
             };
 
-        var item = new AcrylicMenuItem()
+        var item = new AcrylicMenuItem
             {
                 Header = repositoryAction.Name,
                 IsEnabled = repositoryAction.CanExecute,
@@ -465,14 +478,14 @@ public partial class MainWindow
         return item;
     }
 
-    private static void SetViewsSynchronizing(IEnumerable<RepositoryView>? affectedViews, bool synchronizing)
+    private static void SetViewsSynchronizing(IEnumerable<RepositoryViewModel>? affectedViews, bool synchronizing)
     {
         if (affectedViews == null)
         {
             return;
         }
 
-        foreach (RepositoryView view in affectedViews)
+        foreach (RepositoryViewModel view in affectedViews)
         {
             view.IsSynchronizing = synchronizing;
         }
@@ -557,7 +570,7 @@ public partial class MainWindow
             return false;
         }
 
-        if (item is not RepositoryView viewModelItem)
+        if (item is not RepositoryViewModel viewModelItem)
         {
             return false;
         }

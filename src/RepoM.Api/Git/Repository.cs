@@ -3,9 +3,10 @@ namespace RepoM.Api.Git;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using RepoM.Core.Plugin.Repository;
 
 [DebuggerDisplay("{Name} @{Path}")]
-public class Repository
+public class Repository : IRepository
 {
     public Repository()
     {
@@ -17,7 +18,7 @@ public class Repository
         Location = string.Empty;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not Repository other)
         {

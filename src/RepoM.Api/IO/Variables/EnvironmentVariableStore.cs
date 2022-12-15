@@ -3,7 +3,7 @@ namespace RepoM.Api.IO.Variables;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using RepoM.Api.Git;
+using RepoM.Core.Plugin.Repository;
 
 public static class EnvironmentVariableStore
 {
@@ -20,7 +20,7 @@ public static class EnvironmentVariableStore
         return new ExecuteOnDisposed(() => _envVars.Value = new Dictionary<string, string>());
     }
 
-    public static Dictionary<string, string> Get(Repository _)
+    public static Dictionary<string, string> Get(IRepository _)
     {
         return _envVars.Value ?? new Dictionary<string, string>(0);
     }

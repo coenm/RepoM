@@ -1,21 +1,89 @@
 namespace RepoM.App;
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
+using RepoM.App.RepositoryOrdering;
+using RepoM.App.ViewModels;
+
+public class SortMenuItemViewModel : MenuItemViewModel
+{
+    private readonly Func<bool> _isSelectedFunc;
+    private readonly Action _setKeyFunc;
+
+    public SortMenuItemViewModel(
+        Func<bool> isSelectedFunc,
+        Action setKeyFunc,
+        string title)
+    {
+        _isSelectedFunc = isSelectedFunc ?? throw new ArgumentNullException(nameof(isSelectedFunc));
+        _setKeyFunc = setKeyFunc ?? throw new ArgumentNullException(nameof(setKeyFunc));
+
+        Header = title;
+        IsCheckable = true;
+    }
+
+    public override bool IsChecked
+    {
+        get => _isSelectedFunc.Invoke();
+        set => _setKeyFunc.Invoke();
+    }
+
+    public void Poke()
+    {
+        OnPropertyChanged(nameof(IsChecked));
+    }
+}
+
+public class OrderingsViewModel : List<MenuItemViewModel>
+{
+    public OrderingsViewModel(IRepositoryComparerManager repositoryComparerManager, IThreadDispatcher threadDispatcher)
+    {
+        if (repositoryComparerManager == null)
+        {
+            throw new ArgumentNullException(nameof(repositoryComparerManager));
+        }
+
+        if (threadDispatcher == null)
+        {
+            throw new ArgumentNullException(nameof(threadDispatcher));
+        }
+
+        repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) =>
+            {
+                foreach (MenuItemViewModel item in this)
+                {
+                    if (item is SortMenuItemViewModel sortMenuItemViewModel)
+                    {
+                        threadDispatcher.Invoke(() => sortMenuItemViewModel.Poke());
+                    }
+                }
+            };
+
+        AddRange(repositoryComparerManager.RepositoryComparerKeys.Select(name =>
+            new SortMenuItemViewModel(
+                () => repositoryComparerManager.SelectedRepositoryComparerKey == name,
+                () => repositoryComparerManager.SetRepositoryComparer(name),
+                name)));
+    }
+}
 
 public class MainWindowPageModel : INotifyPropertyChanged
 {
     private readonly IAppSettingsService _appSettingsService;
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public MainWindowPageModel(IAppSettingsService appSettingsService)
+    public MainWindowPageModel(IAppSettingsService appSettingsService, OrderingsViewModel orderingsViewModel)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        Orderings = orderingsViewModel;
     }
 
+    public OrderingsViewModel Orderings { get; }
+    
     public AutoFetchMode AutoFetchMode
     {
         get => _appSettingsService.AutoFetchMode;

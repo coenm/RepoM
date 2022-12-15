@@ -3,7 +3,7 @@ namespace RepoM.Api.Git;
 using System;
 using System.IO;
 using System.IO.Abstractions;
-using RepoM.Api.IO;
+using RepoM.Core.Plugin.Common;
 
 public class DefaultRepositoryStore : FileRepositoryStore
 {

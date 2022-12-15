@@ -35,6 +35,21 @@ using Serilog.Core;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using RepoM.App.Services;
 using RepoM.Api.IO.VariableProviders;
+using RepoM.Api.Ordering.IsPinned;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+using RepoM.Core.Plugin.RepositoryOrdering;
+using RepoM.Api.Ordering.Az;
+using RepoM.Api.Ordering.Composition;
+using RepoM.Api.Ordering.Label;
+using RepoM.Api.Ordering.Score;
+using RepoM.Api.Ordering.Sum;
+using Container = SimpleInjector.Container;
+using RepoM.Api.RepositoryActions.Decorators;
+using RepoM.Core.Plugin.RepositoryActions;
+using RepoM.Api.RepositoryActions.Executors;
+using RepoM.App.RepositoryActions;
+using RepoM.App.RepositoryOrdering;
+using RepoM.Core.Plugin.Common;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -69,7 +84,6 @@ public partial class App : Application
             new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
         Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
-
         _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
 
         var fileSystem = new FileSystem();
@@ -80,9 +94,12 @@ public partial class App : Application
         logger.LogInformation("Started");
         RegisterLogging(loggerFactory);
         RegisterServices(_container, fileSystem);
-        UseRepositoryMonitor(_container);
 
+#if DEBUG
         _container.Verify(VerificationOption.VerifyAndDiagnose);
+#endif
+
+        UseRepositoryMonitor(_container);
 
         _updateTimer = new Timer(async _ => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
 
@@ -135,9 +152,9 @@ public partial class App : Application
 
         _hotkey?.Unregister();
 
-#pragma warning disable CA1416 // Validate platform compatibility
+// #pragma warning disable CA1416 // Validate platform compatibility
         _notifyIcon?.Dispose();
-#pragma warning restore CA1416 // Validate platform compatibility
+// #pragma warning restore CA1416 // Validate platform compatibility
 
         base.OnExit(e);
     }
@@ -208,12 +225,14 @@ public partial class App : Application
         container.Register<IThreadDispatcher, WpfThreadDispatcher>(Lifestyle.Singleton);
         container.Register<IGitCommander, ProcessExecutingGitCommander>(Lifestyle.Singleton);
         container.Register<IAppSettingsService, FileAppSettingsService>(Lifestyle.Singleton);
+        container.Register<ICompareSettingsService, FilesICompareSettingsService> (Lifestyle.Singleton);
         container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>(Lifestyle.Singleton);
         container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>(Lifestyle.Singleton);
         container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
-
+        container.RegisterInstance<IClock>(SystemClock.Instance);
         container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
         container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
+        container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
         container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
         container.RegisterInstance<IFileSystem>(fileSystem);
@@ -224,7 +243,7 @@ public partial class App : Application
                 typeof(IVariableProvider).Assembly,
                 typeof(RepositoryExpressionEvaluator).Assembly,
             };
-        // container.Collection.Register(typeof(IVariableProvider), repoExpressionEvaluators, Lifestyle.Singleton);
+        
         container.Collection.Append<IVariableProvider, DateTimeNowVariableProvider>(Lifestyle.Singleton);
         container.Collection.Append<IVariableProvider, DateTimeTimeVariableProvider>(Lifestyle.Singleton);
         container.Collection.Append<IVariableProvider, DateTimeDateVariableProvider>(Lifestyle.Singleton);
@@ -234,6 +253,7 @@ public partial class App : Application
         container.Collection.Append<IVariableProvider, RepositoryVariableProvider>(Lifestyle.Singleton);
         container.Collection.Append<IVariableProvider, SlashVariableProvider>(Lifestyle.Singleton);
         container.Collection.Append<IVariableProvider, BackslashVariableProvider>(Lifestyle.Singleton);
+        container.Collection.Append<IVariableProvider, VariableProviderAdapter>(Lifestyle.Singleton);
 
         container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);
         container.RegisterInstance(new DateTimeVariableProviderOptions
@@ -263,6 +283,29 @@ public partial class App : Application
         container.Register<YamlDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
         container.Register<RepositorySpecificConfiguration>(Lifestyle.Singleton);
 
+
+        container.RegisterSingleton<IRepositoryComparerFactory, RepositoryComparerCompositionFactory>();
+        container.RegisterSingleton<IRepositoryScoreCalculatorFactory, RepositoryScoreCalculatorFactory>();
+
+        container.Collection.Register(
+            typeof(IConfigurationRegistration),
+            new[] { typeof(IConfigurationRegistration).Assembly, typeof(IsPinnedScorerConfigurationV1Registration).Assembly, },
+            Lifestyle.Singleton);
+
+        container.Register<IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>, IsPinnedScorerFactory>(Lifestyle.Singleton);
+        container.Register<IRepositoryScoreCalculatorFactory<TagScorerConfigurationV1>, TagScorerFactory>(Lifestyle.Singleton);
+        container.Register<IRepositoryComparerFactory<AlphabetComparerConfigurationV1>, AzRepositoryComparerFactory>(Lifestyle.Singleton);
+        container.Register<IRepositoryComparerFactory<CompositionComparerConfigurationV1>, CompositionRepositoryComparerFactory>(Lifestyle.Singleton);
+        container.Register<IRepositoryComparerFactory<ScoreComparerConfigurationV1>, ScoreRepositoryComparerFactory>(Lifestyle.Singleton);
+        container.Register<IRepositoryComparerFactory<SumComparerConfigurationV1>, SumRepositoryComparerFactory>(Lifestyle.Singleton);
+
+        container.RegisterSingleton<ActionExecutor>();
+        container.Register(typeof(IActionExecutor<>), new [] { typeof(BrowseActionExecutor).Assembly, }, Lifestyle.Singleton);
+        container.RegisterDecorator(
+            typeof(IActionExecutor<>),
+            typeof(LoggerActionExecutorDecorator<>),
+            Lifestyle.Singleton);
+        
         IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
         IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
         container.RegisterPackages(assemblies);

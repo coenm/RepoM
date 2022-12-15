@@ -3,6 +3,12 @@ namespace RepoM.Api.Common;
 using System;
 using System.Collections.Generic;
 using RepoM.Api.Git.AutoFetch;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+
+public interface ICompareSettingsService
+{
+    Dictionary<string, IRepositoriesComparerConfiguration> Configuration { get; }
+}
 
 public interface IAppSettingsService
 {
@@ -21,6 +27,8 @@ public interface IAppSettingsService
     string AzureDevOpsPersonalAccessToken { get; set; }
 
     string AzureDevOpsBaseUrl { get; set; }
+
+    string SortKey { get; set; }
 
     void RegisterInvalidationHandler(Action handler);
 }

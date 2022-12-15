@@ -10,7 +10,7 @@ public interface IRepositoryInformationAggregator
 
     string? GetStatusByPath(string path);
 
-    ObservableCollection<RepositoryView> Repositories { get; }
+    ObservableCollection<RepositoryViewModel> Repositories { get; }
 
     void Reset();
 

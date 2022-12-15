@@ -1,15 +1,11 @@
 namespace RepoM.Api.Common;
 
 using System;
+using RepoM.Core.Plugin.Common;
 
 public class HardcodededMiniHumanizer : IHumanizer
 {
     private readonly IClock _clock;
-
-    public HardcodededMiniHumanizer()
-        : this(new SystemClock())
-    {
-    }
 
     public HardcodededMiniHumanizer(IClock clock)
     {

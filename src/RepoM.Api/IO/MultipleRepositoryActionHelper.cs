@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api.Git;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 
 public static class MultipleRepositoryActionHelper
 {
@@ -13,9 +14,10 @@ public static class MultipleRepositoryActionHelper
         Action<Repository> action,
         bool executionCausesSynchronizing = false)
     {
-        return new RepositoryAction(name)
+        // todo coen, fix
+        return new RepositoryAction(name, repositories.First()) 
             {
-                Action = (_, _) =>
+                Action = new DelegateAction((_, _) =>
                     {
                         // copy over to an array to not get an exception
                         // once the enumerator changes (which can happen when a change
@@ -26,7 +28,7 @@ public static class MultipleRepositoryActionHelper
                         {
                             SafelyExecute(action, repository); // git/io-exceptions will break the loop, put in try/catch
                         }
-                    },
+                    }),
                 ExecutionCausesSynchronizing = executionCausesSynchronizing,
             };
     }

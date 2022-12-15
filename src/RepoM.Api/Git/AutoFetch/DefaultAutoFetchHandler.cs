@@ -9,7 +9,7 @@ using RepoM.Api.Common;
 public class DefaultAutoFetchHandler : IAutoFetchHandler
 {
     private bool _active;
-    private AutoFetchMode? _mode = null;
+    private AutoFetchMode? _mode;
     private readonly Timer _timer;
     private readonly Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
     private int _lastFetchRepository = -1;
@@ -26,10 +26,10 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
         _profiles = new Dictionary<AutoFetchMode, AutoFetchProfile>
             {
-                { AutoFetchMode.Off, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.MaxValue, } },
-                { AutoFetchMode.Discretely, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromMinutes(5), } },
-                { AutoFetchMode.Adequate, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromMinutes(1), } },
-                { AutoFetchMode.Aggressive, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromSeconds(2), } },
+                { AutoFetchMode.Off, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.MaxValue, } },
+                { AutoFetchMode.Discretely, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromMinutes(5), } },
+                { AutoFetchMode.Adequate, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromMinutes(1), } },
+                { AutoFetchMode.Aggressive, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromSeconds(2), } },
             };
 
         _timer = new Timer(FetchNext, null, Timeout.Infinite, Timeout.Infinite);
@@ -71,28 +71,28 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         // 2. makes sure that no repository is jumped over because the list
         //    of repositories is constantly changed and not sorted in any way in memory.
         //    So we cannot guarantuee that each repository is fetched on each iteration if we do not sort.
-        var repositories = RepositoryInformationAggregator.Repositories
+        var repositories = RepositoryInformationAggregator.Repositories?
                                                           .OrderBy(r => r.Name)
-                                                          .ToList();
+                                                          .ToArray() ?? Array.Empty<RepositoryViewModel>();
 
         // temporarily disable the timer to prevent parallel fetch executions
         UpdateBehavior(AutoFetchMode.Off);
 
         _lastFetchRepository++;
 
-        if (repositories.Count <= _lastFetchRepository)
+        if (repositories.Length <= _lastFetchRepository)
         {
             _lastFetchRepository = 0;
         }
 
-        RepositoryView repositoryView = repositories[_lastFetchRepository];
+        RepositoryViewModel repositoryViewModel = repositories[_lastFetchRepository];
 
-        Console.WriteLine($"Auto-fetching {repositoryView.Name} (index {_lastFetchRepository} of {repositories.Count})");
+        Console.WriteLine($"Auto-fetching {repositoryViewModel.Name} (index {_lastFetchRepository} of {repositories.Length})");
 
-        repositoryView.IsSynchronizing = true;
+        repositoryViewModel.IsSynchronizing = true;
         try
         {
-            RepositoryWriter.Fetch(repositoryView.Repository);
+            RepositoryWriter.Fetch(repositoryViewModel.Repository);
         }
         catch
         {
@@ -103,7 +103,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
             // re-enable the timer to get to the next fetch
             UpdateBehavior();
 
-            repositoryView.IsSynchronizing = false;
+            repositoryViewModel.IsSynchronizing = false;
         }
     }
 
@@ -134,7 +134,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
             }
 
             _mode = value;
-            Console.WriteLine("Auto fetch is: " + _mode.GetValueOrDefault().ToString());
+            Console.WriteLine("Auto fetch is: " + _mode.GetValueOrDefault());
 
             UpdateBehavior();
         }

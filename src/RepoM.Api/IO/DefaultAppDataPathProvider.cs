@@ -2,6 +2,7 @@ namespace RepoM.Api.IO;
 
 using System;
 using System.IO;
+using RepoM.Core.Plugin.Common;
 
 public class DefaultAppDataPathProvider : IAppDataPathProvider
 { 

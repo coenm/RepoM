@@ -16,6 +16,9 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Exceptions;
 using RepoM.Api.IO.Variables;
+using RepoM.Core.Plugin.Common;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
+using IRepository = RepoM.Core.Plugin.Repository.IRepository;
 using Repository = RepoM.Api.Git.Repository;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
@@ -65,14 +68,14 @@ public class RepositoryConfigurationReader
         throw new ConfigurationFileNotFoundException(failingFilename);
     }
 
-    public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params Repository[] repositories)
+    public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params IRepository[] repositories)
     {
         if (!repositories.Any())
         {
             return (null, null, null, null);
         }
 
-        Repository? repository = repositories.FirstOrDefault(); //todo
+        IRepository? repository = repositories.FirstOrDefault(); //todo
         if (repository == null)
         {
             return (null, null, null, null);
@@ -250,19 +253,19 @@ public class RepositoryConfigurationReader
         return (envVars, variables, actions, tags);
     }
 
-    private object? Evaluate(object? input, Repository? repository)
+    private object? Evaluate(object? input, IRepository? repository)
     {
         if (input is not string s)
         {
             return input;
         }
 
-        Repository[] repositories = repository == null ? Array.Empty<Repository>() : new[] { repository, };
+        IRepository[] repositories = repository == null ? Array.Empty<IRepository>() : new[] { repository, };
         return _repoExpressionEvaluator.EvaluateValueExpression(s, repositories);
 
     }
 
-    private string EvaluateString(string? input, Repository? repository)
+    private string EvaluateString(string? input, IRepository? repository)
     {
         object? v = Evaluate(input, repository);
         if (v == null)
@@ -273,7 +276,7 @@ public class RepositoryConfigurationReader
         return v.ToString();
     }
 
-    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository? repository)
+    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository? repository)
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty
@@ -319,7 +322,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         return GetTagsInner(repository).Distinct();
     }
 
-    private IEnumerable<string> GetTagsInner(Repository repository)
+    private IEnumerable<string> GetTagsInner(IRepository repository)
     {
         List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars)
         {
@@ -374,7 +377,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         }
     }
 
-    private object? Evaluate(object? input, Repository repository)
+    private object? Evaluate(object? input, IRepository repository)
     {
         if (input is string s)
         {
@@ -384,7 +387,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         return input;
     }
 
-    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
+    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository repository)
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty
@@ -445,14 +448,14 @@ public class RepositorySpecificConfiguration
         {
             if (ex is ConfigurationFileNotFoundException configurationFileNotFoundException)
             {
-                foreach (RepositoryAction failingItem in CreateFailing(configurationFileNotFoundException, configurationFileNotFoundException.Filename))
+                foreach (RepositoryAction failingItem in CreateFailing(configurationFileNotFoundException, configurationFileNotFoundException.Filename, singleRepository!)) // todo coenm
                 {
                     yield return failingItem;
                 }
             }
             else
             {
-                foreach (RepositoryAction failingItem in CreateFailing(ex, null))
+                foreach (RepositoryAction failingItem in CreateFailing(ex, null, singleRepository!)) // todo coenm
                 {
                     yield return failingItem;
                 }
@@ -509,23 +512,30 @@ public class RepositorySpecificConfiguration
                .ToList();
     }
 
-    private IEnumerable<RepositoryAction> CreateFailing(Exception ex, string? filename)
+    private IEnumerable<RepositoryAction> CreateFailing(Exception ex, string? filename, IRepository repository)
     {
-        yield return new RepositoryAction(_translationService.Translate("Could not read repository actions"))
+        yield return new RepositoryAction(_translationService.Translate("Could not read repository actions"), repository)
             {
                 CanExecute = false,
             };
 
-        yield return new RepositoryAction(ex.Message)
+        yield return new RepositoryAction(ex.Message, repository)
             {
                 CanExecute = false,
             };
 
         if (!string.IsNullOrWhiteSpace(filename))
         {
-            yield return new RepositoryAction(_translationService.Translate("Fix"))
+            yield return new RepositoryAction(_translationService.Translate("Fix"), repository)
                 {
-                    Action = (_, _) => ProcessHelper.StartProcess(_fileSystem.Path.GetDirectoryName(filename), string.Empty),
+                    Action = new DelegateAction((_, _) =>
+                        {
+                            var directoryName = _fileSystem.Path.GetDirectoryName(filename);
+                            if (directoryName != null)
+                            {
+                                ProcessHelper.StartProcess(directoryName, string.Empty);
+                            }
+                        }),
                 };
         }
     }

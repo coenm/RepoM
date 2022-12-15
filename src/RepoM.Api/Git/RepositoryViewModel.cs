@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 
 [DebuggerDisplay("{Name} @{Path}")]
-public class RepositoryView : IRepositoryView, INotifyPropertyChanged
+public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 {
     private readonly IRepositoryMonitor _monitor;
     private string? _cachedRepositoryStatusCode;
@@ -16,7 +16,7 @@ public class RepositoryView : IRepositoryView, INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public RepositoryView(Repository repository, IRepositoryMonitor monitor)
+    public RepositoryViewModel(Repository repository, IRepositoryMonitor monitor)
     {
         _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -25,7 +25,7 @@ public class RepositoryView : IRepositoryView, INotifyPropertyChanged
 
     public override bool Equals(object obj)
     {
-        if (obj is RepositoryView other)
+        if (obj is RepositoryViewModel other)
         {
             return other.Repository.Equals(Repository);
         }
@@ -128,4 +128,5 @@ public class RepositoryView : IRepositoryView, INotifyPropertyChanged
     private string SyncAppendix => "  \u2191\u2193"; // up and down arrows
 
     public DateTime UpdateStampUtc { get; private set; }
+
 }

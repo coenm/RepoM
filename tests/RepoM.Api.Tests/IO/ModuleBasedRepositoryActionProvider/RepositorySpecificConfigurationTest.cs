@@ -21,12 +21,12 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.VariableProviders;
+using RepoM.Core.Plugin.Common;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -54,6 +54,7 @@ public class RepositorySpecificConfigurationTest
 
         _verifySettings = new VerifySettings();
         _verifySettings.UseDirectory("Verified");
+        _verifySettings.IgnoreMember(nameof(Repository));
 
         _tempPath = Path.GetTempPath();
         _fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>(), "C:\\");

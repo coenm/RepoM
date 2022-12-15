@@ -113,9 +113,9 @@ public class DefaultRepositoryReader : IRepositoryReader
             RemoteCollection? remoteCollection = repo.Network?.Remotes;
             if (remoteCollection != null)
             {
-                foreach (LibGit2Sharp.Remote r in remoteCollection.Where(r => !string.IsNullOrWhiteSpace(r.Name) && !string.IsNullOrWhiteSpace(r.Url)))
+                foreach (Remote r in remoteCollection.Where(r => !string.IsNullOrWhiteSpace(r.Name) && !string.IsNullOrWhiteSpace(r.Url)))
                 {
-                    repository.Remotes.Add(new Remote(r.Name.Trim(), r.Url.Trim()));
+                    repository.Remotes.Add(new Core.Plugin.Repository.Remote(r.Name.Trim(), r.Url.Trim()));
                 }
             }
 

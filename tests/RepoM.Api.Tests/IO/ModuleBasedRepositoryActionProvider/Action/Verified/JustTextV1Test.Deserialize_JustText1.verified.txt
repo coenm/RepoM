@@ -1,0 +1,36 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionJustTextV1,
+        Type: just-text@1,
+        Name: This is a message
+      },
+      {
+        $type: RepositoryActionJustTextV1,
+        Enabled: true,
+        Type: just-text@1,
+        Name: This is a message 2
+      },
+      {
+        $type: RepositoryActionJustTextV1,
+        Enabled: false,
+        Type: just-text@1,
+        Name: This is a message 3
+      },
+      {
+        $type: RepositoryActionJustTextV1,
+        Enabled: false,
+        Type: just-text@1,
+        Name: This is a message 4
+      },
+      {
+        $type: RepositoryActionJustTextV1,
+        Enabled: dummy,
+        Type: just-text@1,
+        Name: This is a message 5
+      }
+    ]
+  }
+}

@@ -1,4 +1,3 @@
-
 namespace RepoM.Api.IO.VariableProviders;
 
 using System;

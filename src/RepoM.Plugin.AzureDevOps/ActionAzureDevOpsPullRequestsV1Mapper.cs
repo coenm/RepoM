@@ -11,6 +11,7 @@ using RepoM.Api.IO;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
@@ -91,7 +92,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         }
         catch (Exception e)
         {
-            var notificationItem = new Api.Git.RepositoryAction($"An error occurred grabbing pull requests. {e.Message}")
+            var notificationItem = new Api.Git.RepositoryAction($"An error occurred grabbing pull requests. {e.Message}", repository)
                 {
                     CanExecute = false,
                     ExecutionCausesSynchronizing = false,
@@ -102,13 +103,13 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         if (pullRequests.Any())
         {
             var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
-            results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name)
+            results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name, repository)
                 {
-                    Action = (_, _) =>
+                    Action = new DelegateAction((_, _) =>
                         {
                             _logger.LogInformation("PullRequest {Url}", pr.Url);
                             ProcessHelper.StartProcess(pr.Url, string.Empty);
-                        },
+                        }),
                 }));
 
             return results.ToArray();
@@ -118,7 +119,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         // check if user wants a notification
         if (_expressionEvaluator.EvaluateBooleanExpression(action.ShowWhenEmpty, repository))
         {
-            var notificationItem = new Api.Git.RepositoryAction("No PRs found.")
+            var notificationItem = new Api.Git.RepositoryAction("No PRs found.", repository)
                 {
                     CanExecute = false,
                     ExecutionCausesSynchronizing = false,

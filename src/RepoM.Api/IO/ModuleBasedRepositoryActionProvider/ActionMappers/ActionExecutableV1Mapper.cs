@@ -8,6 +8,7 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
@@ -76,9 +77,9 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
                 arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
             }
 
-            yield return new RepoM.Api.Git.RepositoryAction(name)
+            yield return new Git.RepositoryAction(name, repository)
                 {
-                    Action = (_, _) => ProcessHelper.StartProcess(normalized, arguments),
+                    Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(normalized, arguments))
                 };
             found = true;
         }

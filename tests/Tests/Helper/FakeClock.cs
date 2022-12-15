@@ -1,7 +1,7 @@
 namespace Tests.Helper;
 
 using System;
-using RepoM.Api.Common;
+using RepoM.Core.Plugin.Common;
 
 internal class FakeClock : IClock
 {

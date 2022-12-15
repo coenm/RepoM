@@ -6,7 +6,7 @@ using System.Linq;
 using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.Parser;
 using ExpressionStringEvaluator.VariableProviders;
-using RepoM.Api.Git;
+using RepoM.Core.Plugin.Repository;
 
 public class RepositoryExpressionEvaluator
 {
@@ -20,17 +20,17 @@ public class RepositoryExpressionEvaluator
         _expressionExecutor = new ExpressionExecutor(v, m);
     }
 
-    public string EvaluateStringExpression(string value, params Repository[] repository)
+    public string EvaluateStringExpression(string value, params IRepository[] repository)
     {
         return EvaluateStringExpression(value, repository.AsEnumerable());
     }
 
-    public object? EvaluateValueExpression(string value, params Repository[] repository)
+    public object? EvaluateValueExpression(string value, params IRepository[] repository)
     {
         return EvaluateValueExpression(value, repository.AsEnumerable());
     }
 
-    private object? EvaluateValueExpression(string value, IEnumerable<Repository> repository)
+    private object? EvaluateValueExpression(string value, IEnumerable<IRepository> repository)
     {
         try
         {
@@ -42,7 +42,7 @@ public class RepositoryExpressionEvaluator
         }
     }
 
-    private string EvaluateStringExpression(string value, IEnumerable<Repository> repository)
+    private string EvaluateStringExpression(string value, IEnumerable<IRepository> repository)
     {
         try
         {
@@ -67,7 +67,7 @@ public class RepositoryExpressionEvaluator
         }
     }
 
-    public bool EvaluateBooleanExpression(string? value, Repository? repository)
+    public bool EvaluateBooleanExpression(string? value, IRepository? repository)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -86,7 +86,7 @@ public class RepositoryExpressionEvaluator
 
         try
         {
-            Repository[] repositories = repository == null ? Array.Empty<Repository>() : new[] { repository, };
+            IRepository[] repositories = repository == null ? Array.Empty<IRepository>() : new[] { repository, };
 
             object? result = _expressionExecutor.Execute(new RepositoryContext(repositories), value!);
 

@@ -4,7 +4,7 @@ RepoM is a minimal-conf git repository hub with Windows Explorer enhancements. I
 
 It's populating itself as you work with git. It does not get in the way and does not require any user attention to work.
 
-Repo< will not compete with your favourite git clients, so keep them. It's not about working within a repository: It's a new way to use all of your repositories to make your daily work easier.
+RepoM will not compete with your favourite git clients, so keep them. It's not about working within a repository: It's a new way to use all of your repositories to make your daily work easier.
 
 📦  [Check the Releases page](https://github.com/coenm/RepoM/releases) to **download** the latest version and see **what's new**!
 
@@ -26,7 +26,7 @@ For Windows, use the hotkeys <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> to show
 
 To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you selected a repository. To open a command prompt instead, hold <kbd>Ctrl</kbd> on Windows or <kbd>Command</kbd> on macOS while pressing <kbd>Return</kbd>. These modifier keys will also work with mouse navigation.
 
-## Enhanced Windows Explorer Titles
+## Plugin: Enhanced Windows Explorer Titles
 
 As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a git repository.
 
@@ -34,4 +34,4 @@ As an extra goodie for Windows users, RepoZ automatically detects open File Expl
 
 ## Credits
 
-RepoM is a fork of the amazing RepoZ, which was created by [Screenshot](https://github.com/awaescher/RepoZ).
+RepoM is a fork of the amazing RepoZ, which was created by [Andreas Wäscher](https://github.com/awaescher/RepoZ).

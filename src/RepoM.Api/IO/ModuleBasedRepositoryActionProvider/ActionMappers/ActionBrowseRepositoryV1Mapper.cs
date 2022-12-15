@@ -7,6 +7,8 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 
 public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
 {
@@ -70,23 +72,23 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
 
         if (repository.Remotes.Count == 1 || forceSingle)
         {
-            return CreateProcessRunnerAction(actionName, repository.Remotes[0].Url);
+            return CreateProcessRunnerAction(actionName, repository.Remotes[0].Url, repository);
         }
 
-        return new RepositoryAction(actionName)
+        return new RepositoryAction(actionName, repository)
             {
                 DeferredSubActionsEnumerator = () => repository.Remotes
                                                                .Take(50)
-                                                               .Select(remote => CreateProcessRunnerAction(remote.Name, remote.Url))
+                                                               .Select(remote => CreateProcessRunnerAction(remote.Name, remote.Url, repository))
                                                                .ToArray(),
             };
     }
 
-    private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+    private static RepositoryAction CreateProcessRunnerAction(string name, string process, IRepository repository, string arguments = "")
     {
-        return new RepositoryAction(name)
+        return new RepositoryAction(name, repository)
             {
-                Action = (_, _) => ProcessHelper.StartProcess(process, arguments),
+                Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(process, arguments)),
             };
     }
 }
