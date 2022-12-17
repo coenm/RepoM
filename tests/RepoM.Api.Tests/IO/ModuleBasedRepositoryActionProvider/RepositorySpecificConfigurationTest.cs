@@ -153,7 +153,7 @@ public class RepositorySpecificConfigurationTest
                 NullLogger.Instance));
 
         // act
-        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository(), new Repository());
+        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"), new Repository("path2"));
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -180,7 +180,7 @@ public class RepositorySpecificConfigurationTest
                 NullLogger.Instance));
 
         // act
-        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository());
+        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -207,7 +207,7 @@ public class RepositorySpecificConfigurationTest
                 NullLogger.Instance));
 
         // act
-        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository());
+        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
 
         // assert
         result.Should().BeEmpty();
@@ -234,7 +234,7 @@ public class RepositorySpecificConfigurationTest
                 NullLogger.Instance));
 
         // act
-        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository());
+        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
 
         // assert
         await Verifier.Verify(result, _verifySettings);

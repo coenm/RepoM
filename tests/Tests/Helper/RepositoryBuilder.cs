@@ -1,134 +1,142 @@
 namespace Tests.Helper;
 
+using System;
+using System.Collections.Generic;
 using RepoM.Api.Git;
 
 internal class RepositoryBuilder
 {
-    private readonly Repository _repository;
-
-    public RepositoryBuilder()
-    {
-        _repository = new Repository();
-    }
+    private readonly List<Action<Repository>> _actions = new();
+    private string _path = string.Empty;
 
     public RepositoryBuilder WithName(string name)
     {
-        _repository.Name = name;
+        _actions.Add(r => r.Name = name);
         return this;
     }
 
     public RepositoryBuilder WithPath(string path)
     {
-        _repository.Path = path;
+        _path = path;
         return this;
     }
 
     public RepositoryBuilder WithAheadBy(int ahead)
     {
-        _repository.AheadBy = ahead;
+        _actions.Add(r => r.AheadBy = ahead);
         return this;
     }
 
     public RepositoryBuilder WithBehindBy(int behind)
     {
-        _repository.BehindBy = behind;
+        _actions.Add(r => r.BehindBy = behind);
         return this;
     }
 
     public RepositoryBuilder WithBranches(params string[] branches)
     {
-        _repository.Branches = branches;
+        _actions.Add(r => r.Branches = branches);
         return this;
     }
 
     public RepositoryBuilder WithCurrentBranch(string currentBranch)
     {
-        _repository.CurrentBranch = currentBranch;
+        _actions.Add(r => r.CurrentBranch = currentBranch);
         return this;
     }
 
     public RepositoryBuilder WithDetachedHeadOnCommit(string sha)
     {
-        _repository.CurrentBranchIsDetached = true;
-        _repository.CurrentBranch = sha;
+        _actions.Add(r =>
+            {
+                r.CurrentBranchIsDetached = true;
+                r.CurrentBranch = sha;
+            });
         return this;
     }
 
     public RepositoryBuilder WithDetachedHeadOnTag(string tag)
     {
-        _repository.CurrentBranchIsDetached = true;
-        _repository.CurrentBranchIsOnTag = true;
-        _repository.CurrentBranch = tag;
+        _actions.Add(r =>
+            {
+                r.CurrentBranchIsDetached = true;
+                r.CurrentBranchIsOnTag = true;
+                r.CurrentBranch = tag;
+            });
         return this;
     }
 
     public RepositoryBuilder WithUpstream()
     {
-        _repository.CurrentBranchHasUpstream = true;
+        _actions.Add(r => r.CurrentBranchHasUpstream = true);
         return this;
     }
 
     public RepositoryBuilder WithoutUpstream()
     {
-        _repository.CurrentBranchHasUpstream = false;
+        _actions.Add(r => r.CurrentBranchHasUpstream = false);
         return this;
     }
 
     public RepositoryBuilder WithLocalAdded(int added)
     {
-        _repository.LocalAdded = added;
+        _actions.Add(r => r.LocalAdded = added);
         return this;
     }
 
     public RepositoryBuilder WithLocalIgnored(int ignored)
     {
-        _repository.LocalIgnored = ignored;
+        _actions.Add(r => r.LocalIgnored = ignored);
         return this;
     }
 
     public RepositoryBuilder WithLocalMissing(int missing)
     {
-        _repository.LocalMissing = missing;
+        _actions.Add(r => r.LocalMissing = missing);
         return this;
     }
 
     public RepositoryBuilder WithLocalModified(int modified)
     {
-        _repository.LocalModified = modified;
+        _actions.Add(r => r.LocalModified = modified);
         return this;
     }
 
     public RepositoryBuilder WithLocalRemoved(int removed)
     {
-        _repository.LocalRemoved = removed;
+        _actions.Add(r => r.LocalRemoved = removed);
         return this;
     }
 
     public RepositoryBuilder WithLocalStaged(int staged)
     {
-        _repository.LocalStaged = staged;
+        _actions.Add(r => r.LocalStaged = staged);
         return this;
     }
 
     public RepositoryBuilder WithLocalUntracked(int untracked)
     {
-        _repository.LocalUntracked = untracked;
+        _actions.Add(r => r.LocalUntracked = untracked);
         return this;
     }
 
     public RepositoryBuilder WithStashCount(int stashCount)
     {
-        _repository.StashCount = stashCount;
+        _actions.Add(r => r.StashCount = stashCount);
         return this;
     }
 
-
     public Repository Build()
     {
-        return _repository;
+        var repo = new Repository(_path);
+        foreach (Action<Repository> action in _actions)
+        {
+            action.Invoke(repo);
+        }
+        return repo;
     }
 
-    public Repository BuildFullFeatured()
+    public RepositoryBuilder FullFeatured()
     {
         WithUpstream();
         WithAheadBy(1);
@@ -145,7 +153,12 @@ internal class RepositoryBuilder
         WithStashCount(10);
         WithName("Repo");
         WithPath("C:\\Develop\\Repo\\");
+        return this;
+    }
 
+    public Repository BuildFullFeatured()
+    {
+        FullFeatured();
         return Build();
     }
 }
