@@ -22,6 +22,19 @@ public class DefaultAppDataPathProvider : IAppDataPathProvider
     [Obsolete("Not used.")]
     public string GetAppResourcesPath()
     {
-        return Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        var entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
+        if (entryAssembly == null)
+        {
+            throw new NotSupportedException("Could not get entry point of assembly.");
+        }
+
+        var result = Path.GetDirectoryName(entryAssembly.Location);
+
+        if (result == null)
+        {
+            throw new FileNotFoundException("Could not find location of entry assembly");
+        }
+
+        return result;
     }
 }

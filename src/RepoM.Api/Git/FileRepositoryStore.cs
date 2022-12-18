@@ -16,28 +16,6 @@ public abstract class FileRepositoryStore : IRepositoryStore
 
     protected abstract string GetFileName();
 
-    public IEnumerable<string> Get(string file)
-    {
-        if (!UseFilePersistence)
-        {
-            return Array.Empty<string>();
-        }
-
-        if (_fileSystem.File.Exists(file))
-        {
-            try
-            {
-                return _fileSystem.File.ReadAllLines(file);
-            }
-            catch (Exception)
-            {
-                // swallow for now.
-            }
-        }
-
-        return Array.Empty<string>();
-    }
-
     public IEnumerable<string> Get()
     {
         var file = GetFileName();
@@ -67,6 +45,28 @@ public abstract class FileRepositoryStore : IRepositoryStore
         {
             // swallow for now.
         }
+    }
+
+    private IEnumerable<string> Get(string file)
+    {
+        if (!UseFilePersistence)
+        {
+            return Array.Empty<string>();
+        }
+
+        if (_fileSystem.File.Exists(file))
+        {
+            try
+            {
+                return _fileSystem.File.ReadAllLines(file);
+            }
+            catch (Exception)
+            {
+                // swallow for now.
+            }
+        }
+
+        return Array.Empty<string>();
     }
 
     // todo remove
