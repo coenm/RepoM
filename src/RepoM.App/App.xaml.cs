@@ -226,7 +226,7 @@ public partial class App : Application
         container.Register<IThreadDispatcher, WpfThreadDispatcher>(Lifestyle.Singleton);
         container.Register<IGitCommander, ProcessExecutingGitCommander>(Lifestyle.Singleton);
         container.Register<IAppSettingsService, FileAppSettingsService>(Lifestyle.Singleton);
-        container.Register<ICompareSettingsService, FilesICompareSettingsService> (Lifestyle.Singleton);
+        container.Register<ICompareSettingsService, FilesCompareSettingsService> (Lifestyle.Singleton);
         container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>(Lifestyle.Singleton);
         container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>(Lifestyle.Singleton);
         container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);

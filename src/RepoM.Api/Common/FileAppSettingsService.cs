@@ -5,80 +5,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Core.Plugin.Common;
-using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
-
-public class FilesICompareSettingsService : ICompareSettingsService
-{
-    private readonly IFileSystem _fileSystem;
-    private readonly IEnumerable<IConfigurationRegistration> _registrations;
-    private readonly IAppDataPathProvider _appDataPathProvider;
-    private Dictionary<string, IRepositoriesComparerConfiguration>? _configuration;
-
-
-    public FilesICompareSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, IEnumerable<IConfigurationRegistration> registrations)
-    {
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _registrations = registrations.ToList();
-        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-    }
-
-    public Dictionary<string, IRepositoriesComparerConfiguration> Configuration => _configuration ??= Load();
-
-
-    private string GetFileName()
-    {
-        return _fileSystem.Path.Combine(_appDataPathProvider.GetAppDataPath(), "RepoM.Ordering.yaml");
-    }
-
-    private Dictionary<string, IRepositoriesComparerConfiguration> Load()
-    {
-        var file = GetFileName();
-
-        if (!_fileSystem.File.Exists(file))
-        {
-            throw new Exception("File doesn't exist");
-        }
-
-        try
-        {
-            var yml = _fileSystem.File.ReadAllText(file);
-
-            DeserializerBuilder builder = new DeserializerBuilder()
-                .WithNamingConvention(HyphenatedNamingConvention.Instance);
-
-            foreach (IConfigurationRegistration instance in _registrations)
-            {
-                var tag = instance.Tag.TrimStart('!');
-                builder.WithTagMapping("!" + tag, instance.ConfigurationType);
-            }
-
-            IDeserializer deserializer = builder.Build();
-
-            return deserializer.Deserialize<Dictionary<string, IRepositoriesComparerConfiguration>>(yml);
-        }
-        catch
-        {
-            throw;
-            /* Our app settings are not critical. For our purposes, we want to ignore IO exceptions */
-        }
-    }
-}
 
 public class FileAppSettingsService : IAppSettingsService
 {
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
     private AppSettings? _settings;
     private readonly List<Action> _invalidationHandlers = new();
     private readonly IAppDataPathProvider _appDataPathProvider;
 
-    public FileAppSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem)
+    public FileAppSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, ILogger logger)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
     }
 
@@ -108,20 +51,34 @@ public class FileAppSettingsService : IAppSettingsService
     private void Save()
     {
         var file = GetFileName();
-        var path = _fileSystem.Directory.GetParent(file).FullName;
-
-        if (!_fileSystem.Directory.Exists(path))
+        IDirectoryInfo? directoryInfo = _fileSystem.Directory.GetParent(file);
+        if (directoryInfo == null)
         {
-            _fileSystem.Directory.CreateDirectory(path);
+            _logger.LogError("Could not save configuration because no parent of '{file}' found", file);
+            return;
+        }
+
+        var path = directoryInfo.FullName;
+
+        try
+        {
+            if (!_fileSystem.Directory.Exists(path))
+            {
+                _fileSystem.Directory.CreateDirectory(path);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not check or create directory '{path}'. {message}", path, ex.Message);
         }
 
         try
         {
             _fileSystem.File.WriteAllText(GetFileName(), JsonConvert.SerializeObject(_settings, Formatting.Indented));
         }
-        catch
+        catch(Exception ex)
         {
-            /* Our app settings are not critical. For our purposes, we want to ignore IO exceptions */
+            _logger.LogError(ex, "Could not save configuration to file '{file}'. {message}", file, ex.Message);
         }
     }
 
