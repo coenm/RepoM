@@ -2,12 +2,12 @@ namespace RepoM.Api.IO;
 
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO.ExpressionEvaluator;
+using RepoM.Core.Plugin.Expressions;
 
 public static class NameHelper
 {
     // todo
-    public static string EvaluateName(in string? input, in Repository repository, ITranslationService translationService, RepositoryExpressionEvaluator repositoryExpressionEvaluator)
+    public static string EvaluateName(in string? input, in Repository repository, ITranslationService translationService, IRepositoryExpressionEvaluator repositoryExpressionEvaluator)
     {
         return repositoryExpressionEvaluator.EvaluateStringExpression(
             ReplaceTranslatables(

@@ -4,17 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api.Git;
-using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.Variables;
+using RepoM.Core.Plugin.Expressions;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class ActionMapperComposition
 {
     private readonly IActionToRepositoryActionMapper[] _deserializers;
-    private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
+    private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
 
-    public ActionMapperComposition(IEnumerable<IActionToRepositoryActionMapper> deserializers, RepositoryExpressionEvaluator repoExpressionEvaluator)
+    public ActionMapperComposition(IEnumerable<IActionToRepositoryActionMapper> deserializers, IRepositoryExpressionEvaluator repoExpressionEvaluator)
     {
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _deserializers = deserializers.Where(x => x != null).ToArray() ?? throw new ArgumentNullException(nameof(deserializers));

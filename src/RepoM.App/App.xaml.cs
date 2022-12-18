@@ -50,6 +50,7 @@ using RepoM.Api.RepositoryActions.Executors;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryOrdering;
 using RepoM.Core.Plugin.Common;
+using RepoM.Core.Plugin.Expressions;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -237,11 +238,12 @@ public partial class App : Application
 
         container.RegisterInstance<IFileSystem>(fileSystem);
 
-        container.Register<RepositoryExpressionEvaluator>(Lifestyle.Singleton);
+        container.Register<IRepositoryExpressionEvaluator, RepositoryExpressionEvaluator>(Lifestyle.Singleton);
         Assembly[] repoExpressionEvaluators =
             {
                 typeof(IVariableProvider).Assembly,
                 typeof(RepositoryExpressionEvaluator).Assembly,
+                typeof(IRepositoryExpressionEvaluator).Assembly,
             };
         
         container.Collection.Append<IVariableProvider, DateTimeNowVariableProvider>(Lifestyle.Singleton);

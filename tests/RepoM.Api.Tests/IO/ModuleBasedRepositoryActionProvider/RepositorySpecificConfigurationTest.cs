@@ -27,6 +27,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.VariableProviders;
 using RepoM.Core.Plugin.Common;
+using RepoM.Core.Plugin.Expressions;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -42,7 +43,7 @@ public class RepositorySpecificConfigurationTest
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
     private readonly string _tempPath;
-    private readonly RepositoryExpressionEvaluator _repositoryExpressionEvaluator;
+    private readonly IRepositoryExpressionEvaluator _repositoryExpressionEvaluator;
     private readonly ActionMapperComposition _actionMapperComposition;
     private readonly ITranslationService _translationService;
 

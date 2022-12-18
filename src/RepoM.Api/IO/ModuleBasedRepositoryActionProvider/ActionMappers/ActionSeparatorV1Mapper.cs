@@ -4,15 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api.Git;
-using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Core.Plugin.Expressions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionSeparatorV1Mapper : IActionToRepositoryActionMapper
 {
-    private readonly RepositoryExpressionEvaluator _expressionEvaluator;
+    private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
 
-    public ActionSeparatorV1Mapper(RepositoryExpressionEvaluator expressionEvaluator)
+    public ActionSeparatorV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
     }

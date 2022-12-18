@@ -6,9 +6,12 @@ using System.Linq;
 using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.Parser;
 using ExpressionStringEvaluator.VariableProviders;
+using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 
-public class RepositoryExpressionEvaluator
+
+
+public class RepositoryExpressionEvaluator : IRepositoryExpressionEvaluator
 {
     private readonly ExpressionExecutor _expressionExecutor;
 

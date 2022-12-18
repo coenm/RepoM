@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Core.Plugin.Expressions;
 
 internal static class ActionMapperCompositionFactory
 {
     public static ActionMapperComposition Create(
-        RepositoryExpressionEvaluator expressionEvaluator,
+        IRepositoryExpressionEvaluator expressionEvaluator,
         ITranslationService translationService,
         IFileSystem fileSystem,
         IRepositoryWriter repositoryWriter,
