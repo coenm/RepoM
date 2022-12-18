@@ -8,6 +8,8 @@ using RepoM.Core.Plugin.Repository;
 [DebuggerDisplay("{Name} @{Path}")]
 public class Repository : IRepository
 {
+    private readonly string? _normalizedPath;
+
     public Repository(string path)
     {
         Name = string.Empty;
@@ -17,6 +19,7 @@ public class Repository : IRepository
         Path = path;
         Location = string.Empty;
         SafePath = GetSafePath(path);
+        _normalizedPath = Normalize(path);
     }
 
     public override bool Equals(object? obj)
@@ -31,7 +34,7 @@ public class Repository : IRepository
             return string.IsNullOrEmpty(Path);
         }
 
-        return string.Equals(Normalize(other.Path), Normalize(Path), StringComparison.OrdinalIgnoreCase);
+        return string.Equals(other._normalizedPath, _normalizedPath, StringComparison.OrdinalIgnoreCase);
     }
 
     public override int GetHashCode()
