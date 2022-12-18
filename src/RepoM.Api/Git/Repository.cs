@@ -29,9 +29,9 @@ public class Repository : IRepository
             return false;
         }
 
-        if (string.IsNullOrEmpty(other.Path))
+        if (string.IsNullOrEmpty(other._normalizedPath))
         {
-            return string.IsNullOrEmpty(Path);
+            return string.IsNullOrEmpty(_normalizedPath);
         }
 
         return string.Equals(other._normalizedPath, _normalizedPath, StringComparison.OrdinalIgnoreCase);
