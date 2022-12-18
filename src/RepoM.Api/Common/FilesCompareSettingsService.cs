@@ -2,8 +2,10 @@ namespace RepoM.Api.Common;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using YamlDotNet.Serialization;
@@ -12,14 +14,19 @@ using YamlDotNet.Serialization.NamingConventions;
 public class FilesCompareSettingsService : ICompareSettingsService
 {
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
     private readonly IEnumerable<IConfigurationRegistration> _registrations;
     private readonly IAppDataPathProvider _appDataPathProvider;
     private Dictionary<string, IRepositoriesComparerConfiguration>? _configuration;
-
-
-    public FilesCompareSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, IEnumerable<IConfigurationRegistration> registrations)
+    
+    public FilesCompareSettingsService(
+        IAppDataPathProvider appDataPathProvider,
+        IFileSystem fileSystem,
+        IEnumerable<IConfigurationRegistration> registrations,
+        ILogger logger)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _registrations = registrations.ToList();
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
     }
@@ -38,7 +45,7 @@ public class FilesCompareSettingsService : ICompareSettingsService
 
         if (!_fileSystem.File.Exists(file))
         {
-            throw new Exception("File doesn't exist");
+            throw new FileNotFoundException("Comparer configuration file not found", file);
         }
 
         try
@@ -58,10 +65,10 @@ public class FilesCompareSettingsService : ICompareSettingsService
 
             return deserializer.Deserialize<Dictionary<string, IRepositoriesComparerConfiguration>>(yml);
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Could not load configuration from file '{file}'. {message}", file, ex.Message);
             throw;
-            /* Our app settings are not critical. For our purposes, we want to ignore IO exceptions */
         }
     }
 }
