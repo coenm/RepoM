@@ -14,7 +14,7 @@ public abstract class FileRepositoryStore : IRepositoryStore
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 
-    public abstract string GetFileName();
+    protected abstract string GetFileName();
 
     public IEnumerable<string> Get(string file)
     {
