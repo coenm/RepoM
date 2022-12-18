@@ -8,14 +8,18 @@ using RepoM.Core.Plugin.Repository;
 [DebuggerDisplay("{Name} @{Path}")]
 public class Repository : IRepository
 {
-    public Repository()
+    private readonly string? _normalizedPath;
+
+    public Repository(string path)
     {
         Name = string.Empty;
         Branches = Array.Empty<string>();
         LocalBranches = Array.Empty<string>();
         CurrentBranch = string.Empty;
-        Path = string.Empty;
+        Path = path;
         Location = string.Empty;
+        SafePath = GetSafePath(path);
+        _normalizedPath = Normalize(path);
     }
 
     public override bool Equals(object? obj)
@@ -25,23 +29,12 @@ public class Repository : IRepository
             return false;
         }
 
-        if (string.IsNullOrEmpty(other.Path))
+        if (string.IsNullOrEmpty(other._normalizedPath))
         {
-            return string.IsNullOrEmpty(Path);
+            return string.IsNullOrEmpty(_normalizedPath);
         }
 
-        return string.Equals(Normalize(other.Path), Normalize(Path), StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string? Normalize(string path)
-    {
-        // yeah not that beautiful but we have to add a backslash
-        // or slash (depending on the OS) and on Mono, I don't have Path.PathSeparator.
-        // so we add a random char with Path.Combine() and remove it again
-        path = System.IO.Path.Combine(path, "_");
-        path = path.Substring(0, path.Length - 1);
-
-        return System.IO.Path.GetDirectoryName(path);
+        return string.Equals(other._normalizedPath, _normalizedPath, StringComparison.OrdinalIgnoreCase);
     }
 
     public override int GetHashCode()
@@ -51,7 +44,7 @@ public class Repository : IRepository
 
     public string Name { get; set; }
 
-    public string Path { get; set; }
+    public string Path { get; }
 
     public string Location { get; set; }
 
@@ -111,21 +104,8 @@ public class Repository : IRepository
 
     public List<Remote> Remotes { get; } = new List<Remote>(1);
 
-    public string SafePath
-    {
-        // use '/' for linux systems and bash command line (will work on cmd and powershell as well)
-        get
-        {
-            var safePath = Path?.Replace(@"\", "/") ?? string.Empty;
-            if (safePath.EndsWith("/"))
-            {
-                safePath = safePath.Substring(0, safePath.Length - 1);
-            }
-
-            return safePath;
-        }
-    }
-
+    public string SafePath { get; }
+    
     public string GetStatusCode()
     {
         return string.Join("-", new object[]
@@ -142,5 +122,28 @@ public class Repository : IRepository
                 LocalIgnored ?? 0,
                 StashCount ?? 0,
             });
+    }
+
+    private static string GetSafePath(string input)
+    {
+        // use '/' for linux systems and bash command line (will work on cmd and powershell as well)
+        var safePath = input.Replace(@"\", "/");
+        if (safePath.EndsWith("/"))
+        {
+            safePath = safePath[..^1];
+        }
+
+        return safePath;
+    }
+
+    private static string? Normalize(string path)
+    {
+        // yeah not that beautiful but we have to add a backslash
+        // or slash (depending on the OS) and on Mono, I don't have Path.PathSeparator.
+        // so we add a random char with Path.Combine() and remove it again
+        path = System.IO.Path.Combine(path, "_");
+        path = path[..^1];
+
+        return System.IO.Path.GetDirectoryName(path);
     }
 }

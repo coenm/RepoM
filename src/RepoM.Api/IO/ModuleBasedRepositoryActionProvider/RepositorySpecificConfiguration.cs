@@ -10,13 +10,13 @@ using DotNetEnv;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Exceptions;
 using RepoM.Api.IO.Variables;
 using RepoM.Core.Plugin.Common;
+using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
 using Repository = RepoM.Api.Git.Repository;
@@ -28,7 +28,7 @@ public class RepositoryConfigurationReader
     private readonly IFileSystem _fileSystem;
     private readonly JsonDynamicRepositoryActionDeserializer _jsonAppSettingsDeserializer;
     private readonly YamlDynamicRepositoryActionDeserializer _yamlAppSettingsDeserializer;
-    private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
+    private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ILogger _logger;
 
     private const string FILENAME = "RepositoryActions.";
@@ -39,7 +39,7 @@ public class RepositoryConfigurationReader
         IFileSystem fileSystem,
         JsonDynamicRepositoryActionDeserializer jsonAppSettingsDeserializer,
         YamlDynamicRepositoryActionDeserializer yamlAppSettingsDeserializer,
-        RepositoryExpressionEvaluator repoExpressionEvaluator,
+        IRepositoryExpressionEvaluator repoExpressionEvaluator,
         ILogger logger)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
@@ -111,9 +111,9 @@ public class RepositoryConfigurationReader
         Redirect? redirect = rootFile.Redirect;
         if (!string.IsNullOrWhiteSpace(redirect?.Filename))
         {
-            if (IsEnabled(redirect?.Enabled, true, null))
+            if (IsEnabled(redirect.Enabled, true, null))
             {
-                filename = EvaluateString(redirect?.Filename, null);
+                filename = EvaluateString(redirect.Filename, null);
                 if (_fileSystem.File.Exists(filename))
                 {
                     try
@@ -306,11 +306,11 @@ public class RepositoryConfigurationReader
 
 public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory 
 {
-    private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
+    private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly RepositoryConfigurationReader _repoConfigReader;
 
     public RepositoryTagsConfigurationFactory(
-        RepositoryExpressionEvaluator repoExpressionEvaluator,
+        IRepositoryExpressionEvaluator repoExpressionEvaluator,
         RepositoryConfigurationReader repoConfigReader)
     {
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
@@ -398,14 +398,14 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
 public class RepositorySpecificConfiguration
 {
     private readonly IFileSystem _fileSystem;
-    private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
+    private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ActionMapperComposition _actionMapper;
     private readonly ITranslationService _translationService;
     private readonly RepositoryConfigurationReader _repoConfigReader;
 
     public RepositorySpecificConfiguration(
         IFileSystem fileSystem,
-        RepositoryExpressionEvaluator repoExpressionEvaluator,
+        IRepositoryExpressionEvaluator repoExpressionEvaluator,
         ActionMapperComposition actionMapper,
         ITranslationService translationService,
         RepositoryConfigurationReader repoConfigReader)

@@ -14,29 +14,7 @@ public abstract class FileRepositoryStore : IRepositoryStore
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 
-    public abstract string GetFileName();
-
-    public IEnumerable<string> Get(string file)
-    {
-        if (!UseFilePersistence)
-        {
-            return Array.Empty<string>();
-        }
-
-        if (_fileSystem.File.Exists(file))
-        {
-            try
-            {
-                return _fileSystem.File.ReadAllLines(file);
-            }
-            catch (Exception)
-            {
-                // swallow for now.
-            }
-        }
-
-        return Array.Empty<string>();
-    }
+    protected abstract string GetFileName();
 
     public IEnumerable<string> Get()
     {
@@ -67,6 +45,28 @@ public abstract class FileRepositoryStore : IRepositoryStore
         {
             // swallow for now.
         }
+    }
+
+    private IEnumerable<string> Get(string file)
+    {
+        if (!UseFilePersistence)
+        {
+            return Array.Empty<string>();
+        }
+
+        if (_fileSystem.File.Exists(file))
+        {
+            try
+            {
+                return _fileSystem.File.ReadAllLines(file);
+            }
+            catch (Exception)
+            {
+                // swallow for now.
+            }
+        }
+
+        return Array.Empty<string>();
     }
 
     // todo remove

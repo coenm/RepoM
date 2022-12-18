@@ -10,6 +10,7 @@ using Tests.Helper;
 public class RepositoryViewTests
 {
     private Repository _repo = null!;
+    private readonly RepositoryBuilder _repositoryBuilder = new RepositoryBuilder().FullFeatured();
     private RepositoryViewModel _viewModel = null!;
     private StatusCharacterMap _statusCharacterMap = null!;
 
@@ -284,9 +285,14 @@ public class RepositoryViewTests
         [Test]
         public void Can_Filter_By_Path()
         {
-            _repo.Name = "No Match Here";
-            _repo.Path = @"C:\Test\Path";
-            _viewModel.MatchesFilter(@"p C:\").Should().Be(true);
+            _repositoryBuilder
+                .WithName("No Match Here")
+                .WithPath(@"C:\Test\Path");
+            Repository repo = _repositoryBuilder.Build();
+
+            var viewModel = new RepositoryViewModel(repo, A.Dummy<IRepositoryMonitor>());
+
+            viewModel.MatchesFilter(@"p C:\").Should().Be(true);
         }
 
         [Test]
@@ -313,7 +319,7 @@ public class RepositoryViewTests
         }
 
         [Test]
-        public void Returns_True_For_ToDo_Filter_With_UnpushedChanges()
+        public void Returns_True_For_ToDo_Filter_With_UnPushedChanges()
         {
             _repo.StashCount = 1;
             _repo.HasUnpushedChanges.Should().Be(true);
@@ -321,9 +327,9 @@ public class RepositoryViewTests
         }
 
         [Test]
-        public void Returns_False_For_ToDo_Filter_Without_UnpushedChanges()
+        public void Returns_False_For_ToDo_Filter_Without_UnPushedChanges()
         {
-            _repo = new Repository();
+            _repo = new RepositoryBuilder().Build();
             _repo.HasUnpushedChanges.Should().Be(false);
             new RepositoryViewModel(_repo, A.Dummy<IRepositoryMonitor>()).MatchesFilter("todo").Should().Be(false);
         }
@@ -340,8 +346,12 @@ public class RepositoryViewTests
         [Test]
         public void Returns_False_If_Path_Is_Empty()
         {
-            _repo.Path = "";
-            _viewModel.WasFound.Should().BeFalse();
+            _repositoryBuilder.WithPath(string.Empty);
+            Repository repo = _repositoryBuilder.Build();
+
+            var viewModel = new RepositoryViewModel(repo, A.Dummy<IRepositoryMonitor>());
+
+            viewModel.WasFound.Should().BeFalse();
         }
     }
 

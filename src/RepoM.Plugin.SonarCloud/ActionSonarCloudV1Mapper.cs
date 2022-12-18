@@ -7,9 +7,9 @@ using JetBrains.Annotations;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
-using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
@@ -17,10 +17,10 @@ using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.R
 internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly SonarCloudFavoriteService _service;
-    private readonly RepositoryExpressionEvaluator _expressionEvaluator;
+    private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
 
-    public ActionSonarCloudV1Mapper(SonarCloudFavoriteService service, RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
+    public ActionSonarCloudV1Mapper(SonarCloudFavoriteService service, IRepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));

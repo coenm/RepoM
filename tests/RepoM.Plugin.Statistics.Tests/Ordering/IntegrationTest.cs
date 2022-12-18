@@ -24,7 +24,7 @@ public class IntegrationTest
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly MockFileSystem _fileSystem;
-    private readonly FilesICompareSettingsService _sut;
+    private readonly FilesCompareSettingsService _sut;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
 
@@ -35,7 +35,7 @@ public class IntegrationTest
         
         _appDataPathProvider = A.Fake<IAppDataPathProvider>();
         _fileSystem = new MockFileSystem();
-        container.Register<FilesICompareSettingsService>(Lifestyle.Singleton);
+        container.Register<FilesCompareSettingsService>(Lifestyle.Singleton);
         container.RegisterSingleton(A.Dummy<IClock>);
         container.RegisterInstance<IAppDataPathProvider>(_appDataPathProvider);
         container.RegisterSingleton(A.Dummy<ILogger>);
@@ -45,7 +45,7 @@ public class IntegrationTest
 
         container.Verify();
 
-        _sut = container.GetInstance<FilesICompareSettingsService>();
+        _sut = container.GetInstance<FilesCompareSettingsService>();
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

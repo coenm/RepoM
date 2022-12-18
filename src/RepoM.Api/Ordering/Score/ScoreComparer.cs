@@ -13,19 +13,19 @@ public class ScoreComparer : IRepositoryComparer
         _calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
     }
 
-    public int Compare(IRepository x, IRepository y)
+    public int Compare(IRepository? x, IRepository? y)
     {
         if (ReferenceEquals(x, y))
         {
             return 0;
         }
 
-        if (ReferenceEquals(null, y))
+        if (y is null)
         {
             return 1;
         }
 
-        if (ReferenceEquals(null, x))
+        if (x is null)
         {
             return -1;
         }

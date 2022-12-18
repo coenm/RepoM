@@ -3,6 +3,7 @@
 
 // This class is placed in the root namespace to allow users to start using these extension methods after
 // adding the assembly reference, without find and add the correct namespace.
+// ReSharper disable CheckNamespace
 namespace SimpleInjector
 {
     using System;
@@ -122,7 +123,7 @@ namespace SimpleInjector
         {
             try
             {
-                return (IPackage)Activator.CreateInstance(packageType);
+                return (IPackage)Activator.CreateInstance(packageType)!;
             }
             catch (Exception ex)
             {

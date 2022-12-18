@@ -23,7 +23,7 @@ public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgno
         _fullFilename = Path.Combine(appDataPathProvider.GetAppDataPath(), "Repositories.ignore");
     }
 
-    public override string GetFileName()
+    protected override string GetFileName()
     {
         return _fullFilename;
     }

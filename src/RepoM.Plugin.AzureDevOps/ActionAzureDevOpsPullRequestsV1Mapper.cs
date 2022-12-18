@@ -8,9 +8,9 @@ using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
-using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
@@ -18,13 +18,13 @@ using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.R
 internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly AzureDevOpsPullRequestService _service;
-    private readonly RepositoryExpressionEvaluator _expressionEvaluator;
+    private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
     private readonly ILogger _logger;
 
     public ActionAzureDevOpsPullRequestsV1Mapper(
         AzureDevOpsPullRequestService service,
-        RepositoryExpressionEvaluator expressionEvaluator,
+        IRepositoryExpressionEvaluator expressionEvaluator,
         ITranslationService translationService,
         ILogger logger)
     {

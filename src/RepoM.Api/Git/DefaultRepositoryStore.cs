@@ -16,7 +16,7 @@ public class DefaultRepositoryStore : FileRepositoryStore
         _fullFilename = Path.Combine(AppDataPathProvider.GetAppDataPath(), "Repositories.cache");
     }
 
-    public override string GetFileName()
+    protected override string GetFileName()
     {
         return _fullFilename;
     }

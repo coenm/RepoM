@@ -58,7 +58,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         _timer.Change(milliseconds, Timeout.Infinite);
     }
 
-    private void FetchNext(object timerState)
+    private void FetchNext(object? timerState)
     {
         var hasAny = RepositoryInformationAggregator.Repositories?.Any() ?? false;
         if (!hasAny)
@@ -70,7 +70,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         // 1. it's most comprehensive for the user
         // 2. makes sure that no repository is jumped over because the list
         //    of repositories is constantly changed and not sorted in any way in memory.
-        //    So we cannot guarantuee that each repository is fetched on each iteration if we do not sort.
+        //    So we cannot guarantee that each repository is fetched on each iteration if we do not sort.
         var repositories = RepositoryInformationAggregator.Repositories?
                                                           .OrderBy(r => r.Name)
                                                           .ToArray() ?? Array.Empty<RepositoryViewModel>();

@@ -5,17 +5,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api.Git;
-using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.IO.Variables;
+using RepoM.Core.Plugin.Expressions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
 {
-    private readonly RepositoryExpressionEvaluator _expressionEvaluator;
+    private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
 
-    public ActionForEachV1Mapper(RepositoryExpressionEvaluator expressionEvaluator)
+    public ActionForEachV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
     }

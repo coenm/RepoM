@@ -85,10 +85,9 @@ public class DefaultRepositoryReader : IRepositoryReader
 
             HeadDetails headDetails = GetHeadDetails(repo);
 
-            var repository = new Repository
+            var repository = new Repository(workingDirectory.FullName)
                 {
                     Name = workingDirectory.Name,
-                    Path = workingDirectory.FullName,
                     Location = workingDirectory.Parent.FullName,
                     Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
                     LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
