@@ -13,7 +13,7 @@ public class ActionDeserializerComposition
 
     public ActionDeserializerComposition(IEnumerable<IActionDeserializer> deserializers)
     {
-        _deserializers = deserializers?.Where(x => x != null).ToArray() ?? throw new ArgumentNullException(nameof(deserializers));
+        _deserializers = deserializers?.ToArray() ?? throw new ArgumentNullException(nameof(deserializers));
     }
 
     public RepositoryAction? DeserializeSingleAction(string type, JToken jToken, JsonSerializer jsonSerializer)
@@ -27,12 +27,7 @@ public class ActionDeserializerComposition
             return null;
         }
 
-        JToken? multiSelectEnabledToken = jToken["multi-select-enabled"];
-
-        if (multiSelectEnabledToken != null)
-        {
-            result.MultiSelectEnabled = multiSelectEnabledToken.Value<string>();
-        }
+        result.MultiSelectEnabled = "false";
 
         return result;
     }
