@@ -9,8 +9,6 @@ using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 
-
-
 public class RepositoryExpressionEvaluator : IRepositoryExpressionEvaluator
 {
     private readonly ExpressionExecutor _expressionExecutor;

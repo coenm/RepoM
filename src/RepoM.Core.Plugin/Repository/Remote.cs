@@ -60,7 +60,7 @@ public class Remote
 
         if (output.EndsWith(".git", StringComparison.CurrentCultureIgnoreCase))
         {
-            output = output.Substring(0, output.Length - ".git".Length);
+            output = output[..^".git".Length];
         }
 
         return output.Replace("%20", " ");

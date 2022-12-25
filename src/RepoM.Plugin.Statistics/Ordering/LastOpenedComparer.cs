@@ -29,12 +29,12 @@ internal class LastOpenedComparer : IRepositoryComparer
             return 0;
         }
 
-        if (ReferenceEquals(null, y))
+        if (y is null)
         {
             return _weight;
         }
 
-        if (ReferenceEquals(null, x))
+        if (x is null)
         {
             return -1 * _weight;
         }

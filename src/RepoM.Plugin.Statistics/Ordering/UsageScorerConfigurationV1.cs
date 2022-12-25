@@ -2,6 +2,7 @@ namespace RepoM.Plugin.Statistics.Ordering;
 
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 public sealed class UsageScorerConfigurationV1 : IRepositoryScorerConfiguration
@@ -11,6 +12,7 @@ public sealed class UsageScorerConfigurationV1 : IRepositoryScorerConfiguration
     public int? MaxScore { get; set; } = null;
 }
 
+[UsedImplicitly]
 public sealed class Windows
 {
     public TimeSpan Until { get; set; }

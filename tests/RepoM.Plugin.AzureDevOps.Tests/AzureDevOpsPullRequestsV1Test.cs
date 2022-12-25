@@ -71,12 +71,12 @@ public class AzureDevOpsPullRequestsV1Test
             {
                 SerializationType.Json => _sutJson.Deserialize(rawContent),
                 SerializationType.Yaml => _sutYaml.Deserialize(rawContent),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
             };
     }
 
     private static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }));
+        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }));
     }
 }

@@ -22,7 +22,7 @@ public sealed class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor
 
     public void Execute(IRepository repository, T action)
     {
-        if (action.GetType() != typeof(NullAction))
+        if (action is not NullAction)
         {
             Record(repository);
         }

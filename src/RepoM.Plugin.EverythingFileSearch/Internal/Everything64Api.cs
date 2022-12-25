@@ -88,7 +88,7 @@ internal static class Everything64Api
         {
             try
             {
-                Everything_GetMajorVersion();
+                _ = Everything_GetMajorVersion();
                 return true;
             }
             catch (Exception)

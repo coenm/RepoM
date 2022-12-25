@@ -11,5 +11,8 @@ internal class UselessRepositoryStore : IRepositoryStore
         return Array.Empty<string>();
     }
 
-    public void Set(IEnumerable<string> paths) { }
+    public void Set(IEnumerable<string> paths)
+    {
+        // intentionally do nothing.
+    }
 }

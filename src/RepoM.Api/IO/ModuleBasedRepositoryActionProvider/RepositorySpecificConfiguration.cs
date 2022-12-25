@@ -24,6 +24,8 @@ using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class RepositoryConfigurationReader
 {
+    private readonly string[] _extensions = { "yml", "yaml", "json", };
+
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly IFileSystem _fileSystem;
     private readonly JsonDynamicRepositoryActionDeserializer _jsonAppSettingsDeserializer;
@@ -52,10 +54,8 @@ public class RepositoryConfigurationReader
 
     private string GetRepositoryActionsFilename(string basePath)
     {
-        var extensions = new [] { "yml", "yaml", "json", };
-
         var path = Path.Combine(basePath, FILENAME);
-        foreach (var ext in extensions)
+        foreach (var ext in _extensions)
         {
             var filename = path + ext;
             if (_fileSystem.File.Exists(filename))
@@ -64,7 +64,7 @@ public class RepositoryConfigurationReader
             }
         }
 
-        var failingFilename = path + "{" +  string.Join(",",extensions) + "}";
+        var failingFilename = path + "{" +  string.Join(",",_extensions) + "}";
         throw new ConfigurationFileNotFoundException(failingFilename);
     }
 
@@ -287,7 +287,7 @@ public class RepositoryConfigurationReader
     {
         if (extension.StartsWith("."))
         {
-            extension = extension.Substring(1);
+            extension = extension[1..];
         }
 
         if ("json".Equals(extension, StringComparison.CurrentCultureIgnoreCase))
