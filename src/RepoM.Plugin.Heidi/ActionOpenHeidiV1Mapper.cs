@@ -1,0 +1,135 @@
+namespace RepoM.Plugin.Heidi;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
+using RepoM.Api.Common;
+using RepoM.Api.Git;
+using RepoM.Api.IO;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Plugin.Heidi.Internal;
+using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
+
+[UsedImplicitly]
+internal class ActionOpenHeidiV1Mapper : IActionToRepositoryActionMapper
+{
+    private readonly HeidiConfigurationService _service;
+    private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
+    private readonly ITranslationService _translationService;
+    private readonly ILogger _logger;
+
+    public ActionOpenHeidiV1Mapper(
+        HeidiConfigurationService service,
+        IRepositoryExpressionEvaluator expressionEvaluator,
+        ITranslationService translationService,
+        ILogger logger)
+    {
+        _service = service ?? throw new ArgumentNullException(nameof(service));
+        _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
+        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
+    {
+        return action is RepositoryActionOpenHeidiV1;
+    }
+
+    public bool CanHandleMultipleRepositories()
+    {
+        return false;
+    }
+
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    {
+        return Map(action as RepositoryActionOpenHeidiV1, repository.First());
+    }
+
+    private Api.Git.RepositoryAction[] Map(RepositoryActionOpenHeidiV1? action, Repository repository)
+    {
+        if (action == null)
+        {
+            return Array.Empty<Api.Git.RepositoryAction>();
+        }
+
+        return Array.Empty<Api.Git.RepositoryAction>();
+
+        if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
+        {
+            return Array.Empty<Api.Git.RepositoryAction>();
+        }
+
+        // if (string.IsNullOrWhiteSpace(action.ProjectId))
+        // {
+        //     return Array.Empty<Api.Git.RepositoryAction>();
+        // }
+        //
+        // var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
+        //
+        // string? projectId = null;
+        // if (action.ProjectId != null)
+        // {
+        //     projectId = _expressionEvaluator.EvaluateStringExpression(action.ProjectId!, repository);
+        // }
+        //
+        // if (string.IsNullOrWhiteSpace(projectId))
+        // {
+        //     return Array.Empty<Api.Git.RepositoryAction>();
+        // }
+        //
+        // string? repoId = null;
+        // if (action.RepoId != null)
+        // {
+        //     repoId = _expressionEvaluator.EvaluateStringExpression(action.RepoId!, repository);
+        // }
+        //
+        // List<HeidiDatabase> pullRequests;
+        // try
+        // {
+        //     pullRequests = _service.GetPullRequests(repository, projectId, repoId);
+        // }
+        // catch (Exception e)
+        // {
+        //     var notificationItem = new Api.Git.RepositoryAction($"An error occurred grabbing pull requests. {e.Message}", repository)
+        //         {
+        //             CanExecute = false,
+        //             ExecutionCausesSynchronizing = false,
+        //         };
+        //     return new[] { notificationItem, };
+        // }
+        //
+        // if (pullRequests.Any())
+        // {
+        //     var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
+        //     results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name, repository)
+        //         {
+        //             Action = new DelegateAction((_, _) =>
+        //                 {
+        //                     _logger.LogInformation("HeidiDatabase {Url}", pr.Url);
+        //                     ProcessHelper.StartProcess(pr.Url, string.Empty);
+        //                 }),
+        //         }));
+        //
+        //     return results.ToArray();
+        // }
+        //
+        // // no pr's found
+        // // check if user wants a notification
+        // if (_expressionEvaluator.EvaluateBooleanExpression(action.ShowWhenEmpty, repository))
+        // {
+        //     var notificationItem = new Api.Git.RepositoryAction("No PRs found.", repository)
+        //         {
+        //             CanExecute = false,
+        //             ExecutionCausesSynchronizing = false,
+        //         };
+        //     return new[] { notificationItem, };
+        // }
+        //
+        // return Array.Empty<Api.Git.RepositoryAction>();
+    }
+}
