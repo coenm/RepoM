@@ -4,16 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RepoM.Plugin.Heidi.Internal.Config;
 
 internal class HeidiPortableConfigReader
 {
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
 
-    public HeidiPortableConfigReader(IFileSystem fileSystem)
+    public HeidiPortableConfigReader(IFileSystem fileSystem, ILogger logger)
     {
-        _fileSystem = fileSystem;
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
     
     public async Task<Dictionary<string, RepomHeidiConfig>> ReadConfigsAsync(string filename)
@@ -49,26 +52,33 @@ internal class HeidiPortableConfigReader
                 continue;
             }
 
-            var indexRepomStart = line.IndexOf(KEYWORD_START, StringComparison.InvariantCulture);
-            if (indexRepomStart <= indexComment)
+            var indexStart = line.IndexOf(KEYWORD_START, StringComparison.InvariantCulture);
+            if (indexStart <= indexComment)
             {
                 continue;
             }
 
-            var indexRepomEnd = line.IndexOf(KEYWORD_END, StringComparison.InvariantCulture);
-            if (indexRepomEnd <= indexRepomStart)
+            var indexEnd = line.IndexOf(KEYWORD_END, StringComparison.InvariantCulture);
+            if (indexEnd <= indexStart)
             {
                 continue;
             }
 
-            var key = line[KEYWORD_SERVER.Length..indexComment];
-            var json = line.Substring(indexRepomStart + KEYWORD_START.Length, indexRepomEnd - indexRepomStart - KEYWORD_START.Length);
-
-            RepomHeidiConfigV1? config = JsonConvert.DeserializeObject<RepomHeidiConfigV1>(json);
-            if (config != null)
+            try
             {
-                config.HeidiKey = key;
-                result.Add(key, config);
+                var key = line[KEYWORD_SERVER.Length..indexComment];
+                var json = line.Substring(indexStart + KEYWORD_START.Length, indexEnd - indexStart - KEYWORD_START.Length);
+
+                RepomHeidiConfig? config = JsonConvert.DeserializeObject<RepomHeidiConfig>(json);
+                if (config != null)
+                {
+                    config.HeidiKey = key;
+                    result.Add(key, config);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Could not deserialize heidi config {message}", e.Message);
             }
         }
 

@@ -4,6 +4,7 @@ using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
+using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Plugin.Heidi.Internal;
 using VerifyTests;
@@ -28,12 +29,15 @@ public class HeidiPortableConfigReaderTests
         _verifySettings = new VerifySettings();
         _verifySettings.UseDirectory("Verified");
         _mockFileSystem = new MockFileSystem();
-        _sut = new HeidiPortableConfigReader(_mockFileSystem);
+        _sut = new HeidiPortableConfigReader(_mockFileSystem, NullLogger.Instance);
     }
 
     [Fact]
     public async Task Abc()
     {
+        var xx = @$"Servers\BDO\MSS - BDODT-D\Comment<|||>1<|||>MigrationStatusService<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""CoProf"",""Environment"":""D"",""Application"":""ap""}}#REPOM_END#";
+        
+
         // arrange
         _testFileSettings.UseFileName("heidi1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);

@@ -1,0 +1,12 @@
+﻿{
+  BDO\MSS - BDODT-D: {
+    HeidiKey: BDO\MSS - BDODT-D,
+    Repositories: [
+      RepoM
+    ],
+    Order: 12,
+    Name: CoProf,
+    Environment: D,
+    Application: ap
+  }
+}
