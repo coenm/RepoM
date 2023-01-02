@@ -4,7 +4,8 @@ using System;
 
 internal class HeidiSettings
 {
-    private const string ENV_VAR_PREFIX = "REPOM_PLUGIN_HEIDI_";
+    private const string ENV_VAR_PREFIX = "REPOM_HEIDI_";
+
     public string ConfigPath { get; } = DetermineValueUsingEnvironment("CONFIG_PATH", "C:\\StandAloneProgramFiles\\HeidiSQL_12.3_64_Portable\\");
 
     public string ConfigFilename { get; } = DetermineValueUsingEnvironment("CONFIG_FILENAME", "portable_settings.txt");
@@ -17,6 +18,10 @@ internal class HeidiSettings
         try
         {
             var result = Environment.GetEnvironmentVariable(ENV_VAR_PREFIX + envVarName);
+            if (result == null)
+            {
+                result= Environment.GetEnvironmentVariable(ENV_VAR_PREFIX + envVarName, EnvironmentVariableTarget.User);
+            }
             return string.IsNullOrWhiteSpace(result) ? defaultValue : result;
         }
         catch (Exception)
