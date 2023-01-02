@@ -33,9 +33,6 @@ internal sealed class HeidiConfigurationService : IDisposable
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-
-        Environment.GetEnvironmentVariable("REPOZ_PLUGIN_HEIDI_PATH");
-        Environment.GetEnvironmentVariable("REPOZ_PLUGIN_HEIDI_FILENAME");
     }
 
     public Task InitializeAsync()
