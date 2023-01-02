@@ -79,7 +79,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
 
             yield return new Git.RepositoryAction(name, repository)
                 {
-                    Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(normalized, arguments))
+                    Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(normalized, arguments)),
                 };
             found = true;
         }

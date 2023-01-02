@@ -49,9 +49,9 @@ public class ActionFolderV1Deserializer : IActionDeserializer
         result.Items.Clear();
 
         IList<JToken> repositoryActions = actions.Children().ToList();
-        foreach (JToken variable in repositoryActions)
+        foreach (JToken repositoryAction in repositoryActions)
         {
-            JToken? typeToken = variable["type"];
+            JToken? typeToken = repositoryAction["type"];
             if (typeToken == null)
             {
                 continue;
@@ -63,7 +63,7 @@ public class ActionFolderV1Deserializer : IActionDeserializer
                 continue;
             }
 
-            RepositoryAction? customAction = actionDeserializer.DeserializeSingleAction(typeValue!, variable, jsonSerializer);
+            RepositoryAction? customAction = actionDeserializer.DeserializeSingleAction(typeValue!, repositoryAction, jsonSerializer);
             if (customAction == null)
             {
                 continue;
