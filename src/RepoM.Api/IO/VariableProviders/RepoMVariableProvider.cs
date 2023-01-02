@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Reflection;
 using RepoM.Api.IO.Variables;
 using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -58,9 +59,32 @@ class PropertyHandler : IItemHandler<PropertySelector>
 {
     public object? Handle(PropertySelector item, object? value)
     {
+        if (value == null)
+        {
+            return null;
+        }
+
         if (value is ExpandoObject eo)
         {
             return eo.SingleOrDefault(pair => pair.Key == item.Property).Value;
+        }
+
+        try
+        {
+            return value.GetType().GetProperty(item.Property)?.GetValue(value, null)
+                   ??
+                   value.GetType()
+                        .GetProperties()
+                        .FirstOrDefault(p =>
+                            p.CanRead
+                            &&
+                            item.Property.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase))
+                        ?.GetValue(value, null);
+            // return value.GetType().GetProperty(item.Property)?.GetValue(value, null);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
 
         return null;
@@ -99,7 +123,7 @@ public class RepoMVariableProvider : IVariableProvider
         var index = envKey.IndexOfAny(new [] { '.', '[', });
         if (index > 0)
         {
-            envSearchKey = envKey.Substring(0, index);
+            envSearchKey = envKey[..index];
         }
 
         Scope? scope = RepoMVariableProviderStore.VariableScope.Value;
@@ -118,7 +142,7 @@ public class RepoMVariableProvider : IVariableProvider
                     return result;
                 }
 
-                var selectors = FindSelectors(envKey.Substring(index)).ToList();
+                IItem[] selectors = FindSelectors(envKey[index..]).ToArray();
                 object? r = result;
 
                 var ph = new PropertyHandler();
@@ -144,7 +168,7 @@ public class RepoMVariableProvider : IVariableProvider
         }
     }
 
-    private IEnumerable<IItem> FindSelectors(string selector)
+    private static IEnumerable<IItem> FindSelectors(string selector)
     {
         var dots = selector.TrimStart('.').Split('.').ToList();
         foreach (var dot in dots)

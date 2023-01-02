@@ -14,8 +14,8 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
-using RepoM.Plugin.Heidi.Internal.Config;
 using RepoM.Plugin.Heidi.RepositoryActions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
@@ -85,8 +85,11 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
             _logger.LogWarning("HeidiSQL executable '{executable}' does not exist", executable);
             yield break;
         }
-        
-        RepomHeidiConfig[] databases = _service.GetByRepository(repository).ToArray();
+
+        HeidiConfiguration[] databases = (string.IsNullOrWhiteSpace(action.Key)
+                ? _service.GetByRepository(repository)
+                : _service.GetByKey(action.Key))
+            .ToArray();
 
         string? name = action.Name;
 
@@ -141,11 +144,11 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         }
     }
 
-    private static IEnumerable<RepositoryActionBase> GetDbActions(IRepository repository, IEnumerable<RepomHeidiConfig> databases, string executable)
+    private static IEnumerable<RepositoryActionBase> GetDbActions(IRepository repository, IEnumerable<HeidiConfiguration> databases, string executable)
     {
         return databases.Select(database => new Api.Git.RepositoryAction(database.Name, repository)
             {
-               Action = new StartProcessAction(executable, new[] { "--description" , $"\"{database.HeidiKey}\"", }),
+               Action = new StartProcessAction(executable, new[] { "--description" , $"\"{database.Description}\"", }),
                ExecutionCausesSynchronizing = false,
             });
     }
