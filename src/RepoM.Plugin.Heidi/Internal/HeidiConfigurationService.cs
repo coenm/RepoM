@@ -15,12 +15,10 @@ using RepoM.Plugin.Heidi.Interface;
 
 internal sealed class HeidiConfigurationService : IDisposable
 {
-    const string PATH = "C:\\StandAloneProgramFiles\\HeidiSQL_12.3_64_Portable\\";
-    const string FILENAME = "portable_settings.txt";
-
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
     private readonly HeidiPortableConfigReader _reader;
+    private readonly HeidiSettings _settings;
     private IFileSystemWatcher? _fileWatcher;
     private IDisposable? _eventSubscription;
     private Dictionary<string, List<HeidiConfiguration>> _repositoryHeidiConfigs = new();
@@ -28,18 +26,23 @@ internal sealed class HeidiConfigurationService : IDisposable
     public HeidiConfigurationService(
         ILogger logger,
         IFileSystem fileSystem,
-        HeidiPortableConfigReader reader)
+        HeidiPortableConfigReader reader,
+        HeidiSettings settings)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+
+        Environment.GetEnvironmentVariable("REPOZ_PLUGIN_HEIDI_PATH");
+        Environment.GetEnvironmentVariable("REPOZ_PLUGIN_HEIDI_FILENAME");
     }
 
     public Task InitializeAsync()
     {
-        if (_fileSystem.File.Exists(Path.Combine(PATH, FILENAME)))
+        if (_fileSystem.File.Exists(Path.Combine(_settings.ConfigPath, _settings.ConfigFilename)))
         {
-            _fileWatcher = _fileSystem.FileSystemWatcher.New(PATH, FILENAME);
+            _fileWatcher = _fileSystem.FileSystemWatcher.New(_settings.ConfigPath, _settings.ConfigFilename);
             _fileWatcher.NotifyFilter = NotifyFilters.LastWrite;
             _fileWatcher.EnableRaisingEvents = true;
             _eventSubscription = Observable
@@ -49,7 +52,7 @@ internal sealed class HeidiConfigurationService : IDisposable
                 .Throttle(TimeSpan.FromSeconds(1))
                 .Subscribe(OnFileUpdate);
 
-            Task.Run(() => OnFileUpdate(new FileSystemEventArgs(WatcherChangeTypes.Changed, PATH, FILENAME)));
+            Task.Run(() => OnFileUpdate(new FileSystemEventArgs(WatcherChangeTypes.Changed, _settings.ConfigPath, _settings.ConfigFilename)));
         }
         else
         {
@@ -98,7 +101,7 @@ internal sealed class HeidiConfigurationService : IDisposable
         {
             _logger.LogDebug("File changed '{name}' '{type}' '{fullPath}'", e.Name, e.ChangeType, e.FullPath);
 
-            Dictionary<string, RepomHeidiConfig> config = await _reader.ReadConfigsAsync(e.FullPath);
+            Dictionary<string, RepomHeidiConfig> config = await _reader.ReadConfigsAsync(e.FullPath).ConfigureAwait(false);
             
             var newResult = new Dictionary<string, List<HeidiConfiguration>>();
 
@@ -112,10 +115,10 @@ internal sealed class HeidiConfigurationService : IDisposable
                         Order = item.Value.Order,
                     };
 
-                foreach (var r in item.Value.Repositories)
+                foreach (var repository in item.Value.Repositories)
                 {
-                    newResult.TryAdd(r, new List<HeidiConfiguration>());
-                    newResult[r].Add(heidiConfig);
+                    newResult.TryAdd(repository, new List<HeidiConfiguration>());
+                    newResult[repository].Add(heidiConfig);
                 }
             }
 
