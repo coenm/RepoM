@@ -18,10 +18,10 @@ internal class ActionHeidiDatabasesV1Deserializer : IActionDeserializer
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
     {
-        return Deserialize(jToken, actionDeserializer, jsonSerializer);
+        return Deserialize(jToken, jsonSerializer);
     }
 
-    private static RepositoryActionHeidiDatabasesV1? Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
+    private static RepositoryActionHeidiDatabasesV1? Deserialize(JToken jToken, JsonSerializer jsonSerializer)
     {
         return jToken.ToObject<RepositoryActionHeidiDatabasesV1>(jsonSerializer);
     }
