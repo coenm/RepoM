@@ -102,17 +102,17 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
             
             var newResult = new Dictionary<string, List<HeidiConfiguration>>();
 
-            foreach (KeyValuePair<string, RepomHeidiConfig> item in config)
+            foreach (RepomHeidiConfig currentConfig in config.Select(c => c.Value))
             {
                 var heidiConfig = new HeidiConfiguration
                     {
-                        Name = item.Value.Name,
-                        Description = item.Value.HeidiKey,
-                        Environment = item.Value.Environment,
-                        Order = item.Value.Order,
+                        Name = currentConfig.Name,
+                        Description = currentConfig.HeidiKey,
+                        Environment = currentConfig.Environment,
+                        Order = currentConfig.Order,
                     };
 
-                foreach (var repository in item.Value.Repositories)
+                foreach (var repository in currentConfig.Repositories)
                 {
                     newResult.TryAdd(repository, new List<HeidiConfiguration>());
                     newResult[repository].Add(heidiConfig);
