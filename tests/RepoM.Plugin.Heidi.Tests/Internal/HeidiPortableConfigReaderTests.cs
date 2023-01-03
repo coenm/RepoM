@@ -1,12 +1,13 @@
 namespace RepoM.Plugin.Heidi.Tests.Internal;
 
+using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
 using Microsoft.Extensions.Logging.Abstractions;
-using RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Plugin.Heidi.Internal;
+using RepoM.Plugin.Heidi.Internal.Config;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -32,25 +33,31 @@ public class HeidiPortableConfigReaderTests
         _sut = new HeidiPortableConfigReader(_mockFileSystem, NullLogger.Instance);
     }
 
-    [Fact]
-    public async Task Abc()
+    [Fact(Skip = "Tmp")]
+    public async Task RealFile()
     {
-        var xx = @$"Servers\BDO\MSS - BDODT-D\Comment<|||>1<|||>MigrationStatusService<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""CoProf"",""Environment"":""D"",""Application"":""ap""}}#REPOM_END#";
-        
-
         // arrange
         _testFileSettings.UseFileName("heidi1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _mockFileSystem.AddFile("file2.txt", content);
-        // _mockFileSystem.AddFile("file1.txt", @$"Servers\BDO\MSS - BDODT-D\Comment<|||>1<|||>MigrationStatusService<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""CoProf"",""Environment"":""D"",""Application"":""ap"",""Version"":0,""HeidiKey"":null}}#REPOM_END#");
-        _mockFileSystem.AddFile("file1.txt", @$"Servers\BDO\MSS - BDODT-D\Comment<|||>1<|||>MigrationStatusService<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""CoProf"",""Environment"":""D"",""Application"":""ap""}}#REPOM_END#");
-        // Servers\BDO\MSS - BDODT-D\Comment<|||>1<|||>MigrationStatusService<{{{><}}}> <{{{><}}}>#REPOM_START#{"Repositories":["RepoM"],"Order":12,"Name":"CoProf","Environment":"D","Application":"ap","Version":0,"HeidiKey":null}#REPOM_END#
-        // {"Repositories":["RepoM"],"Order":12,"Name":"CoProf","Environment":"D","Application":"ap","Version":0,"HeidiKey":null}
+        _mockFileSystem.AddFile("file1.txt", content);
 
         // act
-        var result = await _sut.ReadConfigsAsync("file1.txt");
+        Dictionary<string, RepomHeidiConfig> result = await _sut.ReadConfigsAsync("file1.txt");
 
         // assert
-        _ = await Verifier.Verify(result);
+        _ = await Verifier.Verify(result, _verifySettings);
+    }
+
+    [Fact]
+    public async Task SingleLine()
+    {
+        // arrange
+        _mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D"",""Application"":""ap""}}#REPOM_END#");
+       
+        // act
+        Dictionary<string, RepomHeidiConfig> result = await _sut.ReadConfigsAsync("file1.txt");
+
+        // assert
+        _ = await Verifier.Verify(result, _verifySettings);
     }
 }
