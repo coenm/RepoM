@@ -23,14 +23,14 @@ using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.R
 internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
 {
     private const string DEFAULT_EXE = "C:\\StandAloneProgramFiles\\HeidiSQL_12.3_64_Portable\\heidisql.exe";
-    private readonly HeidiConfigurationService _service;
+    private readonly IHeidiConfigurationService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
     
     public ActionHeidiDatabasesV1Mapper(
-        HeidiConfigurationService service,
+        IHeidiConfigurationService service,
         IRepositoryExpressionEvaluator expressionEvaluator,
         ITranslationService translationService,
         IFileSystem fileSystem,

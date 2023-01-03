@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using RepoM.Plugin.Heidi.Internal.Config;
 using RepoM.Plugin.Heidi.Interface;
 
-internal sealed class HeidiConfigurationService : IDisposable
+internal sealed class HeidiConfigurationService : IHeidiConfigurationService, IDisposable
 {
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;

@@ -10,9 +10,9 @@ using RepoM.Plugin.Heidi.Internal;
 [UsedImplicitly]
 internal class HeidiDbVariableProvider : IVariableProvider<RepositoryContext>
 {
-    private readonly HeidiConfigurationService _service;
+    private readonly IHeidiConfigurationService _service;
 
-    public HeidiDbVariableProvider(HeidiConfigurationService service)
+    public HeidiDbVariableProvider(IHeidiConfigurationService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }

@@ -9,9 +9,9 @@ using RepoM.Plugin.Heidi.Internal;
 [UsedImplicitly]
 internal class HeidiModule : IModule
 {
-    private readonly HeidiConfigurationService _service;
+    private readonly IHeidiConfigurationService _service;
 
-    public HeidiModule(HeidiConfigurationService service)
+    public HeidiModule(IHeidiConfigurationService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
