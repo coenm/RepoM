@@ -1,0 +1,20 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionHeidiDatabasesV1,
+        Executable: {var.HeidiExe},
+        Type: heidi-databases@1,
+        Name: My Databases,
+        Active: true
+      },
+      {
+        $type: RepositoryActionHeidiDatabasesV1,
+        Type: heidi-databases@1,
+        Name: My Databases with default heidi,
+        Active: true
+      }
+    ]
+  }
+}

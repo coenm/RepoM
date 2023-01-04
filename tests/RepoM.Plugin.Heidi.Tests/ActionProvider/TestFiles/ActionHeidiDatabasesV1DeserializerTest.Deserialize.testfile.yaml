@@ -1,0 +1,9 @@
+repository-actions:
+  actions:
+  - type: heidi-databases@1
+    name: My Databases
+    executable: '{var.HeidiExe}'
+    active: true
+  - type: heidi-databases@1
+    name: My Databases with default heidi
+    active: 'true'
