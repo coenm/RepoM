@@ -138,4 +138,29 @@ public class HeidiConfigurationServiceTests
         // assert
         A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME))).MustHaveHappenedOnceExactly();
     }
+
+    [Fact]
+    public async Task Dispose_ShouldRemoveSubscription()
+    {
+        var mre = new AutoResetEvent(false);
+        A.CallTo(() => _fileSystem.File.Exists(A<string>._)).Returns(true);
+        A.CallTo(() => _configReader.ReadConfigsAsync(A<string>._))
+         .Invokes(() => mre.Set())
+         .Returns(Task.FromResult(new Dictionary<string, RepomHeidiConfig>()));
+
+        await _sut.InitializeAsync();
+        mre.WaitOne(TimeSpan.FromSeconds(1));
+        
+        Fake.ClearRecordedCalls(_configReader);
+
+        // act
+        _sut.Dispose();
+
+        var evt = new FileSystemEventArgs(WatcherChangeTypes.Changed, PATH, FILENAME);
+        _changeEventDummyFileSystemWatcher.Change(evt);
+        await Task.Delay(5000);
+
+        // assert
+        A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME))).MustNotHaveHappened();
+    }
 }
