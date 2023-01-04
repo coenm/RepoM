@@ -80,7 +80,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
 
         if (_repositoryHeidiConfigs.TryGetValue(key, out List<HeidiConfiguration>? configs))
         {
-            return configs.AsReadOnly();
+            return configs.OrderBy(x => x.Order).ToArray();
         }
 
         return Array.Empty<HeidiConfiguration>();
