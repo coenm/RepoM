@@ -1,13 +1,13 @@
 ﻿[
   {
-    Description: OSS/Github/RepoM-D,
     Name: RepoM Dev!!,
+    Description: OSS/Github/RepoM-D,
     Order: 5,
     Environment: Development
   },
   {
-    Description: OSS/Github/RepoM-P,
     Name: RepoM Prod,
+    Description: OSS/Github/RepoM-P,
     Order: 23,
     Environment: Production
   }
