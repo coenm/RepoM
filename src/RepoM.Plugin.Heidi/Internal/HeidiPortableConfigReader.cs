@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RepoM.Plugin.Heidi.Internal.Config;
 
-internal class HeidiPortableConfigReader
+internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 {
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;

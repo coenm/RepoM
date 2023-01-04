@@ -43,8 +43,8 @@ public class HeidiPackage : IPackage
 
     private static void RegisterInternals(Container container)
     {
-        container.Register<HeidiSettings>(Lifestyle.Singleton);
+        container.Register<IHeidiSettings, HeidiSettings>(Lifestyle.Singleton);
         container.Register<IHeidiConfigurationService, HeidiConfigurationService>(Lifestyle.Singleton);
-        container.Register<HeidiPortableConfigReader>(Lifestyle.Singleton);
+        container.Register<IHeidiPortableConfigReader, HeidiPortableConfigReader>(Lifestyle.Singleton);
     }
 }

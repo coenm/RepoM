@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Heidi.Internal;
 
 using System;
 
-internal class HeidiSettings
+internal class HeidiSettings : IHeidiSettings
 {
     private const string ENV_VAR_PREFIX = "REPOM_HEIDI_";
 
@@ -17,11 +17,7 @@ internal class HeidiSettings
         
         try
         {
-            var result = Environment.GetEnvironmentVariable(ENV_VAR_PREFIX + envVarName);
-            if (result == null)
-            {
-                result= Environment.GetEnvironmentVariable(ENV_VAR_PREFIX + envVarName, EnvironmentVariableTarget.User);
-            }
+            var result = Environment.GetEnvironmentVariable(ENV_VAR_PREFIX + envVarName) ?? Environment.GetEnvironmentVariable(ENV_VAR_PREFIX + envVarName, EnvironmentVariableTarget.User);
             return string.IsNullOrWhiteSpace(result) ? defaultValue : result;
         }
         catch (Exception)

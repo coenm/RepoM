@@ -17,8 +17,8 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
 {
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
-    private readonly HeidiPortableConfigReader _reader;
-    private readonly HeidiSettings _settings;
+    private readonly IHeidiPortableConfigReader _reader;
+    private readonly IHeidiSettings _settings;
     private IFileSystemWatcher? _fileWatcher;
     private IDisposable? _eventSubscription;
     private Dictionary<string, List<HeidiConfiguration>> _repositoryHeidiConfigs = new();
@@ -26,8 +26,8 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     public HeidiConfigurationService(
         ILogger logger,
         IFileSystem fileSystem,
-        HeidiPortableConfigReader reader,
-        HeidiSettings settings)
+        IHeidiPortableConfigReader reader,
+        IHeidiSettings settings)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
