@@ -22,6 +22,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     private IFileSystemWatcher? _fileWatcher;
     private IDisposable? _eventSubscription;
     private Dictionary<string, List<HeidiConfiguration>> _repositoryHeidiConfigs = new();
+    private string? _heidiConfigFile;
 
     public HeidiConfigurationService(
         ILogger logger,
@@ -37,7 +38,8 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
 
     public Task InitializeAsync()
     {
-        if (_fileSystem.File.Exists(Path.Combine(_settings.ConfigPath, _settings.ConfigFilename)))
+        _heidiConfigFile = Path.Combine(_settings.ConfigPath, _settings.ConfigFilename);
+        if (_fileSystem.File.Exists(_heidiConfigFile))
         {
             _fileWatcher = _fileSystem.FileSystemWatcher.New(_settings.ConfigPath, _settings.ConfigFilename);
             _fileWatcher.NotifyFilter = NotifyFilters.LastWrite;
@@ -97,6 +99,13 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
         try
         {
             _logger.LogDebug("File changed '{name}' '{type}' '{fullPath}'", e.Name, e.ChangeType, e.FullPath);
+
+            // for now, check exact path and file
+            if (!e.FullPath.Equals(_heidiConfigFile, StringComparison.CurrentCultureIgnoreCase))
+            {
+                _logger.LogWarning("File updated but wasn't configured file, '{configured}', '{updated}'", _heidiConfigFile, e.FullPath);
+                return;
+            }
 
             Dictionary<string, RepomHeidiConfig> config = await _reader.ReadConfigsAsync(e.FullPath).ConfigureAwait(false);
             
