@@ -115,13 +115,11 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
 
             foreach (RepomHeidiConfig currentConfig in config.Select(c => c.Value))
             {
-                var heidiConfig = new HeidiConfiguration
-                    {
-                        Name = currentConfig.Name,
-                        Description = currentConfig.HeidiKey,
-                        Environment = currentConfig.Environment,
-                        Order = currentConfig.Order,
-                    };
+                var heidiConfig = new HeidiConfiguration(
+                    currentConfig.Name,
+                    currentConfig.HeidiKey,
+                    currentConfig.Order,
+                    currentConfig.Environment);
 
                 foreach (var repository in currentConfig.Repositories)
                 {

@@ -1,12 +1,22 @@
 namespace RepoM.Plugin.Heidi.Interface;
 
+using System;
+
 public class HeidiConfiguration
 {
-    public string Description { get; internal init; }
+    public HeidiConfiguration(string name, string description, int order, string? environment)
+    {
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Description = description ?? throw new ArgumentNullException(nameof(description));
+        Order = order;
+        Environment = environment ?? string.Empty;
+    }
 
-    public string Name { get; internal init; }
+    public string Name { get; }
 
-    public int Order { get; internal init; }
+    public string Description { get; }
     
-    public string Environment { get; internal init; }
+    public int Order { get; }
+    
+    public string Environment { get; }
 }
