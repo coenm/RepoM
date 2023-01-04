@@ -6,7 +6,6 @@
     ],
     Order: 12,
     Name: cp,
-    Environment: D,
-    Application: ap
+    Environment: D
   }
 }
