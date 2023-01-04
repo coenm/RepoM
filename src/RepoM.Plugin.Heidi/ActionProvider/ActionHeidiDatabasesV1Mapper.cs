@@ -22,11 +22,11 @@ using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.R
 [UsedImplicitly]
 internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
 {
-    private const string DEFAULT_EXE = "C:\\StandAloneProgramFiles\\HeidiSQL_12.3_64_Portable\\heidisql.exe";
     private readonly IHeidiConfigurationService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
     private readonly IFileSystem _fileSystem;
+    private readonly IHeidiSettings _settings;
     private readonly ILogger _logger;
     
     public ActionHeidiDatabasesV1Mapper(
@@ -34,12 +34,14 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         IRepositoryExpressionEvaluator expressionEvaluator,
         ITranslationService translationService,
         IFileSystem fileSystem,
+        IHeidiSettings settings,
         ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -71,7 +73,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         }
 
         var executable = string.IsNullOrWhiteSpace(action.Executable)
-            ? DEFAULT_EXE
+            ? _settings.DefaultExe
             : _expressionEvaluator.EvaluateStringExpression(action.Executable, repository);
 
         if (string.IsNullOrWhiteSpace(executable))
