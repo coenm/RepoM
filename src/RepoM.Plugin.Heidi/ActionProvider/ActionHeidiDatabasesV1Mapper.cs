@@ -45,7 +45,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
+    public bool CanMap(RepositoryAction action)
     {
         return action is RepositoryActionHeidiDatabasesV1;
     }
@@ -55,7 +55,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         return false;
     }
 
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionHeidiDatabasesV1, repository.First());
     }
