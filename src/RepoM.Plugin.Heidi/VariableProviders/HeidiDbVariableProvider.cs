@@ -39,7 +39,7 @@ internal class HeidiDbVariableProvider : IVariableProvider<RepositoryContext>
         }
         
         var startIndex = "heidi-db".Length;
-        var keySuffix = key.Substring(startIndex, key.Length - startIndex);
+        var keySuffix = key[startIndex..];
 
         if (".dbs".Equals(keySuffix, StringComparison.CurrentCultureIgnoreCase))
         {
