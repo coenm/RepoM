@@ -52,7 +52,7 @@ public class HeidiPortableConfigReaderTests
     public async Task SingleLine()
     {
         // arrange
-        _mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D"",""Application"":""ap""}}#REPOM_END#");
+        _mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D""}}#REPOM_END#");
        
         // act
         Dictionary<string, RepomHeidiConfig> result = await _sut.ReadConfigsAsync("file1.txt");

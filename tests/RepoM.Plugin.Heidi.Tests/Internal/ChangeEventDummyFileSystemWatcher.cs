@@ -32,9 +32,9 @@ internal class ChangeEventDummyFileSystemWatcher : IFileSystemWatcher
         throw new NotImplementedException();
     }
 
-    public void Change(FileSystemEventArgs evt)
+    public void Change(string path, string filename)
     {
-        Changed?.Invoke(this, evt);
+        Changed?.Invoke(this, new FileSystemEventArgs(WatcherChangeTypes.Changed, path, filename));
     }
 
     public IContainer? Container { get; }

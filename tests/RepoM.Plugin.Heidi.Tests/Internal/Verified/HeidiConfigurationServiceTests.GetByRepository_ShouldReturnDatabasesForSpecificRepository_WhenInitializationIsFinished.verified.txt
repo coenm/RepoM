@@ -1,0 +1,14 @@
+﻿[
+  {
+    Description: OSS/Github/RepoM-D,
+    Name: RepoM Dev!!,
+    Order: 5,
+    Environment: Development
+  },
+  {
+    Description: OSS/Github/RepoM-P,
+    Name: RepoM Prod,
+    Order: 23,
+    Environment: Production
+  }
+]

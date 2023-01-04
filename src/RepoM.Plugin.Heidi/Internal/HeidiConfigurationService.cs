@@ -24,6 +24,8 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     private Dictionary<string, List<HeidiConfiguration>> _repositoryHeidiConfigs = new();
     private string? _heidiConfigFile;
 
+    public event EventHandler? ConfigurationUpdated;
+
     public HeidiConfigurationService(
         ILogger logger,
         IFileSystem fileSystem,
@@ -129,6 +131,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
             }
 
             _repositoryHeidiConfigs = newResult;
+            ConfigurationUpdated?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception exception)
         {
