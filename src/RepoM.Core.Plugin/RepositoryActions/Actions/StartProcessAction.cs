@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.Heidi.RepositoryActions;
+namespace RepoM.Core.Plugin.RepositoryActions.Actions;
 
 using RepoM.Core.Plugin.RepositoryActions;
 

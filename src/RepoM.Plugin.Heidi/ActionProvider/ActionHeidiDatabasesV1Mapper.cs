@@ -15,7 +15,6 @@ using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
-using RepoM.Plugin.Heidi.RepositoryActions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]

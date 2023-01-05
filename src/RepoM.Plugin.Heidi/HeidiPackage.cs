@@ -9,8 +9,6 @@ using SimpleInjector;
 using SimpleInjector.Packaging;
 using RepoM.Plugin.Heidi.VariableProviders;
 using RepoM.Plugin.Heidi.ActionProvider;
-using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Plugin.Heidi.RepositoryActions;
 
 [UsedImplicitly]
 public class HeidiPackage : IPackage
@@ -32,7 +30,6 @@ public class HeidiPackage : IPackage
 
         // action executor
         // (see Statistics for example)
-        container.Register(typeof(IActionExecutor<>), typeof(StartProcessActionExecutor), Lifestyle.Singleton);
 
         // variable provider
         container.Collection.Append<IVariableProvider, HeidiDbVariableProvider>(Lifestyle.Singleton);

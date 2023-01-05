@@ -1,10 +1,12 @@
 namespace RepoM.Plugin.Heidi.Tests.Internal;
 
+using System;
 using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
+using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Plugin.Heidi.Internal;
 using RepoM.Plugin.Heidi.Internal.Config;
@@ -33,6 +35,22 @@ public class HeidiPortableConfigReaderTests
         _sut = new HeidiPortableConfigReader(_mockFileSystem, NullLogger.Instance);
     }
 
+    [Fact]
+    public void Ctor_ShouldThrow_WhenArgumentIsNull()
+    {
+        // arrange
+
+        // act
+        Action act1 = () => _ = new HeidiPortableConfigReader(null!, null!);
+        Action act2 = () => _ = new HeidiPortableConfigReader(null!, NullLogger.Instance);
+        Action act3 = () => _ = new HeidiPortableConfigReader(_mockFileSystem, null!);
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
+        act2.Should().Throw<ArgumentNullException>();
+        act3.Should().Throw<ArgumentNullException>();
+    }
+    
     [Fact(Skip = "Tmp")]
     public async Task RealFile()
     {

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.Interface;
@@ -96,6 +97,36 @@ public class HeidiConfigurationServiceTests
                 },
             };
     }
+
+    public static IEnumerable<object[]> CtorNullArguments
+    {
+        get
+        {
+            var l = A.Dummy<ILogger>();
+            var fs = A.Dummy<IFileSystem>();
+            var hpcr = A.Dummy<IHeidiPortableConfigReader>();
+            var hs = A.Dummy<IHeidiSettings>();
+
+            yield return new object[] { l, fs, hpcr, null!, };
+            yield return new object[] { l, fs, null!, hs, };
+            yield return new object[] { l, null!, hpcr, hs, };
+            yield return new object[] { null!, fs, hpcr, hs, };
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(CtorNullArguments))]
+    internal void Ctor_ShouldThrow_WhenArgumentIsNull(ILogger? logger, IFileSystem? fileSystem, IHeidiPortableConfigReader? reader, IHeidiSettings? heidiSettings)
+    {
+        // arrange
+
+        // act
+        Action act = () => new HeidiConfigurationService(logger!, fileSystem!, reader!, heidiSettings!);
+
+        // assert
+        act.Should().ThrowExactly<ArgumentNullException>();
+    }
+
 
     [Fact]
     public async Task GetByRepository_ShouldReturnDatabasesForSpecificRepository_WhenInitializationIsFinished()
