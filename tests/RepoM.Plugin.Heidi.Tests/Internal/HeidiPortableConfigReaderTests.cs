@@ -66,6 +66,32 @@ public class HeidiPortableConfigReaderTests
         _ = await Verifier.Verify(result, _verifySettings);
     }
 
+
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    [InlineData("rubbsh")]
+    [InlineData("rubbsh rubbsh rubbsh rubbsh")]
+    [InlineData("Servers\\rubbshfsdf sdfkjsfdlj ")]
+    [InlineData("Servers\\Name\\Comment<|||>")]
+    [InlineData("Servers\\Name\\Comment<|||>Junk")]
+    [InlineData("Servers\\Name\\Comment<|||>Junk #REPOM_START#")]
+    [InlineData("Servers\\Name\\Comment<|||>Junk #REPOM_START##REPOM_END#")]
+    [InlineData("Servers\\Name\\Comment<|||>Junk #REPOM_START#dummy#REPOM_END#")]
+    [InlineData("Servers\\Name\\Comment<|||>Junk #REPOM_START#  #REPOM_END#")]
+    public async Task ReadConfigAsync_ShouldIgnoreInvalidInput(string input)
+    {
+        // arrange
+        _mockFileSystem.AddFile("file.txt", input);
+
+        // act
+        Dictionary<string, RepomHeidiConfig> result = await _sut.ReadConfigsAsync("file.txt");
+
+        // assert
+        result.Should().BeEmpty();
+    }
+
     [Fact]
     public async Task SingleLine()
     {
