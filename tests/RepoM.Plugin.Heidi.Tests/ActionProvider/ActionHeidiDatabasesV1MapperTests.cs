@@ -3,9 +3,9 @@ namespace RepoM.Plugin.Heidi.Tests.ActionProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
-using LibGit2Sharp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Common;
@@ -15,34 +15,44 @@ using RepoM.Core.Plugin.Expressions;
 using RepoM.Plugin.Heidi.ActionProvider;
 using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
+using VerifyTests;
+using VerifyXunit;
 using Xunit;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
 using Repository = RepoM.Api.Git.Repository;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
+[UsesVerify]
 public class ActionHeidiDatabasesV1MapperTests
 {
-    private IHeidiConfigurationService _service;
-    private IRepositoryExpressionEvaluator _expressionEvaluator;
-    private ITranslationService _translationService;
-    private IHeidiSettings _settings;
-    private ILogger _logger;
+    private readonly IHeidiConfigurationService _service;
+    private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
+    private readonly IHeidiSettings _settings;
+    private readonly ITranslationService _translationService;
     private readonly ActionHeidiDatabasesV1Mapper _sut;
-    private Repository _repository;
+    private readonly Repository _repository;
     private readonly RepositoryActionHeidiDatabasesV1 _action;
-    private ActionMapperComposition _actionMapperComposition;
+    private readonly ActionMapperComposition _actionMapperComposition;
+    private readonly VerifySettings _verifySettings;
 
     public ActionHeidiDatabasesV1MapperTests()
     {
+        _verifySettings = new VerifySettings();
+        _verifySettings.UseDirectory("Verified");
+
         _actionMapperComposition = new ActionMapperComposition(new List<IActionToRepositoryActionMapper>(), A.Dummy<IRepositoryExpressionEvaluator>());
         _repository = new Repository("dummy") { };
         _service = A.Fake<IHeidiConfigurationService>();
         _expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
-        _translationService = A.Fake<ITranslationService>();
         _settings = A.Fake<IHeidiSettings>();
-        _logger = NullLogger.Instance;
+        _translationService = A.Fake<ITranslationService>();
 
-        _sut = new ActionHeidiDatabasesV1Mapper(_service, _expressionEvaluator, _translationService, _settings, _logger);
+        _sut = new ActionHeidiDatabasesV1Mapper(
+            _service,
+            _expressionEvaluator,
+            _translationService,
+            _settings,
+            NullLogger.Instance);
 
         _action = new RepositoryActionHeidiDatabasesV1
             {
@@ -57,7 +67,7 @@ public class ActionHeidiDatabasesV1MapperTests
         A.CallTo(() => _expressionEvaluator.EvaluateStringExpression(A<string>._, _repository))
          .ReturnsLazily(call =>
              {
-                 if (call.Arguments.First() is string s)
+                 if (call.Arguments[0] is string s)
                  {
                      return "ES_" + s;
                  }
@@ -66,6 +76,8 @@ public class ActionHeidiDatabasesV1MapperTests
              });
         A.CallTo(() => _service.GetByKey(A<string>._)).Returns(Array.Empty<HeidiConfiguration>());
         A.CallTo(() => _service.GetByRepository(_repository)).Returns(Array.Empty<HeidiConfiguration>());
+        A.CallTo(() => _translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
+        A.CallTo(() => _translationService.Translate(A<string>._, A<object[]>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
     }
 
     [Fact]
@@ -232,5 +244,69 @@ public class ActionHeidiDatabasesV1MapperTests
         // assert
         A.CallTo(() => _service.GetByRepository(_repository)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _service.GetByKey(A<string>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task Map_ShouldReturnNoDatabasesFoundAction_WhenNameIsNullOrEmptyAndNoDatabasesFound()
+    {
+        // arrange
+        _action.Name = string.Empty;
+        
+        // act
+        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+
+        // assert
+        await Verifier.Verify(result, _verifySettings);
+    }
+
+    [Fact]
+    public async Task Map_ShouldReturnActions_WhenNameIsNullOrEmptyAndDatabasesFound()
+    {
+        // arrange
+        _action.Name = string.Empty;
+        A.CallTo(() => _service.GetByRepository(_repository))
+         .Returns(new[]
+             {
+                 new HeidiConfiguration("A-name", "B-description", 6, "C-environment"),
+                 new HeidiConfiguration("D-name", "E-description", 2, null),
+             });
+
+        // act
+        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+
+        // assert
+        await Verifier.Verify(result, _verifySettings);
+    }
+
+    [Fact]
+    public async Task Map_ShouldReturnFolderWithNoDatabasesFoundAction_WhenNameIsSetAndNoDatabasesFound()
+    {
+        // arrange
+        _action.Name = "Databases";
+
+        // act
+        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+
+        // assert
+        await Verifier.Verify(result, _verifySettings);
+    }
+    
+    [Fact]
+    public async Task Map_ShouldReturnFolderWithDatabaseActions_WhenNameIsSetAndDatabasesFound()
+    {
+        // arrange
+        _action.Name = "Databases";
+        A.CallTo(() => _service.GetByRepository(_repository))
+         .Returns(new[]
+             {
+                 new HeidiConfiguration("A-name", "B-description", 6, "C-environment"),
+                 new HeidiConfiguration("D-name", "E-description", 2, null),
+             });
+    
+        // act
+        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+    
+        // assert
+        await Verifier.Verify(result, _verifySettings);
     }
 }
