@@ -2,7 +2,6 @@ namespace RepoM.Plugin.Heidi.ActionProvider;
 
 using System;
 using System.Collections.Generic;
-using System.IO.Abstractions;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -25,7 +24,6 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
     private readonly IHeidiConfigurationService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
-    private readonly IFileSystem _fileSystem;
     private readonly IHeidiSettings _settings;
     private readonly ILogger _logger;
     
@@ -33,14 +31,12 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         IHeidiConfigurationService service,
         IRepositoryExpressionEvaluator expressionEvaluator,
         ITranslationService translationService,
-        IFileSystem fileSystem,
         IHeidiSettings settings,
         ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -82,12 +78,6 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        if (!_fileSystem.File.Exists(executable))
-        {
-            _logger.LogWarning("HeidiSQL executable '{executable}' does not exist", executable);
-            yield break;
-        }
-
         HeidiConfiguration[] databases = (string.IsNullOrWhiteSpace(action.Key)
                 ? _service.GetByRepository(repository)
                 : _service.GetByKey(action.Key))
@@ -97,7 +87,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
 
         if (!string.IsNullOrWhiteSpace(name))
         {
-            name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
+            name = NameHelper.EvaluateName(name, repository, _translationService, _expressionEvaluator);
 
             if (!string.IsNullOrWhiteSpace(name))
             {
