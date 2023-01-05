@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
@@ -28,7 +27,6 @@ public class ActionHeidiDatabasesV1MapperTests
     private readonly IHeidiConfigurationService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly IHeidiSettings _settings;
-    private readonly ITranslationService _translationService;
     private readonly ActionHeidiDatabasesV1Mapper _sut;
     private readonly Repository _repository;
     private readonly RepositoryActionHeidiDatabasesV1 _action;
@@ -41,16 +39,16 @@ public class ActionHeidiDatabasesV1MapperTests
         _verifySettings.UseDirectory("Verified");
 
         _actionMapperComposition = new ActionMapperComposition(new List<IActionToRepositoryActionMapper>(), A.Dummy<IRepositoryExpressionEvaluator>());
-        _repository = new Repository("dummy") { };
+        _repository = new Repository("dummy");
         _service = A.Fake<IHeidiConfigurationService>();
         _expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
         _settings = A.Fake<IHeidiSettings>();
-        _translationService = A.Fake<ITranslationService>();
+        ITranslationService translationService = A.Fake<ITranslationService>();
 
         _sut = new ActionHeidiDatabasesV1Mapper(
             _service,
             _expressionEvaluator,
-            _translationService,
+            translationService,
             _settings,
             NullLogger.Instance);
 
@@ -76,8 +74,8 @@ public class ActionHeidiDatabasesV1MapperTests
              });
         A.CallTo(() => _service.GetByKey(A<string>._)).Returns(Array.Empty<HeidiConfiguration>());
         A.CallTo(() => _service.GetByRepository(_repository)).Returns(Array.Empty<HeidiConfiguration>());
-        A.CallTo(() => _translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
-        A.CallTo(() => _translationService.Translate(A<string>._, A<object[]>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
+        A.CallTo(() => translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
+        A.CallTo(() => translationService.Translate(A<string>._, A<object[]>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
     }
 
     [Fact]
