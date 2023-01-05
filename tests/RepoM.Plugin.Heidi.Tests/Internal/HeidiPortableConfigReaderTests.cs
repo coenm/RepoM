@@ -66,8 +66,6 @@ public class HeidiPortableConfigReaderTests
         _ = await Verifier.Verify(result, _verifySettings);
     }
 
-
-
     [Theory]
     [InlineData("")]
     [InlineData("  ")]
