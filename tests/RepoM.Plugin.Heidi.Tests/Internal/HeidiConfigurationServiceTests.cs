@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.Interface;
@@ -23,8 +22,7 @@ public class HeidiConfigurationServiceTests
 {
     private const string FILENAME = "heidi.portable.txt";
     private const string PATH = "C:\\heidi\\";
-    
-    private readonly ILogger _logger;
+
     private readonly IFileSystem _fileSystem;
     private readonly IHeidiPortableConfigReader _configReader;
     private readonly IHeidiSettings _heidiSettings;
@@ -43,12 +41,11 @@ public class HeidiConfigurationServiceTests
         _changeEventDummyFileSystemWatcher = new ChangeEventDummyFileSystemWatcher();
         _fileWatcher = A.Fake<IFileSystemWatcher>(o => o.Wrapping(_changeEventDummyFileSystemWatcher));
 
-        _logger = NullLogger.Instance;
         _fileSystem = A.Fake<IFileSystem>();
         _configReader = A.Fake<IHeidiPortableConfigReader>();
         _heidiSettings = A.Fake<IHeidiSettings>();
         _repository = A.Fake<IRepository>();
-        _sut = new HeidiConfigurationService(_logger, _fileSystem, _configReader, _heidiSettings);
+        _sut = new HeidiConfigurationService(NullLogger.Instance, _fileSystem, _configReader, _heidiSettings);
 
         A.CallTo(() => _fileSystem.FileSystemWatcher.New(A<string>._, A<string>._)).Returns(_fileWatcher);
         A.CallTo(() => _heidiSettings.ConfigFilename).Returns(FILENAME);
@@ -288,5 +285,17 @@ public class HeidiConfigurationServiceTests
 
         // assert
         A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME))).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public void Dispose_ShouldDoNothing_WhenNotInitialized()
+    {
+        // arrange
+
+        // act
+        Action act = () => _sut.Dispose();
+
+        // assert
+        act.Should().NotThrow();
     }
 }
