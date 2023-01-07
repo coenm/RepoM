@@ -10,40 +10,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RepoM.Plugin.Heidi.Internal.Config;
 
-internal struct HeidiSingleLineConfiguration
-{
-    public string Key { get; set; }
-
-    public string Type { get; set; }
-
-    public string ContentType { get; set; }
-
-    public string? Content { get; set; }
-}
-
-internal struct HeidiSingleDatabaseConfiguration
-{
-    public string Key { get; set; }
-
-    public string Host { get; set; }
-
-    public string User { get; set; }
-
-    public string EncryptedPassword { get; set; }
-
-    public string Port { get; set; }
-
-    public bool WindowsAuth { get; set; }
-
-    public int NetType { get; set; }
-
-    public string Library { get; set; }
-
-    public string Comment { get; set; }
-
-    public string Databases { get; set; }
-}
-
 internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 {
     private const string KEYWORD_SERVER = "Servers\\";
@@ -59,42 +25,35 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    // public async Task<string> ParseConfigAsync(string filename)
-    // {
-    //     await ParseConfigurationAsync(filename);
-    // }
-
-
     public async Task<List<HeidiSingleDatabaseConfiguration>> ParseConfiguration2Async(string filename)
     {
         var config = await ParseConfigurationAsync(filename).ConfigureAwait(false);
+
         var result = new List<HeidiSingleDatabaseConfiguration>();
         
         foreach (IGrouping<string, HeidiSingleLineConfiguration> group in config.GroupBy(x => x.Key))
         {
             var lines = group.ToList();
 
-            var configuration = new HeidiSingleDatabaseConfiguration
+            result.Add(new HeidiSingleDatabaseConfiguration
                 {
                     Key = group.Key,
                     Host = GetStringValue(lines, "Host", string.Empty),
                     User = GetStringValue(lines, "User", string.Empty),
-                    EncryptedPassword = GetStringValue(lines, "EncryptedPassword", string.Empty),
+                    EncryptedPassword = GetStringValue(lines, "Password", string.Empty),
                     Port = GetStringValue(lines, "Port", string.Empty),
-                    WindowsAuth = true,
+                    WindowsAuth = GetIntValue(lines, "WindowsAuth", -1),
                     NetType = GetIntValue(lines, "NetType", -1),
                     Library = GetStringValue(lines, "Library", string.Empty),
                     Comment = GetStringValue(lines, "Comment", string.Empty),
                     Databases = GetStringValue(lines, "Databases", string.Empty),
-                };
-
-            result.Add(configuration);
+                });
         }
 
         return result;
     }
 
-    private string GetStringValue(IEnumerable<HeidiSingleLineConfiguration> input, string key, string defaultValue = "")
+    private static string GetStringValue(IEnumerable<HeidiSingleLineConfiguration> input, string key, string defaultValue = "")
     {
         var foundItems = input.Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
@@ -111,7 +70,7 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
         return foundItems[0].Content ?? defaultValue;
     }
 
-    private int GetIntValue(IEnumerable<HeidiSingleLineConfiguration> input, string key, int defaultValue = -1)
+    private static int GetIntValue(IEnumerable<HeidiSingleLineConfiguration> input, string key, int defaultValue = -1)
     {
         var foundItems = input.Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
@@ -127,7 +86,7 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 
         var content = foundItems[0].Content ?? string.Empty;
 
-        if (!int.TryParse(content, out int result))
+        if (!int.TryParse(content, out var result))
         {
             return defaultValue;
         }
@@ -150,26 +109,7 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
         return result;
     }
 
-    // private bool TrySplitLine2(in string line, [NotNullWhen(true)] out HeidiSingleLineConfiguration? config)
-    // {
-    //     if (TrySplitLine(line, out var key, out var type, out var contentType, out var content))
-    //     {
-    //         config = new HeidiSingleLineConfiguration
-    //             {
-    //                 Key = key,
-    //                 Type = type,
-    //                 ContentType = contentType,
-    //                 Content = content,
-    //             };
-    //         return true;
-    //     }
-    //
-    //     config = null;
-    //     return false;
-    // }
-    
-
-    private bool TrySplitLine(in string line, [NotNullWhen(true)] out HeidiSingleLineConfiguration? heidiConfig)
+   private static bool TrySplitLine(in string line, [NotNullWhen(true)] out HeidiSingleLineConfiguration? heidiConfig)
     {
         heidiConfig = null;
 
