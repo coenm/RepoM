@@ -102,4 +102,37 @@ public class HeidiPortableConfigReaderTests
         // assert
         _ = await Verifier.Verify(result, _verifySettings);
     }
+
+
+    [Fact]
+    public async Task S()
+    {
+        // arrange
+        _testFileSettings.UseFileName("heidi2");
+        var content = await EasyTestFile.LoadAsText(_testFileSettings);
+        _mockFileSystem.AddFile("file1.txt", content);
+        //_mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D""}}#REPOM_END#");
+
+        // act
+        var result = await _sut.ParseConfigurationAsync("file1.txt");
+
+        // assert
+        await Verifier.Verify(result, _verifySettings);
+    }
+
+    [Fact]
+    public async Task S2()
+    {
+        // arrange
+        _testFileSettings.UseFileName("heidi2");
+        var content = await EasyTestFile.LoadAsText(_testFileSettings);
+        _mockFileSystem.AddFile("file1.txt", content);
+        //_mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D""}}#REPOM_END#");
+
+        // act
+        var result = await _sut.ParseConfiguration2Async("file1.txt");
+
+        // assert
+        await Verifier.Verify(result, _verifySettings);
+    }
 }
