@@ -43,6 +43,6 @@ public class HeidiPackage : IPackage
         container.Register<IHeidiSettings, HeidiSettings>(Lifestyle.Singleton);
         container.Register<IHeidiConfigurationService, HeidiConfigurationService>(Lifestyle.Singleton);
         container.Register<IHeidiPortableConfigReader, HeidiPortableConfigReader>(Lifestyle.Singleton);
-        container.Register<IHeidiPasswordDecoder, HeidiPasswordDecoder>(Lifestyle.Singleton);
+        container.RegisterInstance<IHeidiPasswordDecoder>(HeidiPasswordDecoder.Instance);
     }
 }
