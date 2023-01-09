@@ -213,6 +213,6 @@
     Key: Coen\test,
     Type: LogFilePath,
     ContentType: 1,
-    Content: {UserProfile}\AppData\Roaming\HeidiSQL\Logs\%session\%db\%y%m%d.sql
+    Content: C:\AppData\Roaming\HeidiSQL\Logs\%session\%db\%y%m%d.sql
   }
 ]

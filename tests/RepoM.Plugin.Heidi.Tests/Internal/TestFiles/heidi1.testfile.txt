@@ -51,7 +51,7 @@ ColWidths_frmTableEditor.listCheckConstraints<|||>1<|||>200,420
 ColsVisible_frmTableEditor.listCheckConstraints<|||>1<|||>0,1
 ColPositions_frmTableEditor.listCheckConstraints<|||>1<|||>0,1
 ColSort_frmTableEditor.listCheckConstraints<|||>1<|||>-1,0
-GridExportFilename<|||>1<|||>C:\Users\coenm\OneDrive - GitHub\GitHub\Project\2022-11\2022-12-23 Batch runs\db.json
+GridExportFilename<|||>1<|||>C:\OneDrive - GitHub\GitHub\Project\2022-11\2022-12-23 Batch runs\db.json
 GridExportFormat<|||>3<|||>13
 dbtreewidth<|||>3<|||>584
 MainWinMaximized<|||>3<|||>1
@@ -65,7 +65,7 @@ ColWidths_frmRoutineEditor.listParameters<|||>1<|||>50,394,90,70
 ColsVisible_frmRoutineEditor.listParameters<|||>1<|||>0,1,2,3
 ColPositions_frmRoutineEditor.listParameters<|||>1<|||>0,1,2,3
 ColSort_frmRoutineEditor.listParameters<|||>1<|||>-1,0
-SQLFile0<|||>1<|||>C:\Users\coenm\Downloads\HeidiSQL_12.3_64_Portable\Backups\query-tab-2022-12-16_11-01-27-849.sql
+SQLFile0<|||>1<|||>C:\Downloads\HeidiSQL_12.3_64_Portable\Backups\query-tab-2022-12-16_11-01-27-849.sql
 GridExportOutputCopy<|||>3<|||>0
 GridExportOutputFile<|||>3<|||>1
 AllowMultipleInstances<|||>3<|||>1

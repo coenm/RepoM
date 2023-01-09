@@ -66,4 +66,4 @@ Servers\Coen\test\SSL_Cipher<|||>1<|||>
 Servers\Coen\test\IgnoreDatabasePattern<|||>1<|||>
 Servers\Coen\test\LogFileDdl<|||>3<|||>0
 Servers\Coen\test\LogFileDml<|||>3<|||>0
-Servers\Coen\test\LogFilePath<|||>1<|||>C:\Users\Munckhof CJJ\AppData\Roaming\HeidiSQL\Logs\%session\%db\%y%m%d.sql
+Servers\Coen\test\LogFilePath<|||>1<|||>C:\AppData\Roaming\HeidiSQL\Logs\%session\%db\%y%m%d.sql
