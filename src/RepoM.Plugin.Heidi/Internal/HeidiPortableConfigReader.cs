@@ -10,47 +10,198 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RepoM.Plugin.Heidi.Internal.Config;
 
+internal class ExtractRepositoryFromHeidi
+{
+    private const string KEYWORD_NEWLINE = "<{{{><}}}>";
+
+    public bool TryExtract(HeidiSingleDatabaseConfiguration config, [NotNullWhen(true)] out RepoHeidi? i)
+    {
+        i = null;
+        // return false;
+
+        ReadOnlySpan<char> comment = config.Comment.Replace(KEYWORD_NEWLINE, " ").AsSpan();
+        if (string.IsNullOrWhiteSpace(config.Comment))
+        {
+            return false;
+        }
+        
+        var repos = new List<string>(1);
+
+        var index = comment.IndexOf('#');
+        if (index > 0)
+        {
+            index = comment.IndexOf(" #");
+        }
+
+        while (index > -1)
+        {
+            comment = comment[(index + 1) ..];
+
+            if (comment.StartsWith("#repo:", StringComparison.CurrentCultureIgnoreCase))
+            {
+                // #repo: <one or more>
+
+                // #repo:"abc def"
+                // #repo:abc
+
+                comment = comment["#repo:".Length..];
+
+                if (comment[0].Equals('"'))
+                {
+                    // yes
+                    comment = comment[1..];
+                    var endIndex = comment.IndexOf('"');
+                    if (endIndex > 0)
+                    {
+                        var repo = comment[0..endIndex].ToString();
+                        if (!string.IsNullOrWhiteSpace(repo))
+                        {
+                            repos.Add(repo);
+
+                        }
+                        // foreach (var c in repo)
+                        // {
+                        //     //a-z, A-Z, 0-9, \s ._-
+                        //
+                        //     
+                        // }
+                    }
+                }
+                else
+                {
+                    char[] allowedChars = new[] { '.', '-', '_'/*, ' '*/, };
+
+                    var k = 0;
+                    bool stop = false;
+                    while (k < comment.Length && !stop )
+                    {
+                        k++;
+                        if (comment[k] is >= 'a' and <= 'z')
+                        {
+                            continue;
+                        }
+                        if (comment[k] is >= 'A' and <= 'Z')
+                        {
+                            continue;
+                        }
+                        if (allowedChars.Contains(comment[k]))
+                        {
+                            continue;
+                            
+                        }
+
+                        // yes
+                        stop = true;
+                    }
+
+                    var repo = comment[..k].ToString();
+                    if (!string.IsNullOrWhiteSpace(repo))
+                    {
+                        repos.Add(repo);
+                    }
+
+                    comment = comment[k..];
+                }
+            }
+            else if (comment.StartsWith("order:", StringComparison.InvariantCultureIgnoreCase))
+            {
+                comment = comment[("order:".Length + 1)..];
+
+
+            }
+            else if (comment.StartsWith("name:", StringComparison.CurrentCultureIgnoreCase))
+            {
+                comment = comment[("name:".Length + 1)..];
+
+            }
+            else
+            {
+                // tag
+                // stop until space or eof
+            }
+            
+            // #order: <single>
+            // #name: <single>
+            // #xx <tag, zero or more>
+
+
+            index = comment.IndexOf(" #");
+        }
+        
+        i = new RepoHeidi
+            {
+                Order = 12,
+                HeidiKey = config.Key,
+                RepositoryName = repos.FirstOrDefault() ?? string.Empty,
+                Tags = Array.Empty<string>(),
+            };
+        return true;
+    }
+}
+
 internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 {
     private const string KEYWORD_SERVER = "Servers\\";
     private const string KEYWORD_SPLIT = "<|||>";
-    private const string KEYWORD_NEWLINE = "<{{{><}}}>";
+
 
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
+    private readonly IHeidiPasswordDecoder _passwordDecoder;
 
-    public HeidiPortableConfigReader(IFileSystem fileSystem, ILogger logger)
+    public HeidiPortableConfigReader(IFileSystem fileSystem, ILogger logger, IHeidiPasswordDecoder passwordDecoder)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _passwordDecoder = passwordDecoder ?? throw new ArgumentNullException(nameof(passwordDecoder));
     }
 
-    public async Task<List<HeidiSingleDatabaseConfiguration>> ParseConfiguration2Async(string filename)
+    public async Task<List<HeidiSingleDatabaseConfiguration>> Parse(string filename)
     {
-        var config = await ParseConfigurationAsync(filename).ConfigureAwait(false);
+        var parseResult = await ParseConfiguration2Async(filename).ConfigureAwait(false);
 
         var result = new List<HeidiSingleDatabaseConfiguration>();
-        
-        foreach (IGrouping<string, HeidiSingleLineConfiguration> group in config.GroupBy(x => x.Key))
-        {
-            var lines = group.ToList();
 
+        foreach (var item in parseResult)
+        {
             result.Add(new HeidiSingleDatabaseConfiguration
                 {
-                    Key = group.Key,
-                    Host = GetStringValue(lines, "Host", string.Empty),
-                    User = GetStringValue(lines, "User", string.Empty),
-                    EncryptedPassword = GetStringValue(lines, "Password", string.Empty),
-                    Port = GetStringValue(lines, "Port", string.Empty),
-                    WindowsAuth = GetIntValue(lines, "WindowsAuth", -1),
-                    NetType = GetIntValue(lines, "NetType", -1),
-                    Library = GetStringValue(lines, "Library", string.Empty),
-                    Comment = GetStringValue(lines, "Comment", string.Empty),
-                    Databases = GetStringValue(lines, "Databases", string.Empty),
+                    Comment = item.Comment,
+                    Databases = item.Databases.Split(';').Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToArray(),
+                    Host = item.Host,
+                    Key = item.Key,
+                    Password = _passwordDecoder.DecodePassword(item.EncryptedPassword), // can throw
+                    WindowsAuth = item.WindowsAuth == 1,
+                    User = item.User,
+                    Port = int.Parse(item.Port),
+                    NetType = item.NetType,
+                    Library = item.Library,
                 });
         }
 
         return result;
+    }
+
+    public async Task<List<HeidiSingleDatabaseRawConfiguration>> ParseConfiguration2Async(string filename)
+    {
+        var config = await ParseConfigurationAsync(filename).ConfigureAwait(false);
+
+        return (from @group in config.GroupBy(x => x.Key)
+                let lines = @group.ToList()
+                select new HeidiSingleDatabaseRawConfiguration
+                    {
+                        Key = @group.Key,
+                        Host = GetStringValue(lines, "Host", string.Empty),
+                        User = GetStringValue(lines, "User", string.Empty),
+                        EncryptedPassword = GetStringValue(lines, "Password", string.Empty),
+                        Port = GetStringValue(lines, "Port", "0"),
+                        WindowsAuth = GetIntValue(lines, "WindowsAuth", -1),
+                        NetType = GetIntValue(lines, "NetType", -1),
+                        Library = GetStringValue(lines, "Library", string.Empty),
+                        Comment = GetStringValue(lines, "Comment", string.Empty),
+                        Databases = GetStringValue(lines, "Databases", string.Empty),
+                    })
+            .ToList();
     }
 
     private static string GetStringValue(IEnumerable<HeidiSingleLineConfiguration> input, string key, string defaultValue = "")

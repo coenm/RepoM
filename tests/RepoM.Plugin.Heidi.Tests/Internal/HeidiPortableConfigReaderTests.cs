@@ -6,6 +6,7 @@ using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
+using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Plugin.Heidi.Internal;
@@ -32,7 +33,8 @@ public class HeidiPortableConfigReaderTests
         _verifySettings = new VerifySettings();
         _verifySettings.UseDirectory("Verified");
         _mockFileSystem = new MockFileSystem();
-        _sut = new HeidiPortableConfigReader(_mockFileSystem, NullLogger.Instance);
+        IHeidiPasswordDecoder passwordDecoder = new DummyDecoder();
+        _sut = new HeidiPortableConfigReader(_mockFileSystem, NullLogger.Instance, passwordDecoder);
     }
 
     [Fact]
@@ -41,14 +43,18 @@ public class HeidiPortableConfigReaderTests
         // arrange
 
         // act
-        Action act1 = () => _ = new HeidiPortableConfigReader(null!, null!);
-        Action act2 = () => _ = new HeidiPortableConfigReader(null!, NullLogger.Instance);
-        Action act3 = () => _ = new HeidiPortableConfigReader(_mockFileSystem, null!);
+        Action act1 = () => _ = new HeidiPortableConfigReader(null!, null!, null!);
+        Action act2 = () => _ = new HeidiPortableConfigReader(null!, NullLogger.Instance, A.Dummy<IHeidiPasswordDecoder>());
+        Action act3 = () => _ = new HeidiPortableConfigReader(_mockFileSystem, null!, null!);
+        Action act4 = () => _ = new HeidiPortableConfigReader(null!, NullLogger.Instance, A.Dummy<IHeidiPasswordDecoder>());
+        Action act5 = () => _ = new HeidiPortableConfigReader(_mockFileSystem, null!, null!);
 
         // assert
         act1.Should().Throw<ArgumentNullException>();
         act2.Should().Throw<ArgumentNullException>();
         act3.Should().Throw<ArgumentNullException>();
+        act4.Should().Throw<ArgumentNullException>();
+        act5.Should().Throw<ArgumentNullException>();
     }
     
     [Fact(Skip = "Tmp")]
@@ -134,5 +140,13 @@ public class HeidiPortableConfigReaderTests
 
         // assert
         await Verifier.Verify(result, _verifySettings);
+    }
+
+    private class DummyDecoder : IHeidiPasswordDecoder
+    {
+        public string DecodePassword(ReadOnlySpan<char> input)
+        {
+            return "Decoded:" + input.ToString();
+        }
     }
 }
