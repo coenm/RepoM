@@ -66,7 +66,7 @@ public class HeidiPortableConfigReaderTests
         _mockFileSystem.AddFile("file1.txt", content);
 
         // act
-        Dictionary<string, RepomHeidiConfig> result = await _sut.ReadConfigsAsync("file1.txt");
+        List<HeidiSingleDatabaseConfiguration> result = await _sut.ParseAsync("file1.txt");
 
         // assert
         _ = await Verifier.Verify(result, _verifySettings);
@@ -90,7 +90,7 @@ public class HeidiPortableConfigReaderTests
         _mockFileSystem.AddFile("file.txt", input);
 
         // act
-        Dictionary<string, RepomHeidiConfig> result = await _sut.ReadConfigsAsync("file.txt");
+        List<HeidiSingleDatabaseConfiguration> result = await _sut.ParseAsync("file.txt");
 
         // assert
         result.Should().BeEmpty();
@@ -103,7 +103,7 @@ public class HeidiPortableConfigReaderTests
         _mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D""}}#REPOM_END#");
        
         // act
-        Dictionary<string, RepomHeidiConfig> result = await _sut.ReadConfigsAsync("file1.txt");
+        List<HeidiSingleDatabaseConfiguration> result = await _sut.ParseAsync("file1.txt");
 
         // assert
         _ = await Verifier.Verify(result, _verifySettings);

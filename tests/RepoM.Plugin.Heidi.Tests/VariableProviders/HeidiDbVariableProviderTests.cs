@@ -1,10 +1,10 @@
 namespace RepoM.Plugin.Heidi.Tests.VariableProviders;
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
-using FluentAssertions.Common;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
@@ -118,9 +118,9 @@ public class HeidiDbVariableProviderTests
         A.CallTo(() => _configService.GetByRepository(_repository))
          .Returns(new HeidiConfiguration[]
             {
-                new("cc", "bb1", 5, null),
-                new ("bb", "bb2", 1, "Test"), // should be first in result, (order = 1)
-                new ("aa", "bb3", 5, "dev"), // should be second in result, (order = 5, name aa < name cc)
+                new ("cc", 5, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
+                new ("bb", 1, new [] { "Test", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)), // should be first in result, (order = 1)
+                new ("aa", 5, new [] { "Dev", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)), // should be second in result, (order = 5, name aa < name cc)
             });
 
         // act
@@ -137,9 +137,9 @@ public class HeidiDbVariableProviderTests
         A.CallTo(() => _configService.GetByRepository(_repository))
          .Returns(new HeidiConfiguration[]
              {
-                 new("cc", "bb1", 5, null),
-                 new ("bb", "bb2", 1, "Test"),
-                 new ("aa", "bb3", 5, "dev"), 
+                 new ("cc", 5, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
+                 new ("bb", 1, new [] { "Test", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)), // should be first in result, (order = 1)
+                 new ("aa", 5, new [] { "Dev", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)), // should be second in result, (order = 5, name aa < name cc)
              });
 
         // act
@@ -156,9 +156,9 @@ public class HeidiDbVariableProviderTests
         A.CallTo(() => _configService.GetByRepository(_repository))
          .Returns(new HeidiConfiguration[]
              {
-                 new("cc", "bb1", 5, null),
-                 new ("bb", "bb2", 1, "Test"),
-                 new ("aa", "bb3", 5, "dev"), 
+                 new ("cc", 5, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
+                 new ("bb", 1, new [] { "Test", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)), // should be first in result, (order = 1)
+                 new ("aa", 5, new [] { "Dev", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)), // should be second in result, (order = 5, name aa < name cc)
              });
 
         // act

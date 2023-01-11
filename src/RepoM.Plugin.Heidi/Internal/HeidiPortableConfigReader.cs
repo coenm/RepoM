@@ -10,135 +10,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RepoM.Plugin.Heidi.Internal.Config;
 
-internal class ExtractRepositoryFromHeidi
-{
-    private const string KEYWORD_NEWLINE = "<{{{><}}}>";
-
-    public bool TryExtract(HeidiSingleDatabaseConfiguration config, [NotNullWhen(true)] out RepoHeidi? i)
-    {
-        i = null;
-        // return false;
-
-        ReadOnlySpan<char> comment = config.Comment.Replace(KEYWORD_NEWLINE, " ").AsSpan();
-        if (string.IsNullOrWhiteSpace(config.Comment))
-        {
-            return false;
-        }
-        
-        var repos = new List<string>(1);
-
-        var index = comment.IndexOf('#');
-        if (index > 0)
-        {
-            index = comment.IndexOf(" #");
-        }
-
-        while (index > -1)
-        {
-            comment = comment[(index + 1) ..];
-
-            if (comment.StartsWith("#repo:", StringComparison.CurrentCultureIgnoreCase))
-            {
-                // #repo: <one or more>
-
-                // #repo:"abc def"
-                // #repo:abc
-
-                comment = comment["#repo:".Length..];
-
-                if (comment[0].Equals('"'))
-                {
-                    // yes
-                    comment = comment[1..];
-                    var endIndex = comment.IndexOf('"');
-                    if (endIndex > 0)
-                    {
-                        var repo = comment[0..endIndex].ToString();
-                        if (!string.IsNullOrWhiteSpace(repo))
-                        {
-                            repos.Add(repo);
-
-                        }
-                        // foreach (var c in repo)
-                        // {
-                        //     //a-z, A-Z, 0-9, \s ._-
-                        //
-                        //     
-                        // }
-                    }
-                }
-                else
-                {
-                    char[] allowedChars = new[] { '.', '-', '_'/*, ' '*/, };
-
-                    var k = 0;
-                    bool stop = false;
-                    while (k < comment.Length && !stop )
-                    {
-                        k++;
-                        if (comment[k] is >= 'a' and <= 'z')
-                        {
-                            continue;
-                        }
-                        if (comment[k] is >= 'A' and <= 'Z')
-                        {
-                            continue;
-                        }
-                        if (allowedChars.Contains(comment[k]))
-                        {
-                            continue;
-                            
-                        }
-
-                        // yes
-                        stop = true;
-                    }
-
-                    var repo = comment[..k].ToString();
-                    if (!string.IsNullOrWhiteSpace(repo))
-                    {
-                        repos.Add(repo);
-                    }
-
-                    comment = comment[k..];
-                }
-            }
-            else if (comment.StartsWith("order:", StringComparison.InvariantCultureIgnoreCase))
-            {
-                comment = comment[("order:".Length + 1)..];
-
-
-            }
-            else if (comment.StartsWith("name:", StringComparison.CurrentCultureIgnoreCase))
-            {
-                comment = comment[("name:".Length + 1)..];
-
-            }
-            else
-            {
-                // tag
-                // stop until space or eof
-            }
-            
-            // #order: <single>
-            // #name: <single>
-            // #xx <tag, zero or more>
-
-
-            index = comment.IndexOf(" #");
-        }
-        
-        i = new RepoHeidi
-            {
-                Order = 12,
-                HeidiKey = config.Key,
-                RepositoryName = repos.FirstOrDefault() ?? string.Empty,
-                Tags = Array.Empty<string>(),
-            };
-        return true;
-    }
-}
-
 internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 {
     private const string KEYWORD_SERVER = "Servers\\";
@@ -156,13 +27,13 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
         _passwordDecoder = passwordDecoder ?? throw new ArgumentNullException(nameof(passwordDecoder));
     }
 
-    public async Task<List<HeidiSingleDatabaseConfiguration>> Parse(string filename)
+    public async Task<List<HeidiSingleDatabaseConfiguration>> ParseAsync(string filename)
     {
         var parseResult = await ParseConfiguration2Async(filename).ConfigureAwait(false);
 
         var result = new List<HeidiSingleDatabaseConfiguration>();
 
-        foreach (var item in parseResult)
+        foreach (HeidiSingleDatabaseRawConfiguration item in parseResult)
         {
             result.Add(new HeidiSingleDatabaseConfiguration
                 {
@@ -315,69 +186,69 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
     }
 
 
-    public async Task<Dictionary<string, RepomHeidiConfig>> ReadConfigsAsync(string filename)
-    {
-        const string KEYWORD_SERVER = "Servers\\";
-        const string KEYWORD_COMMENT = "\\Comment<|||>";
-        const string KEYWORD_START = "#REPOM_START#";
-        const string KEYWORD_END = "#REPOM_END#";
-
-        var result = new Dictionary<string, RepomHeidiConfig>();
-        string[] lines = await _fileSystem.File.ReadAllLinesAsync(filename);
-
-        foreach (var line in lines)
-        {
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                continue;
-            }
-
-            if (line.Length < 10)
-            {
-                continue;
-            }
-
-            if (!line.StartsWith(KEYWORD_SERVER))
-            {
-                continue;
-            }
-
-            var indexComment = line.IndexOf(KEYWORD_COMMENT, StringComparison.InvariantCulture);
-            if (indexComment < 1)
-            {
-                continue;
-            }
-
-            var indexStart = line.IndexOf(KEYWORD_START, StringComparison.InvariantCulture);
-            if (indexStart <= indexComment)
-            {
-                continue;
-            }
-
-            var indexEnd = line.IndexOf(KEYWORD_END, StringComparison.InvariantCulture);
-            if (indexEnd <= indexStart)
-            {
-                continue;
-            }
-
-            try
-            {
-                var key = line[KEYWORD_SERVER.Length..indexComment];
-                var json = line.Substring(indexStart + KEYWORD_START.Length, indexEnd - indexStart - KEYWORD_START.Length);
-
-                RepomHeidiConfig? config = JsonConvert.DeserializeObject<RepomHeidiConfig>(json);
-                if (config != null)
-                {
-                    config.HeidiKey = key;
-                    result.Add(key, config);
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, "Could not deserialize heidi config {message}", e.Message);
-            }
-        }
-
-        return result;
-    }
+    // public async Task<Dictionary<string, RepomHeidiConfig>> ReadConfigsAsync(string filename)
+    // {
+    //     const string KEYWORD_SERVER = "Servers\\";
+    //     const string KEYWORD_COMMENT = "\\Comment<|||>";
+    //     const string KEYWORD_START = "#REPOM_START#";
+    //     const string KEYWORD_END = "#REPOM_END#";
+    //
+    //     var result = new Dictionary<string, RepomHeidiConfig>();
+    //     string[] lines = await _fileSystem.File.ReadAllLinesAsync(filename);
+    //
+    //     foreach (var line in lines)
+    //     {
+    //         if (string.IsNullOrWhiteSpace(line))
+    //         {
+    //             continue;
+    //         }
+    //
+    //         if (line.Length < 10)
+    //         {
+    //             continue;
+    //         }
+    //
+    //         if (!line.StartsWith(KEYWORD_SERVER))
+    //         {
+    //             continue;
+    //         }
+    //
+    //         var indexComment = line.IndexOf(KEYWORD_COMMENT, StringComparison.InvariantCulture);
+    //         if (indexComment < 1)
+    //         {
+    //             continue;
+    //         }
+    //
+    //         var indexStart = line.IndexOf(KEYWORD_START, StringComparison.InvariantCulture);
+    //         if (indexStart <= indexComment)
+    //         {
+    //             continue;
+    //         }
+    //
+    //         var indexEnd = line.IndexOf(KEYWORD_END, StringComparison.InvariantCulture);
+    //         if (indexEnd <= indexStart)
+    //         {
+    //             continue;
+    //         }
+    //
+    //         try
+    //         {
+    //             var key = line[KEYWORD_SERVER.Length..indexComment];
+    //             var json = line.Substring(indexStart + KEYWORD_START.Length, indexEnd - indexStart - KEYWORD_START.Length);
+    //
+    //             RepomHeidiConfig? config = JsonConvert.DeserializeObject<RepomHeidiConfig>(json);
+    //             if (config != null)
+    //             {
+    //                 config.HeidiKey = key;
+    //                 result.Add(key, config);
+    //             }
+    //         }
+    //         catch (Exception e)
+    //         {
+    //             _logger.LogWarning(e, "Could not deserialize heidi config {message}", e.Message);
+    //         }
+    //     }
+    //
+    //     return result;
+    // }
 }

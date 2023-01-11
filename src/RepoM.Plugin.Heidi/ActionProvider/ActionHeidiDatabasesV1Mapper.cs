@@ -139,7 +139,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
     {
         return databases.Select(database => new Api.Git.RepositoryAction(database.Name, repository)
             {
-               Action = new StartProcessAction(executable, new[] { "--description" , $"\"{database.Description}\"", }),
+               Action = new StartProcessAction(executable, new[] { "--description" , $"\"{database.HeidiDb.Key}\"", }),
                ExecutionCausesSynchronizing = false,
             });
     }

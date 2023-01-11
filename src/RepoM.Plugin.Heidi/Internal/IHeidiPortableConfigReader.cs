@@ -6,5 +6,7 @@ using RepoM.Plugin.Heidi.Internal.Config;
 
 internal interface IHeidiPortableConfigReader
 {
-    Task<Dictionary<string, RepomHeidiConfig>> ReadConfigsAsync(string filename);
+    Task<List<HeidiSingleDatabaseConfiguration>> ParseAsync(string filename);
+
+    // Task<Dictionary<string, RepomHeidiConfig>> ReadConfigsAsync(string filename);
 }

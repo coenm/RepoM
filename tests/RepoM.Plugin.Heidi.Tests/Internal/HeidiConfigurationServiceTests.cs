@@ -29,9 +29,10 @@ public class HeidiConfigurationServiceTests
     private readonly IHeidiSettings _heidiSettings;
     private readonly IFileSystemWatcher _fileWatcher;
     private readonly IRepository _repository;
+    private readonly IHeidiRepositoryExtractor _heidiRepositoryExtractor;
     private readonly HeidiConfigurationService _sut;
     private readonly ChangeEventDummyFileSystemWatcher _changeEventDummyFileSystemWatcher;
-    private readonly Dictionary<string, RepomHeidiConfig> _heidiConfigurationResult1;
+    private readonly List<HeidiSingleDatabaseConfiguration> _heidiConfigurationResult1;
     private readonly VerifySettings _verifySettings;
 
     public HeidiConfigurationServiceTests()
@@ -46,7 +47,8 @@ public class HeidiConfigurationServiceTests
         _configReader = A.Fake<IHeidiPortableConfigReader>();
         _heidiSettings = A.Fake<IHeidiSettings>();
         _repository = A.Fake<IRepository>();
-        _sut = new HeidiConfigurationService(NullLogger.Instance, _fileSystem, _configReader, _heidiSettings);
+        _heidiRepositoryExtractor = A.Fake<IHeidiRepositoryExtractor>();
+        _sut = new HeidiConfigurationService(NullLogger.Instance, _fileSystem, _configReader, _heidiRepositoryExtractor, _heidiSettings);
 
         A.CallTo(() => _fileSystem.FileSystemWatcher.New(A<string>._, A<string>._)).Returns(_fileWatcher);
         A.CallTo(() => _heidiSettings.ConfigFilename).Returns(FILENAME);
@@ -60,41 +62,32 @@ public class HeidiConfigurationServiceTests
                 new("origin", "http://github.com/coenm/RepoM.git"),
             });
 
-        _heidiConfigurationResult1 = new Dictionary<string, RepomHeidiConfig>
+        _heidiConfigurationResult1 = new List<HeidiSingleDatabaseConfiguration>
             {
-                {
-                    "OSS/Github/RepoM-P",
-                    new RepomHeidiConfig
-                        {
-                            HeidiKey = "OSS/Github/RepoM-P",
-                            Order = 23,
-                            Environment = "Production",
-                            Name = "RepoM Prod",
-                            Repositories = new []{ "RepoM", },
-                        }
-                },
-                {
-                    "OSS/Github/RepoM-D",
-                    new RepomHeidiConfig
-                        {
-                            HeidiKey = "OSS/Github/RepoM-D",
-                            Order = 5,
-                            Environment = "Development",
-                            Name = "RepoM Dev!!",
-                            Repositories = new []{ "RepoM", "RepomTest", },
-                        }
-                },
-                {
-                    "OSS/Abc",
-                    new RepomHeidiConfig
-                        {
-                            HeidiKey = "OSS/Abc",
-                            Order = 0,
-                            Environment = "Production",
-                            Name = "Abc Prod",
-                            Repositories = new []{ "Abc", },
-                        }
-                },
+                new HeidiSingleDatabaseConfiguration
+                    {
+                        Key = "OSS/Github/RepoM-P",
+                        // Order = 23,
+                        // Environment = "Production",
+                        // Name = "RepoM Prod",
+                        // Repositories = new []{ "RepoM", },
+                    },
+                new HeidiSingleDatabaseConfiguration
+                    {
+                        Key = "OSS/Github/RepoM-D",
+                        // Order = 5,
+                        // Environment = "Development",
+                        // Name = "RepoM Dev!!",
+                        // Repositories = new []{ "RepoM", "RepomTest", },
+                    },
+                new HeidiSingleDatabaseConfiguration
+                    {
+                        Key = "OSS/Abc",
+                        // Order = 0,
+                        // Environment = "Production",
+                        // Name = "Abc Prod",
+                        // Repositories = new []{ "Abc", },
+                    },
             };
     }
 
@@ -105,23 +98,30 @@ public class HeidiConfigurationServiceTests
             var l = A.Dummy<ILogger>();
             var fs = A.Dummy<IFileSystem>();
             var hpcr = A.Dummy<IHeidiPortableConfigReader>();
+            var hre = A.Dummy<IHeidiRepositoryExtractor>();
             var hs = A.Dummy<IHeidiSettings>();
 
-            yield return new object[] { l, fs, hpcr, null!, };
-            yield return new object[] { l, fs, null!, hs, };
-            yield return new object[] { l, null!, hpcr, hs, };
-            yield return new object[] { null!, fs, hpcr, hs, };
+            yield return new object[] { l, fs, hpcr, hre, null!, };
+            yield return new object[] { l, fs, hpcr, null!, hs, };
+            yield return new object[] { l, fs, null!, hre, hs, };
+            yield return new object[] { l, null!, hpcr, hre, hs, };
+            yield return new object[] { null!, fs, hpcr, hre, hs, };
         }
     }
 
     [Theory]
     [MemberData(nameof(CtorNullArguments))]
-    internal void Ctor_ShouldThrow_WhenArgumentIsNull(ILogger? logger, IFileSystem? fileSystem, IHeidiPortableConfigReader? reader, IHeidiSettings? heidiSettings)
+    internal void Ctor_ShouldThrow_WhenArgumentIsNull(
+        ILogger? logger,
+        IFileSystem? fileSystem,
+        IHeidiPortableConfigReader? reader,
+        IHeidiRepositoryExtractor? heidiRepositoryExtractor,
+        IHeidiSettings? heidiSettings)
     {
         // arrange
 
         // act
-        Action act = () => new HeidiConfigurationService(logger!, fileSystem!, reader!, heidiSettings!);
+        Action act = () => _ = new HeidiConfigurationService(logger!, fileSystem!, reader!, heidiRepositoryExtractor!, heidiSettings!);
 
         // assert
         act.Should().ThrowExactly<ArgumentNullException>();
@@ -135,7 +135,7 @@ public class HeidiConfigurationServiceTests
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
-        A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
          .Returns(Task.FromResult(_heidiConfigurationResult1));
 
         await _sut.InitializeAsync();
@@ -164,7 +164,7 @@ public class HeidiConfigurationServiceTests
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
-        A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
          .Returns(Task.FromResult(_heidiConfigurationResult1));
 
         await _sut.InitializeAsync();
@@ -188,7 +188,7 @@ public class HeidiConfigurationServiceTests
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
-        A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
          .Returns(Task.FromResult(_heidiConfigurationResult1));
 
         await _sut.InitializeAsync();
@@ -207,7 +207,7 @@ public class HeidiConfigurationServiceTests
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
-        A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
          .Returns(Task.FromResult(_heidiConfigurationResult1));
 
         // act
@@ -216,7 +216,7 @@ public class HeidiConfigurationServiceTests
 
         // assert
         A.CallTo(() => _fileSystem.FileSystemWatcher.New(A<string>._, A<string>._)).MustHaveHappened();
-        A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME))).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -230,7 +230,7 @@ public class HeidiConfigurationServiceTests
 
         // assert
         A.CallTo(() => _fileSystem.FileSystemWatcher.New(A<string>._, A<string>._)).MustNotHaveHappened();
-        A.CallTo(() => _configReader.ReadConfigsAsync(A<string>._)).MustNotHaveHappened();
+        A.CallTo(() => _configReader.ParseAsync(A<string>._)).MustNotHaveHappened();
     }
 
     [Fact]
@@ -251,8 +251,8 @@ public class HeidiConfigurationServiceTests
         var mre = new AutoResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(A<string>._)).Returns(true);
-        A.CallTo(() => _configReader.ReadConfigsAsync(A<string>._))
-         .Returns(Task.FromResult(new Dictionary<string, RepomHeidiConfig>()));
+        A.CallTo(() => _configReader.ParseAsync(A<string>._))
+         .Returns(Task.FromResult(new List<HeidiSingleDatabaseConfiguration>()));
 
         await _sut.InitializeAsync();
         mre.WaitOne(TimeSpan.FromSeconds(1));
@@ -263,7 +263,7 @@ public class HeidiConfigurationServiceTests
         await Task.Delay(5000);
 
         // assert
-        A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME))).MustNotHaveHappened();
+        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustNotHaveHappened();
     }
 
     [Fact]
@@ -272,9 +272,9 @@ public class HeidiConfigurationServiceTests
         var mre = new AutoResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(A<string>._)).Returns(true);
-        A.CallTo(() => _configReader.ReadConfigsAsync(A<string>._))
+        A.CallTo(() => _configReader.ParseAsync(A<string>._))
          .ReturnsNextFromSequence(
-             Task.FromResult(new Dictionary<string, RepomHeidiConfig>()),
+             Task.FromResult(new List<HeidiSingleDatabaseConfiguration>()),
              Task.FromResult(_heidiConfigurationResult1));
 
         await _sut.InitializeAsync();
@@ -291,7 +291,7 @@ public class HeidiConfigurationServiceTests
         await Task.Delay(5000);
 
         // assert
-        A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME))).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -300,8 +300,8 @@ public class HeidiConfigurationServiceTests
         var mre = new AutoResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(A<string>._)).Returns(true);
-        A.CallTo(() => _configReader.ReadConfigsAsync(A<string>._))
-         .Returns(Task.FromResult(new Dictionary<string, RepomHeidiConfig>()));
+        A.CallTo(() => _configReader.ParseAsync(A<string>._))
+         .Returns(Task.FromResult(new List<HeidiSingleDatabaseConfiguration>()));
 
         await _sut.InitializeAsync();
         mre.WaitOne(TimeSpan.FromSeconds(1));
@@ -315,7 +315,7 @@ public class HeidiConfigurationServiceTests
         await Task.Delay(5000);
 
         // assert
-        A.CallTo(() => _configReader.ReadConfigsAsync(Path.Combine(PATH, FILENAME))).MustNotHaveHappened();
+        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustNotHaveHappened();
     }
 
     [Fact]

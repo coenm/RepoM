@@ -1,0 +1,12 @@
+﻿{
+  Success: true,
+  Repository: {
+    HeidiKey: hk,
+    Repository: repom 234,
+    Order: 42,
+    Name: name123,
+    Tags: [
+      T
+    ]
+  }
+}

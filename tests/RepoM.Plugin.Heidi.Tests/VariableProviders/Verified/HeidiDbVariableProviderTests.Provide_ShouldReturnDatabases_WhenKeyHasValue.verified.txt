@@ -1,20 +1,68 @@
 ﻿[
   {
-    Name: bb,
-    Description: bb2,
+    HeidiDb: {
+      Key: Key2,
+      Host: Host2,
+      User: usr2,
+      Password: pwd2pwd,
+      Port: 102,
+      WindowsAuth: true,
+      NetType: 3,
+      Library: lib2,
+      Comment: comment2,
+      Databases: [
+        db0,
+        db1
+      ]
+    },
     Order: 1,
-    Environment: Test
+    Name: bb,
+    Tags: [
+      Test
+    ],
+    HeidiFilename: file1.txt
   },
   {
+    HeidiDb: {
+      Key: Key3,
+      Host: Host3,
+      User: usr3,
+      Password: pwd3pwd,
+      Port: 103,
+      WindowsAuth: false,
+      NetType: 4,
+      Library: lib3,
+      Comment: comment3,
+      Databases: [
+        db0,
+        db1,
+        db2
+      ]
+    },
+    Order: 5,
     Name: aa,
-    Description: bb3,
-    Order: 5,
-    Environment: dev
+    Tags: [
+      Dev
+    ],
+    HeidiFilename: file1.txt
   },
   {
-    Name: cc,
-    Description: bb1,
+    HeidiDb: {
+      Key: Key1,
+      Host: Host1,
+      User: usr1,
+      Password: pwd1pwd,
+      Port: 101,
+      WindowsAuth: false,
+      NetType: 2,
+      Library: lib1,
+      Comment: comment1,
+      Databases: [
+        db0
+      ]
+    },
     Order: 5,
-    Environment: 
+    Name: cc,
+    HeidiFilename: file1.txt
   }
 ]

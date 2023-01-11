@@ -263,10 +263,10 @@ public class ActionHeidiDatabasesV1MapperTests
         // arrange
         _action.Name = string.Empty;
         A.CallTo(() => _service.GetByRepository(_repository))
-         .Returns(new[]
+         .Returns(new HeidiConfiguration[]
              {
-                 new HeidiConfiguration("A-name", "B-description", 6, "C-environment"),
-                 new HeidiConfiguration("D-name", "E-description", 2, null),
+                 new ("A-name", 6, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1, "B-description")),
+                 new ("D-name", 2, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2, "E-description")),
              });
 
         // act
@@ -295,10 +295,10 @@ public class ActionHeidiDatabasesV1MapperTests
         // arrange
         _action.Name = "Databases";
         A.CallTo(() => _service.GetByRepository(_repository))
-         .Returns(new[]
+         .Returns(new HeidiConfiguration[]
              {
-                 new HeidiConfiguration("A-name", "B-description", 6, "C-environment"),
-                 new HeidiConfiguration("D-name", "E-description", 2, null),
+                 new ("A-name", 6, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1, "B-description")),
+                 new ("D-name", 2, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2, "E-description")),
              });
     
         // act

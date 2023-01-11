@@ -18,10 +18,12 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
     private readonly IHeidiPortableConfigReader _reader;
+    private readonly IHeidiRepositoryExtractor _repositoryExtractor;
     private readonly IHeidiSettings _settings;
     private IFileSystemWatcher? _fileWatcher;
     private IDisposable? _eventSubscription;
-    private Dictionary<string, List<HeidiConfiguration>> _repositoryHeidiConfigs = new();
+    private Dictionary<string, List<HeidiConfiguration>> _repositoryHeidiConfigs2 = new();
+    private List<HeidiSingleDatabaseConfiguration> _rawDatabases = new();
     private string? _heidiConfigFile;
 
     public event EventHandler? ConfigurationUpdated;
@@ -30,11 +32,13 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
         ILogger logger,
         IFileSystem fileSystem,
         IHeidiPortableConfigReader reader,
+        IHeidiRepositoryExtractor repositoryExtractor,
         IHeidiSettings settings)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        _repositoryExtractor = repositoryExtractor ?? throw new ArgumentNullException(nameof(repositoryExtractor));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
@@ -82,7 +86,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
             return Array.Empty<HeidiConfiguration>();
         }
 
-        if (_repositoryHeidiConfigs.TryGetValue(key, out List<HeidiConfiguration>? configs))
+        if (_repositoryHeidiConfigs2.TryGetValue(key, out List<HeidiConfiguration>? configs))
         {
             return configs.OrderBy(x => x.Order).ToArray();
         }
@@ -100,35 +104,39 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     {
         try
         {
-            _logger.LogDebug("File changed '{name}' '{type}' '{fullPath}'", e.Name, e.ChangeType, e.FullPath);
+            _logger.LogDebug("Filename changed '{name}' '{type}' '{fullPath}'", e.Name, e.ChangeType, e.FullPath);
 
             // for now, check exact path and file
             if (!e.FullPath.Equals(_heidiConfigFile, StringComparison.CurrentCultureIgnoreCase))
             {
-                _logger.LogWarning("File updated but wasn't configured file, '{configured}', '{updated}'", _heidiConfigFile, e.FullPath);
+                _logger.LogWarning("Filename updated but wasn't configured file, '{configured}', '{updated}'", _heidiConfigFile, e.FullPath);
                 return;
             }
 
-            Dictionary<string, RepomHeidiConfig> config = await _reader.ReadConfigsAsync(e.FullPath).ConfigureAwait(false);
-            
-            var newResult = new Dictionary<string, List<HeidiConfiguration>>();
+            var heidiDatabases = await _reader.ParseAsync(e.FullPath).ConfigureAwait(false);
+            var repoHeids = new List<RepoHeidi>();
 
-            foreach (RepomHeidiConfig currentConfig in config.Select(c => c.Value))
+            foreach (HeidiSingleDatabaseConfiguration c in heidiDatabases)
             {
-                var heidiConfig = new HeidiConfiguration(
-                    currentConfig.Name,
-                    currentConfig.HeidiKey,
-                    currentConfig.Order,
-                    currentConfig.Environment);
-
-                foreach (var repository in currentConfig.Repositories)
+                if (_repositoryExtractor.TryExtract(c, out RepoHeidi? repoHeidi))
                 {
-                    newResult.TryAdd(repository, new List<HeidiConfiguration>());
-                    newResult[repository].Add(heidiConfig);
+                    repoHeids.Add(repoHeidi.Value);
                 }
             }
 
-            _repositoryHeidiConfigs = newResult;
+            var newResult2 = new Dictionary<string, List<HeidiConfiguration>>();
+            foreach (RepoHeidi repository in repoHeids)
+            {
+                var item = new HeidiConfiguration(
+                    repository,
+                    heidiDatabases.Single(x => x.Key.Equals(repository.HeidiKey)),
+                    e.FullPath);
+                newResult2.TryAdd(repository.Repository, new List<HeidiConfiguration>());
+                newResult2[repository.Repository].Add(item);
+            }
+
+            _rawDatabases = heidiDatabases;
+            _repositoryHeidiConfigs2 = newResult2;
             ConfigurationUpdated?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception exception)
