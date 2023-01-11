@@ -78,37 +78,21 @@ public class HeidiPortableConfigReaderTests
     [InlineData("rubbsh")]
     [InlineData("rubbsh rubbsh rubbsh rubbsh")]
     [InlineData("Servers\\rubbshfsdf sdfkjsfdlj ")]
-    [InlineData("Servers\\Name\\Comment<|||>")]
-    [InlineData("Servers\\Name\\Comment<|||>Junk")]
-    [InlineData("Servers\\Name\\Comment<|||>Junk #REPOM_START#")]
-    [InlineData("Servers\\Name\\Comment<|||>Junk #REPOM_START##REPOM_END#")]
-    [InlineData("Servers\\Name\\Comment<|||>Junk #REPOM_START#dummy#REPOM_END#")]
-    [InlineData("Servers\\Name\\Comment<|||>Junk #REPOM_START#  #REPOM_END#")]
+    [InlineData("Servers\\")]
+    [InlineData(" Servers\\Name\\Comment<|||>aa")]
+    [InlineData("ServersName\\Comment<|||>value")]
+    [InlineData("Server\\Name\\Comment<|||>value")]
     public async Task ReadConfigAsync_ShouldIgnoreInvalidInput(string input)
     {
         // arrange
         _mockFileSystem.AddFile("file.txt", input);
 
         // act
-        List<HeidiSingleDatabaseConfiguration> result = await _sut.ParseAsync("file.txt");
+        var result = await _sut.ParseSingleLinesAsync("file.txt");
 
         // assert
         result.Should().BeEmpty();
     }
-
-    [Fact]
-    public async Task SingleLine()
-    {
-        // arrange
-        _mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D""}}#REPOM_END#");
-       
-        // act
-        List<HeidiSingleDatabaseConfiguration> result = await _sut.ParseAsync("file1.txt");
-
-        // assert
-        _ = await Verifier.Verify(result, _verifySettings);
-    }
-
 
     [Fact]
     public async Task S()
@@ -120,7 +104,7 @@ public class HeidiPortableConfigReaderTests
         //_mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D""}}#REPOM_END#");
 
         // act
-        var result = await _sut.ParseConfigurationAsync("file1.txt");
+        var result = await _sut.ParseSingleLinesAsync("file1.txt");
 
         // assert
         await Verifier.Verify(result, _verifySettings);

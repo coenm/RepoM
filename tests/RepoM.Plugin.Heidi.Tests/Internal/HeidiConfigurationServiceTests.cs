@@ -138,6 +138,12 @@ public class HeidiConfigurationServiceTests
         A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
          .Returns(Task.FromResult(_heidiConfigurationResult1));
 
+        RepoHeidi? aRef;
+        A.CallTo(() => _heidiRepositoryExtractor.TryExtract(A<HeidiSingleDatabaseConfiguration>._, out aRef))
+         .Returns(true)
+         .AssignsOutAndRefParametersLazily((HeidiSingleDatabaseConfiguration x, RepoHeidi? someRef) =>
+             new object[] { new RepoHeidi(), });
+
         await _sut.InitializeAsync();
         mre.WaitOne(TimeSpan.FromSeconds(2));
 

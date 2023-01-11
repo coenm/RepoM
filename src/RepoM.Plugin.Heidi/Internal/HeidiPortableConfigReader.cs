@@ -7,15 +7,13 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using RepoM.Plugin.Heidi.Internal.Config;
 
 internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 {
     private const string KEYWORD_SERVER = "Servers\\";
     private const string KEYWORD_SPLIT = "<|||>";
-
-
+    
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
     private readonly IHeidiPasswordDecoder _passwordDecoder;
@@ -29,7 +27,7 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 
     public async Task<List<HeidiSingleDatabaseConfiguration>> ParseAsync(string filename)
     {
-        var parseResult = await ParseConfiguration2Async(filename).ConfigureAwait(false);
+        List<HeidiSingleDatabaseRawConfiguration> parseResult = await ParseConfiguration2Async(filename).ConfigureAwait(false);
 
         var result = new List<HeidiSingleDatabaseConfiguration>();
 
@@ -53,9 +51,9 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
         return result;
     }
 
-    public async Task<List<HeidiSingleDatabaseRawConfiguration>> ParseConfiguration2Async(string filename)
+    internal async Task<List<HeidiSingleDatabaseRawConfiguration>> ParseConfiguration2Async(string filename)
     {
-        var config = await ParseConfigurationAsync(filename).ConfigureAwait(false);
+        List<HeidiSingleLineConfiguration> config = await ParseSingleLinesAsync(filename).ConfigureAwait(false);
 
         return (from @group in config.GroupBy(x => x.Key)
                 let lines = @group.ToList()
@@ -77,7 +75,7 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 
     private static string GetStringValue(IEnumerable<HeidiSingleLineConfiguration> input, string key, string defaultValue = "")
     {
-        var foundItems = input.Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+        HeidiSingleLineConfiguration[] foundItems = input.Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
         if (foundItems.Length == 0)
         {
@@ -94,7 +92,7 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 
     private static int GetIntValue(IEnumerable<HeidiSingleLineConfiguration> input, string key, int defaultValue = -1)
     {
-        var foundItems = input.Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+        HeidiSingleLineConfiguration[] foundItems = input.Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
         if (foundItems.Length == 0)
         {
@@ -116,7 +114,7 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
         return result;
     }
     
-    public async Task<List<HeidiSingleLineConfiguration>> ParseConfigurationAsync(string filename)
+    internal async Task<List<HeidiSingleLineConfiguration>> ParseSingleLinesAsync(string filename)
     {
         string[] lines = await _fileSystem.File.ReadAllLinesAsync(filename).ConfigureAwait(false);
         var result = new List<HeidiSingleLineConfiguration>();
@@ -184,71 +182,4 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 
         return true;
     }
-
-
-    // public async Task<Dictionary<string, RepomHeidiConfig>> ReadConfigsAsync(string filename)
-    // {
-    //     const string KEYWORD_SERVER = "Servers\\";
-    //     const string KEYWORD_COMMENT = "\\Comment<|||>";
-    //     const string KEYWORD_START = "#REPOM_START#";
-    //     const string KEYWORD_END = "#REPOM_END#";
-    //
-    //     var result = new Dictionary<string, RepomHeidiConfig>();
-    //     string[] lines = await _fileSystem.File.ReadAllLinesAsync(filename);
-    //
-    //     foreach (var line in lines)
-    //     {
-    //         if (string.IsNullOrWhiteSpace(line))
-    //         {
-    //             continue;
-    //         }
-    //
-    //         if (line.Length < 10)
-    //         {
-    //             continue;
-    //         }
-    //
-    //         if (!line.StartsWith(KEYWORD_SERVER))
-    //         {
-    //             continue;
-    //         }
-    //
-    //         var indexComment = line.IndexOf(KEYWORD_COMMENT, StringComparison.InvariantCulture);
-    //         if (indexComment < 1)
-    //         {
-    //             continue;
-    //         }
-    //
-    //         var indexStart = line.IndexOf(KEYWORD_START, StringComparison.InvariantCulture);
-    //         if (indexStart <= indexComment)
-    //         {
-    //             continue;
-    //         }
-    //
-    //         var indexEnd = line.IndexOf(KEYWORD_END, StringComparison.InvariantCulture);
-    //         if (indexEnd <= indexStart)
-    //         {
-    //             continue;
-    //         }
-    //
-    //         try
-    //         {
-    //             var key = line[KEYWORD_SERVER.Length..indexComment];
-    //             var json = line.Substring(indexStart + KEYWORD_START.Length, indexEnd - indexStart - KEYWORD_START.Length);
-    //
-    //             RepomHeidiConfig? config = JsonConvert.DeserializeObject<RepomHeidiConfig>(json);
-    //             if (config != null)
-    //             {
-    //                 config.HeidiKey = key;
-    //                 result.Add(key, config);
-    //             }
-    //         }
-    //         catch (Exception e)
-    //         {
-    //             _logger.LogWarning(e, "Could not deserialize heidi config {message}", e.Message);
-    //         }
-    //     }
-    //
-    //     return result;
-    // }
 }

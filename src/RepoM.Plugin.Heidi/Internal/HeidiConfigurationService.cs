@@ -22,7 +22,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     private readonly IHeidiSettings _settings;
     private IFileSystemWatcher? _fileWatcher;
     private IDisposable? _eventSubscription;
-    private Dictionary<string, List<HeidiConfiguration>> _repositoryHeidiConfigs2 = new();
+    private Dictionary<string, List<HeidiConfiguration>> _repositoryHeidiConfigs = new();
     private List<HeidiSingleDatabaseConfiguration> _rawDatabases = new();
     private string? _heidiConfigFile;
 
@@ -86,7 +86,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
             return Array.Empty<HeidiConfiguration>();
         }
 
-        if (_repositoryHeidiConfigs2.TryGetValue(key, out List<HeidiConfiguration>? configs))
+        if (_repositoryHeidiConfigs.TryGetValue(key, out List<HeidiConfiguration>? configs))
         {
             return configs.OrderBy(x => x.Order).ToArray();
         }
@@ -124,19 +124,19 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
                 }
             }
 
-            var newResult2 = new Dictionary<string, List<HeidiConfiguration>>();
+            var newResult = new Dictionary<string, List<HeidiConfiguration>>();
             foreach (RepoHeidi repository in repoHeids)
             {
                 var item = new HeidiConfiguration(
                     repository,
                     heidiDatabases.Single(x => x.Key.Equals(repository.HeidiKey)),
                     e.FullPath);
-                newResult2.TryAdd(repository.Repository, new List<HeidiConfiguration>());
-                newResult2[repository.Repository].Add(item);
+                newResult.TryAdd(repository.Repository, new List<HeidiConfiguration>());
+                newResult[repository.Repository].Add(item);
             }
 
             _rawDatabases = heidiDatabases;
-            _repositoryHeidiConfigs2 = newResult2;
+            _repositoryHeidiConfigs = newResult;
             ConfigurationUpdated?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception exception)
