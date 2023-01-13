@@ -154,6 +154,8 @@ public class HeidiConfigurationServiceTests
     public async Task GetAllDatabases_ShouldReturnDatabases_WhenInitializedCompleted()
     {
         // arrange
+        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
+         .Returns(Task.FromResult(_heidiConfigurationResult));
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
 
