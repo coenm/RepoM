@@ -1,0 +1,14 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionClipboardCopyV1,
+        Text: x {var.data} z,
+        Type: clipboard-copy@1,
+        Name: Copy to clipboard,
+        Active: true
+      }
+    ]
+  }
+}

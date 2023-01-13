@@ -1,0 +1,25 @@
+﻿[
+  {
+    $type: RepositoryAction,
+    Name: ES_name123,
+    Action: {
+      $type: CopyToClipboardAction,
+      Text: 
+    },
+    Repository: {
+      $type: Repository,
+      Name: ,
+      Path: dummy,
+      Location: ,
+      CurrentBranch: ,
+      CurrentBranchHasUpstream: false,
+      CurrentBranchIsDetached: false,
+      CurrentBranchIsOnTag: false,
+      WasFound: true,
+      HasUnpushedChanges: false,
+      SafePath: dummy
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]
