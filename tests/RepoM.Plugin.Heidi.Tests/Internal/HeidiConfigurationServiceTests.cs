@@ -2,6 +2,7 @@ namespace RepoM.Plugin.Heidi.Tests.Internal;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -11,7 +12,6 @@ using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
@@ -34,7 +34,7 @@ public class HeidiConfigurationServiceTests
     private readonly IHeidiRepositoryExtractor _heidiRepositoryExtractor;
     private readonly HeidiConfigurationService _sut;
     private readonly ChangeEventDummyFileSystemWatcher _changeEventDummyFileSystemWatcher;
-    private readonly List<HeidiSingleDatabaseConfiguration> _heidiConfigurationResult1;
+    private readonly List<HeidiSingleDatabaseConfiguration> _heidiConfigurationResult;
     private readonly VerifySettings _verifySettings;
     private readonly List<RepoHeidi> _heidis;
 
@@ -88,7 +88,7 @@ public class HeidiConfigurationServiceTests
                     },
             };
 
-        _heidiConfigurationResult1 = new List<HeidiSingleDatabaseConfiguration>
+        _heidiConfigurationResult = new List<HeidiSingleDatabaseConfiguration>
             {
                 new HeidiSingleDatabaseConfiguration("OSS/Github/RepoM-P")
                     {
@@ -150,7 +150,23 @@ public class HeidiConfigurationServiceTests
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
+    [Fact]
+    public async Task GetAllDatabases_ShouldReturnDatabases_WhenInitializedCompleted()
+    {
+        // arrange
+        var mre = new ManualResetEvent(false);
+        _sut.ConfigurationUpdated += (_, _) => mre.Set();
 
+        await _sut.InitializeAsync();
+        mre.WaitOne();
+
+        // act
+        ImmutableArray<HeidiSingleDatabaseConfiguration> result = _sut.GetAllDatabases();
+        
+        // assert
+        result.Should().BeEquivalentTo(_heidiConfigurationResult);
+    }
+    
     [Fact]
     public async Task GetByRepository_ShouldReturnDatabasesForSpecificRepository_WhenInitializationIsFinished()
     {
@@ -159,7 +175,7 @@ public class HeidiConfigurationServiceTests
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
         A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
-         .Returns(Task.FromResult(_heidiConfigurationResult1));
+         .Returns(Task.FromResult(_heidiConfigurationResult));
 
         RepoHeidi? aRef;
         A.CallTo(() => _heidiRepositoryExtractor.TryExtract(A<HeidiSingleDatabaseConfiguration>._, out aRef))
@@ -210,7 +226,7 @@ public class HeidiConfigurationServiceTests
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
         A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
-         .Returns(Task.FromResult(_heidiConfigurationResult1));
+         .Returns(Task.FromResult(_heidiConfigurationResult));
 
         await _sut.InitializeAsync();
         mre.WaitOne(TimeSpan.FromSeconds(2));
@@ -234,7 +250,7 @@ public class HeidiConfigurationServiceTests
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
         A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
-         .Returns(Task.FromResult(_heidiConfigurationResult1));
+         .Returns(Task.FromResult(_heidiConfigurationResult));
 
         await _sut.InitializeAsync();
         mre.WaitOne(TimeSpan.FromSeconds(2));
@@ -253,7 +269,7 @@ public class HeidiConfigurationServiceTests
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
         A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
         A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
-         .Returns(Task.FromResult(_heidiConfigurationResult1));
+         .Returns(Task.FromResult(_heidiConfigurationResult));
 
         // act
         await _sut.InitializeAsync();
@@ -320,7 +336,7 @@ public class HeidiConfigurationServiceTests
         A.CallTo(() => _configReader.ParseAsync(A<string>._))
          .ReturnsNextFromSequence(
              Task.FromResult(new List<HeidiSingleDatabaseConfiguration>()),
-             Task.FromResult(_heidiConfigurationResult1));
+             Task.FromResult(_heidiConfigurationResult));
 
         await _sut.InitializeAsync();
         mre.WaitOne(TimeSpan.FromSeconds(1));
