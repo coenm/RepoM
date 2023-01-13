@@ -1,0 +1,257 @@
+SessionManager_WindowWidth<|||>3<|||>2264
+SessionManager_WindowHeight<|||>3<|||>1029
+ColWidths_connform.ListSessions<|||>1<|||>216,202,158,50,122,50,318
+ColsVisible_connform.ListSessions<|||>1<|||>0,1,2,4,6
+ColPositions_connform.ListSessions<|||>1<|||>0,1,2,3,4,5,6
+ColSort_connform.ListSessions<|||>1<|||>0,0
+MainWinLeft<|||>3<|||>516
+MainWinWidth<|||>3<|||>993
+MainWinHeight<|||>3<|||>525
+ColWidths_MainForm.ListDatabases<|||>1<|||>150,80,50,50,50,50,50,50,50,50,120
+ColsVisible_MainForm.ListDatabases<|||>1<|||>0,1,2,3,4,5,6,7,8,9,10
+ColPositions_MainForm.ListDatabases<|||>1<|||>0,1,2,3,4,5,6,7,8,9,10
+ColSort_MainForm.ListDatabases<|||>1<|||>0,0
+ColWidths_MainForm.ListVariables<|||>1<|||>160,200,428
+ColsVisible_MainForm.ListVariables<|||>1<|||>0,1,2
+ColPositions_MainForm.ListVariables<|||>1<|||>0,1,2
+ColSort_MainForm.ListVariables<|||>1<|||>0,0
+ColWidths_MainForm.ListStatus<|||>1<|||>160,428,100,100
+ColsVisible_MainForm.ListStatus<|||>1<|||>0,1,2,3
+ColPositions_MainForm.ListStatus<|||>1<|||>0,1,2,3
+ColSort_MainForm.ListStatus<|||>1<|||>0,0
+ColWidths_MainForm.ListProcesses<|||>1<|||>70,80,80,80,80,50,50,300
+ColsVisible_MainForm.ListProcesses<|||>1<|||>0,1,2,3,4,5,6,7
+ColPositions_MainForm.ListProcesses<|||>1<|||>0,1,2,3,4,5,6,7
+ColSort_MainForm.ListProcesses<|||>1<|||>0,1
+ColWidths_MainForm.ListCommandStats<|||>1<|||>120,100,100,100,368
+ColsVisible_MainForm.ListCommandStats<|||>1<|||>0,1,2,3,4
+ColPositions_MainForm.ListCommandStats<|||>1<|||>0,1,2,3,4
+ColSort_MainForm.ListCommandStats<|||>1<|||>1,1
+ColWidths_MainForm.ListTables<|||>1<|||>120,70,70,120,120,70,100,50,70,70,70,70,70,90,120,70,70,70,50
+ColsVisible_MainForm.ListTables<|||>1<|||>0,1,2,3,4,5,6,18
+ColPositions_MainForm.ListTables<|||>1<|||>0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+ColSort_MainForm.ListTables<|||>1<|||>0,0
+LastSessions<|||>1<|||>
+LastActiveSession<|||>1<|||>GitHub\EA - GitHubDT-D
+SessionManager_WindowLeft<|||>3<|||>384
+SessionManager_WindowTop<|||>3<|||>252
+ColWidths_frmTableEditor.listColumns<|||>1<|||>42,203,154,90,60,65,50,117,130,140,100,100
+ColsVisible_frmTableEditor.listColumns<|||>1<|||>0,1,2,3,4,5,6,7,8,9,10,11
+ColPositions_frmTableEditor.listColumns<|||>1<|||>0,1,2,3,4,5,6,7,8,9,10,11
+ColSort_frmTableEditor.listColumns<|||>1<|||>-1,0
+ColWidths_frmTableEditor.treeIndexes<|||>1<|||>314,100,80,120
+ColsVisible_frmTableEditor.treeIndexes<|||>1<|||>0,1,2,3
+ColPositions_frmTableEditor.treeIndexes<|||>1<|||>0,1,2,3
+ColSort_frmTableEditor.treeIndexes<|||>1<|||>-1,0
+ColWidths_frmTableEditor.listForeignKeys<|||>1<|||>200,80,100,80,80,80
+ColsVisible_frmTableEditor.listForeignKeys<|||>1<|||>0,1,2,3,4,5
+ColPositions_frmTableEditor.listForeignKeys<|||>1<|||>0,1,2,3,4,5
+ColSort_frmTableEditor.listForeignKeys<|||>1<|||>-1,0
+ColWidths_frmTableEditor.listCheckConstraints<|||>1<|||>200,420
+ColsVisible_frmTableEditor.listCheckConstraints<|||>1<|||>0,1
+ColPositions_frmTableEditor.listCheckConstraints<|||>1<|||>0,1
+ColSort_frmTableEditor.listCheckConstraints<|||>1<|||>-1,0
+GridExportFilename<|||>1<|||>C:\OneDrive - GitHub\GitHub\Project\2022-11\2022-12-23 Batch runs\db.json
+GridExportFormat<|||>3<|||>13
+dbtreewidth<|||>3<|||>584
+MainWinMaximized<|||>3<|||>1
+MainWinOnMonitor<|||>3<|||>0
+SessionManager_ListWidth<|||>3<|||>1019
+MainWinTop<|||>3<|||>97
+ExportSQL_CreateTables<|||>3<|||>1
+ExportSQL_Output<|||>3<|||>3
+querymemoheight<|||>3<|||>125
+ColWidths_frmRoutineEditor.listParameters<|||>1<|||>50,394,90,70
+ColsVisible_frmRoutineEditor.listParameters<|||>1<|||>0,1,2,3
+ColPositions_frmRoutineEditor.listParameters<|||>1<|||>0,1,2,3
+ColSort_frmRoutineEditor.listParameters<|||>1<|||>-1,0
+SQLFile0<|||>1<|||>C:\Downloads\HeidiSQL_12.3_64_Portable\Backups\query-tab-2022-12-16_11-01-27-849.sql
+GridExportOutputCopy<|||>3<|||>0
+GridExportOutputFile<|||>3<|||>1
+AllowMultipleInstances<|||>3<|||>1
+SQL Attr Comment Foreground<|||>3<|||>8421504
+SQL Attr Comment Background<|||>3<|||>536870911
+SQL Attr Comment Style<|||>3<|||>2
+SQL Attr ConditionalComment Foreground<|||>3<|||>8421504
+SQL Attr ConditionalComment Background<|||>3<|||>536870911
+SQL Attr ConditionalComment Style<|||>3<|||>2
+SQL Attr ConsoleOutput Foreground<|||>3<|||>536870911
+SQL Attr ConsoleOutput Background<|||>3<|||>536870911
+SQL Attr ConsoleOutput Style<|||>3<|||>5
+SQL Attr DataType Foreground<|||>3<|||>128
+SQL Attr DataType Background<|||>3<|||>536870911
+SQL Attr DataType Style<|||>3<|||>1
+SQL Attr DefaultPackages Foreground<|||>3<|||>536870911
+SQL Attr DefaultPackages Background<|||>3<|||>536870911
+SQL Attr DefaultPackages Style<|||>3<|||>1
+SQL Attr DelimitedIdentifier Foreground<|||>3<|||>32896
+SQL Attr DelimitedIdentifier Background<|||>3<|||>536870911
+SQL Attr DelimitedIdentifier Style<|||>3<|||>0
+SQL Attr Exception Foreground<|||>3<|||>536870911
+SQL Attr Exception Background<|||>3<|||>536870911
+SQL Attr Exception Style<|||>3<|||>2
+SQL Attr Function Foreground<|||>3<|||>8388608
+SQL Attr Function Background<|||>3<|||>536870911
+SQL Attr Function Style<|||>3<|||>1
+SQL Attr Identifier Foreground<|||>3<|||>32896
+SQL Attr Identifier Background<|||>3<|||>536870911
+SQL Attr Identifier Style<|||>3<|||>0
+SQL Attr Key Foreground<|||>3<|||>16711680
+SQL Attr Key Background<|||>3<|||>536870911
+SQL Attr Key Style<|||>3<|||>1
+SQL Attr Number Foreground<|||>3<|||>8388736
+SQL Attr Number Background<|||>3<|||>536870911
+SQL Attr Number Style<|||>3<|||>0
+SQL Attr PLSQL-ReservedWord Foreground<|||>3<|||>536870911
+SQL Attr PLSQL-ReservedWord Background<|||>3<|||>536870911
+SQL Attr PLSQL-ReservedWord Style<|||>3<|||>1
+SQL Attr ProcName Foreground<|||>3<|||>536870911
+SQL Attr ProcName Background<|||>3<|||>536870911
+SQL Attr ProcName Style<|||>3<|||>0
+SQL Attr Space Foreground<|||>3<|||>536870911
+SQL Attr Space Background<|||>3<|||>536870911
+SQL Attr Space Style<|||>3<|||>0
+SQL Attr SQLPlus-Command Foreground<|||>3<|||>536870911
+SQL Attr SQLPlus-Command Background<|||>3<|||>536870911
+SQL Attr SQLPlus-Command Style<|||>3<|||>1
+SQL Attr String Foreground<|||>3<|||>32768
+SQL Attr String Background<|||>3<|||>536870911
+SQL Attr String Style<|||>3<|||>0
+SQL Attr Symbol Foreground<|||>3<|||>16711680
+SQL Attr Symbol Background<|||>3<|||>536870911
+SQL Attr Symbol Style<|||>3<|||>0
+SQL Attr TableName Foreground<|||>3<|||>16711935
+SQL Attr TableName Background<|||>3<|||>536870911
+SQL Attr TableName Style<|||>3<|||>0
+SQL Attr Variable Foreground<|||>3<|||>8388736
+SQL Attr Variable Background<|||>3<|||>536870911
+SQL Attr Variable Style<|||>3<|||>0
+FieldEditor_Set<|||>3<|||>1
+queryhelperswidth<|||>3<|||>250
+DataPreviewHeight<|||>3<|||>125
+sqloutheight<|||>3<|||>100
+Servers\GitHub\SessionCreated<|||>1<|||>2022-12-27 15:54:31
+Servers\GitHub\Folder<|||>3<|||>1
+Servers\GitHub\As - GitHubDT-D\SessionCreated<|||>1<|||>2022-12-27 20:23:26
+Servers\GitHub\As - GitHubDT-D\Host<|||>1<|||>GitHubdt-d-dbs.database.windows.net
+Servers\GitHub\As - GitHubDT-D\WindowsAuth<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-D\CleartextPluginEnabled<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-D\User<|||>1<|||>SA-AuditServer
+Servers\GitHub\As - GitHubDT-D\Password<|||>1<|||>52406F4C3D82
+Servers\GitHub\As - GitHubDT-D\LoginPrompt<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-D\Port<|||>1<|||>1433
+Servers\GitHub\As - GitHubDT-D\NetType<|||>3<|||>4
+Servers\GitHub\As - GitHubDT-D\Compressed<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-D\LocalTimeZone<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-D\QueryTimeout<|||>3<|||>30
+Servers\GitHub\As - GitHubDT-D\KeepAlive<|||>3<|||>20
+Servers\GitHub\As - GitHubDT-D\FullTableStatus<|||>3<|||>1
+Servers\GitHub\As - GitHubDT-D\Databases<|||>1<|||>GitHubdt-d-db-as
+Servers\GitHub\As - GitHubDT-D\Library<|||>1<|||>MSOLEDBSQL
+Servers\GitHub\As - GitHubDT-D\Comment<|||>1<|||>Audit Server
+Servers\GitHub\As - GitHubDT-D\StartupScriptFilename<|||>1<|||>
+Servers\GitHub\As - GitHubDT-D\TreeBackground<|||>3<|||>536870911
+Servers\GitHub\As - GitHubDT-D\SshExecutable<|||>1<|||>plink.exe
+Servers\GitHub\As - GitHubDT-D\SSHtunnelHost<|||>1<|||>
+Servers\GitHub\As - GitHubDT-D\SSHtunnelHostPort<|||>3<|||>22
+Servers\GitHub\As - GitHubDT-D\SSHtunnelUser<|||>1<|||>
+Servers\GitHub\As - GitHubDT-D\SSHtunnelPassword<|||>1<|||>2
+Servers\GitHub\As - GitHubDT-D\SSHtunnelTimeout<|||>3<|||>4
+Servers\GitHub\As - GitHubDT-D\SSHtunnelPrivateKey<|||>1<|||>
+Servers\GitHub\As - GitHubDT-D\SSHtunnelPort<|||>3<|||>3307
+Servers\GitHub\As - GitHubDT-D\SSL_Active<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-D\SSL_Key<|||>1<|||>
+Servers\GitHub\As - GitHubDT-D\SSL_Cert<|||>1<|||>
+Servers\GitHub\As - GitHubDT-D\SSL_CA<|||>1<|||>
+Servers\GitHub\As - GitHubDT-D\SSL_Cipher<|||>1<|||>
+Servers\GitHub\As - GitHubDT-D\IgnoreDatabasePattern<|||>1<|||>
+Servers\GitHub\As - GitHubDT-D\LogFileDdl<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-D\LogFileDml<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-D\LogFilePath<|||>1<|||>C:\Users\coenm\AppData\Roaming\HeidiSQL\Logs\%session\%db\%y%m%d.sql
+Servers\GitHub\As - GitHubDT-D\ServerVersionFull<|||>1<|||>Microsoft SQL Azure (RTM) - 12.0.2000.8
+Servers\GitHub\As - GitHubDT-D\ConnectCount<|||>3<|||>1
+Servers\GitHub\As - GitHubDT-D\ServerVersion<|||>3<|||>1200
+Servers\GitHub\As - GitHubDT-D\LastConnect<|||>1<|||>2022-12-27 20:23:28
+Servers\GitHub\As - GitHubDT-D\RefusedCount<|||>3<|||>1
+Servers\GitHub\As - GitHubDT-T\SessionCreated<|||>1<|||>2022-12-27 22:31:58
+Servers\GitHub\As - GitHubDT-T\Host<|||>1<|||>GitHubdt-t-dbs.database.windows.net
+Servers\GitHub\As - GitHubDT-T\WindowsAuth<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-T\CleartextPluginEnabled<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-T\User<|||>1<|||>SA-AuditServer
+Servers\GitHub\As - GitHubDT-T\Password<|||>1<|||>503C676F3D
+Servers\GitHub\As - GitHubDT-T\LoginPrompt<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-T\Port<|||>1<|||>1433
+Servers\GitHub\As - GitHubDT-T\NetType<|||>3<|||>4
+Servers\GitHub\As - GitHubDT-T\Compressed<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-T\LocalTimeZone<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-T\QueryTimeout<|||>3<|||>30
+Servers\GitHub\As - GitHubDT-T\KeepAlive<|||>3<|||>20
+Servers\GitHub\As - GitHubDT-T\FullTableStatus<|||>3<|||>1
+Servers\GitHub\As - GitHubDT-T\Databases<|||>1<|||>GitHubdt-t-db-as
+Servers\GitHub\As - GitHubDT-T\Library<|||>1<|||>MSOLEDBSQL
+Servers\GitHub\As - GitHubDT-T\Comment<|||>1<|||>Audit Server
+Servers\GitHub\As - GitHubDT-T\StartupScriptFilename<|||>1<|||>
+Servers\GitHub\As - GitHubDT-T\TreeBackground<|||>3<|||>536870911
+Servers\GitHub\As - GitHubDT-T\SshExecutable<|||>1<|||>plink.exe
+Servers\GitHub\As - GitHubDT-T\SSHtunnelHost<|||>1<|||>
+Servers\GitHub\As - GitHubDT-T\SSHtunnelHostPort<|||>3<|||>22
+Servers\GitHub\As - GitHubDT-T\SSHtunnelUser<|||>1<|||>
+Servers\GitHub\As - GitHubDT-T\SSHtunnelPassword<|||>1<|||>7
+Servers\GitHub\As - GitHubDT-T\SSHtunnelTimeout<|||>3<|||>4
+Servers\GitHub\As - GitHubDT-T\SSHtunnelPrivateKey<|||>1<|||>
+Servers\GitHub\As - GitHubDT-T\SSHtunnelPort<|||>3<|||>3307
+Servers\GitHub\As - GitHubDT-T\SSL_Active<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-T\SSL_Key<|||>1<|||>
+Servers\GitHub\As - GitHubDT-T\SSL_Cert<|||>1<|||>
+Servers\GitHub\As - GitHubDT-T\SSL_CA<|||>1<|||>
+Servers\GitHub\As - GitHubDT-T\SSL_Cipher<|||>1<|||>
+Servers\GitHub\As - GitHubDT-T\IgnoreDatabasePattern<|||>1<|||>
+Servers\GitHub\As - GitHubDT-T\LogFileDdl<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-T\LogFileDml<|||>3<|||>0
+Servers\GitHub\As - GitHubDT-T\LogFilePath<|||>1<|||>C:\Users\coenm\AppData\Roaming\HeidiSQL\Logs\%session\%db\%y%m%d.sql
+Servers\GitHub\As - GitHubDT-T\ServerVersionFull<|||>1<|||>Microsoft SQL Azure (RTM) - 12.0.2000.8
+Servers\GitHub\As - GitHubDT-T\ConnectCount<|||>3<|||>1
+Servers\GitHub\As - GitHubDT-T\ServerVersion<|||>3<|||>1200
+Servers\GitHub\As - GitHubDT-T\LastConnect<|||>1<|||>2022-12-27 22:33:04
+Servers\GitHub\As - GitHubDT-T\lastUsedDB<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\SessionCreated<|||>1<|||>2022-12-27 20:23:26
+Servers\GitHub\As - GitHubNL-A\Host<|||>1<|||>GitHubnl-a-dbs.database.windows.net
+Servers\GitHub\As - GitHubNL-A\WindowsAuth<|||>3<|||>0
+Servers\GitHub\As - GitHubNL-A\CleartextPluginEnabled<|||>3<|||>0
+Servers\GitHub\As - GitHubNL-A\User<|||>1<|||>SA-AuditServer
+Servers\GitHub\As - GitHubNL-A\Password<|||>1<|||>36364
+Servers\GitHub\As - GitHubNL-A\LoginPrompt<|||>3<|||>0
+Servers\GitHub\As - GitHubNL-A\Port<|||>1<|||>1433
+Servers\GitHub\As - GitHubNL-A\NetType<|||>3<|||>4
+Servers\GitHub\As - GitHubNL-A\Compressed<|||>3<|||>0
+Servers\GitHub\As - GitHubNL-A\LocalTimeZone<|||>3<|||>0
+Servers\GitHub\As - GitHubNL-A\QueryTimeout<|||>3<|||>30
+Servers\GitHub\As - GitHubNL-A\KeepAlive<|||>3<|||>20
+Servers\GitHub\As - GitHubNL-A\FullTableStatus<|||>3<|||>1
+Servers\GitHub\As - GitHubNL-A\Databases<|||>1<|||>GitHubnl-a-db-as
+Servers\GitHub\As - GitHubNL-A\Library<|||>1<|||>MSOLEDBSQL
+Servers\GitHub\As - GitHubNL-A\Comment<|||>1<|||>Audit Server
+Servers\GitHub\As - GitHubNL-A\StartupScriptFilename<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\TreeBackground<|||>3<|||>536870911
+Servers\GitHub\As - GitHubNL-A\SshExecutable<|||>1<|||>plink.exe
+Servers\GitHub\As - GitHubNL-A\SSHtunnelHost<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\SSHtunnelHostPort<|||>3<|||>22
+Servers\GitHub\As - GitHubNL-A\SSHtunnelUser<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\SSHtunnelPassword<|||>1<|||>7
+Servers\GitHub\As - GitHubNL-A\SSHtunnelTimeout<|||>3<|||>4
+Servers\GitHub\As - GitHubNL-A\SSHtunnelPrivateKey<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\SSHtunnelPort<|||>3<|||>3307
+Servers\GitHub\As - GitHubNL-A\SSL_Active<|||>3<|||>0
+Servers\GitHub\As - GitHubNL-A\SSL_Key<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\SSL_Cert<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\SSL_CA<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\SSL_Cipher<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\IgnoreDatabasePattern<|||>1<|||>
+Servers\GitHub\As - GitHubNL-A\LogFileDdl<|||>3<|||>0
+Servers\GitHub\As - GitHubNL-A\LogFileDml<|||>3<|||>0
+Servers\GitHub\As - GitHubNL-A\LogFilePath<|||>1<|||>C:\Users\coenm\AppData\Roaming\HeidiSQL\Logs\%session\%db\%y%m%d.sql
+Servers\GitHub\As - GitHubNL-A\ServerVersionFull<|||>1<|||>Microsoft SQL Azure (RTM) - 12.0.2000.8
+Servers\GitHub\As - GitHubNL-A\ConnectCount<|||>3<|||>1
+Servers\GitHub\As - GitHubNL-A\ServerVersion<|||>3<|||>1200
+Servers\GitHub\As - GitHubNL-A\LastConnect<|||>1<|||>2022-12-27 20:23:28
+Servers\GitHub\As - GitHubNL-A\RefusedCount<|||>3<|||>1

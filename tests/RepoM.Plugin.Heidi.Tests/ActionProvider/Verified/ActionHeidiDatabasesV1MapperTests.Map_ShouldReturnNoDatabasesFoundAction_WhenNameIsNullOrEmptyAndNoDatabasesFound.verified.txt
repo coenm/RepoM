@@ -1,0 +1,24 @@
+﻿[
+  {
+    $type: RepositoryAction,
+    Name: NO databases found!,
+    Action: {
+      $type: NullAction
+    },
+    Repository: {
+      $type: Repository,
+      Name: ,
+      Path: dummy,
+      Location: ,
+      CurrentBranch: ,
+      CurrentBranchHasUpstream: false,
+      CurrentBranchIsDetached: false,
+      CurrentBranchIsOnTag: false,
+      WasFound: true,
+      HasUnpushedChanges: false,
+      SafePath: dummy
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: false
+  }
+]

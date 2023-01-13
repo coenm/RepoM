@@ -1,0 +1,13 @@
+﻿[
+  {
+    Key: Coen\test,
+    Host: 127.0.0.1,
+    User: usr,
+    EncryptedPassword: 79806D9,
+    Port: 2,
+    NetType: 4,
+    Library: MSOLEDBSQL,
+    Comment: cmt,
+    Databases: a;b;v
+  }
+]

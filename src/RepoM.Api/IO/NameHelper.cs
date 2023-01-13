@@ -39,6 +39,5 @@ public static class NameHelper
 
         var rest = value.Replace("{" + translatable + "}", "").Trim();
         return translationService.Translate("(" + translatable + ")", rest); // XMl doesn't support {}
-
     }
 }

@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.LuceneSearch\RepoM.Plugin.LuceneSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.EverythingFileSearch\RepoM.Plugin.EverythingFileSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />

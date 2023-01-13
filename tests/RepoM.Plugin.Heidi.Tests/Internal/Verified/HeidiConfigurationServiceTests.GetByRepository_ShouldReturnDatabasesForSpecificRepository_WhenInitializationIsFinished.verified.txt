@@ -1,0 +1,30 @@
+﻿[
+  {
+    DbConfig: {
+      Key: OSS/Github/RepoM-D,
+      Host: ,
+      User: ,
+      Password: ,
+      WindowsAuth: false,
+      Library: ,
+      Comment: 
+    },
+    Order: 5,
+    Name: RepoM Dev!!,
+    HeidiFilename: C:\heidi\heidi.portable.txt
+  },
+  {
+    DbConfig: {
+      Key: OSS/Github/RepoM-P,
+      Host: ,
+      User: ,
+      Password: ,
+      WindowsAuth: false,
+      Library: ,
+      Comment: 
+    },
+    Order: 23,
+    Name: RepoM Prod,
+    HeidiFilename: C:\heidi\heidi.portable.txt
+  }
+]

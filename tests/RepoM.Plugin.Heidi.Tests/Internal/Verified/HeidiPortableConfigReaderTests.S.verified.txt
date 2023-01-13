@@ -1,0 +1,218 @@
+﻿[
+  {
+    Key: Coen\test,
+    Type: SessionCreated,
+    ContentType: 1,
+    Content: 2023-01-06 22:26:58
+  },
+  {
+    Key: Coen\test,
+    Type: Host,
+    ContentType: 1,
+    Content: 127.0.0.1
+  },
+  {
+    Key: Coen\test,
+    Type: WindowsAuth,
+    ContentType: 3,
+    Content: 0
+  },
+  {
+    Key: Coen\test,
+    Type: CleartextPluginEnabled,
+    ContentType: 3,
+    Content: 0
+  },
+  {
+    Key: Coen\test,
+    Type: User,
+    ContentType: 1,
+    Content: usr
+  },
+  {
+    Key: Coen\test,
+    Type: Password,
+    ContentType: 1,
+    Content: 79806D9
+  },
+  {
+    Key: Coen\test,
+    Type: LoginPrompt,
+    ContentType: 3,
+    Content: 0
+  },
+  {
+    Key: Coen\test,
+    Type: Port,
+    ContentType: 1,
+    Content: 2
+  },
+  {
+    Key: Coen\test,
+    Type: NetType,
+    ContentType: 3,
+    Content: 4
+  },
+  {
+    Key: Coen\test,
+    Type: Compressed,
+    ContentType: 3,
+    Content: 0
+  },
+  {
+    Key: Coen\test,
+    Type: LocalTimeZone,
+    ContentType: 3,
+    Content: 0
+  },
+  {
+    Key: Coen\test,
+    Type: QueryTimeout,
+    ContentType: 3,
+    Content: 30
+  },
+  {
+    Key: Coen\test,
+    Type: KeepAlive,
+    ContentType: 3,
+    Content: 20
+  },
+  {
+    Key: Coen\test,
+    Type: FullTableStatus,
+    ContentType: 3,
+    Content: 1
+  },
+  {
+    Key: Coen\test,
+    Type: Databases,
+    ContentType: 1,
+    Content: a;b;v
+  },
+  {
+    Key: Coen\test,
+    Type: Library,
+    ContentType: 1,
+    Content: MSOLEDBSQL
+  },
+  {
+    Key: Coen\test,
+    Type: Comment,
+    ContentType: 1,
+    Content: cmt
+  },
+  {
+    Key: Coen\test,
+    Type: StartupScriptFilename,
+    ContentType: 1,
+    Content: 
+  },
+  {
+    Key: Coen\test,
+    Type: TreeBackground,
+    ContentType: 3,
+    Content: -16777187
+  },
+  {
+    Key: Coen\test,
+    Type: SshExecutable,
+    ContentType: 1,
+    Content: plink.exe
+  },
+  {
+    Key: Coen\test,
+    Type: SSHtunnelHost,
+    ContentType: 1,
+    Content: 
+  },
+  {
+    Key: Coen\test,
+    Type: SSHtunnelHostPort,
+    ContentType: 3,
+    Content: 22
+  },
+  {
+    Key: Coen\test,
+    Type: SSHtunnelUser,
+    ContentType: 1,
+    Content: 
+  },
+  {
+    Key: Coen\test,
+    Type: SSHtunnelPassword,
+    ContentType: 1,
+    Content: 9
+  },
+  {
+    Key: Coen\test,
+    Type: SSHtunnelTimeout,
+    ContentType: 3,
+    Content: 4
+  },
+  {
+    Key: Coen\test,
+    Type: SSHtunnelPrivateKey,
+    ContentType: 1,
+    Content: 
+  },
+  {
+    Key: Coen\test,
+    Type: SSHtunnelPort,
+    ContentType: 3,
+    Content: 3307
+  },
+  {
+    Key: Coen\test,
+    Type: SSL_Active,
+    ContentType: 3,
+    Content: 0
+  },
+  {
+    Key: Coen\test,
+    Type: SSL_Key,
+    ContentType: 1,
+    Content: 
+  },
+  {
+    Key: Coen\test,
+    Type: SSL_Cert,
+    ContentType: 1,
+    Content: 
+  },
+  {
+    Key: Coen\test,
+    Type: SSL_CA,
+    ContentType: 1,
+    Content: 
+  },
+  {
+    Key: Coen\test,
+    Type: SSL_Cipher,
+    ContentType: 1,
+    Content: 
+  },
+  {
+    Key: Coen\test,
+    Type: IgnoreDatabasePattern,
+    ContentType: 1,
+    Content: 
+  },
+  {
+    Key: Coen\test,
+    Type: LogFileDdl,
+    ContentType: 3,
+    Content: 0
+  },
+  {
+    Key: Coen\test,
+    Type: LogFileDml,
+    ContentType: 3,
+    Content: 0
+  },
+  {
+    Key: Coen\test,
+    Type: LogFilePath,
+    ContentType: 1,
+    Content: C:\AppData\Roaming\HeidiSQL\Logs\%session\%db\%y%m%d.sql
+  }
+]

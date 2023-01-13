@@ -1,0 +1,11 @@
+﻿{
+  RepoM\MSS - DT-D: {
+    HeidiKey: RepoM\MSS - DT-D,
+    Repositories: [
+      RepoM
+    ],
+    Order: 12,
+    Name: cp,
+    Environment: D
+  }
+}

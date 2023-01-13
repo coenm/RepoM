@@ -1,0 +1,56 @@
+﻿[
+  {
+    $type: RepositoryAction,
+    Name: A-name,
+    Action: {
+      $type: StartProcessAction,
+      Executable: ES_heidi-test.exe,
+      Arguments: [
+        --description,
+        "B-description"
+      ]
+    },
+    Repository: {
+      $type: Repository,
+      Name: ,
+      Path: dummy,
+      Location: ,
+      CurrentBranch: ,
+      CurrentBranchHasUpstream: false,
+      CurrentBranchIsDetached: false,
+      CurrentBranchIsOnTag: false,
+      WasFound: true,
+      HasUnpushedChanges: false,
+      SafePath: dummy
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: RepositoryAction,
+    Name: D-name,
+    Action: {
+      $type: StartProcessAction,
+      Executable: ES_heidi-test.exe,
+      Arguments: [
+        --description,
+        "E-description"
+      ]
+    },
+    Repository: {
+      $type: Repository,
+      Name: ,
+      Path: dummy,
+      Location: ,
+      CurrentBranch: ,
+      CurrentBranchHasUpstream: false,
+      CurrentBranchIsDetached: false,
+      CurrentBranchIsOnTag: false,
+      WasFound: true,
+      HasUnpushedChanges: false,
+      SafePath: dummy
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]
