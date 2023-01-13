@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
@@ -76,6 +77,33 @@ public class ActionHeidiDatabasesV1MapperTests
         A.CallTo(() => _service.GetByRepository(_repository)).Returns(Array.Empty<RepositoryHeidiConfiguration>());
         A.CallTo(() => translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
         A.CallTo(() => translationService.Translate(A<string>._, A<object[]>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
+    }
+
+    [Fact]
+    public void Ctor_ShouldThrowArgumentNullException_WhenAnArgumentIsNull()
+    {
+        // arrange
+        IHeidiConfigurationService service = A.Dummy<IHeidiConfigurationService>();
+        IRepositoryExpressionEvaluator expressionEvaluator = A.Dummy<IRepositoryExpressionEvaluator>();
+        ITranslationService translationService = A.Dummy<ITranslationService>();
+        IHeidiSettings settings = A.Dummy<IHeidiSettings>();
+        ILogger logger = A.Dummy<ILogger>();
+
+        // act
+        var actions = new List<Action>
+            {
+                () => _ = new ActionHeidiDatabasesV1Mapper(service, expressionEvaluator, translationService, settings, null!),
+                () => _ = new ActionHeidiDatabasesV1Mapper(service, expressionEvaluator, translationService, null!, logger),
+                () => _ = new ActionHeidiDatabasesV1Mapper(service, expressionEvaluator, null!, settings, logger),
+                () => _ = new ActionHeidiDatabasesV1Mapper(service, null!, translationService, settings, logger),
+                () => _ = new ActionHeidiDatabasesV1Mapper(null!, expressionEvaluator, translationService, settings, logger),
+            };
+
+        // assert
+        foreach (Action action in actions)
+        {
+            action.Should().Throw<ArgumentNullException>();
+        }
     }
 
     [Fact]

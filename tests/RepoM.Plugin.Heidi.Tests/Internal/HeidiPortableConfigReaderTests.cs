@@ -2,12 +2,14 @@ namespace RepoM.Plugin.Heidi.Tests.Internal;
 
 using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Plugin.Heidi.Internal;
 using RepoM.Plugin.Heidi.Internal.Config;
@@ -41,20 +43,19 @@ public class HeidiPortableConfigReaderTests
     public void Ctor_ShouldThrow_WhenArgumentIsNull()
     {
         // arrange
+        var fileSystem = A.Dummy<IFileSystem>();
+        var logger = A.Dummy<ILogger>();
+        var heidiPasswordDecoder = A.Dummy<IHeidiPasswordDecoder>();
 
         // act
-        Action act1 = () => _ = new HeidiPortableConfigReader(null!, null!, null!);
-        Action act2 = () => _ = new HeidiPortableConfigReader(null!, NullLogger.Instance, A.Dummy<IHeidiPasswordDecoder>());
-        Action act3 = () => _ = new HeidiPortableConfigReader(_mockFileSystem, null!, null!);
-        Action act4 = () => _ = new HeidiPortableConfigReader(null!, NullLogger.Instance, A.Dummy<IHeidiPasswordDecoder>());
-        Action act5 = () => _ = new HeidiPortableConfigReader(_mockFileSystem, null!, null!);
+        Action act1 = () => _ = new HeidiPortableConfigReader(fileSystem, logger, null!);
+        Action act2 = () => _ = new HeidiPortableConfigReader(fileSystem, null!, heidiPasswordDecoder);
+        Action act3 = () => _ = new HeidiPortableConfigReader(null!, logger, heidiPasswordDecoder);
 
         // assert
         act1.Should().Throw<ArgumentNullException>();
         act2.Should().Throw<ArgumentNullException>();
         act3.Should().Throw<ArgumentNullException>();
-        act4.Should().Throw<ArgumentNullException>();
-        act5.Should().Throw<ArgumentNullException>();
     }
     
     [Fact(Skip = "Tmp")]
@@ -101,7 +102,6 @@ public class HeidiPortableConfigReaderTests
         _testFileSettings.UseFileName("heidi2");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _mockFileSystem.AddFile("file1.txt", content);
-        //_mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D""}}#REPOM_END#");
 
         // act
         var result = await _sut.ParseSingleLinesAsync("file1.txt");
@@ -117,8 +117,7 @@ public class HeidiPortableConfigReaderTests
         _testFileSettings.UseFileName("heidi2");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _mockFileSystem.AddFile("file1.txt", content);
-        //_mockFileSystem.AddFile("file1.txt", @$"Servers\RepoM\MSS - DT-D\Comment<|||>1<|||>RepoM<{{{{{{><}}}}}}> <{{{{{{><}}}}}}>#REPOM_START#{{""Repositories"":[""RepoM""],""Order"":12,""Name"":""cp"",""Environment"":""D""}}#REPOM_END#");
-
+        
         // act
         var result = await _sut.ParseConfiguration2Async("file1.txt");
 

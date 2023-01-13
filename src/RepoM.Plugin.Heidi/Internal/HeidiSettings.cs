@@ -14,7 +14,6 @@ internal class HeidiSettings : IHeidiSettings
 
     private static string DetermineValueUsingEnvironment(string envVarName, string defaultValue)
     {
-        
         try
         {
             var result = Environment.GetEnvironmentVariable(ENV_VAR_PREFIX + envVarName) ?? Environment.GetEnvironmentVariable(ENV_VAR_PREFIX + envVarName, EnvironmentVariableTarget.User);

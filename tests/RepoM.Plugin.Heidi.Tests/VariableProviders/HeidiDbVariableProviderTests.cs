@@ -33,12 +33,7 @@ public class HeidiDbVariableProviderTests
         _sut = new HeidiDbVariableProvider(_configService);
 
         A.CallTo(() => _configService.GetAllDatabases())
-         .Returns(new[]
-             {
-                 new HeidiSingleDatabaseConfiguration("RepoM/Abc")
-                     {
-                     },
-             }.ToImmutableArray());
+         .Returns(new[] { new HeidiSingleDatabaseConfiguration("RepoM/Abc"), }.ToImmutableArray());
 
         A.CallTo(() => _configService.GetByRepository(_repository))
          .Returns(new RepositoryHeidiConfiguration[]
@@ -229,14 +224,51 @@ public class HeidiDbVariableProviderTests
         // assert
         result.Should().BeOfType<bool>().Which.Should().Be(expectedResult);
     }
+    
+    [Theory]
+    [InlineData("heidi-db.all.count")]
+    [InlineData("heidi-db.ALL.Count")]
+    [InlineData("heidi-db.all.Count")]
+    public void Provide_ShouldReturnZero_WhenKeyIsAllCountAndDatabasesIsEmpty(string key)
+    {
+        // arrange
+        A.CallTo(() => _configService.GetAllDatabases()).Returns(Array.Empty<HeidiSingleDatabaseConfiguration>().ToImmutableArray());
 
-    [Fact]
-    public void Provide_ShouldReturnNull_WhenKeyIsUnknown()
+        // act
+        var result = _sut.Provide(_repositoryContext, key, null);
+
+        // assert
+        result.Should().BeOfType<int>().Which.Should().Be(0);
+    }
+    
+    [Theory]
+    [InlineData("heidi-db.all.dbs")]
+    [InlineData("heidi-db.ALL.DbS")]
+    [InlineData("heidi-db.all.Dbs")]
+    public void Provide_ShouldReturnDatabases_WhenKeyIsAllDatabases(string key)
+    {
+        // arrange
+        var dbs = new HeidiSingleDatabaseConfiguration[] { new("test"), };
+        A.CallTo(() => _configService.GetAllDatabases()).Returns(dbs.ToImmutableArray());
+
+        // act
+        var result = _sut.Provide(_repositoryContext, key, null);
+
+        // assert
+        result.Should().BeOfType<HeidiSingleDatabaseConfiguration[]>().Which.Should().BeEquivalentTo(dbs);
+    }
+
+    [Theory]
+    [InlineData("heidi-db.dummy")]
+    [InlineData("heidi-db")]
+    [InlineData("heidi-db.all.dummy")]
+    [InlineData("heidi-db.repo.dummy")]
+    public void Provide_ShouldReturnNull_WhenKeyIsUnknown(string key)
     {
         // arrange
 
         // act
-        var result = _sut.Provide(_repositoryContext, "heidi-db.dummy", null);
+        var result = _sut.Provide(_repositoryContext, key, null);
 
         // assert
         result.Should().BeNull();
