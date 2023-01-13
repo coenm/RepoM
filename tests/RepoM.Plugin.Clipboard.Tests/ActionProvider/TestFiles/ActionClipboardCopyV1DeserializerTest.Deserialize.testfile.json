@@ -1,0 +1,12 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "clipboard-copy@1",
+        "name": "Copy to clipboard",
+        "text": "x {var.data} z",
+        "active": true
+      }
+    ]
+  }
+}
