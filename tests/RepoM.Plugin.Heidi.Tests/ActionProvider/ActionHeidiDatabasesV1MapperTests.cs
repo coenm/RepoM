@@ -72,8 +72,8 @@ public class ActionHeidiDatabasesV1MapperTests
 
                  throw new Exception("Thrown by test, Not expected");
              });
-        A.CallTo(() => _service.GetByKey(A<string>._)).Returns(Array.Empty<HeidiConfiguration>());
-        A.CallTo(() => _service.GetByRepository(_repository)).Returns(Array.Empty<HeidiConfiguration>());
+        A.CallTo(() => _service.GetByKey(A<string>._)).Returns(Array.Empty<RepositoryHeidiConfiguration>());
+        A.CallTo(() => _service.GetByRepository(_repository)).Returns(Array.Empty<RepositoryHeidiConfiguration>());
         A.CallTo(() => translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
         A.CallTo(() => translationService.Translate(A<string>._, A<object[]>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
     }
@@ -263,7 +263,7 @@ public class ActionHeidiDatabasesV1MapperTests
         // arrange
         _action.Name = string.Empty;
         A.CallTo(() => _service.GetByRepository(_repository))
-         .Returns(new HeidiConfiguration[]
+         .Returns(new RepositoryHeidiConfiguration[]
              {
                  new ("A-name", 6, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1, "B-description")),
                  new ("D-name", 2, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2, "E-description")),
@@ -295,7 +295,7 @@ public class ActionHeidiDatabasesV1MapperTests
         // arrange
         _action.Name = "Databases";
         A.CallTo(() => _service.GetByRepository(_repository))
-         .Returns(new HeidiConfiguration[]
+         .Returns(new RepositoryHeidiConfiguration[]
              {
                  new ("A-name", 6, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1, "B-description")),
                  new ("D-name", 2, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2, "E-description")),

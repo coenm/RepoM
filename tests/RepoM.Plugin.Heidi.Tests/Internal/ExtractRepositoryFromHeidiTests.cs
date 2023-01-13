@@ -31,9 +31,8 @@ public class ExtractRepositoryFromHeidiTests
     public void TryExtract_ShouldDistinctTags_WhenDoubles(string comment)
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
             {
-                Key = "dummy",
                 Comment = comment,
             };
 
@@ -51,9 +50,8 @@ public class ExtractRepositoryFromHeidiTests
     public void TryExtract_ShouldListMultipleTags(string comment)
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
             {
-                Key = "dummy",
                 Comment = comment,
             };
 
@@ -79,9 +77,8 @@ public class ExtractRepositoryFromHeidiTests
     public void TryExtract_ShouldHaveNoTags_WhenInputHasNoTags(string comment)
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
             {
-                Key = "dummy",
                 Comment = comment,
             };
 
@@ -103,9 +100,8 @@ public class ExtractRepositoryFromHeidiTests
     public void TryExtract_ShouldUseOrder_WhenInputHasOrder(string comment, int expectedOrder)
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
             {
-                Key = "dummy",
                 Comment = comment,
             };
 
@@ -130,9 +126,8 @@ public class ExtractRepositoryFromHeidiTests
     public void TryExtract_ShouldUseMaxInt_WhenInputHasInvalidOrder(string comment)
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
             {
-                Key = "dummy",
                 Comment = comment,
             };
 
@@ -155,9 +150,8 @@ public class ExtractRepositoryFromHeidiTests
     public void TryExtract_ShouldUseName_WhenInputHasName(string comment, string expectedName)
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
         {
-            Key = "dummy",
             Comment = comment,
         };
 
@@ -177,9 +171,8 @@ public class ExtractRepositoryFromHeidiTests
     public void TryExtract_ShouldUseEmptyName_WhenInputHasInvalidName(string comment)
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
         {
-            Key = "dummy",
             Comment = comment,
         };
 
@@ -202,9 +195,8 @@ public class ExtractRepositoryFromHeidiTests
     public void TryExtract_ShouldUseRepo_WhenInputHasRepo(string comment, string expectedName)
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
             {
-                Key = "dummy",
                 Comment = comment,
             };
 
@@ -222,9 +214,8 @@ public class ExtractRepositoryFromHeidiTests
     public void TryExtract_ShouldReturnFalse_WhenRepoIsNotValid(string comment)
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
             {
-                Key = "dummy",
                 Comment = comment,
             };
 
@@ -239,9 +230,8 @@ public class ExtractRepositoryFromHeidiTests
     public async Task TryExtract_ShouldExtractData_WhenAvailableInComment()
     {
         // arrange
-        var dbSettings = new HeidiSingleDatabaseConfiguration
+        var dbSettings = new HeidiSingleDatabaseConfiguration("hk")
             {
-                Key = "hk",
                 Comment = "abc #repo:\"repom 234\" #order:42 #name:name123 rubbischsdfkl$934 #T xsf",
             };
 

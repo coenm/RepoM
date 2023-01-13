@@ -2,6 +2,7 @@ namespace RepoM.Plugin.Heidi.Internal;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -22,8 +23,8 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     private readonly IHeidiSettings _settings;
     private IFileSystemWatcher? _fileWatcher;
     private IDisposable? _eventSubscription;
-    private Dictionary<string, List<HeidiConfiguration>> _repositoryHeidiConfigs = new();
-    private List<HeidiSingleDatabaseConfiguration> _rawDatabases = new();
+    private Dictionary<string, List<RepositoryHeidiConfiguration>> _repositoryHeidiConfigs = new();
+    private ImmutableArray<HeidiSingleDatabaseConfiguration> _rawDatabases = new();
     private string? _heidiConfigFile;
 
     public event EventHandler? ConfigurationUpdated;
@@ -67,31 +68,36 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
         return Task.CompletedTask;
     }
 
-    public IEnumerable<HeidiConfiguration> GetByRepository(IRepository repository)
+    public ImmutableArray<HeidiSingleDatabaseConfiguration> GetAllDatabases()
+    {
+        return _rawDatabases;
+    }
+
+    public IEnumerable<RepositoryHeidiConfiguration> GetByRepository(IRepository repository)
     {
         Remote? origin = repository.Remotes.FirstOrDefault(x => "Origin".Equals(x.Key, StringComparison.CurrentCultureIgnoreCase));
 
         if (origin == null)
         {
-            return Array.Empty<HeidiConfiguration>();
+            return Array.Empty<RepositoryHeidiConfiguration>();
         }
 
         return GetByKey(origin.Name);
     }
 
-    public IEnumerable<HeidiConfiguration> GetByKey(string key)
+    public IEnumerable<RepositoryHeidiConfiguration> GetByKey(string key)
     {
         if (string.IsNullOrWhiteSpace(key))
         {
-            return Array.Empty<HeidiConfiguration>();
+            return Array.Empty<RepositoryHeidiConfiguration>();
         }
 
-        if (_repositoryHeidiConfigs.TryGetValue(key, out List<HeidiConfiguration>? configs))
+        if (_repositoryHeidiConfigs.TryGetValue(key, out List<RepositoryHeidiConfiguration>? configs))
         {
             return configs.OrderBy(x => x.Order).ToArray();
         }
 
-        return Array.Empty<HeidiConfiguration>();
+        return Array.Empty<RepositoryHeidiConfiguration>();
     }
 
     public void Dispose()
@@ -124,18 +130,18 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
                 }
             }
 
-            var newResult = new Dictionary<string, List<HeidiConfiguration>>();
+            var newResult = new Dictionary<string, List<RepositoryHeidiConfiguration>>();
             foreach (RepoHeidi repository in repoHeids)
             {
-                var item = new HeidiConfiguration(
+                var item = new RepositoryHeidiConfiguration(
                     repository,
                     heidiDatabases.Single(x => x.Key.Equals(repository.HeidiKey)),
                     e.FullPath);
-                newResult.TryAdd(repository.Repository, new List<HeidiConfiguration>());
+                newResult.TryAdd(repository.Repository, new List<RepositoryHeidiConfiguration>());
                 newResult[repository.Repository].Add(item);
             }
 
-            _rawDatabases = heidiDatabases;
+            _rawDatabases = heidiDatabases.ToImmutableArray();
             _repositoryHeidiConfigs = newResult;
             ConfigurationUpdated?.Invoke(this, EventArgs.Empty);
         }

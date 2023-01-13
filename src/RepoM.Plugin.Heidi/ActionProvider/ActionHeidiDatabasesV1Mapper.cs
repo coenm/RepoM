@@ -77,7 +77,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        HeidiConfiguration[] databases = (string.IsNullOrWhiteSpace(action.Key)
+        RepositoryHeidiConfiguration[] databases = (string.IsNullOrWhiteSpace(action.Key)
                 ? _service.GetByRepository(repository)
                 : _service.GetByKey(action.Key))
             .ToArray();
@@ -135,11 +135,11 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         }
     }
 
-    private static IEnumerable<RepositoryActionBase> GetDbActions(IRepository repository, IEnumerable<HeidiConfiguration> databases, string executable)
+    private static IEnumerable<RepositoryActionBase> GetDbActions(IRepository repository, IEnumerable<RepositoryHeidiConfiguration> databases, string executable)
     {
         return databases.Select(database => new Api.Git.RepositoryAction(database.Name, repository)
             {
-               Action = new StartProcessAction(executable, new[] { "--description" , $"\"{database.HeidiDb.Key}\"", }),
+               Action = new StartProcessAction(executable, new[] { "--description" , $"\"{database.DbConfig.Key}\"", }),
                ExecutionCausesSynchronizing = false,
             });
     }

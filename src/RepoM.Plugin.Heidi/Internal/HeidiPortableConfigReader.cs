@@ -33,12 +33,11 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 
         foreach (HeidiSingleDatabaseRawConfiguration item in parseResult)
         {
-            result.Add(new HeidiSingleDatabaseConfiguration
+            result.Add(new HeidiSingleDatabaseConfiguration(item.Key)
                 {
                     Comment = item.Comment,
                     Databases = item.Databases.Split(';').Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToArray(),
                     Host = item.Host,
-                    Key = item.Key,
                     Password = _passwordDecoder.DecodePassword(item.EncryptedPassword), // can throw
                     WindowsAuth = item.WindowsAuth == 1,
                     User = item.User,

@@ -1,13 +1,14 @@
 namespace RepoM.Plugin.Heidi.Tests.VariableProviders;
 
 using System;
-using System.Linq;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
+using RepoM.Plugin.Heidi.Internal.Config;
 using RepoM.Plugin.Heidi.VariableProviders;
 using VerifyTests;
 using VerifyXunit;
@@ -30,6 +31,22 @@ public class HeidiDbVariableProviderTests
         _repositoryContext = new RepositoryContext(_repository);
         _configService = A.Fake<IHeidiConfigurationService>();
         _sut = new HeidiDbVariableProvider(_configService);
+
+        A.CallTo(() => _configService.GetAllDatabases())
+         .Returns(new[]
+             {
+                 new HeidiSingleDatabaseConfiguration("RepoM/Abc")
+                     {
+                     },
+             }.ToImmutableArray());
+
+        A.CallTo(() => _configService.GetByRepository(_repository))
+         .Returns(new RepositoryHeidiConfiguration[]
+             {
+                 new ("cc", 5, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
+                 new ("bb", 1, new [] { "Test", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)), // should be first in result, (order = 1)
+                 new ("aa", 5, new [] { "Dev", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)), // should be second in result, (order = 5, name aa < name cc)
+             });
     }
 
     [Fact]
@@ -43,8 +60,11 @@ public class HeidiDbVariableProviderTests
     [InlineData("")]
     [InlineData(" ")]
     [InlineData("heididb")]
+    [InlineData("heididb.")]
     [InlineData("heidi db")]
+    [InlineData("heidi db.")]
     [InlineData(" heidi-db")]
+    [InlineData(" heidi-db.")]
     public void CanProvide_ShouldReturnFalse_WhenKeyIsInvalid(string? key)
     {
         // arrange
@@ -57,10 +77,10 @@ public class HeidiDbVariableProviderTests
     }
 
     [Theory]
-    [InlineData("heidi-db")]
+    [InlineData("heidi-db.")]
     [InlineData("heidi-db.any")]
-    [InlineData("heidi-DB")]
-    [InlineData("HeiDI-Db")]
+    [InlineData("heidi-DB.")]
+    [InlineData("HeiDI-Db.")]
     [InlineData("HeiDI-Db.DBS")]
     public void CanProvide_ShouldReturnTrue_WhenKeyIsValid(string? key)
     {
@@ -91,7 +111,7 @@ public class HeidiDbVariableProviderTests
         // arrange
 
         // act
-        var result = _sut.Provide(new RepositoryContext(new IRepository[] { null!, }), "heidi-db.any", null);
+        var result = _sut.Provide(new RepositoryContext(new IRepository[] { null!, }), "heidi-db.repo.any", null);
 
         // assert
         result.Should().BeNull();
@@ -103,25 +123,19 @@ public class HeidiDbVariableProviderTests
         // arrange
 
         // act
-        var result = _sut.Provide(new RepositoryContext(Array.Empty<IRepository>()), "heidi-db.any", null);
+        var result = _sut.Provide(new RepositoryContext(Array.Empty<IRepository>()), "heidi-db.repo.any", null);
 
         // assert
         result.Should().BeNull();
     }
 
     [Theory]
-    [InlineData("heidi-db")]
-    [InlineData("heidi-db.dbs")]
+    [InlineData("heidi-db.repo.DBS")]
+    [InlineData("heidi-db.RePo.dBs")]
+    [InlineData("heidi-db.repo.dbs")]
     public async Task Provide_ShouldReturnDatabases_WhenKeyHasValue(string key)
     {
         // arrange
-        A.CallTo(() => _configService.GetByRepository(_repository))
-         .Returns(new HeidiConfiguration[]
-            {
-                new ("cc", 5, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
-                new ("bb", 1, new [] { "Test", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)), // should be first in result, (order = 1)
-                new ("aa", 5, new [] { "Dev", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)), // should be second in result, (order = 5, name aa < name cc)
-            });
 
         // act
         var result = _sut.Provide(_repositoryContext, key, null);
@@ -130,55 +144,90 @@ public class HeidiDbVariableProviderTests
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(nameof(key));
     }
 
-    [Fact]
-    public void Provide_ShouldReturnCount_WhenKeyIsCount()
+    [Theory]
+    [InlineData("heidi-db.repo.count")]
+    [InlineData("heidi-db.RePo.Count")]
+    [InlineData("heidi-db.repo.Count")]
+    public void Provide_ShouldReturnCount_WhenKeyIsCount(string key)
     {
         // arrange
-        A.CallTo(() => _configService.GetByRepository(_repository))
-         .Returns(new HeidiConfiguration[]
-             {
-                 new ("cc", 5, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
-                 new ("bb", 1, new [] { "Test", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)), // should be first in result, (order = 1)
-                 new ("aa", 5, new [] { "Dev", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)), // should be second in result, (order = 5, name aa < name cc)
-             });
 
         // act
-        var result = _sut.Provide(_repositoryContext, "heidi-db.count", null);
+        var result = _sut.Provide(_repositoryContext, key, null);
 
         // assert
         result.Should().BeOfType<int>().Which.Should().Be(3);
     }
 
-    [Fact]
-    public void Provide_ShouldReturnTrue_WhenKeyIsAnyAndDatabasesFound()
+    [Theory]
+    [InlineData("heidi-db.repo.any")]
+    [InlineData("heidi-db.RePo.Any")]
+    [InlineData("heidi-db.repo.Any")]
+    public void Provide_ShouldReturnTrue_WhenKeyIsAnyAndDatabasesFound(string key)
     {
         // arrange
-        A.CallTo(() => _configService.GetByRepository(_repository))
-         .Returns(new HeidiConfiguration[]
-             {
-                 new ("cc", 5, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
-                 new ("bb", 1, new [] { "Test", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)), // should be first in result, (order = 1)
-                 new ("aa", 5, new [] { "Dev", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)), // should be second in result, (order = 5, name aa < name cc)
-             });
 
         // act
-        var result = _sut.Provide(_repositoryContext, "heidi-db.any", null);
+        var result = _sut.Provide(_repositoryContext, key, null);
 
         // assert
         result.Should().BeOfType<bool>().Which.Should().BeTrue();
     }
 
-    [Fact]
-    public void Provide_ShouldReturnFalse_WhenKeyIsAnyAndDatabasesNotFound()
+    [Theory]
+    [InlineData("heidi-db.repo.any", false)]
+    [InlineData("heidi-db.RePo.Any", false)]
+    [InlineData("heidi-db.repo.Any", false)]
+    [InlineData("heidi-db.repo.empty", true)]
+    [InlineData("heidi-db.RePo.Empty", true)]
+    [InlineData("heidi-db.repo.Empty", true)]
+    public void Provide_ShouldReturnFalse_WhenKeyIsAnyEmptyAndDatabasesNotFound(string key, bool expectedResult)
     {
         // arrange
-        A.CallTo(() => _configService.GetByRepository(_repository)).Returns(Array.Empty<HeidiConfiguration>());
+        A.CallTo(() => _configService.GetByRepository(_repository)).Returns(Array.Empty<RepositoryHeidiConfiguration>());
 
         // act
-        var result = _sut.Provide(_repositoryContext, "heidi-db.any", null);
+        var result = _sut.Provide(_repositoryContext, key, null);
 
         // assert
-        result.Should().BeOfType<bool>().Which.Should().BeFalse();
+        result.Should().BeOfType<bool>().Which.Should().Be(expectedResult);
+    }
+    
+    [Theory]
+    [InlineData("heidi-db.all.any", true)]
+    [InlineData("heidi-db.ALL.Any", true)]
+    [InlineData("heidi-db.all.Any", true)]
+    [InlineData("heidi-db.all.empty", false)]
+    [InlineData("heidi-db.ALL.Empty", false)]
+    [InlineData("heidi-db.all.Empty", false)]
+    public void Provide_ShouldReturnTrue_WhenKeyIsAllAnyEmptyAndDatabasesFound(string key, bool expectedResult)
+    {
+        // arrange
+
+        // act
+        var result = _sut.Provide(_repositoryContext, key, null);
+
+        // assert
+        result.Should().BeOfType<bool>().Which.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData("heidi-db.all.any", false)]
+    [InlineData("heidi-db.ALL.Any", false)]
+    [InlineData("heidi-db.all.Any", false)]
+    [InlineData("heidi-db.all.empty", true)]
+    [InlineData("heidi-db.ALL.Empty", true)]
+    [InlineData("heidi-db.all.Empty", true)]
+    public void Provide_ShouldReturnFalse_WhenKeyIsAllAnyAndDatabasesNotFound(string key, bool expectedResult)
+    {
+        // arrange
+        A.CallTo(() => _configService.GetAllDatabases()).Returns(Array.Empty<HeidiSingleDatabaseConfiguration>().ToImmutableArray());
+
+        // act
+        var result = _sut.Provide(_repositoryContext, key, null);
+
+        // assert
+        result.Should().BeOfType<bool>().Which.Should().Be(expectedResult);
     }
 
     [Fact]

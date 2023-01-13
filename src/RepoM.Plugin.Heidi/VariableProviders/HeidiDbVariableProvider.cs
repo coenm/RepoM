@@ -17,46 +17,84 @@ internal class HeidiDbVariableProvider : IVariableProvider<RepositoryContext>
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
+    // heidi-db.repo.dbs => []
+    // heidi-db.repo.any => bool
+    // heidi-db.repo.empty => bool
+    // heidi-db.repo.length => int
+    // heidi-db.all.dbs => []
+    // heidi-db.all.any => bool
+    // heidi-db.all.empty => bool
+    // heidi-db.all.length => int
+
     public bool CanProvide(string key)
     {
-        return !string.IsNullOrWhiteSpace(key) && key.StartsWith("heidi-db", StringComparison.CurrentCultureIgnoreCase);
+        return !string.IsNullOrWhiteSpace(key) && key.StartsWith("heidi-db.", StringComparison.CurrentCultureIgnoreCase);
     }
 
     public object? Provide(RepositoryContext context, string key, string? arg)
     {
-        IRepository? repo = context.Repositories.FirstOrDefault();
-        if (repo == null)
-        {
-            return null;
-        }
-
-        if (key.Equals("heidi-db", StringComparison.CurrentCultureIgnoreCase))
-        {
-            return _service.GetByRepository(repo)
-                           .OrderBy(x => x.Order)
-                           .ThenBy(x => x.Name)
-                           .ToArray();
-        }
-        
         var startIndex = "heidi-db".Length;
         var keySuffix = key[startIndex..];
 
-        if (".dbs".Equals(keySuffix, StringComparison.CurrentCultureIgnoreCase))
+        if (keySuffix.StartsWith(".all", StringComparison.CurrentCultureIgnoreCase))
         {
-            return _service.GetByRepository(repo)
-                           .OrderBy(x => x.Order)
-                           .ThenBy(x => x.Name)
-                           .ToArray();
+            var keySuffixInner = keySuffix[".all".Length..];
+            var dbs = _service.GetAllDatabases();
+
+            if (".count".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return dbs.Count();
+            }
+
+            if (".any".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return dbs.Any();
+            }
+
+            if (".empty".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return dbs.IsEmpty;
+            }
+
+            if (".dbs".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return dbs.ToArray();
+            }
         }
 
-        if (".count".Equals(keySuffix, StringComparison.CurrentCultureIgnoreCase))
+        else if (keySuffix.StartsWith(".repo", StringComparison.CurrentCultureIgnoreCase))
         {
-            return _service.GetByRepository(repo).Count();
-        }
+            var keySuffixInner = keySuffix[".repo".Length..];
 
-        if (".any".Equals(keySuffix, StringComparison.CurrentCultureIgnoreCase))
-        {
-            return _service.GetByRepository(repo).Any();
+            IRepository? repo = context.Repositories.FirstOrDefault();
+            if (repo == null)
+            {
+                return null;
+            }
+
+            var dbs = _service.GetByRepository(repo);
+
+            if (".count".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return dbs.Count();
+            }
+
+            if (".any".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return dbs.Any();
+            }
+
+            if (".empty".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return !dbs.Any();
+            }
+
+            if (".dbs".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return dbs.OrderBy(x => x.Order)
+                          .ThenBy(x => x.Name)
+                          .ToArray();
+            }
         }
 
         // heidi-db[D].count

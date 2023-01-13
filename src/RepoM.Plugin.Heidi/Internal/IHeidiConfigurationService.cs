@@ -2,9 +2,11 @@ namespace RepoM.Plugin.Heidi.Internal;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.Interface;
+using RepoM.Plugin.Heidi.Internal.Config;
 
 internal interface IHeidiConfigurationService
 {
@@ -12,7 +14,9 @@ internal interface IHeidiConfigurationService
 
     Task InitializeAsync();
 
-    IEnumerable<HeidiConfiguration> GetByRepository(IRepository repository);
+    ImmutableArray<HeidiSingleDatabaseConfiguration> GetAllDatabases();
 
-    IEnumerable<HeidiConfiguration> GetByKey(string key);
+    IEnumerable<RepositoryHeidiConfiguration> GetByRepository(IRepository repository);
+
+    IEnumerable<RepositoryHeidiConfiguration> GetByKey(string key);
 }

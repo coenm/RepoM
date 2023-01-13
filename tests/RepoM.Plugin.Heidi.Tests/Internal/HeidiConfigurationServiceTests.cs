@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
@@ -34,6 +36,7 @@ public class HeidiConfigurationServiceTests
     private readonly ChangeEventDummyFileSystemWatcher _changeEventDummyFileSystemWatcher;
     private readonly List<HeidiSingleDatabaseConfiguration> _heidiConfigurationResult1;
     private readonly VerifySettings _verifySettings;
+    private readonly List<RepoHeidi> _heidis;
 
     public HeidiConfigurationServiceTests()
     {
@@ -62,27 +65,47 @@ public class HeidiConfigurationServiceTests
                 new("origin", "http://github.com/coenm/RepoM.git"),
             });
 
+        _heidis = new List<RepoHeidi>
+            {
+                new RepoHeidi("OSS/Github/RepoM-P")
+                    {
+                        Name = "RepoM Prod",
+                        Order = 23,
+                        Tags = Array.Empty<string>(),
+                        Repository = "RepoM",
+                    },
+                new RepoHeidi("OSS/Github/RepoM-D")                    {
+                        Name = "RepoM Dev!!",
+                        Order = 5,
+                        Tags = Array.Empty<string>(),
+                        Repository = "RepoM",
+                    },
+                new RepoHeidi("OSS/Abc")                    {
+                        Name = "Abc Prod",
+                        Order = 0,
+                        Tags = Array.Empty<string>(),
+                        Repository = "Abc",
+                    },
+            };
+
         _heidiConfigurationResult1 = new List<HeidiSingleDatabaseConfiguration>
             {
-                new HeidiSingleDatabaseConfiguration
+                new HeidiSingleDatabaseConfiguration("OSS/Github/RepoM-P")
                     {
-                        Key = "OSS/Github/RepoM-P",
                         // Order = 23,
                         // Environment = "Production",
                         // Name = "RepoM Prod",
                         // Repositories = new []{ "RepoM", },
                     },
-                new HeidiSingleDatabaseConfiguration
+                new HeidiSingleDatabaseConfiguration("OSS/Github/RepoM-D")
                     {
-                        Key = "OSS/Github/RepoM-D",
                         // Order = 5,
                         // Environment = "Development",
                         // Name = "RepoM Dev!!",
                         // Repositories = new []{ "RepoM", "RepomTest", },
                     },
-                new HeidiSingleDatabaseConfiguration
+                new HeidiSingleDatabaseConfiguration("OSS/Abc")
                     {
-                        Key = "OSS/Abc",
                         // Order = 0,
                         // Environment = "Production",
                         // Name = "Abc Prod",
@@ -140,15 +163,31 @@ public class HeidiConfigurationServiceTests
 
         RepoHeidi? aRef;
         A.CallTo(() => _heidiRepositoryExtractor.TryExtract(A<HeidiSingleDatabaseConfiguration>._, out aRef))
-         .Returns(true)
-         .AssignsOutAndRefParametersLazily((HeidiSingleDatabaseConfiguration x, RepoHeidi? someRef) =>
-             new object[] { new RepoHeidi(), });
+         .ReturnsLazily(call =>
+             {
+                 if (call.Arguments.First() is HeidiSingleDatabaseConfiguration h)
+                 {
+                     return _heidis.Any(x => x.HeidiKey.Equals(h.Key));
+                 }
+
+                 throw new Exception("thrown by test");
+             })
+         .AssignsOutAndRefParametersLazily((HeidiSingleDatabaseConfiguration config, RepoHeidi? output) =>
+             {
+                 var matches = _heidis.Where(x => x.HeidiKey.Equals(config.Key)).ToArray();
+                 if (matches.Length > 0)
+                 {
+                     return new object[] { matches.First(), };
+                 }
+                 return new object[] { null!, };
+
+             });
 
         await _sut.InitializeAsync();
         mre.WaitOne(TimeSpan.FromSeconds(2));
 
         // act
-        IEnumerable<HeidiConfiguration> result = _sut.GetByRepository(_repository);
+        IEnumerable<RepositoryHeidiConfiguration> result = _sut.GetByRepository(_repository);
         
         // assert
         _ = await Verifier.Verify(result, _verifySettings);
@@ -177,7 +216,7 @@ public class HeidiConfigurationServiceTests
         mre.WaitOne(TimeSpan.FromSeconds(2));
 
         // act
-        IEnumerable<HeidiConfiguration> result = _sut.GetByRepository(_repository);
+        IEnumerable<RepositoryHeidiConfiguration> result = _sut.GetByRepository(_repository);
         
         // assert
         result.Should().BeEmpty();
@@ -201,7 +240,7 @@ public class HeidiConfigurationServiceTests
         mre.WaitOne(TimeSpan.FromSeconds(2));
 
         // act
-        IEnumerable<HeidiConfiguration> result = _sut.GetByKey(key!);
+        IEnumerable<RepositoryHeidiConfiguration> result = _sut.GetByKey(key!);
 
         // assert
         result.Should().BeEmpty();

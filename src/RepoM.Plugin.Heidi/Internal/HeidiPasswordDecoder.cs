@@ -15,6 +15,11 @@ internal class HeidiPasswordDecoder : IHeidiPasswordDecoder
 
     public string DecodePassword(ReadOnlySpan<char> input)
     {
+        if (input.Length is 0 or 1)
+        {
+            return string.Empty;
+        }
+
         if (input.Length < 3)
         {
             throw new InvalidPasswordException();

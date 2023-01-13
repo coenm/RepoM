@@ -15,6 +15,8 @@ public class HeidiPasswordDecoderTests
     }
 
     [Theory]
+    [InlineData("", "")]
+    [InlineData(" ", "")]
     [InlineData("6768696", "abc")]
     [InlineData("6465663", "abc")]
     [InlineData("656667654", "abca")]
@@ -31,9 +33,7 @@ public class HeidiPasswordDecoderTests
     }
 
     [Theory]
-    [InlineData("")] // < 3
-    [InlineData(" ")] // < 3
-    [InlineData("  ")] // < 3
+    [InlineData("  ")]
     [InlineData("1234")] // even
     [InlineData("123456")] // even
     [InlineData("12345678")] // even

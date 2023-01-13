@@ -1,6 +1,6 @@
 ﻿[
   {
-    HeidiDb: {
+    DbConfig: {
       Key: Key2,
       Host: Host2,
       User: usr2,
@@ -23,7 +23,7 @@
     HeidiFilename: file1.txt
   },
   {
-    HeidiDb: {
+    DbConfig: {
       Key: Key3,
       Host: Host3,
       User: usr3,
@@ -47,7 +47,7 @@
     HeidiFilename: file1.txt
   },
   {
-    HeidiDb: {
+    DbConfig: {
       Key: Key1,
       Host: Host1,
       User: usr1,

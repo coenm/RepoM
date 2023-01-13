@@ -2,20 +2,24 @@ namespace RepoM.Plugin.Heidi.Interface;
 
 public class HeidiDbConfig
 {
-    public string Key { get; set; }
+    internal HeidiDbConfig()
+    {
+    }
 
-    public string Host { get; set; }
+    public string Key { get; internal set; }
 
-    public string User { get; set; }
+    public string Host { get; internal set; }
 
-    public string Password { get; set; }
+    public string User { get; internal set; }
 
-    public int Port { get; set; }
+    public string Password { get; internal set; }
+
+    public int Port { get; internal set; }
 
     /// <summary>
     /// Use Windows authentication: 1 or 0. (MSSQL, MySQL and MariaDB only).
     /// </summary>
-    public bool WindowsAuth { get; set; }
+    public bool WindowsAuth { get; internal set; }
 
     /// <summary>
     /// Network protocol type:
@@ -37,18 +41,18 @@ public class HeidiDbConfig
     /// 15 = Firebird(local)
     /// https://www.heidisql.com/help.php#commandline
     /// </summary>
-    public int NetType { get; set; }
+    public int NetType { get; internal set; }
 
     /// <summary>
     /// Library or provider (added in v11.1), Depends on the given network protocol
     /// https://www.heidisql.com/help.php#commandline
     /// </summary>
-    public string Library { get; set; }
+    public string Library { get; internal set; }
 
-    public string Comment { get; set; }
+    public string Comment { get; internal set; }
 
     /// <summary>
     /// Databases, separated by semicolon. Single database on PostgreSQL. Interbase and Firebird expect a local file here.
     /// </summary>
-    public string[] Databases { get; set; }
+    public string[] Databases { get; internal set; }
 }
