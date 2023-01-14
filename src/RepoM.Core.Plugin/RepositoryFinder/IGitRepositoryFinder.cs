@@ -1,4 +1,4 @@
-namespace RepoM.Api.IO;
+namespace RepoM.Core.Plugin.RepositoryFinder;
 
 using System;
 using System.Collections.Generic;

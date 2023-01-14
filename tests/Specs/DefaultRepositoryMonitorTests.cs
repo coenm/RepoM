@@ -25,6 +25,7 @@ using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.VariableProviders;
+using RepoM.Core.Plugin.RepositoryFinder;
 using Specs.IO;
 using Specs.Mocks;
 

@@ -9,13 +9,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\..\_ref\Everything64.dll" Link="Everything64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj" />
   </ItemGroup>
 
 </Project>

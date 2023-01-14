@@ -51,6 +51,7 @@ using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryOrdering;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.RepositoryFinder;
 
 /// <summary>
 /// Interaction logic for App.xaml
