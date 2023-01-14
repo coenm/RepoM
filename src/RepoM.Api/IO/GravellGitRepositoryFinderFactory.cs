@@ -2,6 +2,7 @@ namespace RepoM.Api.IO;
 
 using System;
 using System.IO.Abstractions;
+using RepoM.Core.Plugin.RepositoryFinder;
 
 public class GravellGitRepositoryFinderFactory : ISingleGitRepositoryFinderFactory
 {

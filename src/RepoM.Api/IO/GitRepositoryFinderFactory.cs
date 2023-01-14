@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api.Common;
+using RepoM.Core.Plugin.RepositoryFinder;
 
 public class GitRepositoryFinderFactory : IGitRepositoryFinderFactory
 {

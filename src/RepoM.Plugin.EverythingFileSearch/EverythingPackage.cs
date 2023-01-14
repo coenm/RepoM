@@ -1,12 +1,12 @@
 namespace RepoM.Plugin.EverythingFileSearch;
 
 using JetBrains.Annotations;
-using RepoM.Api.IO;
+using RepoM.Core.Plugin.RepositoryFinder;
 using SimpleInjector;
 using SimpleInjector.Packaging;
 
 [UsedImplicitly]
-public class EverythingModule : IPackage
+public class EverythingPackage : IPackage
 {
     public void RegisterServices(Container container)
     {

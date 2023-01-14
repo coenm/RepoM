@@ -2,7 +2,7 @@ namespace RepoM.Plugin.EverythingFileSearch;
 
 using System;
 using JetBrains.Annotations;
-using RepoM.Api.IO;
+using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.Plugin.EverythingFileSearch.Internal;
 
 [UsedImplicitly]
