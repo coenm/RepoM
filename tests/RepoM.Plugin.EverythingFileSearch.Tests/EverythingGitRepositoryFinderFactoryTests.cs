@@ -1,7 +1,6 @@
 namespace RepoM.Plugin.EverythingFileSearch.Tests;
 
 using System;
-using System.Net.NetworkInformation;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.Core.Plugin.RepositoryFinder;

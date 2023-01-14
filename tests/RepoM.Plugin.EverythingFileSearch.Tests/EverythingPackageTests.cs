@@ -2,7 +2,6 @@ namespace RepoM.Plugin.EverythingFileSearch.Tests;
 
 using System;
 using FakeItEasy;
-using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.Plugin.EverythingFileSearch;
 using SimpleInjector;
