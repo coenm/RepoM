@@ -27,4 +27,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.Plugin.EverythingFileSearch\RepoM.Plugin.EverythingFileSearch.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Internal\" />
+  </ItemGroup>
 </Project>
