@@ -13,6 +13,15 @@ using Xunit;
 
 public class WindowExplorerBarGitInfoModuleTest
 {
+    private readonly IWindowsExplorerHandler _explorerHandler;
+    private readonly WindowExplorerBarGitInfoModule _sut;
+
+    public WindowExplorerBarGitInfoModuleTest()
+    {
+        _explorerHandler = A.Fake<IWindowsExplorerHandler>();
+        _sut = new WindowExplorerBarGitInfoModule(_explorerHandler);
+    }
+
     [Fact]
     public void Ctor_ShouldThrow_WhenArgumentIsNull()
     {
@@ -25,18 +34,15 @@ public class WindowExplorerBarGitInfoModuleTest
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
-
     [Fact]
     public async Task StopAsync_ShouldCleanTitles()
     {
         // arrange
-        var explorerHandler = A.Fake<IWindowsExplorerHandler>();
-        var sut = new WindowExplorerBarGitInfoModule(explorerHandler);
-    
+
         // act
-        await sut.StopAsync();
+        await _sut.StopAsync();
 
         // assert
-        A.CallTo(() => explorerHandler.CleanTitles()).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _explorerHandler.CleanTitles()).MustHaveHappenedOnceExactly();
     }
 }
