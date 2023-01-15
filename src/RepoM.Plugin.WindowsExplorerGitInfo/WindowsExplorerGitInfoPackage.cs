@@ -7,11 +7,11 @@ using SimpleInjector;
 using SimpleInjector.Packaging;
 
 [UsedImplicitly]
-public class WindowsExplorerGitInfoModule : IPackage
+public class WindowsExplorerGitInfoPackage : IPackage
 {
     public void RegisterServices(Container container)
     {
-        container.Register<WindowsExplorerHandler>(Lifestyle.Singleton);
+        container.Register<IWindowsExplorerHandler, WindowsExplorerHandler>(Lifestyle.Singleton);
         container.Collection.Append<IModule, WindowExplorerBarGitInfoModule>(Lifestyle.Singleton);
     }
 }
