@@ -11,9 +11,9 @@ using RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 internal class WindowExplorerBarGitInfoModule : IModule
 {
     private readonly Timer _explorerUpdateTimer;
-    private readonly WindowsExplorerHandler _explorerHandler;
+    private readonly IWindowsExplorerHandler _explorerHandler;
 
-    public WindowExplorerBarGitInfoModule(WindowsExplorerHandler explorerHandler)
+    public WindowExplorerBarGitInfoModule(IWindowsExplorerHandler explorerHandler)
     {
         _explorerHandler = explorerHandler ?? throw new ArgumentNullException(nameof(explorerHandler));
         _explorerUpdateTimer = new Timer(RefreshTimerCallback, null, Timeout.Infinite, Timeout.Infinite);

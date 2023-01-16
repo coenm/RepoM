@@ -2,7 +2,7 @@ namespace RepoM.Plugin.WindowsExplorerGitInfo.PInvoke;
 
 using System;
 
-public class WindowPath
+internal class WindowPath
 {
     public WindowPath(IntPtr handle, string path)
     {

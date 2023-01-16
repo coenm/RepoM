@@ -1,9 +1,8 @@
 namespace RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 
-using JetBrains.Annotations;
 using RepoM.Api.Git;
 
-internal class WindowsExplorerHandler
+internal class WindowsExplorerHandler : IWindowsExplorerHandler
 {
     private readonly IRepositoryInformationAggregator _repositoryInfoAggregator;
 
@@ -18,7 +17,6 @@ internal class WindowsExplorerHandler
         actor.Pulse();
     }
 
-    [PublicAPI]
     public void CleanTitles()
     {
         var actor = new CleanWindowTitleActor();
