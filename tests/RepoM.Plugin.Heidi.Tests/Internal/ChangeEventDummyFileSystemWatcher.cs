@@ -8,6 +8,11 @@ using System.IO.Abstractions;
 
 internal sealed class ChangeEventDummyFileSystemWatcher : IFileSystemWatcher
 {
+    public IWaitForChangedResult WaitForChanged(WatcherChangeTypes changeType, TimeSpan timeout)
+    {
+        throw new NotImplementedException();
+    }
+
     public void Dispose()
     {
         // Method intentionally left empty.

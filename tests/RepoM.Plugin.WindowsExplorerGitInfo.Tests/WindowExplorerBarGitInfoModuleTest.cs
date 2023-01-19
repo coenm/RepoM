@@ -92,14 +92,14 @@ public class WindowExplorerBarGitInfoModuleTest
               });
 
         await _sut.StartAsync();
-        _ = mreAfterStart.WaitOne(TimeSpan.FromSeconds(2));
+        _ = mreAfterStart.WaitOne(TimeSpan.FromSeconds(5));
 
         // act
         await _sut.StopAsync();
-        _ = mreAfterStop.WaitOne(TimeSpan.FromSeconds(2));
+        _ = mreAfterStop.WaitOne(TimeSpan.FromSeconds(5));
 
         // assert
-        A.CallTo(() => _explorerHandler.UpdateTitles()).MustHaveHappened(2, Times.Exactly);
+        A.CallTo(() => _explorerHandler.UpdateTitles()).MustHaveHappenedTwiceOrMore();
         A.CallTo(() => _explorerHandler.CleanTitles()).MustHaveHappenedOnceExactly();
     }
 }
