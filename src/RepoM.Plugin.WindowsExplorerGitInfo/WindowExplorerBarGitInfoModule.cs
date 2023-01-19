@@ -10,7 +10,8 @@ using RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 [UsedImplicitly] 
 internal class WindowExplorerBarGitInfoModule : IModule
 {
-    private readonly Timer _explorerUpdateTimer;
+    private static readonly int _delayBetweenTitleUpdatesInMs = 500;
+    private Timer _explorerUpdateTimer;
     private readonly IWindowsExplorerHandler _explorerHandler;
 
     public WindowExplorerBarGitInfoModule(IWindowsExplorerHandler explorerHandler)
@@ -25,16 +26,19 @@ internal class WindowExplorerBarGitInfoModule : IModule
         return Task.CompletedTask;
     }
 
-    public Task StopAsync()
+    public async Task StopAsync()
     {
-        _explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+        Timer originalTimer = _explorerUpdateTimer;
+        _explorerUpdateTimer = new Timer(_ => {}, null, Timeout.Infinite, Timeout.Infinite);
+        originalTimer.Change(Timeout.Infinite, Timeout.Infinite);
+        await Task.Delay(_delayBetweenTitleUpdatesInMs + 1000);
+        originalTimer.Change(Timeout.Infinite, Timeout.Infinite);
         _explorerHandler.CleanTitles();
-        return Task.CompletedTask;
     }
 
     private void RefreshTimerCallback(object? state)
     {
         _explorerHandler.UpdateTitles();
-        _explorerUpdateTimer.Change(500, Timeout.Infinite);
+        _explorerUpdateTimer.Change(_delayBetweenTitleUpdatesInMs, Timeout.Infinite);
     }
 }
