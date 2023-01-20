@@ -30,7 +30,12 @@ public abstract class FileRepositoryStore : IRepositoryStore
         }
 
         var file = GetFileName();
-        var path = _fileSystem.Directory.GetParent(file).FullName;
+        var path = _fileSystem.Directory.GetParent(file)?.FullName;
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return;
+        }
 
         if (!_fileSystem.Directory.Exists(path))
         {
