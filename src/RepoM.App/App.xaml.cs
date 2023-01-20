@@ -322,22 +322,25 @@ public partial class App : Application
 
     private static void StopModules(List<IModule> modules)
     {
-        var allTasks = Task.WhenAll(modules.Select(async x =>
+        var task = Task.Run(() =>
             {
-                await x.StopAsync();
+                return Task.WhenAll(modules.Select(async module =>
+                    {
+                        await module.StopAsync().ConfigureAwait(false);
 
-                if (x is IAsyncDisposable asyncDisposable)
-                {
-                    await asyncDisposable.DisposeAsync();
-                }
-                else if (x is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
-            }));
-        allTasks.GetAwaiter().GetResult();
+                        if (module is IAsyncDisposable asyncDisposable)
+                        {
+                            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+                        }
+                        else if (module is IDisposable disposable)
+                        {
+                            disposable.Dispose();
+                        }
+                    }));
+            });
+
+        task.ConfigureAwait(false).GetAwaiter().GetResult();
     }
-
     private static void UseRepositoryMonitor(Container container)
     {
         // var repositoryInformationAggregator = container.GetInstance<IRepositoryInformationAggregator>();
