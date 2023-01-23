@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Core;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -32,7 +33,8 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
     {
         _indexDirectory = indexDirectoryFactory.Instance;
 
-        _analyzer = new StandardAnalyzer(LuceneNetVersion.VERSION);
+        _analyzer = new WhitespaceAnalyzer(LuceneNetVersion.VERSION);
+        //_analyzer = new StandardAnalyzer(LuceneNetVersion.VERSION);
         /*
                 _analyzer = new PerFieldAnalyzerWrapper(
                                                         new HtmlStripAnalyzer(LuceneNetVersion.VERSION),
@@ -258,7 +260,17 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
         var result = new MultiFieldQueryParser(LuceneNetVersion.VERSION, _defaultQueryFields, _analyzer)
             {
                 DefaultOperator = defaultOperator,
+                
             };
+        return result;
+    }
+
+    internal MultiFieldQueryParser CreateQueryParserTest(Operator defaultOperator)
+    {
+        var result = new MultiFieldQueryParser(LuceneNetVersion.VERSION, new[] { "free-text", }, _analyzer)
+                {
+                    DefaultOperator = defaultOperator,
+                };
         return result;
     }
 

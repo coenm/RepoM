@@ -1,0 +1,150 @@
+﻿{
+  Lucene: [
+    {
+      Query: {
+        Term: {
+          Field: tag,
+          Text: work
+        }
+      },
+      IsRequired: true
+    },
+    {
+      Query: [
+        {
+          Occur: SHOULD,
+          Query: {
+            Term: {
+              Field: free-text,
+              Text: test1
+            }
+          },
+          IsRequired: false
+        }
+      ],
+      IsRequired: true
+    },
+    {
+      Query: {
+        LowerTerm: {
+          Length: 2
+        },
+        UpperTerm: {
+          Length: 2
+        },
+        IncludesLower: true,
+        IncludesUpper: true,
+        Field: age,
+        MultiTermRewriteMethod: {
+          TermCountCutoff: 350,
+          DocCountPercent: 0.1
+        }
+      },
+      IsRequired: true
+    },
+    {
+      Query: [
+        {
+          Occur: SHOULD,
+          Query: {
+            Term: {
+              Field: free-text,
+              Text: DataRontonde
+            }
+          },
+          IsRequired: false
+        }
+      ],
+      IsRequired: true
+    },
+    {
+      Query: [
+        {
+          Occur: SHOULD,
+          Query: {
+            Term: {
+              Field: free-text,
+              Text: Core
+            }
+          },
+          IsRequired: false
+        }
+      ],
+      IsRequired: true
+    }
+  ],
+  RepoM: {
+    Clauses: [
+      {
+        Query: {
+          Term: {
+            Field: tag,
+            Text: work
+          }
+        },
+        IsRequired: true
+      },
+      {
+        Query: {
+          Clauses: [
+            {
+              Occur: SHOULD,
+              Query: {
+                Term: {
+                  Field: free-text,
+                  Text: test1
+                }
+              },
+              IsRequired: false
+            }
+          ]
+        },
+        IsRequired: true
+      },
+      {
+        Query: {
+          IncludesLower: true,
+          Field: age,
+          LowerText: 41,
+          UpperText: 51,
+          IncludesUpper: true
+        },
+        IsRequired: true
+      },
+      {
+        Query: {
+          Clauses: [
+            {
+              Occur: SHOULD,
+              Query: {
+                Term: {
+                  Field: free-text,
+                  Text: DataRontonde
+                }
+              },
+              IsRequired: false
+            }
+          ]
+        },
+        IsRequired: true
+      },
+      {
+        Query: {
+          Clauses: [
+            {
+              Occur: SHOULD,
+              Query: {
+                Term: {
+                  Field: free-text,
+                  Text: Core
+                }
+              },
+              IsRequired: false
+            }
+          ]
+        },
+        IsRequired: true
+      }
+    ]
+  }
+}
