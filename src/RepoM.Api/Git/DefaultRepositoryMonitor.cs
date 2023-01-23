@@ -263,11 +263,13 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private void DestroyRepositoryObserver(string path)
     {
-        if (_repositoryObservers.TryGetValue(path, out IRepositoryObserver observer))
+        if (!_repositoryObservers.TryGetValue(path, out IRepositoryObserver? observer))
         {
-            observer.Stop();
-            _repositoryObservers.Remove(path);
+            return;
         }
+
+        observer.Stop();
+        _repositoryObservers.Remove(path);
     }
 
     private void OnRepositoryDeletionDetected(string repoPath)
