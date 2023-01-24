@@ -11,7 +11,6 @@ using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using RepoM.Plugin.LuceneSearch;
-using Sprache;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
