@@ -1,0 +1,24 @@
+﻿{
+  Lucene: {
+    $type: TermRangeQuery,
+    LowerTerm: {
+      Offset: 0,
+      Length: 2
+    },
+    UpperTerm: {
+      Offset: 0,
+      Length: 2
+    },
+    IncludesLower: false,
+    IncludesUpper: true,
+    Field: age
+  },
+  RepoM: {
+    $type: MyTermRangeQuery,
+    IncludesLower: false,
+    Field: age,
+    LowerText: 16,
+    UpperText: 75,
+    IncludesUpper: true
+  }
+}

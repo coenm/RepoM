@@ -1,0 +1,34 @@
+﻿{
+  Lucene: {
+    $type: BooleanQuery,
+    $values: [
+      {
+        Occur: MUST_NOT,
+        Query: {
+          $type: TermQuery,
+          Term: {
+            Field: tag,
+            Text: abc
+          }
+        },
+        IsRequired: false
+      }
+    ]
+  },
+  RepoM: {
+    $type: MyBooleanQuery,
+    Clauses: [
+      {
+        Occur: MUST_NOT,
+        Query: {
+          $type: MyTermQuery,
+          Term: {
+            Field: tag,
+            Text: abc
+          }
+        },
+        IsRequired: false
+      }
+    ]
+  }
+}

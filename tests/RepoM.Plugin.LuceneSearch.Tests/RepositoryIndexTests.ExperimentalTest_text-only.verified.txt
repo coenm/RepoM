@@ -5,17 +5,6 @@
       {
         Occur: MUST,
         Query: {
-          $type: TermQuery,
-          Term: {
-            Field: tag,
-            Text: work
-          }
-        },
-        IsRequired: true
-      },
-      {
-        Occur: MUST,
-        Query: {
           $type: BooleanQuery,
           $values: [
             {
@@ -24,45 +13,7 @@
                 $type: TermQuery,
                 Term: {
                   Field: free-text,
-                  Text: test1
-                }
-              },
-              IsRequired: false
-            }
-          ]
-        },
-        IsRequired: true
-      },
-      {
-        Occur: MUST,
-        Query: {
-          $type: TermRangeQuery,
-          LowerTerm: {
-            Offset: 0,
-            Length: 2
-          },
-          UpperTerm: {
-            Offset: 0,
-            Length: 2
-          },
-          IncludesLower: true,
-          IncludesUpper: true,
-          Field: age
-        },
-        IsRequired: true
-      },
-      {
-        Occur: MUST,
-        Query: {
-          $type: BooleanQuery,
-          $values: [
-            {
-              Occur: SHOULD,
-              Query: {
-                $type: TermQuery,
-                Term: {
-                  Field: free-text,
-                  Text: abc
+                  Text: This
                 }
               },
               IsRequired: false
@@ -82,7 +33,47 @@
                 $type: TermQuery,
                 Term: {
                   Field: free-text,
-                  Text: Core
+                  Text: is
+                }
+              },
+              IsRequired: false
+            }
+          ]
+        },
+        IsRequired: true
+      },
+      {
+        Occur: MUST,
+        Query: {
+          $type: BooleanQuery,
+          $values: [
+            {
+              Occur: SHOULD,
+              Query: {
+                $type: TermQuery,
+                Term: {
+                  Field: free-text,
+                  Text: Some
+                }
+              },
+              IsRequired: false
+            }
+          ]
+        },
+        IsRequired: true
+      },
+      {
+        Occur: MUST,
+        Query: {
+          $type: BooleanQuery,
+          $values: [
+            {
+              Occur: SHOULD,
+              Query: {
+                $type: TermQuery,
+                Term: {
+                  Field: free-text,
+                  Text: Text@
                 }
               },
               IsRequired: false
@@ -99,17 +90,6 @@
       {
         Occur: MUST,
         Query: {
-          $type: MyTermQuery,
-          Term: {
-            Field: tag,
-            Text: work
-          }
-        },
-        IsRequired: true
-      },
-      {
-        Occur: MUST,
-        Query: {
           $type: MyBooleanQuery,
           Clauses: [
             {
@@ -118,39 +98,7 @@
                 $type: MyTermQuery,
                 Term: {
                   Field: free-text,
-                  Text: test1
-                }
-              },
-              IsRequired: false
-            }
-          ]
-        },
-        IsRequired: true
-      },
-      {
-        Occur: MUST,
-        Query: {
-          $type: MyTermRangeQuery,
-          IncludesLower: true,
-          Field: age,
-          LowerText: 41,
-          UpperText: 51,
-          IncludesUpper: true
-        },
-        IsRequired: true
-      },
-      {
-        Occur: MUST,
-        Query: {
-          $type: MyBooleanQuery,
-          Clauses: [
-            {
-              Occur: SHOULD,
-              Query: {
-                $type: MyTermQuery,
-                Term: {
-                  Field: free-text,
-                  Text: abc
+                  Text: This
                 }
               },
               IsRequired: false
@@ -170,7 +118,47 @@
                 $type: MyTermQuery,
                 Term: {
                   Field: free-text,
-                  Text: Core
+                  Text: is
+                }
+              },
+              IsRequired: false
+            }
+          ]
+        },
+        IsRequired: true
+      },
+      {
+        Occur: MUST,
+        Query: {
+          $type: MyBooleanQuery,
+          Clauses: [
+            {
+              Occur: SHOULD,
+              Query: {
+                $type: MyTermQuery,
+                Term: {
+                  Field: free-text,
+                  Text: Some
+                }
+              },
+              IsRequired: false
+            }
+          ]
+        },
+        IsRequired: true
+      },
+      {
+        Occur: MUST,
+        Query: {
+          $type: MyBooleanQuery,
+          Clauses: [
+            {
+              Occur: SHOULD,
+              Query: {
+                $type: MyTermQuery,
+                Term: {
+                  Field: free-text,
+                  Text: Text@
                 }
               },
               IsRequired: false

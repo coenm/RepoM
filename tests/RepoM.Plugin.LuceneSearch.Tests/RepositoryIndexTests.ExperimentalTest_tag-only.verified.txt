@@ -1,0 +1,16 @@
+﻿{
+  Lucene: {
+    $type: TermQuery,
+    Term: {
+      Field: tag,
+      Text: abc
+    }
+  },
+  RepoM: {
+    $type: MyTermQuery,
+    Term: {
+      Field: tag,
+      Text: abc
+    }
+  }
+}

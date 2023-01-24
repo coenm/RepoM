@@ -1,0 +1,42 @@
+﻿{
+  Lucene: {
+    $type: BooleanQuery,
+    $values: [
+      {
+        Occur: MUST,
+        Query: {
+          $type: TermRangeQuery,
+          LowerTerm: {
+            Offset: 0,
+            Length: 2
+          },
+          UpperTerm: {
+            Offset: 0,
+            Length: 2
+          },
+          IncludesLower: true,
+          IncludesUpper: true,
+          Field: age
+        },
+        IsRequired: true
+      }
+    ]
+  },
+  RepoM: {
+    $type: MyBooleanQuery,
+    Clauses: [
+      {
+        Occur: MUST,
+        Query: {
+          $type: MyTermRangeQuery,
+          IncludesLower: true,
+          Field: age,
+          LowerText: 16,
+          UpperText: 75,
+          IncludesUpper: true
+        },
+        IsRequired: true
+      }
+    ]
+  }
+}

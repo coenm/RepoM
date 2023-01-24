@@ -4,18 +4,49 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Argon;
 using FluentAssertions;
 using Lucene.Net.Analysis.Core;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using RepoM.Plugin.LuceneSearch;
+using Sprache;
+using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
+// https://lucene.apache.org/core/2_9_4/queryparsersyntax.html
 [UsesVerify]
 public class RepositoryIndexTests
 {
+    private readonly WhitespaceAnalyzer _analyzer;
+    private readonly MultiFieldQueryParser _queryParser;
+    private readonly VerifySettings _settings;
+
+    public RepositoryIndexTests()
+    {
+        _analyzer = new WhitespaceAnalyzer(LuceneNetVersion.VERSION);
+        _queryParser = new MultiFieldQueryParser(LuceneNetVersion.VERSION, new[] { "free-text", }, _analyzer)
+            {
+                DefaultOperator = Operator.AND,
+            };
+
+        _settings = new VerifySettings();
+        _settings.AddExtraSettings(settings =>
+            {
+                settings.DefaultValueHandling = DefaultValueHandling.Include;
+                // settings.NullValueHandling = NullValueHandling.Include;
+                settings.TypeNameHandling = TypeNameHandling.Auto;
+
+            });
+        _settings.IgnoreMember("Bytes");
+        _settings.IgnoreMember("Boost");
+        _settings.IgnoreMember("IsProhibited");
+        _settings.IgnoreMember("MultiTermRewriteMethod");
+        _settings.DisableRequireUniquePrefix();
+    }
+
     [Fact]
     public void Test1()
     {
@@ -50,21 +81,95 @@ public class RepositoryIndexTests
         // assert
         hits.Should().Be(1);
     }
+  
+    [Theory]
+    [InlineData("tag-only", "tag:abc")]
+    [InlineData("tag-only", "  tag:abc  ")]
+    [InlineData("tag-only", "tag:\"abc\"")]
+    [InlineData("tag-only", " tag:\"abc\"")]
+    [InlineData("tag-only", " tag:\"abc  \"")]
+    [InlineData("tag-only", " tag:\"   abc  \"")]
+    [InlineData("tag-only", " (tag:\"   abc  \")")]
+
+    [InlineData("tag-plus", " +tag:\"   abc  \"")]
+    [InlineData("tag-plus", " +tag:abc")]
+    [InlineData("tag-plus", " (+tag:abc)")]
+    [InlineData("tag-plus", " +(tag:abc)")]
+
+    [InlineData("tag-min", " -tag:\"   abc  \"")]
+    [InlineData("tag-min", " -tag:abc")]
+    [InlineData("tag-min", " (-tag:abc)")]
+    [InlineData("tag-min", " -(tag:abc)")]
+
+    [InlineData("text-only", "This is Some   Text@ ")]
+    [InlineData("text-only", "This is Some Text@")]
+    [InlineData("text-only", "  This is Some Text@  ")]
+    [InlineData("text-only", "  This is      Some Text@  ")]
+    [InlineData("text-only", "  This is      Some^4 Text@  ")] // boosting ignored
+    // [InlineData("text-only", "  This is      Some^ Text@  ")]  // error
+    [InlineData("text-only", "  +This +is      Some Text@  ")] // plus doesnt matter
+
+
+    [InlineData("range-only", "age:[16 TO 75]")]
+    [InlineData("range-only", "  age:[16 TO 75]")]
+    [InlineData("range-only", "age:[16 TO 75]  ")]
+    [InlineData("range-only", "age:[16   TO   75]")]
+    [InlineData("range-only", "age:[  16 TO 75 ]")]
+    [InlineData("range-only", "age: [16 TO 75]")]
+    [InlineData("range-only", "age : [16 TO 75]")]
+    [InlineData("range-only", "age :[16 TO 75]")]
+    [InlineData("range-only", "  age:[16 TO 75] ")]
+    [InlineData("range-only", "(age:[16 TO 75])")]
+    [InlineData("range-only-must", "+(age:[16 TO 75])")]
+    [InlineData("range-only-must", "(+age:[16 TO 75])")]
+    [InlineData("range-only-excl-left", "age:{16 TO 75]")]
+    [InlineData("range-only-excl-right", "age:[16 TO 75}")]
+    [InlineData("range-only-excl", "age:{16 TO 75}")]
+
+    // wildcard not yet implemented
+    // [InlineData("wildcard", "te?t")]
+    // [InlineData("wildcard", "te*t")]
+
+    // prefix query?
+    //[InlineData("wildcard", "test*")]
+
+    // fuzzy search FuzzyQuery
+    //[InlineData("fuzzy", "roam~aa")]
+    // [InlineData("fuzzy", "roam~0.8")]
+    // [InlineData("Proximity", "\"jakarta apache\"~10")] // Proximity Searches, PhraseQuery
+     // [InlineData("boosting", "jakarta^4 apache")] // Proximity Searches, PhraseQuery
+
+
+    // [InlineData("range-only", "  age:(16 TO 75) ")]
+    // [InlineData("range-only", "  age:[16 .. 75] ")]
+    // [InlineData("range-only", "  age:[16TO 75] ")]
+    // [InlineData("range-only", "  age:[16 TO75] ")]
+    public async Task ExperimentalTest(string outputName, string input)
+    {
+        // arrange
+
+        // act
+        Query result = _queryParser.Parse(input);
+
+        // assert
+        await Verifier.Verify(new
+                          {
+                              Lucene = result,
+                              RepoM = MapQuery(result),
+                          },
+                          _settings)
+                      .UseTextForParameters(outputName);
+    }
 
     [Fact]
     public async Task ExperimentalTests()
     {
         // arrange
-        var analyzer = new WhitespaceAnalyzer(LuceneNetVersion.VERSION);
+        // var analyzer = new WhitespaceAnalyzer(LuceneNetVersion.VERSION);
         // var analyzer = new KeywordAnalyzer();
 
         // act
-        var queryParser = new MultiFieldQueryParser(LuceneNetVersion.VERSION, new[] { "free-text", }, analyzer)
-            {
-                DefaultOperator = Operator.AND,
-            };
-
-        Query? result = queryParser.Parse("tag:work test1 age:[41 TO 51] DataRontonde Core");
+        Query result = _queryParser.Parse("tag:work test1 age:[41 TO 51] abc Core");
 
         MyQueryBase x = MapQuery(result);
 
@@ -73,10 +178,8 @@ public class RepositoryIndexTests
                           {
                               Lucene = result,
                               RepoM = x,
-                          })
-                      .IgnoreMember("Bytes")
-                      .IgnoreMember("Boost")
-                      .IgnoreMember("IsProhibited");
+                          },
+                          _settings);
     }
 
     private MyQueryBase MapQuery(Query query)
