@@ -27,9 +27,13 @@ public class RepositoryIndexTests
     public RepositoryIndexTests()
     {
         _analyzer = new WhitespaceAnalyzer(LuceneNetVersion.VERSION);
+
         _queryParser = new MultiFieldQueryParser(LuceneNetVersion.VERSION, new[] { "free-text", }, _analyzer)
             {
                 DefaultOperator = Operator.AND,
+                AllowLeadingWildcard = true,
+                FuzzyMinSim = 1.0f, //FuzzyQuery 
+                PhraseSlop = 0, // disable Proximity
             };
 
         _settings = new VerifySettings();
@@ -45,6 +49,7 @@ public class RepositoryIndexTests
         _settings.IgnoreMember("IsProhibited");
         _settings.IgnoreMember("MultiTermRewriteMethod");
         _settings.IgnoreMember("Automaton");
+        _settings.IgnoreMember("MaxEdits");
         _settings.DisableRequireUniquePrefix();
     }
 
@@ -130,17 +135,18 @@ public class RepositoryIndexTests
     [InlineData("wildcard-q-star", "te?t*")]
     [InlineData("wildcard-q", "te?t")]
     [InlineData("no-wildcard-q", "\"te?t\"")]
+    [InlineData("wildcard-start", "*ext")]
     [InlineData("wildcard", "te*t")]
     [InlineData("wildcard", " te*t  ")]
     [InlineData("no-wildcard", " \"te*t\"  ")] // * is not wildcard because inside quotes
 
-    // prefix query?
-    //[InlineData("wildcard", "test*")]
-
     // fuzzy search FuzzyQuery
-    //[InlineData("fuzzy", "roam~aa")]
-    // [InlineData("fuzzy", "roam~0.8")]
-    // [InlineData("Proximity", "\"jakarta apache\"~10")] // Proximity Searches, PhraseQuery
+    [InlineData("fuzzy", "roam~")]
+    [InlineData("fuzzy", "roam~0.8")] // same as above due to removing 'MaxEdits' property in verify
+    [InlineData("fuzzy", "roam~1.0")] // same as above due to removing 'MaxEdits' property in verify
+
+
+    //[InlineData("Proximity", "\"jakarta apache\"~10")] // Proximity Searches, PhraseQuery
      // [InlineData("boosting", "jakarta^4 apache")] // Proximity Searches, PhraseQuery
 
 
@@ -206,6 +212,23 @@ public class RepositoryIndexTests
         if (query is Lucene.Net.Search.WildcardQuery wq)
         {
             return new MyWildcardQuery(wq);
+        }
+
+        if (query is FuzzyQuery fq)
+        {
+            // do not support fuzzy query,
+            return new MyTermQuery(new MyTerm()
+                {
+                    Field = fq.Term.Field,
+                    Text = fq.Term.Text,
+                });
+        }
+
+        if (query is Lucene.Net.Search.PhraseQuery pq)
+        {
+            // do not support PhraseQuery,
+            var fullName2 = query.GetType().FullName;
+            throw new NotImplementedException(fullName2);
         }
 
         var fullName = query.GetType().FullName;
@@ -346,13 +369,18 @@ public class MyTermRangeQuery : MyQueryBase
 
 public class MyTermQuery : MyQueryBase
 {
-    internal MyTermQuery(TermQuery termQuery)
-    {
-        Term = new MyTerm
+    internal MyTermQuery(TermQuery termQuery):
+        this(new MyTerm
             {
                 Field = termQuery.Term.Field,
                 Text = termQuery.Term.Text,
-            };
+            })
+    {
+    }
+
+    public MyTermQuery(MyTerm term)
+    {
+        Term = term;
     }
 
     public MyTerm Term { get; init; }
