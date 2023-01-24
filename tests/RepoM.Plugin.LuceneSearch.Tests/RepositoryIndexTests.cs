@@ -108,7 +108,6 @@ public class RepositoryIndexTests
     // [InlineData("text-only", "  This is      Some^ Text@  ")]  // error
     [InlineData("text-only", "  +This +is      Some Text@  ")] // plus doesnt matter
 
-
     [InlineData("range-only", "age:[16 TO 75]")]
     [InlineData("range-only", "  age:[16 TO 75]")]
     [InlineData("range-only", "age:[16 TO 75]  ")]
@@ -181,7 +180,7 @@ public class RepositoryIndexTests
                           _settings);
     }
 
-    private MyQueryBase MapQuery(Query query)
+    private static MyQueryBase MapQuery(Query query)
     {
         if (query is Lucene.Net.Search.BooleanQuery bq)
         {
@@ -206,6 +205,7 @@ public class RepositoryIndexTests
 public sealed class MyTerm
 {
     public string Field { get; init; }
+
     public string Text { get; init;  }
 }
 
@@ -216,53 +216,46 @@ public class MyBooleanClause
 
     public static string ToString(Occur occur)
     {
-        switch (occur)
-        {
-            case Occur.MUST:
-                return "+";
-
-            case Occur.SHOULD:
-                return "";
-
-            case Occur.MUST_NOT:
-                return "-";
-
-            default:
-                throw new ArgumentOutOfRangeException("Invalid Occur value"); // LUCENENET specific
-        }
+        return occur switch
+            {
+                Occur.MUST => "+",
+                Occur.SHOULD => "",
+                Occur.MUST_NOT => "-",
+                _ => throw new ArgumentOutOfRangeException("Invalid Occur value")
+            };
     }
 
     /// <summary>
     /// The query whose matching documents are combined by the boolean query.
     /// </summary>
-    private MyQueryBase query;
+    private MyQueryBase _query;
 
-    private Occur occur;
+    private Occur _occur;
 
     /// <summary>
     /// Constructs a <see cref="BooleanClause"/>.
     /// </summary>
     public MyBooleanClause(MyQueryBase query, Occur occur)
     {
-        this.query = query;
-        this.occur = occur;
+        _query = query;
+        _occur = occur;
     }
 
     public virtual Occur Occur
     {
-        get => occur;
-        set => occur = value;
+        get => _occur;
+        set => _occur = value;
     }
 
     public virtual MyQueryBase Query
     {
-        get => query;
-        set => query = value;
+        get => _query;
+        set => _query = value;
     }
 
-    public virtual bool IsProhibited => Occur.MUST_NOT == occur;
+    public virtual bool IsProhibited => Occur.MUST_NOT == _occur;
 
-    public virtual bool IsRequired => Occur.MUST == occur;
+    public virtual bool IsRequired => Occur.MUST == _occur;
 }
 
 /// <summary>
@@ -292,7 +285,6 @@ public enum Occur
 
 public abstract class MyQueryBase
 {
-
 }
 
 public class MyTermRangeQuery : MyQueryBase
@@ -345,8 +337,6 @@ public class MyBooleanQuery : MyQueryBase
         _clauses = bq.Clauses
                      .Select(x => new MyBooleanClause(map(x.Query), MapOccur(x.Occur)))
                      .ToList();
-
-
     }
 
     public void Add(MyBooleanClause clause)
