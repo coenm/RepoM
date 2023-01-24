@@ -1,0 +1,34 @@
+﻿{
+  Lucene: {
+    $type: BooleanQuery,
+    $values: [
+      {
+        Occur: SHOULD,
+        Query: {
+          $type: TermQuery,
+          Term: {
+            Field: free-text,
+            Text: te?t
+          }
+        },
+        IsRequired: false
+      }
+    ]
+  },
+  RepoM: {
+    $type: MyBooleanQuery,
+    Clauses: [
+      {
+        Occur: SHOULD,
+        Query: {
+          $type: MyTermQuery,
+          Term: {
+            Field: free-text,
+            Text: te?t
+          }
+        },
+        IsRequired: false
+      }
+    ]
+  }
+}

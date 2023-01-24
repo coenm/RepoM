@@ -10,6 +10,7 @@ using Lucene.Net.Analysis.Core;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
+using Lucene.Net.Util;
 using RepoM.Plugin.LuceneSearch;
 using VerifyTests;
 using VerifyXunit;
@@ -43,6 +44,7 @@ public class RepositoryIndexTests
         _settings.IgnoreMember("Boost");
         _settings.IgnoreMember("IsProhibited");
         _settings.IgnoreMember("MultiTermRewriteMethod");
+        _settings.IgnoreMember("Automaton");
         _settings.DisableRequireUniquePrefix();
     }
 
@@ -125,8 +127,12 @@ public class RepositoryIndexTests
     [InlineData("range-only-excl", "age:{16 TO 75}")]
 
     // wildcard not yet implemented
-    // [InlineData("wildcard", "te?t")]
-    // [InlineData("wildcard", "te*t")]
+    [InlineData("wildcard-q-star", "te?t*")]
+    [InlineData("wildcard-q", "te?t")]
+    [InlineData("no-wildcard-q", "\"te?t\"")]
+    [InlineData("wildcard", "te*t")]
+    [InlineData("wildcard", " te*t  ")]
+    [InlineData("no-wildcard", " \"te*t\"  ")] // * is not wildcard because inside quotes
 
     // prefix query?
     //[InlineData("wildcard", "test*")]
@@ -195,6 +201,11 @@ public class RepositoryIndexTests
         if (query is Lucene.Net.Search.TermRangeQuery trq)
         {
             return new MyTermRangeQuery(trq);
+        }
+
+        if (query is Lucene.Net.Search.WildcardQuery wq)
+        {
+            return new MyWildcardQuery(wq);
         }
 
         var fullName = query.GetType().FullName;
@@ -285,6 +296,25 @@ public enum Occur
 
 public abstract class MyQueryBase
 {
+}
+
+
+
+public class MyWildcardQuery : MyQueryBase
+{
+    public MyWildcardQuery(WildcardQuery wildcardQuery)
+    {
+        Term = new MyTerm
+            {
+                Field = wildcardQuery.Term.Field,
+                Text = wildcardQuery.Term.Text,
+            };
+        Field = wildcardQuery.Term.Field;
+    }
+
+    public MyTerm Term { get; init; }
+
+    public string Field { get; init; }
 }
 
 public class MyTermRangeQuery : MyQueryBase
