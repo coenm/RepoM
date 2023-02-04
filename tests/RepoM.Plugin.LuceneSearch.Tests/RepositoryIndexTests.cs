@@ -65,7 +65,7 @@ public class RepositoryIndexTests
 
 
         // act
-        SetQuery result = (SetQuery)_queryParser.Parse(input);
+        var result = (SetQuery)_queryParser.Parse(input);
 
         // assert
         await Verifier.Verify(new
@@ -81,16 +81,16 @@ public class RepositoryIndexTests
                           });
     }
 
-    private IClause MapQuery2(SetQuery result, bool b)
+    private IQuery MapQuery2(SetQuery result, bool b)
     {
         return ConvertX(result.SetBooleanClause);
     }
 
-    private IClause ConvertX(WrappedBooleanClause input)
+    private IQuery ConvertX(WrappedBooleanClause input)
     {
         if (input is NotBooleanClause nbc)
         {
-            return new NotClause(ConvertQueryToClause(nbc.Query));
+            return new NotQuery(ConvertQueryToClause(nbc.Query));
         }
 
         if (input is SetBooleanClause x)
@@ -100,23 +100,18 @@ public class RepositoryIndexTests
                 return ConvertX(x.Items.Single());
             }
 
-            var array = x.Items.Select(x => ConvertX(x)).ToArray();
+            IQuery[] array = x.Items.Select(booleanClause => ConvertX(booleanClause)).ToArray();
 
-            if (x.Mode == SetBooleanClause.BoolMode.AND)
-            {
-                return new AndClause(array);
-            }
+            return x.Mode == SetBooleanClause.BoolMode.AND
+                ? new AndQuery(array)
+                : new OrQuery(array);
+        }
 
-            return new OrClause(array);
-        }
-        
-        {
-            //WrappedBooleanClause
-            return ConvertQueryToClause(input.Query);
-        }
+        //WrappedBooleanClause
+        return ConvertQueryToClause(input.Query);
     }
 
-    private IClause ConvertQueryToClause(Query query)
+    private IQuery ConvertQueryToClause(Query query)
     {
         // if (query is Lucene.Net.Search.BooleanQuery bq)
         // {
