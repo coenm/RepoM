@@ -1,0 +1,53 @@
+﻿{
+  $type: dynamic,
+  Output: tag:github.com tag:github,
+  Lucene: {
+    $type: BooleanQuery,
+    $values: [
+      {
+        $type: BooleanClause,
+        Occur: SHOULD,
+        Query: {
+          $type: TermQuery,
+          Term: {
+            $type: Term,
+            Field: tag,
+            Text: github.com
+          }
+        },
+        IsRequired: false
+      },
+      {
+        $type: BooleanClause,
+        Occur: SHOULD,
+        Query: {
+          $type: TermQuery,
+          Term: {
+            $type: Term,
+            Field: tag,
+            Text: github
+          }
+        },
+        IsRequired: false
+      }
+    ]
+  },
+  RepoM: {
+    $type: And,
+    Terms: {
+      $type: TermBase[],
+      $values: [
+        {
+          $type: SimpleTerm,
+          Term: tag,
+          Value: github.com
+        },
+        {
+          $type: SimpleTerm,
+          Term: tag,
+          Value: github
+        }
+      ]
+    }
+  }
+}

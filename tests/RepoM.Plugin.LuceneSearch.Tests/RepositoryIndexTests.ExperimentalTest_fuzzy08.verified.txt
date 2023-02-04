@@ -1,6 +1,6 @@
 ﻿{
   $type: dynamic,
-  Output: free-text:te?t*,
+  Output: free-text:roam~0,
   Lucene: {
     $type: BooleanQuery,
     $values: [
@@ -8,11 +8,13 @@
         $type: BooleanClause,
         Occur: SHOULD,
         Query: {
-          $type: WildcardQuery,
+          $type: FuzzyQuery,
+          PrefixLength: 0,
+          Transpositions: true,
           Term: {
             $type: Term,
             Field: free-text,
-            Text: te?t*
+            Text: roam
           },
           Field: free-text
         },
@@ -21,8 +23,8 @@
     ]
   },
   RepoM: {
-    $type: WildCardTerm,
+    $type: SimpleTerm,
     Term: free-text,
-    Value: te?t*
+    Value: roam
   }
 }

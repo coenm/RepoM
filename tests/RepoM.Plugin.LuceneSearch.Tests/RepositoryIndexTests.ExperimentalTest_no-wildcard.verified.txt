@@ -1,12 +1,16 @@
 ﻿{
+  $type: dynamic,
+  Output: free-text:te*t,
   Lucene: {
     $type: BooleanQuery,
     $values: [
       {
+        $type: BooleanClause,
         Occur: SHOULD,
         Query: {
           $type: TermQuery,
           Term: {
+            $type: Term,
             Field: free-text,
             Text: te*t
           }
@@ -16,19 +20,8 @@
     ]
   },
   RepoM: {
-    $type: MyBooleanQuery,
-    Clauses: [
-      {
-        Occur: SHOULD,
-        Query: {
-          $type: MyTermQuery,
-          Term: {
-            Field: free-text,
-            Text: te*t
-          }
-        },
-        IsRequired: false
-      }
-    ]
+    $type: SimpleTerm,
+    Term: free-text,
+    Value: te*t
   }
 }

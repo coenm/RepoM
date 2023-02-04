@@ -1,16 +1,17 @@
 ﻿{
+  $type: dynamic,
+  Output: tag:abc,
   Lucene: {
     $type: TermQuery,
     Term: {
+      $type: Term,
       Field: tag,
       Text: abc
     }
   },
   RepoM: {
-    $type: MyTermQuery,
-    Term: {
-      Field: tag,
-      Text: abc
-    }
+    $type: SimpleTerm,
+    Term: tag,
+    Value: abc
   }
 }

@@ -1,16 +1,21 @@
 ﻿{
+  $type: dynamic,
+  Output: +age:[16 TO 75],
   Lucene: {
     $type: BooleanQuery,
     $values: [
       {
+        $type: BooleanClause,
         Occur: MUST,
         Query: {
           $type: TermRangeQuery,
           LowerTerm: {
+            $type: BytesRef,
             Offset: 0,
             Length: 2
           },
           UpperTerm: {
+            $type: BytesRef,
             Offset: 0,
             Length: 2
           },
@@ -23,20 +28,11 @@
     ]
   },
   RepoM: {
-    $type: MyBooleanQuery,
-    Clauses: [
-      {
-        Occur: MUST,
-        Query: {
-          $type: MyTermRangeQuery,
-          IncludesLower: true,
-          Field: age,
-          LowerText: 16,
-          UpperText: 75,
-          IncludesUpper: true
-        },
-        IsRequired: true
-      }
-    ]
+    $type: TermRange,
+    Field: age,
+    LowerText: 16,
+    IncludesLower: true,
+    UpperText: 75,
+    IncludesUpper: true
   }
 }

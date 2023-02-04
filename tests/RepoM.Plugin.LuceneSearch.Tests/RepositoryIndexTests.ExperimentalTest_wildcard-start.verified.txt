@@ -1,12 +1,16 @@
 ﻿{
+  $type: dynamic,
+  Output: free-text:*ext,
   Lucene: {
     $type: BooleanQuery,
     $values: [
       {
+        $type: BooleanClause,
         Occur: SHOULD,
         Query: {
           $type: WildcardQuery,
           Term: {
+            $type: Term,
             Field: free-text,
             Text: *ext
           },
@@ -17,20 +21,8 @@
     ]
   },
   RepoM: {
-    $type: MyBooleanQuery,
-    Clauses: [
-      {
-        Occur: SHOULD,
-        Query: {
-          $type: MyWildcardQuery,
-          Term: {
-            Field: free-text,
-            Text: *ext
-          },
-          Field: free-text
-        },
-        IsRequired: false
-      }
-    ]
+    $type: WildCardTerm,
+    Term: free-text,
+    Value: *ext
   }
 }

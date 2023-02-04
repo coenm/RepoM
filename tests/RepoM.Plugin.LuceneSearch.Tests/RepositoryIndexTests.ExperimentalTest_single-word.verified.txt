@@ -1,6 +1,6 @@
 ﻿{
   $type: dynamic,
-  Output: free-text:te?t*,
+  Output: free-text:aBc@,
   Lucene: {
     $type: BooleanQuery,
     $values: [
@@ -8,21 +8,20 @@
         $type: BooleanClause,
         Occur: SHOULD,
         Query: {
-          $type: WildcardQuery,
+          $type: TermQuery,
           Term: {
             $type: Term,
             Field: free-text,
-            Text: te?t*
-          },
-          Field: free-text
+            Text: aBc@
+          }
         },
         IsRequired: false
       }
     ]
   },
   RepoM: {
-    $type: WildCardTerm,
+    $type: SimpleTerm,
     Term: free-text,
-    Value: te?t*
+    Value: aBc@
   }
 }

@@ -1,0 +1,74 @@
+﻿{
+  Lucene: {
+    $type: BooleanQuery,
+    $values: [
+      {
+        Occur: MUST,
+        Query: {
+          $type: BooleanQuery,
+          $values: [
+            {
+              Occur: SHOULD,
+              Query: {
+                $type: TermQuery,
+                Term: {
+                  Field: tag,
+                  Text: github.com
+                }
+              },
+              IsRequired: false
+            },
+            {
+              Occur: SHOULD,
+              Query: {
+                $type: TermQuery,
+                Term: {
+                  Field: tag,
+                  Text: github
+                }
+              },
+              IsRequired: false
+            }
+          ]
+        },
+        IsRequired: true
+      }
+    ]
+  },
+  RepoM: {
+    $type: MyBooleanQuery,
+    Clauses: [
+      {
+        Occur: MUST,
+        Query: {
+          $type: MyBooleanQuery,
+          Clauses: [
+            {
+              Occur: SHOULD,
+              Query: {
+                $type: MyTermQuery,
+                Term: {
+                  Field: tag,
+                  Text: github.com
+                }
+              },
+              IsRequired: false
+            },
+            {
+              Occur: SHOULD,
+              Query: {
+                $type: MyTermQuery,
+                Term: {
+                  Field: tag,
+                  Text: github
+                }
+              },
+              IsRequired: false
+            }
+          ]
+        },
+        IsRequired: true
+      }
+    ]
+  }
+}

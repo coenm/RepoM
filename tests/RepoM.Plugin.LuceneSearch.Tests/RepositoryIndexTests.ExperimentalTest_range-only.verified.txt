@@ -1,11 +1,15 @@
 ﻿{
+  $type: dynamic,
+  Output: age:[16 TO 75],
   Lucene: {
     $type: TermRangeQuery,
     LowerTerm: {
+      $type: BytesRef,
       Offset: 0,
       Length: 2
     },
     UpperTerm: {
+      $type: BytesRef,
       Offset: 0,
       Length: 2
     },
@@ -14,10 +18,10 @@
     Field: age
   },
   RepoM: {
-    $type: MyTermRangeQuery,
-    IncludesLower: true,
+    $type: TermRange,
     Field: age,
     LowerText: 16,
+    IncludesLower: true,
     UpperText: 75,
     IncludesUpper: true
   }

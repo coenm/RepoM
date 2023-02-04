@@ -1,0 +1,8 @@
+﻿{
+  $type: Not,
+  Term: {
+    $type: SimpleTerm,
+    Term: tag,
+    Value: x
+  }
+}
