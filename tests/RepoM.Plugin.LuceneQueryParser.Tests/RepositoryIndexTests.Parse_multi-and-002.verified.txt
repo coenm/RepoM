@@ -1,0 +1,21 @@
+﻿{
+  Output: And( Not(tag:github.com), tag:github ),
+  Model: {
+    $type: AndQuery,
+    Items: [
+      {
+        $type: NotQuery,
+        Item: {
+          $type: SimpleTerm,
+          Term: tag,
+          Value: github.com
+        }
+      },
+      {
+        $type: SimpleTerm,
+        Term: tag,
+        Value: github
+      }
+    ]
+  }
+}

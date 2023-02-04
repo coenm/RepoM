@@ -1,0 +1,21 @@
+﻿{
+  Output: Or( tag:github.com, Not(tag:github) ),
+  Model: {
+    $type: OrQuery,
+    Items: [
+      {
+        $type: SimpleTerm,
+        Term: tag,
+        Value: github.com
+      },
+      {
+        $type: NotQuery,
+        Item: {
+          $type: SimpleTerm,
+          Term: tag,
+          Value: github
+        }
+      }
+    ]
+  }
+}

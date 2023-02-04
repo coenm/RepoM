@@ -71,10 +71,45 @@ public class RepositoryIndexTests
     [InlineData("range-only-excl-left", "age:{16 TO 75]")]
     [InlineData("range-only-excl-right", "age:[16 TO 75}")]
     [InlineData("range-only-excl", "age:{16 TO 75}")]
+
+    [InlineData("multi-001", "(+tag:github.com OR +tag:github)")] 
+    [InlineData("multi-001", "(tag:github.com OR tag:github)")]
+    [InlineData("multi-001", "+(tag:github.com OR tag:github)")]
+    [InlineData("multi-001", "+tag:github.com OR +tag:github")]
+
+    [InlineData("multi-002", "(-tag:github.com OR +tag:github)")]
+    [InlineData("multi-002", "(-tag:github.com OR tag:github)")]
+    [InlineData("multi-002", "+(-tag:github.com OR tag:github)")]
+
+    [InlineData("multi-003", "(+tag:github.com OR -tag:github)")]
+    [InlineData("multi-003", "(tag:github.com OR -tag:github)")]
+    [InlineData("multi-003", "+(tag:github.com OR -tag:github)")]
+
+    [InlineData("multi-and-001", "(+tag:github.com AND +tag:github)")]
+    [InlineData("multi-and-001", "(tag:github.com AND tag:github)")]
+    [InlineData("multi-and-001", "+(tag:github.com AND tag:github)")]
+    [InlineData("multi-and-001", "+tag:github.com AND +tag:github")]
+
+    [InlineData("multi-and-001", "(+tag:github.com   +tag:github)")]
+    [InlineData("multi-and-001", "(tag:github.com  tag:github)")]
+    [InlineData("multi-and-001", "+(tag:github.com tag:github)")]
+    [InlineData("multi-and-001", "+tag:github.com  +tag:github")]
+
+    [InlineData("multi-and-002", "(-tag:github.com AND +tag:github)")]
+    [InlineData("multi-and-002", "(-tag:github.com AND tag:github)")]
+    [InlineData("multi-and-002", "+(-tag:github.com AND tag:github)")]
+    [InlineData("multi-and-002", "+(-tag:github.com tag:github)")]
+
+    [InlineData("multi-and-003", "(+tag:github.com AND -tag:github)")]
+    [InlineData("multi-and-003", "(tag:github.com AND -tag:github)")]
+    [InlineData("multi-and-003", "+(tag:github.com AND -tag:github)")]
+    [InlineData("multi-and-003", "+(tag:github.com -tag:github)")]
+
+
     public async Task Parse(string outputName, string input)
     {
         // arrange
-
+        
         // act
         IQuery result = _sut.Parse(input);
 
@@ -96,7 +131,6 @@ public class RepositoryIndexTests
     // // [InlineData("text-only", "  +This +is      Some Text@  ")] // plus doesnt matter
     // //
     
-
     //
     // // // wildcard not yet implemented
     // [InlineData("wildcard-q-star", "te?t*")]
@@ -116,14 +150,7 @@ public class RepositoryIndexTests
     // // //[InlineData("Proximity", "\"jakarta apache\"~10")] // Proximity Searches, PhraseQuery
     // // // [InlineData("boosting", "jakarta^4 apache")] // Proximity Searches, PhraseQuery
     // //
-    // [InlineData("multi-001", "(+tag:github.com OR +tag:github)", false)] // or, two tags
-    // [InlineData("multi-001", "+tag:github.com OR +tag:github", true)] // or, two tags
-    // [InlineData("multi-001", "+tag:github.com +tag:github", false)] // or, two tags
-    // [InlineData("multi-001", "+tag:github.com +tag:github", true)] // or, two tags
-    // // [InlineData("multi-001", "(tag:github.com OR tag:github)")] // or, two tags
-    // // [InlineData("multi-001", "(+tag:github.com OR +tag:github)")] // or, two tags
-    // // [InlineData("multi-001.1", "+(tag:github.com OR tag:github)")] // or, two tags
-    // // [InlineData("multi-001.2", "-(tag:github.com OR tag:github)")] // negative or, two tags
+     // // [InlineData("multi-001.2", "-(tag:github.com OR tag:github)")] // negative or, two tags
     // // [InlineData("multi-001.3", "(-tag:github.com AND -tag:github)")] // negative or, two tags
     // //
     // // [InlineData("multi-002", "is:pinned repom")]

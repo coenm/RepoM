@@ -1,0 +1,18 @@
+﻿{
+  Output: And( tag:github.com, tag:github ),
+  Model: {
+    $type: AndQuery,
+    Items: [
+      {
+        $type: SimpleTerm,
+        Term: tag,
+        Value: github.com
+      },
+      {
+        $type: SimpleTerm,
+        Term: tag,
+        Value: github
+      }
+    ]
+  }
+}
