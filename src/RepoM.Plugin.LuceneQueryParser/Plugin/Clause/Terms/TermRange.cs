@@ -1,4 +1,7 @@
-namespace RepoM.Plugin.LuceneSearch.Tests.NewFolder.Clause.Terms;
+namespace RepoM.Plugin.LuceneQueryParser.Plugin.Clause.Terms;
+using Lucene.Net.Index;
+using YamlDotNet.Core.Tokens;
+
 public class TermRange : TermBase
 {
     public TermRange(string field, string lowerText, bool includesLower, string upperText, bool includesUpper)
@@ -19,4 +22,9 @@ public class TermRange : TermBase
     public string UpperText { get; }
 
     public bool IncludesUpper { get; }
+
+    public override string ToString()
+    {
+        return Field + ":[" + LowerText + ".." + UpperText + "]";
+    }
 }

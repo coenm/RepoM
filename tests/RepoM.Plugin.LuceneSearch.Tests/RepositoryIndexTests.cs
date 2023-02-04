@@ -1,19 +1,17 @@
 namespace RepoM.Plugin.LuceneSearch.Tests;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Argon;
-using FluentAssertions;
 using Lucene.Net.Analysis.Core;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
+using RepoM.Plugin.LuceneQueryParser.LuceneX;
+using RepoM.Plugin.LuceneQueryParser.Plugin.Clause;
+using RepoM.Plugin.LuceneQueryParser.Plugin.Clause.Terms;
 using RepoM.Plugin.LuceneSearch;
-using RepoM.Plugin.LuceneSearch.Tests.NewFolder.Clause;
-using RepoM.Plugin.LuceneSearch.Tests.NewFolder.Clause.Terms;
-using RepoM.Plugin.LuceneSearch.Tests.NewFolder.LuceneX;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -172,217 +170,218 @@ public class RepositoryIndexTests
         var fullName = query.GetType().FullName;
         throw new NotImplementedException(fullName);
     }
-
-
-
-    [Fact]
-    public void Test1()
-    {
-        // arrange
-        var sut = new RepositoryIndex(new LuceneDirectoryInstance(new RamLuceneDirectoryFactory()));
-
-        // act
-        _ = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
-
-        // assert
-        hits.Should().Be(0);
-    }
-
-    [Theory]
-    [InlineData("tag-only", "tag:abc")]
-    [InlineData("tag-only", "  tag:abc  ")]
-    [InlineData("tag-only", "tag:\"abc\"")]
-    [InlineData("tag-only", " tag:\"abc\"")]
-    [InlineData("tag-only", " tag:\"abc  \"")]
-    [InlineData("tag-only", " tag:\"   abc  \"")]
-    [InlineData("tag-only", " (tag:\"   abc  \")")]
-    
-    [InlineData("tag-plus", " +tag:\"   abc  \"")]
-    [InlineData("tag-plus", " +tag:abc")]
-    [InlineData("tag-plus", " (+tag:abc)")]
-    [InlineData("tag-plus", " +(tag:abc)")]
-    [InlineData("tag-plus", " (+(tag:abc))")]
-    
-    [InlineData("tag-min", " -tag:\"   abc  \"")]
-    [InlineData("tag-min", " -tag:abc")]
-    [InlineData("tag-min", " (-tag:abc)")]
-    [InlineData("tag-min", " -(tag:abc)")]
-
-    [InlineData("single-word", "aBc@")]
-    [InlineData("single-word", " aBc@ ")]
-    [InlineData("single-word", " \"aBc@\" ")]
-    [InlineData("single-word", " ((\"aBc@\")) ")]
-    // [InlineData("single-word", " +(\"aBc@\") ")]
-    // [InlineData("single-word", " (+\"aBc@\") ")]
-
-    // [InlineData("text-only", "This is Some   Text@ ")]
-    // [InlineData("text-only", "This is Some Text@")]
-    // [InlineData("text-only", "  This is Some Text@  ")]
-    // [InlineData("text-only", "  This is      Some Text@  ")]
-    // [InlineData("text-only", "  This is      Some^4 Text@  ")] // boosting ignored
-    // // [InlineData("text-only", "  This is      Some^ Text@  ")]  // error
-    // [InlineData("text-only", "  +This +is      Some Text@  ")] // plus doesnt matter
     //
-    [InlineData("range-only", "age:[16 TO 75]")]
-    [InlineData("range-only", "  age:[16 TO 75]")]
-    [InlineData("range-only", "age:[16 TO 75]  ")]
-    [InlineData("range-only", "age:[16   TO   75]")]
-    [InlineData("range-only", "age:[  16 TO 75 ]")]
-    [InlineData("range-only", "age: [16 TO 75]")]
-    [InlineData("range-only", "age : [16 TO 75]")]
-    [InlineData("range-only", "age :[16 TO 75]")]
-    [InlineData("range-only", "  age:[16 TO 75] ")]
-    [InlineData("range-only", "(age:[16 TO 75])")]
-    [InlineData("range-only-must", "+(age:[16 TO 75])")]
-    [InlineData("range-only-must", "(+age:[16 TO 75])")]
-    [InlineData("range-only-excl-left", "age:{16 TO 75]")]
-    [InlineData("range-only-excl-right", "age:[16 TO 75}")]
-    [InlineData("range-only-excl", "age:{16 TO 75}")]
-    
-    // // wildcard not yet implemented
-    [InlineData("wildcard-q-star", "te?t*")]
-    [InlineData("wildcard-q", "te?t")]
-    // [InlineData("wildcard-q2", "te?t abc")]
-    [InlineData("no-wildcard-q", "\"te?t\"")]
-    [InlineData("wildcard-start", "*ext")]
-    [InlineData("wildcard", "te*t")]
-    [InlineData("wildcard", " te*t  ")]
-    [InlineData("no-wildcard", " \"te*t\"  ")] // * is not wildcard because inside quotes
     //
-    // // fuzzy search FuzzyQuery
-    [InlineData("fuzzy", "roam~")]
-    [InlineData("fuzzy08", "roam~0.8")] // same as above due to removing 'MaxEdits' property in verify
-    [InlineData("fuzzy10", "roam~1.0")] // same as above due to removing 'MaxEdits' property in verify
-
-    // //[InlineData("Proximity", "\"jakarta apache\"~10")] // Proximity Searches, PhraseQuery
-    // // [InlineData("boosting", "jakarta^4 apache")] // Proximity Searches, PhraseQuery
     //
-    [InlineData("multi-001", "(+tag:github.com OR +tag:github)", false)] // or, two tags
-    [InlineData("multi-001", "+tag:github.com OR +tag:github", true)] // or, two tags
-    [InlineData("multi-001", "+tag:github.com +tag:github", false)] // or, two tags
-    [InlineData("multi-001", "+tag:github.com +tag:github", true)] // or, two tags
-    // [InlineData("multi-001", "(tag:github.com OR tag:github)")] // or, two tags
-    // [InlineData("multi-001", "(+tag:github.com OR +tag:github)")] // or, two tags
-    // [InlineData("multi-001.1", "+(tag:github.com OR tag:github)")] // or, two tags
-    // [InlineData("multi-001.2", "-(tag:github.com OR tag:github)")] // negative or, two tags
-    // [InlineData("multi-001.3", "(-tag:github.com AND -tag:github)")] // negative or, two tags
+    // [Fact]
+    // public void Test1()
+    // {
+    //     // arrange
+    //     var sut = new RepositoryIndex(new LuceneDirectoryInstance(new RamLuceneDirectoryFactory()));
     //
-    // [InlineData("multi-002", "is:pinned repom")]
-    // [InlineData("multi-002", "is:pinned AND repom")]
-    // [InlineData("multi-002", "is:pinned OR repom")] 
+    //     // act
+    //     _ = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
+    //
+    //     // assert
+    //     hits.Should().Be(0);
+    // }
+    //
+    // [Theory]
+    // [InlineData("tag-only", "tag:abc")]
+    // [InlineData("tag-only", "  tag:abc  ")]
+    // [InlineData("tag-only", "tag:\"abc\"")]
+    // [InlineData("tag-only", " tag:\"abc\"")]
+    // [InlineData("tag-only", " tag:\"abc  \"")]
+    // [InlineData("tag-only", " tag:\"   abc  \"")]
+    // [InlineData("tag-only", " (tag:\"   abc  \")")]
+    //
+    // [InlineData("tag-plus", " +tag:\"   abc  \"")]
+    // [InlineData("tag-plus", " +tag:abc")]
+    // [InlineData("tag-plus", " (+tag:abc)")]
+    // [InlineData("tag-plus", " +(tag:abc)")]
+    // [InlineData("tag-plus", " (+(tag:abc))")]
+    //
+    // [InlineData("tag-min", " -tag:\"   abc  \"")]
+    // [InlineData("tag-min", " -tag:abc")]
+    // [InlineData("tag-min", " (-tag:abc)")]
+    // [InlineData("tag-min", " -(tag:abc)")]
+    //
+    // [InlineData("single-word", "aBc@")]
+    // [InlineData("single-word", " aBc@ ")]
+    // [InlineData("single-word", " \"aBc@\" ")]
+    // [InlineData("single-word", " ((\"aBc@\")) ")]
+    // // [InlineData("single-word", " +(\"aBc@\") ")]
+    // // [InlineData("single-word", " (+\"aBc@\") ")]
+    //
+    // // [InlineData("text-only", "This is Some   Text@ ")]
+    // // [InlineData("text-only", "This is Some Text@")]
+    // // [InlineData("text-only", "  This is Some Text@  ")]
+    // // [InlineData("text-only", "  This is      Some Text@  ")]
+    // // [InlineData("text-only", "  This is      Some^4 Text@  ")] // boosting ignored
+    // // // [InlineData("text-only", "  This is      Some^ Text@  ")]  // error
+    // // [InlineData("text-only", "  +This +is      Some Text@  ")] // plus doesnt matter
+    // //
+    // [InlineData("range-only", "age:[16 TO 75]")]
+    // [InlineData("range-only", "  age:[16 TO 75]")]
+    // [InlineData("range-only", "age:[16 TO 75]  ")]
+    // [InlineData("range-only", "age:[16   TO   75]")]
+    // [InlineData("range-only", "age:[  16 TO 75 ]")]
+    // [InlineData("range-only", "age: [16 TO 75]")]
+    // [InlineData("range-only", "age : [16 TO 75]")]
+    // [InlineData("range-only", "age :[16 TO 75]")]
+    // [InlineData("range-only", "  age:[16 TO 75] ")]
+    // [InlineData("range-only", "(age:[16 TO 75])")]
+    // [InlineData("range-only-must", "+(age:[16 TO 75])")]
+    // [InlineData("range-only-must", "(+age:[16 TO 75])")]
+    // [InlineData("range-only-excl-left", "age:{16 TO 75]")]
+    // [InlineData("range-only-excl-right", "age:[16 TO 75}")]
+    // [InlineData("range-only-excl", "age:{16 TO 75}")]
+    //
+    // // // wildcard not yet implemented
+    // [InlineData("wildcard-q-star", "te?t*")]
+    // [InlineData("wildcard-q", "te?t")]
+    // // [InlineData("wildcard-q2", "te?t abc")]
+    // [InlineData("no-wildcard-q", "\"te?t\"")]
+    // [InlineData("wildcard-start", "*ext")]
+    // [InlineData("wildcard", "te*t")]
+    // [InlineData("wildcard", " te*t  ")]
+    // [InlineData("no-wildcard", " \"te*t\"  ")] // * is not wildcard because inside quotes
+    // //
+    // // // fuzzy search FuzzyQuery
+    // [InlineData("fuzzy", "roam~")]
+    // [InlineData("fuzzy08", "roam~0.8")] // same as above due to removing 'MaxEdits' property in verify
+    // [InlineData("fuzzy10", "roam~1.0")] // same as above due to removing 'MaxEdits' property in verify
+    //
+    // // //[InlineData("Proximity", "\"jakarta apache\"~10")] // Proximity Searches, PhraseQuery
+    // // // [InlineData("boosting", "jakarta^4 apache")] // Proximity Searches, PhraseQuery
+    // //
+    // [InlineData("multi-001", "(+tag:github.com OR +tag:github)", false)] // or, two tags
+    // [InlineData("multi-001", "+tag:github.com OR +tag:github", true)] // or, two tags
+    // [InlineData("multi-001", "+tag:github.com +tag:github", false)] // or, two tags
+    // [InlineData("multi-001", "+tag:github.com +tag:github", true)] // or, two tags
+    // // [InlineData("multi-001", "(tag:github.com OR tag:github)")] // or, two tags
+    // // [InlineData("multi-001", "(+tag:github.com OR +tag:github)")] // or, two tags
+    // // [InlineData("multi-001.1", "+(tag:github.com OR tag:github)")] // or, two tags
+    // // [InlineData("multi-001.2", "-(tag:github.com OR tag:github)")] // negative or, two tags
+    // // [InlineData("multi-001.3", "(-tag:github.com AND -tag:github)")] // negative or, two tags
+    // //
+    // // [InlineData("multi-002", "is:pinned repom")]
+    // // [InlineData("multi-002", "is:pinned AND repom")]
+    // // [InlineData("multi-002", "is:pinned OR repom")] 
+    //
+    // public async Task ExperimentalTest(string outputName, string input, bool and = false)
+    // {
+    //     // arrange
+    //     if (and)
+    //     {
+    //         // _queryParser.DefaultOperator = Operator.AND;
+    //         _queryParser = new CustomMultiFieldQueryParser(LuceneNetVersion.VERSION, new[] { "free-text", }, _analyzer)
+    //             {
+    //                 DefaultOperator = Operator.AND,
+    //                 AllowLeadingWildcard = true,
+    //                 FuzzyMinSim = 1.0f, //FuzzyQuery 
+    //                 PhraseSlop = 0, // disable Proximity
+    //                 
+    //             };
+    //     }
+    //     else
+    //     {
+    //         _queryParser = new CustomMultiFieldQueryParser(LuceneNetVersion.VERSION, new[] { "free-text", }, _analyzer)
+    //             {
+    //                 DefaultOperator = Operator.OR,
+    //                 AllowLeadingWildcard = true,
+    //                 FuzzyMinSim = 1.0f, //FuzzyQuery 
+    //                 PhraseSlop = 0, // disable Proximity
+    //             };
+    //         // _queryParser.DefaultOperator = Operator.OR;
+    //     }
+    //     
+    //
+    //     // act
+    //     Query result = _queryParser.Parse(input);
+    //
+    //     // assert
+    //     await Verifier.Verify(new
+    //                           {
+    //                               Output = result.ToString(),
+    //                               Lucene = result,
+    //                               RepoM = MapQuery1(result, _queryParser.DefaultOperator == Operator.AND),
+    //                           },
+    //                       _settings)
+    //                   .AddExtraSettings(x =>
+    //                       {
+    //                           x.TypeNameHandling = TypeNameHandling.All;
+    //                       })
+    //                   .UseTextForParameters(outputName);
+    // }
+    //
+    // [Theory]
+    // [InlineData("-tag:x")]
+    // public async Task NegativeSingle(string input)
+    // {
+    //     // arrange
+    //     _queryParser.DefaultOperator = Operator.OR;
+    //
+    //     // act
+    //     Query result = _queryParser.Parse(input);
+    //     var mapped = MapQuery1(result, _queryParser.DefaultOperator == Operator.AND);
+    //     
+    //     // assert
+    //     var expected = new Not(new SimpleTerm("tag", "x")) as TermBase;
+    //     await Verifier.Verify(mapped, _settings).AddExtraSettings(x =>
+    //                       {
+    //                           x.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full;
+    //                           x.TypeNameHandling = TypeNameHandling.All;
+    //                       })
+    //                   .UseTextForParameters("xx");
+    // }
+    //
+    // [Fact]
+    // public async Task Tesdt1()
+    // {
+    //     // arrange
+    //     var sut = new RepositoryIndex(new LuceneDirectoryInstance(new RamLuceneDirectoryFactory()));
+    //     var item = new RepositorySearchModel(
+    //         "c:/a/b/c",
+    //         "RepoM",
+    //         new List<string>()
+    //             {
+    //                 "repositories",
+    //                 "work",
+    //             });
+    //     await sut.ReIndexMediaFileAsync(item).ConfigureAwait(false);
+    //
+    //     // act
+    //     _ = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
+    //
+    //     // assert
+    //     hits.Should().Be(1);
+    // }
+    //
+    // [Fact]
+    // public async Task ExperimentalTests()
+    // {
+    //     // arrange
+    //     // var analyzer = new WhitespaceAnalyzer(LuceneNetVersion.VERSION);
+    //     // var analyzer = new KeywordAnalyzer();
+    //
+    //     // act
+    //     Query result = _queryParser.Parse("tag:work test1 age:[41 TO 51] abc Core");
+    //
+    //     MyQueryBase x = MapQuery(result);
+    //
+    //     // assert
+    //     await Verifier.Verify(new
+    //                       {
+    //                           Lucene = result,
+    //                           RepoM = x,
+    //                       },
+    //                       _settings);
+    // }
+
     
-    public async Task ExperimentalTest(string outputName, string input, bool and = false)
-    {
-        // arrange
-        if (and)
-        {
-            // _queryParser.DefaultOperator = Operator.AND;
-            _queryParser = new CustomMultiFieldQueryParser(LuceneNetVersion.VERSION, new[] { "free-text", }, _analyzer)
-                {
-                    DefaultOperator = Operator.AND,
-                    AllowLeadingWildcard = true,
-                    FuzzyMinSim = 1.0f, //FuzzyQuery 
-                    PhraseSlop = 0, // disable Proximity
-                    
-                };
-        }
-        else
-        {
-            _queryParser = new CustomMultiFieldQueryParser(LuceneNetVersion.VERSION, new[] { "free-text", }, _analyzer)
-                {
-                    DefaultOperator = Operator.OR,
-                    AllowLeadingWildcard = true,
-                    FuzzyMinSim = 1.0f, //FuzzyQuery 
-                    PhraseSlop = 0, // disable Proximity
-                };
-            // _queryParser.DefaultOperator = Operator.OR;
-        }
-        
 
-        // act
-        Query result = _queryParser.Parse(input);
-
-        // assert
-        await Verifier.Verify(new
-                              {
-                                  Output = result.ToString(),
-                                  Lucene = result,
-                                  RepoM = MapQuery1(result, _queryParser.DefaultOperator == Operator.AND),
-                              },
-                          _settings)
-                      .AddExtraSettings(x =>
-                          {
-                              x.TypeNameHandling = TypeNameHandling.All;
-                          })
-                      .UseTextForParameters(outputName);
-    }
-
-    [Theory]
-    [InlineData("-tag:x")]
-    public async Task NegativeSingle(string input)
-    {
-        // arrange
-        _queryParser.DefaultOperator = Operator.OR;
-
-        // act
-        Query result = _queryParser.Parse(input);
-        var mapped = MapQuery1(result, _queryParser.DefaultOperator == Operator.AND);
-        
-        // assert
-        var expected = new Not(new SimpleTerm("tag", "x")) as TermBase;
-        await Verifier.Verify(mapped, _settings).AddExtraSettings(x =>
-                          {
-                              x.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full;
-                              x.TypeNameHandling = TypeNameHandling.All;
-                          })
-                      .UseTextForParameters("xx");
-    }
-
-    [Fact]
-    public async Task Tesdt1()
-    {
-        // arrange
-        var sut = new RepositoryIndex(new LuceneDirectoryInstance(new RamLuceneDirectoryFactory()));
-        var item = new RepositorySearchModel(
-            "c:/a/b/c",
-            "RepoM",
-            new List<string>()
-                {
-                    "repositories",
-                    "work",
-                });
-        await sut.ReIndexMediaFileAsync(item).ConfigureAwait(false);
-
-        // act
-        _ = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
-
-        // assert
-        hits.Should().Be(1);
-    }
-
-    [Fact]
-    public async Task ExperimentalTests()
-    {
-        // arrange
-        // var analyzer = new WhitespaceAnalyzer(LuceneNetVersion.VERSION);
-        // var analyzer = new KeywordAnalyzer();
-
-        // act
-        Query result = _queryParser.Parse("tag:work test1 age:[41 TO 51] abc Core");
-
-        MyQueryBase x = MapQuery(result);
-
-        // assert
-        await Verifier.Verify(new
-                          {
-                              Lucene = result,
-                              RepoM = x,
-                          },
-                          _settings);
-    }
-
-    
-
+    /*
     private static TermBase MapQuery1(Query query, bool and)
     {
         if (query is Lucene.Net.Search.BooleanQuery bq)
@@ -405,7 +404,6 @@ public class RepositoryIndexTests
             }
 
             return and ? new And(items) : new Or(items);
-            // return new MyBooleanQuery(bq, MapQuery);
         }
         
         if (query is Lucene.Net.Search.TermQuery tq)
@@ -437,7 +435,9 @@ public class RepositoryIndexTests
         var fullName = query.GetType().FullName;
         throw new NotImplementedException(fullName);
     }
+    */
 
+    /*
     private static MyQueryBase MapQuery(Query query)
     {
         if (query is Lucene.Net.Search.BooleanQuery bq)
@@ -480,15 +480,19 @@ public class RepositoryIndexTests
         var fullName = query.GetType().FullName;
         throw new NotImplementedException(fullName);
     }
+*/
 }
 
+/*
 public sealed class MyTerm
 {
     public string Field { get; init; }
 
     public string Text { get; init;  }
 }
+*/
 
+/*
 public class MyBooleanClause
 {
     // LUCENENET specific - de-nested Occur from BooleanClause in order to prevent
@@ -532,12 +536,10 @@ public class MyBooleanClause
         get => _query;
         set => _query = value;
     }
-
-    public virtual bool IsProhibited => Occur.MUST_NOT == _occur;
-
-    public virtual bool IsRequired => Occur.MUST == _occur;
 }
+*/
 
+/*
 /// <summary>
 /// Specifies how clauses are to occur in matching documents. </summary>
 public enum Occur
@@ -562,13 +564,17 @@ public enum Occur
     /// </summary>
     MUST_NOT
 }
+*/
 
+/*
 public abstract class MyQueryBase
 {
 }
+*/
 
 
 
+/*
 public class MyWildcardQuery : MyQueryBase
 {
     public MyWildcardQuery(WildcardQuery wildcardQuery)
@@ -585,7 +591,9 @@ public class MyWildcardQuery : MyQueryBase
 
     public string Field { get; init; }
 }
+*/
 
+/*
 public class MyTermRangeQuery : MyQueryBase
 {
     public MyTermRangeQuery(Lucene.Net.Search.TermRangeQuery inner)
@@ -612,7 +620,9 @@ public class MyTermRangeQuery : MyQueryBase
     /// Returns <c>true</c> if the upper endpoint is inclusive </summary>
     public bool IncludesUpper { get; }
 }
+*/
 
+/*
 public class MyTermQuery : MyQueryBase
 {
     internal MyTermQuery(TermQuery termQuery):
@@ -631,8 +641,9 @@ public class MyTermQuery : MyQueryBase
 
     public MyTerm Term { get; init; }
 }
+*/
 
-public class MyBooleanQuery : MyQueryBase
+/*public class MyBooleanQuery : MyQueryBase
 {
     private readonly List<MyBooleanClause> _clauses;
 
@@ -661,4 +672,4 @@ public class MyBooleanQuery : MyQueryBase
                 _ => throw new ArgumentOutOfRangeException(nameof(clauseOccur), clauseOccur, null),
             };
     }
-}
+}*/

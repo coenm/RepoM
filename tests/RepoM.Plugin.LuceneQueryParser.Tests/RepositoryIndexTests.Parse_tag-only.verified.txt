@@ -1,0 +1,8 @@
+﻿{
+  Output: tag:abc,
+  Model: {
+    $type: SimpleTerm,
+    Term: tag,
+    Value: abc
+  }
+}

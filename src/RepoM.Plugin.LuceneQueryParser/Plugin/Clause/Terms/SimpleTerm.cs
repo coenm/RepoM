@@ -1,4 +1,7 @@
-namespace RepoM.Plugin.LuceneSearch.Tests.NewFolder.Clause.Terms;
+namespace RepoM.Plugin.LuceneQueryParser.Plugin.Clause.Terms;
+
+using System.Net.Http.Headers;
+
 public class SimpleTerm : TermBase
 {
     public SimpleTerm(string term, string value)
@@ -10,4 +13,9 @@ public class SimpleTerm : TermBase
     public string Term { get; }
 
     public string Value { get; }
+
+    public override string ToString()
+    {
+        return Term + ":" + Value;
+    }
 }

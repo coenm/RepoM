@@ -1,0 +1,11 @@
+﻿{
+  Output: age:[16..75],
+  Model: {
+    $type: TermRange,
+    Field: age,
+    LowerText: 16,
+    IncludesLower: true,
+    UpperText: 75,
+    IncludesUpper: true
+  }
+}

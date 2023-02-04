@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.LuceneSearch.Tests.NewFolder.LuceneX;
+namespace RepoM.Plugin.LuceneQueryParser.LuceneX;
 
 using System;
 using System.Collections.Generic;
@@ -6,8 +6,10 @@ using System.Diagnostics;
 using System.Linq;
 using Lucene.Net.Analysis;
 using Lucene.Net.QueryParsers.Classic;
+using Lucene.Net.QueryParsers.Flexible.Standard;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
+using Sprache;
 
 public class CustomMultiFieldQueryParser : MultiFieldQueryParser
 {

@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.LuceneSearch.Tests.NewFolder.LuceneX;
+namespace RepoM.Plugin.LuceneQueryParser.LuceneX;
 
 using System.Collections.Generic;
 using System.Linq;

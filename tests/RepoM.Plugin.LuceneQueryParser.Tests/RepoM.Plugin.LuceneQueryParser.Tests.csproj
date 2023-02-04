@@ -24,17 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.Plugin.LuceneQueryParser\RepoM.Plugin.LuceneQueryParser.csproj" />
-    <ProjectReference Include="..\..\src\RepoM.Plugin.LuceneSearch\RepoM.Plugin.LuceneSearch.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="RepositoryIndexTests.Tesd3t1.verified.txt">
-      <DependentUpon>RepositoryIndexTests.cs</DependentUpon>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>
