@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Core;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -22,7 +21,7 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
     private const string KEY_REPOSITORY_NAME = "name";
     private const string KEY_REPOSITORY_PATH = "path";
     private const string KEY_TAG = "tag";
-    
+
     private readonly Analyzer _analyzer;
     private readonly IndexWriter _indexWriter;
     private readonly SearcherManager _searcherManager;
@@ -33,8 +32,7 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
     {
         _indexDirectory = indexDirectoryFactory.Instance;
 
-        _analyzer = new WhitespaceAnalyzer(LuceneNetVersion.VERSION);
-        //_analyzer = new StandardAnalyzer(LuceneNetVersion.VERSION);
+        _analyzer = new StandardAnalyzer(LuceneNetVersion.VERSION);
         /*
                 _analyzer = new PerFieldAnalyzerWrapper(
                                                         new HtmlStripAnalyzer(LuceneNetVersion.VERSION),
@@ -65,10 +63,10 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
     */
 
         var indexWriterConfig = new IndexWriterConfig(LuceneNetVersion.VERSION, _analyzer)
-            {
-                OpenMode = OpenMode.CREATE_OR_APPEND,
-                RAMBufferSizeMB = 256.0,
-            };
+        {
+            OpenMode = OpenMode.CREATE_OR_APPEND,
+            RAMBufferSizeMB = 256.0,
+        };
 
         _indexWriter = new IndexWriter(_indexDirectory, indexWriterConfig);
         _searcherManager = new SearcherManager(_indexWriter, true, null);
@@ -159,7 +157,7 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
         var query = new TermQuery(term);
         return Search(query, null, out _).SingleOrDefault();
     }
-    
+
     public List<RepositorySearchResult> Search(string queryString, SearchOperator searchMode, out int totalHits)
     {
         lock (_syncLock)
@@ -258,19 +256,9 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
     private MultiFieldQueryParser CreateQueryParser(Operator defaultOperator)
     {
         var result = new MultiFieldQueryParser(LuceneNetVersion.VERSION, _defaultQueryFields, _analyzer)
-            {
-                DefaultOperator = defaultOperator,
-                
-            };
-        return result;
-    }
-
-    internal MultiFieldQueryParser CreateQueryParserTest(Operator defaultOperator)
-    {
-        var result = new MultiFieldQueryParser(LuceneNetVersion.VERSION, new[] { "free-text", }, _analyzer)
-                {
-                    DefaultOperator = defaultOperator,
-                };
+        {
+            DefaultOperator = defaultOperator,
+        };
         return result;
     }
 
@@ -297,11 +285,11 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
     private static Operator MapOperator(SearchOperator searchOperator)
     {
         return searchOperator switch
-            {
-                SearchOperator.And => Operator.AND,
-                SearchOperator.Or => Operator.OR,
-                _ => throw new ArgumentOutOfRangeException(nameof(searchOperator), searchOperator, null)
-            };
+        {
+            SearchOperator.And => Operator.AND,
+            SearchOperator.Or => Operator.OR,
+            _ => throw new ArgumentOutOfRangeException(nameof(searchOperator), searchOperator, null)
+        };
     }
 
     private void DeleteByTerm(Term term)
