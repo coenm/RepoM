@@ -1,6 +1,4 @@
-namespace RepoM.Plugin.LuceneQueryParser.Plugin.Clause.Terms;
-
-using System.Net.Http.Headers;
+namespace RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 public class SimpleTerm : TermBase
 {

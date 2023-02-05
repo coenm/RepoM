@@ -16,8 +16,4 @@
     <ProjectReference Include="..\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Interface\" />
-  </ItemGroup>
-
 </Project>

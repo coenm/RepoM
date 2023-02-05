@@ -1,5 +1,4 @@
-namespace RepoM.Plugin.LuceneQueryParser.Plugin.Clause;
-using Lucene.Net.Search;
+namespace RepoM.Core.Plugin.RepositoryFiltering.Clause;
 
 public class NotQuery : IQuery
 {

@@ -2,8 +2,8 @@ namespace RepoM.Plugin.LuceneQueryParser.Tests;
 
 using System.Threading.Tasks;
 using Argon;
+using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Plugin.LuceneQueryParser;
-using RepoM.Plugin.LuceneQueryParser.Plugin.Clause;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;

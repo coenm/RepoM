@@ -1,7 +1,7 @@
-namespace RepoM.Plugin.LuceneQueryParser.Plugin.Clause;
+namespace RepoM.Core.Plugin.RepositoryFiltering.Clause;
 
-using System.Linq;
 using System;
+using System.Linq;
 
 public class AndQuery : IQuery
 {
@@ -14,6 +14,11 @@ public class AndQuery : IQuery
 
     public override string ToString()
     {
+        if (Items.Length == 0)
+        {
+            return string.Empty;
+        }
+        
         if (Items.Length == 1)
         {
             return Items.Single().ToString();

@@ -30,5 +30,7 @@ public interface IAppSettingsService
 
     string SortKey { get; set; }
 
+    string QueryParserKey { get; set; }
+
     void RegisterInvalidationHandler(Action handler);
 }

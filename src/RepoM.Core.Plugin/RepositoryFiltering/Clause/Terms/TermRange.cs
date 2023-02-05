@@ -1,6 +1,4 @@
-namespace RepoM.Plugin.LuceneQueryParser.Plugin.Clause.Terms;
-using Lucene.Net.Index;
-using YamlDotNet.Core.Tokens;
+namespace RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 public class TermRange : TermBase
 {

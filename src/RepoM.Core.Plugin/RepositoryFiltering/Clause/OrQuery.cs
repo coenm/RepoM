@@ -1,8 +1,6 @@
-namespace RepoM.Plugin.LuceneQueryParser.Plugin.Clause;
+namespace RepoM.Core.Plugin.RepositoryFiltering.Clause;
 
 using System;
-using LibGit2Sharp;
-using static RepoM.Plugin.LuceneQueryParser.LuceneX.SetBooleanClause;
 using System.Linq;
 
 public class OrQuery : IQuery
@@ -16,6 +14,11 @@ public class OrQuery : IQuery
 
     public override string ToString()
     {
+        if (Items.Length == 0)
+        {
+            return string.Empty;
+        }
+
         if (Items.Length == 1)
         {
             return Items.Single().ToString();

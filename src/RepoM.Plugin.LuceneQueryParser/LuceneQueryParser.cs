@@ -7,12 +7,12 @@ using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
+using RepoM.Core.Plugin.RepositoryFiltering;
+using RepoM.Core.Plugin.RepositoryFiltering.Clause;
+using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Plugin.LuceneQueryParser.LuceneX;
-using RepoM.Plugin.LuceneQueryParser.Plugin;
-using RepoM.Plugin.LuceneQueryParser.Plugin.Clause;
-using RepoM.Plugin.LuceneQueryParser.Plugin.Clause.Terms;
 
-public class LuceneQueryParser1 : IQueryParser
+public class LuceneQueryParser1 : INamedQueryParser
 {
     private readonly WhitespaceAnalyzer _analyzer;
     private readonly CustomMultiFieldQueryParser _queryParser;
@@ -29,6 +29,8 @@ public class LuceneQueryParser1 : IQueryParser
             PhraseSlop = 0, // disable Proximity
         };
     }
+
+    public string Name { get; } = "Lucene";
 
     public IQuery Parse(string text)
     {
