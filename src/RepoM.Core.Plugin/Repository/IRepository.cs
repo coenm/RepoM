@@ -21,4 +21,6 @@ public interface IRepository
     string SafePath { get; }
 
     List<Remote> Remotes { get; }
+
+    bool HasUnpushedChanges { get; }
 }

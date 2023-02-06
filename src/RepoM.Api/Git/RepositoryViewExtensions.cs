@@ -2,20 +2,21 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.Text.RegularExpressions;
+using RepoM.Core.Plugin.Repository;
 
 public static class RepositoryViewExtensions
 {
-    public static bool MatchesRegexFilter(this IRepositoryView repositoryView, string pattern)
+    public static bool MatchesRegexFilter(this IRepository repositoryView, string pattern)
     {
         return MatchesFilter(repositoryView, pattern, useRegex: true);
     }
 
-    public static bool MatchesFilter(this IRepositoryView repositoryView, string filter)
+    public static bool MatchesFilter(this IRepository repositoryView, string filter)
     {
         return MatchesFilter(repositoryView, filter, useRegex: false);
     }
 
-    private static bool MatchesFilter(IRepositoryView repositoryView, string filter, bool useRegex)
+    private static bool MatchesFilter(IRepository repositoryView, string filter, bool useRegex)
     {
         if (string.IsNullOrEmpty(filter))
         {
@@ -49,7 +50,7 @@ public static class RepositoryViewExtensions
         }
         else
         {
-            filter = filter.Substring(2);
+            filter = filter[2..];
         }
 
         if (string.IsNullOrEmpty(filter))

@@ -257,21 +257,21 @@ public class RepositoryViewTests
         [Test]
         public void Returns_True_If_Filter_Is_Empty()
         {
-            _viewModel.MatchesFilter("").Should().Be(true);
+            _viewModel.Repository.MatchesFilter("").Should().Be(true);
         }
 
         [Test]
         public void Can_Filter_By_Name_Implicit()
         {
             _repo.Name = "Hello World";
-            _viewModel.MatchesFilter("lo wo").Should().Be(true);
+            _viewModel.Repository.MatchesFilter("lo wo").Should().Be(true);
         }
 
         [Test]
         public void Can_Filter_By_Name_Explicit()
         {
             _repo.Name = "Hello World";
-            _viewModel.MatchesFilter("n lo wo").Should().Be(true);
+            _viewModel.Repository.MatchesFilter("n lo wo").Should().Be(true);
         }
 
         [Test]
@@ -279,7 +279,7 @@ public class RepositoryViewTests
         {
             _repo.Name = "No Match Here";
             _repo.CurrentBranch = "feature/Test";
-            _viewModel.MatchesFilter("b feat").Should().Be(true);
+            _viewModel.Repository.MatchesFilter("b feat").Should().Be(true);
         }
 
         [Test]
@@ -292,14 +292,14 @@ public class RepositoryViewTests
 
             var viewModel = new RepositoryViewModel(repo, A.Dummy<IRepositoryMonitor>());
 
-            viewModel.MatchesFilter(@"p C:\").Should().Be(true);
+            viewModel.Repository.MatchesFilter(@"p C:\").Should().Be(true);
         }
 
         [Test]
         public void Returns_True_If_Filter_Is_Empty_Except_Prefix()
         {
             // "n ", "b ", "p " can be used to filter for name, branch and path
-            _viewModel.MatchesFilter("b ").Should().Be(true);
+            _viewModel.Repository.MatchesFilter("b ").Should().Be(true);
         }
 
         [Test]
@@ -307,7 +307,7 @@ public class RepositoryViewTests
         {
             // should be interpreted as "b" search term without prefix
             _repo.Name = "xyz";
-            _viewModel.MatchesFilter("b").Should().Be(false);
+            _viewModel.Repository.MatchesFilter("b").Should().Be(false);
         }
 
         [Test]
@@ -315,7 +315,7 @@ public class RepositoryViewTests
         {
             // trimming "b " leads to " master" which is not trimmed by design
             _repo.CurrentBranch = "master";
-            _viewModel.MatchesFilter("b  master").Should().Be(false);
+            _viewModel.Repository.MatchesFilter("b  master").Should().Be(false);
         }
 
         [Test]
@@ -323,7 +323,7 @@ public class RepositoryViewTests
         {
             _repo.StashCount = 1;
             _repo.HasUnpushedChanges.Should().Be(true);
-            _viewModel.MatchesFilter("todo").Should().Be(true);
+            _viewModel.Repository.MatchesFilter("todo").Should().Be(true);
         }
 
         [Test]
@@ -331,7 +331,7 @@ public class RepositoryViewTests
         {
             _repo = new RepositoryBuilder().Build();
             _repo.HasUnpushedChanges.Should().Be(false);
-            new RepositoryViewModel(_repo, A.Dummy<IRepositoryMonitor>()).MatchesFilter("todo").Should().Be(false);
+            new RepositoryViewModel(_repo, A.Dummy<IRepositoryMonitor>()).Repository.MatchesFilter("todo").Should().Be(false);
         }
     }
 

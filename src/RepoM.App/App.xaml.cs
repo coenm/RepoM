@@ -238,6 +238,7 @@ public partial class App : Application
         container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
         container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
 
+        container.Register<IRepositoryMatcher, RepositoryMatcher>(Lifestyle.Singleton);
         container.Register<IRepositoryFilteringManager, RepositoryFilteringManager>(Lifestyle.Singleton);
         container.Collection.Append<INamedQueryParser, DefaultQueryParser>(Lifestyle.Singleton);
 

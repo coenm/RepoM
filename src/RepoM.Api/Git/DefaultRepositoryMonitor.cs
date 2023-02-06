@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
+using RepoM.Core.Plugin.Repository;
 
 public class DefaultRepositoryMonitor : IRepositoryMonitor
 {
@@ -209,7 +210,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         }
     }
 
-    public bool IsPinned(Repository repository)
+    public bool IsPinned(IRepository repository)
     {
         return _pinned.ContainsKey(repository.SafePath);
     }

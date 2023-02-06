@@ -1,17 +1,12 @@
 namespace RepoM.App.RepositoryFiltering;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.Services.Common;
 using RepoM.Api.Common;
-using RepoM.Api.Ordering.Az;
-using RepoM.App.RepositoryOrdering;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryOrdering;
-using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 internal class RepositoryFilteringManager : IRepositoryFilteringManager
 {
@@ -39,39 +34,6 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
             throw new ArgumentOutOfRangeException("Cannot be empty", nameof(queryParsers));
         }
 
-        // Dictionary<string, IRepositoriesComparerConfiguration> multipleConfigurations = new ();
-        // var comparers = new Dictionary<string, IQueryParser>();
-
-        // try
-        // {
-        //     multipleConfigurations = compareSettingsService.Configuration;
-        // }
-        // catch (Exception e)
-        // {
-        //     _logger.LogError(e, "Could not get comparer configuration. Falling back to default. {message}", e.Message);
-        // }
-        
-        // foreach ((var key, IRepositoriesComparerConfiguration config) in multipleConfigurations)
-        // {
-        //     // try
-        //     // {
-        //     //     if (!comparers.TryAdd(key, new RepositoryComparerAdapter(repositoryComparerFactory.Create(config))))
-        //     //     {
-        //     //         _logger.LogWarning("Could not add comparer for key '{key}'.", key);
-        //     //     }
-        //     // }
-        //     // catch (Exception e)
-        //     // {
-        //     //     _logger.LogError(e, "Could not create a repository comparer for key '{key}'. {message}", key, e.Message);
-        //     // }
-        // }
-
-        // if (comparers.Count == 0)
-        // {
-        //     // comparers.Add("Default", new RepositoryComparerAdapter(new AzComparer(1, "Name")));
-        //     _logger.LogInformation("No custom comparers added, add default comparer");
-        // }
-        
         _queryParser = new QueryParserComposition(_queryParsers);
 
         _repositoryComparerKeys = _queryParsers.Select(x => x.Name).ToList();
