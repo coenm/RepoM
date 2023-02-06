@@ -6,9 +6,9 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
-public class DefaultQueryParser : INamedQueryParser
+internal class DefaultQueryParser : INamedQueryParser
 {
-    public string Name { get; } = "Default";
+    public string Name => "Default";
 
     public IQuery Parse(string text)
     {

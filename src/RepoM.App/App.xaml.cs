@@ -53,6 +53,7 @@ using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.App.RepositoryFiltering;
+using RepoM.Core.Plugin.RepositoryFiltering;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -236,7 +237,10 @@ public partial class App : Application
         container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
         container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
         container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
+
         container.Register<IRepositoryFilteringManager, RepositoryFilteringManager>(Lifestyle.Singleton);
+        container.Collection.Append<INamedQueryParser, DefaultQueryParser>(Lifestyle.Singleton);
+
         container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
         container.RegisterInstance<IFileSystem>(fileSystem);

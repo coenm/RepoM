@@ -14,14 +14,13 @@ using RepoM.Plugin.LuceneQueryParser.LuceneX;
 
 public class LuceneQueryParser1 : INamedQueryParser
 {
-    private readonly WhitespaceAnalyzer _analyzer;
     private readonly CustomMultiFieldQueryParser _queryParser;
 
     public LuceneQueryParser1()
     {
-        _analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
+        var analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
 
-        _queryParser = new CustomMultiFieldQueryParser(LuceneVersion.LUCENE_48, new[] { "free-text", }, _analyzer)
+        _queryParser = new CustomMultiFieldQueryParser(LuceneVersion.LUCENE_48, new[] { "free-text", }, analyzer)
         {
             DefaultOperator = Operator.AND,
             AllowLeadingWildcard = true,

@@ -109,15 +109,15 @@ public class FileAppSettingsService : IAppSettingsService
 
     public string QueryParserKey
     {
-        get => Settings.QueryParserKey;
+        get => Settings.SelectedQueryParser;
         set
         {
-            if (value == Settings.QueryParserKey)
+            if (value == Settings.SelectedQueryParser)
             {
                 return;
             }
 
-            Settings.QueryParserKey = value;
+            Settings.SelectedQueryParser = value;
 
             NotifyChange();
             Save();

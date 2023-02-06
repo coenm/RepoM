@@ -24,6 +24,7 @@
     <ProjectReference Include="..\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.Clipboard\RepoM.Plugin.Clipboard.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.LuceneQueryParser\RepoM.Plugin.LuceneQueryParser.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.LuceneSearch\RepoM.Plugin.LuceneSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.EverythingFileSearch\RepoM.Plugin.EverythingFileSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />

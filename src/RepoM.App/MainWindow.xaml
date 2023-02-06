@@ -184,6 +184,26 @@
 									<controls:AcrylicMenuItem Header="{DynamicResource Advanced}" >
 										<controls:AcrylicMenuItem Header="{DynamicResource PruneOnFetch}" IsCheckable="True" IsChecked="{Binding PruneOnFetch}" />
                                         <controls:AcrylicMenuItem Header="{DynamicResource EnabledSearchRepoEverything}" IsCheckable="True" IsChecked="{Binding EnabledSearchRepoEverything}" />
+
+                                        <controls:AcrylicMenuItem Header="Query Parsers" ItemsSource="{Binding Path=QueryParsers}" >
+                                            <controls:AcrylicMenuItem.ItemContainerStyle>
+                                                <Style>
+                                                    <Setter Property="controls:AcrylicMenuItem.Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type MenuItem}">
+                                                                <controls:AcrylicMenuItem 
+                                                                    Header="{Binding Header}"
+                                                                    IsCheckable="{Binding IsCheckable}"
+                                                                    IsChecked="{Binding IsChecked}"
+                                                                />
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </controls:AcrylicMenuItem.ItemContainerStyle>
+                                        </controls:AcrylicMenuItem>
+
+
                                     </controls:AcrylicMenuItem>
 
 									<Separator/>

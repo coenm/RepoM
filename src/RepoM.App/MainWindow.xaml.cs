@@ -18,6 +18,7 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.App.Controls;
 using RepoM.App.RepositoryActions;
+using RepoM.App.RepositoryFiltering;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
 using RepoM.Core.Plugin.Common;
@@ -54,7 +55,8 @@ public partial class MainWindow
         IFileSystem fileSystem,
         ActionExecutor executor,
         IRepositoryComparerManager repositoryComparerManager,
-        IThreadDispatcher threadDispatcher)
+        IThreadDispatcher threadDispatcher,
+        IRepositoryFilteringManager repositoryFilteringManager)
     {
         _translationService = translationService;
         InitializeComponent();
@@ -62,7 +64,8 @@ public partial class MainWindow
         AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
-        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel);
+        var filteringViewModel = new QueryParsersViewModel(repositoryFilteringManager, threadDispatcher);
+        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel, filteringViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;

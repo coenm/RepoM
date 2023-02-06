@@ -12,11 +12,11 @@ public class AppSettings
         SonarCloudPersonalAccessToken = string.Empty;
         AzureDevOps = AzureDevOpsOptions.Default;
         SortKey = string.Empty;
-        QueryParserKey = string.Empty;
+        SelectedQueryParser = string.Empty;
     }
     public string SortKey { get; set; }
 
-    public string QueryParserKey { get; set; }
+    public string SelectedQueryParser { get; set; }
 
     public AutoFetchMode AutoFetchMode { get; set; }
 

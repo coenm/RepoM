@@ -6,15 +6,16 @@ using System.ComponentModel;
 using System.Linq;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
+using RepoM.App.RepositoryFiltering;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.ViewModels;
 
-public class SortMenuItemViewModel : MenuItemViewModel
+public class ActionCheckableMenuItemViewModel : MenuItemViewModel
 {
     private readonly Func<bool> _isSelectedFunc;
     private readonly Action _setKeyFunc;
 
-    public SortMenuItemViewModel(
+    public ActionCheckableMenuItemViewModel(
         Func<bool> isSelectedFunc,
         Action setKeyFunc,
         string title)
@@ -38,6 +39,39 @@ public class SortMenuItemViewModel : MenuItemViewModel
     }
 }
 
+public class QueryParsersViewModel : List<MenuItemViewModel>
+{
+    public QueryParsersViewModel(IRepositoryFilteringManager repositoryFilterManager, IThreadDispatcher threadDispatcher)
+    {
+        if (repositoryFilterManager == null)
+        {
+            throw new ArgumentNullException(nameof(repositoryFilterManager));
+        }
+
+        if (threadDispatcher == null)
+        {
+            throw new ArgumentNullException(nameof(threadDispatcher));
+        }
+
+        repositoryFilterManager.SelectedQueryParserChanged += (_, _) =>
+            {
+                foreach (MenuItemViewModel item in this)
+                {
+                    if (item is ActionCheckableMenuItemViewModel sortMenuItemViewModel)
+                    {
+                        threadDispatcher.Invoke(() => sortMenuItemViewModel.Poke());
+                    }
+                }
+            };
+
+        AddRange(repositoryFilterManager.QueryParserKeys.Select(name =>
+            new ActionCheckableMenuItemViewModel(
+                () => repositoryFilterManager.SelectedQueryParserKey == name,
+                () => repositoryFilterManager.SetQueryParser(name),
+                name)));
+    }
+}
+
 public class OrderingsViewModel : List<MenuItemViewModel>
 {
     public OrderingsViewModel(IRepositoryComparerManager repositoryComparerManager, IThreadDispatcher threadDispatcher)
@@ -56,7 +90,7 @@ public class OrderingsViewModel : List<MenuItemViewModel>
             {
                 foreach (MenuItemViewModel item in this)
                 {
-                    if (item is SortMenuItemViewModel sortMenuItemViewModel)
+                    if (item is ActionCheckableMenuItemViewModel sortMenuItemViewModel)
                     {
                         threadDispatcher.Invoke(() => sortMenuItemViewModel.Poke());
                     }
@@ -64,7 +98,7 @@ public class OrderingsViewModel : List<MenuItemViewModel>
             };
 
         AddRange(repositoryComparerManager.RepositoryComparerKeys.Select(name =>
-            new SortMenuItemViewModel(
+            new ActionCheckableMenuItemViewModel(
                 () => repositoryComparerManager.SelectedRepositoryComparerKey == name,
                 () => repositoryComparerManager.SetRepositoryComparer(name),
                 name)));
@@ -76,11 +110,14 @@ public class MainWindowPageModel : INotifyPropertyChanged
     private readonly IAppSettingsService _appSettingsService;
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public MainWindowPageModel(IAppSettingsService appSettingsService, OrderingsViewModel orderingsViewModel)
+    public MainWindowPageModel(IAppSettingsService appSettingsService, OrderingsViewModel orderingsViewModel, QueryParsersViewModel queryParsersViewModel)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         Orderings = orderingsViewModel;
+        QueryParsers = queryParsersViewModel;
     }
+
+    public QueryParsersViewModel QueryParsers { get; }
 
     public OrderingsViewModel Orderings { get; }
     
