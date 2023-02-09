@@ -1,0 +1,18 @@
+﻿{
+  Output: And( free-text:abc.def, free-text:word33 ),
+  Model: {
+    $type: AndQuery,
+    Items: [
+      {
+        $type: SimpleTerm,
+        Term: free-text,
+        Value: abc.def
+      },
+      {
+        $type: SimpleTerm,
+        Term: free-text,
+        Value: word33
+      }
+    ]
+  }
+}

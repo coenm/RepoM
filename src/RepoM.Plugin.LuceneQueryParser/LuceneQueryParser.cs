@@ -111,16 +111,15 @@ public class LuceneQueryParser : INamedQueryParser
         {
             return new WildCardTerm(wq.Term.Field, wq.Term.Text);
         }
-        //
-        // if (query is FuzzyQuery fq)
-        // {
-        //     // do not support fuzzy query,
-        //     return new SimpleTerm(fq.Term.Field, fq.Term.Text);
-        // }
+        
+        if (query is FuzzyQuery fq)
+        {
+            // do not support fuzzy query,
+            return new SimpleTerm(fq.Term.Field, fq.Term.Text);
+        }
 
         if (query is SetQuery cq)
         {
-            // 
             return MapQuery2(cq, true);
         }
         

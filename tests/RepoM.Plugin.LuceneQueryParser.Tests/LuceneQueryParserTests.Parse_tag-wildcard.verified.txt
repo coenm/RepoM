@@ -1,8 +1,18 @@
 ﻿{
-  Output: tag:github.com*,
+  Output: And( tag:github.com, free-text:* ),
   Model: {
-    $type: StartsWithTerm,
-    Term: tag,
-    Value: github.com
+    $type: AndQuery,
+    Items: [
+      {
+        $type: SimpleTerm,
+        Term: tag,
+        Value: github.com
+      },
+      {
+        $type: WildCardTerm,
+        Term: free-text,
+        Value: *
+      }
+    ]
   }
 }

@@ -23,7 +23,6 @@ public class LuceneQueryParserTests
         _settings.AddExtraSettings(settings =>
             {
                 settings.DefaultValueHandling = DefaultValueHandling.Include;
-                // settings.NullValueHandling = NullValueHandling.Include;
                 settings.TypeNameHandling = TypeNameHandling.Auto;
 
             });
@@ -52,6 +51,14 @@ public class LuceneQueryParserTests
     [InlineData("single-word", "\"aBc@\"")]
 
     [InlineData("two-word", "word1 word2")]
+    [InlineData("two-word", "word1   word2")]
+    [InlineData("two-word", "word1 AND  word2")]
+    [InlineData("and-or-words", "(word1   word2) OR word33")]
+    [InlineData("and-or-words", "(word1  AND word2) OR word33")]
+    [InlineData("and-or-words", "word1  AND word2 OR word33")]
+    [InlineData("and-or-words-negative", "word1  AND word2 OR -word33")]
+    [InlineData("mix1", "word1  AND tag:tagsss OR word33")]
+    [InlineData("mix2", "abc.def  word33")]
 
     // [InlineData("single-word", " aBc@ ")]
     // [InlineData("single-word", " \"aBc@\" ")]
@@ -121,8 +128,7 @@ public class LuceneQueryParserTests
     [InlineData("tag-wildcard-start", "tag:*github.com")]
     [InlineData("tag-wildcard-start-end", "tag:*github.com*")]
 
-
-    // [InlineData("tag-wildcard", "tag:github.com *")] // throws
+    [InlineData("tag-wildcard", "tag:github.com *")]
     public async Task Parse(string outputName, string input)
     {
         // arrange

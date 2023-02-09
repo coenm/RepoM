@@ -1,0 +1,28 @@
+﻿{
+  Output: Or( And( free-text:word1, tag:tagsss ), free-text:word33 ),
+  Model: {
+    $type: OrQuery,
+    Items: [
+      {
+        $type: AndQuery,
+        Items: [
+          {
+            $type: SimpleTerm,
+            Term: free-text,
+            Value: word1
+          },
+          {
+            $type: SimpleTerm,
+            Term: tag,
+            Value: tagsss
+          }
+        ]
+      },
+      {
+        $type: SimpleTerm,
+        Term: free-text,
+        Value: word33
+      }
+    ]
+  }
+}
