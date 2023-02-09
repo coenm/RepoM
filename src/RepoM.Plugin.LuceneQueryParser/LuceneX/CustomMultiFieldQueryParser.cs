@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using Lucene.Net.Analysis;
 using Lucene.Net.QueryParsers.Classic;
-using Lucene.Net.QueryParsers.Flexible.Standard;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
 using Sprache;
@@ -22,19 +21,76 @@ public class CustomMultiFieldQueryParser : MultiFieldQueryParser
         : base(matchVersion, fields, analyzer)
     {
     }
-    
+
     protected override Query GetBooleanQuery(IList<BooleanClause> clauses, bool disableCoord)
     {
+        if (clauses.Count == 1)
+        {
+            if (clauses[0] is BooleanClause bc)
+            {
+                WrappedBooleanClause bc1;
+                if (bc.IsProhibited)
+                {
+                    bc1 = new NotBooleanClause(bc);
+                }
+                else
+                {
+                    bc1 = new WrappedBooleanClause(bc);
+                }
+                clauses[0] = (new SetBooleanClause(bc1) { Mode = SetBooleanClause.BoolMode.AND, });
+                clauses.Add(dummy); // dummy
+            }
+        }
+
         if (clauses[0] is not SetBooleanClause x)
         {
-            throw new Exception();
+            return base.GetBooleanQuery(clauses, disableCoord);
+            // throw new Exception();
         }
 
         return new SetQuery(x);
+        //
+        //     var l = new List<BooleanClause>();
+        //     
+        //     BooleanQuery query = NewBooleanQuery(disableCoord);
+        //     foreach (BooleanClause clause in clauses)
+        //     {
+        // // protected const int CONJ_NONE = 0;
+        // // protected const int CONJ_AND = 1;
+        // // protected const int CONJ_OR = 2;
+        //         var conj = 0;
+        //         var mods = clause.IsProhibited ? MOD_NOT : MOD_REQ;
+        //         AddClause(l, conj, mods, clause.Query);
+        //         // query.Add(clause);
+        //     }
+        //
+        //     return GetBooleanQuery(l);
+        //
+        //     // if (clauses.Count == 0)
+        //     // {
+        //     //     return null; // all clause words were filtered away by the analyzer.
+        //     // }
+        //     //
+        //     // if (clauses.Count == 1)
+        //     // {
+        //     //     if (clauses[0] is SetBooleanClause x)
+        //     //     {
+        //     //         return new SetQuery(x);
+        //     //     }
+        //     // }
+        //     //
+        //     // throw new Exception();
     }
 
     private static BooleanClause dummy = new(new BooleanQuery(), Occur.MUST_NOT);
 
+    //
+    // protected override Query GetBooleanQuery(IList<BooleanClause> clauses)
+    // {
+    //     return GetBooleanQuery(clauses, false);
+    //     return base.GetBooleanQuery(clauses);
+    // }
+    
     protected override void AddClause(IList<BooleanClause> clauses, int conj, int mods, Query q)
     {
         bool required, prohibited;
@@ -105,7 +161,7 @@ public class CustomMultiFieldQueryParser : MultiFieldQueryParser
                 // or (x, y, z)
                 // pick last item to make it
                 // or (x, y, (and (z, zz))
-                var lastItem = currentClause.Items.Last();
+                WrappedBooleanClause lastItem = currentClause.Items.Last();
                 Debug.Assert(((SetBooleanClause)lastItem).Mode == SetBooleanClause.BoolMode.AND);
                 ((SetBooleanClause)lastItem).Items.Add(new SetBooleanClause(clause));
             }

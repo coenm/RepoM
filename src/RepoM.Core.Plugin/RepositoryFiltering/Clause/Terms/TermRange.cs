@@ -2,7 +2,7 @@ namespace RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 public class TermRange : TermBase
 {
-    public TermRange(string field, string lowerText, bool includesLower, string upperText, bool includesUpper)
+    public TermRange(string field, string? lowerText, bool includesLower, string? upperText, bool includesUpper)
     {
         Field = field;
         LowerText = lowerText;
@@ -13,16 +13,16 @@ public class TermRange : TermBase
 
     public string Field { get; }
 
-    public string LowerText { get; }
+    public string? LowerText { get; }
 
     public bool IncludesLower { get; }
 
-    public string UpperText { get; }
+    public string? UpperText { get; }
 
     public bool IncludesUpper { get; }
 
     public override string ToString()
     {
-        return Field + ":[" + LowerText + ".." + UpperText + "]";
+        return Field + ":[" + (LowerText ?? "*") + ".." + (UpperText ?? "*") + "]";
     }
 }

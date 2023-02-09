@@ -26,4 +26,46 @@
     <ProjectReference Include="..\..\src\RepoM.Plugin.LuceneQueryParser\RepoM.Plugin.LuceneQueryParser.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="LuceneQueryParserTests.Abc.received.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_multi-001.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_multi-002.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_multi-003.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_multi-and-001.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_multi-and-002.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_multi-and-003.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_range-only.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_range-only-excl.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_range-only-excl-left.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_range-only-excl-right.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_tag-min.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+    <None Update="LuceneQueryParserTests.Parse_tag-only.verified.txt">
+      <DependentUpon>LuceneQueryParserTests.cs</DependentUpon>
+    </None>
+  </ItemGroup>
+
 </Project>

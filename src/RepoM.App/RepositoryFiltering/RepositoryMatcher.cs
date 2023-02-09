@@ -21,16 +21,6 @@ internal class RepositoryMatcher : IRepositoryMatcher
 
     public bool Matches(IRepository repository, IQuery query)
     {
-        if (repository == null)
-        {
-            return false;
-        }
-
-        if (query == null)
-        {
-            return false;
-        }
-
         if (query is AndQuery and)
         {
             return HandleAnd(repository, and);
@@ -69,6 +59,11 @@ internal class RepositoryMatcher : IRepositoryMatcher
             {
                 return !_monitor.IsPinned(repository);
             }
+        }
+
+        if (st.Term.Equals("tag", x))
+        {
+            return repository.Tags.Contains(st.Value);
         }
 
         // unknown

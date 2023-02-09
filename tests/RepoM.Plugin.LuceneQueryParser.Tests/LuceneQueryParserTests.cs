@@ -10,14 +10,14 @@ using Xunit;
 
 // https://lucene.apache.org/core/2_9_4/queryparsersyntax.html
 [UsesVerify]
-public class RepositoryIndexTests
+public class LuceneQueryParserTests
 {
-    private readonly LuceneQueryParser1 _sut;
+    private readonly LuceneQueryParser _sut;
     private readonly VerifySettings _settings;
 
-    public RepositoryIndexTests()
+    public LuceneQueryParserTests()
     {
-        _sut = new LuceneQueryParser1();
+        _sut = new LuceneQueryParser();
 
         _settings = new VerifySettings();
         _settings.AddExtraSettings(settings =>
@@ -47,7 +47,12 @@ public class RepositoryIndexTests
     [InlineData("tag-min", " (-tag:abc)")]
     [InlineData("tag-min", " -(tag:abc)")]
 
-    // [InlineData("single-word", "aBc@")]
+    [InlineData("single-word", "aBc@")]
+    [InlineData("single-word", " aBc@ ")]
+    [InlineData("single-word", "\"aBc@\"")]
+
+    [InlineData("two-word", "word1 word2")]
+
     // [InlineData("single-word", " aBc@ ")]
     // [InlineData("single-word", " \"aBc@\" ")]
     // [InlineData("single-word", " ((\"aBc@\")) ")]
@@ -71,6 +76,11 @@ public class RepositoryIndexTests
     [InlineData("range-only-excl-left", "age:{16 TO 75]")]
     [InlineData("range-only-excl-right", "age:[16 TO 75}")]
     [InlineData("range-only-excl", "age:{16 TO 75}")]
+
+    [InlineData("range-no-upper", "age:[16 TO *]")]
+    [InlineData("range-no-upper2", "age:[16 TO *}")]
+    [InlineData("range-no-lower", "age:[* TO 103]")]
+    [InlineData("range-no-lower2", "age:[* TO 103}")]
 
     [InlineData("multi-001", "(+tag:github.com OR +tag:github)")] 
     [InlineData("multi-001", "(tag:github.com OR tag:github)")]
@@ -105,7 +115,14 @@ public class RepositoryIndexTests
     [InlineData("multi-and-003", "+(tag:github.com AND -tag:github)")]
     [InlineData("multi-and-003", "+(tag:github.com -tag:github)")]
 
+    [InlineData("tag-wildcard", "tag:github.com*")]
+    [InlineData("tag-wildcard-literal", "tag:\"github.com*\"")]
 
+    [InlineData("tag-wildcard-start", "tag:*github.com")]
+    [InlineData("tag-wildcard-start-end", "tag:*github.com*")]
+
+
+    // [InlineData("tag-wildcard", "tag:github.com *")] // throws
     public async Task Parse(string outputName, string input)
     {
         // arrange

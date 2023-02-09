@@ -15,6 +15,6 @@ public class LuceneQueryParserPackage : IPackage
 
     private static void RegisterPluginHooks(Container container)
     {
-        container.Collection.Append<INamedQueryParser, LuceneQueryParser1>(Lifestyle.Singleton);
+        container.Collection.Append<INamedQueryParser, LuceneQueryParser>(Lifestyle.Singleton);
     }
 }

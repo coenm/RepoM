@@ -12,11 +12,11 @@ using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Plugin.LuceneQueryParser.LuceneX;
 
-public class LuceneQueryParser1 : INamedQueryParser
+public class LuceneQueryParser : INamedQueryParser
 {
     private readonly CustomMultiFieldQueryParser _queryParser;
 
-    public LuceneQueryParser1()
+    public LuceneQueryParser()
     {
         var analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
 
@@ -69,29 +69,29 @@ public class LuceneQueryParser1 : INamedQueryParser
 
     private IQuery ConvertQueryToClause(Query query)
     {
-        // if (query is Lucene.Net.Search.BooleanQuery bq)
-        // {
-        //     // and, or
-        //     TermBase[] items = bq.Clauses.Select(x =>
-        //         {
-        //             if (x.Occur == Lucene.Net.Search.Occur.MUST_NOT)
-        //             {
-        //                 return new Not(MapQuery1(x.Query, and));
-        //             }
-        //
-        //             return MapQuery1(x.Query, and);
-        //         }).ToArray();
-        //
-        //
-        //     if (items.Length == 1)
-        //     {
-        //         return items.Single();
-        //     }
-        //
-        //     return and ? new And(items) : new Or(items);
-        //     // return new MyBooleanQuery(bq, MapQuery);
-        // }
-        //
+         if (query is Lucene.Net.Search.BooleanQuery bq)
+         {
+            // // and, or
+            // TermBase[] items = bq.Clauses.Select(x =>
+            //     {
+            //         if (x.Occur == Lucene.Net.Search.Occur.MUST_NOT)
+            //         {
+            //             return new Not(MapQuery1(x.Query, and));
+            //         }
+            //
+            //         return MapQuery1(x.Query, and);
+            //     }).ToArray();
+            //
+            //
+            // if (bq.Clauses.Count == 1)
+            // {
+            //     return bq.Clauses.Single();
+            // }
+            //
+            // return and ? new And(items) : new Or(items);
+            // return new MyBooleanQuery(bq, MapQuery);
+        }
+
         if (query is TermQuery tq)
         {
             return new SimpleTerm(tq.Term.Field, tq.Term.Text);
@@ -101,9 +101,9 @@ public class LuceneQueryParser1 : INamedQueryParser
         {
             return new TermRange(
                 trq.Field,
-                Term.ToString(trq.LowerTerm),
+                trq.LowerTerm == null ? null : Term.ToString(trq.LowerTerm),
                 trq.IncludesLower,
-                Term.ToString(trq.UpperTerm),
+                trq.UpperTerm == null ? null : Term.ToString(trq.UpperTerm),
                 trq.IncludesUpper);
         }
 
@@ -123,7 +123,11 @@ public class LuceneQueryParser1 : INamedQueryParser
             // 
             return MapQuery2(cq, true);
         }
-
+        
+        if (query is PrefixQuery pq)
+        {
+            return new StartsWithTerm(pq.Field, pq.Prefix.Text);
+        }
 
         var fullName = query.GetType().FullName;
         throw new NotImplementedException(fullName);

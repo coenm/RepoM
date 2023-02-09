@@ -1,0 +1,8 @@
+﻿{
+  Output: free-text:aBc@,
+  Model: {
+    $type: SimpleTerm,
+    Term: free-text,
+    Value: aBc@
+  }
+}
