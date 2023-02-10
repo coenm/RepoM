@@ -16,7 +16,7 @@ public class DefaultAppDataPathProvider : IAppDataPathProvider
 
     public string GetAppDataPath() 
     {
-        return _applicationDataRepoM ;
+        return _applicationDataRepoM;
     }
 
     [Obsolete("Not used.")]

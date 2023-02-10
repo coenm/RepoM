@@ -20,6 +20,8 @@ public interface IAppSettingsService
 
     double MenuHeight { get; set; }
 
+    List<string> ReposRootDirectories { get; set; }
+
     List<string> EnabledSearchProviders { get; set; }
 
     string SonarCloudPersonalAccessToken { get; set; }

@@ -8,6 +8,7 @@ public class AppSettings
     public AppSettings()
     {
         MenuSize = Size.Default;
+        ReposRootDirectories= new List<string>();
         EnabledSearchProviders = new List<string>();
         SonarCloudPersonalAccessToken = string.Empty;
         AzureDevOps = AzureDevOpsOptions.Default;
@@ -24,6 +25,8 @@ public class AppSettings
 
     public Size MenuSize { get; set; }
 
+    public List<string> ReposRootDirectories { get; set; }
+
     public List<string> EnabledSearchProviders { get; set; }
 
     public string SonarCloudPersonalAccessToken { get; set; }
@@ -31,13 +34,14 @@ public class AppSettings
     public AzureDevOpsOptions AzureDevOps { get; set; }
 
     public static AppSettings Default => new()
-        {
-            AutoFetchMode = AutoFetchMode.Off,
-            PruneOnFetch = false,
-            MenuSize = Size.Default,
-            EnabledSearchProviders = new List<string>(1),
-            SonarCloudPersonalAccessToken = string.Empty,
-            AzureDevOps = AzureDevOpsOptions.Default,
+    {
+        AutoFetchMode = AutoFetchMode.Off,
+        PruneOnFetch = false,
+        MenuSize = Size.Default,
+        ReposRootDirectories = new(),
+        EnabledSearchProviders = new List<string>(1),
+        SonarCloudPersonalAccessToken = string.Empty,
+        AzureDevOps = AzureDevOpsOptions.Default,
     };
 }
 
