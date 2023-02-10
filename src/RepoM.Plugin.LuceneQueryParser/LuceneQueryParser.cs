@@ -1,6 +1,7 @@
 namespace RepoM.Plugin.LuceneQueryParser;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Lucene.Net.Analysis.Core;
 using Lucene.Net.Index;
@@ -14,13 +15,15 @@ using RepoM.Plugin.LuceneQueryParser.LuceneX;
 
 public class LuceneQueryParser : INamedQueryParser
 {
+    private const string KEY_FREE_TEXT = "ThisIsAnUnguessableKEj";
     private readonly CustomMultiFieldQueryParser _queryParser;
 
     public LuceneQueryParser()
     {
         var analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
 
-        _queryParser = new CustomMultiFieldQueryParser(LuceneVersion.LUCENE_48, new[] { "free-text", }, analyzer)
+        
+        _queryParser = new CustomMultiFieldQueryParser(LuceneVersion.LUCENE_48, new[] { KEY_FREE_TEXT, }, analyzer)
         {
             DefaultOperator = Operator.AND,
             AllowLeadingWildcard = true,
@@ -33,8 +36,22 @@ public class LuceneQueryParser : INamedQueryParser
 
     public IQuery Parse(string text)
     {
-        var result = (SetQuery)_queryParser.Parse(text);
-        return MapQuery2(result, _queryParser.DefaultOperator == Operator.AND);
+        try
+        {
+            var result = (SetQuery)_queryParser.Parse(text);
+            return MapQuery2(result, _queryParser.DefaultOperator == Operator.AND);
+        }
+        catch (ParseException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
     }
 
     private IQuery MapQuery2(SetQuery result, bool b)
@@ -94,6 +111,11 @@ public class LuceneQueryParser : INamedQueryParser
 
         if (query is TermQuery tq)
         {
+            if (KEY_FREE_TEXT.Equals(tq.Term.Field, StringComparison.CurrentCulture))
+            {
+                return new FreeText(tq.Term.Text);
+            }
+
             return new SimpleTerm(tq.Term.Field, tq.Term.Text);
         }
 
@@ -126,6 +148,35 @@ public class LuceneQueryParser : INamedQueryParser
         if (query is PrefixQuery pq)
         {
             return new StartsWithTerm(pq.Field, pq.Prefix.Text);
+        }
+
+        if (query is PhraseQuery phraseQuery)
+        {
+            var queryTerms = new HashSet<Term>();
+            phraseQuery.ExtractTerms(queryTerms);
+
+            if (queryTerms.Count >= 1)
+            {
+                // assume all same field
+                var field = queryTerms.First().Field;
+                var s = string.Empty;
+                foreach (var qt in queryTerms)
+                {
+                    s += " " + qt.Text;
+                }
+
+                s = s.Trim();
+
+                if (KEY_FREE_TEXT.Equals(field, StringComparison.CurrentCulture))
+                {
+                    return new FreeText(s);
+                }
+                
+                return new SimpleTerm(field, s);
+            }
+        
+            // not supported
+            throw new NotSupportedException();
         }
 
         var fullName = query.GetType().FullName;

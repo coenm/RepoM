@@ -1,5 +1,5 @@
 ﻿{
-  Output: Or( And( free-text:word1, tag:tagsss ), free-text:word33 ),
+  Output: Or( And( word1, tag:tagsss ), word33 ),
   Model: {
     $type: OrQuery,
     Items: [
@@ -7,8 +7,7 @@
         $type: AndQuery,
         Items: [
           {
-            $type: SimpleTerm,
-            Term: free-text,
+            $type: FreeText,
             Value: word1
           },
           {
@@ -19,8 +18,7 @@
         ]
       },
       {
-        $type: SimpleTerm,
-        Term: free-text,
+        $type: FreeText,
         Value: word33
       }
     ]

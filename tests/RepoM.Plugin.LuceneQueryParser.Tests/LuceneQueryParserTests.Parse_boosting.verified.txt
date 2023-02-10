@@ -1,15 +1,15 @@
 ﻿{
-  Output: And( abc.def, word33 ),
+  Output: And( jakarta, apache ),
   Model: {
     $type: AndQuery,
     Items: [
       {
         $type: FreeText,
-        Value: abc.def
+        Value: jakarta
       },
       {
         $type: FreeText,
-        Value: word33
+        Value: apache
       }
     ]
   }

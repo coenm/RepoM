@@ -1,16 +1,14 @@
 ﻿{
-  Output: And( free-text:word1, free-text:word2 ),
+  Output: And( word1, word2 ),
   Model: {
     $type: AndQuery,
     Items: [
       {
-        $type: SimpleTerm,
-        Term: free-text,
+        $type: FreeText,
         Value: word1
       },
       {
-        $type: SimpleTerm,
-        Term: free-text,
+        $type: FreeText,
         Value: word2
       }
     ]
