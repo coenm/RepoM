@@ -175,6 +175,18 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
+    public List<string> ReposRootDirectories
+    {
+        get => Settings.ReposRootDirectories;
+        set
+        {
+            Settings.ReposRootDirectories = value.ToList();
+
+            NotifyChange();
+            Save();
+        }
+    }
+
     public List<string> EnabledSearchProviders
     {
         get => Settings.EnabledSearchProviders;
