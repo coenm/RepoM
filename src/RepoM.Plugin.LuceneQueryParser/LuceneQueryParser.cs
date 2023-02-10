@@ -137,6 +137,11 @@ public class LuceneQueryParser : INamedQueryParser
         if (query is FuzzyQuery fq)
         {
             // do not support fuzzy query,
+            if (KEY_FREE_TEXT.Equals(fq.Term.Field, StringComparison.CurrentCulture))
+            {
+                return new FreeText(fq.Term.Text);
+            }
+
             return new SimpleTerm(fq.Term.Field, fq.Term.Text);
         }
 
@@ -160,7 +165,7 @@ public class LuceneQueryParser : INamedQueryParser
                 // assume all same field
                 var field = queryTerms.First().Field;
                 var s = string.Empty;
-                foreach (var qt in queryTerms)
+                foreach (Term qt in queryTerms)
                 {
                     s += " " + qt.Text;
                 }

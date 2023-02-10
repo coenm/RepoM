@@ -131,8 +131,6 @@ public class LuceneQueryParserTests
     [InlineData("tag-wildcard-start-end", "tag:*github.com*")]
 
     [InlineData("text-only", "This is Some   Text@ ")]
-
-    [InlineData("text-only", "This is Some   Text@ ")]
     [InlineData("text-only", "This is Some Text@")]
     [InlineData("text-only", "  This is Some Text@  ")]
     [InlineData("text-only", "  This is      Some Text@  ")]
@@ -141,6 +139,9 @@ public class LuceneQueryParserTests
 
     // [InlineData("text-only", "  This is      Some^ Text@  ")]  // error
 
+    [InlineData("fuzzy", "roam~")]
+    [InlineData("fuzzy", "roam~0.8")] 
+    [InlineData("fuzzy", "roam~1.0")] 
     [InlineData("Proximity", "\"jakarta apache\"~10")] // Proximity Searches, PhraseQuery
     [InlineData("boosting", "jakarta^4 apache")] // Proximity Searches, PhraseQuery
     public async Task Parse(string outputName, string input)
@@ -168,11 +169,6 @@ public class LuceneQueryParserTests
     // [InlineData("wildcard", "te*t")]
     // [InlineData("wildcard", " te*t  ")]
     // [InlineData("no-wildcard", " \"te*t\"  ")] // * is not wildcard because inside quotes
-    // //
-    // // // fuzzy search FuzzyQuery
-    // [InlineData("fuzzy", "roam~")]
-    // [InlineData("fuzzy08", "roam~0.8")] // same as above due to removing 'MaxEdits' property in verify
-    // [InlineData("fuzzy10", "roam~1.0")] // same as above due to removing 'MaxEdits' property in verify
     //
 
 
