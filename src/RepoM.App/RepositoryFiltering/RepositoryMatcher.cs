@@ -10,6 +10,74 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
+public class HasPullRequestsMatcher : IQueryMatcher
+{
+    private static readonly string[] _values = new[]
+        {
+            "pr",
+            "prs",
+            "pullrequest",
+            "pullrequests",
+            "pull-request",
+            "pull-requests",
+        };
+    
+    public bool? IsMatch(IRepository repository, TermBase term)
+    {
+        if (term is not SimpleTerm st)
+        {
+            return null;
+        }
+
+        if (!"has".Equals(st.Term, StringComparison.CurrentCulture))
+        {
+            return null;
+        }
+
+        if (_values.Contains(st.Value))
+        {
+            return HasPullRequests(repository);
+        }
+
+        return null;
+    }
+
+    private bool HasPullRequests(IRepository repository)
+    {
+        return false;
+    }
+}
+
+public class HasUnpushedMatcher : IQueryMatcher
+{
+    private static readonly string[] _values =
+        {
+            "unpushed",
+            "unpushed-changes",
+        };
+
+    public bool? IsMatch(IRepository repository, TermBase term)
+    {
+        if (term is not SimpleTerm st)
+        {
+            return null;
+        }
+
+        if (!"has".Equals(st.Term, StringComparison.CurrentCulture))
+        {
+            return null;
+        }
+
+        if (_values.Contains(st.Value))
+        {
+            return repository.HasUnpushedChanges;
+        }
+
+        return null;
+    }
+}
+
+
 public class IsPinnedMatcher : IQueryMatcher
 {
     private readonly IRepositoryMonitor _monitor;
@@ -57,9 +125,11 @@ internal class RepositoryMatcher : IRepositoryMatcher
 
         _queryMatchers = new List<IQueryMatcher>
             {
-                new FreeTextMatcher(),
                 new IsPinnedMatcher(monitor),
                 new TagMatcher(),
+                new HasPullRequestsMatcher(),
+                new HasUnpushedMatcher(),
+                new FreeTextMatcher(),
             };
     }
 
@@ -88,12 +158,12 @@ internal class RepositoryMatcher : IRepositoryMatcher
         return true;
     }
 
-    private bool HandleTerm(IRepository repository, TermBase st)
+    private bool HandleTerm(IRepository repository, TermBase termBase)
     {
         // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (IQueryMatcher matcher in _queryMatchers)
         {
-            var result = matcher.IsMatch(repository, st);
+            var result = matcher.IsMatch(repository, termBase);
             if (result.HasValue)
             {
                 return result.Value;
@@ -107,14 +177,14 @@ internal class RepositoryMatcher : IRepositoryMatcher
     private bool HandleAnd(IRepository repository, AndQuery and)
     {
         return and.Items
-                  .Select(subquery => Matches(repository, subquery))
+                  .Select(q => Matches(repository, q))
                   .All(result => result);
     }
 
     private bool HandleOr(IRepository repository, OrQuery or)
     {
         return or.Items
-                 .Select(subquery => Matches(repository, subquery))
+                 .Select(q => Matches(repository, q))
                  .Any(result => result);
     }
 }
