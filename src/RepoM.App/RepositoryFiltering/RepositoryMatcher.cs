@@ -48,7 +48,7 @@ public class HasPullRequestsMatcher : IQueryMatcher
     }
 }
 
-public class HasUnpushedMatcher : IQueryMatcher
+public class HasUnPushedMatcher : IQueryMatcher
 {
     private static readonly string[] _values =
         {
@@ -128,7 +128,7 @@ internal class RepositoryMatcher : IRepositoryMatcher
                 new IsPinnedMatcher(monitor),
                 new TagMatcher(),
                 new HasPullRequestsMatcher(),
-                new HasUnpushedMatcher(),
+                new HasUnPushedMatcher(),
                 new FreeTextMatcher(),
             };
     }
