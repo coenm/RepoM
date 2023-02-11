@@ -1,22 +1,68 @@
 namespace RepoM.App.RepositoryFiltering;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
+
+public class IsPinnedMatcher : IQueryMatcher
+{
+    private readonly IRepositoryMonitor _monitor;
+
+    public IsPinnedMatcher(IRepositoryMonitor monitor)
+    {
+        _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+    }
+
+    public bool? IsMatch(IRepository repository, TermBase term)
+    {
+        if (term is not SimpleTerm st)
+        {
+            return null;
+        }
+
+        if (!"is".Equals(st.Term, StringComparison.CurrentCulture))
+        {
+            return null;
+        }
+
+        if ("pinned".Equals(st.Value, StringComparison.CurrentCulture))
+        {
+            return _monitor.IsPinned(repository);
+        }
+
+        if ("unpinned".Equals(st.Value, StringComparison.CurrentCulture))
+        {
+            return !_monitor.IsPinned(repository);
+        }
+
+        return null;
+    }
+}
+
 
 internal class RepositoryMatcher : IRepositoryMatcher
 {
     private readonly ILogger _logger;
     private readonly IRepositoryMonitor _monitor;
+    private readonly IList<IQueryMatcher> _queryMatchers;
 
     public RepositoryMatcher(ILogger logger, IRepositoryMonitor monitor)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+
+        _queryMatchers = new List<IQueryMatcher>
+            {
+                new FreeTextMatcher(),
+                new IsPinnedMatcher(monitor),
+                new TagMatcher(),
+            };
     }
 
     public bool Matches(IRepository repository, IQuery query)
@@ -36,34 +82,24 @@ internal class RepositoryMatcher : IRepositoryMatcher
             return !Matches(repository, not.Item);
         }
 
-        if (query is SimpleTerm st)
+        if (query is TermBase st)
         {
-            return HandleSimpleTerm(repository, st);
+            return HandleTerm(repository, st);
         }
 
         return true;
     }
 
-    private bool HandleSimpleTerm(IRepository repository, SimpleTerm st)
+    private bool HandleTerm(IRepository repository, TermBase st)
     {
-        var x = StringComparison.InvariantCultureIgnoreCase;
-
-        if (st.Term.Equals("is", x))
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (IQueryMatcher matcher in _queryMatchers)
         {
-            if (st.Value.Equals("pinned", x))
+            var result = matcher.IsMatch(repository, st);
+            if (result.HasValue)
             {
-                return _monitor.IsPinned(repository);
+                return result.Value;
             }
-
-            if (st.Value.Equals("unpinned", x))
-            {
-                return !_monitor.IsPinned(repository);
-            }
-        }
-
-        if (st.Term.Equals("tag", x))
-        {
-            return repository.Tags.Contains(st.Value);
         }
 
         // unknown

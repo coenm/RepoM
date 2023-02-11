@@ -22,38 +22,6 @@ public interface IQueryMatcher
     bool? IsMatch(IRepository repository, TermBase term);
 }
 
-public class IsPinnedMatcher : IQueryMatcher
-{
-    public bool? IsMatch(IRepository repository, TermBase term)
-    {
-        if (term is not SimpleTerm st)
-        {
-            return null;
-        }
-
-        if (!"is".Equals(st.Term, StringComparison.CurrentCulture))
-        {
-            return null;
-        }
-
-        if ("pinned".Equals(st.Value, StringComparison.CurrentCulture))
-        {
-            return IsPinned(repository);
-        }
-
-        if ("unpinned".Equals(st.Value, StringComparison.CurrentCulture))
-        {
-            return !IsPinned(repository);
-        }
-
-        return null;
-    }
-
-    private static bool IsPinned(IRepository repository)
-    {
-        return true;
-    }
-}
 
 public class TagMatcher : IQueryMatcher
 {
