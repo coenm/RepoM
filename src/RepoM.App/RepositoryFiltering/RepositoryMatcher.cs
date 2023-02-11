@@ -49,13 +49,11 @@ public class IsPinnedMatcher : IQueryMatcher
 internal class RepositoryMatcher : IRepositoryMatcher
 {
     private readonly ILogger _logger;
-    private readonly IRepositoryMonitor _monitor;
     private readonly IList<IQueryMatcher> _queryMatchers;
 
     public RepositoryMatcher(ILogger logger, IRepositoryMonitor monitor)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
 
         _queryMatchers = new List<IQueryMatcher>
             {
