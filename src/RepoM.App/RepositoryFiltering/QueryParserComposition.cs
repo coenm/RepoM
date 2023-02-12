@@ -1,11 +1,10 @@
 namespace RepoM.App.RepositoryFiltering;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
-using YamlDotNet.Core.Tokens;
+using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 internal class QueryParserComposition : IQueryParser
 {
@@ -32,7 +31,17 @@ internal class QueryParserComposition : IQueryParser
 
     public IQuery Parse(string text)
     {
+        if (text.Equals(_cacheText))
+        {
+            return _cacheQuery;
+        }
+
         IQueryParser queryParser = _selected;
-        return queryParser.Parse(text);
+        _cacheText = text;
+        _cacheQuery = queryParser.Parse(text);
+        return _cacheQuery;
     }
+
+    private string _cacheText = string.Empty;
+    private IQuery _cacheQuery = new FreeText(string.Empty);
 }

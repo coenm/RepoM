@@ -591,33 +591,32 @@ public partial class MainWindow
         }
 
         query = query.Trim();
-        
-        try
+
+        if (!_refreshDelayed)
         {
-            IQuery q = _repositoryFilteringManager.QueryParser.Parse(query);
-            return !_refreshDelayed && _repositoryMatcher.Matches(viewModelItem.Repository, q);
-        }
-        catch (Exception e)
-        {
-            // oops
-        }
-        
-        if (string.Equals("is:pinned", query, StringComparison.CurrentCultureIgnoreCase))
-        {
-            return viewModelItem.IsPinned;
+            // if (viewModelItem.Repository.Name.Contains("repom", StringComparison.CurrentCultureIgnoreCase))
+            {
+                try
+                {
+                    IQuery q = _repositoryFilteringManager.QueryParser.Parse(query);
+                    var r  =  _repositoryMatcher.Matches(viewModelItem.Repository, q);
+                    if (r)
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }
+                catch (Exception e)
+                {
+                    var x = e.Message;
+                    return false;
+                }
+            }
         }
 
-        if (string.Equals("is:unpinned", query, StringComparison.CurrentCultureIgnoreCase))
-        {
-            return !viewModelItem.IsPinned;
-        }
+        return false;
 
-        // always show pinned.
-        if (viewModelItem.IsPinned)
-        {
-            // pinned should always be visible
-            return true;
-        }
         
         if (query.StartsWith("!"))
         {

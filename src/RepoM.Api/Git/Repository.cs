@@ -110,7 +110,7 @@ public class Repository : IRepository
     {
         return string.Join("-", new object[]
             {
-                CurrentBranch ?? string.Empty,
+                CurrentBranch,
                 AheadBy ?? 0,
                 BehindBy ?? 0,
                 LocalUntracked ?? 0,

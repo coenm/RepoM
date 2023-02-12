@@ -24,7 +24,7 @@ internal class DefaultQueryParser : INamedQueryParser
             text = text.Replace("is:unpinned", " ");
         }
 
-        q.Add(new SimpleTerm("text", text));
+        q.Add(new FreeText(text));
 
         if (q.Any())
         {
