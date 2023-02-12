@@ -21,7 +21,16 @@ public class HasPullRequestsMatcher : IQueryMatcher
             "pull-request",
             "pull-requests",
         };
-    
+
+    private readonly StringComparison _stringComparisonValue;
+
+    public HasPullRequestsMatcher(bool ignoreCase)
+    {
+        _stringComparisonValue = ignoreCase
+            ? StringComparison.CurrentCultureIgnoreCase
+            : StringComparison.CurrentCulture;
+    }
+
     public bool? IsMatch(IRepository repository, TermBase term)
     {
         if (term is not SimpleTerm st)
@@ -34,7 +43,7 @@ public class HasPullRequestsMatcher : IQueryMatcher
             return null;
         }
 
-        if (_values.Contains(st.Value))
+        if (_values.Any(x => x.Equals(st.Value, _stringComparisonValue)))
         {
             return HasPullRequests(repository);
         }
@@ -48,7 +57,7 @@ public class HasPullRequestsMatcher : IQueryMatcher
     }
 }
 
-public class HasUnPushedMatcher : IQueryMatcher
+public class HasUnPushedChangesMatcher : IQueryMatcher
 {
     private static readonly string[] _values =
         {
@@ -127,9 +136,9 @@ internal class RepositoryMatcher : IRepositoryMatcher
             {
                 new IsPinnedMatcher(monitor),
                 new TagMatcher(),
-                new HasPullRequestsMatcher(),
-                new HasUnPushedMatcher(),
-                new FreeTextMatcher(),
+                new HasPullRequestsMatcher(ignoreCase:true),
+                new HasUnPushedChangesMatcher(),
+                new FreeTextMatcher(ignoreCase:true, ignoreCaseTag:true),
             };
     }
 

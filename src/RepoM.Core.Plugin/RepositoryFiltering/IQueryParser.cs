@@ -44,6 +44,19 @@ public class TagMatcher : IQueryMatcher
 
 public class FreeTextMatcher : IQueryMatcher
 {
+    private readonly StringComparison _stringComparisonFreeText;
+    private readonly StringComparison _stringComparisonTag;
+
+    public FreeTextMatcher(bool ignoreCase, bool ignoreCaseTag)
+    {
+        _stringComparisonFreeText = ignoreCase
+            ? StringComparison.CurrentCultureIgnoreCase
+            : StringComparison.CurrentCulture;
+        _stringComparisonTag = ignoreCaseTag
+            ? StringComparison.CurrentCultureIgnoreCase
+            : StringComparison.CurrentCulture;
+    }
+
     public bool? IsMatch(IRepository repository, TermBase term)
     {
         if (term is not FreeText st)
@@ -51,11 +64,11 @@ public class FreeTextMatcher : IQueryMatcher
             return null;
         }
 
-        if (repository.Tags.Contains(st.Value))
+        if (repository.Tags.Any(x => x.Equals(st.Value, _stringComparisonTag)))
         {
             return true;
         }
 
-        return repository.Name.Contains(st.Value);
+        return repository.Name.Contains(st.Value, _stringComparisonFreeText);
     }
 }
