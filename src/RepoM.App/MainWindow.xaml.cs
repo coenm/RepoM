@@ -604,7 +604,7 @@ public partial class MainWindow
             {
                 try
                 {
-                    IQuery q = _repositoryFilteringManager.QueryParser.Parse(query);
+                    IQuery q = _repositoryFilteringManager.QueryParser.Parse(sanitizedQuery);
                     var r = _repositoryMatcher.Matches(viewModelItem.Repository, q);
                     if (r)
                     {
