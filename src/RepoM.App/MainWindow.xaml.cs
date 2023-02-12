@@ -592,32 +592,34 @@ public partial class MainWindow
 
         query = query.Trim();
 
-        if (!_refreshDelayed)
+        if (query.StartsWith("@"))
         {
-            // if (viewModelItem.Repository.Name.Contains("repom", StringComparison.CurrentCultureIgnoreCase))
+            var sanitizedQuery = query[1..];
+            if (string.IsNullOrWhiteSpace(sanitizedQuery))
+            {
+                return true;
+            }
+
+            if (!_refreshDelayed)
             {
                 try
                 {
                     IQuery q = _repositoryFilteringManager.QueryParser.Parse(query);
-                    var r  =  _repositoryMatcher.Matches(viewModelItem.Repository, q);
+                    var r = _repositoryMatcher.Matches(viewModelItem.Repository, q);
                     if (r)
                     {
                         return true;
                     }
-
-                    return false;
                 }
                 catch (Exception e)
                 {
-                    var x = e.Message;
                     return false;
                 }
             }
+
+            return false;
         }
 
-        return false;
-
-        
         if (query.StartsWith("!"))
         {
             var sanitizedQuery = query[1..];
@@ -629,6 +631,7 @@ public partial class MainWindow
             var results = _repositorySearch.Search(sanitizedQuery).ToArray();
             return results.Contains(viewModelItem.Path);
         }
+
 
         return !_refreshDelayed && viewModelItem.Repository.MatchesFilter(txtFilter.Text);
     }
