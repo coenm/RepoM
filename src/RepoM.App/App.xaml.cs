@@ -242,6 +242,13 @@ public partial class App : Application
         container.Register<IRepositoryFilteringManager, RepositoryFilteringManager>(Lifestyle.Singleton);
         container.Collection.Append<INamedQueryParser, DefaultQueryParser>(Lifestyle.Singleton);
 
+        container.Collection.Append<IQueryMatcher, IsPinnedMatcher>(Lifestyle.Singleton);
+        container.Collection.Append<IQueryMatcher, TagMatcher>(Lifestyle.Singleton);
+        container.Collection.Append<IQueryMatcher>(() => new HasPullRequestsMatcher(true), Lifestyle.Singleton);
+        container.Collection.Append<IQueryMatcher, HasUnPushedChangesMatcher>(Lifestyle.Singleton);
+        container.Collection.Append<IQueryMatcher>(() => new FreeTextMatcher(ignoreCase: true, ignoreCaseTag: true), Lifestyle.Singleton);
+
+
         container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
         container.RegisterInstance<IFileSystem>(fileSystem);

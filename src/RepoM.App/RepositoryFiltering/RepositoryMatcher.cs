@@ -126,20 +126,12 @@ public class IsPinnedMatcher : IQueryMatcher
 internal class RepositoryMatcher : IRepositoryMatcher
 {
     private readonly ILogger _logger;
-    private readonly IList<IQueryMatcher> _queryMatchers;
+    private readonly IQueryMatcher[] _queryMatchers;
 
-    public RepositoryMatcher(ILogger logger, IRepositoryMonitor monitor)
+    public RepositoryMatcher(ILogger logger, IEnumerable<IQueryMatcher> matchers)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-        _queryMatchers = new List<IQueryMatcher>
-            {
-                new IsPinnedMatcher(monitor),
-                new TagMatcher(),
-                new HasPullRequestsMatcher(ignoreCase:true),
-                new HasUnPushedChangesMatcher(),
-                new FreeTextMatcher(ignoreCase:true, ignoreCaseTag:true),
-            };
+        _queryMatchers = matchers.ToArray();
     }
 
     public bool Matches(IRepository repository, IQuery query)
