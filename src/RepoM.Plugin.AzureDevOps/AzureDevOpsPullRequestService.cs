@@ -11,7 +11,7 @@ using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
 using RepoM.Api.Common;
-using RepoM.Api.Git;
+using RepoM.Core.Plugin.Repository;
 
 internal sealed class AzureDevOpsPullRequestService : IDisposable
 {
@@ -196,7 +196,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         }
     }
 
-    public List<PullRequest> GetPullRequests(Repository repository, string projectId, string? repoId)
+    public List<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
     {
         RegisterProjectId(projectId);
         if (_gitRepositoriesPerProject.Count == 0)
@@ -207,7 +207,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         return Task.Run(() => GetPullRequestsTask(repository, projectId, repoId)).GetAwaiter().GetResult();
     }
 
-    private async Task<List<PullRequest>> GetPullRequestsTask(Repository repository, string projectId, string? repoId)
+    private async Task<List<PullRequest>> GetPullRequestsTask(IRepository repository, string projectId, string? repoId)
     {
         if (_gitClient == null)
         {

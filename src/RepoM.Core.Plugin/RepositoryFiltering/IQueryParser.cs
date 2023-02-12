@@ -2,7 +2,6 @@ namespace RepoM.Core.Plugin.RepositoryFiltering;
 
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
@@ -21,8 +20,6 @@ public interface IQueryMatcher
 {
     bool? IsMatch(IRepository repository, TermBase term);
 }
-
-
 
 public class TagMatcher : IQueryMatcher
 {
