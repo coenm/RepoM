@@ -1,0 +1,8 @@
+﻿{
+  Output: tag:?github.com,
+  Model: {
+    $type: WildCardTerm,
+    Term: tag,
+    Value: ?github.com
+  }
+}

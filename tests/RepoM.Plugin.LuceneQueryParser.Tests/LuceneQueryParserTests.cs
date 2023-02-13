@@ -126,9 +126,12 @@ public class LuceneQueryParserTests
     // [InlineData("tag-wildcard", "tag:github.com *")]
     [InlineData("tag-wildcard-literal", "tag:\"github.com*\"")]
     
-
     [InlineData("tag-wildcard-start", "tag:*github.com")]
+    [InlineData("tag-wildcard-middle-end", "tag:git*.com*")]
+    [InlineData("tag-wildcard-end", "tag:github.com*")]
     [InlineData("tag-wildcard-start-end", "tag:*github.com*")]
+    [InlineData("tag-question-end", "tag:github.com?")]
+    [InlineData("tag-question-start", "tag:?github.com")]
 
     [InlineData("text-only", "This is Some   Text@ ")]
     [InlineData("text-only", "This is Some Text@")]
@@ -138,7 +141,6 @@ public class LuceneQueryParserTests
     [InlineData("text-only", "  +This +is      Some Text@  ")] // plus doesnt matter
 
     // [InlineData("text-only", "  This is      Some^ Text@  ")]  // error
-
     [InlineData("fuzzy", "roam~")]
     [InlineData("fuzzy", "roam~0.8")] 
     [InlineData("fuzzy", "roam~1.0")] 
@@ -159,17 +161,4 @@ public class LuceneQueryParserTests
                 },
             _settings).UseTextForParameters(outputName);
     }
-
-    // // // wildcard not yet implemented
-    // [InlineData("wildcard-q-star", "te?t*")]
-    // [InlineData("wildcard-q", "te?t")]
-    // // [InlineData("wildcard-q2", "te?t abc")]
-    // [InlineData("no-wildcard-q", "\"te?t\"")]
-    // [InlineData("wildcard-start", "*ext")]
-    // [InlineData("wildcard", "te*t")]
-    // [InlineData("wildcard", " te*t  ")]
-    // [InlineData("no-wildcard", " \"te*t\"  ")] // * is not wildcard because inside quotes
-    //
-
-
 }

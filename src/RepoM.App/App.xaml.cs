@@ -244,7 +244,6 @@ public partial class App : Application
 
         container.Collection.Append<IQueryMatcher, IsPinnedMatcher>(Lifestyle.Singleton);
         container.Collection.Append<IQueryMatcher, TagMatcher>(Lifestyle.Singleton);
-        container.Collection.Append<IQueryMatcher>(() => new HasPullRequestsMatcher(true), Lifestyle.Singleton);
         container.Collection.Append<IQueryMatcher, HasUnPushedChangesMatcher>(Lifestyle.Singleton);
         container.Collection.Append<IQueryMatcher>(() => new FreeTextMatcher(ignoreCase: true, ignoreCaseTag: true), Lifestyle.Singleton);
 

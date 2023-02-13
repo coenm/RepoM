@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Core.Plugin.RepositoryFiltering;
+using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
 internal class RepositoryFilteringManager : IRepositoryFilteringManager
@@ -38,6 +39,8 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
         _repositoryComparerKeys = _queryParsers.Select(x => x.Name).ToList();
 
+        PreFilter = new TrueQuery();
+
         if (string.IsNullOrWhiteSpace(_appSettingsService.QueryParserKey))
         {
             _logger.LogInformation("Query parser was not set. Pick first one.");
@@ -52,11 +55,15 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
     public event EventHandler<string>? SelectedQueryParserChanged;
 
+    public event EventHandler<string>? PreFilterChanged;
+
     public IQueryParser QueryParser => _queryParser;
 
     public string SelectedQueryParserKey { get; private set; } = string.Empty;
 
     public IReadOnlyList<string> QueryParserKeys => _repositoryComparerKeys;
+    
+    public IQuery PreFilter { get; private set; }
 
     public bool SetQueryParser(string key)
     {

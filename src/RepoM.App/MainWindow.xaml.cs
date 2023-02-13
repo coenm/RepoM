@@ -585,6 +585,11 @@ public partial class MainWindow
             return false;
         }
 
+        if (!_repositoryMatcher.Matches(viewModelItem.Repository, _repositoryFilteringManager.PreFilter))
+        {
+            return false;
+        }
+
         if (string.IsNullOrWhiteSpace(query))
         {
             return true;

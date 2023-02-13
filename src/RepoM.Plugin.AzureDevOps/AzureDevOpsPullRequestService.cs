@@ -196,6 +196,23 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         }
     }
 
+    public bool HasPullRequests(IRepository repository)
+    {
+        var found = _repositoryDirectoryDevOpsRepoIdMapping.TryGetValue(repository.SafePath, out Guid repoIdGuid);
+        if (!found)
+        {
+            return false;
+        }
+
+        if (repoIdGuid == Guid.Empty)
+        {
+            return false;
+        }
+
+        var result = _pullRequestsPerProject.Values.Any(prs => prs.Any(x => x.RepoId.Equals(repoIdGuid)));
+        return result;
+    }
+
     public List<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
     {
         RegisterProjectId(projectId);
@@ -236,7 +253,6 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
             }
 
             var url = new Uri(urlString);
-
             List<GitRepository> repositories;
             try
             {

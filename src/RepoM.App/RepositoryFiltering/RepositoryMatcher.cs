@@ -10,53 +10,6 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
-public class HasPullRequestsMatcher : IQueryMatcher
-{
-    private static readonly string[] _values = new[]
-        {
-            "pr",
-            "prs",
-            "pullrequest",
-            "pullrequests",
-            "pull-request",
-            "pull-requests",
-        };
-
-    private readonly StringComparison _stringComparisonValue;
-
-    public HasPullRequestsMatcher(bool ignoreCase)
-    {
-        _stringComparisonValue = ignoreCase
-            ? StringComparison.CurrentCultureIgnoreCase
-            : StringComparison.CurrentCulture;
-    }
-
-    public bool? IsMatch(IRepository repository, TermBase term)
-    {
-        if (term is not SimpleTerm st)
-        {
-            return null;
-        }
-
-        if (!"has".Equals(st.Term, StringComparison.CurrentCulture))
-        {
-            return null;
-        }
-
-        if (_values.Any(x => x.Equals(st.Value, _stringComparisonValue)))
-        {
-            return HasPullRequests(repository);
-        }
-
-        return null;
-    }
-
-    private bool HasPullRequests(IRepository repository)
-    {
-        return false;
-    }
-}
-
 public class HasUnPushedChangesMatcher : IQueryMatcher
 {
     private static readonly string[] _values =
@@ -65,7 +18,7 @@ public class HasUnPushedChangesMatcher : IQueryMatcher
             "unpushed-changes",
         };
 
-    public bool? IsMatch(IRepository repository, TermBase term)
+    public bool? IsMatch(in IRepository repository, in TermBase term)
     {
         if (term is not SimpleTerm st)
         {
@@ -96,7 +49,7 @@ public class IsPinnedMatcher : IQueryMatcher
         _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
     }
 
-    public bool? IsMatch(IRepository repository, TermBase term)
+    public bool? IsMatch(in IRepository repository, in TermBase term)
     {
         if (term is not SimpleTerm st)
         {
@@ -136,6 +89,16 @@ internal class RepositoryMatcher : IRepositoryMatcher
 
     public bool Matches(IRepository repository, IQuery query)
     {
+        if (query is TrueQuery)
+        {
+            return true;
+        }
+
+        if (query is FalseQuery)
+        {
+            return false;
+        }
+
         if (query is AndQuery and)
         {
             return HandleAnd(repository, and);
