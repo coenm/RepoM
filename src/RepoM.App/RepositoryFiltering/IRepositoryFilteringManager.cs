@@ -8,15 +8,22 @@ using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 public interface IRepositoryFilteringManager
 {
     event EventHandler<string>? SelectedQueryParserChanged;
-    event EventHandler<string>? PreFilterChanged;
+
+    event EventHandler<string>? SelectedFilterChanged;
 
     IQueryParser QueryParser { get; }
 
+    IQuery PreFilter { get; }
+
     IReadOnlyList<string> QueryParserKeys { get; }
+
+    IReadOnlyList<string> FilterKeys { get; }
 
     string SelectedQueryParserKey { get; }
 
+    string SelectedFilterKey { get; }
+
     bool SetQueryParser(string key);
 
-    IQuery PreFilter { get; }
+    bool SetFilter(string key);
 }

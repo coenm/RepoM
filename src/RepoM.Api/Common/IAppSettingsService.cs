@@ -34,5 +34,7 @@ public interface IAppSettingsService
 
     string QueryParserKey { get; set; }
 
+    string SelectedFilter { get; set; }
+
     void RegisterInvalidationHandler(Action handler);
 }

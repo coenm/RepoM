@@ -123,6 +123,23 @@ public class FileAppSettingsService : IAppSettingsService
             Save();
         }
     }
+
+    public string SelectedFilter
+    {
+        get => Settings.SelectedFilter;
+        set
+        {
+            if (value == Settings.SelectedFilter)
+            {
+                return;
+            }
+
+            Settings.SelectedFilter = value;
+
+            NotifyChange();
+            Save();
+        }
+    }
     
     public AutoFetchMode AutoFetchMode
     {

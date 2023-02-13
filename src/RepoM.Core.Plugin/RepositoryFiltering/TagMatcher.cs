@@ -24,7 +24,7 @@ public class TagMatcher : IQueryMatcher
 
     private static bool CheckTerm(in string term)
     {
-        return !"tag".Equals(term, StringComparison.CurrentCulture);
+        return "tag".Equals(term, StringComparison.CurrentCulture);
     }
 
     private static bool? IsMatch(in IRepository repository, in StartsWithTerm term)

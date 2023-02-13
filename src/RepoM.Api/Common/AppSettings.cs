@@ -14,10 +14,13 @@ public class AppSettings
         AzureDevOps = AzureDevOpsOptions.Default;
         SortKey = string.Empty;
         SelectedQueryParser = string.Empty;
+        SelectedFilter = string.Empty;
     }
     public string SortKey { get; set; }
 
     public string SelectedQueryParser { get; set; }
+
+    public string SelectedFilter { get; set; }
 
     public AutoFetchMode AutoFetchMode { get; set; }
 

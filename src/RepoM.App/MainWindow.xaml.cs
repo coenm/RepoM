@@ -77,8 +77,10 @@ public partial class MainWindow
         AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
         
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
-        var filteringViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
-        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel, filteringViewModel);
+        var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
+        var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
+
+        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;
@@ -96,6 +98,7 @@ public partial class MainWindow
         view.CustomSort = repositoryComparerManager.Comparer;
         repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
+        repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
 
         AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);
@@ -585,11 +588,18 @@ public partial class MainWindow
             return false;
         }
 
-        if (!_repositoryMatcher.Matches(viewModelItem.Repository, _repositoryFilteringManager.PreFilter))
+        try
+        {
+            if (!_repositoryMatcher.Matches(viewModelItem.Repository, _repositoryFilteringManager.PreFilter))
+            {
+                return false;
+            }
+        }
+        catch (Exception)
         {
             return false;
         }
-
+        
         if (string.IsNullOrWhiteSpace(query))
         {
             return true;
@@ -605,24 +615,20 @@ public partial class MainWindow
                 return true;
             }
 
-            if (!_refreshDelayed)
+            if (_refreshDelayed)
             {
-                try
-                {
-                    IQuery q = _repositoryFilteringManager.QueryParser.Parse(sanitizedQuery);
-                    var r = _repositoryMatcher.Matches(viewModelItem.Repository, q);
-                    if (r)
-                    {
-                        return true;
-                    }
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
+                return false;
             }
 
-            return false;
+            try
+            {
+                IQuery q = _repositoryFilteringManager.QueryParser.Parse(sanitizedQuery);
+                return _repositoryMatcher.Matches(viewModelItem.Repository, q);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         if (query.StartsWith("!"))
@@ -636,8 +642,7 @@ public partial class MainWindow
             var results = _repositorySearch.Search(sanitizedQuery).ToArray();
             return results.Contains(viewModelItem.Path);
         }
-
-
+        
         return !_refreshDelayed && viewModelItem.Repository.MatchesFilter(txtFilter.Text);
     }
 

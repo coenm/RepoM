@@ -43,5 +43,6 @@ internal class QueryParserComposition : IQueryParser
     }
 
     private string _cacheText = string.Empty;
+
     private IQuery _cacheQuery = new FreeText(string.Empty);
 }
