@@ -2,10 +2,12 @@ namespace RepoM.App.RepositoryFiltering;
 
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
+[UsedImplicitly]
 internal class DefaultQueryParser : INamedQueryParser
 {
     public string Name => "Default";

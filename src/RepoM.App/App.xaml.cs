@@ -53,6 +53,7 @@ using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.App.RepositoryFiltering;
+using RepoM.App.RepositoryFiltering.QueryMatchers;
 using RepoM.Core.Plugin.RepositoryFiltering;
 
 /// <summary>

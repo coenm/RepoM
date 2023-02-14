@@ -122,12 +122,10 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
                 catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
                 {
                     _logger.LogWarning(e, "Project does not exist (projectId {projectId})", projectId);
-                    //throw new ApplicationException(e.Message, e);
                 }
                 catch (Exception e)
                 {
                     _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
-                    //throw new ApplicationException("Could retrieve repositories Check your PAT", e);
                 }
                 
                 if (repositories == null || repositories.Count == 0)

@@ -4,77 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
-
-public class HasUnPushedChangesMatcher : IQueryMatcher
-{
-    private static readonly string[] _values =
-        {
-            "unpushed",
-            "unpushed-changes",
-        };
-
-    public bool? IsMatch(in IRepository repository, in TermBase term)
-    {
-        if (term is not SimpleTerm st)
-        {
-            return null;
-        }
-
-        if (!"has".Equals(st.Term, StringComparison.CurrentCulture))
-        {
-            return null;
-        }
-
-        if (_values.Contains(st.Value))
-        {
-            return repository.HasUnpushedChanges;
-        }
-
-        return null;
-    }
-}
-
-
-public class IsPinnedMatcher : IQueryMatcher
-{
-    private readonly IRepositoryMonitor _monitor;
-
-    public IsPinnedMatcher(IRepositoryMonitor monitor)
-    {
-        _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
-    }
-
-    public bool? IsMatch(in IRepository repository, in TermBase term)
-    {
-        if (term is not SimpleTerm st)
-        {
-            return null;
-        }
-
-        if (!"is".Equals(st.Term, StringComparison.CurrentCulture))
-        {
-            return null;
-        }
-
-        if ("pinned".Equals(st.Value, StringComparison.CurrentCulture))
-        {
-            return _monitor.IsPinned(repository);
-        }
-
-        if ("unpinned".Equals(st.Value, StringComparison.CurrentCulture))
-        {
-            return !_monitor.IsPinned(repository);
-        }
-
-        return null;
-    }
-}
-
 
 internal class RepositoryMatcher : IRepositoryMatcher
 {
@@ -141,14 +74,14 @@ internal class RepositoryMatcher : IRepositoryMatcher
     private bool HandleAnd(IRepository repository, AndQuery and)
     {
         return and.Items
-                  .Select(q => Matches(repository, q))
-                  .All(result => result);
+            .Select(q => Matches(repository, q))
+            .All(result => result);
     }
 
     private bool HandleOr(IRepository repository, OrQuery or)
     {
         return or.Items
-                 .Select(q => Matches(repository, q))
-                 .Any(result => result);
+            .Select(q => Matches(repository, q))
+            .Any(result => result);
     }
 }

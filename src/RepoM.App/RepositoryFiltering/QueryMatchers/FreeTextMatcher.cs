@@ -1,11 +1,13 @@
-namespace RepoM.App.RepositoryFiltering;
+namespace RepoM.App.RepositoryFiltering.QueryMatchers;
 
 using System;
 using System.Linq;
+using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
+[UsedImplicitly]
 public class FreeTextMatcher : IQueryMatcher
 {
     private readonly StringComparison _stringComparisonFreeText;
