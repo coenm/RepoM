@@ -13,7 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.App.Controls;
@@ -604,11 +603,16 @@ public partial class MainWindow
 
         if (query.StartsWith("!"))
         {
-            return !_refreshDelayed && viewModelItem.Repository.MatchesFilter(txtFilter.Text);
+            var sanitizedQuery = query[1..].Trim();
+            if (string.IsNullOrWhiteSpace(sanitizedQuery))
+            {
+                return true;
+            }
+
+            return !_refreshDelayed && viewModelItem.Repository.MatchesFilter(sanitizedQuery);
         }
 
-        var sanitizedQuery = query[1..];
-        if (string.IsNullOrWhiteSpace(sanitizedQuery))
+        if (string.IsNullOrWhiteSpace(query))
         {
             return true;
         }
@@ -620,25 +624,14 @@ public partial class MainWindow
 
         try
         {
-            IQuery queryObject = _repositoryFilteringManager.QueryParser.Parse(sanitizedQuery);
-            return _repositoryMatcher.Matches(viewModelItem.Repository, queryObject);
+            IQuery queryObject = _repositoryFilteringManager.QueryParser.Parse(query);
+            var result = _repositoryMatcher.Matches(viewModelItem.Repository, queryObject);
+            return result;
         }
         catch (Exception)
         {
             return false;
         }
-
-        // if (query.StartsWith("!"))
-        // {
-        //     var sanitizedQuery = query[1..];
-        //     if (string.IsNullOrWhiteSpace(sanitizedQuery))
-        //     {
-        //         return true;
-        //     }
-        //
-        //     var results = _repositorySearch.Search(sanitizedQuery).ToArray();
-        //     return results.Contains(viewModelItem.Path);
-        // }
     }
 
     private void TxtFilter_Finish(object sender, EventArgs e)

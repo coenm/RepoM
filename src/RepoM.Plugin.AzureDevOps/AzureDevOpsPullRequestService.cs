@@ -300,6 +300,8 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
             return _emptyList;
         }
 
+        _repositoryDirectoryDevOpsRepoIdMapping.AddOrUpdate(repository.SafePath, _ => repoIdGuid, (_, _) => repoIdGuid);
+
         if (_pullRequestsPerProject.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Any())
         {
             _logger.LogTrace("Returning pull requests from cache where repo id was given.");
