@@ -84,7 +84,7 @@ To search for repositories, you can use a repom-dialect of Lucene query syntax.
 >
 > #### NOT operator
 >
-> The `NOT` operator excludes respositories that matches the term after NOT. You can also use ~~`!` or~~ `-`. For example, `NOT RepoM` finds all repositories except the ones that matches "RepoM". The same holds for `-RepoM` ~~or `!RepoM`~~.
+> The `NOT` operator excludes respositories that matches the term after NOT. You can also use `!` or `-`. For example, `NOT RepoM` finds all repositories except the ones that matches "RepoM". The same holds for `-RepoM` or `!RepoM`.
 >
 > ### Grouping
 >
