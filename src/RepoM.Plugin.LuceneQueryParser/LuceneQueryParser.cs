@@ -11,35 +11,34 @@ using Lucene.Net.Util;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
-using RepoM.Plugin.LuceneQueryParser.LuceneX;
+using RepoM.Plugin.LuceneQueryParser.Internal;
 
 public class LuceneQueryParser : INamedQueryParser
 {
-    private const string KEY_FREE_TEXT = "ThisIsAnUnguessableKEj";
+    private const string KEY_FREE_TEXT = "ThisShouldBeAnUnguessableKEj";
     private readonly CustomMultiFieldQueryParser _queryParser;
 
     public LuceneQueryParser()
     {
         var analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
 
-        
         _queryParser = new CustomMultiFieldQueryParser(LuceneVersion.LUCENE_48, new[] { KEY_FREE_TEXT, }, analyzer)
-        {
-            DefaultOperator = Operator.AND,
-            AllowLeadingWildcard = true,
-            FuzzyMinSim = 1.0f, //FuzzyQuery 
-            PhraseSlop = 0, // disable Proximity
-        };
+            {
+                DefaultOperator = Operator.AND,
+                AllowLeadingWildcard = true,
+                FuzzyMinSim = 1.0f, //FuzzyQuery 
+                PhraseSlop = 0, // disable Proximity
+            };
     }
 
-    public string Name { get; } = "Lucene";
+    public string Name => "Lucene";
 
     public IQuery Parse(string text)
     {
         try
         {
             var result = (SetQuery)_queryParser.Parse(text);
-            return MapQuery2(result, _queryParser.DefaultOperator == Operator.AND);
+            return MapQuery(result);
         }
         catch (ParseException e)
         {
@@ -51,15 +50,14 @@ public class LuceneQueryParser : INamedQueryParser
             Console.WriteLine(e);
             throw;
         }
-        
     }
 
-    private IQuery MapQuery2(SetQuery result, bool b)
+    private IQuery MapQuery(SetQuery result)
     {
-        return ConvertX(result.SetBooleanClause);
+        return ConvertWrappedBooleanClause(result.SetBooleanClause);
     }
 
-    private IQuery ConvertX(WrappedBooleanClause input)
+    private IQuery ConvertWrappedBooleanClause(WrappedBooleanClause input)
     {
         if (input is NotBooleanClause nbc)
         {
@@ -70,45 +68,21 @@ public class LuceneQueryParser : INamedQueryParser
         {
             if (x.Items.Count == 1)
             {
-                return ConvertX(x.Items.Single());
+                return ConvertWrappedBooleanClause(x.Items.Single());
             }
 
-            IQuery[] array = x.Items.Select(booleanClause => ConvertX(booleanClause)).ToArray();
+            IQuery[] array = x.Items.Select(ConvertWrappedBooleanClause).ToArray();
 
             return x.Mode == SetBooleanClause.BoolMode.AND
                 ? new AndQuery(array)
                 : new OrQuery(array);
         }
 
-        //WrappedBooleanClause
         return ConvertQueryToClause(input.Query);
     }
 
     private IQuery ConvertQueryToClause(Query query)
     {
-         if (query is Lucene.Net.Search.BooleanQuery bq)
-         {
-            // // and, or
-            // TermBase[] items = bq.Clauses.Select(x =>
-            //     {
-            //         if (x.Occur == Lucene.Net.Search.Occur.MUST_NOT)
-            //         {
-            //             return new Not(MapQuery1(x.Query, and));
-            //         }
-            //
-            //         return MapQuery1(x.Query, and);
-            //     }).ToArray();
-            //
-            //
-            // if (bq.Clauses.Count == 1)
-            // {
-            //     return bq.Clauses.Single();
-            // }
-            //
-            // return and ? new And(items) : new Or(items);
-            // return new MyBooleanQuery(bq, MapQuery);
-        }
-
         if (query is TermQuery tq)
         {
             if (KEY_FREE_TEXT.Equals(tq.Term.Field, StringComparison.CurrentCulture))
@@ -147,7 +121,7 @@ public class LuceneQueryParser : INamedQueryParser
 
         if (query is SetQuery cq)
         {
-            return MapQuery2(cq, true);
+            return MapQuery(cq);
         }
         
         if (query is PrefixQuery pq)
@@ -160,28 +134,23 @@ public class LuceneQueryParser : INamedQueryParser
             var queryTerms = new HashSet<Term>();
             phraseQuery.ExtractTerms(queryTerms);
 
-            if (queryTerms.Count >= 1)
+            if (queryTerms.Count < 1)
             {
-                // assume all same field
-                var field = queryTerms.First().Field;
-                var s = string.Empty;
-                foreach (Term qt in queryTerms)
-                {
-                    s += " " + qt.Text;
-                }
-
-                s = s.Trim();
-
-                if (KEY_FREE_TEXT.Equals(field, StringComparison.CurrentCulture))
-                {
-                    return new FreeText(s);
-                }
-                
-                return new SimpleTerm(field, s);
+                throw new NotSupportedException();
             }
-        
+
+            // assume all same field
+            var field = queryTerms.First().Field;
+            var s = queryTerms.Aggregate(string.Empty, (current, qt) => current + " " + qt.Text).Trim();
+
+            if (KEY_FREE_TEXT.Equals(field, StringComparison.CurrentCulture))
+            {
+                return new FreeText(s);
+            }
+                
+            return new SimpleTerm(field, s);
+
             // not supported
-            throw new NotSupportedException();
         }
 
         var fullName = query.GetType().FullName;

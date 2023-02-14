@@ -1,8 +1,9 @@
-namespace RepoM.Core.Plugin.RepositoryFiltering;
+namespace RepoM.App.RepositoryFiltering;
 
 using System;
 using System.Linq;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 public class TagMatcher : IQueryMatcher

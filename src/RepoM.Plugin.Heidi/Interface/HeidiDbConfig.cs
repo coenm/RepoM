@@ -1,5 +1,7 @@
 namespace RepoM.Plugin.Heidi.Interface;
 
+using System;
+
 public class HeidiDbConfig
 {
     internal HeidiDbConfig()
@@ -54,5 +56,5 @@ public class HeidiDbConfig
     /// <summary>
     /// Databases, separated by semicolon. Single database on PostgreSQL. Interbase and Firebird expect a local file here.
     /// </summary>
-    public string[] Databases { get; internal set; }
+    public string[] Databases { get; internal set; } = Array.Empty<string>();
 }

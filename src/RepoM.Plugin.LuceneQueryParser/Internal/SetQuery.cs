@@ -1,8 +1,8 @@
-namespace RepoM.Plugin.LuceneQueryParser.LuceneX;
+namespace RepoM.Plugin.LuceneQueryParser.Internal;
 
 using Lucene.Net.Search;
 
-public class SetQuery : Query
+internal class SetQuery : Query
 {
     public SetBooleanClause SetBooleanClause { get; }
 

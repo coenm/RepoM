@@ -60,12 +60,6 @@ public class LuceneQueryParserTests
     [InlineData("mix1", "word1  AND tag:tagsss OR word33")]
     [InlineData("mix2", "abc.def  word33")]
 
-    // [InlineData("single-word", " aBc@ ")]
-    // [InlineData("single-word", " \"aBc@\" ")]
-    // [InlineData("single-word", " ((\"aBc@\")) ")]
-    // // [InlineData("single-word", " +(\"aBc@\") ")]
-    // // [InlineData("single-word", " (+\"aBc@\") ")]
-
     [InlineData("range-only", "age:[16 TO 75]")]
     [InlineData("range-only", "  age:[16 TO 75]")]
     [InlineData("range-only", "age:[16 TO 75]  ")]

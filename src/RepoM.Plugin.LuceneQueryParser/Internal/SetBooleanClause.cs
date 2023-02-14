@@ -1,9 +1,9 @@
-namespace RepoM.Plugin.LuceneQueryParser.LuceneX;
+namespace RepoM.Plugin.LuceneQueryParser.Internal;
 
 using System.Collections.Generic;
 using System.Linq;
 
-public class SetBooleanClause : WrappedBooleanClause
+internal class SetBooleanClause : WrappedBooleanClause
 {
     public SetBooleanClause(WrappedBooleanClause first) : base(first)
     {

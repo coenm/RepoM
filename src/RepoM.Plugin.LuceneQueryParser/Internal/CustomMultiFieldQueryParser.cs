@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.LuceneQueryParser.LuceneX;
+namespace RepoM.Plugin.LuceneQueryParser.Internal;
 
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,8 @@ using Lucene.Net.Util;
 
 internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
 {
+    private static readonly BooleanClause _dummy = new(new BooleanQuery(), Occur.MUST_NOT);
+
     public CustomMultiFieldQueryParser(LuceneVersion matchVersion, string[] fields, Analyzer analyzer, IDictionary<string, float> boosts)
         : base(matchVersion, fields, analyzer, boosts)
     {
@@ -25,29 +27,25 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
     {
         if (clauses.Count == 1)
         {
-            if (clauses[0] is BooleanClause bc)
+            if (clauses[0] is BooleanClause booleanClause)
             {
-                WrappedBooleanClause bc1;
-                bc1 = bc.IsProhibited
-                    ? new NotBooleanClause(bc)
-                    : new WrappedBooleanClause(bc);
-                clauses[0] = new SetBooleanClause(bc1) { Mode = SetBooleanClause.BoolMode.AND, };
-                clauses.Add(dummy); // dummy
+                WrappedBooleanClause wrappedBooleanClause = booleanClause.IsProhibited
+                    ? new NotBooleanClause(booleanClause)
+                    : new WrappedBooleanClause(booleanClause);
+                clauses[0] = new SetBooleanClause(wrappedBooleanClause) { Mode = SetBooleanClause.BoolMode.AND, };
+                clauses.Add(_dummy); 
             }
         }
 
-        if (clauses[0] is not SetBooleanClause x)
+        if (clauses[0] is not SetBooleanClause setBooleanClause)
         {
             return base.GetBooleanQuery(clauses, disableCoord);
-            // throw new Exception();
         }
 
-        return new SetQuery(x);
+        return new SetQuery(setBooleanClause);
     }
 
-    private static BooleanClause dummy = new(new BooleanQuery(), Occur.MUST_NOT);
 
-    
     protected override void AddClause(IList<BooleanClause> clauses, int conj, int mods, Query q)
     {
         bool required, prohibited;
@@ -100,7 +98,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
         {
             // default AND
             clauses.Add(new SetBooleanClause(clause) { Mode = SetBooleanClause.BoolMode.AND, });
-            clauses.Add(dummy); // dummy
+            clauses.Add(_dummy); // dummy
             return;
         }
 

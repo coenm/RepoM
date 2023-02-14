@@ -1,8 +1,8 @@
-namespace RepoM.Plugin.LuceneQueryParser.LuceneX;
+namespace RepoM.Plugin.LuceneQueryParser.Internal;
 
 using Lucene.Net.Search;
 
-public class NotBooleanClause : WrappedBooleanClause
+internal class NotBooleanClause : WrappedBooleanClause
 {
     public NotBooleanClause(BooleanClause clause)
         : base(clause)
@@ -11,6 +11,6 @@ public class NotBooleanClause : WrappedBooleanClause
 
     public override string ToString()
     {
-        return $"Not({Query.ToString()})";
+        return $"Not({Query})";
     }
 }

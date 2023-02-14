@@ -1,8 +1,8 @@
-namespace RepoM.Plugin.LuceneQueryParser.LuceneX;
+namespace RepoM.Plugin.LuceneQueryParser.Internal;
 
 using Lucene.Net.Search;
 
-public class WrappedBooleanClause : Lucene.Net.Search.BooleanClause
+internal class WrappedBooleanClause : Lucene.Net.Search.BooleanClause
 {
     private readonly BooleanClause _wrapped;
 

@@ -173,9 +173,9 @@ public partial class App : Application
         }
 
         IConfigurationBuilder builder = new ConfigurationBuilder()
-                                        .SetBasePath(Directory.GetCurrentDirectory())
-                                        .AddJsonFile(fullFilename, optional: true, reloadOnChange: false)
-                                        .AddEnvironmentVariables();
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile(fullFilename, optional: true, reloadOnChange: false)
+            .AddEnvironmentVariables();
         return builder.Build();
     }
 
@@ -372,7 +372,6 @@ public partial class App : Application
     {
         // We noticed that the hotkey registration at app start causes a high CPU utilization if the main window was not shown before.
         // To fix this, we need to make the window visible. However, to prevent flickering we move the window out of the screen bounds to show and hide it.
-
         window.Left = -9999;
         window.Show();
         window.Hide();

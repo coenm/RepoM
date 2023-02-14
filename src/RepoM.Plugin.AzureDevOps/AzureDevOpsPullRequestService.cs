@@ -206,6 +206,11 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
             try
             {
                 repoIdGuid = FindRepositoryGuid(repository);
+
+                if (repoIdGuid != Guid.Empty)
+                {
+                    _repositoryDirectoryDevOpsRepoIdMapping.AddOrUpdate(repository.SafePath, _ => repoIdGuid, (_, _) => repoIdGuid);
+                }
             }
             catch (Exception)
             {
@@ -217,7 +222,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         {
             return 0;
         }
-
+        
         return _pullRequestsPerProject.Values.Sum(prs => prs.Count(x => x.RepoId.Equals(repoIdGuid)));
     }
 
@@ -254,7 +259,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
 
         if (repoIdGuid == Guid.Empty)
         {
-            repoIdGuid = await FindRepositoryByProjectIdx(repository, projectId);
+            repoIdGuid = await FindRepositoryGuidByProjectId(repository, projectId);
 
             if (repoIdGuid == Guid.Empty)
             {
@@ -284,26 +289,29 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         return _emptyList;
     }
 
-    private async Task<Guid> FindRepositoryByProjectIdx(IRepository repository, string projectId)
+    private async Task<Guid> FindRepositoryGuidByProjectId(IRepository repository, string projectId)
     {
         try
         {
-            List<GitRepository> repos = await _gitClient.GetRepositoriesAsync(projectId, includeLinks: true, includeAllUrls: true, includeHidden: true);
-
-            foreach (GitRepository r in repos)
+            if (_gitClient != null)
             {
-                _devOpsGitRepositories.AddOrUpdate(r.Id, _ => r, (_, __) => r);
+                // yes it is possible due to a race condition that the _gitClient is null when executing this request.
+                // don't care for now as we catch the exceptions.
+                List<GitRepository> repos = await _gitClient!.GetRepositoriesAsync(projectId, includeLinks: true, includeAllUrls: true, includeHidden: true);
+
+                foreach (GitRepository r in repos)
+                {
+                    _devOpsGitRepositories.AddOrUpdate(r.Id, _ => r, (_, __) => r);
+                }
             }
         }
         catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
         {
             _logger.LogWarning(e, "Project does not exist (repository: {repository.Name} projectId {projectId})", repository.Name, projectId);
-            throw new ApplicationException(e.Message, e);
         }
         catch (Exception e)
         {
             _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
-            throw new ApplicationException("Could retrieve repositories Check your PAT", e);
         }
 
         return FindRepositoryGuid(repository);
@@ -313,20 +321,25 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
     {
         string searchRepoUrl = GetRepositorySearchUrl(repository);
 
-        GitRepository[] selectedRepos = _devOpsGitRepositories.Values.ToArray()
+        if (_devOpsGitRepositories.Count == 0)
+        {
+            return Guid.Empty;
+        }
+
+        GitRepository[] selectedRepos = _devOpsGitRepositories.Values
             .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
             .ToArray();
 
         if (selectedRepos.Length == 0)
         {
             _logger.LogWarning("No repository found for url {searchRepoUrl}", searchRepoUrl);
-            throw new ApplicationException($"No repositories found for url {searchRepoUrl}");
+            return Guid.Empty;
         }
 
         if (selectedRepos.Length > 1)
         {
             _logger.LogWarning("Multiple repositories found for url {searchRepoUrl}", searchRepoUrl);
-            throw new ApplicationException($"Multiple repositories found for url {searchRepoUrl}");
+            return Guid.Empty;
         }
 
         return selectedRepos[0].Id;
