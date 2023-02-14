@@ -35,7 +35,6 @@ public partial class MainWindow
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly DefaultRepositoryMonitor? _monitor;
     private readonly ITranslationService _translationService;
-    private readonly IRepositorySearch _repositorySearch;
     private bool _closeOnDeactivate = true;
     private bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
@@ -54,7 +53,6 @@ public partial class MainWindow
         IAppSettingsService appSettingsService,
         ITranslationService translationService,
         IAppDataPathProvider appDataPathProvider,
-        IRepositorySearch repositorySearch,
         IFileSystem fileSystem,
         ActionExecutor executor,
         IRepositoryComparerManager repositoryComparerManager,
@@ -68,7 +66,6 @@ public partial class MainWindow
         _repositoryActionProvider = repositoryActionProvider ?? throw new ArgumentNullException(nameof(repositoryActionProvider));
         _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-        _repositorySearch = repositorySearch ?? throw new ArgumentNullException(nameof(repositorySearch));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _executor = executor ?? throw new ArgumentNullException(nameof(executor));
         
@@ -576,7 +573,7 @@ public partial class MainWindow
 
     private bool FilterRepositories(object item)
     {
-        var query = txtFilter.Text;
+        var query = txtFilter.Text.Trim();
 
         if (_refreshDelayed)
         {
@@ -605,45 +602,43 @@ public partial class MainWindow
             return true;
         }
 
-        query = query.Trim();
-
-        if (query.StartsWith("@"))
-        {
-            var sanitizedQuery = query[1..];
-            if (string.IsNullOrWhiteSpace(sanitizedQuery))
-            {
-                return true;
-            }
-
-            if (_refreshDelayed)
-            {
-                return false;
-            }
-
-            try
-            {
-                IQuery q = _repositoryFilteringManager.QueryParser.Parse(sanitizedQuery);
-                return _repositoryMatcher.Matches(viewModelItem.Repository, q);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         if (query.StartsWith("!"))
         {
-            var sanitizedQuery = query[1..];
-            if (string.IsNullOrWhiteSpace(sanitizedQuery))
-            {
-                return true;
-            }
-
-            var results = _repositorySearch.Search(sanitizedQuery).ToArray();
-            return results.Contains(viewModelItem.Path);
+            return !_refreshDelayed && viewModelItem.Repository.MatchesFilter(txtFilter.Text);
         }
-        
-        return !_refreshDelayed && viewModelItem.Repository.MatchesFilter(txtFilter.Text);
+
+        var sanitizedQuery = query[1..];
+        if (string.IsNullOrWhiteSpace(sanitizedQuery))
+        {
+            return true;
+        }
+
+        if (_refreshDelayed)
+        {
+            return false;
+        }
+
+        try
+        {
+            IQuery queryObject = _repositoryFilteringManager.QueryParser.Parse(sanitizedQuery);
+            return _repositoryMatcher.Matches(viewModelItem.Repository, queryObject);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        // if (query.StartsWith("!"))
+        // {
+        //     var sanitizedQuery = query[1..];
+        //     if (string.IsNullOrWhiteSpace(sanitizedQuery))
+        //     {
+        //         return true;
+        //     }
+        //
+        //     var results = _repositorySearch.Search(sanitizedQuery).ToArray();
+        //     return results.Contains(viewModelItem.Path);
+        // }
     }
 
     private void TxtFilter_Finish(object sender, EventArgs e)
