@@ -66,16 +66,37 @@ To search for repositories, you can use a repom-dialect of Lucene query syntax.
 >
 > ### Boolean Operators
 >
-> Boolean operators allow terms to be combined through logic operators. Lucene supports `AND`, `OR`, `NOT` and `-` as Boolean operators (Note: Boolean operators must be ALL CAPS).
+> Boolean operators allow terms to be combined through logic operators. Lucene supports `AND`, `OR`, and `NOT` as Boolean operators (Note: Boolean operators must be ALL CAPS).
 >
 >The `AND` operator is the default conjunction operator. This means that if there is no Boolean operator between two terms, the `AND` operator is used.
 >
-> The `AND` operator links two terms and finds repositories when both terms are a match.
+> #### AND operator
+>
+> The `AND` operator links two terms and finds repositories when both terms are a match. I.e. `x AND y`. It is also possible to use `&&`.
+>
+> #### OR operator
+>
 > The `OR` operator finds repositories if either of the terms matches in a repository.
 >
-> To search for documents that contain either "jakarta apache" or just "jakarta" use the query:
+> To search for repositories that match either "x1 x2" or just "x3" use the query:
 >
-> `"jakarta apache" OR jakarta`
+> `"x1 x2" OR x3`. You can also use `||` instead of `OR`.
+>
+> #### NOT operator
+>
+> The `NOT` operator excludes respositories that matches the term after NOT. You can also use ~~`!` or~~ `-`. For example, `NOT RepoM` finds all repositories except the ones that matches "RepoM". The same holds for `-RepoM` ~~or `!RepoM`~~.
+>
+> ### Grouping
+>
+> Lucene supports using parentheses to group clauses to form sub queries. This can be very useful if you want to control the boolean logic for a query.
+>
+> To search for either "jakarta" or "apache" and "website" use the query: `(jakarta OR apache) AND website`.
+>
+> ### Escaping Special Characters
+>
+> Lucene supports escaping special characters that are part of the query syntax. The current list special characters are `+ - && || ! ( ) { } [ ] ^ " ~ * ? : \`.
+>
+>To escape these character use the `\` before the character. For example to search for "(1+1):2" use the query: `\(1\+1\)\:2`
 
 ## Plugin: Enhanced Windows Explorer Titles
 
