@@ -268,12 +268,7 @@ public class RepositoryConfigurationReader
     private string EvaluateString(string? input, IRepository? repository)
     {
         object? v = Evaluate(input, repository);
-        if (v == null)
-        {
-            return string.Empty;
-        }
-
-        return v.ToString();
+        return v?.ToString() ?? string.Empty;
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository? repository)
@@ -287,7 +282,7 @@ public class RepositoryConfigurationReader
     {
         if (extension.StartsWith("."))
         {
-            extension = extension.Substring(1);
+            extension = extension[1..];
         }
 
         if ("json".Equals(extension, StringComparison.CurrentCultureIgnoreCase))

@@ -21,7 +21,7 @@ public class OrQuery : IQuery
 
         if (Items.Length == 1)
         {
-            return Items.Single().ToString();
+            return Items.Single().ToString() ?? string.Empty;
         }
 
         return "Or( " + string.Join(", ", Items.Select(x => x.ToString())) + " )";

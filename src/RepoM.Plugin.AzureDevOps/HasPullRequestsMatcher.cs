@@ -19,6 +19,7 @@ internal class HasPullRequestsMatcher : IQueryMatcher
         };
 
     private readonly AzureDevOpsPullRequestService _azureDevOpsPullRequestService;
+
     private readonly StringComparison _stringComparisonValue;
 
     public HasPullRequestsMatcher(AzureDevOpsPullRequestService azureDevOpsPullRequestService, bool ignoreCase)
@@ -53,8 +54,7 @@ internal class HasPullRequestsMatcher : IQueryMatcher
     {
         try
         {
-            var result = _azureDevOpsPullRequestService.HasPullRequests(repository);
-            return result;
+            return _azureDevOpsPullRequestService.CountPullRequests(repository) > 0;
         }
         catch (Exception)
         {

@@ -26,6 +26,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
     private readonly ConcurrentDictionary<string, Guid> _repositoryDirectoryDevOpsRepoIdMapping = new();
     private readonly ConcurrentDictionary<string, PullRequest[]> _pullRequestsPerProject = new();
     private readonly ConcurrentDictionary<string, GitRepository[]> _gitRepositoriesPerProject = new();
+    private readonly ConcurrentDictionary<Guid, GitRepository> _devOpsGitRepositories = new(); // Guid is the repository guid.
 
     public AzureDevOpsPullRequestService(
         IAppSettingsService appSettingsService,
@@ -196,21 +197,28 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         }
     }
 
-    public bool HasPullRequests(IRepository repository)
+    public int CountPullRequests(IRepository repository)
     {
         var found = _repositoryDirectoryDevOpsRepoIdMapping.TryGetValue(repository.SafePath, out Guid repoIdGuid);
+
         if (!found)
         {
-            return false;
+            try
+            {
+                repoIdGuid = FindRepositoryGuid(repository);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
 
         if (repoIdGuid == Guid.Empty)
         {
-            return false;
+            return 0;
         }
 
-        var result = _pullRequestsPerProject.Values.Any(prs => prs.Any(x => x.RepoId.Equals(repoIdGuid)));
-        return result;
+        return _pullRequestsPerProject.Values.Sum(prs => prs.Count(x => x.RepoId.Equals(repoIdGuid)));
     }
 
     public List<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
@@ -246,48 +254,12 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
 
         if (repoIdGuid == Guid.Empty)
         {
-            var urlString = repository.Remotes.SingleOrDefault(x => x.Key.Equals("Origin", StringComparison.CurrentCultureIgnoreCase))?.Url ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(urlString))
+            repoIdGuid = await FindRepositoryByProjectIdx(repository, projectId);
+
+            if (repoIdGuid == Guid.Empty)
             {
                 return _emptyList;
             }
-
-            var url = new Uri(urlString);
-            List<GitRepository> repositories;
-            try
-            {
-                repositories = await _gitClient.GetRepositoriesAsync(projectId, includeLinks: true, includeAllUrls: true, includeHidden: true);
-            }
-            catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
-            {
-                _logger.LogWarning(e, "Project does not exist (repository: {repository.Name} projectId {projectId})", repository.Name, projectId);
-                throw new ApplicationException(e.Message, e);
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
-                throw new ApplicationException("Could retrieve repositories Check your PAT", e);
-            }
-
-            var searchRepoUrl = url.Scheme + "://" + url.Host + url.LocalPath;
-
-            GitRepository[] selectedRepos = repositories
-                                            .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
-                                            .ToArray();
-
-            if (selectedRepos.Length == 0)
-            {
-                _logger.LogWarning("No repository found for url {searchRepoUrl}", searchRepoUrl);
-                throw new ApplicationException($"No repositories found for url {searchRepoUrl}");
-            }
-
-            if (selectedRepos.Length > 1)
-            {
-                _logger.LogWarning("Multiple repositories found for url {searchRepoUrl}", searchRepoUrl);
-                throw new ApplicationException($"Multiple repositories found for url {searchRepoUrl}");
-            }
-
-            repoIdGuid = selectedRepos.Single().Id;
 
             // update mapping.
             _logger.LogTrace("Update mapping");
@@ -312,7 +284,55 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         return _emptyList;
     }
 
-    //
+    private async Task<Guid> FindRepositoryByProjectIdx(IRepository repository, string projectId)
+    {
+        try
+        {
+            List<GitRepository> repos = await _gitClient.GetRepositoriesAsync(projectId, includeLinks: true, includeAllUrls: true, includeHidden: true);
+
+            foreach (GitRepository r in repos)
+            {
+                _devOpsGitRepositories.AddOrUpdate(r.Id, _ => r, (_, __) => r);
+            }
+        }
+        catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
+        {
+            _logger.LogWarning(e, "Project does not exist (repository: {repository.Name} projectId {projectId})", repository.Name, projectId);
+            throw new ApplicationException(e.Message, e);
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
+            throw new ApplicationException("Could retrieve repositories Check your PAT", e);
+        }
+
+        return FindRepositoryGuid(repository);
+    }
+
+    private Guid FindRepositoryGuid(IRepository repository)
+    {
+        string searchRepoUrl = GetRepositorySearchUrl(repository);
+
+        GitRepository[] selectedRepos = _devOpsGitRepositories.Values.ToArray()
+            .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
+            .ToArray();
+
+        if (selectedRepos.Length == 0)
+        {
+            _logger.LogWarning("No repository found for url {searchRepoUrl}", searchRepoUrl);
+            throw new ApplicationException($"No repositories found for url {searchRepoUrl}");
+        }
+
+        if (selectedRepos.Length > 1)
+        {
+            _logger.LogWarning("Multiple repositories found for url {searchRepoUrl}", searchRepoUrl);
+            throw new ApplicationException($"Multiple repositories found for url {searchRepoUrl}");
+        }
+
+        return selectedRepos[0].Id;
+    }
+
+
     // private static Task<List<GitPullRequest>> GetPullRequests(GitHttpClientBase gitClient, Guid repoId)
     // {
     //     return gitClient.GetPullRequestsAsync(
@@ -334,5 +354,19 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
     private static string CreatePullRequestUrl(GitRepository repo, GitPullRequest pr)
     {
         return repo.WebUrl + "/pullrequest/" + pr.PullRequestId;
+    }
+
+    private static string GetRepositorySearchUrl(IRepository repository)
+    {
+        var urlString = repository.Remotes.SingleOrDefault(x => x.Key.Equals("Origin", StringComparison.CurrentCultureIgnoreCase))?.Url ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(urlString))
+        {
+            return urlString;
+        }
+        
+        var url = new Uri(urlString);
+        var searchRepoUrl = url.Scheme + "://" + url.Host + url.LocalPath;
+        return searchRepoUrl;
     }
 }

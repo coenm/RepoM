@@ -21,7 +21,7 @@ public class AndQuery : IQuery
         
         if (Items.Length == 1)
         {
-            return Items.Single().ToString();
+            return Items.Single().ToString() ?? string.Empty;
         }
 
         return "And( " + string.Join(", ", Items.Select(x => x.ToString())) + " )";
