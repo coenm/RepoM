@@ -51,7 +51,6 @@ public class LuceneQueryParserTests
     [InlineData("tag-min", " !(tag:abc)")]
     [InlineData("tag-min", " (!tag:abc)")]
     [InlineData("tag-min", " !tag:abc")]
-    [InlineData("tag-min", "!repom")]
 
     [InlineData("single-word", "aBc@")]
     [InlineData("single-word", " aBc@ ")]
