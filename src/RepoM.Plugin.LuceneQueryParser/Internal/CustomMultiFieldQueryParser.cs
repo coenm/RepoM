@@ -72,7 +72,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
         {
             // We set PROHIBITED if we're introduced by NOT or -; We set REQUIRED
             // if not PROHIBITED and not introduced by OR
-            prohibited = mods == MOD_NOT; // verboden
+            prohibited = mods == MOD_NOT;
             required = !prohibited && conj != CONJ_OR;
         }
 
