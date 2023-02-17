@@ -586,6 +586,19 @@ public partial class MainWindow
 
         try
         {
+            IQuery? alwaysVisibleFilter = _repositoryFilteringManager.AlwaysVisibleFilter;
+            if (alwaysVisibleFilter != null && _repositoryMatcher.Matches(viewModelItem.Repository, alwaysVisibleFilter))
+            {
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        try
+        {
             if (!_repositoryMatcher.Matches(viewModelItem.Repository, _repositoryFilteringManager.PreFilter))
             {
                 return false;

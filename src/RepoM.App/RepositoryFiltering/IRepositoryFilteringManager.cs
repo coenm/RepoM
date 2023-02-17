@@ -15,6 +15,8 @@ public interface IRepositoryFilteringManager
 
     IQuery PreFilter { get; }
 
+    IQuery? AlwaysVisibleFilter { get; }
+
     IReadOnlyList<string> QueryParserKeys { get; }
 
     IReadOnlyList<string> FilterKeys { get; }

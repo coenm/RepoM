@@ -9,7 +9,6 @@ using RepoM.Api.Common;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
-using RepoM.Core.Plugin.RepositoryOrdering;
 
 internal class RepositoryFilteringManager : IRepositoryFilteringManager
 {
@@ -39,11 +38,12 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
             throw new ArgumentOutOfRangeException("Cannot be empty", nameof(queryParsers));
         }
 
-        var c = filterSettingsService.Configuration;
+        var config = filterSettingsService.Configuration;
 
         // tmp
         _queryDictionary = new ConcurrentDictionary<string, IQuery>();
         _queryDictionary.TryAdd("Default", new TrueQuery());
+        _queryDictionary.TryAdd("BDO", new AndQuery(new SimpleTerm("tag", "BDO")));
         _queryDictionary.TryAdd("TIS", new AndQuery(new SimpleTerm("tag", "TIS")));
         _queryDictionary.TryAdd("DRC", new AndQuery(new SimpleTerm("tag", "DRC")));
         _queryDictionary.TryAdd("Prive", new AndQuery(new SimpleTerm("tag", "Prive")));
@@ -86,6 +86,8 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
     public IQueryParser QueryParser => _queryParser;
 
     public IQuery PreFilter { get; private set; }
+
+    public IQuery? AlwaysVisibleFilter { get; } = null!;
 
     public string SelectedQueryParserKey { get; private set; } = string.Empty;
 
