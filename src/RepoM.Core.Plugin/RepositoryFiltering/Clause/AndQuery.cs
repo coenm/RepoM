@@ -24,6 +24,6 @@ public class AndQuery : IQuery
             return Items.Single().ToString() ?? string.Empty;
         }
 
-        return "And( " + string.Join(", ", Items.Select(x => x.ToString())) + " )";
+        return "And(" + string.Join(", ", Items.Select(x => x.ToString())) + ")";
     }
 }

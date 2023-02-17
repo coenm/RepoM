@@ -1,5 +1,5 @@
 ﻿{
-  Output: Or( tag:github.com, Not(tag:github) ),
+  Output: Or(tag:github.com, Not(tag:github)),
   Model: {
     $type: OrQuery,
     Items: [

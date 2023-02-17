@@ -1,5 +1,5 @@
 ﻿{
-  Output: And( word1, word2 ),
+  Output: And(word1, word2),
   Model: {
     $type: AndQuery,
     Items: [

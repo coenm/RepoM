@@ -24,6 +24,6 @@ public class OrQuery : IQuery
             return Items.Single().ToString() ?? string.Empty;
         }
 
-        return "Or( " + string.Join(", ", Items.Select(x => x.ToString())) + " )";
+        return "Or(" + string.Join(", ", Items.Select(x => x.ToString())) + ")";
     }
 }

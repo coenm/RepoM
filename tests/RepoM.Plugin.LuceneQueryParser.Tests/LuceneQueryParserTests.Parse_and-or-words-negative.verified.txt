@@ -1,5 +1,5 @@
 ﻿{
-  Output: Or( And( word1, word2 ), Not(word33) ),
+  Output: Or(And(word1, word2), Not(word33)),
   Model: {
     $type: OrQuery,
     Items: [

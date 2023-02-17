@@ -1,5 +1,5 @@
 ﻿{
-  Output: And( Not(tag:github.com), tag:github ),
+  Output: And(Not(tag:github.com), tag:github),
   Model: {
     $type: AndQuery,
     Items: [
