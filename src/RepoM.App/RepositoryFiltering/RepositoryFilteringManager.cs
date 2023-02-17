@@ -23,21 +23,23 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
     public RepositoryFilteringManager(
         IAppSettingsService appSettingsService,
-        ICompareSettingsService compareSettingsService,
-        IRepositoryComparerFactory repositoryComparerFactory,
+        IFilterSettingsService filterSettingsService,/*
+        IRepositoryComparerFactory repositoryComparerFactory,*/
         IEnumerable<INamedQueryParser> queryParsers,
         ILogger logger)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         _queryParsers = queryParsers.ToArray() ?? throw new ArgumentNullException(nameof(queryParsers));
-        _ = compareSettingsService ?? throw new ArgumentNullException(nameof(compareSettingsService));
-        _ = repositoryComparerFactory ?? throw new ArgumentNullException(nameof(repositoryComparerFactory));
+        _ = filterSettingsService ?? throw new ArgumentNullException(nameof(filterSettingsService));
+        // _ = repositoryComparerFactory ?? throw new ArgumentNullException(nameof(repositoryComparerFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         if (!_queryParsers.Any())
         {
             throw new ArgumentOutOfRangeException("Cannot be empty", nameof(queryParsers));
         }
+
+        var c = filterSettingsService.Configuration;
 
         // tmp
         _queryDictionary = new ConcurrentDictionary<string, IQuery>();
