@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
-using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Core.Plugin.RepositoryFiltering.Configuration;
 
 internal class RepositoryFilterConfiguration
