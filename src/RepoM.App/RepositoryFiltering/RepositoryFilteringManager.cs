@@ -99,7 +99,6 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         _repositoryComparerKeys = _queryParsers.Select(x => x.Name).ToList();
 
         PreFilter = new TrueQuery();
-        PreFilter = new AndQuery(new SimpleTerm("tag", "DRC"));
 
         if (string.IsNullOrWhiteSpace(_appSettingsService.QueryParserKey))
         {
