@@ -132,7 +132,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
     public IQuery PreFilter { get; private set; }
 
-    public IQuery? AlwaysVisibleFilter { get; private set; } = null!;
+    public IQuery? AlwaysVisibleFilter { get; private set; }
 
     public string SelectedQueryParserKey { get; private set; } = string.Empty;
 
