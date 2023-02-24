@@ -614,22 +614,6 @@ public partial class MainWindow
             return true;
         }
 
-        if (query.StartsWith("!"))
-        {
-            var sanitizedQuery = query[1..].Trim();
-            if (string.IsNullOrWhiteSpace(sanitizedQuery))
-            {
-                return true;
-            }
-
-            return !_refreshDelayed && viewModelItem.Repository.MatchesFilter(sanitizedQuery);
-        }
-
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            return true;
-        }
-
         if (_refreshDelayed)
         {
             return false;
@@ -638,8 +622,7 @@ public partial class MainWindow
         try
         {
             IQuery queryObject = _repositoryFilteringManager.QueryParser.Parse(query);
-            var result = _repositoryMatcher.Matches(viewModelItem.Repository, queryObject);
-            return result;
+            return _repositoryMatcher.Matches(viewModelItem.Repository, queryObject);
         }
         catch (Exception)
         {
