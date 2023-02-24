@@ -7,6 +7,7 @@ using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.Variables;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.Repository;
 using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class ActionMapperComposition
@@ -50,7 +51,7 @@ public class ActionMapperComposition
         return result.ToArray();
     }
 
-    private object? Evaluate(object? input, Repository repository)
+    private object? Evaluate(object? input, IRepository repository)
     {
         if (input is string s)
         {
@@ -60,7 +61,7 @@ public class ActionMapperComposition
         return input;
     }
 
-    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
+    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository repository)
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty

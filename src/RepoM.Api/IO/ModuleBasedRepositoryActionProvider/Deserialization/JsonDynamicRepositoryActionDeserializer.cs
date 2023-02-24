@@ -147,16 +147,16 @@ public class JsonDynamicRepositoryActionDeserializer
             yield break;
         }
 
-        IList<JToken> files = token.Children().ToList();
-        foreach (JToken file in files)
+        IList<JToken> childTokens = token.Children().ToList();
+        foreach (JToken t in childTokens)
         {
-            Variable? obj = file.ToObject<Variable>(_jsonSerializer);
+            Variable? obj = t.ToObject<Variable>(_jsonSerializer);
             if (obj == null)
             {
                 continue;
             }
 
-            JToken? valueToken = file["value"];
+            JToken? valueToken = t["value"];
             if (valueToken == null)
             {
                 continue;
