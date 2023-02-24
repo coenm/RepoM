@@ -421,8 +421,6 @@ public partial class MainWindow
                 {
                     return;
                 }
-
-                var coords = new float[] { 0, 0, };
                 
                 // run actions in the UI async to not block it
                 if (repositoryAction.ExecutionCausesSynchronizing)

@@ -1,13 +1,15 @@
 namespace RepoM.Core.Plugin.RepositoryFiltering.Clause;
 
+using System;
+
 public class NotQuery : IQuery
 {
-    public IQuery Item { get; }
-
     public NotQuery(IQuery item)
     {
-        Item = item;
+        Item = item ?? throw new ArgumentNullException(nameof(item));
     }
+
+    public IQuery Item { get; }
 
     public override string ToString()
     {

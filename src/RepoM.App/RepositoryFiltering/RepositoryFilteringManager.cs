@@ -9,17 +9,6 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Configuration;
 
-internal class RepositoryFilterConfiguration
-{
-    public string Name { get; init; }
-
-    public string Description { get; init; }
-
-    public IQuery? AlwaysVisible { get; init; }
-
-    public IQuery? Filter { get; init; }
-}
-
 internal class RepositoryFilteringManager : IRepositoryFilteringManager
 {
     private readonly IAppSettingsService _appSettingsService;
@@ -32,15 +21,13 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
     public RepositoryFilteringManager(
         IAppSettingsService appSettingsService,
-        IFilterSettingsService filterSettingsService,/*
-        IRepositoryComparerFactory repositoryComparerFactory,*/
+        IFilterSettingsService filterSettingsService,
         IEnumerable<INamedQueryParser> queryParsers,
         ILogger logger)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         _queryParsers = queryParsers.ToArray() ?? throw new ArgumentNullException(nameof(queryParsers));
         _ = filterSettingsService ?? throw new ArgumentNullException(nameof(filterSettingsService));
-        // _ = repositoryComparerFactory ?? throw new ArgumentNullException(nameof(repositoryComparerFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         if (!_queryParsers.Any())
@@ -97,7 +84,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
         _repositoryComparerKeys = _queryParsers.Select(x => x.Name).ToList();
 
-        PreFilter = new TrueQuery();
+        PreFilter = TrueQuery.Instance;
 
         if (string.IsNullOrWhiteSpace(_appSettingsService.QueryParserKey))
         {
@@ -162,11 +149,22 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
             return false;
         }
         
-        PreFilter = value.Filter ?? new TrueQuery();
+        PreFilter = value.Filter ?? TrueQuery.Instance;
         AlwaysVisibleFilter = value.AlwaysVisible;
         _appSettingsService.SelectedFilter = key;
         SelectedFilterKey = key;
         SelectedFilterChanged?.Invoke(this, key);
         return true;
+    }
+
+    private class RepositoryFilterConfiguration
+    {
+        public string Name { get; init; }
+
+        public string Description { get; init; }
+
+        public IQuery? AlwaysVisible { get; init; }
+
+        public IQuery? Filter { get; init; }
     }
 }
