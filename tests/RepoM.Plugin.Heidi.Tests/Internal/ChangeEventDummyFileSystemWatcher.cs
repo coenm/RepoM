@@ -8,11 +8,6 @@ using System.IO.Abstractions;
 
 internal sealed class ChangeEventDummyFileSystemWatcher : IFileSystemWatcher
 {
-    public IWaitForChangedResult WaitForChanged(WatcherChangeTypes changeType, TimeSpan timeout)
-    {
-        throw new NotImplementedException();
-    }
-
     public void Dispose()
     {
         // Method intentionally left empty.
@@ -34,6 +29,11 @@ internal sealed class ChangeEventDummyFileSystemWatcher : IFileSystemWatcher
     }
 
     public IWaitForChangedResult WaitForChanged(WatcherChangeTypes changeType, int timeout)
+    {
+        throw new NotSupportedException();
+    }
+
+    public IWaitForChangedResult WaitForChanged(WatcherChangeTypes changeType, TimeSpan timeout)
     {
         throw new NotSupportedException();
     }
@@ -65,13 +65,13 @@ internal sealed class ChangeEventDummyFileSystemWatcher : IFileSystemWatcher
 
     public ISynchronizeInvoke? SynchronizingObject { get; set; }
 
-    public event FileSystemEventHandler? Changed;
+    public event FileSystemEventHandler? Changed = delegate { };
 
-    public event FileSystemEventHandler? Created;
+    public event FileSystemEventHandler? Created = delegate { };
 
-    public event FileSystemEventHandler? Deleted;
+    public event FileSystemEventHandler? Deleted = delegate { };
 
-    public event ErrorEventHandler? Error;
+    public event ErrorEventHandler? Error = delegate { };
 
-    public event RenamedEventHandler? Renamed;
+    public event RenamedEventHandler? Renamed = delegate { };
 }
