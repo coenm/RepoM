@@ -4,6 +4,9 @@ using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryFiltering;
+using RepoM.Plugin.AzureDevOps.ActionProvider;
+using RepoM.Plugin.AzureDevOps.Internal;
+using RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 using SimpleInjector;
 using SimpleInjector.Packaging;
 
@@ -15,9 +18,9 @@ public class AzureDevOpsPackage : IPackage
         container.Collection.Append<IActionDeserializer, ActionAzureDevOpsPullRequestsV1Deserializer>(Lifestyle.Singleton);
         container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsPullRequestsV1Mapper>(Lifestyle.Singleton);
 
-        container.Register<AzureDevOpsPullRequestService>(Lifestyle.Singleton);
+        container.Register<IAzureDevOpsPullRequestService, AzureDevOpsPullRequestService>(Lifestyle.Singleton);
 
         container.Collection.Append<IModule, AzureDevOpsModule>(Lifestyle.Singleton);
-        container.Collection.Append<IQueryMatcher>(() => new HasPullRequestsMatcher(container.GetInstance<AzureDevOpsPullRequestService>(), true), Lifestyle.Singleton);
+        container.Collection.Append<IQueryMatcher>(() => new HasPullRequestsMatcher(container.GetInstance<IAzureDevOpsPullRequestService>(), true), Lifestyle.Singleton);
     }
 }

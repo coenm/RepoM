@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.AzureDevOps.Tests;
+namespace RepoM.Plugin.AzureDevOps.Tests.ActionProvider;
 
 using System;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Plugin.AzureDevOps.ActionProvider;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -68,11 +69,11 @@ public class AzureDevOpsPullRequestsV1Test
     private RepositoryActionConfiguration SutDeserialize(string rawContent, SerializationType type)
     {
         return type switch
-            {
-                SerializationType.Json => _sutJson.Deserialize(rawContent),
-                SerializationType.Yaml => _sutYaml.Deserialize(rawContent),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            };
+        {
+            SerializationType.Json => _sutJson.Deserialize(rawContent),
+            SerializationType.Yaml => _sutYaml.Deserialize(rawContent),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
     }
 
     private static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)

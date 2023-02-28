@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.AzureDevOps;
+namespace RepoM.Plugin.AzureDevOps.Internal;
 
 using System;
 

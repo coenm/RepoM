@@ -1,10 +1,11 @@
-namespace RepoM.Plugin.AzureDevOps;
+namespace RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using System.Linq;
 using System;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Plugin.AzureDevOps.Internal;
 
 internal class HasPullRequestsMatcher : IQueryMatcher
 {
@@ -18,11 +19,11 @@ internal class HasPullRequestsMatcher : IQueryMatcher
             "pull-requests",
         };
 
-    private readonly AzureDevOpsPullRequestService _azureDevOpsPullRequestService;
+    private readonly IAzureDevOpsPullRequestService _azureDevOpsPullRequestService;
 
     private readonly StringComparison _stringComparisonValue;
 
-    public HasPullRequestsMatcher(AzureDevOpsPullRequestService azureDevOpsPullRequestService, bool ignoreCase)
+    public HasPullRequestsMatcher(IAzureDevOpsPullRequestService azureDevOpsPullRequestService, bool ignoreCase)
     {
         _azureDevOpsPullRequestService = azureDevOpsPullRequestService ?? throw new ArgumentNullException(nameof(azureDevOpsPullRequestService));
         _stringComparisonValue = ignoreCase

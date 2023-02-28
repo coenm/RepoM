@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.AzureDevOps;
+namespace RepoM.Plugin.AzureDevOps.ActionProvider;
 
 using System;
 using JetBrains.Annotations;
@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
-using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
+using RepositoryAction = Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
 internal class ActionAzureDevOpsPullRequestsV1Deserializer : IActionDeserializer

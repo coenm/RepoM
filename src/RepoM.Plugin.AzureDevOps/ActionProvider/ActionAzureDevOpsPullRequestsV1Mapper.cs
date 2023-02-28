@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.AzureDevOps;
+namespace RepoM.Plugin.AzureDevOps.ActionProvider;
 
 using System;
 using System.Collections.Generic;
@@ -12,18 +12,19 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
-using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
+using RepoM.Plugin.AzureDevOps.Internal;
+using RepositoryAction = Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
 internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryActionMapper
 {
-    private readonly AzureDevOpsPullRequestService _service;
+    private readonly IAzureDevOpsPullRequestService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
     private readonly ILogger _logger;
 
     public ActionAzureDevOpsPullRequestsV1Mapper(
-        AzureDevOpsPullRequestService service,
+        IAzureDevOpsPullRequestService service,
         IRepositoryExpressionEvaluator expressionEvaluator,
         ITranslationService translationService,
         ILogger logger)
@@ -93,10 +94,10 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         catch (Exception e)
         {
             var notificationItem = new Api.Git.RepositoryAction($"An error occurred grabbing pull requests. {e.Message}", repository)
-                {
-                    CanExecute = false,
-                    ExecutionCausesSynchronizing = false,
-                };
+            {
+                CanExecute = false,
+                ExecutionCausesSynchronizing = false,
+            };
             return new[] { notificationItem, };
         }
 
@@ -104,13 +105,13 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         {
             var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
             results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name, repository)
-                {
-                    Action = new DelegateAction((_, _) =>
-                        {
-                            _logger.LogInformation("PullRequest {Url}", pr.Url);
-                            ProcessHelper.StartProcess(pr.Url, string.Empty);
-                        }),
-                }));
+            {
+                Action = new DelegateAction((_, _) =>
+                    {
+                        _logger.LogInformation("PullRequest {Url}", pr.Url);
+                        ProcessHelper.StartProcess(pr.Url, string.Empty);
+                    }),
+            }));
 
             return results.ToArray();
         }
@@ -120,10 +121,10 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
         if (_expressionEvaluator.EvaluateBooleanExpression(action.ShowWhenEmpty, repository))
         {
             var notificationItem = new Api.Git.RepositoryAction("No PRs found.", repository)
-                {
-                    CanExecute = false,
-                    ExecutionCausesSynchronizing = false,
-                };
+            {
+                CanExecute = false,
+                ExecutionCausesSynchronizing = false,
+            };
             return new[] { notificationItem, };
         }
 

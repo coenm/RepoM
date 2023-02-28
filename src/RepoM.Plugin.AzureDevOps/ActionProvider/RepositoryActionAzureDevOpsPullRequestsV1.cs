@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.AzureDevOps;
+namespace RepoM.Plugin.AzureDevOps.ActionProvider;
 
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 

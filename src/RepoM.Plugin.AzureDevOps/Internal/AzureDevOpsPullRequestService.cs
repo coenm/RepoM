@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.AzureDevOps;
+namespace RepoM.Plugin.AzureDevOps.Internal;
 
 using System;
 using System.Collections.Concurrent;
@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Services.WebApi;
 using RepoM.Api.Common;
 using RepoM.Core.Plugin.Repository;
 
-internal sealed class AzureDevOpsPullRequestService : IDisposable
+internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService, IDisposable
 {
     private readonly IAppSettingsService _appSettingsService;
     private readonly ILogger _logger;
@@ -28,9 +28,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
     private readonly ConcurrentDictionary<string, GitRepository[]> _gitRepositoriesPerProject = new();
     private readonly ConcurrentDictionary<Guid, GitRepository> _devOpsGitRepositories = new(); // Guid is the repository guid.
 
-    public AzureDevOpsPullRequestService(
-        IAppSettingsService appSettingsService,
-        ILogger logger)
+    public AzureDevOpsPullRequestService(IAppSettingsService appSettingsService, ILogger logger)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -80,6 +78,54 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         return Task.CompletedTask;
     }
 
+    public int CountPullRequests(IRepository repository)
+    {
+        var isRepositoryKnown = _repositoryDirectoryDevOpsRepoIdMapping.TryGetValue(repository.SafePath, out Guid repoIdGuid);
+
+        if (!isRepositoryKnown)
+        {
+            try
+            {
+                repoIdGuid = FindRepositoryGuid(repository);
+
+                if (repoIdGuid != Guid.Empty)
+                {
+                    _repositoryDirectoryDevOpsRepoIdMapping.AddOrUpdate(repository.SafePath, _ => repoIdGuid, (_, _) => repoIdGuid);
+                }
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+        if (repoIdGuid == Guid.Empty)
+        {
+            return 0;
+        }
+
+        return _pullRequestsPerProject.Values.Sum(prs => prs.Count(x => x.RepoId.Equals(repoIdGuid)));
+    }
+
+    public List<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
+    {
+        RegisterProjectId(projectId);
+        if (_gitRepositoriesPerProject.IsEmpty)
+        {
+            _ = UpdateProjects(_gitClient!);
+        }
+
+        return Task.Run(() => GetPullRequestsTask(repository, projectId, repoId)).GetAwaiter().GetResult();
+    }
+
+    public void Dispose()
+    {
+        _updateTimer1?.Dispose();
+        _updateTimer2?.Dispose();
+        _gitClient?.Dispose();
+        _connection?.Dispose();
+    }
+
     private void RegisterProjectId(string? projectId)
     {
         if (string.IsNullOrWhiteSpace(projectId))
@@ -127,7 +173,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
                 {
                     _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
                 }
-                
+
                 if (repositories == null || repositories.Count == 0)
                 {
                     _logger.LogInformation("No repositories found for project {projectId}.", projectId);
@@ -164,10 +210,10 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
                 List<GitPullRequest> result = await gitClient.GetPullRequestsByProjectAsync(
                     projectId,
                     new GitPullRequestSearchCriteria
-                        {
-                            Status = PullRequestStatus.Active,
-                            IncludeLinks = true,
-                        });
+                    {
+                        Status = PullRequestStatus.Active,
+                        IncludeLinks = true,
+                    });
 
                 if (!result.Any())
                 {
@@ -177,7 +223,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
                 }
 
                 _gitRepositoriesPerProject.TryGetValue(projectId, out GitRepository[]? repos);
-                
+
                 PullRequest[] pullRequests = result
                                              .Select(pr => new PullRequest(
                                                  pr.Repository.Id,
@@ -193,46 +239,6 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
                 _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
             }
         }
-    }
-
-    public int CountPullRequests(IRepository repository)
-    {
-        var found = _repositoryDirectoryDevOpsRepoIdMapping.TryGetValue(repository.SafePath, out Guid repoIdGuid);
-
-        if (!found)
-        {
-            try
-            {
-                repoIdGuid = FindRepositoryGuid(repository);
-
-                if (repoIdGuid != Guid.Empty)
-                {
-                    _repositoryDirectoryDevOpsRepoIdMapping.AddOrUpdate(repository.SafePath, _ => repoIdGuid, (_, _) => repoIdGuid);
-                }
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-        }
-
-        if (repoIdGuid == Guid.Empty)
-        {
-            return 0;
-        }
-        
-        return _pullRequestsPerProject.Values.Sum(prs => prs.Count(x => x.RepoId.Equals(repoIdGuid)));
-    }
-
-    public List<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
-    {
-        RegisterProjectId(projectId);
-        if (_gitRepositoriesPerProject.Count == 0)
-        {
-            _ = UpdateProjects(_gitClient!);
-        }
-
-        return Task.Run(() => GetPullRequestsTask(repository, projectId, repoId)).GetAwaiter().GetResult();
     }
 
     private async Task<List<PullRequest>> GetPullRequestsTask(IRepository repository, string projectId, string? repoId)
@@ -299,7 +305,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
 
                 foreach (GitRepository r in repos)
                 {
-                    _devOpsGitRepositories.AddOrUpdate(r.Id, _ => r, (_, __) => r);
+                    _devOpsGitRepositories.AddOrUpdate(r.Id, _ => r, (_, _) => r);
                 }
             }
         }
@@ -317,9 +323,9 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
 
     private Guid FindRepositoryGuid(IRepository repository)
     {
-        string searchRepoUrl = GetRepositorySearchUrl(repository);
+        var searchRepoUrl = GetRepositorySearchUrl(repository);
 
-        if (_devOpsGitRepositories.Count == 0)
+        if (_devOpsGitRepositories.IsEmpty)
         {
             return Guid.Empty;
         }
@@ -343,25 +349,6 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         return selectedRepos[0].Id;
     }
 
-
-    // private static Task<List<GitPullRequest>> GetPullRequests(GitHttpClientBase gitClient, Guid repoId)
-    // {
-    //     return gitClient.GetPullRequestsAsync(
-    //         repoId,
-    //         new GitPullRequestSearchCriteria
-    //             {
-    //                 Status = PullRequestStatus.Active,
-    //             });
-    // }
-
-    public void Dispose()
-    {
-        _updateTimer1?.Dispose();
-        _updateTimer2?.Dispose();
-        _gitClient?.Dispose();
-        _connection?.Dispose();
-    }
-
     private static string CreatePullRequestUrl(GitRepository repo, GitPullRequest pr)
     {
         return repo.WebUrl + "/pullrequest/" + pr.PullRequestId;
@@ -375,7 +362,7 @@ internal sealed class AzureDevOpsPullRequestService : IDisposable
         {
             return urlString;
         }
-        
+
         var url = new Uri(urlString);
         var searchRepoUrl = url.Scheme + "://" + url.Host + url.LocalPath;
         return searchRepoUrl;
