@@ -21,10 +21,10 @@ public class ActionAzureDevOpsPullRequestsV1MapperTests
     private readonly IRepositoryExpressionEvaluator _evaluator;
     private readonly ITranslationService _translation;
     private readonly ActionAzureDevOpsPullRequestsV1Mapper _sut;
-    private RepositoryAction _action;
-    private IEnumerable<Repository> _repositories;
-    private Repository _repository;
-    private ActionMapperComposition _composition;
+    private readonly RepositoryAction _action;
+    private readonly IEnumerable<Repository> _repositories;
+    private readonly Repository _repository;
+    private readonly ActionMapperComposition _composition;
 
     public ActionAzureDevOpsPullRequestsV1MapperTests()
     {

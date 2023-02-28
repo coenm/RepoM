@@ -56,21 +56,15 @@ internal class ActionAzureDevOpsPullRequestsV1Deserializer : IActionDeserializer
         }
 
         JToken? projectId = jToken["project-id"];
-        if (projectId != null && result != null)
+        if (projectId != null && result != null && projectId.Type == JTokenType.String)
         {
-            if (projectId.Type == JTokenType.String)
-            {
-                result.ProjectId = projectId.Value<string>();
-            }
+            result.ProjectId = projectId.Value<string>();
         }
 
         JToken? repositoryId = jToken["repository-id"];
-        if (repositoryId != null && result != null)
+        if (repositoryId != null && result != null && repositoryId.Type == JTokenType.String)
         {
-            if (repositoryId.Type == JTokenType.String)
-            {
-                result.RepoId = repositoryId.Value<string>();
-            }
+            result.RepoId = repositoryId.Value<string>();
         }
 
         return result;
