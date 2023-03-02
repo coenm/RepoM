@@ -179,7 +179,7 @@ public class ActionAzureDevOpsPullRequestsV1MapperTests
         IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repositories, _composition);
 
         // assert
-        result.Should().HaveCount(2).And.AllBeOfType<RepositoryAction>();
+        result.Should().HaveCount(2).And.AllBeOfType<Api.Git.RepositoryAction>();
         A.CallTo(_service).MustHaveHappenedOnceExactly();
         A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepoId)).MustHaveHappenedOnceExactly();
     }
