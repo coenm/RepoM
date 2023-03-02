@@ -52,6 +52,9 @@ using RepoM.App.RepositoryOrdering;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryFinder;
+using RepoM.App.RepositoryFiltering;
+using RepoM.App.RepositoryFiltering.QueryMatchers;
+using RepoM.Core.Plugin.RepositoryFiltering;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -171,9 +174,9 @@ public partial class App : Application
         }
 
         IConfigurationBuilder builder = new ConfigurationBuilder()
-                                        .SetBasePath(Directory.GetCurrentDirectory())
-                                        .AddJsonFile(fullFilename, optional: true, reloadOnChange: false)
-                                        .AddEnvironmentVariables();
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile(fullFilename, optional: true, reloadOnChange: false)
+            .AddEnvironmentVariables();
         return builder.Build();
     }
 
@@ -228,6 +231,7 @@ public partial class App : Application
         container.Register<IGitCommander, ProcessExecutingGitCommander>(Lifestyle.Singleton);
         container.Register<IAppSettingsService, FileAppSettingsService>(Lifestyle.Singleton);
         container.Register<ICompareSettingsService, FilesCompareSettingsService> (Lifestyle.Singleton);
+        container.Register<IFilterSettingsService, FilesFilterSettingsService> (Lifestyle.Singleton);
         container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>(Lifestyle.Singleton);
         container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>(Lifestyle.Singleton);
         container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
@@ -235,6 +239,17 @@ public partial class App : Application
         container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
         container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
         container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
+
+        container.Register<IRepositoryMatcher, RepositoryMatcher>(Lifestyle.Singleton);
+        container.Register<IRepositoryFilteringManager, RepositoryFilteringManager>(Lifestyle.Singleton);
+        container.Collection.Append<INamedQueryParser, DefaultQueryParser>(Lifestyle.Singleton);
+
+        container.Collection.Append<IQueryMatcher, IsPinnedMatcher>(Lifestyle.Singleton);
+        container.Collection.Append<IQueryMatcher, TagMatcher>(Lifestyle.Singleton);
+        container.Collection.Append<IQueryMatcher, HasUnPushedChangesMatcher>(Lifestyle.Singleton);
+        container.Collection.Append<IQueryMatcher>(() => new FreeTextMatcher(ignoreCase: true, ignoreCaseTag: true), Lifestyle.Singleton);
+
+
         container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
         container.RegisterInstance<IFileSystem>(fileSystem);
@@ -359,7 +374,6 @@ public partial class App : Application
     {
         // We noticed that the hotkey registration at app start causes a high CPU utilization if the main window was not shown before.
         // To fix this, we need to make the window visible. However, to prevent flickering we move the window out of the screen bounds to show and hide it.
-
         window.Left = -9999;
         window.Show();
         window.Hide();

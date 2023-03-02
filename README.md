@@ -24,13 +24,26 @@ With RepoZ, you can instantly jump into a given repository with a file browser o
 
 For Windows, use the hotkeys <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> to show RepoM.
 
-To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you selected a repository. To open a command prompt instead, hold <kbd>Ctrl</kbd> on Windows or <kbd>Command</kbd> on macOS while pressing <kbd>Return</kbd>. These modifier keys will also work with mouse navigation.
+<!--
+To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you selected a repository. To open a command prompt instead, hold <kbd>Ctrl</kbd> on Windows while pressing <kbd>Return</kbd>. These modifier keys will also work with mouse navigation.
+-->
+## Documentation
 
-## Plugin: Enhanced Windows Explorer Titles
-
-As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a git repository.
-
-![Screenshot](https://raw.githubusercontent.com/awaescher/RepoZ/master/_doc/RepoZ-ReadMe-Explorer.png)
+- [Plugins](_doc/Plugins.md)
+  - [AzureDevOps](_doc/RepoM.Plugin.AzureDevOps.md)
+  - [Clipboard](_doc/RepoM.Plugin.Clipboard.md)
+  - [EverythingFileSearch](_doc/RepoM.Plugin.EverythingFileSearch.md)
+  - [Heidi](_doc/RepoM.Plugin.Heidi.md)
+  - [LuceneQueryParser](_doc/RepoM.Plugin.LuceneQueryParser.md)
+  - [SonarCloud](_doc/RepoM.Plugin.SonarCloud.md)
+  - [Statistics](_doc/RepoM.Plugin.Statistics.md)
+  - [WindowsExplorerGitInfo](_doc/RepoM.Plugin.WindowsExplorerGitInfo.md)
+- [Search](_doc/Search.md)
+- Settings
+  - [Global settings](_doc/Settings.md)
+  - [Repository Actions](_doc/RepositoryActions.md)
+  - [Filtering](_doc/Filtering.md)
+  - [Ordering](_doc/Ordering.md)
 
 ## Credits
 

@@ -1,0 +1,7 @@
+﻿{
+  Output: aBc@,
+  Model: {
+    $type: FreeText,
+    Value: aBc@
+  }
+}

@@ -107,6 +107,40 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
+    public string QueryParserKey
+    {
+        get => Settings.SelectedQueryParser;
+        set
+        {
+            if (value == Settings.SelectedQueryParser)
+            {
+                return;
+            }
+
+            Settings.SelectedQueryParser = value;
+
+            NotifyChange();
+            Save();
+        }
+    }
+
+    public string SelectedFilter
+    {
+        get => Settings.SelectedFilter;
+        set
+        {
+            if (value == Settings.SelectedFilter)
+            {
+                return;
+            }
+
+            Settings.SelectedFilter = value;
+
+            NotifyChange();
+            Save();
+        }
+    }
+    
     public AutoFetchMode AutoFetchMode
     {
         get => Settings.AutoFetchMode;

@@ -1,0 +1,28 @@
+﻿{
+  Output: Or(And(word1, word2), Not(word33)),
+  Model: {
+    $type: OrQuery,
+    Items: [
+      {
+        $type: AndQuery,
+        Items: [
+          {
+            $type: FreeText,
+            Value: word1
+          },
+          {
+            $type: FreeText,
+            Value: word2
+          }
+        ]
+      },
+      {
+        $type: NotQuery,
+        Item: {
+          $type: FreeText,
+          Value: word33
+        }
+      }
+    ]
+  }
+}

@@ -216,7 +216,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                         char[] allowedChars = { '.', '-', '_', };
 
                         var k = 0;
-                        bool stop = false;
+                        var stop = false;
                         while (k < comment.Length && !stop)
                         {
                             if (comment[k] is >= 'a' and <= 'z')

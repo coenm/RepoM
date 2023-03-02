@@ -1,0 +1,16 @@
+﻿{
+  Output: And(abc.def, word33),
+  Model: {
+    $type: AndQuery,
+    Items: [
+      {
+        $type: FreeText,
+        Value: abc.def
+      },
+      {
+        $type: FreeText,
+        Value: word33
+      }
+    ]
+  }
+}

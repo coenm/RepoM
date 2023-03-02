@@ -1,0 +1,16 @@
+﻿{
+  Output: And(word1, word2),
+  Model: {
+    $type: AndQuery,
+    Items: [
+      {
+        $type: FreeText,
+        Value: word1
+      },
+      {
+        $type: FreeText,
+        Value: word2
+      }
+    ]
+  }
+}

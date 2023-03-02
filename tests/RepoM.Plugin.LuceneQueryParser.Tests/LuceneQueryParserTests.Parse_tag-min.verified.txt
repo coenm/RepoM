@@ -1,0 +1,11 @@
+﻿{
+  Output: Not(tag:abc),
+  Model: {
+    $type: NotQuery,
+    Item: {
+      $type: SimpleTerm,
+      Term: tag,
+      Value: abc
+    }
+  }
+}

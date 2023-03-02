@@ -6,15 +6,16 @@ using System.ComponentModel;
 using System.Linq;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
+using RepoM.App.RepositoryFiltering;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.ViewModels;
 
-public class SortMenuItemViewModel : MenuItemViewModel
+public class ActionCheckableMenuItemViewModel : MenuItemViewModel
 {
     private readonly Func<bool> _isSelectedFunc;
     private readonly Action _setKeyFunc;
 
-    public SortMenuItemViewModel(
+    public ActionCheckableMenuItemViewModel(
         Func<bool> isSelectedFunc,
         Action setKeyFunc,
         string title)
@@ -38,6 +39,72 @@ public class SortMenuItemViewModel : MenuItemViewModel
     }
 }
 
+public class QueryParsersViewModel : List<MenuItemViewModel>
+{
+    public QueryParsersViewModel(IRepositoryFilteringManager repositoryFilterManager, IThreadDispatcher threadDispatcher)
+    {
+        if (repositoryFilterManager == null)
+        {
+            throw new ArgumentNullException(nameof(repositoryFilterManager));
+        }
+
+        if (threadDispatcher == null)
+        {
+            throw new ArgumentNullException(nameof(threadDispatcher));
+        }
+
+        repositoryFilterManager.SelectedQueryParserChanged += (_, _) =>
+            {
+                foreach (MenuItemViewModel item in this)
+                {
+                    if (item is ActionCheckableMenuItemViewModel vm)
+                    {
+                        threadDispatcher.Invoke(() => vm.Poke());
+                    }
+                }
+            };
+
+        AddRange(repositoryFilterManager.QueryParserKeys.Select(name =>
+            new ActionCheckableMenuItemViewModel(
+                () => repositoryFilterManager.SelectedQueryParserKey == name,
+                () => repositoryFilterManager.SetQueryParser(name),
+                name)));
+    }
+}
+
+public class FiltersViewModel : List<MenuItemViewModel>
+{
+    public FiltersViewModel(IRepositoryFilteringManager repositoryFilterManager, IThreadDispatcher threadDispatcher)
+    {
+        if (repositoryFilterManager == null)
+        {
+            throw new ArgumentNullException(nameof(repositoryFilterManager));
+        }
+
+        if (threadDispatcher == null)
+        {
+            throw new ArgumentNullException(nameof(threadDispatcher));
+        }
+
+        repositoryFilterManager.SelectedFilterChanged += (_, _) =>
+            {
+                foreach (MenuItemViewModel item in this)
+                {
+                    if (item is ActionCheckableMenuItemViewModel vm)
+                    {
+                        threadDispatcher.Invoke(() => vm.Poke());
+                    }
+                }
+            };
+
+        AddRange(repositoryFilterManager.FilterKeys.Select(name =>
+            new ActionCheckableMenuItemViewModel(
+                () => repositoryFilterManager.SelectedFilterKey == name,
+                () => repositoryFilterManager.SetFilter(name),
+                name)));
+    }
+}
+
 public class OrderingsViewModel : List<MenuItemViewModel>
 {
     public OrderingsViewModel(IRepositoryComparerManager repositoryComparerManager, IThreadDispatcher threadDispatcher)
@@ -56,7 +123,7 @@ public class OrderingsViewModel : List<MenuItemViewModel>
             {
                 foreach (MenuItemViewModel item in this)
                 {
-                    if (item is SortMenuItemViewModel sortMenuItemViewModel)
+                    if (item is ActionCheckableMenuItemViewModel sortMenuItemViewModel)
                     {
                         threadDispatcher.Invoke(() => sortMenuItemViewModel.Poke());
                     }
@@ -64,7 +131,7 @@ public class OrderingsViewModel : List<MenuItemViewModel>
             };
 
         AddRange(repositoryComparerManager.RepositoryComparerKeys.Select(name =>
-            new SortMenuItemViewModel(
+            new ActionCheckableMenuItemViewModel(
                 () => repositoryComparerManager.SelectedRepositoryComparerKey == name,
                 () => repositoryComparerManager.SetRepositoryComparer(name),
                 name)));
@@ -76,14 +143,24 @@ public class MainWindowPageModel : INotifyPropertyChanged
     private readonly IAppSettingsService _appSettingsService;
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public MainWindowPageModel(IAppSettingsService appSettingsService, OrderingsViewModel orderingsViewModel)
+    public MainWindowPageModel(
+        IAppSettingsService appSettingsService,
+        OrderingsViewModel orderingsViewModel,
+        QueryParsersViewModel queryParsersViewModel,
+        FiltersViewModel filtersViewModel)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-        Orderings = orderingsViewModel;
+        Orderings = orderingsViewModel ?? throw new ArgumentNullException(nameof(orderingsViewModel));
+        QueryParsers = queryParsersViewModel ?? throw new ArgumentNullException(nameof(queryParsersViewModel));
+        Filters = filtersViewModel ?? throw new ArgumentNullException(nameof(filtersViewModel));
     }
+    
+    public QueryParsersViewModel QueryParsers { get; }
 
     public OrderingsViewModel Orderings { get; }
-    
+
+    public FiltersViewModel Filters { get; }
+
     public AutoFetchMode AutoFetchMode
     {
         get => _appSettingsService.AutoFetchMode;

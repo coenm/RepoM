@@ -1,0 +1,24 @@
+﻿{
+  Output: And(This, is, Some, Text@),
+  Model: {
+    $type: AndQuery,
+    Items: [
+      {
+        $type: FreeText,
+        Value: This
+      },
+      {
+        $type: FreeText,
+        Value: is
+      },
+      {
+        $type: FreeText,
+        Value: Some
+      },
+      {
+        $type: FreeText,
+        Value: Text@
+      }
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+﻿{
+  Output: tag:github.com*,
+  Model: {
+    $type: SimpleTerm,
+    Term: tag,
+    Value: github.com*
+  }
+}

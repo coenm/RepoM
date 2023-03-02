@@ -2,6 +2,7 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.Threading.Tasks;
+using RepoM.Core.Plugin.Repository;
 
 public interface IRepositoryMonitor
 {
@@ -23,5 +24,5 @@ public interface IRepositoryMonitor
 
     void SetPinned(bool newValue, Repository repository);
 
-    bool IsPinned(Repository repository);
+    bool IsPinned(IRepository repository);
 }

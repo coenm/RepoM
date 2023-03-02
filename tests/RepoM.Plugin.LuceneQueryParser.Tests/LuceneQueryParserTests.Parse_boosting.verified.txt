@@ -1,0 +1,16 @@
+﻿{
+  Output: And(jakarta, apache),
+  Model: {
+    $type: AndQuery,
+    Items: [
+      {
+        $type: FreeText,
+        Value: jakarta
+      },
+      {
+        $type: FreeText,
+        Value: apache
+      }
+    ]
+  }
+}

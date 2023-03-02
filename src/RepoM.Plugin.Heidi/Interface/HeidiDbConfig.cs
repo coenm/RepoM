@@ -1,18 +1,20 @@
 namespace RepoM.Plugin.Heidi.Interface;
 
+using System;
+
 public class HeidiDbConfig
 {
     internal HeidiDbConfig()
     {
     }
 
-    public string Key { get; internal set; }
+    public string Key { get; internal init; } = null!;
 
-    public string Host { get; internal set; }
+    public string Host { get; internal init; } = null!;
 
-    public string User { get; internal set; }
+    public string User { get; internal init; } = null!;
 
-    public string Password { get; internal set; }
+    public string Password { get; internal init; } = null!;
 
     public int Port { get; internal set; }
 
@@ -47,12 +49,12 @@ public class HeidiDbConfig
     /// Library or provider (added in v11.1), Depends on the given network protocol
     /// https://www.heidisql.com/help.php#commandline
     /// </summary>
-    public string Library { get; internal set; }
+    public string Library { get; internal init; } = null!;
 
-    public string Comment { get; internal set; }
+    public string Comment { get; internal init; } = null!;
 
     /// <summary>
     /// Databases, separated by semicolon. Single database on PostgreSQL. Interbase and Firebird expect a local file here.
     /// </summary>
-    public string[] Databases { get; internal set; }
+    public string[] Databases { get; internal set; } = Array.Empty<string>();
 }

@@ -13,15 +13,16 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using RepoM.Api;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.App.Controls;
 using RepoM.App.RepositoryActions;
+using RepoM.App.RepositoryFiltering;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using SourceChord.FluentWPF;
 
 /// <summary>
@@ -33,12 +34,13 @@ public partial class MainWindow
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly DefaultRepositoryMonitor? _monitor;
     private readonly ITranslationService _translationService;
-    private readonly IRepositorySearch _repositorySearch;
     private bool _closeOnDeactivate = true;
     private bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
     private readonly IFileSystem _fileSystem;
     private readonly ActionExecutor _executor;
+    private readonly IRepositoryFilteringManager _repositoryFilteringManager;
+    private readonly IRepositoryMatcher _repositoryMatcher;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     public MainWindow(
@@ -50,19 +52,31 @@ public partial class MainWindow
         IAppSettingsService appSettingsService,
         ITranslationService translationService,
         IAppDataPathProvider appDataPathProvider,
-        IRepositorySearch repositorySearch,
         IFileSystem fileSystem,
         ActionExecutor executor,
         IRepositoryComparerManager repositoryComparerManager,
-        IThreadDispatcher threadDispatcher)
+        IThreadDispatcher threadDispatcher,
+        IRepositoryFilteringManager repositoryFilteringManager,
+        IRepositoryMatcher repositoryMatcher)
     {
-        _translationService = translationService;
+        _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
+        _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
+        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+        _repositoryActionProvider = repositoryActionProvider ?? throw new ArgumentNullException(nameof(repositoryActionProvider));
+        _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
+        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _executor = executor ?? throw new ArgumentNullException(nameof(executor));
+        
         InitializeComponent();
 
         AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
-
+        
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
-        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel);
+        var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
+        var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
+
+        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;
@@ -71,14 +85,7 @@ public partial class MainWindow
             _monitor.OnScanStateChanged += OnScanStateChanged;
             ShowScanningState(_monitor.Scanning);
         }
-
-        _repositoryActionProvider = repositoryActionProvider ?? throw new ArgumentNullException(nameof(repositoryActionProvider));
-        _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
-        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-        _repositorySearch = repositorySearch ?? throw new ArgumentNullException(nameof(repositorySearch));
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _executor = executor ?? throw new ArgumentNullException(nameof(executor));
-
+        
         lstRepositories.ItemsSource = aggregator.Repositories;
 
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
@@ -86,7 +93,9 @@ public partial class MainWindow
         view.Filter = FilterRepositories;
         view.CustomSort = repositoryComparerManager.Comparer;
         repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
-        
+        repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
+        repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
+
         AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);
         txtHelp.Text = GetHelp(statusCharacterMap);
@@ -412,8 +421,6 @@ public partial class MainWindow
                 {
                     return;
                 }
-
-                var coords = new float[] { 0, 0, };
                 
                 // run actions in the UI async to not block it
                 if (repositoryAction.ExecutionCausesSynchronizing)
@@ -563,7 +570,7 @@ public partial class MainWindow
 
     private bool FilterRepositories(object item)
     {
-        var query = txtFilter.Text;
+        var query = txtFilter.Text.Trim();
 
         if (_refreshDelayed)
         {
@@ -575,44 +582,50 @@ public partial class MainWindow
             return false;
         }
 
+        try
+        {
+            IQuery? alwaysVisibleFilter = _repositoryFilteringManager.AlwaysVisibleFilter;
+            if (alwaysVisibleFilter != null && _repositoryMatcher.Matches(viewModelItem.Repository, alwaysVisibleFilter))
+            {
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        try
+        {
+            if (!_repositoryMatcher.Matches(viewModelItem.Repository, _repositoryFilteringManager.PreFilter))
+            {
+                return false;
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        
         if (string.IsNullOrWhiteSpace(query))
         {
             return true;
         }
 
-        query = query.Trim();
-
-
-        if (string.Equals("is:pinned", query, StringComparison.CurrentCultureIgnoreCase))
+        if (_refreshDelayed)
         {
-            return viewModelItem.IsPinned;
+            return false;
         }
 
-        if (string.Equals("is:unpinned", query, StringComparison.CurrentCultureIgnoreCase))
+        try
         {
-            return !viewModelItem.IsPinned;
+            IQuery queryObject = _repositoryFilteringManager.QueryParser.Parse(query);
+            return _repositoryMatcher.Matches(viewModelItem.Repository, queryObject);
         }
-
-        // always show pinned.
-        if (viewModelItem.IsPinned)
+        catch (Exception)
         {
-            // pinned should always be visible
-            return true;
+            return false;
         }
-        
-        if (query.StartsWith("!"))
-        {
-            var sanitizedQuery = query[1..];
-            if (string.IsNullOrWhiteSpace(sanitizedQuery))
-            {
-                return true;
-            }
-
-            var results = _repositorySearch.Search(sanitizedQuery).ToArray();
-            return results.Contains(viewModelItem.Path);
-        }
-
-        return !_refreshDelayed && viewModelItem.MatchesFilter(txtFilter.Text);
     }
 
     private void TxtFilter_Finish(object sender, EventArgs e)

@@ -32,8 +32,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.Api\RepoM.Api.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IO\ModuleBasedRepositoryActionProvider\Action\TestFiles\" />
-  </ItemGroup>
 </Project>

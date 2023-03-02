@@ -1,11 +1,8 @@
 namespace RepoM.Plugin.WindowsExplorerGitInfo.Tests;
 
 using System;
-using System.IO.Abstractions;
 using FakeItEasy;
-using Microsoft.Extensions.Logging;
 using RepoM.Api.Git;
-using RepoM.Core.Plugin.Common;
 using SimpleInjector;
 using Xunit;
 

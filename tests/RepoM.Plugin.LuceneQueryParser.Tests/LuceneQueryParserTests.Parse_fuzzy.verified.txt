@@ -1,0 +1,7 @@
+﻿{
+  Output: roam,
+  Model: {
+    $type: FreeText,
+    Value: roam
+  }
+}

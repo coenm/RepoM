@@ -9,6 +9,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.IO.Variables;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.Repository;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
@@ -35,7 +36,7 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionForEachV1, repository.First(), actionMapperComposition);
     }
 
-    private object? Evaluate(object? input, Repository repository)
+    private object? Evaluate(object? input, IRepository repository)
     {
         if (input is string s)
         {
@@ -45,7 +46,7 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
         return input;
     }
 
-    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
+    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository repository)
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty
