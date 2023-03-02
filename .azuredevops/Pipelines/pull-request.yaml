@@ -46,6 +46,12 @@ stages:
             versionSpec: '5.*'
             checkLatest: true
 
+        - pwsh: |
+            dotnet tool install --tool-path . nbgv
+            ./nbgv cloud -a
+          displayName: Set build number
+          name: Nbgv
+
         - task: DotNetCoreCLI@2
           displayName: DotNet Restore
           inputs:
