@@ -64,4 +64,5 @@ stages:
             command: test
             projects: '**/*[Tt]ests/*.csproj'
             configuration: $(BuildConfiguration) 
-            nobuild: true          
+            nobuild: true
+  
