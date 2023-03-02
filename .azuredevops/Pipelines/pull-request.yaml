@@ -26,10 +26,11 @@ stages:
             value: 1
           - name: BuildConfiguration
             value: Release
-          - name: ci_feed
-            value: 39ce9363-a308-4580-8610-ee11f4953539/01001223-8651-4b73-a7ca-ba27c3e10a3c
- 
+
         steps:
+        - script: git submodule update --init --recursive
+          displayName: Update git submodules
+
         - task: UseDotNet@2
           displayName: "Use dotnet sdk 7.0.x"
           inputs:
