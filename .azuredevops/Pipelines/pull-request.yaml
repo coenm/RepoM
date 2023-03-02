@@ -28,6 +28,10 @@ stages:
             value: Release
 
         steps:
+        - checkout: self
+          fetchDepth: 0 # avoid shallow clone so nbgv can do its work.
+          clean: true
+
         - script: git submodule update --init --recursive
           displayName: Update git submodules
 
