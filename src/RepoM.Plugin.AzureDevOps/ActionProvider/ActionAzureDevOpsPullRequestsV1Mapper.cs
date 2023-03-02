@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
@@ -20,18 +19,12 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
 {
     private readonly IAzureDevOpsPullRequestService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly ITranslationService _translationService;
     private readonly ILogger _logger;
 
-    public ActionAzureDevOpsPullRequestsV1Mapper(
-        IAzureDevOpsPullRequestService service,
-        IRepositoryExpressionEvaluator expressionEvaluator,
-        ITranslationService translationService,
-        ILogger logger)
+    public ActionAzureDevOpsPullRequestsV1Mapper(IAzureDevOpsPullRequestService service, IRepositoryExpressionEvaluator expressionEvaluator, ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
-        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -67,13 +60,9 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
             return Array.Empty<Api.Git.RepositoryAction>();
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
+        // var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
 
-        string? projectId = null;
-        if (action.ProjectId != null)
-        {
-            projectId = _expressionEvaluator.EvaluateStringExpression(action.ProjectId!, repository);
-        }
+        var projectId = _expressionEvaluator.EvaluateStringExpression(action.ProjectId, repository);
 
         if (string.IsNullOrWhiteSpace(projectId))
         {
