@@ -39,11 +39,11 @@ To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you 
   - [Statistics](_doc/RepoM.Plugin.Statistics.md)
   - [WindowsExplorerGitInfo](_doc/RepoM.Plugin.WindowsExplorerGitInfo.md)
 - [Search](_doc/Search.md)
-- [Filtering](_doc/Filtering.md)
-- [Ordering](_doc/Ordering.md)
-- [Settings](_doc/Settings.md)
-
-<!-- snippet: ReceivedCalls -->
+- Settings
+  - [Global settings](_doc/Settings.md)
+  - [Repository Actions](_doc/RepositoryActions.md)
+  - [Filtering](_doc/Filtering.md)
+  - [Ordering](_doc/Ordering.md)
 
 ## Credits
 

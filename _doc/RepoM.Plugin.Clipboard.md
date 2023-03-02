@@ -1,3 +1,5 @@
 # Clipboard
 
 todo.
+
+snippet: ClipboardYaml
