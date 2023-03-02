@@ -39,6 +39,7 @@ public class ActionAzureDevOpsPullRequestsV1MapperTests
         // default test behavior.
         _action.Active = "dummy-Active-property";
         _action.ProjectId = "dummy-project-id";
+        _action.RepoId = null;
         A.CallTo(() => _evaluator.EvaluateBooleanExpression("dummy-Active-property", _repository)).Returns(true);
         A.CallTo(() => _evaluator.EvaluateStringExpression("dummy-project-id", A<IRepository[]>._)).Returns("real-project-id");
     }
@@ -145,6 +146,42 @@ public class ActionAzureDevOpsPullRequestsV1MapperTests
         // assert
         result.Should().BeEmpty();
         A.CallTo(_service).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public void Map_ShouldReturnEmptySet_WhenServiceReturnsNoPullRequests()
+    {
+        // arrange
+        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepoId))
+         .Returns(new List<PullRequest>(0));
+
+        // act
+        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repositories, _composition);
+
+        // assert
+        result.Should().BeEmpty();
+        A.CallTo(_service).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepoId)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public void Map_ShouldReturnRepositoryActions_WhenServiceReturnsPullRequests()
+    {
+        // arrange
+        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepoId))
+         .Returns(new List<PullRequest>
+             {
+                 new (Guid.Empty, "x", "y"),
+                 new (Guid.Empty, "x2", "y2"),
+             });
+
+        // act
+        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repositories, _composition);
+
+        // assert
+        result.Should().HaveCount(2).And.AllBeOfType<RepositoryAction>();
+        A.CallTo(_service).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepoId)).MustHaveHappenedOnceExactly();
     }
 }
 
