@@ -1,6 +1,6 @@
 # Clipboard
 
-When this module is enabled, you can create repository actions to copy text to the clipboard using the action provider type `clipboard-action`.
+When this module is enabled, you can create repository actions to copy text to the clipboard using the action provider type `clipboard-copy`.
 
 ## Version 1
 
