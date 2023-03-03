@@ -52,7 +52,12 @@ public class FilesFilterSettingsService : IFilterSettingsService
 
             IDeserializer deserializer = builder.Build();
 
-            Dictionary<string, RepositoryFilterConfiguration> result = deserializer.Deserialize<Dictionary<string, RepositoryFilterConfiguration>>(yml);
+            Dictionary<string, RepositoryFilterConfiguration>? result = deserializer.Deserialize<Dictionary<string, RepositoryFilterConfiguration>?>(yml);
+            if (result == null)
+            {
+                return new Dictionary<string, RepositoryFilterConfiguration>();
+            }
+
             foreach (KeyValuePair<string, RepositoryFilterConfiguration> item in result)
             {
                 item.Value.Name = item.Key;
