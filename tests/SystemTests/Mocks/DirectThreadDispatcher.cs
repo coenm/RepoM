@@ -1,4 +1,4 @@
-namespace Specs.Mocks;
+namespace SystemTests.Mocks;
 
 using System;
 using RepoM.Api.Common;

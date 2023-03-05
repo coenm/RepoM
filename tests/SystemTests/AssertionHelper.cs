@@ -1,12 +1,12 @@
 
-namespace Specs;
+namespace SystemTests;
 
 using System;
 using System.Threading;
 using FluentAssertions;
 using RepoM.Api.Git;
 
-public static class AssertionHelper
+internal static class AssertionHelper
 {
     public static void Expect(this DefaultRepositoryMonitor monitor, Action act, int changes, int deletes)
     {

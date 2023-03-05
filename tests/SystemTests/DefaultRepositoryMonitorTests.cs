@@ -1,4 +1,4 @@
-namespace Specs;
+namespace SystemTests;
 
 using System;
 using System.Collections.Generic;
@@ -7,14 +7,14 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
+using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.Methods.BooleanToBoolean;
 using ExpressionStringEvaluator.Methods.Flow;
 using ExpressionStringEvaluator.Methods.StringToBoolean;
 using ExpressionStringEvaluator.Methods.StringToInt;
 using ExpressionStringEvaluator.Methods.StringToString;
-using ExpressionStringEvaluator.Methods;
-using ExpressionStringEvaluator.VariableProviders.DateTime;
 using ExpressionStringEvaluator.VariableProviders;
+using ExpressionStringEvaluator.VariableProviders.DateTime;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -26,8 +26,8 @@ using RepoM.Api.IO;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.VariableProviders;
 using RepoM.Core.Plugin.RepositoryFinder;
-using Specs.IO;
-using Specs.Mocks;
+using SystemTests.IO;
+using SystemTests.Mocks;
 
 public class DefaultRepositoryMonitorTests
 {

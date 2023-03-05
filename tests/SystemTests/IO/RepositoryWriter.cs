@@ -1,9 +1,9 @@
-namespace Specs.IO;
+namespace SystemTests.IO;
 
-using LibGit2Sharp;
 using System;
 using System.IO.Abstractions;
 using System.Linq;
+using LibGit2Sharp;
 
 public class RepositoryWriter
 {

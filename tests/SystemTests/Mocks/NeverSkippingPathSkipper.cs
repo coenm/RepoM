@@ -1,6 +1,5 @@
-namespace Specs.Mocks;
+namespace SystemTests.Mocks;
 
-using RepoM.Api.IO;
 using RepoM.Core.Plugin.RepositoryFinder;
 
 internal class NeverSkippingPathSkipper : IPathSkipper
