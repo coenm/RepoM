@@ -1,18 +1,16 @@
-namespace Tests.UI;
+namespace RepoM.Api.Tests.Git;
 
 using FluentAssertions;
-using NUnit.Framework;
 using RepoM.Api.Git;
-using Tests.Helper;
+using Xunit;
 
 public class StatusCompressorTests
 {
-    private RepositoryBuilder _builder = null!;
-    private StatusCharacterMap _characterMap = null!;
-    private StatusCompressor _compressor = null!;
+    private readonly RepositoryBuilder _builder;
+    private readonly StatusCharacterMap _characterMap;
+    private readonly StatusCompressor _compressor;
 
-    [SetUp]
-    public void Setup()
+    public StatusCompressorTests()
     {
         _builder = new RepositoryBuilder();
         _characterMap = new StatusCharacterMap();
@@ -43,14 +41,14 @@ public class StatusCompressorTests
 
     public class CompressMethod : StatusCompressorTests
     {
-        [Test]
+        [Fact]
         public void Returns_Empty_String_For_Empty_Repositories()
         {
             Repository repo = _builder.Build();
             Compress(repo).Should().BeEmpty();
         }
 
-        [Test]
+        [Fact]
         public void Returns_Empty_String_For_Repositories_With_Just_A_Name()
         {
             Repository repo = _builder
@@ -60,7 +58,7 @@ public class StatusCompressorTests
             Compress(repo).Should().BeEmpty();
         }
 
-        [Test]
+        [Fact]
         public void Returns_NoUpstream_For_Repositories_Without_Upstream_And_Just_A_Branch()
         {
             Repository repo = _builder
@@ -71,7 +69,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be(NoUp);
         }
 
-        [Test]
+        [Fact]
         public void Returns_IdenticalToUpstream_For_Repositories_With_Upstream_But_Just_A_Branch()
         {
             Repository repo = _builder
@@ -82,7 +80,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be(Eq);
         }
 
-        [Test]
+        [Fact]
         public void Returns_An_ArrowUp_And_The_Count_If_AheadBy()
         {
             Repository repo = _builder
@@ -94,7 +92,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{Up}15");
         }
 
-        [Test]
+        [Fact]
         public void Returns_An_ArrowDown_And_The_Count_If_BehindBy()
         {
             Repository repo = _builder
@@ -106,7 +104,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{Down}7");
         }
 
-        [Test]
+        [Fact]
         public void Returns_An_ArrowDown_And_An_ArrowDown_And_The_Count_If_AheadBy_And_BehindBy()
         {
             Repository repo = _builder
@@ -119,7 +117,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{Down}7 {Up}15");
         }
 
-        [Test]
+        [Fact]
         public void Returns_Just_An_NoUpstream_Sign_If_No_Upstream_Is_Set_And_AheadBy_And_BehindBy_Are_Zero()
         {
             Repository repo = _builder
@@ -132,7 +130,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be(NoUp);
         }
 
-        [Test]
+        [Fact]
         public void Returns_Just_An_NoUpstream_Sign_If_No_Upstream_Is_Set_Even_If_AheadBy_And_BehindBy_Are_Not_Zero()
         {
             Repository repo = _builder
@@ -145,7 +143,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be(NoUp);
         }
 
-        [Test]
+        [Fact]
         public void Returns_An_Identical_Sign_If_AheadBy_And_BehindBy_Is_Zero()
         {
             Repository repo = _builder
@@ -158,7 +156,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be(Eq);
         }
 
-        [Test]
+        [Fact]
         public void Returns_An_Identical_Sign_If_AheadBy_And_BehindBy_Is_Not_Set()
         {
             Repository repo = _builder
@@ -169,7 +167,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be(Eq);
         }
 
-        [Test]
+        [Fact]
         public void Returns_Added_Staged_Removed_And_NoUpstream_Sign_Without_Upstream()
         {
             Repository repo = _builder
@@ -182,7 +180,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{NoUp} +1 ~2 -3");
         }
 
-        [Test]
+        [Fact]
         public void Returns_Added_Staged_Removed_And_Identical_Sign_With_Upstream()
         {
             Repository repo = _builder
@@ -197,7 +195,7 @@ public class StatusCompressorTests
         }
 
 
-        [Test]
+        [Fact]
         public void Returns_Untracked_Modified_Missing_Without_Upstream()
         {
             Repository repo = _builder
@@ -211,7 +209,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{NoUp} +4 ~5 -6");
         }
 
-        [Test]
+        [Fact]
         public void Returns_Untracked_Modified_Missing_And_Identical_Sign_With_Upstream()
         {
             Repository repo = _builder
@@ -225,7 +223,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{Eq} +4 ~5 -6");
         }
 
-        [Test]
+        [Fact]
         public void Returns_Added_Staged_Removed_Untracked_Modified_Missing_Without_Upstream()
         {
             Repository repo = _builder
@@ -242,7 +240,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{NoUp} +1 ~2 -3 | +4 ~5 -6");
         }
 
-        [Test]
+        [Fact]
         public void Returns_Added_Staged_Removed_Untracked_Modified_Missing_And_Identical_Sign_With_Upstream()
         {
             Repository repo = _builder
@@ -259,7 +257,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{Eq} +1 ~2 -3 | +4 ~5 -6");
         }
 
-        [Test]
+        [Fact]
         public void Returns_Added_Staged_Removed_Untracked_Modified_Missing_Without_AheadBy_And_BehindBy_Without_Upstream()
         {
             Repository repo = _builder
@@ -278,7 +276,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{NoUp} +1 ~2 -3 | +4 ~5 -6");
         }
 
-        [Test]
+        [Fact]
         public void Returns_Added_Staged_Removed_Untracked_Modified_Missing_And_AheadBy_And_BehindBy_With_Upstream()
         {
             Repository repo = _builder
@@ -297,7 +295,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{Down}7 {Up}15 +1 ~2 -3 | +4 ~5 -6");
         }
 
-        [Test]
+        [Fact]
         public void Returns_Stashed_Only_If_No_Other_Changes_Are_Present()
         {
             Repository repo = _builder
@@ -309,7 +307,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{Eq} {StashCount}7");
         }
 
-        [Test]
+        [Fact]
         public void Returns_Stashed_With_Pipe_Separator_If_Other_Changes_Are_Present()
         {
             Repository repo = _builder
@@ -329,7 +327,7 @@ public class StatusCompressorTests
             Compress(repo).Should().Be($"{Down}7 {Up}15 +1 ~2 -3 | +4 ~5 -6 {StashCount}7");
         }
 
-        [Test]
+        [Fact]
         public void Does_Not_Return_Stashes_If_Stash_Is_Empty()
         {
             Repository repo = _builder
@@ -344,7 +342,7 @@ public class StatusCompressorTests
 
     public class CompressWithBranchMethod : StatusCompressorTests
     {
-        [Test]
+        [Fact]
         public void Returns_The_Name_Of_The_Current_Branch_With_Its_Status()
         {
             Repository repo = _builder
@@ -355,7 +353,7 @@ public class StatusCompressorTests
             CompressWithBranch(repo).Should().Be($"develop {Eq}");
         }
 
-        [Test]
+        [Fact]
         public void Returns_A_Part_Of_The_Commit_Sha_If_Head_Is_Detached()
         {
             Repository repo = _builder
@@ -366,7 +364,7 @@ public class StatusCompressorTests
             CompressWithBranch(repo).Should().Be($"(96728c6{Ellipses}) {Eq}");
         }
 
-        [Test]
+        [Fact]
         public void Returns_The_Tag_Name_If_Head_Is_Detached_On_A_Tag()
         {
             Repository repo = _builder

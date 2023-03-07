@@ -1,4 +1,4 @@
-namespace Tests.Helper;
+namespace RepoM.Api.Tests.Git;
 
 using System;
 using System.Collections.Generic;
