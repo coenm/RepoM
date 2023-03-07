@@ -24,11 +24,6 @@ public abstract class FileRepositoryStore : IRepositoryStore
 
     public void Set(IEnumerable<string> paths)
     {
-        if (!UseFilePersistence)
-        {
-            return;
-        }
-
         var file = GetFileName();
         var path = _fileSystem.Directory.GetParent(file)?.FullName;
 
@@ -54,26 +49,20 @@ public abstract class FileRepositoryStore : IRepositoryStore
 
     private IEnumerable<string> Get(string file)
     {
-        if (!UseFilePersistence)
+        if (!_fileSystem.File.Exists(file))
         {
             return Array.Empty<string>();
         }
 
-        if (_fileSystem.File.Exists(file))
+        try
         {
-            try
-            {
-                return _fileSystem.File.ReadAllLines(file);
-            }
-            catch (Exception)
-            {
-                // swallow for now.
-            }
+            return _fileSystem.File.ReadAllLines(file);
+        }
+        catch (Exception)
+        {
+            // swallow for now.
         }
 
         return Array.Empty<string>();
     }
-
-    // todo remove
-    public bool UseFilePersistence { get; set; } = true;
 }
