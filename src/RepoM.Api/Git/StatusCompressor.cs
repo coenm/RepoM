@@ -47,7 +47,7 @@ public class StatusCompressor
                 {
                     if (isBehind)
                     {
-                        builder.Append(" ");
+                        builder.Append(' ');
                     }
 
                     builder.Append($"{_statusCharacterMap.ArrowUpSign}{repository.AheadBy}");
@@ -63,7 +63,7 @@ public class StatusCompressor
         {
             if (builder.Length > 0)
             {
-                builder.Append(" ");
+                builder.Append(' ');
             }
 
             builder.AppendFormat("+{0} ~{1} -{2}", repository.LocalAdded ?? 0, repository.LocalStaged ?? 0, repository.LocalRemoved ?? 0);
@@ -73,7 +73,7 @@ public class StatusCompressor
         {
             if (builder.Length > 0)
             {
-                builder.Append(" ");
+                builder.Append(' ');
             }
 
             if (printAddStagedRemoved)
@@ -88,7 +88,7 @@ public class StatusCompressor
         {
             if (builder.Length > 0)
             {
-                builder.Append(" ");
+                builder.Append(' ');
             }
 
             builder.Append(_statusCharacterMap.StashSign + repository.StashCount.ToString());
@@ -111,7 +111,7 @@ public class StatusCompressor
             // put commit shas in parenthesis (), shorten them and show ellipses afterwards
             if (repository.CurrentBranchIsDetached && branch.Length > COMMIT_SHA_DISPLAY_CHARS)
             {
-                branch = $"({branch.Substring(0, COMMIT_SHA_DISPLAY_CHARS)}{_statusCharacterMap.EllipsesSign})";
+                branch = $"({branch[..COMMIT_SHA_DISPLAY_CHARS]}{_statusCharacterMap.EllipsesSign})";
             }
         }
 

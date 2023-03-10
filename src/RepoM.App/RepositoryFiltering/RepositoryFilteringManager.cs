@@ -36,11 +36,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         }
 
         INamedQueryParser defaultParser = _queryParsers.First(x => x.Name != "Lucene");
-        INamedQueryParser? query1Parser = _queryParsers.FirstOrDefault(x => x.Name == "Lucene");
-        if (query1Parser == null)
-        {
-            query1Parser = defaultParser;
-        }
+        INamedQueryParser queryParser = _queryParsers.FirstOrDefault(x => x.Name == "Lucene") ?? defaultParser;
 
         IQuery? Map(QueryConfiguration input)
         {
@@ -51,21 +47,21 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
             if ("query@1".Equals(input.Kind, StringComparison.CurrentCulture))
             {
-                return query1Parser.Parse(input.Query);
+                return queryParser.Parse(input.Query);
             }
 
             return defaultParser.Parse(input.Query);
         }
 
         _queryDictionary = filterSettingsService.Configuration
-                                                .Select(x => new RepositoryFilterConfiguration
-                                                    {
-                                                        AlwaysVisible = Map(x.Value.AlwaysVisible),
-                                                        Description = x.Value.Description,
-                                                        Filter = Map(x.Value.Filter),
-                                                        Name = x.Key,
-                                                    })
-                                                .ToList();
+            .Select(x => new RepositoryFilterConfiguration
+                {
+                    AlwaysVisible = Map(x.Value.AlwaysVisible),
+                    Description = x.Value.Description,
+                    Filter = Map(x.Value.Filter),
+                    Name = x.Key,
+                })
+            .ToList();
 
         if (!_queryDictionary.Any(x => x.Name.Equals("Default", StringComparison.CurrentCultureIgnoreCase)))
         {
@@ -157,11 +153,11 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         return true;
     }
 
-    private class RepositoryFilterConfiguration
+    private sealed class RepositoryFilterConfiguration
     {
-        public string Name { get; init; }
+        public string Name { get; init; } = null!;
 
-        public string Description { get; init; }
+        public string Description { get; init; } = null!;
 
         public IQuery? AlwaysVisible { get; init; }
 

@@ -43,7 +43,7 @@ internal class HeidiDbVariableProvider : IVariableProvider<RepositoryContext>
 
             if (".count".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
             {
-                return dbs.Count();
+                return dbs.Length;
             }
 
             if (".any".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
