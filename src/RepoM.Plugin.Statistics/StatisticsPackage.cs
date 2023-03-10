@@ -42,6 +42,6 @@ public class StatisticsPackage : IPackage
 
     private static void RegisterInternals(Container container)
     {
-        container.Register<StatisticsService>(Lifestyle.Singleton);
+        container.Register<IStatisticsService, StatisticsService>(Lifestyle.Singleton);
     }
 }

@@ -10,11 +10,11 @@ using RepoM.Core.Plugin.RepositoryActions.Actions;
 public sealed class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor<T> where T : IAction
 {
     private readonly IActionExecutor<T> _decoratee;
-    private readonly StatisticsService _service;
+    private readonly IStatisticsService _service;
 
     public RecordStatisticsActionExecutorDecorator(
         IActionExecutor<T> decoratee,
-        StatisticsService service)
+        IStatisticsService service)
     {
         _decoratee = decoratee ?? throw new ArgumentNullException(nameof(decoratee));
         _service = service ?? throw new ArgumentNullException(nameof(service));

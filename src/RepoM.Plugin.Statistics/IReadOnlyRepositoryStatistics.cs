@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Statistics;
 
 using System;
 
-internal interface IReadOnlyRepositoryStatistics
+public interface IReadOnlyRepositoryStatistics
 {
     int GetRecordingCount(DateTime from, DateTime to);
     int GetRecordingCountFrom(DateTime from);

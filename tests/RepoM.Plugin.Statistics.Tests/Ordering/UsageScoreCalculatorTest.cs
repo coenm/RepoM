@@ -11,7 +11,7 @@ using IClock = RepoM.Core.Plugin.Common.IClock;
 
 public class UsageScoreCalculatorTest
 {
-    private readonly StatisticsService _service;
+    private readonly IStatisticsService _service;
     private readonly IClock _calculatorClock;
     private readonly IRepository _repository;
     private readonly ScoreCalculatorConfig _defaultConfig;

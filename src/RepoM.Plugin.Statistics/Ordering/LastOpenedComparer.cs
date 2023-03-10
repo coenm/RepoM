@@ -8,10 +8,10 @@ using RepoM.Core.Plugin.RepositoryOrdering;
 
 internal class LastOpenedComparer : IRepositoryComparer
 {
-    private readonly StatisticsService _service;
+    private readonly IStatisticsService _service;
     private readonly int _weight;
     
-    public LastOpenedComparer(StatisticsService service, int weight)
+    public LastOpenedComparer(IStatisticsService service, int weight)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _weight = weight;

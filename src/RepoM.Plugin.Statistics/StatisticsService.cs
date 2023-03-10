@@ -11,7 +11,7 @@ using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Statistics.Interface;
 
-public class StatisticsService
+public class StatisticsService : IStatisticsService
 {
     private readonly IClock _clock;
     private readonly ReadOnlyCollection<DateTime> _empty = new List<DateTime>(0).AsReadOnly();
@@ -43,13 +43,6 @@ public class StatisticsService
         return _recordings.Select(x => x.Key).ToImmutableArray();
     }
 
-    internal IReadOnlyRepositoryStatistics? GetRepositoryRecording(IRepository repository)
-    {
-        return _recordings.TryGetValue(repository.SafePath, out RepositoryStatistics? repositoryStatistics)
-            ? repositoryStatistics
-            : null;
-    }
-
     public IReadOnlyList<DateTime> GetRecordings(IRepository repository)
     {
         if (_recordings.TryGetValue(repository.SafePath, out RepositoryStatistics? repositoryStatistics))
@@ -58,6 +51,13 @@ public class StatisticsService
         }
 
         return _empty;
+    }
+
+    public IReadOnlyRepositoryStatistics? GetRepositoryRecording(IRepository repository)
+    {
+        return _recordings.TryGetValue(repository.SafePath, out RepositoryStatistics? repositoryStatistics)
+            ? repositoryStatistics
+            : null;
     }
 
     public void Apply(IEvent evt)

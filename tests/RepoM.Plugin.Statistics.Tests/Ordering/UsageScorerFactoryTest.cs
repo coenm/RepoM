@@ -9,7 +9,7 @@ using Xunit;
 
 public class UsageScorerFactoryTest
 {
-    private readonly StatisticsService _service;
+    private readonly IStatisticsService _service;
     private readonly IClock _clock;
 
     public UsageScorerFactoryTest()

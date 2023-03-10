@@ -9,16 +9,38 @@ using RepoM.Core.Plugin.VariableProviders;
 [UsedImplicitly]
 public class UsageVariableProvider : IVariableProvider<RepositoryContext>
 {
-    private readonly StatisticsService _service;
+    private const StringComparison COMPARISON = StringComparison.CurrentCultureIgnoreCase;
+    private readonly IStatisticsService _service;
 
-    public UsageVariableProvider(StatisticsService service)
+    public UsageVariableProvider(IStatisticsService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
     public bool CanProvide(string key)
     {
-        return !string.IsNullOrWhiteSpace(key) && key.Equals("usage", StringComparison.CurrentCultureIgnoreCase);
+       
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return false;
+        }
+
+        if (key.Equals("usage", COMPARISON))
+        {
+            return true;
+        }
+
+        if (key.Equals("statistics.totalcount", COMPARISON))
+        {
+            return true;
+        }
+
+        if (key.Equals("statistics.count", COMPARISON))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public object? Provide(RepositoryContext context, string key, string? arg)

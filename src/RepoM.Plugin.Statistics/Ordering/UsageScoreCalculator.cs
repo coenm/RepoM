@@ -9,12 +9,12 @@ using RepoM.Core.Plugin.RepositoryOrdering;
 
 internal class UsageScoreCalculator : IRepositoryScoreCalculator
 {
-    private readonly StatisticsService _service;
+    private readonly IStatisticsService _service;
     private readonly IClock _clock;
     private readonly ScoreCalculatorConfig _config;
     private readonly List<ScoreCalculatorRangeConfig> _ranges;
 
-    public UsageScoreCalculator(StatisticsService service, IClock clock, ScoreCalculatorConfig config)
+    public UsageScoreCalculator(IStatisticsService service, IClock clock, ScoreCalculatorConfig config)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
