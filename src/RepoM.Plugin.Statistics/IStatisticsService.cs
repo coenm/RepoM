@@ -13,6 +13,8 @@ public interface IStatisticsService
 
     void Record(IRepository repository);
 
+    int GetTotalRecordingCount();
+
     IReadOnlyList<DateTime> GetRecordings(IRepository repository);
 
     IReadOnlyRepositoryStatistics? GetRepositoryRecording(IRepository repository);

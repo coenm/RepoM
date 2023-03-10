@@ -45,7 +45,17 @@ public class UsageVariableProvider : IVariableProvider<RepositoryContext>
 
     public object? Provide(RepositoryContext context, string key, string? arg)
     {
-        return _service.GetRecordings(context.Repositories.First()).Count;
+        if ("statistics.count".Equals(key, COMPARISON) || "usage".Equals(key, COMPARISON))
+        {
+            return _service.GetRecordings(context.Repositories.First()).Count;
+        }
+
+        if ("statistics.totalcount".Equals(key, COMPARISON))
+        {
+            return _service.GetTotalRecordingCount();
+        }
+
+        throw new NotImplementedException();
     }
 
     public object? Provide(string key, string? arg)

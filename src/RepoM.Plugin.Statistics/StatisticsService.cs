@@ -53,6 +53,11 @@ public class StatisticsService : IStatisticsService
         return _empty;
     }
 
+    public int GetTotalRecordingCount()
+    {
+        return _recordings.Select(x => x.Value.Recordings.Count).Sum();
+    }
+
     public IReadOnlyRepositoryStatistics? GetRepositoryRecording(IRepository repository)
     {
         return _recordings.TryGetValue(repository.SafePath, out RepositoryStatistics? repositoryStatistics)
