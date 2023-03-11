@@ -1,0 +1,19 @@
+﻿{
+  TagsCollection: {
+    Tags: [
+      {
+        Tag: ,
+        When: 
+      },
+      {
+        Tag: ,
+        When: 
+      },
+      {
+        Tag: ,
+        When: 
+      }
+    ]
+  },
+  ActionsCollection: {}
+}

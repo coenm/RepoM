@@ -101,6 +101,21 @@ public class DynamicRepositoryActionDeserializerTest
 
     [Theory]
     [EnumMemberData(typeof(SerializationType))]
+    public async Task Deserialize_RepositoryTagsFiles_1(SerializationType type)
+    {
+        // arrange
+        _testFileSettings.UseFileName("RepositoryTagsExplanation1");
+        var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
+
+        // act
+        RepositoryActionConfiguration result = SutDeserialize(content, type);
+
+        // assert
+        await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
+    }
+
+    [Theory]
+    [EnumMemberData(typeof(SerializationType))]
     public async Task Deserialize_ShouldReturnEmptyObject_WhenContentIsEmpty(SerializationType type)
     {
         // arrange
