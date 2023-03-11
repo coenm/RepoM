@@ -1,6 +1,4 @@
-  # begin-snippet: RepositoryActionsV1RepositoryTagsYaml
-
-#WIP
+# begin-snippet: RepositoryActionsV1RepositoryTagsYaml
 
 # array of objects.
 repository-tags:
