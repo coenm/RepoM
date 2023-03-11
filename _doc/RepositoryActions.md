@@ -34,6 +34,23 @@ In this section you can load custom environment (`.env`) files. These environmen
 This configuration will be evaluated and loaded every time the context menu of a repository opens. Using the `when` keyword, it is possible to only load environment files for specific repositories.
 
 <!-- snippet: RepositoryActionsV1RepositorySpecificEnvFilesYaml -->
+<a id='snippet-repositoryactionsv1repositoryspecificenvfilesyaml'></a>
+```yaml
+# array of objects.
+repository-specific-env-files:
+
+  # 'filename' is the filename to load environment variables from (required, string, evaluated).
+- filename: ''
+
+  # 'when' is a predicate when to load the file (optional, string/boolean, evaluated).
+  when: ''
+
+- filename: ''
+  when: ''
+- filename: ''
+  when: ''
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/TestFiles/RepositorySpecificEnvFilesExplanation1.testfile.yaml#L1-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsv1repositoryspecificenvfilesyaml' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Repository Tags
@@ -41,6 +58,9 @@ This configuration will be evaluated and loaded every time the context menu of a
 This section can be used to assign tags to repositories. These tags can be used to filter, order or search repositories.
 
 <!-- snippet: RepositoryActionsV1RepositoryTagsYaml -->
+```
+** Could not find snippet 'RepositoryActionsV1RepositoryTagsYaml' **
+```
 <!-- endSnippet -->
 
 ## Variables
@@ -49,6 +69,9 @@ Defined variables can be referenced within actions using the variable prefix `va
 It is possible to define variables at multiple levels (ie scopes). This is the top level of defining variables.
 
 <!-- snippet: RepositoryActionsV1RepositoryVariablesYaml -->
+```
+** Could not find snippet 'RepositoryActionsV1RepositoryVariablesYaml' **
+```
 <!-- endSnippet -->
 
 ## Repository Actions
@@ -57,4 +80,7 @@ This section describes the whole context menu of the repository. Within the `rep
 Actions can be enabled or disabled based on all kind of conditions. RepoM comes with a number of actions but it is also possible to load plugins containg specific actions.
 
 <!-- snippet: RepositoryActionsV1RepositoryActionsYaml -->
+```
+** Could not find snippet 'RepositoryActionsV1RepositoryActionsYaml' **
+```
 <!-- endSnippet -->
