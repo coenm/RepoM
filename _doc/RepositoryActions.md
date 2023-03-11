@@ -60,8 +60,6 @@ This section can be used to assign tags to repositories. These tags can be used 
 <!-- snippet: RepositoryActionsV1RepositoryTagsYaml -->
 <a id='snippet-repositoryactionsv1repositorytagsyaml'></a>
 ```yaml
-#WIP
-
 # array of objects.
 repository-tags:
   tags:
@@ -77,7 +75,7 @@ repository-tags:
   - tag: ''
     when: ''
 ```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/TestFiles/RepositoryTagsExplanation1.testfile.yaml#L1-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsv1repositorytagsyaml' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/TestFiles/RepositoryTagsExplanation1.testfile.yaml#L1-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsv1repositorytagsyaml' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Variables
