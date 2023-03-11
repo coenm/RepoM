@@ -40,6 +40,7 @@ public class JsonDynamicRepositoryActionDeserializer
 
         if (version == 1)
         {
+            // obsolete?
             token = jsonObject["redirect"];
             configuration.Redirect = DeserializeRedirect(token);
 
@@ -58,6 +59,21 @@ public class JsonDynamicRepositoryActionDeserializer
             token = jsonObject["repository-actions"];
             DeserializeRepositoryActions(token, configuration);
         }
+
+        // if (version == 2)
+        // {
+        //     token = jsonObject["env-files"];
+        //     configuration.RepositorySpecificEnvironmentFiles.AddRange(TryDeserializeEnumerable<FileReference>(token));
+        //
+        //     token = jsonObject["variables"];
+        //     configuration.Variables.AddRange(TryDeserializeEnumerableVariable(token));
+        //
+        //     token = jsonObject["tags"];
+        //     DeserializeRepositoryTags(token, ref configuration);
+        //
+        //     token = jsonObject["repository-actions"];
+        //     DeserializeRepositoryActions(token, configuration);
+        // }
 
         return configuration;
     }

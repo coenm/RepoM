@@ -1,0 +1,46 @@
+﻿{
+  RepositorySpecificEnvironmentFiles: [
+    {
+      Filename: work.env,
+      When: {StringContains({Repository.SafePath}, "work")}
+    },
+    {
+      Filename: project-x.env
+    }
+  ],
+  Variables: [
+    {
+      Name: var1,
+      Value: value1,
+      Enabled: true
+    },
+    {
+      Name: varObject,
+      Value: {
+        $type: ExpandoObject,
+        age: 12,
+        brothers: {
+          $type: List<object>,
+          $values: [
+            BatMan,
+            SuperMan
+          ]
+        },
+        isSuperMan: true,
+        name: abc
+      }
+    }
+  ],
+  TagsCollection: {
+    Tags: [
+      {
+        Tag: work,
+        When: {StringContains({Repository.SafePath}, "work")}
+      },
+      {
+        Tag: always-tag
+      }
+    ]
+  },
+  ActionsCollection: {}
+}

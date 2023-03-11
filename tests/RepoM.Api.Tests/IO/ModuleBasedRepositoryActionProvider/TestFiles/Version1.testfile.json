@@ -1,0 +1,60 @@
+{
+  // Version 1 of the RepositoryActions.yaml, other versions are not supported at the moment.
+  "version": 1,
+
+  // 'repository-specific-env-files' is an array and specifies loading specific environment files
+  // to be used in actions.
+  "repository-specific-env-files": [
+    {
+      // 'filename' is the filename to load. required. is evaluated.
+      "filename": "work.env",
+
+      // 'when' is a predicate when to load the environment file. optional, evaluated, defaults to true.
+      "when": "{StringContains({Repository.SafePath}, \"work\")}"
+    },
+    {
+      "filename": "project-x.env"
+    }
+  ],
+
+  // 'repository-tags' is an array to specify tags for repositories.
+  // a tag is assigned to a repository when the 'when' predicate is true.
+  "repository-tags": [
+    {
+      // 'tag' is the name of the tag, required, non evaluated.
+      "tag": "work",
+
+      // 'when' is a predicate when to apply a tag to an repository. optional, evaluated, defaults to true.
+      "when": "{StringContains({Repository.SafePath}, \"work\")}"
+    },
+    {
+      "tag": "always-tag"
+    }
+  ],
+
+  // 'variables' is an array to assign variables which can be used in actions. optional, defaults to empty.
+  "variables": [
+    {
+      // 'name' is the name of the variable. required, non empty, no spaces.
+      "name": "var1",
+      
+      // 'value' is the value of the variable. required, evaluated, can be an string, integer, boolean, or object.
+      "value": "value1",
+
+      // 'enabled' is a predicate when to assign the variable. optional, evaluated, defaults to true.
+      "enabled": true
+    },
+    {
+      "name": "varObject",
+      "value": {
+        "name": "abc",
+        "age": 12,
+        "isSuperMan": true,
+        "brothers": [
+          "BatMan",
+          "SuperMan"
+        ]
+      }
+    }
+  ]
+}
