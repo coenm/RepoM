@@ -51,6 +51,26 @@ repository-specific-env-files:
   when: ''
 ```
 <sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/TestFiles/RepositorySpecificEnvFilesExplanation1.testfile.yaml#L1-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsv1repositoryspecificenvfilesyaml' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-repositoryactionsv1repositoryspecificenvfilesyaml-1'></a>
+```yaml
+#WIP
+
+# array of objects.
+repository-tags:
+  tags:
+
+    # 'tag' is the name of the tag (required, string, no-spaces).
+  - tag: ''
+  
+    # 'when' is a predicate when to assign the tag to a repository (optional, string/boolean, evaluated, default true).
+    when: ''
+
+  - tag: ''
+    when: ''
+  - tag: ''
+    when: ''
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/TestFiles/RepositoryTagsExplanation1.testfile.yaml#L1-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsv1repositoryspecificenvfilesyaml-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Repository Tags
