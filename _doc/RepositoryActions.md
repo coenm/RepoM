@@ -120,3 +120,5 @@ repository-actions:
 ```
 <sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/RepositoryActions01Base.testfile.yaml#L3-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactions01base' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+A list of currently supported actions can be found [here](ActionList.md).
