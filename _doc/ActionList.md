@@ -14,6 +14,20 @@ Custom properties:
 Example:
 
 <!-- snippet: RepositoryActionsJustText01 -->
+<a id='snippet-repositoryactionsjusttext01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: just-text@1
+    active: true 
+    variables: []
+    enabled: true
+    name: this is some text to display
+
+  - type: just-text@1
+    name: 'also text'
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/JustText01.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsjusttext01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## associate-file@1
