@@ -2,6 +2,9 @@
 
 # array of objects.
 repository-tags:
+  # variable section for tags (same structure as global variable section)
+  variables:
+
   tags:
 
     # 'tag' is the name of the tag (required, string, no-spaces).

@@ -54,6 +54,17 @@ repository-specific-env-files:
 <sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/TestFiles/RepositorySpecificEnvFilesExplanation1.testfile.yaml#L1-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsv1repositoryspecificenvfilesyaml' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
+## Variables
+
+Defined variables can be referenced within actions using the variable prefix `var.`. Other variable providers are available within RepoM and are explained over here.
+It is possible to define variables at multiple levels (ie scopes). This is the top level of defining variables.
+
+<!-- snippet: RepositoryActionsV1RepositoryVariablesYaml -->
+```
+** Could not find snippet 'RepositoryActionsV1RepositoryVariablesYaml' **
+```
+<!-- endSnippet -->
+
 ## Repository Tags
 
 This section can be used to assign tags to repositories. These tags can be used to filter, order or search repositories.
@@ -77,17 +88,6 @@ repository-tags:
     when: ''
 ```
 <sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/TestFiles/RepositoryTagsExplanation1.testfile.yaml#L1-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsv1repositorytagsyaml' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
-## Variables
-
-Defined variables can be referenced within actions using the variable prefix `var.`. Other variable providers are available within RepoM and are explained over here.
-It is possible to define variables at multiple levels (ie scopes). This is the top level of defining variables.
-
-<!-- snippet: RepositoryActionsV1RepositoryVariablesYaml -->
-```
-** Could not find snippet 'RepositoryActionsV1RepositoryVariablesYaml' **
-```
 <!-- endSnippet -->
 
 ## Repository Actions
