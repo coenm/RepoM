@@ -36,6 +36,7 @@ public class DocumentationTests
 
     [Theory]
     [InlineData("RepositoryActions01Base")]
+    [InlineData("JustText01")]
     public async Task Deserialize_Documentation(string filename)
     {
         // arrange

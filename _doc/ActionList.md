@@ -11,7 +11,10 @@ Custom properties:
 - Name: The name of the item (required, string, evaulated)
 - Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
 
+Example:
 
+<!-- snippet: RepositoryActionsJustText01 -->
+<!-- endSnippet -->
 
 ## associate-file@1
 

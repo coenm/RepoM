@@ -1,4 +1,19 @@
 ﻿{
   TagsCollection: {},
-  ActionsCollection: {}
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionJustTextV1,
+        Enabled: true,
+        Type: just-text@1,
+        Name: this is some text to display,
+        Active: true
+      },
+      {
+        $type: RepositoryActionJustTextV1,
+        Type: just-text@1,
+        Name: also text
+      }
+    ]
+  }
 }
