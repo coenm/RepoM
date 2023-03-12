@@ -99,7 +99,24 @@ This section describes the whole context menu of the repository. Within the `rep
 Actions can be enabled or disabled based on all kind of conditions. RepoM comes with a number of actions but it is also possible to load plugins containg specific actions.
 
 <!-- snippet: RepositoryActions01Base -->
+<a id='snippet-repositoryactions01base'></a>
+```yaml
+repository-actions:
+
+  # variable section for all actions (optional, default empty)
+  variables: []
+
+  # array of actions
+  actions:
+
+    # action type, each type has its own set of properties (required, string, non-evaluated).
+  - type: '' 
+  
+    # predicate whether or not to display this action (optional, boolean/string, evaluted, default true)
+    active: '' 
+
+    # variable section for specific action (optional, default empty)
+    variables: []
 ```
-** Could not find snippet 'RepositoryActionsV1RepositoryActionsYaml' **
-```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/RepositoryActions01Base.testfile.yaml#L3-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactions01base' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
