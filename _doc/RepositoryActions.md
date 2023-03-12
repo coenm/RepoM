@@ -74,7 +74,7 @@ This section can be used to assign tags to repositories. These tags can be used 
 ```yaml
 # array of objects.
 repository-tags:
-  # variable section for tags (same structure as global variable section)
+  # variable section for tags and has the same structure as the global variable section (optional, default empty)
   variables:
 
   tags:
