@@ -12,20 +12,21 @@ version: 1
 # loaded environment variables can be used in actions.
 repository-specific-env-files: []
 
-# 'repository-tags' is an array to specify tags for repositories.
-# a tag is assigned to a repository when the 'when' predicate is true.
-repository-tags: []
-
 # 'variables' is an array.
 # variables can be refrerenced in actions.
 variables: []
+
+# Tags can be assigned to repositories based on predicates.
+repository-tags:
+  variables: []
+  tags: []
 
 # Repository actions which correspondent with the context menu of RepoM.
 repository-actions:
   variables: []
   actions: []
 ```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/TestFiles/Version1.testfile.yaml#L1-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsv1yaml' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/TestFiles/Version1.testfile.yaml#L1-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsv1yaml' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Repository Specific Env Files
