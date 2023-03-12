@@ -95,7 +95,7 @@ repository-tags:
 This section describes the whole context menu of the repository. Within the `repository-actions` it is possible to define variables at multiple levels. The `actions` subsection contains all the actions.
 Actions can be enabled or disabled based on all kind of conditions. RepoM comes with a number of actions but it is also possible to load plugins containg specific actions.
 
-<!-- snippet: RepositoryActionsV1RepositoryActionsYaml -->
+<!-- snippet: RepositoryActions01Base -->
 ```
 ** Could not find snippet 'RepositoryActionsV1RepositoryActionsYaml' **
 ```
