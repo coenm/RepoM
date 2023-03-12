@@ -7,13 +7,14 @@ version: 1
 # loaded environment variables can be used in actions.
 repository-specific-env-files: []
 
-# 'repository-tags' is an array to specify tags for repositories.
-# a tag is assigned to a repository when the 'when' predicate is true.
-repository-tags: []
-
 # 'variables' is an array.
 # variables can be refrerenced in actions.
 variables: []
+
+# Tags can be assigned to repositories based on predicates.
+repository-tags:
+  variables: []
+  tags: []
 
 # Repository actions which correspondent with the context menu of RepoM.
 repository-actions:
