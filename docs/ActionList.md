@@ -60,6 +60,31 @@ repository-actions:
 
 Action opening a webbrowser with the provided url.
 
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Url: The url to browse to (required, string, evaluated)
+
+Example:
+
+<!-- snippet: RepositoryActionsBrowser01 -->
+<a id='snippet-repositoryactionsbrowser01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: browser@1
+    active: true 
+    variables: []
+    name: 'My Github'
+    url: 'https://github.com/coenm'
+
+  - type: browser@1
+    name: 'My Github'
+    url: 'https://github.com/coenm'
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Browser@1.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowser01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
 ## command@1
 
 *todo*
@@ -71,6 +96,40 @@ Action opening a webbrowser with the provided url.
 ## folder@1
 
 Action to create a folder (sub menu) in the context menu of the repository allowing you to order actions.
+
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Items: Array of subitems (required, array of actions)
+
+
+Example:
+
+<!-- snippet: RepositoryActionsFolder01 -->
+<a id='snippet-repositoryactionsfolder01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: folder@1
+    active: true 
+    variables: []
+    name: 'My Folder 1'
+    items:
+    - type: just-text@1
+      name: 'text 1 in sub menu'
+    - type: just-text@1
+      name: 'text 2 in sub menu'
+
+  - type: folder@1
+    name: 'My Folder 2'
+    items:
+    - type: just-text@1
+      name: 'text 1 in sub menu'
+    - type: just-text@1
+      name: 'text 2 in sub menu'
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Folder@1.testfile.yaml#L3-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsfolder01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 ## foreach@1
 
