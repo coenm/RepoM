@@ -43,6 +43,17 @@ No additional properties and assigning variables has no effect.
 Example:
 
 <!-- snippet: RepositoryActionsBrowseRepository01 -->
+<a id='snippet-repositoryactionsbrowserepository01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: browse-repository@1
+    active: true 
+    variables: [] # default property but doens't add anything to this action
+
+  - type: browse-repository@1
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/browse-repository01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowserepository01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## browser@1
