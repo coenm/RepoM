@@ -114,7 +114,14 @@ Pinning a repository allowed custom filtering, ordering and searching.
 
 ## separator@1
 
-Creates a visual seperator in the action menu.
+Creates a visual separator in the action menu.
+
+No additional properties and assigning variables has no effect.
+
+Example:
+
+<!-- snippet: RepositoryActionsSeparator01 -->
+<!-- endSnippet -->
 
 # Plugin actions
 

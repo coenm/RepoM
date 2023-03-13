@@ -36,6 +36,7 @@ public class DocumentationTests
     [InlineData("GitFetch01")]
     [InlineData("GitPull01")]
     [InlineData("GitPush01")]
+    [InlineData("Separator@1")]
     public async Task Deserialize_Documentation(string filename)
     {
         // arrange

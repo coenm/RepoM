@@ -1,13 +1,13 @@
 version: 1
 
-# begin-snippet: RepositoryActionsGitFetch01
+# begin-snippet: RepositoryActionsSeparator01
 
 repository-actions:
   actions:
-  - type: git-fetch@1
+  - type: separator@1
     active: true 
     variables: [] # default property but doens't add anything to this action
 
-  - type: git-fetch@1
+  - type: separator@1
 
 # end-snippet

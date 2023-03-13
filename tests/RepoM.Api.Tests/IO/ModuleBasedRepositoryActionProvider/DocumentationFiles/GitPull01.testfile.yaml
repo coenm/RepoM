@@ -6,7 +6,7 @@ repository-actions:
   actions:
   - type: git-pull@1
     active: true 
-    variables: [] # default property but doens't add anything at this point
+    variables: [] # default property but doens't add anything to this action
 
   - type: git-pull@1
 
