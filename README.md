@@ -34,34 +34,34 @@ To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you 
 
 The main functionality of RepoM are the quick actions to execute per repository. For instance, you can quickly naviate to the repository by directly opening the windows explorer or by opening a command prompt. This context menu is user and repostirory specific and can be defined using yaml. This way, you can add an context menu item (action) for opening the repository in Visual Studio (for a C# project) and for an other repository you can add the action to open a repository in Eclipse.
 
-These actions are defined in the `RepositoryActions.yaml` located in your `%APPDATA%\RepoM\` folder. More information can be found [here](_doc/RepositoryActions.md).
+These actions are defined in the `RepositoryActions.yaml` located in your `%APPDATA%\RepoM\` folder. More information can be found [here](docs/RepositoryActions.md).
 
 ## Tagging
 
-The `RepositoryActions.yaml` file also contains a section to define tags per repository on which you can filter and search when using the hub. How to define tags is described in the [RepositoryActions](_doc/RepositoryActions.md) documentation.
+The `RepositoryActions.yaml` file also contains a section to define tags per repository on which you can filter and search when using the hub. How to define tags is described in the [RepositoryActions](docs/RepositoryActions.md) documentation.
 
 ## Search
 
-[Search](_doc/Search.md)
+[Search](docs/Search.md)
 
 ## Ordering and Filtering
 
-[Filtering](_doc/Filtering.md) [Ordering](_doc/Ordering.md)
+[Filtering](docs/Filtering.md) [Ordering](docs/Ordering.md)
 
 ## Global configuration
 
- [Global settings](_doc/Settings.md)
+ [Global settings](docs/Settings.md)
 
 ## Plugins
 
 RepoM uses plugins to extend functionality. At this moment, when a plugin is available in the installed directory, it will be loaded. In the future, hopefully, a menu item in RepoM will be added so enable/disable plugins.
 
-- [Plugins](_doc/Plugins.md)
-  - [AzureDevOps](_doc/RepoM.Plugin.AzureDevOps.md)
-  - [Clipboard](_doc/RepoM.Plugin.Clipboard.md)
-  - [EverythingFileSearch](_doc/RepoM.Plugin.EverythingFileSearch.md)
-  - [Heidi](_doc/RepoM.Plugin.Heidi.md)
-  - [LuceneQueryParser](_doc/RepoM.Plugin.LuceneQueryParser.md)
-  - [SonarCloud](_doc/RepoM.Plugin.SonarCloud.md)
-  - [Statistics](_doc/RepoM.Plugin.Statistics.md)
-  - [WindowsExplorerGitInfo](_doc/RepoM.Plugin.WindowsExplorerGitInfo.md)
+- [Plugins](docs/Plugins.md)
+  - [AzureDevOps](docs/RepoM.Plugin.AzureDevOps.md)
+  - [Clipboard](docs/RepoM.Plugin.Clipboard.md)
+  - [EverythingFileSearch](docs/RepoM.Plugin.EverythingFileSearch.md)
+  - [Heidi](docs/RepoM.Plugin.Heidi.md)
+  - [LuceneQueryParser](docs/RepoM.Plugin.LuceneQueryParser.md)
+  - [SonarCloud](docs/RepoM.Plugin.SonarCloud.md)
+  - [Statistics](docs/RepoM.Plugin.Statistics.md)
+  - [WindowsExplorerGitInfo](docs/RepoM.Plugin.WindowsExplorerGitInfo.md)
