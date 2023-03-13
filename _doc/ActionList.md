@@ -67,6 +67,17 @@ No additional properties and assigning variables has no effect.
 Example:
 
 <!-- snippet: RepositoryActionsGitCheckout01 -->
+<a id='snippet-repositoryactionsgitcheckout01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: git-checkout@1
+    active: true 
+    variables: [] # default property but doens't add anything at this point
+
+  - type: git-checkout@1
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/GitCheckout01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsgitcheckout01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## git-fetch@1
@@ -78,6 +89,17 @@ No additional properties and assigning variables has no effect.
 Example:
 
 <!-- snippet: RepositoryActionsGitFetch01 -->
+<a id='snippet-repositoryactionsgitfetch01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: git-fetch@1
+    active: true 
+    variables: [] # default property but doens't add anything at this point
+
+  - type: git-fetch@1
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/GitFetch01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsgitfetch01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## git-pull@1
@@ -89,6 +111,17 @@ No additional properties and assigning variables has no effect.
 Example:
 
 <!-- snippet: RepositoryActionsGitPull01 -->
+<a id='snippet-repositoryactionsgitpull01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: git-pull@1
+    active: true 
+    variables: [] # default property but doens't add anything at this point
+
+  - type: git-pull@1
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/GitPull01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsgitpull01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## git-push@1
@@ -100,6 +133,17 @@ No additional properties and assigning variables has no effect.
 Example:
 
 <!-- snippet: RepositoryActionsGitPush01 -->
+<a id='snippet-repositoryactionsgitpush01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: git-push@1
+    active: true 
+    variables: [] # default property but doens't add anything at this point
+
+  - type: git-push@1
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/GitPush01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsgitpush01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## ignore-repositories@1
