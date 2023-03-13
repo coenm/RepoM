@@ -1,0 +1,13 @@
+version: 1
+
+# begin-snippet: RepositoryActionsGitFetch01
+
+repository-actions:
+  actions:
+  - type: git-fetch@1
+    active: true 
+    variables: [] # default property but doens't add anything at this point
+
+  - type: git-fetch@1
+
+# end-snippet

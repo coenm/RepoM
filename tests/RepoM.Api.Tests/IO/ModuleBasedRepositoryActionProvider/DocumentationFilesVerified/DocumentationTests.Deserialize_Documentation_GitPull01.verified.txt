@@ -1,0 +1,16 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionGitPullV1,
+        Type: git-pull@1,
+        Active: true
+      },
+      {
+        $type: RepositoryActionGitPullV1,
+        Type: git-pull@1
+      }
+    ]
+  }
+}

@@ -62,17 +62,45 @@ Action to create a folder (sub menu) in the context menu of the repository allow
 
 This action will create a menu and sub menus with all local and remote branches for an easy checkout.
 
+No additional properties and assigning variables has no effect.
+
+Example:
+
+<!-- snippet: RepositoryActionsGitCheckout01 -->
+<!-- endSnippet -->
+
 ## git-fetch@1
 
 Action to execute a `git fetch` command.
+
+No additional properties and assigning variables has no effect.
+
+Example:
+
+<!-- snippet: RepositoryActionsGitFetch01 -->
+<!-- endSnippet -->
 
 ## git-pull@1
 
 Action to execute a `git pull` command.
 
+No additional properties and assigning variables has no effect.
+
+Example:
+
+<!-- snippet: RepositoryActionsGitPull01 -->
+<!-- endSnippet -->
+
 ## git-push@1
 
 Action to execute a `git push` command.
+
+No additional properties and assigning variables has no effect.
+
+Example:
+
+<!-- snippet: RepositoryActionsGitPush01 -->
+<!-- endSnippet -->
 
 ## ignore-repositories@1
 

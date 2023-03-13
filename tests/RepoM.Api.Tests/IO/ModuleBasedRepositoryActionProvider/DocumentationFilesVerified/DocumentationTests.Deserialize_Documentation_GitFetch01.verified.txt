@@ -1,0 +1,16 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionGitFetchV1,
+        Type: git-fetch@1,
+        Active: true
+      },
+      {
+        $type: RepositoryActionGitFetchV1,
+        Type: git-fetch@1
+      }
+    ]
+  }
+}
