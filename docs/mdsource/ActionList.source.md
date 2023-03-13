@@ -13,8 +13,7 @@ Custom properties:
 
 Example:
 
-<!-- snippet: RepositoryActionsJustText01 -->
-<!-- endSnippet -->
+snippet: RepositoryActionsJustText01
 
 ## associate-file@1
 
@@ -28,8 +27,7 @@ No additional properties and assigning variables has no effect.
 
 Example:
 
-<!-- snippet: RepositoryActionsBrowseRepository01 -->
-<!-- endSnippet -->
+snippet: RepositoryActionsBrowseRepository01
 
 ## browser@1
 
@@ -59,8 +57,7 @@ No additional properties and assigning variables has no effect.
 
 Example:
 
-<!-- snippet: RepositoryActionsGitCheckout01 -->
-<!-- endSnippet -->
+snippet: RepositoryActionsGitCheckout01
 
 ## git-fetch@1
 
@@ -70,8 +67,7 @@ No additional properties and assigning variables has no effect.
 
 Example:
 
-<!-- snippet: RepositoryActionsGitFetch01 -->
-<!-- endSnippet -->
+snippet: RepositoryActionsGitFetch01
 
 ## git-pull@1
 
@@ -81,8 +77,7 @@ No additional properties and assigning variables has no effect.
 
 Example:
 
-<!-- snippet: RepositoryActionsGitPull01 -->
-<!-- endSnippet -->
+snippet: RepositoryActionsGitPull01
 
 ## git-push@1
 
@@ -92,8 +87,7 @@ No additional properties and assigning variables has no effect.
 
 Example:
 
-<!-- snippet: RepositoryActionsGitPush01 -->
-<!-- endSnippet -->
+snippet: RepositoryActionsGitPush01
 
 ## ignore-repositories@1
 
@@ -113,8 +107,7 @@ No additional properties and assigning variables has no effect.
 
 Example:
 
-<!-- snippet: RepositoryActionsSeparator01 -->
-<!-- endSnippet -->
+snippet: RepositoryActionsSeparator01
 
 # Plugin actions
 
