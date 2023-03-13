@@ -33,6 +33,15 @@ snippet: RepositoryActionsBrowseRepository01
 
 Action opening a webbrowser with the provided url.
 
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Url: The url to browse to (required, string, evaluated)
+
+Example:
+
+snippet: RepositoryActionsBrowser01
+
 ## command@1
 
 *todo*
@@ -44,6 +53,16 @@ Action opening a webbrowser with the provided url.
 ## folder@1
 
 Action to create a folder (sub menu) in the context menu of the repository allowing you to order actions.
+
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Items: Array of subitems (required, array of actions)
+
+
+Example:
+
+snippet: RepositoryActionsFolder01
 
 ## foreach@1
 

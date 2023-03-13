@@ -38,6 +38,8 @@ public class DocumentationTests
     [InlineData("GitPush01")]
     [InlineData("browse-repository01")]
     [InlineData("Separator@1")]
+    [InlineData("Browser@1")]
+    [InlineData("Folder@1")]
     public async Task Deserialize_Documentation(string filename)
     {
         // arrange
