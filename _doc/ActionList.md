@@ -73,7 +73,7 @@ repository-actions:
   actions:
   - type: git-checkout@1
     active: true 
-    variables: [] # default property but doens't add anything at this point
+    variables: [] # default property but doens't add anything to this action
 
   - type: git-checkout@1
 ```
@@ -95,7 +95,7 @@ repository-actions:
   actions:
   - type: git-fetch@1
     active: true 
-    variables: [] # default property but doens't add anything at this point
+    variables: [] # default property but doens't add anything to this action
 
   - type: git-fetch@1
 ```
@@ -117,7 +117,7 @@ repository-actions:
   actions:
   - type: git-pull@1
     active: true 
-    variables: [] # default property but doens't add anything at this point
+    variables: [] # default property but doens't add anything to this action
 
   - type: git-pull@1
 ```
@@ -139,7 +139,7 @@ repository-actions:
   actions:
   - type: git-push@1
     active: true 
-    variables: [] # default property but doens't add anything at this point
+    variables: [] # default property but doens't add anything to this action
 
   - type: git-push@1
 ```
@@ -165,6 +165,17 @@ No additional properties and assigning variables has no effect.
 Example:
 
 <!-- snippet: RepositoryActionsSeparator01 -->
+<a id='snippet-repositoryactionsseparator01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: separator@1
+    active: true 
+    variables: [] # default property but doens't add anything to this action
+
+  - type: separator@1
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Separator@1.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsseparator01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 # Plugin actions
