@@ -1,0 +1,13 @@
+version: 1
+
+# begin-snippet: RepositoryActionsBrowseRepository01
+
+repository-actions:
+  actions:
+  - type: browse-repository@1
+    active: true 
+    variables: [] # default property but doens't add anything to this action
+
+  - type: browse-repository@1
+
+# end-snippet

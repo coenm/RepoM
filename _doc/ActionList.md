@@ -36,7 +36,14 @@ repository-actions:
 
 ## browse-repository@1
 
-*todo*
+Action to open the default webbrowser and go to the origin remote webinterface.
+
+No additional properties and assigning variables has no effect.
+
+Example:
+
+<!-- snippet: RepositoryActionsBrowseRepository01 -->
+<!-- endSnippet -->
 
 ## browser@1
 
