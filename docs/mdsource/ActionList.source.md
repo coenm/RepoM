@@ -17,7 +17,16 @@ snippet: RepositoryActionsJustText01
 
 ## associate-file@1
 
-*todo*
+Action menu for opening files with a given extension. If files within the repository are found matching the extension, a submenu will be created with all matched files.
+
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Extension: The file extension to look for. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesnt support regular expressions.  (required, string non-evaluated)
+
+Example:
+
+snippet: RepositoryActionsAssociateFile01
 
 ## browse-repository@1
 
@@ -44,7 +53,17 @@ snippet: RepositoryActionsBrowser01
 
 ## command@1
 
-*todo*
+Action to excute a command (related the the repository).
+
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Command: The command to execute (required, string, evaluted)
+- Arguments: The arguments to add to the command (optional, string, evaluted, default empty string)
+
+Example:
+
+snippet: RepositoryActionsCommand01
 
 ## executable@1
 
@@ -58,7 +77,6 @@ Custom properties:
 
 - Name: The name of the item (required, string, evaulated)
 - Items: Array of subitems (required, array of actions)
-
 
 Example:
 

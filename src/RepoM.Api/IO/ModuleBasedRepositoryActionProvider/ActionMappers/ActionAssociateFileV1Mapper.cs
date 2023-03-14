@@ -38,7 +38,7 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionAssociateFileV1, repository.First());
     }
 
-    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionAssociateFileV1? action, Repository repository)
+    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionAssociateFileV1? action, Repository repository)
     {
         if (action == null)
         {
@@ -50,18 +50,14 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
-        // var command = _expressionEvaluator.EvaluateStringExpression(action.Command, repository);
-
-        //todo no arguments needed.
-        // var arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
-
         if (action.Extension is null)
         {
             yield break;
         }
 
-        RepoM.Api.Git.RepositoryAction? menuItem = CreateFileAssociationSubMenu(
+        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
+        
+        Git.RepositoryAction? menuItem = CreateFileAssociationSubMenu(
             repository,
             name,
             action.Extension);
@@ -72,22 +68,14 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         }
     }
 
-    private static Git.RepositoryAction CreateProcessRunnerAction(string name, string process, IRepository repository, string arguments = "")
-    {
-        return new Git.RepositoryAction(name, repository)
-        {
-            Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(process, arguments)),
-        };
-    }
-
-    private RepoM.Api.Git.RepositoryAction? CreateFileAssociationSubMenu(Repository repository, string actionName, string filePattern)
+    private static Git.RepositoryAction? CreateFileAssociationSubMenu(IRepository repository, string actionName, string filePattern)
     {
         if (!HasFiles(repository, filePattern))
         {
             return null;
         }
 
-        return new RepoM.Api.Git.RepositoryAction(actionName, repository)
+        return new Git.RepositoryAction(actionName, repository)
             {
                 DeferredSubActionsEnumerator = () =>
                     GetFiles(repository, filePattern)
@@ -96,19 +84,27 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             };
     }
 
-    private static bool HasFiles(Repository repository, string searchPattern)
+    private static Git.RepositoryAction CreateProcessRunnerAction(string name, string process, IRepository repository, string arguments = "")
+    {
+        return new Git.RepositoryAction(name, repository)
+            {
+                Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(process, arguments)),
+            };
+    }
+
+    private static bool HasFiles(IRepository repository, string searchPattern)
     {
         return GetFileEnumerator(repository, searchPattern).Any();
     }
 
-    private static IEnumerable<string> GetFiles(Repository repository, string searchPattern)
+    private static IEnumerable<string> GetFiles(IRepository repository, string searchPattern)
     {
         return GetFileEnumerator(repository, searchPattern)
                .OrderBy(f => f)
                .Take(25);
     }
 
-    private static IEnumerable<string> GetFileEnumerator(Repository repository, string searchPattern)
+    private static IEnumerable<string> GetFileEnumerator(IRepository repository, string searchPattern)
     {
         // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
         // .app or .xcodeproj on macOS

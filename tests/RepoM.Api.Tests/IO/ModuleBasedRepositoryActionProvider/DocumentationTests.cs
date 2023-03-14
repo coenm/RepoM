@@ -40,6 +40,8 @@ public class DocumentationTests
     [InlineData("Separator@1")]
     [InlineData("Browser@1")]
     [InlineData("Folder@1")]
+    [InlineData("AssociateFile01")]
+    [InlineData("Command01")]
     public async Task Deserialize_Documentation(string filename)
     {
         // arrange

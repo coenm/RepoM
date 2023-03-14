@@ -1,0 +1,22 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionCommandV1,
+        Command: wt,
+        Arguments: -d "{Repository.SafePath}",
+        Type: command@1,
+        Name: Open in Terminal,
+        Active: true
+      },
+      {
+        $type: RepositoryActionCommandV1,
+        Command: wt,
+        Arguments: -d "{Repository.SafePath}",
+        Type: command@1,
+        Name: Open in Terminal
+      }
+    ]
+  }
+}
