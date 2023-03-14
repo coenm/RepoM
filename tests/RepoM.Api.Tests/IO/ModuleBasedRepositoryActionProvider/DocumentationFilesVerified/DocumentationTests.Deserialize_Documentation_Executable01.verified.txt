@@ -1,0 +1,47 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionExecutableV1,
+        Executables: [
+          %LocalAppData%/Programs/Microsoft VS Code/code.exe,
+          %ProgramW6432%/Microsoft VS Code/code.exe
+        ],
+        Arguments: "{Repository.SafePath}",
+        Type: executable@1,
+        Name: Open in Visual Studio Code,
+        Active: true
+      },
+      {
+        $type: RepositoryActionExecutableV1,
+        Executables: [
+          %LocalAppData%/Programs/Microsoft VS Code/code.exe
+        ],
+        Arguments: "{Repository.SafePath}",
+        Type: executable@1,
+        Name: Open in Visual Studio Code,
+        Active: true
+      },
+      {
+        $type: RepositoryActionExecutableV1,
+        Executables: [
+          %LocalAppData%/Programs/Microsoft VS Code/code.exe,
+          %ProgramW6432%/Microsoft VS Code/code.exe
+        ],
+        Arguments: "{Repository.SafePath}",
+        Type: executable@1,
+        Name: Open in Visual Studio Code
+      },
+      {
+        $type: RepositoryActionExecutableV1,
+        Executables: [
+          %LocalAppData%/Programs/Microsoft VS Code/code.exe
+        ],
+        Arguments: "{Repository.SafePath}",
+        Type: executable@1,
+        Name: Open in Visual Studio Code
+      }
+    ]
+  }
+}

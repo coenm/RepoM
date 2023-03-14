@@ -42,6 +42,7 @@ public class DocumentationTests
     [InlineData("Folder@1")]
     [InlineData("AssociateFile01")]
     [InlineData("Command01")]
+    [InlineData("Executable01")]
     public async Task Deserialize_Documentation(string filename)
     {
         // arrange

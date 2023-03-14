@@ -67,7 +67,21 @@ snippet: RepositoryActionsCommand01
 
 ## executable@1
 
-*todo*
+Action to excute an application with additional arguments. This action is almost identical to the `command@1` action. When no existing executables are provided, the action will not show.
+
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Executables: Array of possible executables. The first executable that exists will be used. The paths should absolute. (required, string, evaluted)
+- Arguments: The arguments to add to the executable (optional, string, evaluted, default empty string)
+
+When you only want to specify exacly one executable, you can replace the required property `Executables` and replace it with the following property:
+
+- Executable: Absolute path of the exeuctable to execute (required, string, evaluted)
+
+Example:
+
+snippet: RepositoryActionsExecutable01
 
 ## folder@1
 
