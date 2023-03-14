@@ -144,7 +144,59 @@ repository-actions:
 
 ## executable@1
 
-*todo*
+Action to excute an application with additional arguments. This action is almost identical to the `command@1` action. When no existing executables are provided, the action will not show.
+
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Executables: Array of possible executables. The first executable that exists will be used. The paths should absolute. (required, string, evaluted)
+- Arguments: The arguments to add to the executable (optional, string, evaluted, default empty string)
+
+When you only want to specify exacly one executable, you can replace the required property `Executables` and replace it with the following property:
+
+- Executable: Absolute path of the exeuctable to execute (required, string, evaluted)
+
+Example:
+
+<!-- snippet: RepositoryActionsExecutable01 -->
+<a id='snippet-repositoryactionsexecutable01'></a>
+```yaml
+repository-actions:
+  actions:
+
+  # all properties
+  - type: executable@1
+    active: true 
+    variables: []
+    name: 'Open in Visual Studio Code'
+    executables:
+    - '%LocalAppData%/Programs/Microsoft VS Code/code.exe'
+    - '%ProgramW6432%/Microsoft VS Code/code.exe'
+    arguments: '"{Repository.SafePath}"'
+
+  # replace executables array with property executable
+  - type: executable@1
+    active: true 
+    variables: []
+    name: 'Open in Visual Studio Code'
+    executable: '%LocalAppData%/Programs/Microsoft VS Code/code.exe'
+    arguments: '"{Repository.SafePath}"'
+    
+  # without default values for active and variables.
+  - type: executable@1
+    name: 'Open in Visual Studio Code'
+    executables:
+    - '%LocalAppData%/Programs/Microsoft VS Code/code.exe'
+    - '%ProgramW6432%/Microsoft VS Code/code.exe'
+    arguments: '"{Repository.SafePath}"'
+
+  - type: executable@1
+    name: 'Open in Visual Studio Code'
+    executable: '%LocalAppData%/Programs/Microsoft VS Code/code.exe'
+    arguments: '"{Repository.SafePath}"'
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Executable01.testfile.yaml#L3-L39' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsexecutable01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 ## folder@1
 
