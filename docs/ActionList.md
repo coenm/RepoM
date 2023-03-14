@@ -32,7 +32,32 @@ repository-actions:
 
 ## associate-file@1
 
-*todo*
+Action menu for opening files with a given extension. If files within the repository are found matching the extension, a submenu will be created with all matched files.
+
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Extension: The file extension to look for. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesnt support regular expressions.  (required, string non-evaluated)
+
+Example:
+
+<!-- snippet: RepositoryActionsAssociateFile01 -->
+<a id='snippet-repositoryactionsassociatefile01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: associate-file@1
+    active: true 
+    variables: []
+    name: 'Open in Visual Studio'
+    extension: '*.sln'
+    
+  - type: associate-file@1
+    name: 'Open in Visual Studio'
+    extension: '*.sln'
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/AssociateFile01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsassociatefile01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 ## browse-repository@1
 
@@ -87,7 +112,35 @@ repository-actions:
 
 ## command@1
 
-*todo*
+Action to excute a command (related the the repository).
+
+Custom properties:
+
+- Name: The name of the item (required, string, evaulated)
+- Command: The command to execute (required, string, evaluted)
+- Arguments: The arguments to add to the command (optional, string, evaluted, default empty string)
+
+Example:
+
+<!-- snippet: RepositoryActionsCommand01 -->
+<a id='snippet-repositoryactionscommand01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: command@1
+    active: true 
+    variables: []
+    name: Open in Terminal
+    command: wt
+    arguments: -d "{Repository.SafePath}"
+    
+  - type: command@1
+    name: Open in Terminal
+    command: wt
+    arguments: -d "{Repository.SafePath}"
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Command01.testfile.yaml#L3-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionscommand01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 ## executable@1
 
@@ -101,7 +154,6 @@ Custom properties:
 
 - Name: The name of the item (required, string, evaulated)
 - Items: Array of subitems (required, array of actions)
-
 
 Example:
 
