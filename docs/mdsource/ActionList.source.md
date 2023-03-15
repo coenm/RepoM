@@ -98,7 +98,18 @@ snippet: RepositoryActionsFolder01
 
 ## foreach@1
 
-*todo*
+Action to create repeated actions based on a variable.
+
+Custom properties:
+
+- Enumerable: name of the variable to enumerate over (required, string).
+- Variable: variable name of the iteration. For each iteration, the variable `{var.name}` has the value of the current iteration (required, string, non-evaluated)
+- Skip: Predicate to skip the current item (optional, string, evaluted, default empty)
+- Actions: Array of repeated actions (required, array of actions)
+
+Example:
+
+snippet: RepositoryActionsForeach01
 
 ## git-checkout@1
 
@@ -144,6 +155,12 @@ snippet: RepositoryActionsGitPush01
 
 Action to ignore the current repository. This repository will be added to the list of ignored repositories and will never show in RepoM.
 To undo this action, clear all ignored repositories or manually edit the ignored repositories file.
+
+No additional properties and assigning variables has no effect.
+
+Example:
+
+snippet: RepositoryActionsIgnoreRepository01
 
 ## pin-repository@1
 

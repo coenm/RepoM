@@ -43,6 +43,8 @@ public class DocumentationTests
     [InlineData("AssociateFile01")]
     [InlineData("Command01")]
     [InlineData("Executable01")]
+    [InlineData("Foreach01")]
+    [InlineData("IgnoreRepository01")]
     public async Task Deserialize_Documentation(string filename)
     {
         // arrange
