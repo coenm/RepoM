@@ -392,6 +392,36 @@ repository-actions:
 Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.
 Pinning a repository allowed custom filtering, ordering and searching.
 
+Custom properties:
+
+- Name: The name of the item. When not set, default text is used based on the mode (optional, string, evaulated, default empty)
+- Mode: Enum `[Toggle, Pin, Unpin]` (required)
+
+Example:
+
+<!-- snippet: RepositoryActionsPinRepository01 -->
+<a id='snippet-repositoryactionspinrepository01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: pin-repository@1
+    active: true 
+    variables: []
+    name: this is some text to display
+    mode: toggle
+
+  - type: pin-repository@1
+    mode: toggle
+
+  - type: pin-repository@1
+    mode: pin
+
+  - type: pin-repository@1
+    mode: unpin
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/PinRepository01.testfile.yaml#L3-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionspinrepository01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
 ## separator@1
 
 Creates a visual separator in the action menu.
