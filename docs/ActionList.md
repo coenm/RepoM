@@ -237,7 +237,44 @@ repository-actions:
 
 ## foreach@1
 
-*todo*
+Action to create repeated actions based on a variable.
+
+Custom properties:
+
+- Enumerable: name of the variable to enumerate over (required, string).
+- Variable: variable name of the iteration. For each iteration, the variable `{var.name}` has the value of the current iteration (required, string, non-evaluated)
+- Skip: Predicate to skip the current item (optional, string, evaluted, default empty)
+- Actions: Array of repeated actions (required, array of actions)
+
+Example:
+
+<!-- snippet: RepositoryActionsForeach01 -->
+<a id='snippet-repositoryactionsforeach01'></a>
+```yaml
+repository-actions:
+  variables:
+  - name: DTAP
+    value:
+    - key: D
+      url: https://develop.local
+    - key: T
+      url: https://test.local
+    - key: A
+      url: https://acceptance.local
+    - key: p
+      url: https://production.local
+  actions:
+  - type: foreach@1
+    enumerable: '{var.DTAP}'
+    variable: environment
+    skip: ''
+    actions:
+    - type: browser@1
+      name: '{var.environment.key}'
+      url: '{var.environment.url}'
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Foreach01.testfile.yaml#L3-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsforeach01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 ## git-checkout@1
 
@@ -327,10 +364,28 @@ repository-actions:
 <sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/GitPush01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsgitpush01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-## ignore-repositories@1
+## ignore-repository@1
 
 Action to ignore the current repository. This repository will be added to the list of ignored repositories and will never show in RepoM.
-To undo this action, clear all ignored repositories or manually edit the ignored repositories file.
+To undo this action, clear all ignored repositories or manually edit the ignored repositories file (when RepoM is not running).
+
+No additional properties and assigning variables has no effect.
+
+Example:
+
+<!-- snippet: RepositoryActionsIgnoreRepository01 -->
+<a id='snippet-repositoryactionsignorerepository01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: ignore-repository@1
+    active: true 
+    variables: [] # default property but doens't add anything to this action
+
+  - type: ignore-repository@1
+```
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/IgnoreRepository01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsignorerepository01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 ## pin-repository@1
 
