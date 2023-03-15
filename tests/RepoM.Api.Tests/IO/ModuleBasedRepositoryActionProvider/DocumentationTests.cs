@@ -45,6 +45,7 @@ public class DocumentationTests
     [InlineData("Executable01")]
     [InlineData("Foreach01")]
     [InlineData("IgnoreRepository01")]
+    [InlineData("PinRepository01")]
     public async Task Deserialize_Documentation(string filename)
     {
         // arrange

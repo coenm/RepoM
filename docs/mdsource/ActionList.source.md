@@ -167,6 +167,15 @@ snippet: RepositoryActionsIgnoreRepository01
 Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.
 Pinning a repository allowed custom filtering, ordering and searching.
 
+Custom properties:
+
+- Name: The name of the item. When not set, default text is used based on the mode (optional, string, evaulated, default empty)
+- Mode: Enum `[Toggle, Pin, Unpin]` (required)
+
+Example:
+
+snippet: RepositoryActionsPinRepository01
+
 ## separator@1
 
 Creates a visual separator in the action menu.
