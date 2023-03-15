@@ -78,7 +78,7 @@ repository-actions:
 
   - type: browse-repository@1
 ```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/browse-repository01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowserepository01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/BrowseRepository01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowserepository01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## browser@1
@@ -107,7 +107,7 @@ repository-actions:
     name: 'My Github'
     url: 'https://github.com/coenm'
 ```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Browser@1.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowser01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Browser01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowser01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## command@1
@@ -232,7 +232,7 @@ repository-actions:
     - type: just-text@1
       name: 'text 2 in sub menu'
 ```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Folder@1.testfile.yaml#L3-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsfolder01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Folder01.testfile.yaml#L3-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsfolder01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## foreach@1
@@ -441,7 +441,7 @@ repository-actions:
 
   - type: separator@1
 ```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Separator@1.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsseparator01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Separator01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsseparator01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 # Plugin actions
