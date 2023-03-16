@@ -190,19 +190,7 @@ snippet: RepositoryActionsSeparator01
 
 These actions are available though the use of plugins.
 
-## clipboard-copy@1
-
-This action makes it possible to copy text to the clipboard.
-
-Custom properties:
-
-- Name: The name of the item (required, string, evaulated)
-- Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
-- Text: The text to copy to the clipboard (required, string, evaluated)
-
-Example:
-
-snippet: RepositoryActionsClipboardCopy01
+include: _plugins.clipboard.action
 
 ## sonarcloud-set-favorite@1
 
