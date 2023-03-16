@@ -192,16 +192,25 @@ These actions are available though the use of plugins.
 
 include: _plugins.clipboard.action
 
+See the [Clipboard](RepoM.Plugin.Clipboard.md) plugin for more information.
+
 include: _plugins.sonarcloud.action
+
+See the [SonarCloud](RepoM.Plugin.SonarCloud.md) plugin for more information.
 
 ## azure-devops-get-prs@1
 
 This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.
 The AzureDevOps plugin is required.
 
+See the [AzureDevOps](RepoM.Plugin.AzureDevOps.md) plugin for more information.
+
 ## heidi-databases@1
 
 *todo*
+
+
+See the [Heidi](RepoM.Plugin.Heidi.md) plugin for more information.
 
 # Repository Actions
 
