@@ -1,13 +1,13 @@
-## sonarcloud-set-favorite@1
+## clipboard-copy@1
 
-Action to mark a repository as favorite within SonarCloud. This action requires the use of the SonarCloud plugin.
+This action makes it possible to copy text to the clipboard.
 
 Custom properties:
 
 - Name: The name of the item (required, string, evaulated)
 - Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
-- Project: The SonarCloud project key (required, string, evaluated)
+- Text: The text to copy to the clipboard (required, string, evaluated)
 
 Example:
 
-snippet: RepositoryActionsSonarCloudSetFavorite01
+snippet: RepositoryActionsClipboardCopy01
