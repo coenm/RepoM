@@ -2,33 +2,33 @@
 
 When this module is enabled, you can create repository actions to copy specific (evaluated) text to the clipboard using the action provider type `clipboard-copy`.
 
-## clipboard-copy@1 <!-- include: _plugins.clipboard.action. path: /docs/mdsource/_plugins.clipboard.action.include.md -->
+## sonarcloud-set-favorite@1 <!-- include: _plugins.clipboard.action. path: /docs/mdsource/_plugins.clipboard.action.include.md -->
 
-This action makes it possible to copy text to the clipboard.
+Action to mark a repository as favorite within SonarCloud. This action requires the use of the SonarCloud plugin.
 
 Custom properties:
 
 - Name: The name of the item (required, string, evaulated)
 - Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
-- Text: The text to copy to the clipboard (required, string, evaluated)
+- Project: The SonarCloud project key (required, string, evaluated)
 
 Example:
 
-<!-- snippet: RepositoryActionsClipboardCopy01 -->
-<a id='snippet-repositoryactionsclipboardcopy01'></a>
+<!-- snippet: RepositoryActionsSonarCloudSetFavorite01 -->
+<a id='snippet-repositoryactionssonarcloudsetfavorite01'></a>
 ```yaml
 repository-actions:
   actions:
-  - type: clipboard-copy@1
-    active: true
+  - type: sonarcloud-set-favorite@1
+    active: true 
     variables: []
-    name: Copy to clipboard
-    text: ''
-
-  - type: clipboard-copy@1
-    name: Copy to clipboard
-    text: ''
+    name: Star repository on SonarCloud
+    project: ''
+    
+  - type: sonarcloud-set-favorite@1
+    name: Star repository on SonarCloud
+    project: ''
 ```
-<sup><a href='/tests/RepoM.Plugin.Clipboard.Tests/DocumentationFiles/Clipboard01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsclipboardcopy01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Plugin.SonarCloud.Tests/DocumentationFiles/SonarCloudSetFavorite01.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionssonarcloudsetfavorite01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 <!-- endInclude -->
