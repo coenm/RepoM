@@ -205,10 +205,8 @@ The AzureDevOps plugin is required.
 
 See the [AzureDevOps](RepoM.Plugin.AzureDevOps.md) plugin for more information.
 
-## heidi-databases@1
 
-*todo*
-
+include: _plugins.heidi.action
 
 See the [Heidi](RepoM.Plugin.Heidi.md) plugin for more information.
 
