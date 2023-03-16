@@ -152,7 +152,7 @@ Custom properties:
 - Executables: Array of possible executables. The first executable that exists will be used. The paths should absolute. (required, string, evaluted)
 - Arguments: The arguments to add to the executable (optional, string, evaluted, default empty string)
 
-When you only want to specify exacly one executable, you can replace the required property `Executables` and replace it with the following property:
+When you want to specify exacly one executable, you can replace the required property `Executables` with the following property:
 
 - Executable: Absolute path of the exeuctable to execute (required, string, evaluted)
 
