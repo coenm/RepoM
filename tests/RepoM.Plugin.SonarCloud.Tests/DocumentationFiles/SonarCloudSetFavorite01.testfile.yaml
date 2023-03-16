@@ -1,0 +1,16 @@
+version: 1
+
+# begin-snippet: RepositoryActionsSonarCloudSetFavorite01
+
+repository-actions:
+  actions:
+  - type: sonarcloud-set-favorite@1
+    active: true 
+    variables: []
+    name: Star repository on SonarCloud
+    project: ''
+    
+  - type: sonarcloud-set-favorite@1
+    name: Star repository on SonarCloud
+    project: ''
+# end-snippet

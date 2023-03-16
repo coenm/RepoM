@@ -1,11 +1,11 @@
-namespace RepoM.Plugin.Clipboard.Tests;
+namespace RepoM.Plugin.SonarCloud.Tests;
 
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
-using RepoM.Plugin.Clipboard.Tests.TestFramework;
+using RepoM.Plugin.SonarCloud.Tests.TestFramework;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -31,7 +31,7 @@ public class DocumentationTests
     }
 
     [Theory]
-    [InlineData("Clipboard01")]
+    [InlineData("SonarCloudSetFavorite01")]
     public async Task Deserialize_Documentation(string filename)
     {
         // arrange

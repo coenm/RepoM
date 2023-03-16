@@ -192,9 +192,7 @@ These actions are available though the use of plugins.
 
 include: _plugins.clipboard.action
 
-## sonarcloud-set-favorite@1
-
-Action to mark a repository as favorite within SonarCloud. This action requires the use of the SonarCloud plugin.
+include: _plugins.sonarcloud.action
 
 ## azure-devops-get-prs@1
 
