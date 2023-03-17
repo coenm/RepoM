@@ -22,11 +22,6 @@ public class ActionPinRepositoryV1Deserializer : IActionDeserializer
     {
         RepositoryActionPinRepositoryV1? result = jToken.ToObject<RepositoryActionPinRepositoryV1>(jsonSerializer);
 
-        if (result == null)
-        {
-            return null;
-        }
-        
-        return result;
+        return result ?? null;
     }
 }

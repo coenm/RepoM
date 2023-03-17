@@ -1,0 +1,17 @@
+version: 1
+
+# begin-snippet: RepositoryActionsClipboardCopy01
+
+repository-actions:
+  actions:
+  - type: clipboard-copy@1
+    active: true
+    variables: []
+    name: Copy to clipboard
+    text: ''
+
+  - type: clipboard-copy@1
+    name: Copy to clipboard
+    text: ''
+
+# end-snippet

@@ -9,7 +9,7 @@ using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
-using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
+using RepositoryAction = Data.RepositoryAction;
 
 public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
 {
@@ -39,7 +39,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionExecutableV1, repository.First());
     }
 
-    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionExecutableV1? action, Repository repository)
+    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionExecutableV1? action, Repository repository)
     {
         if (action == null)
         {
@@ -52,7 +52,6 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
         }
 
         var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
-        // var url = _expressionEvaluator.EvaluateStringExpression(action.Url, repository);
 
         var found = false;
         foreach (var executable in action.Executables)

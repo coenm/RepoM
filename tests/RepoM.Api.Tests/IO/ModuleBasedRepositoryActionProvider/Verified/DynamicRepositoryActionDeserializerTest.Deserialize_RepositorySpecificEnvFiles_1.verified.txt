@@ -1,0 +1,18 @@
+﻿{
+  RepositorySpecificEnvironmentFiles: [
+    {
+      Filename: ,
+      When: 
+    },
+    {
+      Filename: ,
+      When: 
+    },
+    {
+      Filename: ,
+      When: 
+    }
+  ],
+  TagsCollection: {},
+  ActionsCollection: {}
+}

@@ -5,8 +5,6 @@
       {
         $type: RepositoryActionAssociateFileV1,
         Extension: *.sln,
-        Command: the cmd,
-        Arguments: a b c,
         Type: associate-file@1,
         Name: Goto google.com,
         Active: false

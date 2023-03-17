@@ -1,0 +1,42 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionFolderV1,
+        Items: [
+          {
+            $type: RepositoryActionJustTextV1,
+            Type: just-text@1,
+            Name: text 1 in sub menu
+          },
+          {
+            $type: RepositoryActionJustTextV1,
+            Type: just-text@1,
+            Name: text 2 in sub menu
+          }
+        ],
+        Type: folder@1,
+        Name: My Folder 1,
+        Active: true
+      },
+      {
+        $type: RepositoryActionFolderV1,
+        Items: [
+          {
+            $type: RepositoryActionJustTextV1,
+            Type: just-text@1,
+            Name: text 1 in sub menu
+          },
+          {
+            $type: RepositoryActionJustTextV1,
+            Type: just-text@1,
+            Name: text 2 in sub menu
+          }
+        ],
+        Type: folder@1,
+        Name: My Folder 2
+      }
+    ]
+  }
+}

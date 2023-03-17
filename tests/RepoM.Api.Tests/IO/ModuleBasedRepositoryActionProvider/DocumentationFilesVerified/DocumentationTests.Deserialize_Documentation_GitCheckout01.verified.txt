@@ -1,0 +1,16 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionGitCheckoutV1,
+        Type: git-checkout@1,
+        Active: true
+      },
+      {
+        $type: RepositoryActionGitCheckoutV1,
+        Type: git-checkout@1
+      }
+    ]
+  }
+}

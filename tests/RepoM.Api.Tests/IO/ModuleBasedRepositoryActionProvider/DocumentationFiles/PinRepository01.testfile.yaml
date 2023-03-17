@@ -1,0 +1,22 @@
+version: 1
+
+# begin-snippet: RepositoryActionsPinRepository01
+
+repository-actions:
+  actions:
+  - type: pin-repository@1
+    active: true 
+    variables: []
+    name: this is some text to display
+    mode: toggle
+
+  - type: pin-repository@1
+    mode: toggle
+
+  - type: pin-repository@1
+    mode: pin
+
+  - type: pin-repository@1
+    mode: unpin
+
+# end-snippet

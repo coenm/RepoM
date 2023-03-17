@@ -1,0 +1,20 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionAzureDevOpsPullRequestsV1,
+        ProjectId: ,
+        RepoId: ,
+        ShowWhenEmpty: true,
+        Type: azure-devops-get-prs@1,
+        Active: true
+      },
+      {
+        $type: RepositoryActionAzureDevOpsPullRequestsV1,
+        RepoId: ,
+        Type: azure-devops-get-prs@1
+      }
+    ]
+  }
+}

@@ -5,9 +5,9 @@ using RepoM.Core.Plugin.RepositoryOrdering;
 
 public sealed class LastOpenedComparerFactory : IRepositoryComparerFactory<LastOpenedConfigurationV1>
 {
-    private readonly StatisticsService _service;
+    private readonly IStatisticsService _service;
 
-    public LastOpenedComparerFactory(StatisticsService service)
+    public LastOpenedComparerFactory(IStatisticsService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }

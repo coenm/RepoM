@@ -1,10 +1,11 @@
 {
+  "$schema": "https://raw.githubusercontent.com/SimonCropp/MarkdownSnippets/master/schema.json",
   "LinkFormat": "GitHub",
   "TocLevel": 3,
-  "Exclude": [ "_ReSharper.Caches", "packages", "build"],
+  "ExcludeDirectories":  [ "_ReSharper.Caches", "packages", "build"],
   "MaxWidth": 120,
   "TreatMissingAsWarning": true,
   "WriteHeader": false,
   "ReadOnly": false,
-  "Convention": "InPlaceOverwrite"
+  "Convention": "SourceTransform" 
 }

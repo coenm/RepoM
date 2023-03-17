@@ -1,0 +1,20 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionBrowserV1,
+        Url: https://github.com/coenm,
+        Type: browser@1,
+        Name: My Github,
+        Active: true
+      },
+      {
+        $type: RepositoryActionBrowserV1,
+        Url: https://github.com/coenm,
+        Type: browser@1,
+        Name: My Github
+      }
+    ]
+  }
+}

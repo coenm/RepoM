@@ -1,0 +1,13 @@
+version: 1
+
+# begin-snippet: RepositoryActionsSeparator01
+
+repository-actions:
+  actions:
+  - type: separator@1
+    active: true 
+    variables: [] # default property but doens't add anything to this action
+
+  - type: separator@1
+
+# end-snippet

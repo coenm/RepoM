@@ -43,7 +43,7 @@ public class Remote
         try
         {
             var parts = url.Split('/', '\\');
-            name = parts[parts.Length - 1];
+            name = parts[^1];
             name = Sanitize(name);
         }
         catch (Exception)

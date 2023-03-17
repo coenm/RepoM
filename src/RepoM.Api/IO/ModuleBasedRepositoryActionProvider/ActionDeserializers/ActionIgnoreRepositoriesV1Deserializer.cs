@@ -10,6 +10,13 @@ public class ActionIgnoreRepositoriesV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)
     {
+        var b = "ignore-repository@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        if (b)
+        {
+            return true;
+        }
+
+        // obsolete
         return "ignore-repositories@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 

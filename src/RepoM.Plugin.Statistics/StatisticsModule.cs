@@ -17,7 +17,7 @@ using RepoM.Plugin.Statistics.Interface;
 [UsedImplicitly]
 internal class StatisticsModule : IModule
 {
-    private readonly StatisticsService _service;
+    private readonly IStatisticsService _service;
     private readonly IClock _clock;
     private readonly IAppDataPathProvider _pathProvider;
     private readonly IFileSystem _fileSystem;
@@ -27,7 +27,7 @@ internal class StatisticsModule : IModule
     private readonly JsonSerializerSettings _settings;
 
     public StatisticsModule(
-        StatisticsService service,
+        IStatisticsService service,
         IClock clock,
         IAppDataPathProvider pathProvider,
         IFileSystem fileSystem,

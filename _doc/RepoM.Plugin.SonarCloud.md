@@ -1,3 +1,0 @@
-# SonarCloud
-
-todo.

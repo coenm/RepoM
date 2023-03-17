@@ -1,0 +1,25 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionHeidiDatabasesV1,
+        Executable: ,
+        Type: heidi-databases@1,
+        Name: Databases,
+        Active: true
+      },
+      {
+        $type: RepositoryActionHeidiDatabasesV1,
+        Executable: ,
+        Type: heidi-databases@1,
+        Name: Databases
+      },
+      {
+        $type: RepositoryActionHeidiDatabasesV1,
+        Type: heidi-databases@1,
+        Name: Databases
+      }
+    ]
+  }
+}
