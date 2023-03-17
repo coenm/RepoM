@@ -198,13 +198,9 @@ include: _plugins.sonarcloud.action
 
 See the [SonarCloud](RepoM.Plugin.SonarCloud.md) plugin for more information.
 
-## azure-devops-get-prs@1
-
-This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.
-The AzureDevOps plugin is required.
+include: _plugins.azuredevops.action
 
 See the [AzureDevOps](RepoM.Plugin.AzureDevOps.md) plugin for more information.
-
 
 include: _plugins.heidi.action
 
