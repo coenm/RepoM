@@ -30,7 +30,7 @@ using Container = SimpleInjector.Container;
 /// </summary>
 public partial class App : Application
 {
-    private static Timer? _updateTimer;
+    private Timer? _updateTimer;
     private HotKey? _hotkey;
     private static IRepositoryMonitor? _repositoryMonitor;
     private TaskbarIcon? _notifyIcon;
@@ -197,7 +197,7 @@ public partial class App : Application
         _repositoryMonitor.Observe();
     }
 
-    private static async Task CheckForUpdatesAsync()
+    private async Task CheckForUpdatesAsync()
     {
         await Task.Yield();
         AvailableUpdate = null;
