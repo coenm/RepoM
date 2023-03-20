@@ -3,19 +3,15 @@
 namespace RepoM.App;
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.App.i18n;
-using RepoM.Core.Plugin;
 using SimpleInjector;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -30,12 +26,12 @@ using Container = SimpleInjector.Container;
 /// </summary>
 public partial class App : Application
 {
-    private Timer? _updateTimer;
-    private HotKey? _hotkey;
     private static IRepositoryMonitor? _repositoryMonitor;
+    private Timer? _updateTimer;
     private TaskbarIcon? _notifyIcon;
-    private List<IModule>? _modules;
-    private IAppSettingsService? _settings;
+    private ModuleService? _moduleService;
+    private HotKeyService? _hotKeyService;
+    private WindowSizeService? _windowSizeService;
 
     [STAThread]
     public static void Main()
@@ -77,54 +73,23 @@ public partial class App : Application
 
         _updateTimer = new Timer(async _ => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
 
-        // We noticed that the hotkey registration causes a high CPU utilization if the window was not shown before.
-        // To fix this, we need to make the window visible in EnsureWindowHandle() but we set the opacity to 0.0 to prevent flickering
         MainWindow window = Bootstrapper.Container.GetInstance<MainWindow>();
-        EnsureWindowHandle(window);
+        _moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
+        _hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
+        _windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
 
-        _hotkey = new HotKey(47110815);
-        _hotkey.Register(window, HotKey.VK_R, HotKey.MOD_ALT | HotKey.MOD_CTRL, OnHotKeyPressed);
-
-        _modules = Bootstrapper.Container.GetAllInstances<IModule>().ToList();
-        StartModules(_modules);
-
-        _settings = Bootstrapper.Container.GetInstance<IAppSettingsService>();
-
-        if (_settings.MenuWidth > 0)
-        {
-            window.Width = _settings.MenuWidth;
-        }
-
-        if (_settings.MenuHeight > 0)
-        {
-            window.Height = _settings.MenuHeight;
-        }
-
-        window.SizeChanged += WindowOnSizeChanged;
+        _hotKeyService.Register();
+        _windowSizeService.Register();
+        _moduleService.StartAsync().GetAwaiter().GetResult();
     }
-
-    private void WindowOnSizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        // persist
-        if (_settings == null)
-        {
-            return;
-        }
-
-        _settings.MenuWidth = e.NewSize.Width;
-        _settings.MenuHeight = e.NewSize.Height;
-    }
-
+    
     protected override void OnExit(ExitEventArgs e)
     {
-        Bootstrapper.Container.GetInstance<MainWindow>().SizeChanged -= WindowOnSizeChanged;
+        _windowSizeService?.Unregister();
+        
+        _moduleService?.StopAsync().GetAwaiter().GetResult();
 
-        if (_modules != null)
-        {
-            StopModules(_modules);
-        }
-
-        _hotkey?.Unregister();
+        _hotKeyService?.Unregister();
 
 // #pragma warning disable CA1416 // Validate platform compatibility
         _notifyIcon?.Dispose();
@@ -163,36 +128,8 @@ public partial class App : Application
         return loggerFactory;
     }
 
-    private static void StartModules(List<IModule> modules)
-    {
-        var allTasks = Task.WhenAll(modules.Select(x => x.StartAsync()));
-        allTasks.GetAwaiter().GetResult();
-    }
-
-    private static void StopModules(List<IModule> modules)
-    {
-        var task = Task.Run(() =>
-            {
-                return Task.WhenAll(modules.Select(async module =>
-                    {
-                        await module.StopAsync().ConfigureAwait(false);
-
-                        if (module is IAsyncDisposable asyncDisposable)
-                        {
-                            await asyncDisposable.DisposeAsync().ConfigureAwait(false);
-                        }
-                        else if (module is IDisposable disposable)
-                        {
-                            disposable.Dispose();
-                        }
-                    }));
-            });
-
-        task.ConfigureAwait(false).GetAwaiter().GetResult();
-    }
     private static void UseRepositoryMonitor(Container container)
     {
-        // var repositoryInformationAggregator = Container.GetInstance<IRepositoryInformationAggregator>();
         _repositoryMonitor = container.GetInstance<IRepositoryMonitor>();
         _repositoryMonitor.Observe();
     }
@@ -202,20 +139,6 @@ public partial class App : Application
         await Task.Yield();
         AvailableUpdate = null;
         _updateTimer?.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
-    }
-
-    private static void EnsureWindowHandle(Window window)
-    {
-        // We noticed that the hotkey registration at app start causes a high CPU utilization if the main window was not shown before.
-        // To fix this, we need to make the window visible. However, to prevent flickering we move the window out of the screen bounds to show and hide it.
-        window.Left = -9999;
-        window.Show();
-        window.Hide();
-    }
-
-    private static void OnHotKeyPressed()
-    {
-        (Application.Current.MainWindow as MainWindow)?.ShowAndActivate();
     }
 
     public static string? AvailableUpdate { get; private set; }

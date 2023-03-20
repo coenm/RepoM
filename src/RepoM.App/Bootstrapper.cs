@@ -161,10 +161,15 @@ internal static class Bootstrapper
             typeof(IActionExecutor<>),
             typeof(LoggerActionExecutorDecorator<>),
             Lifestyle.Singleton);
+
+        Container.RegisterSingleton<HotKeyService>();
+        Container.RegisterSingleton<WindowSizeService>();
     }
 
     public static void RegisterPlugins(IFileSystem fileSystem)
     {
+        Container.Register<ModuleService>(Lifestyle.Singleton);
+
         IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
         IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
         Container.RegisterPackages(assemblies);

@@ -7,7 +7,7 @@ using System.Linq;
 
 internal static class PluginFinder
 {
-    public static IEnumerable<FileInfo> FindPluginAssemblies(string baseDirectory,IFileSystem fileSystem)
+    public static IEnumerable<FileInfo> FindPluginAssemblies(string baseDirectory, IFileSystem fileSystem)
     {
         IEnumerable<FileInfo> assemblies = GetPluginAssembliesInDirectory(baseDirectory);
 
