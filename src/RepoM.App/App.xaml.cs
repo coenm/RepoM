@@ -20,6 +20,7 @@ using Serilog.Core;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using RepoM.App.Services;
 using Container = SimpleInjector.Container;
+using RepoM.App.Services.Hotkey;
 
 /// <summary>
 /// Interaction logic for App.xaml

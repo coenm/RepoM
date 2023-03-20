@@ -284,12 +284,40 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
+    public List<PluginEnabledSettings> Plugins
+    {
+        get
+        {
+            return Settings.Plugins
+               .Select(x => new PluginEnabledSettings
+                   {
+                       DllName = x.Dll,
+                       Name = x.Name,
+                   })
+               .ToList();
+        }
+        set
+        {
+
+            Settings.Plugins = value
+               .Select(x => new PluginEnabledOptions
+                   {
+                       Dll = x.DllName,
+                       Name = x.Name,
+                   })
+               .ToList();
+
+            NotifyChange();
+            Save();
+        }
+    }
+
     public void RegisterInvalidationHandler(Action handler)
     {
         _invalidationHandlers.Add(handler);
     }
 
-    public void NotifyChange()
+    private void NotifyChange()
     {
         _invalidationHandlers.ForEach(h => h.Invoke());
     }

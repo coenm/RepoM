@@ -15,6 +15,7 @@ public class AppSettings
         SortKey = string.Empty;
         SelectedQueryParser = string.Empty;
         SelectedFilter = string.Empty;
+        Plugins = new List<PluginEnabledOptions>();
     }
     public string SortKey { get; set; }
 
@@ -36,16 +37,19 @@ public class AppSettings
 
     public AzureDevOpsOptions AzureDevOps { get; set; }
 
+    public List<PluginEnabledOptions> Plugins { get; set; } 
+
     public static AppSettings Default => new()
-    {
-        AutoFetchMode = AutoFetchMode.Off,
-        PruneOnFetch = false,
-        MenuSize = Size.Default,
-        ReposRootDirectories = new(),
-        EnabledSearchProviders = new List<string>(1),
-        SonarCloudPersonalAccessToken = string.Empty,
-        AzureDevOps = AzureDevOpsOptions.Default,
-    };
+        {
+            AutoFetchMode = AutoFetchMode.Off,
+            PruneOnFetch = false,
+            MenuSize = Size.Default,
+            ReposRootDirectories = new(),
+            EnabledSearchProviders = new List<string>(1),
+            SonarCloudPersonalAccessToken = string.Empty,
+            AzureDevOps = AzureDevOpsOptions.Default,
+            Plugins = new List<PluginEnabledOptions>(),
+        };
 }
 
 public class AzureDevOpsOptions
@@ -72,4 +76,15 @@ public class Size
             Width = -1,
             Height = -1,
         };
+}
+
+public class PluginEnabledOptions
+{
+    public string Name { get; set; }
+
+    public string Dll
+    {
+        get;
+        set;
+    }
 }

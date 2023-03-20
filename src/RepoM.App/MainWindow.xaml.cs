@@ -20,6 +20,7 @@ using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryFiltering;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
+using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;

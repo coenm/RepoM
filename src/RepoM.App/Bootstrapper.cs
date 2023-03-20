@@ -43,6 +43,7 @@ using System;
 using System.Linq;
 using SimpleInjector;
 using Microsoft.Extensions.Logging;
+using RepoM.App.Services.Hotkey;
 
 internal static class Bootstrapper
 {

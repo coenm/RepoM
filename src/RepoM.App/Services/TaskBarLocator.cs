@@ -15,6 +15,7 @@ public static class TaskBarLocator
     public static TaskBarLocation GetTaskBarLocation()
     {
         TaskBarLocation taskBarLocation = TaskBarLocation.Bottom;
+
         bool taskBarOnTopOrBottom = Screen.PrimaryScreen.WorkingArea.Width == Screen.PrimaryScreen.Bounds.Width;
 
         if (taskBarOnTopOrBottom)

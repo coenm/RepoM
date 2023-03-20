@@ -1,4 +1,4 @@
-namespace RepoM.App.Services;
+namespace RepoM.App.Services.Hotkey;
 
 using System;
 using System.Runtime.InteropServices;
