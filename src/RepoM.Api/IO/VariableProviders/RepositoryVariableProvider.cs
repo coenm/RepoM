@@ -76,8 +76,6 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
 
         if (keySuffix.StartsWith("Remote.", StringComparison.CurrentCultureIgnoreCase))
         {
-            var subKey = keySuffix.Substring(2);
-
             startIndex = "Remote.".Length;
             keySuffix = keySuffix.Substring(startIndex, keySuffix.Length - startIndex);
 
