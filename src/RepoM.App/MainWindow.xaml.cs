@@ -643,7 +643,8 @@ public partial class MainWindow
 
     private string GetHelp(StatusCharacterMap statusCharacterMap)
     {
-        return _translationService.Translate("Help Detail",
+        return _translationService.Translate(
+            "Help Detail",
             statusCharacterMap.IdenticalSign,
             statusCharacterMap.StashSign,
             statusCharacterMap.IdenticalSign,
