@@ -76,8 +76,9 @@ public partial class MainWindow
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
         var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
+        var pluginsViewModel = new PluginsViewModel();
 
-        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel);
+        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel, pluginsViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;

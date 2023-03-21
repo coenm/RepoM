@@ -6,6 +6,11 @@ using System.Linq;
 using RepoM.Api.Common;
 using RepoM.App.RepositoryFiltering;
 
+public class PluginsViewModel
+{
+
+}
+
 public class FiltersViewModel : List<MenuItemViewModel>
 {
     public FiltersViewModel(IRepositoryFilteringManager repositoryFilterManager, IThreadDispatcher threadDispatcher)

@@ -15,12 +15,14 @@ public class MainWindowPageModel : INotifyPropertyChanged
         IAppSettingsService appSettingsService,
         OrderingsViewModel orderingsViewModel,
         QueryParsersViewModel queryParsersViewModel,
-        FiltersViewModel filtersViewModel)
+        FiltersViewModel filtersViewModel,
+        PluginsViewModel pluginsViewModel)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         Orderings = orderingsViewModel ?? throw new ArgumentNullException(nameof(orderingsViewModel));
         QueryParsers = queryParsersViewModel ?? throw new ArgumentNullException(nameof(queryParsersViewModel));
         Filters = filtersViewModel ?? throw new ArgumentNullException(nameof(filtersViewModel));
+        Plugins = pluginsViewModel ?? throw new ArgumentNullException(nameof(pluginsViewModel));
     }
 
     public QueryParsersViewModel QueryParsers { get; }
@@ -28,6 +30,8 @@ public class MainWindowPageModel : INotifyPropertyChanged
     public OrderingsViewModel Orderings { get; }
 
     public FiltersViewModel Filters { get; }
+
+    public PluginsViewModel Plugins { get; }
 
     public AutoFetchMode AutoFetchMode
     {
