@@ -82,6 +82,13 @@ public class Repository : IRepository
                                       (LocalRemoved ?? 0) > 0 ||
                                       (StashCount ?? 0) > 0;
 
+    public bool HasLocalChanges => (LocalUntracked ?? 0) > 0 ||
+                                     (LocalModified ?? 0) > 0 ||
+                                     (LocalMissing ?? 0) > 0 ||
+                                     (LocalAdded ?? 0) > 0 ||
+                                     (LocalStaged ?? 0) > 0 ||
+                                     (LocalRemoved ?? 0) > 0;
+
     public int? AheadBy { get; set; }
 
     public int? BehindBy { get; set; }

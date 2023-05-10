@@ -11,6 +11,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Plugin.AzureDevOps.ActionProvider;
+using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -18,16 +19,16 @@ using XunitEnumMemberData;
 
 [UsesEasyTestFile]
 [UsesVerify]
-public class AzureDevOpsPullRequestsV1Test
+public class AzureDevOpsGetPullRequestsV1Test
 {
     private readonly JsonDynamicRepositoryActionDeserializer _sutJson;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
     private readonly YamlDynamicRepositoryActionDeserializer _sutYaml;
 
-    public AzureDevOpsPullRequestsV1Test()
+    public AzureDevOpsGetPullRequestsV1Test()
     {
-        _sutJson = CreateWithDeserializer(new ActionAzureDevOpsPullRequestsV1Deserializer());
+        _sutJson = CreateWithDeserializer(new ActionAzureDevOpsGetPullRequestsV1Deserializer());
         _sutYaml = new YamlDynamicRepositoryActionDeserializer(_sutJson);
 
         _testFileSettings = new EasyTestFileSettings();
@@ -63,7 +64,7 @@ public class AzureDevOpsPullRequestsV1Test
         RepositoryActionConfiguration result = SutDeserialize(content, SerializationType.Json);
 
         // assert
-        _ = result.ActionsCollection.Actions.Should().AllBeOfType<RepositoryActionAzureDevOpsPullRequestsV1>();
+        _ = result.ActionsCollection.Actions.Should().AllBeOfType<RepositoryActionAzureDevOpsGetPullRequestsV1>();
     }
 
     private RepositoryActionConfiguration SutDeserialize(string rawContent, SerializationType type)

@@ -1,0 +1,63 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionAzureDevOpsCreatePullRequestsV1,
+        ToBranch: develop,
+        ReviewerIds: [
+          GUID
+        ],
+        DraftPr: false,
+        IncludeWorkItems: true,
+        OpenInBrowser: false,
+        AutoComplete: {
+          Enabled: false,
+          MergeStrategy: NoFastForward,
+          DeleteSourceBranch: true,
+          TransitionWorkItems: true
+        },
+        ProjectId: ,
+        Type: azure-devops-create-prs@1
+      },
+      {
+        $type: RepositoryActionAzureDevOpsCreatePullRequestsV1,
+        ToBranch: develop,
+        ReviewerIds: [
+          GUID
+        ],
+        DraftPr: false,
+        IncludeWorkItems: true,
+        OpenInBrowser: false,
+        AutoComplete: {
+          Enabled: true,
+          MergeStrategy: Squash,
+          DeleteSourceBranch: true,
+          TransitionWorkItems: true
+        },
+        ProjectId: ,
+        Type: azure-devops-create-prs@1
+      },
+      {
+        $type: RepositoryActionAzureDevOpsCreatePullRequestsV1,
+        Title: Create PR,
+        PrTitle: PR title,
+        ToBranch: develop,
+        ReviewerIds: [
+          GUID
+        ],
+        DraftPr: true,
+        IncludeWorkItems: true,
+        OpenInBrowser: false,
+        AutoComplete: {
+          Enabled: true,
+          MergeStrategy: NoFastForward,
+          DeleteSourceBranch: true,
+          TransitionWorkItems: true
+        },
+        ProjectId: ,
+        Type: azure-devops-create-prs@1
+      }
+    ]
+  }
+}

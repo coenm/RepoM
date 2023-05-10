@@ -3,20 +3,20 @@
   ActionsCollection: {
     Actions: [
       {
-        $type: RepositoryActionAzureDevOpsPullRequestsV1,
-        ProjectId: {var.AzureDevOpsProjectId},
+        $type: RepositoryActionAzureDevOpsGetPullRequestsV1,
         RepoId: repo_id_guid,
         ShowWhenEmpty: true,
+        ProjectId: {var.AzureDevOpsProjectId},
         Type: azure-devops-get-prs@1
       },
       {
-        $type: RepositoryActionAzureDevOpsPullRequestsV1,
-        ProjectId: abc,
+        $type: RepositoryActionAzureDevOpsGetPullRequestsV1,
         ShowWhenEmpty: false,
+        ProjectId: abc,
         Type: azure-devops-get-prs@1
       },
       {
-        $type: RepositoryActionAzureDevOpsPullRequestsV1,
+        $type: RepositoryActionAzureDevOpsGetPullRequestsV1,
         Type: azure-devops-get-prs@1,
         Active: false
       }

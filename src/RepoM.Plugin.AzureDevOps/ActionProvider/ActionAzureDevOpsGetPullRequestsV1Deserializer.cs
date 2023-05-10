@@ -6,10 +6,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepositoryAction = Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
-internal class ActionAzureDevOpsPullRequestsV1Deserializer : IActionDeserializer
+internal class ActionAzureDevOpsGetPullRequestsV1Deserializer : IActionDeserializer
 {
     public bool CanDeserialize(string type)
     {
@@ -21,9 +22,9 @@ internal class ActionAzureDevOpsPullRequestsV1Deserializer : IActionDeserializer
         return Deserialize(jToken, jsonSerializer);
     }
 
-    private static RepositoryActionAzureDevOpsPullRequestsV1? Deserialize(JToken jToken, JsonSerializer jsonSerializer)
+    private static RepositoryActionAzureDevOpsGetPullRequestsV1? Deserialize(JToken jToken, JsonSerializer jsonSerializer)
     {
-        RepositoryActionAzureDevOpsPullRequestsV1? result = jToken.ToObject<RepositoryActionAzureDevOpsPullRequestsV1>(jsonSerializer);
+        RepositoryActionAzureDevOpsGetPullRequestsV1? result = jToken.ToObject<RepositoryActionAzureDevOpsGetPullRequestsV1>(jsonSerializer);
 
         JToken? showWhenEmpty = jToken["show-when-empty"];
         if (showWhenEmpty != null && result != null)
