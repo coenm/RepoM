@@ -41,21 +41,21 @@ stages:
           inputs:
             version: 6.0.x
             includePreviewVersions: false
-      
+
+        - task: UseDotNet@2
+          displayName: "Use dotnet sdk 7.0.x"
+          inputs:
+            version: 7.0.x
+            includePreviewVersions: false
+
+        - script: dotnet --info
+          displayName: Show dotnet SDK info
+
         - task: NuGetToolInstaller@1
           displayName: Install Nuget 5x
           inputs:
             versionSpec: '5.*'
             checkLatest: true
-
-        - pwsh: |
-            dotnet tool install --global MarkdownSnippets.Tool
-            mdsnippets 
-          displayName: Install MarkdownSnippets.Tool
-          failOnStderr: true
-
-        - script: git status
-          displayName: Show git status
 
         - pwsh: |
             dotnet tool install --global MarkdownSnippets.Tool
@@ -71,21 +71,12 @@ stages:
                 Write-Host " - $line"
               }
 
-              Write-Error "There are local changes in the Git repository meaning not all markdown snippets are up to date."
+              Write-Error "There are local changes in the git repository meaning not all markdown snippets are up to date."
               exit 1
             }
           displayName: Verify markdown snippets are up to date
           name: mdsnippets
           failOnStderr: true
-
-        - task: UseDotNet@2
-          displayName: "Use dotnet sdk 7.0.x"
-          inputs:
-            version: 7.0.x
-            includePreviewVersions: false
-
-        - script: dotnet --info
-          displayName: Show dotnet SDK info
 
         - pwsh: |
             dotnet tool install --tool-path . nbgv
