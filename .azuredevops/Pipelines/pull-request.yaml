@@ -102,6 +102,5 @@ stages:
           inputs:
             command: test
             projects: '**/*[Tt]ests/*.csproj'
-            configuration: $(BuildConfiguration) 
-            nobuild: true
+            arguments: '--no-build --configuration $(BuildConfiguration)'
   

@@ -119,11 +119,8 @@ stages:
           displayName: "DotNet Test"
           inputs:
             command: test
-            # projects: '**/*[Tt]est*.csproj'
             projects: 'tests/**/*.csproj'
-            configuration: $(BuildConfiguration) 
-            nobuild: true
-            arguments: '--collect:"XPlat Code Coverage" --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:ExcludeByAttribute=$(COVERLET_EXCLUDE_ATTRIBUTE) /p:ExcludeByFile=*\*Designer.cs /p:CoverletOutput=../_CoverageResults/ /p:MergeWith="../_CoverageResults/coverage.json" /p:CoverletOutputFormat=cobertura%2cjson'
+            arguments: '--no-build --configuration $(buildConfiguration) --collect:"XPlat Code Coverage" --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:ExcludeByAttribute=$(COVERLET_EXCLUDE_ATTRIBUTE) /p:ExcludeByFile=*\*Designer.cs /p:CoverletOutput=../_CoverageResults/ /p:MergeWith="../_CoverageResults/coverage.json" /p:CoverletOutputFormat=cobertura%2cjson'
             publishTestResults: true
      
         # https://docs.codecov.com/docs/codecov-uploader
