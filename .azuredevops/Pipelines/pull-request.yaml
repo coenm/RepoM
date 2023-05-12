@@ -41,15 +41,6 @@ stages:
           inputs:
             version: 6.0.x
             includePreviewVersions: false
-
-        - task: UseDotNet@2
-          displayName: "Use dotnet sdk 7.0.x"
-          inputs:
-            version: 7.0.x
-            includePreviewVersions: false
-
-        - script: dotnet --info
-          displayName: Show dotnet SDK info
       
         - task: NuGetToolInstaller@1
           displayName: Install Nuget 5x
@@ -68,7 +59,7 @@ stages:
               Write-Host "Processing line: $line"
             }
 
-            $status2 = changedLines | wc -l
+            $status2 = $changedLines | wc -l
             Write-Host "2: The following $status2 file(s) are not up to date:"
 
             if ($status -gt 0) {
@@ -81,6 +72,15 @@ stages:
           displayName: Verify markdown snippets are up to date
           name: mdsnippets
           failOnStderr: true
+
+        - task: UseDotNet@2
+          displayName: "Use dotnet sdk 7.0.x"
+          inputs:
+            version: 7.0.x
+            includePreviewVersions: false
+
+        - script: dotnet --info
+          displayName: Show dotnet SDK info
 
         - pwsh: |
             dotnet tool install --tool-path . nbgv
