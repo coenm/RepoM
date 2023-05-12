@@ -51,6 +51,15 @@ stages:
         - pwsh: |
             dotnet tool install --global MarkdownSnippets.Tool
             mdsnippets 
+          displayName: Install MarkdownSnippets.Tool
+          failOnStderr: true
+
+        - script: git status
+          displayName: Show git status
+
+        - pwsh: |
+            dotnet tool install --global MarkdownSnippets.Tool
+            mdsnippets 
             
             $changedLines = git status --porcelain=v1
             $changedFileCount = $changedLines | wc -l
