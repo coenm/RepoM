@@ -49,23 +49,26 @@ stages:
             checkLatest: true
 
         - pwsh: |
-            dotnet tool install --tool-path . MarkdownSnippets.Tool
-            ./mdsnippets
-
-            $status = git status --porcelain=v1 | wc -l
+            # dotnet tool install --tool-path . MarkdownSnippets.Tool
+            # ./mdsnippets
+            dotnet tool install --global MarkdownSnippets.Tool
+            mdsnippets 
+            
             $changedLines = git status --porcelain=v1
-            $lines = $changedLines -split "`n"
-            foreach ($line in $lines) {
-              Write-Host "Processing line: $line"
-            }
+            $status = $changedLines | wc -l
 
-            $status2 = $changedLines | wc -l
-            Write-Host "2: The following $status2 file(s) are not up to date:"
-
+            # $lines = $changedLines -split "`n"
+            # foreach ($line in $lines) {
+            #   Write-Host "Processing line: $line"
+            # }
+            
             if ($status -gt 0) {
-              Write-Error "There are local changes in the Git repository meaning not all markdown snippets are up to date."
               Write-Host "The following $status file(s) are not up to date:"
-              Write-Host $changedLines
+              $lines = $changedLines -split "`n"
+              foreach ($line in $lines) {
+                Write-Host "Processing line: $line"
+              }
+
               Write-Error "There are local changes in the Git repository meaning not all markdown snippets are up to date."
               exit 1
             }
