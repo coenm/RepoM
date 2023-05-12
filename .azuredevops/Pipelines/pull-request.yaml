@@ -61,13 +61,13 @@ stages:
             dotnet tool install --tool-path . MarkdownSnippets.Tool
             ./mdsnippets
 
-            Write-Information "Test information"
+            Write-Host "Test information"
             $status = git status --porcelain=v1 | wc -l
             $changedLines = git status --porcelain=v1
-            Write-Information "XThe following $status file(s) are not up to date:"
+            Write-Host "XThe following $status file(s) are not up to date:"
             if ($status -gt 0) {
-              Write-Information "The following $status file(s) are not up to date:"
-              Write-Information $changedLines
+              Write-Host "The following $status file(s) are not up to date:"
+              Write-Host $changedLines
               Write-Error "There are local changes in the Git repository meaning not all markdown snippets are up to date."
               exit 1
             }
