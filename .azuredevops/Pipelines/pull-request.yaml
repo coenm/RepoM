@@ -63,9 +63,9 @@ stages:
 
             $status = git status --porcelain=v1 | wc -l
             if ($status -gt 0) {
-              Write-Error "There are local changes in the Git repository meaning not all markdown snippets are up to date."
               Write-Information "The following ${status} file(s) are not up to date:"
               Write-Information `git status --porcelain=v1`
+              Write-Error "There are local changes in the Git repository meaning not all markdown snippets are up to date."
               exit 1
             }
           displayName: Verify markdown snippets are up to date
