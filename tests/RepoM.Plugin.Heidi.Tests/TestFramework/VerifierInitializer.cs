@@ -11,5 +11,6 @@ public static class VerifierInitializer
     {
         VerifierSettings.DisableRequireUniquePrefix();
         VerifierSettings.AddExtraSettings(serializerSettings => serializerSettings.TypeNameHandling = TypeNameHandling.Auto);
+        ClipboardAccept.Enable();
     }
 }

@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.Heidi.Tests;
+namespace RepoM.Plugin.AzureDevOps.Tests;
 
 using System.Threading.Tasks;
 using EasyTestFile;
@@ -31,6 +31,7 @@ public class DocumentationTests
     }
 
     [Theory]
+    [InlineData("AzureDevopsCreatePrs")]
     [InlineData("AzureDevopsGetPrs")]
     public async Task Deserialize_Documentation(string filename)
     {

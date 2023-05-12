@@ -16,6 +16,7 @@
       CurrentBranchIsOnTag: false,
       WasFound: true,
       HasUnpushedChanges: false,
+      HasLocalChanges: false,
       SafePath: dummy
     },
     ExecutionCausesSynchronizing: false,
@@ -44,6 +45,7 @@
             CurrentBranchIsOnTag: false,
             WasFound: true,
             HasUnpushedChanges: false,
+            HasLocalChanges: false,
             SafePath: dummy
           },
           ExecutionCausesSynchronizing: false,
@@ -70,6 +72,7 @@
             CurrentBranchIsOnTag: false,
             WasFound: true,
             HasUnpushedChanges: false,
+            HasLocalChanges: false,
             SafePath: dummy
           },
           ExecutionCausesSynchronizing: false,

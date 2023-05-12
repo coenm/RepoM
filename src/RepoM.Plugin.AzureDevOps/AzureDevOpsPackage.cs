@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.AzureDevOps;
 
+using System.Net.Http;
 using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin;
@@ -15,8 +16,10 @@ public class AzureDevOpsPackage : IPackage
 {
     public void RegisterServices(Container container)
     {
-        container.Collection.Append<IActionDeserializer, ActionAzureDevOpsPullRequestsV1Deserializer>(Lifestyle.Singleton);
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsPullRequestsV1Mapper>(Lifestyle.Singleton);
+        container.Collection.Append<IActionDeserializer, ActionAzureDevOpsCreatePullRequestsV1Deserializer>(Lifestyle.Singleton);
+        container.Collection.Append<IActionDeserializer, ActionAzureDevOpsGetPullRequestsV1Deserializer>(Lifestyle.Singleton);
+        container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsCreatePullRequestsV1Mapper>(Lifestyle.Singleton);
+        container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsGetPullRequestsV1Mapper>(Lifestyle.Singleton);
 
         container.Register<IAzureDevOpsPullRequestService, AzureDevOpsPullRequestService>(Lifestyle.Singleton);
 
