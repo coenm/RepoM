@@ -131,7 +131,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
     private async Task<GitPullRequest> CreatePullRequestInternalAsync(IRepository repository, string projectId, List<string> reviewersIds, string toBranch, string? title = null, bool isDraft = false, bool includeWorkItems = true, CancellationToken cancellationToken = default)
     {
-        title ??= repository.CurrentBranch.Substring(repository.CurrentBranch.IndexOf('/') + 1);
+        title ??= repository.CurrentBranch[(repository.CurrentBranch.IndexOf('/') + 1)..];
 
         Guid repoId = FindRepositoryGuid(repository);
 
@@ -160,7 +160,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                 Match match = workItemRegex.Match(commitMessage);
                 if (match.Success)
                 {
-                    foreach (System.Text.RegularExpressions.Group group in match.Groups.Values.Skip(1))
+                    foreach (Group group in match.Groups.Values.Skip(1))
                     {
                         _ = workItems.Add(new ResourceRef()
                         {
