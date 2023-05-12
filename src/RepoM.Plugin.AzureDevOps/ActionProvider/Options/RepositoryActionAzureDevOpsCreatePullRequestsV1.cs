@@ -50,5 +50,5 @@ public enum RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1
     //     Rebase the source branch on top of the target branch HEAD commit, and create
     //     a two-parent, no-fast-forward merge. The source branch is updated during the
     //     rebase operation.
-    RebaseMerge
+    RebaseMerge,
 }

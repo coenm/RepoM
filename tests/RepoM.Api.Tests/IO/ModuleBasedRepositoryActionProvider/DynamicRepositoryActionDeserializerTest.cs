@@ -65,7 +65,7 @@ public class DynamicRepositoryActionDeserializerTest
             {
                 SerializationType.Json => _sutJson.Deserialize(rawContent),
                 SerializationType.Yaml => _sutYaml.Deserialize(rawContent),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
             };
     }
 

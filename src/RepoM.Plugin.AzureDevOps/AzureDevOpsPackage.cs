@@ -1,6 +1,5 @@
 namespace RepoM.Plugin.AzureDevOps;
 
-using System.Net.Http;
 using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin;

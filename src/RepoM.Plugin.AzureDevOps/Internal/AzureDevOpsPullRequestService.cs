@@ -3,19 +3,14 @@ namespace RepoM.Plugin.AzureDevOps.Internal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Graph;
-using Microsoft.Graph.Models;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
@@ -109,8 +104,8 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                 DeleteSourceBranch = deleteSourceBranch,
                 MergeStrategy = (GitPullRequestMergeStrategy)mergeStrategy,
                 TransitionWorkItems = transitionWorkItems,
-                MergeCommitMessage = $"Merged PR {pr.PullRequestId}: {pr.Title}"
-            }
+                MergeCommitMessage = $"Merged PR {pr.PullRequestId}: {pr.Title}",
+            },
         };
 
         string prBodyJson = JsonConvert.SerializeObject(prBody);
@@ -156,7 +151,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             var commitMessages = repo.Commits
                 .QueryBy(new LibGit2Sharp.CommitFilter()
                 {
-                    ExcludeReachableFrom = repo.Branches[toBranch].UpstreamBranchCanonicalName
+                    ExcludeReachableFrom = repo.Branches[toBranch].UpstreamBranchCanonicalName,
                 })
                 .Select(c => c.Message).ToList();
 
@@ -169,7 +164,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                     {
                         _ = workItems.Add(new ResourceRef()
                         {
-                            Id = group.Value
+                            Id = group.Value,
                         });
                     }
                 }
@@ -190,7 +185,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                     })
                 .ToArray(),
             SupportsIterations = true,
-            WorkItemRefs = workItems.ToArray()
+            WorkItemRefs = workItems.ToArray(),
         };
 
         string prBodyJson = JsonConvert.SerializeObject(prBody);

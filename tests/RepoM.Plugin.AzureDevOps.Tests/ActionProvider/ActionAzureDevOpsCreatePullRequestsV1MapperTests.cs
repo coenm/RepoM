@@ -2,8 +2,6 @@ namespace RepoM.Plugin.AzureDevOps.Tests.ActionProvider;
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -36,14 +34,14 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
 
         _action = new RepositoryActionAzureDevOpsCreatePullRequestsV1()
         {
-            ToBranch = "main"
+            ToBranch = "main",
         };
         _repository = new Repository("")
         {
             Branches = new string[1]
             {
-                "main"
-            }
+                "main",
+            },
         };
         _repositories = new [] { _repository, };
         _composition = new ActionMapperComposition(Array.Empty<IActionToRepositoryActionMapper>(), _evaluator);
