@@ -59,14 +59,14 @@ stages:
 
             # $lines = $changedLines -split "`n"
             # foreach ($line in $lines) {
-            #   Write-Host "Processing line: $line"
+            #   Write-Host " - $line"
             # }
             
             if ($status -gt 0) {
               Write-Host "The following $status file(s) are not up to date:"
               $lines = $changedLines -split "`n"
               foreach ($line in $lines) {
-                Write-Host "Processing line: $line"
+                Write-Host " - $line"
               }
 
               Write-Error "There are local changes in the Git repository meaning not all markdown snippets are up to date."
