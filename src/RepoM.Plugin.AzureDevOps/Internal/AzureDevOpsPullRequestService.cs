@@ -163,9 +163,9 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             foreach (var commitMessage in commitMessages)
             {
                 MatchCollection matches = workItemRegex.Matches(commitMessage);
-                if (matches.Success)
+                if (matches.Any(m => m.Success))
                 {
-                    foreach (System.Text.RegularExpressions.Group group in matches.Groups.Values.Skip(1))
+                    foreach (System.Text.RegularExpressions.Group group in matches.SelectMany(m => m.Groups.Values.Skip(1)))
                     {
                         _ = workItems.Add(new ResourceRef()
                         {
