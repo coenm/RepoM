@@ -8,13 +8,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-public class ProcessExecutingGitCommander : IGitCommander
+public partial class ProcessExecutingGitCommander : IGitCommander
 {
     /// <summary>
     /// Starting with version 1.7.10, Git uses UTF-8.
     /// Use this encoding for Git input and output.
     /// </summary>
     private static readonly Encoding _encoding = new UTF8Encoding(false, true);
+
+    private static readonly Regex _validCommandName = ValidCommandNameRegex();
 
     /// <summary>
     /// Runs the given git command, and returns the contents of its STDOUT.
@@ -209,10 +211,10 @@ public class ProcessExecutingGitCommander : IGitCommander
 
     private static string QuoteProcessArgument(string arg)
     {
-        return arg.Contains(" ") ? ("\"" + arg + "\"") : arg;
+        return arg.Contains(' ') ? "\"" + arg + "\"" : arg;
     }
 
-    private static readonly Regex _validCommandName = new("^[a-z0-9A-Z_-]+$", RegexOptions.Compiled);
+    
 
     private static void AssertValidCommand(string[] command)
     {
@@ -221,4 +223,7 @@ public class ProcessExecutingGitCommander : IGitCommander
             throw new Exception("bad git command: " + (command.Length == 0 ? "" : command[0]));
         }
     }
+
+    [GeneratedRegex("^[a-z0-9A-Z_-]+$", RegexOptions.Compiled)]
+    private static partial Regex ValidCommandNameRegex();
 }
