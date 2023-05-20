@@ -2,7 +2,7 @@
 
 The AzureDevops module enables integration with one azure devops environment. The integration currently focusses on Pull Requests.
 
-To enable the AzureDevops module, manually update the `appsettings.json` file and provide for the `AzureDevOps` both an `PersonalAccessToken` and `BaseUrl`. The `BaseUrl` must end with the organisation and a slash (ie, `https://dev.azure.com/organisation/`).
+To enable the AzureDevops module, manually update the `appsettings.json` file and provide for the `AzureDevOps`section both a `PersonalAccessToken` and `BaseUrl`. The `BaseUrl` must end with the organisation and a slash (ie, `https://dev.azure.com/organisation/`).
 
 ## azure-devops-create-prs@1 <!-- include: _plugins.azuredevops.action. path: /docs/mdsource/_plugins.azuredevops.action.include.md -->
 
