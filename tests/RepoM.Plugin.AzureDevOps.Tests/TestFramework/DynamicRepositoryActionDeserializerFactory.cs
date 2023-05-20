@@ -13,7 +13,8 @@ internal static class DynamicRepositoryActionDeserializerFactory
             new ActionDeserializerComposition(
                 new IActionDeserializer[]
                     {
-                        new ActionAzureDevOpsPullRequestsV1Deserializer(),
+                        new ActionAzureDevOpsCreatePullRequestsV1Deserializer(),
+                        new ActionAzureDevOpsGetPullRequestsV1Deserializer(),
                     }));
     }
 

@@ -35,6 +35,13 @@ stages:
         - script: git submodule update --init --recursive
           displayName: Update git submodules
 
+        # required for mdsnippets?!
+        - task: UseDotNet@2
+          displayName: "Use dotnet sdk 6.0.x"
+          inputs:
+            version: 6.0.x
+            includePreviewVersions: false
+
         - task: UseDotNet@2
           displayName: "Use dotnet sdk 7.0.x"
           inputs:
@@ -43,12 +50,33 @@ stages:
 
         - script: dotnet --info
           displayName: Show dotnet SDK info
-      
+
         - task: NuGetToolInstaller@1
           displayName: Install Nuget 5x
           inputs:
             versionSpec: '5.*'
             checkLatest: true
+
+        - pwsh: |
+            dotnet tool install --global MarkdownSnippets.Tool
+            mdsnippets 
+            
+            $changedLines = git status --porcelain=v1
+            $changedFileCount = $changedLines | wc -l
+            
+            if ($changedFileCount -gt 0) {
+              Write-Host "The following $changedFileCount file(s) are not up to date:"
+              $lines = $changedLines -split "`n"
+              foreach ($line in $lines) {
+                Write-Host " - $line"
+              }
+
+              Write-Error "There are local changes in the git repository meaning not all markdown snippets are up to date."
+              exit 1
+            }
+          displayName: Verify markdown snippets are up to date
+          name: mdsnippets
+          failOnStderr: true
 
         - pwsh: |
             dotnet tool install --tool-path . nbgv
@@ -67,13 +95,12 @@ stages:
           inputs:
             command: 'build'
             projects: '**/*.sln'
-            configuration: $(BuildConfiguration) 
+            arguments: '--configuration $(BuildConfiguration)'
 
         - task: DotNetCoreCLI@2
           displayName: "DotNet Test"
           inputs:
             command: test
             projects: '**/*[Tt]ests/*.csproj'
-            configuration: $(BuildConfiguration) 
-            nobuild: true
+            arguments: '--no-build --configuration $(BuildConfiguration)'
   

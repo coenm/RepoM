@@ -1,0 +1,49 @@
+version: 1
+
+# begin-snippet: RepositoryActionsAzureDevopsCreatePrs01
+
+repository-actions:
+  actions:
+  # Create PR
+  - type: azure-devops-create-prs@1
+    projectId: ''
+    toBranch: develop
+    reviewerIds: [
+        "GUID"
+    ]
+
+  # Create PR with auto-complete enabled
+  - type: azure-devops-create-prs@1
+    projectId: ''
+    toBranch: develop
+    reviewerIds: [
+        "GUID"
+    ]
+    autoComplete: {
+        enabled: true,
+        mergeStrategy: "Squash"
+    }
+
+  # Create PR with all settings
+  - type: azure-devops-create-prs@1
+    projectId: ''
+    title: 'Create PR'
+    # When no prTitle provided it will be generated based on convention.
+    # Title will be the last part of the branchname split on '/'. 
+    # For example: feature/testBranch will result in a PR title of 'testBranch'.
+    prTitle: 'PR title' 
+    toBranch: develop
+    reviewerIds: [
+        "GUID"
+    ]
+    draftPr: true
+    includeWorkItems: true
+    openInBrowser: false
+    autoComplete: {
+        enabled: true,
+        mergeStrategy: "NoFastForward", # You can choose from: "NoFastForward", "Squash", "Rebase" and "RebaseMerge"
+        deleteSourceBranch: true,
+        transitionWorkItems: true
+    }
+
+# end-snippet

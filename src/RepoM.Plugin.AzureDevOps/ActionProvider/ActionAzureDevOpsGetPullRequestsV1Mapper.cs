@@ -11,17 +11,18 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
 using RepositoryAction = Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
-internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryActionMapper
+internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly IAzureDevOpsPullRequestService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ILogger _logger;
 
-    public ActionAzureDevOpsPullRequestsV1Mapper(IAzureDevOpsPullRequestService service, IRepositoryExpressionEvaluator expressionEvaluator, ILogger logger)
+    public ActionAzureDevOpsGetPullRequestsV1Mapper(IAzureDevOpsPullRequestService service, IRepositoryExpressionEvaluator expressionEvaluator, ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
@@ -30,7 +31,7 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
 
     public bool CanMap(RepositoryAction action)
     {
-        return action is RepositoryActionAzureDevOpsPullRequestsV1;
+        return action is RepositoryActionAzureDevOpsGetPullRequestsV1;
     }
 
     public bool CanHandleMultipleRepositories()
@@ -40,10 +41,10 @@ internal class ActionAzureDevOpsPullRequestsV1Mapper : IActionToRepositoryAction
 
     public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
-        return Map(action as RepositoryActionAzureDevOpsPullRequestsV1, repository.First());
+        return Map(action as RepositoryActionAzureDevOpsGetPullRequestsV1, repository.First());
     }
 
-    private Api.Git.RepositoryAction[] Map(RepositoryActionAzureDevOpsPullRequestsV1? action, Repository repository)
+    private Api.Git.RepositoryAction[] Map(RepositoryActionAzureDevOpsGetPullRequestsV1? action, Repository repository)
     {
         if (action == null)
         {
