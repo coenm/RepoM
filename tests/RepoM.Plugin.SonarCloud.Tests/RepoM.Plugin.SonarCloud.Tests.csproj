@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="3.2.0">
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -16,7 +16,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FluentAssertions" Version="6.11.0" />
-    <PackageReference Include="FluentAssertions.Analyzers" Version="0.17.2">
+    <PackageReference Include="FluentAssertions.Analyzers" Version="0.17.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -25,8 +25,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="19.2.29" />
-    <PackageReference Include="Verify.ClipboardAccept" Version="20.0.0" />
-    <PackageReference Include="Verify.Xunit" Version="20.0.0" />
+    <PackageReference Include="Verify.ClipboardAccept" Version="20.1.1" />
+    <PackageReference Include="Verify.Xunit" Version="20.1.1" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="Xunit.EnumMemberData" Version="1.0.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
@@ -40,6 +40,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />
     <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.6.133" />
   </ItemGroup>
 
 </Project>
