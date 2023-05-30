@@ -1,4 +1,4 @@
-namespace RepoM.App.Services;
+namespace RepoM.App.Plugins;
 
 using System;
 using System.Collections.Generic;

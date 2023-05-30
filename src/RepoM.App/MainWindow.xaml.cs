@@ -16,6 +16,7 @@ using System.Windows.Input;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.App.Controls;
+using RepoM.App.Plugins;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryFiltering;
 using RepoM.App.RepositoryOrdering;
@@ -43,6 +44,7 @@ public partial class MainWindow
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
     private readonly IRepositoryMatcher _repositoryMatcher;
     private readonly IAppDataPathProvider _appDataPathProvider;
+    private readonly IModuleManager _moduleManager;
 
     public MainWindow(
         StatusCharacterMap statusCharacterMap,
@@ -58,7 +60,8 @@ public partial class MainWindow
         IRepositoryComparerManager repositoryComparerManager,
         IThreadDispatcher threadDispatcher,
         IRepositoryFilteringManager repositoryFilteringManager,
-        IRepositoryMatcher repositoryMatcher)
+        IRepositoryMatcher repositoryMatcher,
+        IModuleManager moduleManager)
     {
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
         _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
@@ -68,7 +71,8 @@ public partial class MainWindow
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _executor = executor ?? throw new ArgumentNullException(nameof(executor));
-        
+        _moduleManager = moduleManager ?? throw new ArgumentNullException(nameof(moduleManager));
+
         InitializeComponent();
 
         AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
@@ -76,7 +80,7 @@ public partial class MainWindow
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
         var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var pluginsViewModel = new PluginsViewModel();
+        var pluginsViewModel = new PluginsViewModel(_moduleManager, threadDispatcher);
 
         DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel, pluginsViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree

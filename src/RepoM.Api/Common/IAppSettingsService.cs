@@ -52,4 +52,6 @@ public class PluginEnabledSettings
     public string Name { get; set; }
 
     public string DllName { get; set; }
+
+    public bool Enabled { get; set; }
 }

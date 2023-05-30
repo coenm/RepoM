@@ -43,6 +43,7 @@ using System;
 using System.Linq;
 using SimpleInjector;
 using Microsoft.Extensions.Logging;
+using RepoM.App.Plugins;
 using RepoM.App.Services.Hotkey;
 
 internal static class Bootstrapper
@@ -87,6 +88,8 @@ internal static class Bootstrapper
         Container.Collection.Append<IQueryMatcher, TagMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, HasUnPushedChangesMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher>(() => new FreeTextMatcher(ignoreCase: true, ignoreCaseTag: true), Lifestyle.Singleton);
+
+        Container.Register<IModuleManager, ModuleManager>(Lifestyle.Singleton);
 
 
         Container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
