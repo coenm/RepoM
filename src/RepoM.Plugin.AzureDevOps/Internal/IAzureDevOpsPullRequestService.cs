@@ -1,10 +1,8 @@
 namespace RepoM.Plugin.AzureDevOps.Internal;
 
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.TeamFoundation.SourceControl.WebApi;
 using RepoM.Core.Plugin.Repository;
 
 internal interface IAzureDevOpsPullRequestService

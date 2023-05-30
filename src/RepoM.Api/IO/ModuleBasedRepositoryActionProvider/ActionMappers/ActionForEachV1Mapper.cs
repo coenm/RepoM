@@ -53,7 +53,7 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
             : _expressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
     }
 
-    private IEnumerable<RepoM.Api.Git.RepositoryActionBase> Map(RepositoryActionForEachV1? action, Repository repository, ActionMapperComposition actionMapperComposition)
+    private IEnumerable<RepositoryActionBase> Map(RepositoryActionForEachV1? action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
         if (action == null)
         {

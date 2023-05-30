@@ -111,7 +111,7 @@ public class DefaultRepositoryMonitorTests
             defaultRepositoryReader,
             new DefaultRepositoryDetectorFactory(defaultRepositoryReader),
             new DefaultRepositoryObserverFactory(),
-            new GitRepositoryFinderFactory(appSettingsService.Object, new List<ISingleGitRepositoryFinderFactory>() { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem) }),
+            new GitRepositoryFinderFactory(appSettingsService.Object, new List<ISingleGitRepositoryFinderFactory>() { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem), }),
             new UselessRepositoryStore(),
             new DefaultRepositoryInformationAggregator(
                 new DirectThreadDispatcher()),

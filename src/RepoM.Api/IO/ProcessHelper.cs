@@ -20,7 +20,7 @@ public static class ProcessHelper
 
         try
         {
-            var psi = new System.Diagnostics.ProcessStartInfo(process, arguments)
+            var psi = new ProcessStartInfo(process, arguments)
                 {
                     UseShellExecute = true,
                 };
