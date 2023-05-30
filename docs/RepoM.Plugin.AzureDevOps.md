@@ -1,6 +1,8 @@
 # AzureDevOps
 
-*todo*
+The AzureDevops module enables integration with one azure devops environment. The integration currently focusses on Pull Requests.
+
+To enable the AzureDevops module, manually update the `appsettings.json` file and provide for the `AzureDevOps`section both a `PersonalAccessToken` and `BaseUrl`. The `BaseUrl` must end with the organisation and a slash (ie, `https://dev.azure.com/organisation/`).
 
 ## azure-devops-create-prs@1 <!-- include: _plugins.azuredevops.action. path: /docs/mdsource/_plugins.azuredevops.action.include.md -->
 
@@ -18,21 +20,18 @@ repository-actions:
   - type: azure-devops-create-prs@1
     projectId: ''
     toBranch: develop
-    reviewerIds: [
-        "GUID"
-    ]
+    reviewerIds: 
+    - "GUID"
 
   # Create PR with auto-complete enabled
   - type: azure-devops-create-prs@1
     projectId: ''
     toBranch: develop
-    reviewerIds: [
-        "GUID"
-    ]
-    autoComplete: {
-        enabled: true,
-        mergeStrategy: "Squash"
-    }
+    reviewerIds:
+    - "GUID"
+    autoComplete:
+      enabled: true
+      mergeStrategy: "Squash"
 
   # Create PR with all settings
   - type: azure-devops-create-prs@1
@@ -43,20 +42,18 @@ repository-actions:
     # For example: feature/testBranch will result in a PR title of 'testBranch'.
     prTitle: 'PR title' 
     toBranch: develop
-    reviewerIds: [
-        "GUID"
-    ]
+    reviewerIds:
+    - "GUID"
     draftPr: true
     includeWorkItems: true
     openInBrowser: false
-    autoComplete: {
-        enabled: true,
-        mergeStrategy: "NoFastForward", # You can choose from: "NoFastForward", "Squash", "Rebase" and "RebaseMerge"
-        deleteSourceBranch: true,
-        transitionWorkItems: true
-    }
+    autoComplete:
+      enabled: true
+      mergeStrategy: "NoFastForward" # You can choose from: "NoFastForward", "Squash", "Rebase" and "RebaseMerge"
+      deleteSourceBranch: true
+      transitionWorkItems: true
 ```
-<sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/DocumentationFiles/AzureDevopsCreatePrs.testfile.yaml#L3-L49' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsazuredevopscreateprs01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/DocumentationFiles/AzureDevopsCreatePrs.testfile.yaml#L3-L44' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsazuredevopscreateprs01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## azure-devops-get-prs@1

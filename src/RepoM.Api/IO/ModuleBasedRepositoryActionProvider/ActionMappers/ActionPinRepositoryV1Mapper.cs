@@ -80,7 +80,7 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
                     RepositoryActionPinRepositoryV1.PinMode.Toggle => currentlyPinned ? UNPIN : PIN,
                     RepositoryActionPinRepositoryV1.PinMode.Pin => PIN,
                     RepositoryActionPinRepositoryV1.PinMode.UnPin => UNPIN,
-                    _ => throw new ArgumentOutOfRangeException("Unexpected value for mode.")
+                    _ => throw new ArgumentOutOfRangeException("Unexpected value for mode."),
                 };
         }
 
@@ -97,7 +97,7 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
                 RepositoryActionPinRepositoryV1.PinMode.Toggle => CreateAction(name, repository, !currentlyPinned),
                 RepositoryActionPinRepositoryV1.PinMode.Pin => CreateAction(name, repository, true),
                 RepositoryActionPinRepositoryV1.PinMode.UnPin => CreateAction(name, repository, false),
-                _ => throw new ArgumentOutOfRangeException(nameof(action.Mode), action.Mode, "Not expected")
+                _ => throw new ArgumentOutOfRangeException(nameof(action.Mode), action.Mode, "Not expected"),
             };
     }
 }

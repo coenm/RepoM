@@ -3,19 +3,14 @@ namespace RepoM.Plugin.AzureDevOps.Internal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Graph;
-using Microsoft.Graph.Models;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
@@ -24,8 +19,9 @@ using RepoM.Api.Common;
 using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
 
-internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService, IDisposable
+internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService, IDisposable
 {
+    private static readonly Regex _workItemRegex = DevOpsTaskMatchingRegex();
     private readonly HttpClient _httpClient;
     private readonly IAppSettingsService _appSettingsService;
     private readonly ILogger _logger;
@@ -109,13 +105,13 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                 DeleteSourceBranch = deleteSourceBranch,
                 MergeStrategy = (GitPullRequestMergeStrategy)mergeStrategy,
                 TransitionWorkItems = transitionWorkItems,
-                MergeCommitMessage = $"Merged PR {pr.PullRequestId}: {pr.Title}"
-            }
+                MergeCommitMessage = $"Merged PR {pr.PullRequestId}: {pr.Title}",
+            },
         };
 
-        string prBodyJson = JsonConvert.SerializeObject(prBody);
+        var prBodyJson = JsonConvert.SerializeObject(prBody);
         StringContent httpContent = new(prBodyJson, new MediaTypeHeaderValue("application/json"));
-        HttpResponseMessage response = await _httpClient.PatchAsync($"{projectId}/_apis/git/repositories/{repoId}/pullrequests/{pr.PullRequestId}?api-version=7.0", httpContent);
+        HttpResponseMessage response = await _httpClient.PatchAsync($"{projectId}/_apis/git/repositories/{repoId}/pullrequests/{pr.PullRequestId}?api-version=7.0", httpContent, cancellationToken);
         _ = response.EnsureSuccessStatusCode();
 
         if (openInBrowser)
@@ -136,7 +132,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
     private async Task<GitPullRequest> CreatePullRequestInternalAsync(IRepository repository, string projectId, List<string> reviewersIds, string toBranch, string? title = null, bool isDraft = false, bool includeWorkItems = true, CancellationToken cancellationToken = default)
     {
-        title ??= repository.CurrentBranch.Substring(repository.CurrentBranch.IndexOf('/') + 1);
+        title ??= repository.CurrentBranch[(repository.CurrentBranch.IndexOf('/') + 1)..];
 
         Guid repoId = FindRepositoryGuid(repository);
 
@@ -151,25 +147,25 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         {
             using var repo = new LibGit2Sharp.Repository(repository.Path);
 
-            Regex workItemRegex = new(@"\#(\d+)", RegexOptions.Compiled);
+            
 
             var commitMessages = repo.Commits
                 .QueryBy(new LibGit2Sharp.CommitFilter()
                 {
-                    ExcludeReachableFrom = repo.Branches[toBranch].UpstreamBranchCanonicalName
+                    ExcludeReachableFrom = repo.Branches[toBranch].UpstreamBranchCanonicalName,
                 })
                 .Select(c => c.Message).ToList();
 
             foreach (var commitMessage in commitMessages)
             {
-                MatchCollection matches = workItemRegex.Matches(commitMessage);
+                MatchCollection matches = _workItemRegex.Matches(commitMessage);
                 if (matches.Any(m => m.Success))
                 {
-                    foreach (System.Text.RegularExpressions.Group group in matches.SelectMany(m => m.Groups.Values.Skip(1)))
+                    foreach (Group group in matches.SelectMany(m => m.Groups.Values.Skip(1)))
                     {
                         _ = workItems.Add(new ResourceRef()
                         {
-                            Id = group.Value
+                            Id = group.Value,
                         });
                     }
                 }
@@ -190,15 +186,15 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                     })
                 .ToArray(),
             SupportsIterations = true,
-            WorkItemRefs = workItems.ToArray()
+            WorkItemRefs = workItems.ToArray(),
         };
 
-        string prBodyJson = JsonConvert.SerializeObject(prBody);
+        var prBodyJson = JsonConvert.SerializeObject(prBody);
         StringContent httpContent = new(prBodyJson, new MediaTypeHeaderValue("application/json"));
         HttpResponseMessage response = await _httpClient.PostAsync($"{projectId}/_apis/git/repositories/{repoId}/pullrequests?api-version=7.0", httpContent, cancellationToken);
         _ = response.EnsureSuccessStatusCode();
         
-        string? responseContent = await response.Content.ReadAsStringAsync() ?? throw new Exception("Invalid return type");
+        var responseContent = await response.Content.ReadAsStringAsync(cancellationToken) ?? throw new Exception("Invalid return type");
         return JsonConvert.DeserializeObject<GitPullRequest>(responseContent);
     }
 
@@ -496,4 +492,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         var searchRepoUrl = url.Scheme + "://" + url.Host + url.LocalPath;
         return searchRepoUrl;
     }
+
+    [GeneratedRegex("\\#(\\d+)", RegexOptions.Compiled)]
+    private static partial Regex DevOpsTaskMatchingRegex();
 }

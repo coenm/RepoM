@@ -14,8 +14,6 @@ using RepoM.Plugin.Clipboard.ActionProvider;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
-using static System.Net.Mime.MediaTypeNames;
-using IRepository = RepoM.Core.Plugin.Repository.IRepository;
 using Repository = RepoM.Api.Git.Repository;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 

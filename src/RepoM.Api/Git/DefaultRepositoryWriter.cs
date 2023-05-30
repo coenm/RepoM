@@ -16,7 +16,7 @@ public class DefaultRepositoryWriter : IRepositoryWriter
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
     }
 
-    public bool Checkout(Git.Repository repository, string branchName)
+    public bool Checkout(Repository repository, string branchName)
     {
         using var repo = new LibGit2Sharp.Repository(repository.Path);
         Branch branch;
@@ -45,7 +45,7 @@ public class DefaultRepositoryWriter : IRepositoryWriter
         return branch.FriendlyName == branchName;
     }
 
-    public void Fetch(Git.Repository repository)
+    public void Fetch(Repository repository)
     {
         var arguments = _appSettingsService.PruneOnFetch
             ? new string[]
@@ -57,7 +57,7 @@ public class DefaultRepositoryWriter : IRepositoryWriter
         _gitCommander.Command(repository, arguments);
     }
 
-    public void Pull(Git.Repository repository)
+    public void Pull(Repository repository)
     {
         var arguments = _appSettingsService.PruneOnFetch
             ? new string[] { "pull", "--prune", }
@@ -66,12 +66,12 @@ public class DefaultRepositoryWriter : IRepositoryWriter
         _gitCommander.Command(repository, arguments);
     }
 
-    public void Push(Git.Repository repository)
+    public void Push(Repository repository)
     {
         _gitCommander.Command(repository, "push");
     }
 
-    private void SetUpstream(Git.Repository repository, string localBranchName, string upstreamBranchName)
+    private void SetUpstream(Repository repository, string localBranchName, string upstreamBranchName)
     {
         _gitCommander.Command(repository, "branch", $"--set-upstream-to={upstreamBranchName}", localBranchName);
     }

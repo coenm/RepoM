@@ -14,8 +14,6 @@ using VerifyXunit;
 using EasyTestFileXunit;
 using EasyTestFile;
 using VerifyTests;
-using RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
-using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 [UsesEasyTestFile]
