@@ -111,7 +111,7 @@ stages:
           displayName: Prepare analysis on SonarCloud
           inputs:
             SonarCloud: SonarCloudGithub
-            organization: CoenM
+            organization: coenm-github
             projectKey: RepoM
             projectName: RepoM
             extraProperties: |
