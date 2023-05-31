@@ -104,25 +104,46 @@ stages:
         - task: DotNetCoreCLI@2
           displayName: DotNet Restore
           inputs:
-            command: 'restore'
+            command: restore
             projects: '**/*.csproj'
 
-        - task: DotNetCoreCLI@2
-          displayName: "DotNet Build"
+        - task: SonarCloudPrepare@1
+          displayName: Prepare analysis on SonarCloud
           inputs:
-            command: 'build'
+            SonarCloud: SonarCloudGithub
+            organization: coenm-github
+            projectKey: RepoM
+            projectName: RepoM
+            extraProperties: |
+              sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx 
+              sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml 
+
+        - task: DotNetCoreCLI@2
+          displayName: DotNet Build
+          inputs:
+            command: build
             projects: '**/*.sln'
             arguments: '--configuration $(BuildConfiguration)'
 
          # https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/dotnet-core?view=azure-devops&tabs=dotnetfive
         - task: DotNetCoreCLI@2
-          displayName: "DotNet Test"
+          displayName: Dotnet Test
           inputs:
             command: test
             projects: 'tests/**/*.csproj'
-            arguments: '--no-build --configuration $(BuildConfiguration) --collect:"XPlat Code Coverage" --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:ExcludeByAttribute=$(COVERLET_EXCLUDE_ATTRIBUTE) /p:ExcludeByFile=*\*Designer.cs /p:CoverletOutput=../_CoverageResults/ /p:MergeWith="../_CoverageResults/coverage.json" /p:CoverletOutputFormat=cobertura%2cjson'
+            arguments: >-
+              --no-build --configuration $(buildConfiguration) 
+              --collect:"XPlat Code Coverage;Format=cobertura,opencover" 
+              --logger trx 
+              /p:ExcludeByAttribute=CompilerGenerated 
             publishTestResults: true
-     
+
+        - task: SonarCloudAnalyze@1
+          displayName: Run Code Analysis
+
+        - task: SonarCloudPublish@1
+          displayName: Publish Quality Gate Result
+
         # https://docs.codecov.com/docs/codecov-uploader
         # todo fix path
         # ./codecov.exe -f "../**/coverag*.cobertura.xml"
@@ -160,16 +181,6 @@ stages:
             modifyOutputPath: false
             zipAfterPublish: false
 
-        # - task: DotNetCoreCLI@2
-        #   displayName: "Dotnet Publish grr tool"
-        #   inputs:
-        #     command: publish
-        #     arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies --self-contained true --runtime win-x64"
-        #     projects: "**/Grr.App.csproj"
-        #     publishWebProjects: false
-        #     modifyOutputPath: false
-        #     zipAfterPublish: false
-
         - task: DeleteFiles@1
           displayName: 'Remove unneeded files'
           inputs:
@@ -195,26 +206,7 @@ stages:
             # PathtoPublish: "$(Build.ArtifactStagingDirectory)"
             PathtoPublish: "_output"
             ArtifactName: installer
-
-        # - pwsh: |
-        #     dotnet tool install --tool-path . dotnet-reportgenerator-globaltool
-        #     ./reportgenerator "-reports:**/coverag*.cobertura.xml" "-targetdir:$(Agent.TempDirectory)" "-reporttypes:Cobertura"
-        #   displayName: Merge coverage reports
-        #   name: MergeCoverageReports
-
-        # - task: PublishCodeCoverageResults@1
-        #   displayName: 'Publish code coverage to devops'
-        #   inputs:
-        #     codeCoverageTool: Cobertura
-        #     summaryFileLocation: '$(Agent.TempDirectory)/Cobertura.xml'
-       
-        # - task: DotNetCoreCLI@2
-        #   displayName: 'DotNet Pack'
-        #   inputs:
-        #     command: pack
-        #     configuration: $(BuildConfiguration) 
-        #     nobuild: false
-        #     includesymbols: true
+    
 
         # - task: CopyFiles@2
         #   displayName: "Copy files to artifact"

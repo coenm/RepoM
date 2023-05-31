@@ -87,20 +87,41 @@ stages:
         - task: DotNetCoreCLI@2
           displayName: DotNet Restore
           inputs:
-            command: 'restore'
+            command: restore
             projects: '**/*.csproj'
 
-        - task: DotNetCoreCLI@2
-          displayName: "DotNet Build"
+        - task: SonarCloudPrepare@1
+          displayName: Prepare analysis on SonarCloud
           inputs:
-            command: 'build'
+            SonarCloud: SonarCloudGithub
+            organization: coenm-github
+            projectKey: RepoM
+            projectName: RepoM
+            extraProperties: |
+              sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx
+              sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml
+
+        - task: DotNetCoreCLI@2
+          displayName: DotNet Build
+          inputs:
+            command: build
             projects: '**/*.sln'
             arguments: '--configuration $(BuildConfiguration)'
 
         - task: DotNetCoreCLI@2
-          displayName: "DotNet Test"
+          displayName: Dotnet Test
           inputs:
             command: test
-            projects: '**/*[Tt]ests/*.csproj'
-            arguments: '--no-build --configuration $(BuildConfiguration)'
-  
+            projects: 'tests/**/*.csproj'
+            arguments: >-
+              --no-build --configuration $(buildConfiguration) 
+              --collect:"XPlat Code Coverage;Format=cobertura,opencover" 
+              --logger trx 
+              /p:ExcludeByAttribute=CompilerGenerated 
+            publishTestResults: true
+
+        - task: SonarCloudAnalyze@1
+          displayName: Run Code Analysis
+
+        - task: SonarCloudPublish@1
+          displayName: Publish Quality Gate Result

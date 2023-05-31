@@ -1,5 +1,7 @@
 # RepoM
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=RepoM&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=RepoM)
+
 RepoM is a minimal-conf git repository hub. It uses the git repositories on your machine to create an efficient navigation widget and makes sure you'll never lose track of your work along the way.
 
 It's populating itself as you work with git. It does not get in the way and only requires minimal effort to configure.
