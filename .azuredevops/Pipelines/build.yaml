@@ -104,7 +104,7 @@ stages:
         - task: DotNetCoreCLI@2
           displayName: DotNet Restore
           inputs:
-            command: 'restore'
+            command: restore
             projects: '**/*.csproj'
 
         - task: SonarCloudPrepare@1
@@ -119,15 +119,15 @@ stages:
               sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml 
 
         - task: DotNetCoreCLI@2
-          displayName: "DotNet Build"
+          displayName: DotNet Build
           inputs:
-            command: 'build'
+            command: build
             projects: '**/*.sln'
             arguments: '--configuration $(BuildConfiguration)'
 
          # https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/dotnet-core?view=azure-devops&tabs=dotnetfive
         - task: DotNetCoreCLI@2
-          displayName: "Dotnet Test"
+          displayName: Dotnet Test
           inputs:
             command: test
             projects: 'tests/**/*.csproj'
