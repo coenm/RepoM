@@ -117,7 +117,6 @@ stages:
             extraProperties: |
               sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx 
               sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml 
-              sonar.branch.name=$(Build.SourceBranchName) 
 
         - task: DotNetCoreCLI@2
           displayName: "DotNet Build"
