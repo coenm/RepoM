@@ -110,7 +110,7 @@ stages:
         - task: SonarCloudPrepare@1
           displayName: Prepare analysis on SonarCloud
           inputs:
-            SonarCloud: SonarCloud
+            SonarCloud: SonarCloudGithub
             organization: CoenM
             projectKey: RepoM
             projectName: RepoM
