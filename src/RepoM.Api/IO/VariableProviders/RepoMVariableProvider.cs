@@ -42,15 +42,18 @@ class ArrayHandler : IItemHandler<ArraySelector>
 {
     public object? Handle(ArraySelector item, object? value)
     {
-        if (value is IList list)
+        if (value is not IList list)
         {
-            if (list.Count > item.Index)
-            {
-                return list[item.Index];
-            }
+            return null;
         }
 
-        return null;
+        if (list.Count <= item.Index)
+        {
+            return null;
+        }
+
+        return list[item.Index];
+
     }
 }
 
@@ -92,6 +95,7 @@ class PropertyHandler : IItemHandler<PropertySelector>
 
 public class RepoMVariableProvider : IVariableProvider
 {
+    private static readonly char[] _separatorChars = { '.', '[', };
     private const string PREFIX = "var.";
 
     /// <inheritdoc cref="IVariableProvider.CanProvide"/>
@@ -102,13 +106,12 @@ public class RepoMVariableProvider : IVariableProvider
             return false;
         }
 
-        var prefixLength = PREFIX.Length;
-        if (key.Length <= prefixLength)
+        if (key.Length <= PREFIX.Length)
         {
             return false;
         }
 
-        var envKey = key.Substring(prefixLength, key.Length - prefixLength);
+        var envKey = key[PREFIX.Length..];
 
         return !string.IsNullOrWhiteSpace(envKey);
     }
@@ -116,10 +119,9 @@ public class RepoMVariableProvider : IVariableProvider
     /// <inheritdoc cref="IVariableProvider.Provide"/>
     public object? Provide(string key, string? arg)
     {
-        var prefixLength = PREFIX.Length;
-        var envKey = key.Substring(prefixLength, key.Length - prefixLength);
+        var envKey = key[PREFIX.Length..];
         var envSearchKey = envKey;
-        var index = envKey.IndexOfAny(new [] { '.', '[', });
+        var index = envKey.IndexOfAny(_separatorChars);
         if (index > 0)
         {
             envSearchKey = envKey[..index];
@@ -141,8 +143,8 @@ public class RepoMVariableProvider : IVariableProvider
                     return result;
                 }
 
-                IItem[] selectors = FindSelectors(envKey[index..]).ToArray();
-                object? r = result;
+                IEnumerable<IItem> selectors = FindSelectors(envKey[index..]);
+                var r = result;
 
                 var ph = new PropertyHandler();
                 var ah = new ArrayHandler();

@@ -21,21 +21,19 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
             return false;
         }
 
-        var prefixLength = PREFIX.Length;
-        if (key.Length <= prefixLength)
+        if (key.Length <= PREFIX.Length)
         {
             return false;
         }
 
-        var envKey = key.Substring(prefixLength, key.Length - prefixLength);
+        var envKey = key[PREFIX.Length..];
 
         return !string.IsNullOrWhiteSpace(envKey);
     }
 
     public object? Provide(RepositoryContext context, string key, string? arg)
     {
-        var prefixLength = PREFIX.Length;
-        var envKey = key.Substring(prefixLength, key.Length - prefixLength);
+        var envKey = key[PREFIX.Length..];
 
         IRepository? singleContext = context.Repositories.SingleOrDefault();
 
@@ -46,9 +44,9 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
 
         Dictionary<string, string> envVars = GetRepoEnvironmentVariables(singleContext);
 
-        if (envVars.ContainsKey(envKey))
+        if (envVars.TryGetValue(envKey, out var value))
         {
-            return envVars[envKey];
+            return value;
         }
 
         return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
@@ -56,8 +54,7 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
 
     public object? Provide(string key, string? arg)
     {
-        var prefixLength = PREFIX.Length;
-        var envKey = key.Substring(prefixLength, key.Length - prefixLength);
+        var envKey = key[PREFIX.Length..];
         var result = Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
         return result;
     }

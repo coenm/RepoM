@@ -45,7 +45,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
             return;
         }
 
-        var compressor = new StatusCompressor(new StatusCharacterMap());
+        var compressor = new StatusCompressor(StatusCharacterMap.Instance);
         _cachedRepositoryStatus = compressor.Compress(Repository);
         _cachedRepositoryStatusWithBranch = compressor.CompressWithBranch(Repository);
 
@@ -125,8 +125,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
         }
     }
 
-    private string SyncAppendix => "  \u2191\u2193"; // up and down arrows
+    private static string SyncAppendix => "  \u2191\u2193"; // up and down arrows
 
     public DateTime UpdateStampUtc { get; private set; }
-
 }

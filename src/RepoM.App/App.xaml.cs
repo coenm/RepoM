@@ -213,7 +213,7 @@ public partial class App : Application
     private static void RegisterServices(Container container, IFileSystem fileSystem)
     {
         container.Register<MainWindow>(Lifestyle.Singleton);
-        container.Register<StatusCharacterMap>(Lifestyle.Singleton);
+        container.RegisterInstance(StatusCharacterMap.Instance);
         container.Register<StatusCompressor>(Lifestyle.Singleton);
         container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>(Lifestyle.Singleton);
         container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>(Lifestyle.Singleton);

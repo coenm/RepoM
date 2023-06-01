@@ -9,7 +9,7 @@ using SonarQube.Net;
 using SonarQube.Net.Common.Authentication;
 using SonarQube.Net.Models;
 
-internal class SonarCloudFavoriteService
+internal class SonarCloudFavoriteService : ISonarCloudFavoriteService
 {
     private readonly IAppSettingsService _appSettingsService;
     private SonarQubeClient? _client;

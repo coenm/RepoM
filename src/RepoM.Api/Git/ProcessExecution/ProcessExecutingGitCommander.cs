@@ -213,9 +213,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
     {
         return arg.Contains(' ') ? "\"" + arg + "\"" : arg;
     }
-
     
-
     private static void AssertValidCommand(string[] command)
     {
         if (command.Length < 1 || !_validCommandName.IsMatch(command[0]))

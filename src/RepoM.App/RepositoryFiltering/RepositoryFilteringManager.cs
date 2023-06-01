@@ -12,7 +12,6 @@ using RepoM.Core.Plugin.RepositoryFiltering.Configuration;
 internal class RepositoryFilteringManager : IRepositoryFilteringManager
 {
     private readonly IAppSettingsService _appSettingsService;
-    private readonly INamedQueryParser[] _queryParsers;
     private readonly ILogger _logger;
     private readonly QueryParserComposition _queryParser;
     private readonly List<string> _repositoryComparerKeys;
@@ -26,17 +25,18 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         ILogger logger)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-        _queryParsers = queryParsers.ToArray() ?? throw new ArgumentNullException(nameof(queryParsers));
+        _ = queryParsers ?? throw new ArgumentNullException(nameof(queryParsers));
         _ = filterSettingsService ?? throw new ArgumentNullException(nameof(filterSettingsService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        if (!_queryParsers.Any())
+        INamedQueryParser[] queryParsersArray = queryParsers.ToArray();
+        if (!queryParsersArray.Any())
         {
             throw new ArgumentOutOfRangeException("Cannot be empty", nameof(queryParsers));
         }
 
-        INamedQueryParser defaultParser = _queryParsers.First(x => x.Name != "Lucene");
-        INamedQueryParser queryParser = _queryParsers.FirstOrDefault(x => x.Name == "Lucene") ?? defaultParser;
+        INamedQueryParser defaultParser = queryParsersArray.First(x => x.Name != "Lucene");
+        INamedQueryParser queryParser = queryParsersArray.FirstOrDefault(x => x.Name == "Lucene") ?? defaultParser;
 
         IQuery? Map(QueryConfiguration input)
         {
@@ -76,9 +76,9 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         
         _preFilterKeys = _queryDictionary.Select(x => x.Name).ToList();
 
-        _queryParser = new QueryParserComposition(_queryParsers);
+        _queryParser = new QueryParserComposition(queryParsersArray);
 
-        _repositoryComparerKeys = _queryParsers.Select(x => x.Name).ToList();
+        _repositoryComparerKeys = queryParsersArray.Select(x => x.Name).ToList();
 
         PreFilter = TrueQuery.Instance;
 

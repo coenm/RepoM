@@ -13,7 +13,7 @@ public class StatusCompressorTests
     public StatusCompressorTests()
     {
         _builder = new RepositoryBuilder();
-        _characterMap = new StatusCharacterMap();
+        _characterMap = StatusCharacterMap.Instance;
         _compressor = new StatusCompressor(_characterMap);
     }
 

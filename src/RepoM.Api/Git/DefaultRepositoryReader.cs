@@ -83,6 +83,12 @@ public class DefaultRepositoryReader : IRepositoryReader
 
             var workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
 
+            if (string.IsNullOrWhiteSpace(workingDirectory.Parent?.FullName))
+            {
+                _logger.LogError("WorkingDirectory.Parent.Fullname was null or empty for repository found in '{path}'. Return null", repoPath);
+                return null;
+            }
+
             HeadDetails headDetails = GetHeadDetails(repo);
 
             var repository = new Repository(workingDirectory.FullName)
@@ -135,18 +141,15 @@ public class DefaultRepositoryReader : IRepositoryReader
             var localBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToList();
 
             // "origin/" is removed from remote branches name and HEAD branch is ignored
-            var strippedRemoteBranches = repo.Branches
-                                             .Where(b =>
-                                                 b.IsRemote
-                                                 &&
-                                                 b.FriendlyName.IndexOf("HEAD", StringComparison.CurrentCultureIgnoreCase) == -1)
-                                             .Select(b => b.FriendlyName.Replace("origin/", ""))
-                                             .ToList();
-
-            return strippedRemoteBranches
-                   .Except(localBranches)
-                   .OrderBy(n => n)
-                   .ToArray();
+            return repo.Branches
+                       .Where(branch =>
+                           branch.IsRemote
+                           &&
+                           !branch.FriendlyName.Contains("HEAD", StringComparison.CurrentCultureIgnoreCase))
+                       .Select(branch => branch.FriendlyName.Replace("origin/", string.Empty))
+                       .Except(localBranches)
+                       .OrderBy(n => n)
+                       .ToArray();
         }
         catch (Exception)
         {
@@ -177,16 +180,16 @@ public class DefaultRepositoryReader : IRepositoryReader
             };
     }
 
-    private struct HeadDetails
+    private readonly record struct HeadDetails
     {
         public HeadDetails()
         {
         }
 
-        internal string Name { get; set; } = string.Empty;
+        internal string Name { get; init; } = string.Empty;
 
-        internal bool IsDetached { get; set; } = false;
+        internal bool IsDetached { get; init; } = false;
 
-        internal bool IsOnTag { get; set; } = false;
+        internal bool IsOnTag { get; init; } = false;
     }
 }
