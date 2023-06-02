@@ -16,7 +16,7 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
     /// <inheritdoc cref="IVariableProvider.CanProvide"/>
     public bool CanProvide(string key)
     {
-        if (!key.StartsWith(PREFIX, StringComparison.CurrentCultureIgnoreCase))
+        if (string.IsNullOrWhiteSpace(key))
         {
             return false;
         }
@@ -26,8 +26,12 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
             return false;
         }
 
-        var envKey = key[PREFIX.Length..];
+        if (!key.StartsWith(PREFIX, StringComparison.CurrentCultureIgnoreCase))
+        {
+            return false;
+        }
 
+        var envKey = key[PREFIX.Length..];
         return !string.IsNullOrWhiteSpace(envKey);
     }
 
