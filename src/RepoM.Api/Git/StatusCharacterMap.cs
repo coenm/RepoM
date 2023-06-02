@@ -2,6 +2,12 @@ namespace RepoM.Api.Git;
 
 public class StatusCharacterMap
 {
+    private StatusCharacterMap()
+    {
+    }
+
+    public static StatusCharacterMap Instance { get; } = new StatusCharacterMap();
+
     public string IdenticalSign => "\u2261";
 
     public string NoUpstreamSign => "\u2302";

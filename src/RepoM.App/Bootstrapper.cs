@@ -53,7 +53,7 @@ internal static class Bootstrapper
     public static void RegisterServices(IFileSystem fileSystem)
     {
         Container.Register<MainWindow>(Lifestyle.Singleton);
-        Container.Register<StatusCharacterMap>(Lifestyle.Singleton);
+        Container.RegisterInstance(StatusCharacterMap.Instance);
         Container.Register<StatusCompressor>(Lifestyle.Singleton);
         Container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>(Lifestyle.Singleton);
         Container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>(Lifestyle.Singleton);

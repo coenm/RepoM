@@ -8,24 +8,24 @@ public class IgnoreRule
 
     public IgnoreRule(string pattern)
     {
-        var wildcardStart = pattern.StartsWith("*");
-        var wildcardEnd = pattern.EndsWith("*");
+        var wildcardStart = pattern.StartsWith('*');
+        var wildcardEnd = pattern.EndsWith('*');
 
         if (wildcardStart || wildcardEnd)
         {
             if (wildcardStart)
             {
-                pattern = pattern.Substring(1);
+                pattern = pattern[1..];
             }
 
             if (wildcardEnd)
             {
-                pattern = pattern.Substring(0, pattern.Length - 1);
+                pattern = pattern[..^1];
             }
 
             if (wildcardStart && wildcardEnd)
             {
-                _comparer = path => path.IndexOf(pattern, StringComparison.OrdinalIgnoreCase) >= 0;
+                _comparer = path => path.Contains(pattern, StringComparison.OrdinalIgnoreCase);
             }
             else
             {

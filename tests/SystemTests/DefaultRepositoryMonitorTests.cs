@@ -274,6 +274,8 @@ commit file             master   |  |       |                   |              v
         _cloneA.Stage("Second.A");
         _cloneA.Commit("Commit #2 on A");
         _cloneA.Push();
+
+        Assert.Pass("Pass because no exceptions are thrown");
     }
 
     [Test]
@@ -283,6 +285,8 @@ commit file             master   |  |       |                   |              v
         _cloneB.CreateFile("First.B", "First file on clone B");
         _cloneB.Stage("First.B");
         _cloneB.Commit("Commit #1 on B");
+
+        Assert.Pass("Pass because no exceptions are thrown");
     }
 
     [Test]
@@ -408,8 +412,8 @@ commit file             master   |  |       |                   |              v
         // set readonly git files to "normal" 
         // otherwise we get UnauthorizedAccessExceptions
         IEnumerable<string> readOnlyFiles = _fileSystem.Directory
-                                                       .GetFiles(rootPath, "*.*", SearchOption.AllDirectories)
-                                                       .Where(f => File.GetAttributes(f).HasFlag(FileAttributes.ReadOnly));
+           .GetFiles(rootPath, "*.*", SearchOption.AllDirectories)
+           .Where(f => File.GetAttributes(f).HasFlag(FileAttributes.ReadOnly));
 
         foreach (var file in readOnlyFiles)
         {
@@ -433,6 +437,4 @@ commit file             master   |  |       |                   |              v
     {
         Thread.Sleep(500);
     }
-
-    
 }

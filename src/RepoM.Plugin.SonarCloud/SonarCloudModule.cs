@@ -8,9 +8,9 @@ using RepoM.Core.Plugin;
 [UsedImplicitly]
 internal class SonarCloudModule : IModule
 {
-    private readonly SonarCloudFavoriteService _service;
+    private readonly ISonarCloudFavoriteService _service;
 
-    public SonarCloudModule(SonarCloudFavoriteService service)
+    public SonarCloudModule(ISonarCloudFavoriteService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }

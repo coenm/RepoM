@@ -115,20 +115,18 @@ public class Repository : IRepository
     
     public string GetStatusCode()
     {
-        return string.Join("-", new object[]
-            {
-                CurrentBranch,
-                AheadBy ?? 0,
-                BehindBy ?? 0,
-                LocalUntracked ?? 0,
-                LocalModified ?? 0,
-                LocalMissing ?? 0,
-                LocalAdded ?? 0,
-                LocalStaged ?? 0,
-                LocalRemoved ?? 0,
-                LocalIgnored ?? 0,
-                StashCount ?? 0,
-            });
+        return string.Join("-",
+            CurrentBranch,
+            AheadBy ?? 0,
+            BehindBy ?? 0,
+            LocalUntracked ?? 0,
+            LocalModified ?? 0,
+            LocalMissing ?? 0,
+            LocalAdded ?? 0,
+            LocalStaged ?? 0,
+            LocalRemoved ?? 0,
+            LocalIgnored ?? 0,
+            StashCount ?? 0);
     }
 
     private static string GetSafePath(string input)
