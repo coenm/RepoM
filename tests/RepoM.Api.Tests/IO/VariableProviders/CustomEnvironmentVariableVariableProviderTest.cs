@@ -1,7 +1,9 @@
 namespace RepoM.Api.Tests.IO.VariableProviders;
 
+using System;
 using FluentAssertions;
 using RepoM.Api.IO.VariableProviders;
+using RepoM.Core.Plugin.Repository;
 using Xunit;
 
 public class CustomEnvironmentVariableVariableProviderTest
@@ -26,5 +28,55 @@ public class CustomEnvironmentVariableVariableProviderTest
 
         // assert
         result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Provide_ShouldReturnValue_WhenAvailableInEnvironment()
+    {
+        // arrange
+        var dynamicEnvironmentKey = $"RepoM_test_{Guid.NewGuid()}";
+        Environment.SetEnvironmentVariable(dynamicEnvironmentKey, "test value");
+        var sut = new CustomEnvironmentVariableVariableProvider();
+
+        // act
+        var result = sut.Provide($"env.{dynamicEnvironmentKey}", null!);
+
+        // assert
+        // assert
+        result.Should().Be("test value");
+    }
+
+    [Fact]
+    public void Provide_ShouldReturnValue_WhenAvailableInEnvironmentAndNoContextGiven()
+    {
+        // arrange
+        RepositoryContext context = null!;
+        var dynamicEnvironmentKey = $"RepoM_test_{Guid.NewGuid()}";
+        Environment.SetEnvironmentVariable(dynamicEnvironmentKey, "test value");
+        var sut = new CustomEnvironmentVariableVariableProvider();
+
+        // act
+        var result = sut.Provide(context, $"env.{dynamicEnvironmentKey}", null!);
+
+        // assert
+        // assert
+        result.Should().Be("test value");
+    }
+
+    [Fact]
+    public void Provide_ShouldReturnStringEmpty_WhenKeyNotAvailableInEnvironment()
+    {
+        // arrange
+        var dynamicEnvironmentKey = $"RepoM_test_{Guid.NewGuid()}";
+        var sut = new CustomEnvironmentVariableVariableProvider();
+
+        // assume
+        Environment.GetEnvironmentVariables().Contains(dynamicEnvironmentKey).Should().BeFalse();
+
+        // act
+        var result = sut.Provide($"env.{dynamicEnvironmentKey}", null!);
+
+        // assert
+        result.Should().Be(string.Empty);
     }
 }

@@ -37,23 +37,22 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
 
     public object? Provide(RepositoryContext context, string key, string? arg)
     {
-        var envKey = key[PREFIX.Length..];
-
-        IRepository? singleContext = context.Repositories.SingleOrDefault();
-
+        IRepository? singleContext = context?.Repositories?.SingleOrDefault();
         if (singleContext == null)
         {
-            return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
+            return Provide(key, arg);
         }
 
         Dictionary<string, string> envVars = GetRepoEnvironmentVariables(singleContext);
+
+        var envKey = key[PREFIX.Length..];
 
         if (envVars.TryGetValue(envKey, out var value))
         {
             return value;
         }
 
-        return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
+        return Provide(key, arg);
     }
 
     public object? Provide(string key, string? arg)
