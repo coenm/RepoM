@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using RepoM.Plugin.Heidi.Internal.Config;
 
 internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
@@ -15,13 +14,11 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
     private const string KEYWORD_SPLIT = "<|||>";
     
     private readonly IFileSystem _fileSystem;
-    private readonly ILogger _logger;
     private readonly IHeidiPasswordDecoder _passwordDecoder;
 
-    public HeidiPortableConfigReader(IFileSystem fileSystem, ILogger logger, IHeidiPasswordDecoder passwordDecoder)
+    public HeidiPortableConfigReader(IFileSystem fileSystem, IHeidiPasswordDecoder passwordDecoder)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _passwordDecoder = passwordDecoder ?? throw new ArgumentNullException(nameof(passwordDecoder));
     }
 

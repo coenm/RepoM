@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Heidi.Internal.Config;
 
 using System;
 
-internal struct HeidiSingleDatabaseConfiguration
+internal readonly record struct HeidiSingleDatabaseConfiguration
 {
     public HeidiSingleDatabaseConfiguration(string key)
     {
@@ -11,18 +11,18 @@ internal struct HeidiSingleDatabaseConfiguration
 
     public string Key { get; }
 
-    public string Host { get; set; } = string.Empty;
+    public string Host { get; init; } = string.Empty;
 
-    public string User { get; set; } = string.Empty;
+    public string User { get; init; } = string.Empty;
 
-    public string Password { get; set; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
 
-    public int Port { get; set; } = 0;
+    public int Port { get; init; } = 0;
 
     /// <summary>
     /// Use Windows authentication: 1 or 0. (MSSQL, MySQL and MariaDB only).
     /// </summary>
-    public bool WindowsAuth { get; set; } = false;
+    public bool WindowsAuth { get; init; } = false;
 
     /// <summary>
     /// Network protocol type:
@@ -44,18 +44,18 @@ internal struct HeidiSingleDatabaseConfiguration
     /// 15 = Firebird(local)
     /// https://www.heidisql.com/help.php#commandline
     /// </summary>
-    public int NetType { get; set; } = 0;
+    public int NetType { get; init; } = 0;
 
     /// <summary>
     /// Library or provider (added in v11.1), Depends on the given network protocol
     /// https://www.heidisql.com/help.php#commandline
     /// </summary>
-    public string Library { get; set; } = string.Empty;
+    public string Library { get; init; } = string.Empty;
 
-    public string Comment { get; set; } = string.Empty;
+    public string Comment { get; init; } = string.Empty;
 
     /// <summary>
     /// Databases, separated by semicolon. Single database on PostgreSQL. Interbase and Firebird expect a local file here.
     /// </summary>
-    public string[] Databases { get; set; } = Array.Empty<string>();
+    public string[] Databases { get; init; } = Array.Empty<string>();
 }

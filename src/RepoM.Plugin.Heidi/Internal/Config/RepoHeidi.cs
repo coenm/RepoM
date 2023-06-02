@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Heidi.Internal.Config;
 
 using System;
 
-internal struct RepoHeidi
+internal readonly record struct RepoHeidi
 {
     public RepoHeidi(string key)
     {
@@ -11,11 +11,11 @@ internal struct RepoHeidi
 
     public string HeidiKey { get; }
 
-    public string Repository { get; set; } = string.Empty;
+    public string Repository { get; init; } = string.Empty;
 
-    public int Order { get; set; } = int.MaxValue;
+    public int Order { get; init; } = int.MaxValue;
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
     
-    public string[] Tags { get; set; } = Array.Empty<string>();
+    public string[] Tags { get; init; } = Array.Empty<string>();
 }
