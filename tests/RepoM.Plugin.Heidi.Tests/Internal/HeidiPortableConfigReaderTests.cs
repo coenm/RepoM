@@ -9,8 +9,6 @@ using EasyTestFile;
 using EasyTestFileXunit;
 using FakeItEasy;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Plugin.Heidi.Internal;
 using RepoM.Plugin.Heidi.Internal.Config;
 using VerifyTests;
@@ -36,26 +34,23 @@ public class HeidiPortableConfigReaderTests
         _verifySettings.UseDirectory("Verified");
         _mockFileSystem = new MockFileSystem();
         IHeidiPasswordDecoder passwordDecoder = new DummyDecoder();
-        _sut = new HeidiPortableConfigReader(_mockFileSystem, NullLogger.Instance, passwordDecoder);
+        _sut = new HeidiPortableConfigReader(_mockFileSystem, passwordDecoder);
     }
 
     [Fact]
     public void Ctor_ShouldThrow_WhenArgumentIsNull()
     {
         // arrange
-        var fileSystem = A.Dummy<IFileSystem>();
-        var logger = A.Dummy<ILogger>();
-        var heidiPasswordDecoder = A.Dummy<IHeidiPasswordDecoder>();
+        IFileSystem fileSystem = A.Dummy<IFileSystem>();
+        IHeidiPasswordDecoder heidiPasswordDecoder = A.Dummy<IHeidiPasswordDecoder>();
 
         // act
-        Action act1 = () => _ = new HeidiPortableConfigReader(fileSystem, logger, null!);
-        Action act2 = () => _ = new HeidiPortableConfigReader(fileSystem, null!, heidiPasswordDecoder);
-        Action act3 = () => _ = new HeidiPortableConfigReader(null!, logger, heidiPasswordDecoder);
+        Action act1 = () => _ = new HeidiPortableConfigReader(fileSystem, null!);
+        Action act2 = () => _ = new HeidiPortableConfigReader(null!, heidiPasswordDecoder);
 
         // assert
         act1.Should().Throw<ArgumentNullException>();
         act2.Should().Throw<ArgumentNullException>();
-        act3.Should().Throw<ArgumentNullException>();
     }
     
     [Fact(Skip = "Tmp")]
