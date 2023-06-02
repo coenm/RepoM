@@ -134,8 +134,8 @@ public class Repository : IRepository
     private static string GetSafePath(string input)
     {
         // use '/' for linux systems and bash command line (will work on cmd and powershell as well)
-        var safePath = input.Replace(@"\", "/");
-        if (safePath.EndsWith("/"))
+        var safePath = input.Replace('\\', '/');
+        if (safePath.EndsWith('/'))
         {
             safePath = safePath[..^1];
         }
