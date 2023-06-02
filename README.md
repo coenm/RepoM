@@ -1,6 +1,12 @@
 # RepoM
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=RepoM&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=RepoM)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=RepoM&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=RepoM)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=RepoM&metric=coverage)](https://sonarcloud.io/summary/new_code?id=RepoM)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=RepoM&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=RepoM)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=RepoM&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=RepoM)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=RepoM&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=RepoM)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=RepoM&metric=bugs)](https://sonarcloud.io/summary/new_code?id=RepoM)
 
 RepoM is a minimal-conf git repository hub. It uses the git repositories on your machine to create an efficient navigation widget and makes sure you'll never lose track of your work along the way.
 
