@@ -7,9 +7,9 @@ using JetBrains.Annotations;
 [UsedImplicitly]
 internal class SonarCloudIsFavoriteMethod : IMethod
 {
-    private readonly SonarCloudFavoriteService _service;
+    private readonly ISonarCloudFavoriteService _service;
 
-    public SonarCloudIsFavoriteMethod(SonarCloudFavoriteService service)
+    public SonarCloudIsFavoriteMethod(ISonarCloudFavoriteService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }

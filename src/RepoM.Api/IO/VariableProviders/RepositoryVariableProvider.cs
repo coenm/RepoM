@@ -19,10 +19,10 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
 
     public object? Provide(RepositoryContext context, string key, string? arg)
     {
-        return ProvideString(context, key, arg);
+        return ProvideString(context, key);
     }
 
-    private static string ProvideString(RepositoryContext context, string key, string? arg)
+    private static string ProvideString(RepositoryContext context, string key)
     {
         IRepository? repository = context.Repositories.SingleOrDefault();
         if (repository == null)
@@ -31,7 +31,7 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
         }
 
         var startIndex = "Repository.".Length;
-        var keySuffix = key.Substring(startIndex, key.Length - startIndex);
+        var keySuffix = key[startIndex..];
 
         if ("Name".Equals(keySuffix, StringComparison.CurrentCultureIgnoreCase))
         {
@@ -76,10 +76,8 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
 
         if (keySuffix.StartsWith("Remote.", StringComparison.CurrentCultureIgnoreCase))
         {
-            var subKey = keySuffix.Substring(2);
-
             startIndex = "Remote.".Length;
-            keySuffix = keySuffix.Substring(startIndex, keySuffix.Length - startIndex);
+            keySuffix = keySuffix[startIndex..];
 
             var splits = keySuffix.Split('.');
             if (splits.Length != 2)
@@ -87,7 +85,7 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
                 return string.Empty;
             }
 
-            Remote? remote = repository.Remotes.FirstOrDefault(x => x.Key.Equals(splits[0], StringComparison.CurrentCultureIgnoreCase));
+            Remote? remote = repository.Remotes.Find(x => x.Key.Equals(splits[0], StringComparison.CurrentCultureIgnoreCase));
             if (remote == null)
             {
                 return string.Empty;

@@ -2,7 +2,9 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
+[Serializable]
 public class GitCommandException : Exception
 {
     public Process? Process { get; private set; }
@@ -13,9 +15,9 @@ public class GitCommandException : Exception
         Process = process;
     }
 
-  protected GitCommandException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+    protected GitCommandException(SerializationInfo info, StreamingContext context)
         : base(info, context)
-  {
-      Process = null;
-  }
+    {
+        Process = null;
+    }
 }

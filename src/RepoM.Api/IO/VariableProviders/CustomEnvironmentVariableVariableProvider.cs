@@ -16,48 +16,48 @@ public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repos
     /// <inheritdoc cref="IVariableProvider.CanProvide"/>
     public bool CanProvide(string key)
     {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return false;
+        }
+
+        if (key.Length <= PREFIX.Length)
+        {
+            return false;
+        }
+
         if (!key.StartsWith(PREFIX, StringComparison.CurrentCultureIgnoreCase))
         {
             return false;
         }
 
-        var prefixLength = PREFIX.Length;
-        if (key.Length <= prefixLength)
-        {
-            return false;
-        }
-
-        var envKey = key.Substring(prefixLength, key.Length - prefixLength);
-
+        var envKey = key[PREFIX.Length..];
         return !string.IsNullOrWhiteSpace(envKey);
     }
 
     public object? Provide(RepositoryContext context, string key, string? arg)
     {
-        var prefixLength = PREFIX.Length;
-        var envKey = key.Substring(prefixLength, key.Length - prefixLength);
-
-        IRepository? singleContext = context.Repositories.SingleOrDefault();
-
+        IRepository? singleContext = context?.Repositories?.SingleOrDefault();
         if (singleContext == null)
         {
-            return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
+            return Provide(key, arg);
         }
 
         Dictionary<string, string> envVars = GetRepoEnvironmentVariables(singleContext);
 
-        if (envVars.ContainsKey(envKey))
+        var envKey = key[PREFIX.Length..];
+
+        if (envVars.TryGetValue(envKey, out var value))
         {
-            return envVars[envKey];
+            return value;
         }
 
-        return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
+        return Provide(key, arg);
     }
 
     public object? Provide(string key, string? arg)
     {
-        var prefixLength = PREFIX.Length;
-        var envKey = key.Substring(prefixLength, key.Length - prefixLength);
+        var envKey = key[PREFIX.Length..];
         var result = Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
         return result;
     }

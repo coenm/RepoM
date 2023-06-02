@@ -16,11 +16,11 @@ using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.R
 [UsedImplicitly]
 internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
 {
-    private readonly SonarCloudFavoriteService _service;
+    private readonly ISonarCloudFavoriteService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
 
-    public ActionSonarCloudV1Mapper(SonarCloudFavoriteService service, IRepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
+    public ActionSonarCloudV1Mapper(ISonarCloudFavoriteService service, IRepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));

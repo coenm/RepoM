@@ -28,20 +28,20 @@ public class RepositoryAction : RepositoryActionBase
 
 public abstract class RepositoryActionBase
 {
-    public RepositoryActionBase(IRepository repository)
+    protected RepositoryActionBase(IRepository repository)
     {
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
-    public IAction Action { get; set; } = NullAction.Instance;
+    public IAction Action { get; init; } = NullAction.Instance;
 
     public IRepository Repository { get; }
 
-    public bool ExecutionCausesSynchronizing { get; set; }
+    public bool ExecutionCausesSynchronizing { get; init; }
 
-    public bool CanExecute { get; set; } = true;
+    public bool CanExecute { get; init; } = true;
 
-    public Func<RepositoryActionBase[]>? DeferredSubActionsEnumerator { get; set; }
+    public Func<RepositoryActionBase[]>? DeferredSubActionsEnumerator { get; init; }
 
-    public IEnumerable<RepositoryActionBase>? SubActions { get; set; }
+    public IEnumerable<RepositoryActionBase>? SubActions { get; init; }
 }

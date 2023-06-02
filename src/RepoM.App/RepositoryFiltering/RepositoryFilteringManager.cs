@@ -12,7 +12,6 @@ using RepoM.Core.Plugin.RepositoryFiltering.Configuration;
 internal class RepositoryFilteringManager : IRepositoryFilteringManager
 {
     private readonly IAppSettingsService _appSettingsService;
-    private readonly INamedQueryParser[] _queryParsers;
     private readonly ILogger _logger;
     private readonly QueryParserComposition _queryParser;
     private readonly List<string> _repositoryComparerKeys;
@@ -26,17 +25,18 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         ILogger logger)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-        _queryParsers = queryParsers.ToArray() ?? throw new ArgumentNullException(nameof(queryParsers));
+        _ = queryParsers ?? throw new ArgumentNullException(nameof(queryParsers));
         _ = filterSettingsService ?? throw new ArgumentNullException(nameof(filterSettingsService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        if (!_queryParsers.Any())
+        INamedQueryParser[] queryParsersArray = queryParsers.ToArray();
+        if (!queryParsersArray.Any())
         {
             throw new ArgumentOutOfRangeException("Cannot be empty", nameof(queryParsers));
         }
 
-        INamedQueryParser defaultParser = _queryParsers.First(x => x.Name != "Lucene");
-        INamedQueryParser queryParser = _queryParsers.FirstOrDefault(x => x.Name == "Lucene") ?? defaultParser;
+        INamedQueryParser defaultParser = queryParsersArray.First(x => x.Name != "Lucene");
+        INamedQueryParser queryParser = Array.Find(queryParsersArray, x => x.Name == "Lucene") ?? defaultParser;
 
         IQuery? Map(QueryConfiguration input)
         {
@@ -63,7 +63,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
                 })
             .ToList();
 
-        if (!_queryDictionary.Any(x => x.Name.Equals("Default", StringComparison.CurrentCultureIgnoreCase)))
+        if (!_queryDictionary.Exists(x => x.Name.Equals("Default", StringComparison.CurrentCultureIgnoreCase)))
         {
             _queryDictionary.Add(new RepositoryFilterConfiguration
                 {
@@ -76,24 +76,24 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         
         _preFilterKeys = _queryDictionary.Select(x => x.Name).ToList();
 
-        _queryParser = new QueryParserComposition(_queryParsers);
+        _queryParser = new QueryParserComposition(queryParsersArray);
 
-        _repositoryComparerKeys = _queryParsers.Select(x => x.Name).ToList();
+        _repositoryComparerKeys = queryParsersArray.Select(x => x.Name).ToList();
 
         PreFilter = TrueQuery.Instance;
 
         if (string.IsNullOrWhiteSpace(_appSettingsService.QueryParserKey))
         {
             _logger.LogInformation("Query parser was not set. Pick first one.");
-            SetQueryParser(_repositoryComparerKeys.First());
+            SetQueryParser(_repositoryComparerKeys[0]);
         }
         else if (!SetQueryParser(_appSettingsService.QueryParserKey))
         {
             _logger.LogInformation("Could not set query parser '{key}'. Falling back to first query parser.", _appSettingsService.QueryParserKey);
-            SetQueryParser(_repositoryComparerKeys.First());
+            SetQueryParser(_repositoryComparerKeys[0]);
         }
 
-        RepositoryFilterConfiguration first = _queryDictionary.First();
+        RepositoryFilterConfiguration first = _queryDictionary[0];
 
         if (string.IsNullOrWhiteSpace(_appSettingsService.SelectedFilter))
         {
@@ -139,7 +139,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
     public bool SetFilter(string key)
     {
-        RepositoryFilterConfiguration? value = _queryDictionary.FirstOrDefault(x => x.Name == key);
+        RepositoryFilterConfiguration? value = _queryDictionary.Find(x => x.Name == key);
         if (value == null)
         {
             return false;

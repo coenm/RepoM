@@ -75,7 +75,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
 
     public IEnumerable<RepositoryHeidiConfiguration> GetByRepository(IRepository repository)
     {
-        Remote? origin = repository.Remotes.FirstOrDefault(x => "Origin".Equals(x.Key, StringComparison.CurrentCultureIgnoreCase));
+        Remote? origin = repository.Remotes.Find(x => "Origin".Equals(x.Key, StringComparison.CurrentCultureIgnoreCase));
 
         if (origin == null)
         {

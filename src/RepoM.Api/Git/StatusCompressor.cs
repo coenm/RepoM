@@ -1,5 +1,6 @@
 namespace RepoM.Api.Git;
 
+using System;
 using System.Text;
 
 public class StatusCompressor
@@ -10,7 +11,7 @@ public class StatusCompressor
 
     public StatusCompressor(StatusCharacterMap statusCharacterMap)
     {
-        _statusCharacterMap = statusCharacterMap;
+        _statusCharacterMap = statusCharacterMap ?? throw new ArgumentNullException(nameof(statusCharacterMap));
     }
 
     public string Compress(Repository repository)
@@ -66,7 +67,7 @@ public class StatusCompressor
                 builder.Append(' ');
             }
 
-            builder.AppendFormat("+{0} ~{1} -{2}", repository.LocalAdded ?? 0, repository.LocalStaged ?? 0, repository.LocalRemoved ?? 0);
+            builder.Append($"+{repository.LocalAdded ?? 0} ~{repository.LocalStaged ?? 0} -{repository.LocalRemoved ?? 0}");
         }
 
         if (printUntrackedModifiedMissing)
@@ -81,7 +82,7 @@ public class StatusCompressor
                 builder.Append("| ");
             }
 
-            builder.AppendFormat("+{0} ~{1} -{2}", repository.LocalUntracked ?? 0, repository.LocalModified ?? 0, repository.LocalMissing ?? 0);
+            builder.Append($"+{repository.LocalUntracked ?? 0} ~{repository.LocalModified ?? 0} -{repository.LocalMissing ?? 0}");
         }
 
         if (printStashCount)
@@ -91,7 +92,7 @@ public class StatusCompressor
                 builder.Append(' ');
             }
 
-            builder.Append(_statusCharacterMap.StashSign + repository.StashCount.ToString());
+            builder.Append(_statusCharacterMap.StashSign + repository.StashCount);
         }
 
         return builder.ToString();

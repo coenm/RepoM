@@ -1,5 +1,6 @@
 namespace RepoM.Api.Tests.Git;
 
+using System;
 using FluentAssertions;
 using RepoM.Api.Git;
 using Xunit;
@@ -13,7 +14,7 @@ public class StatusCompressorTests
     public StatusCompressorTests()
     {
         _builder = new RepositoryBuilder();
-        _characterMap = new StatusCharacterMap();
+        _characterMap = StatusCharacterMap.Instance;
         _compressor = new StatusCompressor(_characterMap);
     }
 
@@ -41,6 +42,18 @@ public class StatusCompressorTests
 
     public class CompressMethod : StatusCompressorTests
     {
+        [Fact]
+        public void Ctor_ShouldThrow_WhenArgumentIsNull()
+        {
+            // arrange
+
+            // act
+            Action act = () => _ = new StatusCompressor(null!);
+
+            // asset
+            act.Should().Throw<ArgumentNullException>();
+        }
+
         [Fact]
         public void Returns_Empty_String_For_Empty_Repositories()
         {
