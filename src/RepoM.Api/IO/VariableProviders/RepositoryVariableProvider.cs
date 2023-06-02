@@ -85,7 +85,7 @@ public class RepositoryVariableProvider : IVariableProvider<RepositoryContext>
                 return string.Empty;
             }
 
-            Remote? remote = repository.Remotes.FirstOrDefault(x => x.Key.Equals(splits[0], StringComparison.CurrentCultureIgnoreCase));
+            Remote? remote = repository.Remotes.Find(x => x.Key.Equals(splits[0], StringComparison.CurrentCultureIgnoreCase));
             if (remote == null)
             {
                 return string.Empty;

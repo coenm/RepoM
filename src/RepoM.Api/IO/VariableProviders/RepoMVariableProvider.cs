@@ -75,14 +75,13 @@ class PropertyHandler : IItemHandler<PropertySelector>
         {
             return value.GetType().GetProperty(item.Property)?.GetValue(value, null)
                    ??
-                   value.GetType()
-                        .GetProperties()
-                        .FirstOrDefault(p =>
-                            p.CanRead
-                            &&
-                            item.Property.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase))
-                        ?.GetValue(value, null);
-            // return value.GetType().GetProperty(item.Property)?.GetValue(value, null);
+                   Array.Find(
+                       value.GetType().GetProperties(),
+                       p =>
+                           p.CanRead
+                           &&
+                           item.Property.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase))
+                    ?.GetValue(value, null);
         }
         catch (Exception e)
         {
