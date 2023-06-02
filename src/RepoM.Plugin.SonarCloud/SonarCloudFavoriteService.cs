@@ -49,20 +49,20 @@ internal class SonarCloudFavoriteService : ISonarCloudFavoriteService
 
     public async Task SetFavorite(string repoKey)
     {
-        SonarQubeClient? c = _client;
-        if (c == null)
+        SonarQubeClient? client = _client;
+        if (client == null)
         {
             return;
         }
 
         try
         {
-            _= await c.AddFavoriteAsync(repoKey);
+            _= await client.AddFavoriteAsync(repoKey);
             if (_task.IsCompleted)
             {
                 _task = Task.Run(async () =>
                     {
-                        IEnumerable<Favorite>? result = await c.SearchFavoritesAsync();
+                        IEnumerable<Favorite>? result = await client.SearchFavoritesAsync();
                         if (result != null)
                         {
                             _favorites = result.ToList();
@@ -79,6 +79,6 @@ internal class SonarCloudFavoriteService : ISonarCloudFavoriteService
     public bool IsFavorite(string repoKey)
     {
         // qualifiers??
-        return _favorites.Any(x => x.Key == repoKey);
+        return _favorites.Exists(x => x.Key == repoKey);
     }
 }

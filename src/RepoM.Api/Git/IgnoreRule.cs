@@ -8,8 +8,8 @@ public class IgnoreRule
 
     public IgnoreRule(string pattern)
     {
-        var wildcardStart = pattern.StartsWith("*");
-        var wildcardEnd = pattern.EndsWith("*");
+        var wildcardStart = pattern.StartsWith('*');
+        var wildcardEnd = pattern.EndsWith('*');
 
         if (wildcardStart || wildcardEnd)
         {

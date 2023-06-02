@@ -63,7 +63,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
                 })
             .ToList();
 
-        if (!_queryDictionary.Any(x => x.Name.Equals("Default", StringComparison.CurrentCultureIgnoreCase)))
+        if (!_queryDictionary.Exists(x => x.Name.Equals("Default", StringComparison.CurrentCultureIgnoreCase)))
         {
             _queryDictionary.Add(new RepositoryFilterConfiguration
                 {
@@ -85,15 +85,15 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         if (string.IsNullOrWhiteSpace(_appSettingsService.QueryParserKey))
         {
             _logger.LogInformation("Query parser was not set. Pick first one.");
-            SetQueryParser(_repositoryComparerKeys.First());
+            SetQueryParser(_repositoryComparerKeys[0]);
         }
         else if (!SetQueryParser(_appSettingsService.QueryParserKey))
         {
             _logger.LogInformation("Could not set query parser '{key}'. Falling back to first query parser.", _appSettingsService.QueryParserKey);
-            SetQueryParser(_repositoryComparerKeys.First());
+            SetQueryParser(_repositoryComparerKeys[0]);
         }
 
-        RepositoryFilterConfiguration first = _queryDictionary.First();
+        RepositoryFilterConfiguration first = _queryDictionary[0];
 
         if (string.IsNullOrWhiteSpace(_appSettingsService.SelectedFilter))
         {
@@ -139,7 +139,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
     public bool SetFilter(string key)
     {
-        RepositoryFilterConfiguration? value = _queryDictionary.FirstOrDefault(x => x.Name == key);
+        RepositoryFilterConfiguration? value = _queryDictionary.Find(x => x.Name == key);
         if (value == null)
         {
             return false;
