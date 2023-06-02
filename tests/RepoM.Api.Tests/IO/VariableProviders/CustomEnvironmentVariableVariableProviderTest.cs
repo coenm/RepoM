@@ -30,6 +30,21 @@ public class CustomEnvironmentVariableVariableProviderTest
         result.Should().BeFalse();
     }
 
+    [Theory]
+    [InlineData("env.x")]
+    [InlineData("eNv.x")] // case insensitive
+    public void CanProvide_ShouldReturnTrue_WhenKeyIsMatch(string key)
+    {
+        // arrange
+        var sut = new CustomEnvironmentVariableVariableProvider();
+
+        // act
+        var result = sut.CanProvide(key);
+
+        // assert
+        result.Should().BeTrue();
+    }
+
     [Fact]
     public void Provide_ShouldReturnValue_WhenAvailableInEnvironment()
     {
@@ -41,7 +56,6 @@ public class CustomEnvironmentVariableVariableProviderTest
         // act
         var result = sut.Provide($"env.{dynamicEnvironmentKey}", null!);
 
-        // assert
         // assert
         result.Should().Be("test value");
     }
@@ -58,7 +72,6 @@ public class CustomEnvironmentVariableVariableProviderTest
         // act
         var result = sut.Provide(context, $"env.{dynamicEnvironmentKey}", null!);
 
-        // assert
         // assert
         result.Should().Be("test value");
     }
