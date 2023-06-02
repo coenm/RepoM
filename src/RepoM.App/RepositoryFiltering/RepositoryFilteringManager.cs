@@ -36,7 +36,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         }
 
         INamedQueryParser defaultParser = queryParsersArray.First(x => x.Name != "Lucene");
-        INamedQueryParser queryParser = queryParsersArray.FirstOrDefault(x => x.Name == "Lucene") ?? defaultParser;
+        INamedQueryParser queryParser = Array.Find(queryParsersArray, x => x.Name == "Lucene") ?? defaultParser;
 
         IQuery? Map(QueryConfiguration input)
         {

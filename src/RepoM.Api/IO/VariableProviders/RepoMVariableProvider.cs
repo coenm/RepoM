@@ -200,7 +200,7 @@ public class RepoMVariableProvider : IVariableProvider
 
     private static bool TryGetValueFromScope(in Scope scope, string key, out object? value)
     {
-        EvaluatedVariable? var = scope.Variables.FirstOrDefault(x => key.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase));
+        EvaluatedVariable? var = scope.Variables.Find(x => key.Equals(x.Name, StringComparison.CurrentCultureIgnoreCase));
 
         if (var != null)
         {
