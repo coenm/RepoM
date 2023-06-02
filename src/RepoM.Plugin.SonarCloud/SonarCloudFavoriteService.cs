@@ -11,6 +11,8 @@ using SonarQube.Net.Models;
 
 internal class SonarCloudFavoriteService : ISonarCloudFavoriteService
 {
+    const string SONAR_CLOUD_URL = "https://sonarcloud.io";
+
     private readonly IAppSettingsService _appSettingsService;
     private SonarQubeClient? _client;
     private Task _task = Task.CompletedTask;
@@ -28,10 +30,8 @@ internal class SonarCloudFavoriteService : ISonarCloudFavoriteService
         {
             return Task.CompletedTask;
         }
-
-        _client = new SonarQubeClient(
-            "https://sonarcloud.io",
-            new BasicAuthentication(key, string.Empty));
+        
+        _client = new SonarQubeClient(SONAR_CLOUD_URL, new BasicAuthentication(key, string.Empty));
 
         _task = Task.Run(async () =>
             {
