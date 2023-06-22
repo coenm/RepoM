@@ -60,7 +60,8 @@ public partial class App : Application
         var fileSystem = new FileSystem();
 
         // Create instance without DI, because we need it before the last registration of services.
-        IPluginFinder pluginFinder = new PluginFinder(fileSystem);
+        IHmacService hmacService = new HmacSha256Service();
+        IPluginFinder pluginFinder = new PluginFinder(fileSystem, hmacService);
 
         IConfiguration config = SetupConfiguration(fileSystem);
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);

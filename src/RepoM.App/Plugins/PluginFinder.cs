@@ -7,23 +7,22 @@ using System.IO.Abstractions;
 using System.Linq;
 using Mono.Cecil;
 using RepoM.Core.Plugin.AssemblyInformation;
-using System.Security.Cryptography;
 
 internal class PluginFinder : IPluginFinder
 {
     private readonly IFileSystem _fileSystem;
+    private readonly IHmacService _hmacService;
 
-    public PluginFinder(IFileSystem fileSystem)
+    public PluginFinder(IFileSystem fileSystem, IHmacService hmacService)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _hmacService = hmacService ?? throw new ArgumentNullException(nameof(hmacService));
     }
 
     public IEnumerable<PluginInfo> FindPlugins(string baseDirectory)
     {
-        foreach (IFileInfo assemblyPath in FindPluginAssemblies(baseDirectory))
-        {
-            yield return GetPluginInfo(assemblyPath.FullName);
-        }
+        return FindPluginAssemblies(baseDirectory)
+          .Select(assemblyPath => GetPluginInfo(assemblyPath.FullName));
     }
 
     private IEnumerable<IFileInfo> FindPluginAssemblies(string baseDirectory)
@@ -62,18 +61,14 @@ internal class PluginFinder : IPluginFinder
     
     private PluginInfo GetPluginInfo(string assemblyPath)
     {
-        byte[] hash;
         using FileSystemStream stream = _fileSystem.File.OpenRead(assemblyPath);
 
-        byte[] key = RandomNumberGenerator.GetBytes(64);
-
-        using (var hmac = new HMACSHA256(key))
-        {
-            hash = key.Concat(hmac.ComputeHash(stream)).ToArray(); // :-)
-        }
         stream.Position = 0;
+        byte[] hash = _hmacService.GetHmac(stream);
 
+        stream.Position = 0;
         PackageAttribute? packageAttribute = ReadPackageDataWithoutLoadingAssembly(stream);
+
         return new PluginInfo(assemblyPath, packageAttribute, hash);
     }
 
