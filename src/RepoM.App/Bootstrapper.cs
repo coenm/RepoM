@@ -170,12 +170,17 @@ internal static class Bootstrapper
         Container.RegisterSingleton<WindowSizeService>();
     }
 
-    public static void RegisterPlugins(IFileSystem fileSystem)
+    public static void RegisterPlugins(IPluginFinder pluginFinder)
     {
         Container.Register<ModuleService>(Lifestyle.Singleton);
+        Container.RegisterInstance(pluginFinder);
 
-        IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
-        IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
+        IEnumerable<PluginInfo> pluginInformation =  pluginFinder.FindPlugins(Path.Combine(AppDomain.CurrentDomain.BaseDirectory));
+
+        // Set predicate what plugins to load, TODO
+        pluginInformation = pluginInformation.Where(plugin => plugin.Name != "aap");
+        
+        IEnumerable<Assembly> assemblies = pluginInformation.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)));
         Container.RegisterPackages(assemblies);
     }
 

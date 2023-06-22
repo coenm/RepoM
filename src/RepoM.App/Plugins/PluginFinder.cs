@@ -1,45 +1,102 @@
 namespace RepoM.App.Plugins;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using Mono.Cecil;
+using RepoM.Core.Plugin.AssemblyInformation;
+using System.Security.Cryptography;
 
-internal static class PluginFinder
+internal class PluginFinder : IPluginFinder
 {
-    public static IEnumerable<FileInfo> FindPluginAssemblies(string baseDirectory, IFileSystem fileSystem)
-    {
-        IEnumerable<FileInfo> assemblies = GetPluginAssembliesInDirectory(baseDirectory);
+    private readonly IFileSystem _fileSystem;
 
-        foreach (var dir in GetPluginDirectories(baseDirectory, fileSystem))
+    public PluginFinder(IFileSystem fileSystem)
+    {
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+    }
+
+    public IEnumerable<PluginInfo> FindPlugins(string baseDirectory)
+    {
+        foreach (IFileInfo assemblyPath in FindPluginAssemblies(baseDirectory))
         {
-            assemblies = assemblies.Concat(GetPluginAssembliesInDirectory(dir));
+            yield return GetPluginInfo(assemblyPath.FullName);
+        }
+    }
+
+    private IEnumerable<IFileInfo> FindPluginAssemblies(string baseDirectory)
+    {
+        IEnumerable<IFileInfo> assemblies = FindPluginFileNames(baseDirectory);
+
+        foreach (var dir in GetPluginDirectories(baseDirectory))
+        {
+            assemblies = assemblies.Concat(FindPluginFileNames(dir));
         }
 
         return assemblies;
     }
 
-    private static IEnumerable<string> GetPluginDirectories(string baseDirectory, IFileSystem fileSystem)
+    private IEnumerable<string> GetPluginDirectories(string baseDirectory)
     {
         var pluginBaseDirectory = Path.Combine(baseDirectory, "Plugins");
 
-        if (!fileSystem.Directory.Exists(pluginBaseDirectory))
+        if (!_fileSystem.Directory.Exists(pluginBaseDirectory))
         {
             return Enumerable.Empty<string>();
         }
 
-        return fileSystem.Directory.EnumerateDirectories(pluginBaseDirectory);
+        return _fileSystem.Directory.EnumerateDirectories(pluginBaseDirectory);
     }
 
-    private static IEnumerable<FileInfo> GetPluginAssembliesInDirectory(string baseDirectory)
+    private IEnumerable<IFileInfo> FindPluginFileNames(string baseDirectory)
     {
-        // todo IFileystem
-        return new DirectoryInfo(baseDirectory)
-            .GetFiles()
-            .Where(file =>
-                file.Name.StartsWith("RepoM.Plugin.")
-                &&
-                file.Extension.ToLower() == ".dll");
-            // .Select(file => Assembly.Load(AssemblyName.GetAssemblyName(file.FullName)));
+        return _fileSystem.DirectoryInfo.New(baseDirectory)
+          .GetFiles()
+          .Where(file =>
+             file.Name.StartsWith("RepoM.Plugin.")
+             &&
+             file.Extension.ToLower() == ".dll");
+    }
+    
+    private PluginInfo GetPluginInfo(string assemblyPath)
+    {
+        byte[] hash;
+        using FileSystemStream stream = _fileSystem.File.OpenRead(assemblyPath);
+
+        byte[] key = RandomNumberGenerator.GetBytes(64);
+
+        using (var hmac = new HMACSHA256(key))
+        {
+            hash = key.Concat(hmac.ComputeHash(stream)).ToArray(); // :-)
+        }
+        stream.Position = 0;
+
+        PackageAttribute? packageAttribute = ReadPackageDataWithoutLoadingAssembly(stream);
+        return new PluginInfo(assemblyPath, packageAttribute, hash);
+    }
+
+    private static PackageAttribute? ReadPackageDataWithoutLoadingAssembly(Stream stream)
+    {
+        using var assembly = AssemblyDefinition.ReadAssembly(stream);
+
+        CustomAttribute? attribute = assembly.CustomAttributes.SingleOrDefault(a => a.AttributeType.FullName == typeof(PackageAttribute).FullName);
+
+        if (attribute == null)
+        {
+            return null;
+        }
+
+        IList<CustomAttributeArgument> constructorArguments = attribute.ConstructorArguments;
+
+        if (constructorArguments.Count != 2)
+        {
+            throw new Exception("Invalid number of constructor arguments");
+        }
+
+        var key = constructorArguments[0].Value.ToString();
+        var value = constructorArguments[1].Value.ToString();
+        return new PackageAttribute(key!, value!);
     }
 }

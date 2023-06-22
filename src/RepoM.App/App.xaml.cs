@@ -59,13 +59,16 @@ public partial class App : Application
 
         var fileSystem = new FileSystem();
 
+        // Create instance without DI, because we need it before the last registration of services.
+        IPluginFinder pluginFinder = new PluginFinder(fileSystem);
+
         IConfiguration config = SetupConfiguration(fileSystem);
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
         Bootstrapper.RegisterServices(fileSystem);
-        Bootstrapper.RegisterPlugins(fileSystem);
+        Bootstrapper.RegisterPlugins(pluginFinder);
 
 #if DEBUG
         Bootstrapper.Container.Verify(VerificationOption.VerifyAndDiagnose);

@@ -34,8 +34,4 @@
     <PackageReference Include="Verify.ClipboardAccept" Version="20.1.1" />
     <PackageReference Include="Verify.Xunit" Version="20.1.1" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.6.133" />
-  </ItemGroup>
 </Project>
