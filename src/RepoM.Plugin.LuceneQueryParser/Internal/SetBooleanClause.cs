@@ -10,7 +10,7 @@ internal class SetBooleanClause : WrappedBooleanClause
         Add(first);
     }
 
-    public SetBooleanClause(WrappedBooleanClause[] items) : base(items.First())
+    public SetBooleanClause(WrappedBooleanClause[] items) : base(items[0])
     {
         foreach (WrappedBooleanClause item in items)
         {
@@ -18,7 +18,7 @@ internal class SetBooleanClause : WrappedBooleanClause
         }
     }
 
-    public BoolMode Mode { get; set; } = BoolMode.NOTHING;
+    public BoolMode Mode { get; init; } = BoolMode.Nothing;
 
     public List<WrappedBooleanClause> Items { get; } = new List<WrappedBooleanClause>();
 
@@ -29,9 +29,21 @@ internal class SetBooleanClause : WrappedBooleanClause
 
     public enum BoolMode
     {
-        AND,
-        OR,
-        NOTHING,
+        /// <summary>
+        /// And
+        /// </summary>
+        And,
+
+        /// <summary>
+        /// Or
+        /// </summary>
+        Or,
+
+        /// <summary>
+        /// Nothing
+        /// </summary>
+        Nothing,
+
     }
 
     public override string ToString()
@@ -41,7 +53,7 @@ internal class SetBooleanClause : WrappedBooleanClause
             return Items.Single().ToString();
         }
 
-        var op = Mode == BoolMode.AND ? "And" : "Or";
+        var op = Mode == BoolMode.And ? "And" : "Or";
         return $"{op}( " + string.Join(", ", Items.Select(x => x.ToString())) + " )";
 
     }

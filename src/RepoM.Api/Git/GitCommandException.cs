@@ -20,4 +20,10 @@ public class GitCommandException : Exception
     {
         Process = null;
     }
+
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        base.GetObjectData(info, context);
+        // process cannot be written to serialization info.
+    }
 }

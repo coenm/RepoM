@@ -73,7 +73,7 @@ public class LuceneQueryParser : INamedQueryParser
 
             IQuery[] array = x.Items.Select(ConvertWrappedBooleanClause).ToArray();
 
-            return x.Mode == SetBooleanClause.BoolMode.AND
+            return x.Mode == SetBooleanClause.BoolMode.And
                 ? new AndQuery(array)
                 : new OrQuery(array);
         }

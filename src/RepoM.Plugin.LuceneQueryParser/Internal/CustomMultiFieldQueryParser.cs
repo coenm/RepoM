@@ -32,7 +32,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
                 WrappedBooleanClause wrappedBooleanClause = booleanClause.IsProhibited
                     ? new NotBooleanClause(booleanClause)
                     : new WrappedBooleanClause(booleanClause);
-                clauses[0] = new SetBooleanClause(wrappedBooleanClause) { Mode = SetBooleanClause.BoolMode.AND, };
+                clauses[0] = new SetBooleanClause(wrappedBooleanClause) { Mode = SetBooleanClause.BoolMode.And, };
                 clauses.Add(_dummy); 
             }
         }
@@ -97,7 +97,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
         if (!clauses.Any())
         {
             // default AND
-            clauses.Add(new SetBooleanClause(clause) { Mode = SetBooleanClause.BoolMode.AND, });
+            clauses.Add(new SetBooleanClause(clause) { Mode = SetBooleanClause.BoolMode.And, });
             clauses.Add(_dummy); // dummy
             return;
         }
@@ -107,7 +107,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
             // and
             var currentClause = (SetBooleanClause)clauses.First();
 
-            if (currentClause.Mode == SetBooleanClause.BoolMode.AND)
+            if (currentClause.Mode == SetBooleanClause.BoolMode.And)
             {
                 currentClause.Items.Add(new SetBooleanClause(clause));
             }
@@ -117,7 +117,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
                 // pick last item to make it
                 // or (x, y, (and (z, zz))
                 WrappedBooleanClause lastItem = currentClause.Items.Last();
-                Debug.Assert(((SetBooleanClause)lastItem).Mode == SetBooleanClause.BoolMode.AND);
+                Debug.Assert(((SetBooleanClause)lastItem).Mode == SetBooleanClause.BoolMode.And);
                 ((SetBooleanClause)lastItem).Items.Add(new SetBooleanClause(clause));
             }
         }
@@ -127,15 +127,15 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
 
             var currentClause = (SetBooleanClause)clauses.First();
 
-            if (currentClause.Mode == SetBooleanClause.BoolMode.OR)
+            if (currentClause.Mode == SetBooleanClause.BoolMode.Or)
             {
                 currentClause.Items.Add(new SetBooleanClause(clause));
             }
             else
             {
                 // start re-ordering.
-                var second = new SetBooleanClause(clause) { Mode = SetBooleanClause.BoolMode.AND, };
-                var combination = new SetBooleanClause(new[] { currentClause, second, }) { Mode = SetBooleanClause.BoolMode.OR, };
+                var second = new SetBooleanClause(clause) { Mode = SetBooleanClause.BoolMode.And, };
+                var combination = new SetBooleanClause(new[] { currentClause, second, }) { Mode = SetBooleanClause.BoolMode.Or, };
                 clauses[0] = combination;
             }
         }
