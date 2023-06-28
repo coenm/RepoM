@@ -18,6 +18,8 @@ public class FileAppSettingsService : IAppSettingsService
     private readonly List<Action> _invalidationHandlers = new();
     private readonly IAppDataPathProvider _appDataPathProvider;
 
+    private List<PluginSettings>? _plugins;
+
     public FileAppSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, ILogger logger)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -284,32 +286,36 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
-    public List<PluginEnabledSettings> Plugins
+    public List<PluginSettings> Plugins
     {
-        get
-        {
-            return Settings.Plugins
-               .Select(x => new PluginEnabledSettings
-                   {
-                       DllName = x.Dll,
-                       Name = x.Name,
-                   })
-               .ToList();
-        }
+        get => _plugins ??= Convert(Settings.Plugins);
         set
         {
-
+            _plugins = value;
             Settings.Plugins = value
-               .Select(x => new PluginEnabledOptions
-                   {
-                       Dll = x.DllName,
-                       Name = x.Name,
-                   })
+               .Select(x => new PluginOptions
+               {
+                   DllName = x.DllName,
+                   Name = x.Name,
+                   Enabled = x.Enabled,
+               })
                .ToList();
 
             NotifyChange();
             Save();
         }
+    }
+
+    private static List<PluginSettings> Convert(IEnumerable<PluginOptions> plugins)
+    {
+        return plugins.Select(x =>
+            new PluginSettings
+            {
+                DllName = x.DllName,
+                Name = x.Name,
+                Enabled = x.Enabled,
+            })
+            .ToList();
     }
 
     public void RegisterInvalidationHandler(Action handler)

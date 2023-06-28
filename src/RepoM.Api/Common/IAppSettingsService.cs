@@ -42,16 +42,16 @@ public interface IAppSettingsService
 
     string SelectedFilter { get; set; }
 
-    public List<PluginEnabledSettings> Plugins { get; set; }
+    public List<PluginSettings> Plugins { get; set; }
 
     void RegisterInvalidationHandler(Action handler);
 }
 
-public class PluginEnabledSettings
+public class PluginSettings
 {
     public string Name { get; set; }
 
     public string DllName { get; set; }
-
+    
     public bool Enabled { get; set; }
 }

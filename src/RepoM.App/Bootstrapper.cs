@@ -43,6 +43,7 @@ using System;
 using System.Linq;
 using SimpleInjector;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using RepoM.App.Services.Hotkey;
@@ -171,18 +172,51 @@ internal static class Bootstrapper
         Container.RegisterSingleton<WindowSizeService>();
     }
 
-    public static void RegisterPlugins(IPluginFinder pluginFinder)
+    public static void RegisterPlugins(IPluginFinder pluginFinder, IFileSystem fileSystem)
     {
         Container.Register<ModuleService>(Lifestyle.Singleton);
         Container.RegisterInstance(pluginFinder);
 
-        IEnumerable<PluginInfo> pluginInformation =  pluginFinder.FindPlugins(Path.Combine(AppDomain.CurrentDomain.BaseDirectory));
+        var baseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
+        IEnumerable<PluginInfo> pluginInformation =  pluginFinder.FindPlugins(baseDirectory);
 
-        // Set predicate what plugins to load, TODO
-        pluginInformation = pluginInformation.Where(plugin => plugin.Name != "aap");
-        
-        IEnumerable<Assembly> assemblies = pluginInformation.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)));
-        Container.RegisterPackages(assemblies);
+        var appSettingsService = new FileAppSettingsService(DefaultAppDataPathProvider.Instance, fileSystem, NullLogger.Instance);
+
+        if (appSettingsService.Plugins.Count == 0)
+        {
+            appSettingsService.Plugins = pluginInformation
+             .Select(x => new PluginSettings
+                 {
+                     Name = x.Name,
+                     Enabled = true,
+                     DllName = x.AssemblyPath.Replace(baseDirectory, string.Empty),
+                 })
+             .ToList();
+        }
+        else
+        {
+            IEnumerable<PluginSettings> newFoundPlugins = pluginInformation
+                .Where(x => appSettingsService.Plugins.All(y => y.Name != x.Name))
+                .Select(xxx => new PluginSettings()
+                {
+                    Name = xxx.Name,
+                    Enabled = false,
+                    DllName = xxx.AssemblyPath.Replace(baseDirectory, string.Empty)
+                });
+
+            var pluginsListCopy = appSettingsService.Plugins.ToList();
+            pluginsListCopy.AddRange(newFoundPlugins);
+            appSettingsService.Plugins = pluginsListCopy;
+        }
+
+        IEnumerable<string> enabledPlugins = appSettingsService.Plugins.Where(x => x.Enabled).Select(xxx => xxx.Name);
+        pluginInformation = pluginInformation.Where(plugin => enabledPlugins.Contains(plugin.Name));
+
+        if (pluginInformation.Any())
+        {
+            IEnumerable<Assembly> assemblies = pluginInformation.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)));
+            Container.RegisterPackages(assemblies);
+        }
     }
 
     public static void RegisterLogging(ILoggerFactory loggerFactory)
