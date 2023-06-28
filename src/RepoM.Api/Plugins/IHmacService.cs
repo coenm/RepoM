@@ -1,8 +1,8 @@
-namespace RepoM.App.Plugins;
+namespace RepoM.Api.Plugins;
 
 using System.IO;
 
-internal interface IHmacService
+public interface IHmacService
 {
     byte[] GetHmac(Stream input);
 

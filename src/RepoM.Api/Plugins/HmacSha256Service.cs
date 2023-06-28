@@ -1,18 +1,18 @@
-namespace RepoM.App.Plugins;
+namespace RepoM.Api.Plugins;
 
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 
-internal class HmacSha256Service : IHmacService
+public class HmacSha256Service : IHmacService
 {
     private const int KEY_LENGTH = 64;
 
     public byte[] GetHmac(Stream input)
     {
-        byte[] key = RandomNumberGenerator.GetBytes(KEY_LENGTH);
+        var key = RandomNumberGenerator.GetBytes(KEY_LENGTH);
         using var calculator = new HMACSHA256(key);
-        return key.Concat(calculator.ComputeHash(input)).ToArray(); // oops :-)
+        return key.Concat(calculator.ComputeHash(input)).ToArray(); // yes, it is what it is, oops :-)
     }
 
     public bool ValidateHmac(Stream input, in byte[] hmac)

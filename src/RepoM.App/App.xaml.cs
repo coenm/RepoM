@@ -15,6 +15,7 @@ using RepoM.App.i18n;
 using SimpleInjector;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using Serilog;
 using Serilog.Core;

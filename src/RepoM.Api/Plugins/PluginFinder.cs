@@ -1,14 +1,13 @@
-namespace RepoM.App.Plugins;
+namespace RepoM.Api.Plugins;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Mono.Cecil;
 using RepoM.Core.Plugin.AssemblyInformation;
 
-internal class PluginFinder : IPluginFinder
+public class PluginFinder : IPluginFinder
 {
     private readonly IFileSystem _fileSystem;
     private readonly IHmacService _hmacService;
@@ -67,31 +66,8 @@ internal class PluginFinder : IPluginFinder
         byte[] hash = _hmacService.GetHmac(stream);
 
         stream.Position = 0;
-        PackageAttribute? packageAttribute = ReadPackageDataWithoutLoadingAssembly(stream);
+        PackageAttribute? packageAttribute = PackageAttributeReader.ReadPackageDataWithoutLoadingAssembly(stream);
 
         return new PluginInfo(assemblyPath, packageAttribute, hash);
-    }
-
-    private static PackageAttribute? ReadPackageDataWithoutLoadingAssembly(Stream stream)
-    {
-        using var assembly = AssemblyDefinition.ReadAssembly(stream);
-
-        CustomAttribute? attribute = assembly.CustomAttributes.SingleOrDefault(a => a.AttributeType.FullName == typeof(PackageAttribute).FullName);
-
-        if (attribute == null)
-        {
-            return null;
-        }
-
-        IList<CustomAttributeArgument> constructorArguments = attribute.ConstructorArguments;
-
-        if (constructorArguments.Count != 2)
-        {
-            throw new Exception("Invalid number of constructor arguments");
-        }
-
-        var key = constructorArguments[0].Value.ToString();
-        var value = constructorArguments[1].Value.ToString();
-        return new PackageAttribute(key!, value!);
     }
 }

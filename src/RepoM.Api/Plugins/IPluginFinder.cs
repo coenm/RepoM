@@ -1,8 +1,8 @@
-namespace RepoM.App.Plugins;
+namespace RepoM.Api.Plugins;
 
 using System.Collections.Generic;
 
-internal interface IPluginFinder
+public interface IPluginFinder
 {
     IEnumerable<PluginInfo> FindPlugins(string baseDirectory);
 }
