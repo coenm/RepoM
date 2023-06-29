@@ -30,7 +30,6 @@ public class DefaultDriveEnumerator : IPathProvider
             return paths;
         }
 
-        var x = _fileSystem.DriveInfo.GetDrives().ToArray();
         return _fileSystem.DriveInfo.GetDrives()
                          .Where(d => d.DriveType == DriveType.Fixed)
                          .Select(d => d.RootDirectory.FullName)

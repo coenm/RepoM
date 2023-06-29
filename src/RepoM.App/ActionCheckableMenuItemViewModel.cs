@@ -23,7 +23,11 @@ public class ActionCheckableMenuItemViewModel : MenuItemViewModel
     public override bool IsChecked
     {
         get => _isSelectedFunc.Invoke();
-        set => _setKeyFunc.Invoke();
+        set
+        {
+            _ = value; // avoid warnings to use 'value' in setter.
+            _setKeyFunc.Invoke();
+        }
     }
 
     public void Poke()

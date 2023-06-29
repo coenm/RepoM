@@ -5,12 +5,12 @@ using System.Linq;
 
 internal class SetBooleanClause : WrappedBooleanClause
 {
-    public SetBooleanClause(WrappedBooleanClause first) : base(first)
+    public SetBooleanClause(WrappedBooleanClause clause) : base(clause)
     {
-        Add(first);
+        Add(clause);
     }
 
-    public SetBooleanClause(WrappedBooleanClause[] items) : base(items[0])
+    public SetBooleanClause(params WrappedBooleanClause[] items) : base(items[0])
     {
         foreach (WrappedBooleanClause item in items)
         {
@@ -43,7 +43,6 @@ internal class SetBooleanClause : WrappedBooleanClause
         /// Nothing
         /// </summary>
         Nothing,
-
     }
 
     public override string ToString()
@@ -55,6 +54,5 @@ internal class SetBooleanClause : WrappedBooleanClause
 
         var op = Mode == BoolMode.And ? "And" : "Or";
         return $"{op}( " + string.Join(", ", Items.Select(x => x.ToString())) + " )";
-
     }
 }

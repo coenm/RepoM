@@ -80,7 +80,8 @@ public partial class App : Application
 
         _updateTimer = new Timer(async _ => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
 
-        MainWindow window = Bootstrapper.Container.GetInstance<MainWindow>();
+        _ = Bootstrapper.Container.GetInstance<MainWindow>(); // not sure if this is required.
+
         _moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
         _hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
         _windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
