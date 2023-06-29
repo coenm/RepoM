@@ -1,7 +1,6 @@
-namespace RepoM.App;
+namespace RepoM.App.ViewModels;
 
 using System;
-using RepoM.App.ViewModels;
 
 public class ActionCheckableMenuItemViewModel : MenuItemViewModel
 {
@@ -15,8 +14,12 @@ public class ActionCheckableMenuItemViewModel : MenuItemViewModel
     {
         _isSelectedFunc = isSelectedFunc ?? throw new ArgumentNullException(nameof(isSelectedFunc));
         _setKeyFunc = setKeyFunc ?? throw new ArgumentNullException(nameof(setKeyFunc));
-
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            throw new ArgumentNullException(nameof(title));
+        }
         Header = title;
+        
         IsCheckable = true;
     }
 
