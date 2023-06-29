@@ -24,10 +24,7 @@ public class ActionCheckableMenuItemViewModelTests
                 return _isSelectedValue;
             };
         _setKeyFuncCalled = false;
-        _setKeyFunc = () =>
-            {
-                _setKeyFuncCalled = true;
-            };
+        _setKeyFunc = () => _setKeyFuncCalled = true;
     }
 
     [Fact]
@@ -83,5 +80,4 @@ public class ActionCheckableMenuItemViewModelTests
         _isSelectedFuncCalled.Should().BeFalse();
         _setKeyFuncCalled.Should().BeTrue();
     }
-    
 }
