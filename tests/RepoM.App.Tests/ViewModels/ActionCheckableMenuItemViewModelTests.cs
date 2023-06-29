@@ -12,8 +12,7 @@ public class ActionCheckableMenuItemViewModelTests
     private bool _isSelectedValue;
     private bool _isSelectedFuncCalled;
     private readonly Func<bool> _isSelectedFunc;
-
-    private readonly Action setKeyFunc;
+    private readonly Action _setKeyFunc;
     private bool _setKeyFuncCalled;
 
     public ActionCheckableMenuItemViewModelTests()
@@ -25,7 +24,7 @@ public class ActionCheckableMenuItemViewModelTests
                 return _isSelectedValue;
             };
         _setKeyFuncCalled = false;
-        setKeyFunc = () =>
+        _setKeyFunc = () =>
             {
                 _setKeyFuncCalled = true;
             };
@@ -37,11 +36,11 @@ public class ActionCheckableMenuItemViewModelTests
         // arrange
 
         // act
-        var act1 = () => _ = new ActionCheckableMenuItemViewModel(_isSelectedFunc, setKeyFunc, null!);
-        var act2 = () => _ = new ActionCheckableMenuItemViewModel(_isSelectedFunc, setKeyFunc, string.Empty);
-        var act3 = () => _ = new ActionCheckableMenuItemViewModel(_isSelectedFunc, setKeyFunc, " ");
+        var act1 = () => _ = new ActionCheckableMenuItemViewModel(_isSelectedFunc, _setKeyFunc, null!);
+        var act2 = () => _ = new ActionCheckableMenuItemViewModel(_isSelectedFunc, _setKeyFunc, string.Empty);
+        var act3 = () => _ = new ActionCheckableMenuItemViewModel(_isSelectedFunc, _setKeyFunc, " ");
         var act4 = () => _ = new ActionCheckableMenuItemViewModel(_isSelectedFunc, null!, "dummy");
-        var act5 = () => _ = new ActionCheckableMenuItemViewModel(null!, setKeyFunc, "dummy");
+        var act5 = () => _ = new ActionCheckableMenuItemViewModel(null!, _setKeyFunc, "dummy");
 
         // assert
         act1.Should().ThrowExactly<ArgumentNullException>();
@@ -58,7 +57,7 @@ public class ActionCheckableMenuItemViewModelTests
     {
         // arrange
         _isSelectedValue = isSelectedValue;
-        var sut = new ActionCheckableMenuItemViewModel(_isSelectedFunc, setKeyFunc, "dummy title");
+        var sut = new ActionCheckableMenuItemViewModel(_isSelectedFunc, _setKeyFunc, "dummy title");
 
         // act
         var result = sut.IsChecked;
@@ -75,7 +74,7 @@ public class ActionCheckableMenuItemViewModelTests
     public void IsChecked_ShouldCallSetAction_WhenSet(bool value)
     {
         // arrange
-        var sut = new ActionCheckableMenuItemViewModel(_isSelectedFunc, setKeyFunc, "dummy title");
+        var sut = new ActionCheckableMenuItemViewModel(_isSelectedFunc, _setKeyFunc, "dummy title");
 
         // act
         sut.IsChecked = value;
