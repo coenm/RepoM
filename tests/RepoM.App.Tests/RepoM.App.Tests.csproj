@@ -38,8 +38,4 @@
     <ProjectReference Include="..\..\src\RepoM.App\RepoM.App.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
-
 </Project>

@@ -80,7 +80,7 @@ public partial class MainWindow
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
         var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var pluginsViewModel = new PluginsViewModel(_moduleManager, threadDispatcher);
+        var pluginsViewModel = new PluginCollectionViewModel(_moduleManager);
 
         DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel, pluginsViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree

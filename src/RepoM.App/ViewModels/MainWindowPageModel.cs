@@ -16,7 +16,7 @@ public class MainWindowPageModel : INotifyPropertyChanged
         OrderingsViewModel orderingsViewModel,
         QueryParsersViewModel queryParsersViewModel,
         FiltersViewModel filtersViewModel,
-        PluginsViewModel pluginsViewModel)
+        PluginCollectionViewModel pluginsViewModel)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         Orderings = orderingsViewModel ?? throw new ArgumentNullException(nameof(orderingsViewModel));
@@ -31,7 +31,7 @@ public class MainWindowPageModel : INotifyPropertyChanged
 
     public FiltersViewModel Filters { get; }
 
-    public PluginsViewModel Plugins { get; }
+    public PluginCollectionViewModel Plugins { get; }
 
     public AutoFetchMode AutoFetchMode
     {

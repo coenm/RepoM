@@ -6,12 +6,10 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 
-public class ModuleManager : IModuleManager
+public class ModuleManager : IModuleManager 
 {
     private readonly IAppSettingsService _appSettingsService;
     private readonly ILogger _logger;
-
-    public event EventHandler? Changed;
 
     public ModuleManager(IAppSettingsService appSettingsService, ILogger logger)
     {
@@ -19,37 +17,30 @@ public class ModuleManager : IModuleManager
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         Plugins = _appSettingsService.Plugins
-                                     .Select(x => new PluginModel(this)
+                                     .Select(x => new PluginModel(x.Enabled, (key, enabled) => Update(key, enabled))
                                          {
-                                             Description = "",
+                                             Name = x.Name,
                                              Dll = x.DllName,
-                                             Enabled = x.Enabled,
-                                             Found = false,
+                                             Found = true,
                                          })
                                      .ToList();
-
-        Changed?.Invoke(this, EventArgs.Empty);
     }
 
     public IReadOnlyList<PluginModel> Plugins { get; }
-}
 
-public sealed class PluginModel
-{
-    private readonly IModuleManager _moduleManager;
-
-    public PluginModel(IModuleManager moduleManager)
+    // this happends in UI thread.
+    private void Update(string dll, bool enabled)
     {
-        _moduleManager = moduleManager ?? throw new ArgumentNullException(nameof(moduleManager));
+        _logger.LogInformation(enabled ? $"Enabling plugin {dll}" : $"Disabling plugin {dll}");
+        var pluginsCopy = _appSettingsService.Plugins.ToList();
+        PluginSettings? item = pluginsCopy.SingleOrDefault(x => x.DllName == dll);
+        if (item == null)
+        {
+            _logger.LogError($"Could not find plugin {dll}");
+            return;
+        }
+
+        item.Enabled = enabled;
+        _appSettingsService.Plugins = pluginsCopy; // this triggers the save
     }
-
-    public string Name { get; init; } = null!;
-
-    public string Dll { get; init; } = null!;
-    
-    public bool Enabled { get; set; } = true;
-
-    public bool Found { get; set; }
-
-    public string? Description { get; set; }
 }

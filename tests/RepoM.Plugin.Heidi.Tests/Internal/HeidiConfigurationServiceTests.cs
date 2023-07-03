@@ -329,6 +329,7 @@ public class HeidiConfigurationServiceTests
         A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustNotHaveHappened();
     }
 
+    // fragille test, failed once on build server
     [Fact]
     public async Task Events_ShouldBeBundled_WhenHappeningWithinWindow()
     {
