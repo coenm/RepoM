@@ -49,9 +49,16 @@ public interface IAppSettingsService
 
 public class PluginSettings
 {
-    public string Name { get; set; }
+    public PluginSettings(string name, string dllName, bool enabled)
+    {
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+        DllName = dllName ?? throw new ArgumentNullException(nameof(dllName));
+        Enabled = enabled;
+    }
 
-    public string DllName { get; set; }
+    public string Name { get; }
+
+    public string DllName { get; }
     
     public bool Enabled { get; set; }
 }

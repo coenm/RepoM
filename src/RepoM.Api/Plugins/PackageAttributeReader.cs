@@ -25,7 +25,6 @@ public static class PackageAttributeReader
 
             if (constructorArguments.Count != 2)
             {
-                // Invalid number of constructor arguments;
                 return null;
             }
 

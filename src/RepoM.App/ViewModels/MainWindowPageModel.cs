@@ -3,6 +3,7 @@ namespace RepoM.App.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using JetBrains.Annotations;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
 
@@ -25,13 +26,13 @@ public class MainWindowPageModel : INotifyPropertyChanged
         Plugins = pluginsViewModel ?? throw new ArgumentNullException(nameof(pluginsViewModel));
     }
 
-    public QueryParsersViewModel QueryParsers { get; }
+    public QueryParsersViewModel QueryParsers { [UsedImplicitly] get; }
 
-    public OrderingsViewModel Orderings { get; }
+    public OrderingsViewModel Orderings { [UsedImplicitly] get; }
 
-    public FiltersViewModel Filters { get; }
+    public FiltersViewModel Filters { [UsedImplicitly] get; }
 
-    public PluginCollectionViewModel Plugins { get; }
+    public PluginCollectionViewModel Plugins { [UsedImplicitly] get; }
 
     public AutoFetchMode AutoFetchMode
     {
@@ -52,25 +53,41 @@ public class MainWindowPageModel : INotifyPropertyChanged
     public bool AutoFetchOff
     {
         get => AutoFetchMode == AutoFetchMode.Off;
-        set => AutoFetchMode = AutoFetchMode.Off;
+        set
+        {
+            _ = value; // avoid warnings to use 'value' in setter.
+            AutoFetchMode = AutoFetchMode.Off;
+        }
     }
 
     public bool AutoFetchDiscretely
     {
         get => AutoFetchMode == AutoFetchMode.Discretely;
-        set => AutoFetchMode = AutoFetchMode.Discretely;
+        set
+        {
+            _ = value; // avoid warnings to use 'value' in setter.
+            AutoFetchMode = AutoFetchMode.Discretely;
+        }
     }
 
     public bool AutoFetchAdequate
     {
         get => AutoFetchMode == AutoFetchMode.Adequate;
-        set => AutoFetchMode = AutoFetchMode.Adequate;
+        set
+        {
+            _ = value; // avoid warnings to use 'value' in setter.
+            AutoFetchMode = AutoFetchMode.Adequate;
+        }
     }
 
     public bool AutoFetchAggressive
     {
         get => AutoFetchMode == AutoFetchMode.Aggressive;
-        set => AutoFetchMode = AutoFetchMode.Aggressive;
+        set
+        {
+            _ = value; // avoid warnings to use 'value' in setter.
+            AutoFetchMode = AutoFetchMode.Aggressive;
+        }
     }
 
     public bool PruneOnFetch

@@ -178,31 +178,24 @@ internal static class Bootstrapper
         Container.RegisterInstance(pluginFinder);
 
         var baseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
-        IEnumerable<PluginInfo> pluginInformation =  pluginFinder.FindPlugins(baseDirectory);
+        IEnumerable<PluginInfo> pluginInformation =  pluginFinder.FindPlugins(baseDirectory).ToArray();
+
+        static PluginSettings Convert(PluginInfo pluginInfo, string baseDir, bool enabled)
+        {
+            return new PluginSettings(pluginInfo.Name, pluginInfo.AssemblyPath.Replace(baseDir, string.Empty), enabled);
+        }
 
         var appSettingsService = new FileAppSettingsService(DefaultAppDataPathProvider.Instance, fileSystem, NullLogger.Instance);
 
         if (appSettingsService.Plugins.Count == 0)
         {
-            appSettingsService.Plugins = pluginInformation
-             .Select(x => new PluginSettings
-                 {
-                     Name = x.Name,
-                     Enabled = true,
-                     DllName = x.AssemblyPath.Replace(baseDirectory, string.Empty),
-                 })
-             .ToList();
+            appSettingsService.Plugins = pluginInformation.Select(plugin => Convert(plugin, baseDirectory, true)).ToList();
         }
         else
         {
             IEnumerable<PluginSettings> newFoundPlugins = pluginInformation
-                .Where(x => appSettingsService.Plugins.All(y => y.Name != x.Name))
-                .Select(xxx => new PluginSettings()
-                {
-                    Name = xxx.Name,
-                    Enabled = false,
-                    DllName = xxx.AssemblyPath.Replace(baseDirectory, string.Empty)
-                });
+                .Where(pluginInfo => appSettingsService.Plugins.All(plugin => plugin.Name != pluginInfo.Name))
+                .Select(plugin => Convert(plugin, baseDirectory, false));
 
             var pluginsListCopy = appSettingsService.Plugins.ToList();
             pluginsListCopy.AddRange(newFoundPlugins);
@@ -210,11 +203,14 @@ internal static class Bootstrapper
         }
 
         IEnumerable<string> enabledPlugins = appSettingsService.Plugins.Where(x => x.Enabled).Select(xxx => xxx.Name);
-        pluginInformation = pluginInformation.Where(plugin => enabledPlugins.Contains(plugin.Name));
+        
+        Assembly[] assemblies = pluginInformation
+            .Where(plugin => enabledPlugins.Contains(plugin.Name))
+            .Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)))
+            .ToArray();
 
-        if (pluginInformation.Any())
+        if (assemblies.Any())
         {
-            IEnumerable<Assembly> assemblies = pluginInformation.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)));
             Container.RegisterPackages(assemblies);
         }
     }

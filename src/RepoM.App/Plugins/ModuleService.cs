@@ -9,13 +9,12 @@ using RepoM.Core.Plugin;
 
 internal class ModuleService : IAsyncDisposable
 {
-    private readonly IAppSettingsService _appSettings;
     private readonly IModule[] _modules;
     private static Task? _stopTask;
 
     public ModuleService(IEnumerable<IModule> modules, IAppSettingsService appSettings)
     {
-        _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+        _ = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
         _modules = modules.ToArray();
     }
 

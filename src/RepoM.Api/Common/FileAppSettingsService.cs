@@ -308,14 +308,7 @@ public class FileAppSettingsService : IAppSettingsService
 
     private static List<PluginSettings> Convert(IEnumerable<PluginOptions> plugins)
     {
-        return plugins.Select(x =>
-            new PluginSettings
-            {
-                DllName = x.DllName,
-                Name = x.Name,
-                Enabled = x.Enabled,
-            })
-            .ToList();
+        return plugins.Select(x => new PluginSettings(x.Name, x.DllName, x.Enabled)).ToList();
     }
 
     public void RegisterInvalidationHandler(Action handler)

@@ -17,13 +17,13 @@ public class ModuleManager : IModuleManager
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         Plugins = _appSettingsService.Plugins
-                                     .Select(x => new PluginModel(x.Enabled, (key, enabled) => Update(key, enabled))
-                                         {
-                                             Name = x.Name,
-                                             Dll = x.DllName,
-                                             Found = true,
-                                         })
-                                     .ToList();
+            .Select(plugin => new PluginModel(plugin.Enabled, (key, enabled) => Update(key, enabled))
+            {
+                Name = plugin.Name,
+                Dll = plugin.DllName,
+                Found = true,
+            })
+            .ToList();
     }
 
     public IReadOnlyList<PluginModel> Plugins { get; }
@@ -33,10 +33,10 @@ public class ModuleManager : IModuleManager
     {
         _logger.LogInformation(enabled ? $"Enabling plugin {dll}" : $"Disabling plugin {dll}");
         var pluginsCopy = _appSettingsService.Plugins.ToList();
-        PluginSettings? item = pluginsCopy.SingleOrDefault(x => x.DllName == dll);
+        PluginSettings? item = pluginsCopy.SingleOrDefault(plugin => plugin.DllName == dll);
         if (item == null)
         {
-            _logger.LogError($"Could not find plugin {dll}");
+            _logger.LogError("Could not find plugin {dll}", dll);
             return;
         }
 
