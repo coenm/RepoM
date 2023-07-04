@@ -2,6 +2,7 @@ namespace RepoM.Api.Tests.IO;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using FakeItEasy;
@@ -67,5 +68,41 @@ public class DefaultDriveEnumeratorTests
 
         // assert
         result.Should().BeEquivalentTo("d:\\abc\\");
+    }
+
+    [Fact]
+    public void GetPaths_ShouldReturnHardDrives_WhenNoExistingPredefinedPathsFound()
+    {
+        // arrange
+        _appSettings.ReposRootDirectories = new List<string> { "d:\\abc-not-exist\\", };
+        IFileSystem fileSystem = A.Fake<IFileSystem>();
+        IDriveInfoFactory driveInfo = A.Fake<IDriveInfoFactory>();
+        A.CallTo(() => driveInfo.GetDrives()).Returns(
+            new []
+                {
+                    CreateDriveInfo("C:\\", DriveType.Fixed),
+                    CreateDriveInfo("D:\\", DriveType.Fixed),
+                    CreateDriveInfo("E:\\", DriveType.Removable),
+                });
+        A.CallTo(() => fileSystem.DriveInfo).Returns(driveInfo);
+        
+        var sut = new DefaultDriveEnumerator(_appSettings, fileSystem, NullLogger.Instance);
+
+        // act
+        var result = sut.GetPaths();
+
+        // assert
+        result.Should().BeEquivalentTo("C:\\", "D:\\");
+    }
+
+    private static IDriveInfo CreateDriveInfo(string name, DriveType type)
+    {
+        IDriveInfo result = A.Fake<IDriveInfo>(x => x.Strict());
+        A.CallTo(() => result.DriveType).Returns(type);
+        A.CallTo(() => result.Name).Returns(name);
+        IDirectoryInfo di = A.Fake<IDirectoryInfo>();
+        A.CallTo(() => di.FullName).Returns(name);
+        A.CallTo(() => result.RootDirectory).Returns(di);
+        return result;
     }
 }
