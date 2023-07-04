@@ -1,11 +1,11 @@
-namespace RepoM.App.Services.Hotkey;
+namespace RepoM.App.Services.HotKey;
 
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
-internal class HotKey
+internal class HotKeyWindowsRegistration
 {
     [DllImport("User32.dll")]
     private static extern bool RegisterHotKey(
@@ -20,7 +20,6 @@ internal class HotKey
         [In] int id);
 
     public const uint VK_R = 0x52;
-    public const uint VK_Z = 0x5A;
     public const uint MOD_ALT = 0x0001;
     public const uint MOD_CTRL = 0x0002;
     public const uint MOD_SHIFT = 0x0004;
@@ -28,10 +27,9 @@ internal class HotKey
 
     private IntPtr _handle;
     private Action? _hotKeyActionToCall;
-    private HwndSource? _source;
     private readonly int _id;
 
-    public HotKey(int id)
+    public HotKeyWindowsRegistration(int id)
     {
         _id = id;
     }
@@ -42,8 +40,8 @@ internal class HotKey
         _handle = helper.EnsureHandle();
         _hotKeyActionToCall = hotKeyActionToCall;
 
-        _source = HwndSource.FromHwnd(_handle);
-        _source?.AddHook(HwndHook);
+        var source = HwndSource.FromHwnd(_handle);
+        source?.AddHook(HwndHook);
 
         if (!RegisterHotKey(_handle, _id, modifiers, key))
         {
@@ -58,10 +56,10 @@ internal class HotKey
 
     private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        const int WM_HOTKEY = 0x0312;
+        const int WM_HOT_KEY = 0x0312;
         switch (msg)
         {
-            case WM_HOTKEY:
+            case WM_HOT_KEY:
                 if (wParam.ToInt32() == _id)
                 {
                     _hotKeyActionToCall?.Invoke();

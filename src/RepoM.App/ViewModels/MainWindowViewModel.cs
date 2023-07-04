@@ -7,12 +7,12 @@ using JetBrains.Annotations;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
 
-public class MainWindowPageModel : INotifyPropertyChanged
+public class MainWindowViewModel : INotifyPropertyChanged
 {
     private readonly IAppSettingsService _appSettingsService;
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public MainWindowPageModel(
+    public MainWindowViewModel(
         IAppSettingsService appSettingsService,
         OrderingsViewModel orderingsViewModel,
         QueryParsersViewModel queryParsersViewModel,
@@ -26,15 +26,7 @@ public class MainWindowPageModel : INotifyPropertyChanged
         Plugins = pluginsViewModel ?? throw new ArgumentNullException(nameof(pluginsViewModel));
     }
 
-    public QueryParsersViewModel QueryParsers { [UsedImplicitly] get; }
-
-    public OrderingsViewModel Orderings { [UsedImplicitly] get; }
-
-    public FiltersViewModel Filters { [UsedImplicitly] get; }
-
-    public PluginCollectionViewModel Plugins { [UsedImplicitly] get; }
-
-    public AutoFetchMode AutoFetchMode
+    private AutoFetchMode AutoFetchMode
     {
         get => _appSettingsService.AutoFetchMode;
         set
@@ -46,9 +38,16 @@ public class MainWindowPageModel : INotifyPropertyChanged
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchDiscretely)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAdequate)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAggressive)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnabledSearchRepoEverything)));
         }
     }
+
+    public QueryParsersViewModel QueryParsers { [UsedImplicitly] get; }
+
+    public OrderingsViewModel Orderings { [UsedImplicitly] get; }
+
+    public FiltersViewModel Filters { [UsedImplicitly] get; }
+
+    public PluginCollectionViewModel Plugins { [UsedImplicitly] get; }
 
     public bool AutoFetchOff
     {
@@ -98,7 +97,7 @@ public class MainWindowPageModel : INotifyPropertyChanged
 
     public bool EnabledSearchRepoEverything
     {
-        get => _appSettingsService.EnabledSearchProviders.Any(item => "Everything".Equals(item, StringComparison.CurrentCultureIgnoreCase));
+        get => _appSettingsService.EnabledSearchProviders.Exists(item => "Everything".Equals(item, StringComparison.CurrentCultureIgnoreCase));
         set
         {
             if (value)

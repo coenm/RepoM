@@ -82,7 +82,7 @@ public partial class MainWindow
         var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
         var pluginsViewModel = new PluginCollectionViewModel(_moduleManager);
 
-        DataContext = new MainWindowPageModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel, pluginsViewModel);
+        DataContext = new MainWindowViewModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel, pluginsViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;

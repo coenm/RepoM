@@ -46,7 +46,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
-using RepoM.App.Services.Hotkey;
+using RepoM.App.Services.HotKey;
 
 internal static class Bootstrapper
 {

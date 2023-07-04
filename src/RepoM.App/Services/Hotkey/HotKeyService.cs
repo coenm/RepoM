@@ -1,4 +1,4 @@
-namespace RepoM.App.Services.Hotkey;
+namespace RepoM.App.Services.HotKey;
 
 using System;
 using System.Windows;
@@ -6,7 +6,7 @@ using System.Windows;
 internal class HotKeyService
 {
     private readonly MainWindow _mainWindow;
-    private HotKey? _hotKey;
+    private HotKeyWindowsRegistration? _hotKey;
 
     public HotKeyService(MainWindow mainWindow)
     {
@@ -19,8 +19,8 @@ internal class HotKeyService
         // To fix this, we need to make the window visible in EnsureWindowHandle() but we set the opacity to 0.0 to prevent flickering
         EnsureWindowHandle(_mainWindow);
 
-        _hotKey = new HotKey(47110815);
-        _hotKey.Register(_mainWindow, HotKey.VK_R, HotKey.MOD_ALT | HotKey.MOD_CTRL, OnHotKeyPressed);
+        _hotKey = new HotKeyWindowsRegistration(47110815);
+        _hotKey.Register(_mainWindow, HotKeyWindowsRegistration.VK_R, HotKeyWindowsRegistration.MOD_ALT | HotKeyWindowsRegistration.MOD_CTRL, OnHotKeyPressed);
     }
 
     public void Unregister()

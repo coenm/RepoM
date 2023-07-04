@@ -135,7 +135,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
             {
                 // start re-ordering.
                 var second = new SetBooleanClause(clause) { Mode = SetBooleanClause.BoolMode.And, };
-                var combination = new SetBooleanClause(new[] { currentClause, second, }) { Mode = SetBooleanClause.BoolMode.Or, };
+                var combination = new SetBooleanClause(currentClause, second) { Mode = SetBooleanClause.BoolMode.Or, };
                 clauses[0] = combination;
             }
         }
