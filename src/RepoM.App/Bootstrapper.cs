@@ -194,7 +194,7 @@ internal static class Bootstrapper
         else
         {
             IEnumerable<PluginSettings> newFoundPlugins = pluginInformation
-                .Where(pluginInfo => appSettingsService.Plugins.All(plugin => plugin.Name != pluginInfo.Name))
+                .Where(pluginInfo => appSettingsService.Plugins.TrueForAll(plugin => plugin.Name != pluginInfo.Name))
                 .Select(plugin => Convert(plugin, baseDirectory, false));
 
             var pluginsListCopy = appSettingsService.Plugins.ToList();

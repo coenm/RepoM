@@ -31,7 +31,16 @@ public class ModuleManager : IModuleManager
     // this happends in UI thread.
     private void Update(string dll, bool enabled)
     {
-        _logger.LogInformation(enabled ? $"Enabling plugin {dll}" : $"Disabling plugin {dll}");
+        // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression, Justification: Sonar Warning
+        if (enabled)
+        {
+            _logger.LogInformation("Enabling plugin {dll}", dll);
+        }
+        else
+        {
+            _logger.LogInformation("Disabling plugin {dll}", dll);
+        }
+        
         var pluginsCopy = _appSettingsService.Plugins.ToList();
         PluginSettings? item = pluginsCopy.SingleOrDefault(plugin => plugin.DllName == dll);
         if (item == null)
