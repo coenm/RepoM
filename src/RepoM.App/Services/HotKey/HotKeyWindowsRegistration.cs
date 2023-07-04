@@ -5,19 +5,21 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
-internal class HotKeyWindowsRegistration
+internal partial class HotKeyWindowsRegistration
 {
-    [DllImport("User32.dll")]
-    private static extern bool RegisterHotKey(
-        [In] IntPtr hWnd,
-        [In] int id,
-        [In] uint fsModifiers,
-        [In] uint vk);
+    [LibraryImport("User32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool RegisterHotKey(
+        IntPtr hWnd,
+        int id,
+        uint fsModifiers,
+        uint vk);
 
-    [DllImport("User32.dll")]
-    private static extern bool UnregisterHotKey(
-        [In] IntPtr hWnd,
-        [In] int id);
+    [LibraryImport("User32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool UnregisterHotKey(
+        IntPtr hWnd,
+        int id);
 
     public const uint VK_R = 0x52;
     public const uint MOD_ALT = 0x0001;
