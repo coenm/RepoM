@@ -48,7 +48,7 @@ using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using RepoM.App.Services.HotKey;
 
-internal static class Bootstrapper
+public static class Bootstrapper // this should be internal, but made public because of test.
 {
     public static readonly Container Container = new();
 
