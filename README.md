@@ -62,7 +62,7 @@ The `RepositoryActions.yaml` file also contains a section to define tags per rep
 
 ## Plugins
 
-RepoM uses plugins to extend functionality. At this moment, when a plugin is available in the installed directory, it will be loaded. In the future, hopefully, a menu item in RepoM will be added so enable/disable plugins.
+RepoM uses plugins to extend functionality. At this moment, when a plugin is available in the installed directory, it will be found and can be enabled or disabled. This is done in the hamburger menu of RepoM. Enabling or disabling requires a restart of RepoM.
 
 - [Plugins](docs/Plugins.md)
   - [AzureDevOps](docs/RepoM.Plugin.AzureDevOps.md)
