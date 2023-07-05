@@ -10,11 +10,13 @@ internal class LastOpenedComparer : IRepositoryComparer
 {
     private readonly IStatisticsService _service;
     private readonly int _weight;
+    private readonly int _negativeWeight;
     
     public LastOpenedComparer(IStatisticsService service, int weight)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _weight = weight;
+        _negativeWeight = -1 * weight;
     }
 
     public int Compare(IRepository? x, IRepository? y)
@@ -29,14 +31,14 @@ internal class LastOpenedComparer : IRepositoryComparer
             return 0;
         }
 
-        if (ReferenceEquals(null, y))
+        if (y is null)
         {
             return _weight;
         }
 
-        if (ReferenceEquals(null, x))
+        if (x is null)
         {
-            return -1 * _weight;
+            return _negativeWeight;
         }
 
         DateTime lastX = GetLast(x);
@@ -52,7 +54,7 @@ internal class LastOpenedComparer : IRepositoryComparer
             return _weight;
         }
 
-        return -1 * _weight;
+        return _negativeWeight;
     }
 
     private DateTime GetLast(IRepository repository)

@@ -42,5 +42,23 @@ public interface IAppSettingsService
 
     string SelectedFilter { get; set; }
 
+    public List<PluginSettings> Plugins { get; set; }
+
     void RegisterInvalidationHandler(Action handler);
+}
+
+public class PluginSettings
+{
+    public PluginSettings(string name, string dllName, bool enabled)
+    {
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+        DllName = dllName ?? throw new ArgumentNullException(nameof(dllName));
+        Enabled = enabled;
+    }
+
+    public string Name { get; }
+
+    public string DllName { get; }
+    
+    public bool Enabled { get; set; }
 }

@@ -38,11 +38,4 @@
     <ProjectReference Include="..\..\src\RepoM.Api\RepoM.Api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.6.133" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IO\VariableProviders\" />
-  </ItemGroup>
 </Project>

@@ -1,0 +1,12 @@
+﻿[
+  {
+    Name: Name1,
+    DllName: dll1,
+    Enabled: true
+  },
+  {
+    Name: Name2,
+    DllName: dll2,
+    Enabled: false
+  }
+]

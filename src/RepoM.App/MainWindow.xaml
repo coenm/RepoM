@@ -190,6 +190,23 @@
                                         </controls:AcrylicMenuItem.ItemContainerStyle>
                                     </controls:AcrylicMenuItem>
 
+                                    <controls:AcrylicMenuItem Header="Plugins" ItemsSource="{Binding Path=Plugins}" >
+                                        <controls:AcrylicMenuItem.ItemContainerStyle>
+                                            <Style>
+                                                <Setter Property="controls:AcrylicMenuItem.Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type MenuItem}">
+                                                            <controls:AcrylicMenuItem 
+                                                                Header="{Binding Header}"
+                                                                IsCheckable="{Binding IsCheckable}"
+                                                                IsChecked="{Binding IsChecked}"/>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </controls:AcrylicMenuItem.ItemContainerStyle>
+                                    </controls:AcrylicMenuItem>
+
                                     <controls:AcrylicMenuItem Header="{DynamicResource AutoFetch}" x:Name="AutoFetchMenuItem" >
 										<controls:AcrylicMenuItem Header="{DynamicResource Off}" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
 										<Separator/>

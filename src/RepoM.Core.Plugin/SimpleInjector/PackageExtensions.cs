@@ -3,7 +3,6 @@
 
 // This class is placed in the root namespace to allow users to start using these extension methods after
 // adding the assembly reference, without find and add the correct namespace.
-// ReSharper disable CheckNamespace
 namespace SimpleInjector
 {
     using System;
@@ -70,9 +69,7 @@ namespace SimpleInjector
 
             if (assemblies.Any(a => a is null))
             {
-                throw new ArgumentNullException(
-                    "The elements of the supplied collection should not be null.",
-                    nameof(assemblies));
+                throw new ArgumentNullException(nameof(assemblies), "The elements of the supplied collection should not be null.");
             }
 
             var packageTypes = (

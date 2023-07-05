@@ -8,9 +8,9 @@ using RepoM.Plugin.Heidi.Internal.Config;
 
 internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
 {
-    private const string HASHTAG_REPO = "#repo:";
-    private const string HASHTAG_ORDER = "#order:";
-    private const string HASHTAG_NAME = "#name:";
+    private const string HASH_TAG_REPO = "#repo:";
+    private const string HASH_TAG_ORDER = "#order:";
+    private const string HASH_TAG_NAME = "#name:";
     private const string KEYWORD_NEWLINE = "<{{{><}}}>";
     private const StringComparison COMPARISON = StringComparison.InvariantCultureIgnoreCase;
 
@@ -42,9 +42,9 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
         {
             comment = comment[(index + 1) ..];
 
-            if (comment.StartsWith(HASHTAG_REPO, COMPARISON))
+            if (comment.StartsWith(HASH_TAG_REPO, COMPARISON))
             {
-                comment = comment[HASHTAG_REPO.Length..];
+                comment = comment[HASH_TAG_REPO.Length..];
 
                 if (comment[0].Equals('"'))
                 {
@@ -113,9 +113,9 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
             }
             else
             {
-                if (comment.StartsWith(HASHTAG_ORDER, COMPARISON))
+                if (comment.StartsWith(HASH_TAG_ORDER, COMPARISON))
                 {
-                    comment = comment[HASHTAG_ORDER.Length..];
+                    comment = comment[HASH_TAG_ORDER.Length..];
 
                     var k = 0;
                     var stop = false;
@@ -142,9 +142,9 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                 }
                 else
                 {
-                    if (comment.StartsWith(HASHTAG_NAME, COMPARISON))
+                    if (comment.StartsWith(HASH_TAG_NAME, COMPARISON))
                     {
-                        comment = comment[HASHTAG_NAME.Length..];
+                        comment = comment[HASH_TAG_NAME.Length..];
 
                         if (comment[0].Equals('"'))
                         {
@@ -267,7 +267,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
         output = new RepoHeidi(config.Key)
             {
                 Order = orders.FirstOrDefault(int.MaxValue),
-                Repository = repos.First(),
+                Repository = repos[0],
                 Name = names.FirstOrDefault() ?? string.Empty,
                 Tags = tags.Distinct().ToArray(),
             };
