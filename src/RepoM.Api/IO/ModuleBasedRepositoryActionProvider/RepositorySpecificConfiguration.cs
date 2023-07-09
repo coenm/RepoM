@@ -473,7 +473,7 @@ public class RepositorySpecificConfiguration
 
                 if (multiSelectRequired)
                 {
-                    var actionNotCapableForMultipleRepos = repositories.Any(repo => !IsEnabled(action.MultiSelectEnabled, false, repo));
+                    var actionNotCapableForMultipleRepos = Array.Exists(repositories, repo => !IsEnabled(action.MultiSelectEnabled, false, repo));
                     if (actionNotCapableForMultipleRepos)
                     {
                         continue;

@@ -23,6 +23,6 @@ public class WindowsPathSkipper : IPathSkipper
 
     public bool ShouldSkip(string path)
     {
-        return _exclusions.Any(ex => path.IndexOf(ex, StringComparison.OrdinalIgnoreCase) > -1);
+        return _exclusions.Exists(ex => path.IndexOf(ex, StringComparison.OrdinalIgnoreCase) > -1);
     }
 }

@@ -37,7 +37,7 @@ public class ActionIgnoreRepositoriesV1Mapper : IActionToRepositoryActionMapper
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, IEnumerable<Repository> repositories, ActionMapperComposition actionMapperComposition)
     {
         Repository[] repos = repositories as Repository[] ?? repositories.ToArray();
-        if (repos.Any(r => !_expressionEvaluator.EvaluateBooleanExpression(action.Active, r)))
+        if (Array.Exists(repos, r => !_expressionEvaluator.EvaluateBooleanExpression(action.Active, r)))
         {
             yield break;
         }

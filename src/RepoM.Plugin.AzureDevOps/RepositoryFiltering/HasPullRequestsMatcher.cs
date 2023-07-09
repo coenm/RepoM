@@ -2,7 +2,6 @@ namespace RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Core.Plugin.RepositoryFiltering;
-using System.Linq;
 using System;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.Internal;
@@ -43,7 +42,7 @@ internal class HasPullRequestsMatcher : IQueryMatcher
             return null;
         }
 
-        if (_values.Any(x => x.Equals(st.Value, _stringComparisonValue)))
+        if (Array.Exists(_values, x => x.Equals(st.Value, _stringComparisonValue)))
         {
             return HasPullRequests(repository);
         }
