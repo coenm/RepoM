@@ -280,7 +280,7 @@ public class RepositoryConfigurationReader
 
     private RepositoryActionConfiguration Deserialize(string extension, string rawContent)
     {
-        if (extension.StartsWith("."))
+        if (extension.StartsWith('.'))
         {
             extension = extension[1..];
         }

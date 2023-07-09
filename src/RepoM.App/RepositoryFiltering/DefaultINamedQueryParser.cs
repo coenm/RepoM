@@ -14,26 +14,27 @@ internal class DefaultQueryParser : INamedQueryParser
 
     public IQuery Parse(string text)
     {
-        List<IQuery> q = new();
+        IQuery? isPinnedQuery = null;
         if (text.StartsWith("is:pinned"))
         {
-            q.Add(new SimpleTerm("is", "pinned"));
-            text = text.Replace("is:pinned", " ");
+            isPinnedQuery = new SimpleTerm("is", "pinned");
+            text = text.Replace("is:pinned", string.Empty);
         }
         else if(text.StartsWith("is:unpinned"))
         {
-            q.Add(new SimpleTerm("is", "unpinned"));
-            text = text.Replace("is:unpinned", " ");
+            isPinnedQuery = new SimpleTerm("is", "unpinned");
+            text = text.Replace("is:unpinned", string.Empty);
         }
 
-        q.Add(new FreeText(text));
-
-        if (q.Any())
+        if (isPinnedQuery != null && string.IsNullOrWhiteSpace(text))
         {
-            return new AndQuery(q.ToArray());
-
+            return isPinnedQuery;
         }
 
-        return q.First();
+        var freeTextQuery = new FreeText(text);
+
+        return isPinnedQuery == null
+            ? freeTextQuery
+            : new AndQuery(isPinnedQuery, freeTextQuery);
     }
 }

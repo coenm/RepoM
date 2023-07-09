@@ -66,6 +66,6 @@ public class FindFilesMethod : IMethod
         return directory
                .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
                .Select(f => f.FullName)
-               .Where(f => !f.StartsWith("."));
+               .Where(f => !f.StartsWith('.'));
     }
 }
