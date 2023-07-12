@@ -3,6 +3,7 @@ namespace RepoM.Api.IO.Methods;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using ExpressionStringEvaluator.Methods;
 using JetBrains.Annotations;
@@ -11,10 +12,12 @@ using Microsoft.Extensions.Logging;
 [UsedImplicitly]
 public class FindFilesMethod : IMethod
 {
+    private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
 
-    public FindFilesMethod(ILogger logger)
+    public FindFilesMethod(IFileSystem fileSystem, ILogger logger)
     {
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -57,15 +60,15 @@ public class FindFilesMethod : IMethod
         }
     }
     
-    private static IEnumerable<string> GetFileEnumerator(string path, string searchPattern)
+    private IEnumerable<string> GetFileEnumerator(string path, string searchPattern)
     {
         // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
         // .app or .xcodeproj on macOS
+        IDirectoryInfo directory = _fileSystem.DirectoryInfo.New(path);
 
-        var directory = new DirectoryInfo(path);
         return directory
-               .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
-               .Select(f => f.FullName)
-               .Where(f => !f.StartsWith("."));
+         .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
+         .Select(f => f.FullName)
+         .Where(f => !f.StartsWith('.'));
     }
 }

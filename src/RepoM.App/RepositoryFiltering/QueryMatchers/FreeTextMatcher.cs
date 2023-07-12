@@ -30,7 +30,7 @@ public class FreeTextMatcher : IQueryMatcher
             return null;
         }
 
-        if (repository.Tags.Any(x => x.Equals(st.Value, _stringComparisonTag)))
+        if (Array.Exists(repository.Tags, x => x.Equals(st.Value, _stringComparisonTag)))
         {
             return true;
         }

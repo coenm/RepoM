@@ -280,7 +280,7 @@ public class RepositoryConfigurationReader
 
     private RepositoryActionConfiguration Deserialize(string extension, string rawContent)
     {
-        if (extension.StartsWith("."))
+        if (extension.StartsWith('.'))
         {
             extension = extension[1..];
         }
@@ -353,7 +353,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         using IDisposable d1 = RepoMVariableProviderStore.Push(variables ?? new List<EvaluatedVariable>(0));
         using IDisposable d2 = EnvironmentVariableStore.Set(repositoryEnvVars);
 
-        foreach (TagsCollection tagsCollection in tags?.Where(t => t != null) ?? Array.Empty<TagsCollection>())
+        foreach (TagsCollection tagsCollection in ((IEnumerable<TagsCollection>?)tags) ?? Array.Empty<TagsCollection>())
         {
             using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(tagsCollection.Variables));
 
@@ -463,7 +463,7 @@ public class RepositorySpecificConfiguration
         using IDisposable d2 = EnvironmentVariableStore.Set(repositoryEnvVars ?? new Dictionary<string, string>());
 
         // load variables global
-        foreach (ActionsCollection actionsCollection in actions?.Where(action => action != null) ?? Array.Empty<ActionsCollection>())
+        foreach (ActionsCollection actionsCollection in ((IEnumerable<ActionsCollection>?)actions) ?? Array.Empty<ActionsCollection>())
         {
             using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(actionsCollection.Variables, singleRepository));
 
@@ -473,7 +473,7 @@ public class RepositorySpecificConfiguration
 
                 if (multiSelectRequired)
                 {
-                    var actionNotCapableForMultipleRepos = repositories.Any(repo => !IsEnabled(action.MultiSelectEnabled, false, repo));
+                    var actionNotCapableForMultipleRepos = Array.Exists(repositories, repo => !IsEnabled(action.MultiSelectEnabled, false, repo));
                     if (actionNotCapableForMultipleRepos)
                     {
                         continue;
@@ -535,7 +535,7 @@ public class RepositorySpecificConfiguration
         }
     }
 
-    private object? Evaluate(object? input, Repository repository)
+    private object? Evaluate(object? input, IRepository repository)
     {
         if (input is string s)
         {
@@ -545,7 +545,7 @@ public class RepositorySpecificConfiguration
         return input;
     }
 
-    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
+    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository repository)
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty

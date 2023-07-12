@@ -17,7 +17,7 @@ internal static class ActionMapperCompositionFactory
         IRepositoryWriter repositoryWriter,
         IRepositoryMonitor repositoryMonitor)
     {
-        var list = new List<IActionToRepositoryActionMapper>
+        var mappers = new IActionToRepositoryActionMapper[]
             {
                 new ActionBrowseRepositoryV1Mapper(expressionEvaluator, translationService),
                 new ActionBrowserV1Mapper(expressionEvaluator, translationService),
@@ -35,6 +35,15 @@ internal static class ActionMapperCompositionFactory
                 new ActionJustTextV1Mapper(expressionEvaluator, translationService),
             };
 
+        return new ActionMapperComposition(mappers, expressionEvaluator);
+    }
+
+    public static ActionMapperComposition CreateSmall(IRepositoryExpressionEvaluator expressionEvaluator, IActionToRepositoryActionMapper actionToRepositoryActionMapper)
+    {
+        var list = new IActionToRepositoryActionMapper[1]
+            {
+                actionToRepositoryActionMapper
+            };
         return new ActionMapperComposition(list, expressionEvaluator);
     }
 }

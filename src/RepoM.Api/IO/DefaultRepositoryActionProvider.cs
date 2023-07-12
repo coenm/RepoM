@@ -32,7 +32,7 @@ public class DefaultRepositoryActionProvider : IRepositoryActionProvider
     public RepositoryActionBase? GetSecondaryAction(Repository repository)
     {
         RepositoryActionBase[] actions = GetContextMenuActions(new[] { repository, }).Take(2).ToArray();
-        return actions.Length > 1 ? actions.ElementAt(1) : null;
+        return actions.Length > 1 ? actions[1] : null;
     }
 
     public IEnumerable<RepositoryActionBase> GetContextMenuActions(IEnumerable<Repository> repositories)

@@ -38,7 +38,7 @@ public class TagMatcher : IQueryMatcher
         }
 
         var value = term.Value;
-        return repository.Tags.Any(tag =>
+        return Array.Exists(repository.Tags, tag =>
             tag.Equals(value, StringComparison.CurrentCulture)
             ||
             tag.StartsWith(value, StringComparison.CurrentCulture));

@@ -25,9 +25,10 @@ public class GitRepositoryFinderFactory : IGitRepositoryFinderFactory
         {
             if (!string.IsNullOrWhiteSpace(enabledSearchProviderName))
             {
-                factory = _factories.FirstOrDefault(searchProviderFactory => searchProviderFactory.IsActive
-                                                                             &&
-                                                                             searchProviderFactory.Name.Equals(enabledSearchProviderName, StringComparison.CurrentCultureIgnoreCase));
+                factory = _factories.Find(searchProviderFactory =>
+                    searchProviderFactory.IsActive
+                    &&
+                    searchProviderFactory.Name.Equals(enabledSearchProviderName, StringComparison.CurrentCultureIgnoreCase));
             }
 
             if (factory != null)
@@ -37,7 +38,7 @@ public class GitRepositoryFinderFactory : IGitRepositoryFinderFactory
         }
 
         // Default, fallback
-        factory = _factories.FirstOrDefault(searchProviderFactory => searchProviderFactory is GravellGitRepositoryFinderFactory);
+        factory = _factories.Find(searchProviderFactory => searchProviderFactory is GravellGitRepositoryFinderFactory);
         if (factory != null)
         {
             return factory.Create();
