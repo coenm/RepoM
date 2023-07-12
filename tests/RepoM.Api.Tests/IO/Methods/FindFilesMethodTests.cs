@@ -1,13 +1,12 @@
 namespace RepoM.Api.Tests.IO.Methods;
 
 using FakeItEasy;
-using RepoM.Api.Common;
 using RepoM.Api.IO.Methods;
-using RepoM.Core.Plugin.RepositoryFinder;
 using System;
 using FluentAssertions;
 using Xunit;
 using System.IO.Abstractions;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 
 public class FindFilesMethodTests
@@ -51,5 +50,49 @@ public class FindFilesMethodTests
 
         // assert
         _ = result.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    public void Handle_ShouldReturnNull_WhenArgsLengthIsLessThenTwo(int length)
+    {
+        // arrange
+        var args = Enumerable.Range(0, length).Select(x => $"{x}").Cast<object>().ToArray();
+        var sut = new FindFilesMethod(_fileSystem, _logger);
+
+        // act
+        object? result = sut.Handle("FindFiles", args);
+
+        // assert
+        _ = result.Should().BeNull();
+    }
+
+    [Fact]
+    public void Handle_ShouldReturnNull_WhenFirstArgumentIsNotString()
+    {
+        // arrange
+        var args = new object[] { 1, "dummy", };
+        var sut = new FindFilesMethod(_fileSystem, _logger);
+
+        // act
+        object? result = sut.Handle("FindFiles", args);
+
+        // assert
+        _ = result.Should().BeNull();
+    }
+
+    [Fact]
+    public void Handle_ShouldReturnNull_WhenSecondArgumentIsNotString()
+    {
+        // arrange
+        var args = new object[] {"dummy", 42, };
+        var sut = new FindFilesMethod(_fileSystem, _logger);
+
+        // act
+        object? result = sut.Handle("FindFiles", args);
+
+        // assert
+        _ = result.Should().BeNull();
     }
 }
