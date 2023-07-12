@@ -6,7 +6,6 @@ using FakeItEasy;
 using FluentAssertions;
 using RepoM.Api.Common;
 using RepoM.Api.IO;
-using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Core.Plugin.RepositoryFinder;
 using Xunit;
 
