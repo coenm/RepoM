@@ -43,8 +43,7 @@ public class AssociateFileV1Test
         // assert
         await Verifier.Verify(result, _verifySettings);
     }
-
-
+    
     [Fact]
     public async Task Deserialize_ShouldBeOfExpectedType()
     {
