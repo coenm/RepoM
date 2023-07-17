@@ -7,18 +7,9 @@ namespace SimpleInjector
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Globalization;
-    using System.IO;
-    using System.IO.Abstractions;
-    using System.Linq;
     using System.Reflection;
-    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using RepoM.Core.Plugin;
-    using RepoM.Core.Plugin.Common;
     using SimpleInjector.Packaging;
 
     /// <summary>
@@ -33,9 +24,10 @@ namespace SimpleInjector
         /// </summary>
         /// <param name="container">The container to which the packages will be applied to.</param>
         /// <param name="assemblies">The assemblies that will be searched for packages.</param>
+        /// <param name="packageConfigurationFactoryMethod">The factory method to create an <see cref="IPackageConfiguration"/> instance based.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="container"/> is a null
         /// reference.</exception>
-        public static async Task RegisterPackagesAsync(this Container container, IEnumerable<Assembly> assemblies, Func<string, IPackageConfiguration> packageConfigurationFactoryMethod)
+        public static Task RegisterPackagesAsync(this Container container, IEnumerable<Assembly> assemblies, Func<string, IPackageConfiguration> packageConfigurationFactoryMethod)
         {
             if (container is null)
             {
@@ -52,17 +44,33 @@ namespace SimpleInjector
                 throw new ArgumentNullException(nameof(packageConfigurationFactoryMethod));
             }
 
+            return RegisterPackagesInnerAsync(container, assemblies, packageConfigurationFactoryMethod);
+        }
+
+        private static async Task RegisterPackagesInnerAsync(Container container, IEnumerable<Assembly> assemblies, Func<string, IPackageConfiguration> packageConfigurationFactoryMethod)
+        {
             foreach (Assembly assembly in assemblies)
             {
-                var n = assembly.GetName().Name;
+                var assemblyName = assembly.GetName().Name ?? string.Empty;
 
-                foreach (IPackage package in container.GetPackagesToRegister(new [] { assembly, }))
+                foreach (IPackage package in container.GetPackagesToRegister(new[] { assembly, }))
                 {
                     if (package is IPackageWithConfiguration packageWithConfiguration)
                     {
-                        var x = n + "." + packageWithConfiguration.Name;
+                        var fileName = assemblyName;
+                        if (fileName.StartsWith("RepoM.Plugin."))
+                        {
+                            fileName = fileName["RepoM.Plugin.".Length..];
+                        }
 
-                        await packageWithConfiguration.RegisterServicesAsync(container, packageConfigurationFactoryMethod.Invoke(x)).ConfigureAwait(false);
+                        if (!string.IsNullOrWhiteSpace(packageWithConfiguration.Name))
+                        {
+                            fileName += "." + packageWithConfiguration.Name;
+                        }
+
+                        await packageWithConfiguration
+                              .RegisterServicesAsync(container, packageConfigurationFactoryMethod.Invoke(fileName))
+                              .ConfigureAwait(false);
                     }
                     else
                     {
@@ -70,94 +78,6 @@ namespace SimpleInjector
                     }
                 }
             }
-
-            // foreach (IPackage package in container.GetPackagesToRegister(assemblies))
-            // {
-            //     if (package is IPackageWithConfiguration packageWithConfiguration)
-            //     {
-            //         await packageWithConfiguration.RegisterServicesAsync(container, packageConfigurationFactoryMethod.Invoke("")).ConfigureAwait(false);
-            //     }
-            //     else
-            //     {
-            //         package.RegisterServices(container);
-            //     }
-            // }
         }
-    }
-
-    public class FileBasedPackageConfiguration : IPackageConfiguration
-    {
-        private readonly IAppDataPathProvider _appDataPathProvider;
-        private readonly IFileSystem _fileSystem;
-        private readonly ILogger _logger;
-        private readonly string _filename;
-
-        public FileBasedPackageConfiguration(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, ILogger logger, string filename)
-        {
-            _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _filename = filename ?? throw new ArgumentNullException(nameof(filename));
-        }
-
-        public async Task<int?> GetConfigurationVersionAsync()
-        {
-            var result = await LoadAsync<object>().ConfigureAwait(false);
-            return result?.Version;
-        }
-
-        public async Task<T?> LoadConfigurationAsync<T>() where T : class, new()
-        {
-            var result = await LoadAsync<T>().ConfigureAwait(false);
-            return result?.Payload;
-        }
-
-        public async Task PersistConfigurationAsync<T>(T configuration, int version)
-        {
-            if (configuration == null)
-            {
-                return;
-            }
-
-            var filename = GetFilename();
-
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(new ConfigEnveloppe<T> { Version = version, Payload = configuration, }, Formatting.Indented);
-            await _fileSystem.File.WriteAllTextAsync(filename, json).ConfigureAwait(false);
-        }
-
-        private string GetFilename()
-        {
-            return Path.Combine(_appDataPathProvider.GetAppDataPath(), "Module", _filename + ".json");
-        }
-
-        private async Task<ConfigEnveloppe<T>?> LoadAsync<T>()
-        {
-            var filename = GetFilename();
-            if (!_fileSystem.File.Exists(filename))
-            {
-                return null;
-            }
-
-            var json = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-            // Newtonsoft.Json.JsonConvert.DefaultSettings = () => new Newtonsoft.Json.JsonSerializerSettings
-            //     {
-            //     Converters = new List<Newtonsoft.Json.JsonConverter> { new Newtonsoft.Json.Converters.StringEnumConverter() },
-            //     NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-            //     Formatting = Newtonsoft.Json.Formatting.Indented,
-            // };
-
-            var result = JsonConvert.DeserializeObject<ConfigEnveloppe<T>>(json);
-
-            return result;
-
-        }
-
-    }
-
-    public class ConfigEnveloppe<T>
-    {
-        public int Version { get; set; }
-
-        public T Payload { get; set; }
     }
 }

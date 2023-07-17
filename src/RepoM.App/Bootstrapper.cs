@@ -48,6 +48,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using RepoM.App.Services.HotKey;
+using Newtonsoft.Json;
+using RepoM.Core.Plugin;
 
 internal static class Bootstrapper
 {
@@ -212,11 +214,9 @@ internal static class Bootstrapper
 
         if (assemblies.Any())
         {
-            // Container.RegisterPackages(assemblies);
             await Container.RegisterPackagesAsync(
                 assemblies,
-                filename => new FileBasedPackageConfiguration(DefaultAppDataPathProvider.Instance, fileSystem, NullLogger.Instance, filename))
-                           .ConfigureAwait(false); //tmp
+                filename => new FileBasedPackageConfiguration(DefaultAppDataPathProvider.Instance, fileSystem, filename)).ConfigureAwait(false); 
         }
     }
 
@@ -234,5 +234,69 @@ internal static class Bootstrapper
                 : typeof(Logger<>).MakeGenericType(c.Consumer.ImplementationType),
             Lifestyle.Singleton,
             _ => true);
+    }
+}
+
+file class FileBasedPackageConfiguration : IPackageConfiguration
+{
+    private readonly IAppDataPathProvider _appDataPathProvider;
+    private readonly IFileSystem _fileSystem;
+    private readonly string _filename;
+
+    public FileBasedPackageConfiguration(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, string filename)
+    {
+        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _filename = filename ?? throw new ArgumentNullException(nameof(filename));
+    }
+
+    public async Task<int?> GetConfigurationVersionAsync()
+    {
+        ConfigEnvelope<object>? result = await LoadAsync<object>().ConfigureAwait(false);
+        return result?.Version;
+    }
+
+    public async Task<T?> LoadConfigurationAsync<T>() where T : class, new()
+    {
+        ConfigEnvelope<T>? result = await LoadAsync<T>().ConfigureAwait(false);
+        return result?.Payload;
+    }
+
+    public async Task PersistConfigurationAsync<T>(T configuration, int version)
+    {
+        if (configuration == null)
+        {
+            return;
+        }
+
+        var filename = GetFilename();
+
+        var json = JsonConvert.SerializeObject(new ConfigEnvelope<T> { Version = version, Payload = configuration, }, Formatting.Indented);
+        await _fileSystem.File.WriteAllTextAsync(filename, json).ConfigureAwait(false);
+    }
+
+    private string GetFilename()
+    {
+        return Path.Combine(_appDataPathProvider.GetAppDataPath(), "Module", _filename + ".json");
+    }
+
+    private async Task<ConfigEnvelope<T>?> LoadAsync<T>()
+    {
+        var filename = GetFilename();
+        if (!_fileSystem.File.Exists(filename))
+        {
+            return null;
+        }
+
+        var json = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
+        ConfigEnvelope<T>? result = JsonConvert.DeserializeObject<ConfigEnvelope<T>>(json);
+        return result;
+    }
+
+    private sealed class ConfigEnvelope<T>
+    {
+        public int Version { get; init; }
+
+        public T? Payload { get; init; }
     }
 }

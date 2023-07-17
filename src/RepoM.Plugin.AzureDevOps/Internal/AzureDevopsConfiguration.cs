@@ -2,13 +2,6 @@ namespace RepoM.Plugin.AzureDevOps.Internal;
 
 using System;
 
-internal interface IAzureDevopsConfiguration
-{
-    string? AzureDevOpsPersonalAccessToken { get; }
-
-    Uri? AzureDevOpsBaseUrl { get; }
-}
-
 internal class AzureDevopsConfiguration : IAzureDevopsConfiguration
 {
     public AzureDevopsConfiguration(string? url, string? pat)
@@ -23,7 +16,6 @@ internal class AzureDevopsConfiguration : IAzureDevopsConfiguration
         {
             AzureDevOpsBaseUrl = null;
         }
-        
     }
 
     public string? AzureDevOpsPersonalAccessToken { get; }
