@@ -5,14 +5,14 @@ using FluentAssertions;
 using RepoM.Plugin.Heidi.Internal;
 using Xunit;
 
-public class HeidiSettingsTests 
+public class EnvironmentVariablesHeidiSettingsTests 
 {
     [Fact]
     public void ConfigFilename_ShouldReturnDefault_WhenEnvironmentVariableIsUnset()
     {
         // arrange
         using IDisposable _ = EnvironmentVariableManager.SetEnvironmentVariable("REPOM_HEIDI_CONFIG_FILENAME", string.Empty);
-        var sut = new HeidiSettings();
+        var sut = new EnvironmentVariablesHeidiSettings();
 
         // act
         var result = sut.ConfigFilename;
@@ -26,7 +26,7 @@ public class HeidiSettingsTests
     {
         // arrange
         using IDisposable _ = EnvironmentVariableManager.SetEnvironmentVariable("REPOM_HEIDI_CONFIG_FILENAME", "Dummy@#");
-        var sut = new HeidiSettings();
+        var sut = new EnvironmentVariablesHeidiSettings();
 
         // act
         var result = sut.ConfigFilename;

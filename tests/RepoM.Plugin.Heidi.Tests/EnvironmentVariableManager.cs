@@ -2,7 +2,9 @@ namespace RepoM.Plugin.Heidi.Tests;
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
+using YamlDotNet.Core.Tokens;
 
 internal static class EnvironmentVariableManager
 {
