@@ -18,8 +18,7 @@ public class AzureDevOpsPackageTests
 {
     private readonly Container _container;
     private readonly IPackageConfiguration _packageConfiguration;
-    private readonly AzureDevopsConfigV1? _azureDevopsConfigV1;
-    private IAppSettingsService _appSettingsService;
+    private readonly IAppSettingsService _appSettingsService;
 
     public AzureDevOpsPackageTests()
     {
@@ -27,18 +26,17 @@ public class AzureDevOpsPackageTests
         _appSettingsService = A.Fake<IAppSettingsService>();
         _container = new Container();
 
-        _azureDevopsConfigV1 = new AzureDevopsConfigV1
+        var azureDevopsConfigV1 = new AzureDevopsConfigV1
             {
                 PersonalAccessToken = "PAT",
                 BaseUrl = "https://dev.azure.com/MyOrg",
             };
         A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(1 as int?));
-        A.CallTo(() => _packageConfiguration.LoadConfigurationAsync<AzureDevopsConfigV1>()).ReturnsLazily(() => _azureDevopsConfigV1);
+        A.CallTo(() => _packageConfiguration.LoadConfigurationAsync<AzureDevopsConfigV1>()).ReturnsLazily(() => azureDevopsConfigV1);
         A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<AzureDevopsConfigV1>._, 1)).Returns(Task.CompletedTask);
 
         A.CallTo(() => _appSettingsService.AzureDevOpsBaseUrl).Returns("https://dev.azure.com/MyOrg123ABC");
         A.CallTo(() => _appSettingsService.AzureDevOpsPersonalAccessToken).Returns("MY_TEST_PAT");
-
     }
 
     [Fact]
@@ -91,7 +89,8 @@ public class AzureDevOpsPackageTests
         await sut.RegisterServicesAsync(_container, _packageConfiguration);
 
         Fake.ClearRecordedCalls(_packageConfiguration);
-        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<AzureDevopsConfigV1>._, 1)).Invokes(call => persistedConfig = call.Arguments[0] as AzureDevopsConfigV1);
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<AzureDevopsConfigV1>._, 1))
+         .Invokes(call => persistedConfig = call.Arguments[0] as AzureDevopsConfigV1);
 
         // act
         // make sure everyting is resolved. This will trigger the copy of the config.

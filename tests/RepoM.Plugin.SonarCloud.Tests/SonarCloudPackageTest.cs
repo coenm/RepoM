@@ -4,45 +4,116 @@ using System;
 using FakeItEasy;
 using RepoM.Api.Common;
 using RepoM.Core.Plugin.Expressions;
-using RepoM.Plugin.SonarCloud;
 using SimpleInjector;
 using Xunit;
+using System.Threading.Tasks;
+using RepoM.Core.Plugin;
+using VerifyXunit;
+using RepoM.Plugin.SonarCloud.PersistentConfiguration;
 
+[UsesVerify]
 public class SonarCloudPackageTest
 {
+    private readonly Container _container;
+    private readonly IPackageConfiguration _packageConfiguration;
+    private readonly IAppSettingsService _appSettingsService;
+
+    public SonarCloudPackageTest()
+    {
+        _packageConfiguration = A.Fake<IPackageConfiguration>();
+        _appSettingsService = A.Fake<IAppSettingsService>();
+        _container = new Container();
+
+        var sonarCloudConfigV1 = new SonarCloudConfigV1
+            {
+                PersonalAccessToken = "PATx",
+                BaseUrl = "https://sonarcloud.io",
+            };
+        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(1 as int?));
+        A.CallTo(() => _packageConfiguration.LoadConfigurationAsync<SonarCloudConfigV1>()).ReturnsLazily(() => sonarCloudConfigV1);
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<SonarCloudConfigV1>._, 1)).Returns(Task.CompletedTask);
+
+        A.CallTo(() => _appSettingsService.SonarCloudPersonalAccessToken).Returns("MY_TEST_PAT_SONAR");
+    }
+
     [Fact]
-    public void RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
+    public async Task RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
     {
         // arrange
-        var container = new Container();
-        RegisterExternals(container);
+        RegisterExternals(_container);
         var sut = new SonarCloudPackage();
 
         // act
-        sut.RegisterServices(container);
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
 
         // assert
         // implicit, Verify throws when container is not valid.
-        container.Verify(VerificationOption.VerifyAndDiagnose);
+        _container.Verify(VerificationOption.VerifyAndDiagnose);
     }
 
-    [Fact]
-    public void RegisterServices_ShouldFail_WhenExternalDependenciesAreNotRegistered()
+    [Theory]
+    [InlineData(null)]
+    [InlineData(2)]
+    [InlineData(10)]
+    public async Task RegisterServices_ShouldPersistNewConfig_WhenVersionIsNotCorrect(int? version)
     {
         // arrange
-        var container = new Container();
+        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
+        RegisterExternals(_container);
         var sut = new SonarCloudPackage();
 
         // act
-        sut.RegisterServices(container);
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
 
         // assert
-        Assert.Throws<InvalidOperationException>(() => container.Verify(VerificationOption.VerifyAndDiagnose));
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<SonarCloudConfigV1>._, 1)).MustHaveHappenedOnceExactly();
+
+        // implicit, Verify throws when container is not valid.
+        _container.Verify(VerificationOption.VerifyAndDiagnose);
     }
 
-    private static void RegisterExternals(Container container)
+    [Theory]
+    [InlineData(null)]
+    [InlineData(2)]
+    [InlineData(10)]
+    public async Task RegisterServices_ShouldCopyExistingAppSettingsConfig_WhenNoCurrentCorrectConfig(int? version)
     {
-        container.RegisterSingleton(A.Dummy<IAppSettingsService>);
+        // arrange
+        SonarCloudConfigV1? persistedConfig = null;
+        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
+        RegisterExternals(_container);
+        var sut = new SonarCloudPackage();
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
+
+        Fake.ClearRecordedCalls(_packageConfiguration);
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<SonarCloudConfigV1>._, 1))
+         .Invokes(call => persistedConfig = call.Arguments[0] as SonarCloudConfigV1);
+
+        // act
+        // make sure everyting is resolved. This will trigger the copy of the config.
+        _container.Verify(VerificationOption.VerifyAndDiagnose);
+
+        // assert
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<SonarCloudConfigV1>._, 1)).MustHaveHappenedOnceExactly();
+        await Verifier.Verify(persistedConfig).IgnoreParametersForVerified(nameof(version));
+    }
+
+    [Fact]
+    public async Task RegisterServices_ShouldFail_WhenExternalDependenciesAreNotRegistered()
+    {
+        // arrange
+        var sut = new SonarCloudPackage();
+
+        // act
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
+
+        // assert
+        Assert.Throws<InvalidOperationException>(() => _container.Verify(VerificationOption.VerifyAndDiagnose));
+    }
+
+    private void RegisterExternals(Container container)
+    {
+        container.RegisterInstance(_appSettingsService);
         container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
         container.RegisterSingleton(A.Dummy<ITranslationService>);
     }
