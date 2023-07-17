@@ -70,7 +70,7 @@ public partial class App : Application
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
         Bootstrapper.RegisterServices(fileSystem);
-        Bootstrapper.RegisterPlugins(pluginFinder, fileSystem);
+        Bootstrapper.RegisterPlugins(pluginFinder, fileSystem).GetAwaiter().GetResult();
 
 #if DEBUG
         Bootstrapper.Container.Verify(VerificationOption.VerifyAndDiagnose);
