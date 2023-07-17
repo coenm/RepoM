@@ -38,7 +38,7 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
     public AzureDevOpsPullRequestService(IAzureDevopsConfiguration configuration, ILogger logger)
     {
         _httpClient = new();
-        _configuration = configuration;
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         try
