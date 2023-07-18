@@ -80,19 +80,19 @@ internal class StatisticsModule : IModule
 
         foreach (var file in orderedEnumerable)
         {
-            IEvent[] list = Array.Empty<IEvent>();
+            IEvent[] events = Array.Empty<IEvent>();
 
             try
             {
                 var json = await _fileSystem.File.ReadAllTextAsync(file, CancellationToken.None).ConfigureAwait(false);
-                list = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? Array.Empty<IEvent>();
+                events = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? Array.Empty<IEvent>();
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not read or deserialize data from '{filename}'. {message}", file, e.Message);
             }
 
-            if (list.All(item => item.Timestamp <= threshold))
+            if (Array.TrueForAll(events, item => item.Timestamp <= threshold))
             {
                 try
                 {
