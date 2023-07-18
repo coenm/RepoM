@@ -30,10 +30,13 @@ public interface IAppSettingsService
 
     List<string> EnabledSearchProviders { get; set; }
 
+    [Obsolete("Will be removed in next big version")]
     string SonarCloudPersonalAccessToken { get; set; }
 
+    [Obsolete("Will be removed in next big version")]
     string AzureDevOpsPersonalAccessToken { get; set; }
 
+    [Obsolete("Will be removed in next big version")]
     string AzureDevOpsBaseUrl { get; set; }
 
     string SortKey { get; set; }

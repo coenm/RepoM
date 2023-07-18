@@ -12,7 +12,7 @@ internal class AzureDevopsConfiguration : IAzureDevopsConfiguration
         {
             AzureDevOpsBaseUrl = url != null ? new Uri(url) : null!;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             AzureDevOpsBaseUrl = null;
         }

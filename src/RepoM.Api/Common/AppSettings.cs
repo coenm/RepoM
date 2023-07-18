@@ -33,9 +33,9 @@ public class AppSettings
 
     public List<string> EnabledSearchProviders { get; set; }
 
-    public string SonarCloudPersonalAccessToken { get; set; }
+    public string? SonarCloudPersonalAccessToken { get; set; }
 
-    public AzureDevOpsOptions AzureDevOps { get; set; }
+    public AzureDevOpsOptions? AzureDevOps { get; set; }
 
     public List<PluginOptions> Plugins { get; set; } 
 
@@ -46,7 +46,7 @@ public class AppSettings
             MenuSize = Size.Default,
             ReposRootDirectories = new(),
             EnabledSearchProviders = new List<string>(1),
-            SonarCloudPersonalAccessToken = string.Empty,
+            SonarCloudPersonalAccessToken = null,
             AzureDevOps = AzureDevOpsOptions.Default,
             Plugins = new List<PluginOptions>(),
         };
@@ -54,15 +54,11 @@ public class AppSettings
 
 public class AzureDevOpsOptions
 {
-    public string PersonalAccessToken { get; set; } = string.Empty;
+    public string? PersonalAccessToken { get; set; } = string.Empty;
 
-    public string BaseUrl { get; set; } = string.Empty;
+    public string? BaseUrl { get; set; } = string.Empty;
 
-    public static AzureDevOpsOptions Default => new()
-        {
-            PersonalAccessToken = string.Empty,
-            BaseUrl = string.Empty,
-        };
+    public static AzureDevOpsOptions? Default => null;
 }
 
 public class Size

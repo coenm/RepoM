@@ -235,51 +235,120 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
+    [Obsolete("Will be removed in next big version")]
     public string SonarCloudPersonalAccessToken
     {
-        get => Settings.SonarCloudPersonalAccessToken;
+        get => Settings.SonarCloudPersonalAccessToken ?? string.Empty;
         set
         {
-            if (value.Equals(Settings.SonarCloudPersonalAccessToken, StringComparison.InvariantCulture))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                return;
-            }
+                if (Settings.SonarCloudPersonalAccessToken == null)
+                {
+                    return;
+                }
 
-            Settings.SonarCloudPersonalAccessToken = value;
+                Settings.SonarCloudPersonalAccessToken = null;
+            }
+            else
+            {
+                if (value.Equals(Settings.SonarCloudPersonalAccessToken, StringComparison.InvariantCulture))
+                {
+                    return;
+                }
+
+                Settings.SonarCloudPersonalAccessToken = value;
+            }
 
             NotifyChange();
             Save();
         }
     }
 
+    [Obsolete("Will be removed in next big version")]
     public string AzureDevOpsPersonalAccessToken
     {
-        get => Settings.AzureDevOps.PersonalAccessToken;
+        get => Settings.AzureDevOps?.PersonalAccessToken ?? string.Empty;
         set
         {
-            if (value.Equals(Settings.AzureDevOps.PersonalAccessToken, StringComparison.InvariantCulture))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                return;
-            }
+                if (Settings.AzureDevOps == null)
+                {
+                    return;
+                }
 
-            Settings.AzureDevOps.PersonalAccessToken = value;
+                if (string.IsNullOrWhiteSpace(Settings.AzureDevOps.PersonalAccessToken))
+                {
+                    return;
+                }
+
+                Settings.AzureDevOps.PersonalAccessToken = null;
+
+                if (Settings.AzureDevOps.BaseUrl == null)
+                {
+                    Settings.AzureDevOps = null;
+                }
+            }
+            else
+            {
+                if (Settings.AzureDevOps == null)
+                {
+                    Settings.AzureDevOps = new AzureDevOpsOptions { PersonalAccessToken = value, };
+                }
+                else
+                {
+                    if (value.Equals(Settings.AzureDevOps.PersonalAccessToken, StringComparison.InvariantCulture))
+                    {
+                        return;
+                    }
+                }
+            }
 
             NotifyChange();
             Save();
         }
     }
 
+    [Obsolete("Will be removed in next big version")]
     public string AzureDevOpsBaseUrl
     {
-        get => Settings.AzureDevOps.BaseUrl;
+        get => Settings.AzureDevOps?.BaseUrl ?? string.Empty;
         set
         {
-            if (value.Equals(Settings.AzureDevOps.BaseUrl, StringComparison.InvariantCulture))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                return;
-            }
+                if (Settings.AzureDevOps == null)
+                {
+                    return;
+                }
 
-            Settings.AzureDevOps.BaseUrl = value;
+                if (string.IsNullOrWhiteSpace(Settings.AzureDevOps.BaseUrl))
+                {
+                    return;
+                }
+
+                Settings.AzureDevOps.BaseUrl = null;
+
+                if (Settings.AzureDevOps.PersonalAccessToken == null)
+                {
+                    Settings.AzureDevOps = null;
+                }
+            }
+            else
+            {
+                if (Settings.AzureDevOps == null)
+                {
+                    Settings.AzureDevOps = new AzureDevOpsOptions { BaseUrl = value, };
+                }
+                else
+                {
+                    if (value.Equals(Settings.AzureDevOps.BaseUrl, StringComparison.InvariantCulture))
+                    {
+                        return;
+                    }
+                }
+            }
 
             NotifyChange();
             Save();

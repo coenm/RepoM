@@ -66,7 +66,7 @@ public class SonarCloudPackage : IPackageWithConfiguration
         }
     }
 
-    private void RegisterServices(Container container)
+    private static void RegisterServices(Container container)
     {
         container.Collection.Append<IActionDeserializer, ActionSonarCloudSetFavoriteV1Deserializer>(Lifestyle.Singleton);
         container.Collection.Append<IActionToRepositoryActionMapper, ActionSonarCloudV1Mapper>(Lifestyle.Singleton);
