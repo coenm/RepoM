@@ -56,15 +56,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                         if (!string.IsNullOrWhiteSpace(repo))
                         {
                             repos.Add(repo.Trim());
-
                         }
-
-                        // foreach (var c in repo)
-                        // {
-                        //     //a-z, A-Z, 0-9, \s ._-
-                        //
-                        //     
-                        // }
                     }
                 }
                 else
@@ -94,7 +86,6 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                         {
                             k++;
                             continue;
-                            
                         }
 
                         stop = true;
@@ -156,14 +147,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                                 if (!string.IsNullOrWhiteSpace(name))
                                 {
                                     names.Add(name.Trim());
-
                                 }
-                                // foreach (var c in repo)
-                                // {
-                                //     //a-z, A-Z, 0-9, \s ._-
-                                //
-                                //     
-                                // }
                             }
                         }
                         else
