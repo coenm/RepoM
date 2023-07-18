@@ -55,7 +55,7 @@ internal class RepositoryStatistics : IReadOnlyRepositoryStatistics
             return;
         }
 
-        throw new NotImplementedException();
+        throw new InvalidOperationException($"Type '{evt.GetType().Name}' is unknown");
     }
 
     private void Apply(RepositoryActionRecordedEvent evt)

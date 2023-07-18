@@ -1,5 +1,7 @@
 namespace RepoM.Plugin.Statistics;
 
+using System;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
@@ -7,18 +9,63 @@ using RepoM.Core.Plugin.RepositoryOrdering;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Core.Plugin.VariableProviders;
 using RepoM.Plugin.Statistics.Ordering;
+using RepoM.Plugin.Statistics.PersistentConfiguration;
 using RepoM.Plugin.Statistics.RepositoryActions;
 using RepoM.Plugin.Statistics.VariableProviders;
 using SimpleInjector;
 using SimpleInjector.Packaging;
 
 [UsedImplicitly]
-public class StatisticsPackage : IPackage
+public class StatisticsPackage : IPackageWithConfiguration
 {
-    public void RegisterServices(Container container)
+    public string Name => "StatisticsPackage"; // do not change this name, it is part of the persistant filename
+
+    public async Task RegisterServicesAsync(Container container, IPackageConfiguration packageConfiguration)
     {
+        await ExtractAndRegisterConfiguration(container, packageConfiguration).ConfigureAwait(false);
         RegisterPluginHooks(container);
         RegisterInternals(container);
+    }
+
+    private static async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
+    {
+        var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
+
+        var config = new StatisticsConfigV1
+            {
+                PersistenceBuffer = TimeSpan.FromMinutes(5),
+                RetentionDays = 30,
+            };
+
+        if (version == CurrentConfigVersion.VERSION)
+        {
+            StatisticsConfigV1? result = await packageConfiguration.LoadConfigurationAsync<StatisticsConfigV1>().ConfigureAwait(false);
+            if (result == null)
+            {
+                await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+            }
+            else
+            {
+                config = result;
+            }
+        }
+        else
+        {
+            await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        }
+
+        var retentionDays = config.RetentionDays ?? 30;
+        if (retentionDays < 0)
+        {
+            retentionDays *= -1;
+        }
+
+        container.RegisterInstance<IStatisticsConfiguration>(
+            new StatisticsConfiguration
+            {
+                PersistenceBuffer = config.PersistenceBuffer ?? TimeSpan.FromMinutes(5),
+                RetentionDays= retentionDays,
+            });
     }
 
     private static void RegisterPluginHooks(Container container)
@@ -43,5 +90,10 @@ public class StatisticsPackage : IPackage
     private static void RegisterInternals(Container container)
     {
         container.Register<IStatisticsService, StatisticsService>(Lifestyle.Singleton);
+    }
+
+    void IPackage.RegisterServices(Container container)
+    {
+        throw new NotImplementedException();
     }
 }

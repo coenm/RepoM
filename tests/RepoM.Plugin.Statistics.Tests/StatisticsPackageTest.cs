@@ -2,42 +2,82 @@ namespace RepoM.Plugin.Statistics.Tests;
 
 using System;
 using System.IO.Abstractions;
+using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
+using RepoM.Plugin.Statistics.PersistentConfiguration;
 using SimpleInjector;
 using Xunit;
 
 public class StatisticsPackageTest
 {
-    [Fact]
-    public void RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
+    private readonly Container _container;
+    private readonly IPackageConfiguration _packageConfiguration;
+
+    public StatisticsPackageTest()
     {
-        // arrange
-        var container = new Container();
-        RegisterExternals(container);
-        var sut = new StatisticsPackage();
+        _packageConfiguration = A.Fake<IPackageConfiguration>();
+        _container = new Container();
 
-        // act
-        sut.RegisterServices(container);
-
-        // assert
-        // implicit, Verify throws when container is not valid.
-        container.Verify(VerificationOption.VerifyAndDiagnose);
+        var statisticsConfigV1 = new StatisticsConfigV1
+            {
+                PersistenceBuffer = TimeSpan.FromMinutes(15),
+                RetentionDays = 50,
+            };
+        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(1 as int?));
+        A.CallTo(() => _packageConfiguration.LoadConfigurationAsync<StatisticsConfigV1>()).ReturnsLazily(() => statisticsConfigV1);
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<StatisticsConfigV1>._, 1)).Returns(Task.CompletedTask);
     }
 
     [Fact]
-    public void RegisterServices_ShouldFail_WhenExternalDependenciesAreNotRegistered()
+    public async Task RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
     {
         // arrange
-        var container = new Container();
+        RegisterExternals(_container);
         var sut = new StatisticsPackage();
 
         // act
-        sut.RegisterServices(container);
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
 
         // assert
-        Assert.Throws<InvalidOperationException>(() => container.Verify(VerificationOption.VerifyAndDiagnose));
+        // implicit, Verify throws when container is not valid.
+        _container.Verify(VerificationOption.VerifyAndDiagnose);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData(2)]
+    [InlineData(10)]
+    public async Task RegisterServices_ShouldPersistNewConfig_WhenVersionIsNotCorrect(int? version)
+    {
+        // arrange
+        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
+        RegisterExternals(_container);
+        var sut = new StatisticsPackage();
+
+        // act
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
+
+        // assert
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<StatisticsConfigV1>._, 1)).MustHaveHappenedOnceExactly();
+
+        // implicit, Verify throws when container is not valid.
+        _container.Verify(VerificationOption.VerifyAndDiagnose);
+    }
+
+    [Fact]
+    public async Task RegisterServices_ShouldFail_WhenExternalDependenciesAreNotRegistered()
+    {
+        // arrange
+        var sut = new StatisticsPackage();
+
+        // act
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
+
+        // assert
+        Assert.Throws<InvalidOperationException>(() => _container.Verify(VerificationOption.VerifyAndDiagnose));
     }
 
     private static void RegisterExternals(Container container)

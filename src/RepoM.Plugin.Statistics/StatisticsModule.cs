@@ -18,6 +18,7 @@ using RepoM.Plugin.Statistics.Interface;
 internal class StatisticsModule : IModule
 {
     private readonly IStatisticsService _service;
+    private readonly IStatisticsConfiguration _configuration;
     private readonly IClock _clock;
     private readonly IAppDataPathProvider _pathProvider;
     private readonly IFileSystem _fileSystem;
@@ -28,12 +29,14 @@ internal class StatisticsModule : IModule
 
     public StatisticsModule(
         IStatisticsService service,
+        IStatisticsConfiguration configuration,
         IClock clock,
         IAppDataPathProvider pathProvider,
         IFileSystem fileSystem,
         ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -73,7 +76,7 @@ internal class StatisticsModule : IModule
 
         IOrderedEnumerable<string> orderedEnumerable = _fileSystem.Directory.GetFiles(_basePath, "statistics.v1.*.json").OrderBy(f => f);
 
-        DateTime threshold = _clock.Now.AddDays(-30);
+        DateTime threshold = _clock.Now.AddDays(-1 * _configuration.RetentionDays);
 
         foreach (var file in orderedEnumerable)
         {
@@ -136,10 +139,16 @@ internal class StatisticsModule : IModule
 
     private IDisposable WriteEventsToFile()
     {
+        TimeSpan buffer = _configuration.PersistenceBuffer;
+        if (buffer < TimeSpan.FromSeconds(10))
+        {
+            buffer = TimeSpan.FromSeconds(10);
+        }
+
         return _service
                .Events
                .ObserveOn(Scheduler.Default)
-               .Buffer(TimeSpan.FromMinutes(5))
+               .Buffer(buffer)
                .Subscribe(data =>
                    {
                        IEvent[] events = data.ToArray();
