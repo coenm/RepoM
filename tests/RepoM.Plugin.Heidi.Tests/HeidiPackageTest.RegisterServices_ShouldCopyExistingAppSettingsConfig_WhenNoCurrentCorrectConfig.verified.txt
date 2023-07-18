@@ -1,5 +1,0 @@
-﻿{
-  ConfigPath: heidi-configpath-envvar,
-  ConfigFilename: heidi-filename-envvar,
-  ExecutableFilename: heidi-exe-envvar
-}
