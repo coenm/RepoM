@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.Statistics.Tests.Ordering;
 
+using System;
 using System.Collections.Generic;
 using FakeItEasy;
 using System.IO.Abstractions;
@@ -15,6 +16,8 @@ using EasyTestFileXunit;
 using EasyTestFile;
 using VerifyTests;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+using RepoM.Core.Plugin;
+using RepoM.Plugin.Statistics.PersistentConfiguration;
 
 [UsesEasyTestFile]
 [UsesVerify]
@@ -28,8 +31,13 @@ public class IntegrationTest
 
     public IntegrationTest()
     {
+        var packageConfiguration = A.Fake<IPackageConfiguration>();
+        A.CallTo(() => packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(1 as int?));
+        A.CallTo(() => packageConfiguration.LoadConfigurationAsync<StatisticsConfigV1>())
+         .ReturnsLazily(() => new StatisticsConfigV1 { PersistenceBuffer = TimeSpan.FromMinutes(5), RetentionDays = 30, });
         var container = new Container();
-        new StatisticsPackage().RegisterServices(container);
+        var package = new StatisticsPackage();
+        package.RegisterServicesAsync(container, packageConfiguration).GetAwaiter().GetResult();
         
         _appDataPathProvider = A.Fake<IAppDataPathProvider>();
         _fileSystem = new MockFileSystem();
@@ -65,6 +73,7 @@ public class IntegrationTest
         // assert
         await Verifier.Verify(result, _verifySettings);
     }
+
     [Fact]
     public async Task LastOpenedConfiguration1()
     {

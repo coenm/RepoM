@@ -5,6 +5,7 @@ namespace SimpleInjector.Packaging
 {
     using System.Collections.Generic;
     using System.Reflection;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Contract for types allow registering a set of services.

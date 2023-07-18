@@ -4,7 +4,6 @@ using System;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
-using RepoM.Api.Common;
 using Xunit;
 
 public class SonarCloudFavoriteServiceTest
@@ -28,8 +27,8 @@ public class SonarCloudFavoriteServiceTest
     public async Task InitializeAsync_ShouldNotInitialize_WhenPatInvalid(string? pat)
     {
         // arrange
-        IAppSettingsService appSettingsService = A.Fake<IAppSettingsService>();
-        appSettingsService.SonarCloudPersonalAccessToken = pat!;
+        ISonarCloudConfiguration appSettingsService = A.Fake<ISonarCloudConfiguration>();
+        A.CallTo(() => appSettingsService.PersonalAccessToken).Returns(pat!);
         var sut = new SonarCloudFavoriteService(appSettingsService);
 
         // act
@@ -43,7 +42,7 @@ public class SonarCloudFavoriteServiceTest
     public void SetFavorite_ShouldReturn_WhenNotInitialized()
     {
         // arrange
-        IAppSettingsService appSettingsService = A.Fake<IAppSettingsService>();
+        ISonarCloudConfiguration appSettingsService = A.Fake<ISonarCloudConfiguration>();
         var sut = new SonarCloudFavoriteService(appSettingsService);
 
         // assume
@@ -60,7 +59,7 @@ public class SonarCloudFavoriteServiceTest
     public void IsFavorite_ShouldReturnFalse_WhenNotInitialized()
     {
         // arrange
-        IAppSettingsService appSettingsService = A.Fake<IAppSettingsService>();
+        ISonarCloudConfiguration appSettingsService = A.Fake<ISonarCloudConfiguration>();
         var sut = new SonarCloudFavoriteService(appSettingsService);
 
         // assume

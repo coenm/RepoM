@@ -11,7 +11,7 @@ using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Statistics.Interface;
 
-public class StatisticsService : IStatisticsService
+internal class StatisticsService : IStatisticsService
 {
     private readonly IClock _clock;
     private readonly ReadOnlyCollection<DateTime> _empty = new List<DateTime>(0).AsReadOnly();
@@ -55,7 +55,7 @@ public class StatisticsService : IStatisticsService
 
     public int GetTotalRecordingCount()
     {
-        return _recordings.Select(x => x.Value.Recordings.Count).Sum();
+        return _recordings.Select(repo => repo.Value.Recordings.Count).Sum();
     }
 
     public IReadOnlyRepositoryStatistics? GetRepositoryRecording(IRepository repository)

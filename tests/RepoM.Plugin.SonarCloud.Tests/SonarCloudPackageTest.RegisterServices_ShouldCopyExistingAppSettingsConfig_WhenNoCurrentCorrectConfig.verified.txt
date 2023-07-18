@@ -1,0 +1,4 @@
+﻿{
+  PersonalAccessToken: MY_TEST_PAT_SONAR,
+  BaseUrl: https://sonarcloud.io
+}

@@ -41,6 +41,7 @@ using System.IO;
 using System.Reflection;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using SimpleInjector;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -172,7 +173,7 @@ internal static class Bootstrapper
         Container.RegisterSingleton<WindowSizeService>();
     }
 
-    public static void RegisterPlugins(IPluginFinder pluginFinder, IFileSystem fileSystem)
+    public static async Task RegisterPlugins(IPluginFinder pluginFinder, IFileSystem fileSystem, ILoggerFactory loggerFactory)
     {
         Container.Register<ModuleService>(Lifestyle.Singleton);
         Container.RegisterInstance(pluginFinder);
@@ -211,7 +212,13 @@ internal static class Bootstrapper
 
         if (assemblies.Any())
         {
-            Container.RegisterPackages(assemblies);
+            await Container.RegisterPackagesAsync(
+                assemblies,
+                filename => new FileBasedPackageConfiguration(
+                    DefaultAppDataPathProvider.Instance,
+                    fileSystem,
+                    loggerFactory.CreateLogger<FileBasedPackageConfiguration>(),
+                    filename)).ConfigureAwait(false); 
         }
     }
 

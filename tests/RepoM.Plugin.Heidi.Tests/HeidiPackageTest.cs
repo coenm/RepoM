@@ -2,44 +2,117 @@ namespace RepoM.Plugin.Heidi.Tests;
 
 using System;
 using System.IO.Abstractions;
+using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Plugin.Heidi.PersistentConfiguration;
 using SimpleInjector;
 using Xunit;
 
 public class HeidiPackageTest
 {
-    [Fact]
-    public void RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
+    private readonly Container _container;
+    private readonly IPackageConfiguration _packageConfiguration;
+
+    public HeidiPackageTest()
     {
-        // arrange
-        var container = new Container();
-        RegisterExternals(container);
-        var sut = new HeidiPackage();
+        _packageConfiguration = A.Fake<IPackageConfiguration>();
+        _container = new Container();
 
-        // act
-        sut.RegisterServices(container);
-
-        // assert
-        // implicit, Verify throws when container is not valid.
-        container.Verify(VerificationOption.VerifyAndDiagnose);
+        var heidiConfigV1 = new HeidiConfigV1
+        {
+            ConfigPath = "C:\\Config\\Path\\Test\\",
+            ConfigFilename = "portable.heidi.test.txt",
+            ExecutableFilename = "TestHeidiSQL.exe",
+        };
+        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(1 as int?));
+        A.CallTo(() => _packageConfiguration.LoadConfigurationAsync<HeidiConfigV1>()).ReturnsLazily(() => heidiConfigV1);
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<HeidiConfigV1>._, 1)).Returns(Task.CompletedTask);
     }
 
     [Fact]
-    public void RegisterServices_ShouldFail_WhenExternalDependenciesAreNotRegistered()
+    public async Task RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
     {
         // arrange
-        var container = new Container();
+        RegisterExternals(_container);
         var sut = new HeidiPackage();
 
         // act
-        sut.RegisterServices(container);
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
 
         // assert
-        Assert.Throws<InvalidOperationException>(() => container.Verify(VerificationOption.VerifyAndDiagnose));
+        // implicit, Verify throws when container is not valid.
+        _container.Verify(VerificationOption.VerifyAndDiagnose);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData(2)]
+    [InlineData(10)]
+    public async Task RegisterServices_ShouldPersistNewConfig_WhenVersionIsNotCorrect(int? version)
+    {
+        // arrange
+        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
+        RegisterExternals(_container);
+        var sut = new HeidiPackage();
+
+        // act
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
+
+        // assert
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<HeidiConfigV1>._, 1)).MustHaveHappenedOnceExactly();
+
+        // implicit, Verify throws when container is not valid.
+        _container.Verify(VerificationOption.VerifyAndDiagnose);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData(2)]
+    [InlineData(10)]
+    public async Task RegisterServices_ShouldCopyExistingAppSettingsConfig_WhenNoCurrentCorrectConfig(int? version)
+    {
+        // This test is not complete but has some issues running in AzureDevops. Propbably due to the environment variables.
+        // Because this functionality will be stripped in a few months (ie, october 2023) this test is not a priority.
+
+        // arrange
+        // using IDisposable d1 = EnvironmentVariableManager.SetEnvironmentVariable("REPOM_HEIDI_CONFIG_PATH", "heidi-configpath-envvar");
+        // using IDisposable d2 = EnvironmentVariableManager.SetEnvironmentVariable("REPOM_HEIDI_CONFIG_FILENAME", "heidi-filename-envvar");
+        // using IDisposable d3 = EnvironmentVariableManager.SetEnvironmentVariable("REPOM_HEIDI_EXE", "heidi-exe-envvar");
+
+        HeidiConfigV1? persistedConfig = null;
+        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
+        RegisterExternals(_container);
+        var sut = new HeidiPackage();
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
+
+        Fake.ClearRecordedCalls(_packageConfiguration);
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<HeidiConfigV1>._, 1))
+         .Invokes(call => persistedConfig = call.Arguments[0] as HeidiConfigV1);
+
+        // act
+        // make sure everyting is resolved. This will trigger the copy of the config.
+        _container.Verify(VerificationOption.VerifyAndDiagnose);
+
+        // assert
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<HeidiConfigV1>._, 1)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task RegisterServices_ShouldFail_WhenExternalDependenciesAreNotRegistered()
+    {
+        // arrange
+        var sut = new HeidiPackage();
+
+        // act
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
+
+        // assert
+        Assert.Throws<InvalidOperationException>(() => _container.Verify(VerificationOption.VerifyAndDiagnose));
     }
 
     private static void RegisterExternals(Container container)

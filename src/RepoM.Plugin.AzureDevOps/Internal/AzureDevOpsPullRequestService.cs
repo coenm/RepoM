@@ -15,7 +15,6 @@ using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
 using Newtonsoft.Json;
-using RepoM.Api.Common;
 using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
 
@@ -23,7 +22,7 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
 {
     private static readonly Regex _workItemRegex = DevOpsTaskMatchingRegex();
     private readonly HttpClient _httpClient;
-    private readonly IAppSettingsService _appSettingsService;
+    private readonly IAzureDevopsConfiguration _configuration;
     private readonly ILogger _logger;
     private readonly VssConnection? _connection;
     private GitHttpClient? _azureDevopsGitClient;
@@ -36,23 +35,20 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
     private readonly ConcurrentDictionary<string, GitRepository[]> _gitRepositoriesPerProject = new();
     private readonly ConcurrentDictionary<Guid, GitRepository> _devOpsGitRepositories = new(); // Guid is the repository guid.
 
-    public AzureDevOpsPullRequestService(IAppSettingsService appSettingsService, ILogger logger)
+    public AzureDevOpsPullRequestService(IAzureDevopsConfiguration configuration, ILogger logger)
     {
         _httpClient = new();
-        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-        var token = _appSettingsService.AzureDevOpsPersonalAccessToken;
 
         try
         {
-            Uri baseUrl = new(_appSettingsService.AzureDevOpsBaseUrl);
             _connection = new VssConnection(
-                baseUrl,
-                new VssBasicCredential(string.Empty, token));
-            _httpClient.BaseAddress = baseUrl;
+                _configuration.AzureDevOpsBaseUrl,
+                new VssBasicCredential(string.Empty, _configuration.AzureDevOpsPersonalAccessToken));
+            _httpClient.BaseAddress = _configuration.AzureDevOpsBaseUrl;
             _httpClient.DefaultRequestHeaders.Accept.Add(new("application/json"));
-            _httpClient.DefaultRequestHeaders.Authorization = new("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($":{_appSettingsService.AzureDevOpsPersonalAccessToken}")));
+            _httpClient.DefaultRequestHeaders.Authorization = new("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($":{_configuration.AzureDevOpsPersonalAccessToken}")));
         }
         catch (Exception e)
         {
@@ -68,10 +64,10 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
             return Task.CompletedTask;
         }
 
-        var key = _appSettingsService.AzureDevOpsPersonalAccessToken;
+        var key = _configuration.AzureDevOpsPersonalAccessToken;
         if (string.IsNullOrWhiteSpace(key))
         {
-            _logger.LogInformation($"'{nameof(_appSettingsService.AzureDevOpsPersonalAccessToken)}' was null or empty. Module will not be enabled.");
+            _logger.LogInformation($"'{nameof(_configuration.AzureDevOpsPersonalAccessToken)}' was null or empty. Module will not be enabled.");
             return Task.CompletedTask;
         }
 

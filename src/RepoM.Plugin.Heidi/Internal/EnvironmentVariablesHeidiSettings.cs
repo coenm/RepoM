@@ -2,7 +2,8 @@ namespace RepoM.Plugin.Heidi.Internal;
 
 using System;
 
-internal class HeidiSettings : IHeidiSettings
+[Obsolete("Will be removed in next major version.")]
+internal class EnvironmentVariablesHeidiSettings : IHeidiSettings
 {
     private const string ENV_VAR_PREFIX = "REPOM_HEIDI_";
 

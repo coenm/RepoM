@@ -18,6 +18,7 @@ using RepoM.Plugin.Statistics.Interface;
 internal class StatisticsModule : IModule
 {
     private readonly IStatisticsService _service;
+    private readonly IStatisticsConfiguration _configuration;
     private readonly IClock _clock;
     private readonly IAppDataPathProvider _pathProvider;
     private readonly IFileSystem _fileSystem;
@@ -28,12 +29,14 @@ internal class StatisticsModule : IModule
 
     public StatisticsModule(
         IStatisticsService service,
+        IStatisticsConfiguration configuration,
         IClock clock,
         IAppDataPathProvider pathProvider,
         IFileSystem fileSystem,
         ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -73,23 +76,23 @@ internal class StatisticsModule : IModule
 
         IOrderedEnumerable<string> orderedEnumerable = _fileSystem.Directory.GetFiles(_basePath, "statistics.v1.*.json").OrderBy(f => f);
 
-        DateTime threshold = _clock.Now.AddDays(-30);
+        DateTime threshold = _clock.Now.AddDays(-1 * _configuration.RetentionDays);
 
         foreach (var file in orderedEnumerable)
         {
-            IEvent[] list = Array.Empty<IEvent>();
+            IEvent[] events = Array.Empty<IEvent>();
 
             try
             {
                 var json = await _fileSystem.File.ReadAllTextAsync(file, CancellationToken.None).ConfigureAwait(false);
-                list = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? Array.Empty<IEvent>();
+                events = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? Array.Empty<IEvent>();
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not read or deserialize data from '{filename}'. {message}", file, e.Message);
             }
 
-            if (list.All(item => item.Timestamp <= threshold))
+            if (Array.TrueForAll(events, item => item.Timestamp <= threshold))
             {
                 try
                 {
@@ -136,10 +139,16 @@ internal class StatisticsModule : IModule
 
     private IDisposable WriteEventsToFile()
     {
+        TimeSpan buffer = _configuration.PersistenceBuffer;
+        if (buffer < TimeSpan.FromSeconds(10))
+        {
+            buffer = TimeSpan.FromSeconds(10);
+        }
+
         return _service
                .Events
                .ObserveOn(Scheduler.Default)
-               .Buffer(TimeSpan.FromMinutes(5))
+               .Buffer(buffer)
                .Subscribe(data =>
                    {
                        IEvent[] events = data.ToArray();

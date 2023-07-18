@@ -80,7 +80,7 @@ public class RepositoryStatisticsTest
         Action act = () => sut.Apply(new DummyEvent());
         
         // assert
-        act.Should().Throw<NotImplementedException>();
+        act.Should().Throw<InvalidOperationException>();
     }
     
     [Fact]

@@ -246,4 +246,24 @@ public class ExtractRepositoryFromHeidiTests
             },
             _verifySettings);
     }
+    
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void TryExtract_ShouldReturnFalse_WhenCommentIsNullOrEmpty(string? comment)
+    {
+        // arrange
+        var dbSettings = new HeidiSingleDatabaseConfiguration("hk")
+            {
+                Comment = comment!,
+            };
+
+        // act
+        var result = _sut.TryExtract(dbSettings, out RepoHeidi? repo);
+
+        // assert
+        result.Should().BeFalse();
+        repo.Should().BeNull();
+    }
 }
