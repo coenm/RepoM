@@ -1,13 +1,10 @@
 namespace RepoM.Plugin.SonarCloud.Tests;
 
-using RepoM.Api.IO;
 using System;
-using System.ComponentModel.DataAnnotations;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
-using RepoM.Core.Plugin.RepositoryFinder;
 using Xunit;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
