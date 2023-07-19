@@ -105,7 +105,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
         if (conj is CONJ_NONE or CONJ_AND)
         {
             // and
-            var currentClause = (SetBooleanClause)clauses.First();
+            var currentClause = (SetBooleanClause)clauses[0];
 
             if (currentClause.Mode == SetBooleanClause.BoolMode.And)
             {
@@ -125,7 +125,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
         {
             // or
 
-            var currentClause = (SetBooleanClause)clauses.First();
+            var currentClause = (SetBooleanClause)clauses[0];
 
             if (currentClause.Mode == SetBooleanClause.BoolMode.Or)
             {
