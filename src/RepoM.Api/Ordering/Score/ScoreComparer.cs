@@ -30,7 +30,6 @@ public class ScoreComparer : IRepositoryComparer
             return -1;
         }
 
-        var result = _calculator.Score(y) - _calculator.Score(x);
-        return result;
+        return _calculator.Score(y) - _calculator.Score(x);
     }
 }
