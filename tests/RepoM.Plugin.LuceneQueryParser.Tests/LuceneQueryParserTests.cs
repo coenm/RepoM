@@ -2,6 +2,7 @@ namespace RepoM.Plugin.LuceneQueryParser.Tests;
 
 using System.Threading.Tasks;
 using Argon;
+using FluentAssertions;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Plugin.LuceneQueryParser;
 using VerifyTests;
@@ -27,6 +28,18 @@ public class LuceneQueryParserTests
 
             });
         _settings.DisableRequireUniquePrefix();
+    }
+
+    [Fact]
+    public void Name_ShouldReturnLucene()
+    {
+        // arrange
+
+        // act
+        var result = _sut.Name;
+
+        // assert
+        result.Should().Be("Lucene");
     }
 
     [Theory]
