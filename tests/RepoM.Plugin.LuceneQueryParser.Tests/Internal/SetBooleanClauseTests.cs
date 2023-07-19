@@ -43,6 +43,57 @@ public class SetBooleanClauseTests
     }
 
     [Fact]
+    public void ToString_ShouldReturnOrCombined_WhenMultipleClauses()
+    {
+        // arrange
+        var wrappedBooleanClause1 = new WrappedBooleanClause(new BooleanClause(new BooleanQuery(), Occur.MUST));
+        var wrappedBooleanClause2 = new WrappedBooleanClause(new BooleanClause(new BooleanQuery(), Occur.MUST));
+        var sut = new SetBooleanClause(wrappedBooleanClause1, wrappedBooleanClause2);
+
+        // act
+        var result = sut.ToString();
+
+        // assert
+        result.Should().Be("Or( ,  )");
+    }
+
+    [Fact]
+    public void ToString_ShouldReturnOrCombined_WhenMultipleClausesAndModeIsOr()
+    {
+        // arrange
+        var wrappedBooleanClause1 = new WrappedBooleanClause(new BooleanClause(new BooleanQuery(), Occur.MUST));
+        var wrappedBooleanClause2 = new WrappedBooleanClause(new BooleanClause(new BooleanQuery(), Occur.MUST));
+        var sut = new SetBooleanClause(wrappedBooleanClause1, wrappedBooleanClause2)
+            {
+                Mode = SetBooleanClause.BoolMode.Or,
+            };
+
+        // act
+        var result = sut.ToString();
+
+        // assert
+        result.Should().Be("Or( ,  )");
+    }
+
+    [Fact]
+    public void ToString_ShouldReturnOrCombined_WhenMultipleClausesAndModeIsAnd()
+    {
+        // arrange
+        var wrappedBooleanClause1 = new WrappedBooleanClause(new BooleanClause(new BooleanQuery(), Occur.MUST));
+        var wrappedBooleanClause2 = new WrappedBooleanClause(new BooleanClause(new BooleanQuery(), Occur.MUST));
+        var sut = new SetBooleanClause(wrappedBooleanClause1, wrappedBooleanClause2)
+            {
+                Mode = SetBooleanClause.BoolMode.And,
+            };
+
+        // act
+        var result = sut.ToString();
+
+        // assert
+        result.Should().Be("And( ,  )");
+    }
+
+    [Fact]
     public void Ctor_ShouldAddArgumentInItemsCollection1()
     {
         // arrange
