@@ -8,6 +8,7 @@ using Lucene.Net.Index;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Lucene.Net.Util;
+using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
@@ -15,11 +16,13 @@ using RepoM.Plugin.LuceneQueryParser.Internal;
 
 public class LuceneQueryParser : INamedQueryParser
 {
+    private readonly ILogger _logger;
     private const string KEY_FREE_TEXT = "ThisShouldBeAnUnguessableKEj";
     private readonly CustomMultiFieldQueryParser _queryParser;
 
-    public LuceneQueryParser()
+    public LuceneQueryParser(ILogger logger)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         var analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
 
         _queryParser = new CustomMultiFieldQueryParser(LuceneVersion.LUCENE_48, new[] { KEY_FREE_TEXT, }, analyzer)
@@ -42,12 +45,13 @@ public class LuceneQueryParser : INamedQueryParser
         }
         catch (ParseException e)
         {
-            Console.WriteLine(e);
+            _logger.LogDebug(e, "Parse exception '{text}' could not be parsed {message}", text, e.Message);
             throw;
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            // Should not happen. Log just in case.
+            _logger.LogError(e, "Unexpected Parse exception '{text}' could not be parsed {message}", text, e.Message);
             throw;
         }
     }
