@@ -1,6 +1,5 @@
 namespace RepoM.Plugin.AzureDevOps;
 
-using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api.Common;
@@ -12,7 +11,6 @@ using RepoM.Plugin.AzureDevOps.Internal;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
 using RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 using SimpleInjector;
-using SimpleInjector.Packaging;
 
 [UsedImplicitly]
 public class AzureDevOpsPackage : IPackageWithConfiguration
@@ -83,10 +81,5 @@ public class AzureDevOpsPackage : IPackageWithConfiguration
 
         container.Collection.Append<IModule, AzureDevOpsModule>(Lifestyle.Singleton);
         container.Collection.Append<IQueryMatcher>(() => new HasPullRequestsMatcher(container.GetInstance<IAzureDevOpsPullRequestService>(), true), Lifestyle.Singleton);
-    }
-
-    void IPackage.RegisterServices(Container container)
-    {
-        throw new NotImplementedException();
     }
 }

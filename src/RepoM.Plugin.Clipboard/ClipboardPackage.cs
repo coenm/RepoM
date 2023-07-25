@@ -1,20 +1,24 @@
 namespace RepoM.Plugin.Clipboard;
 
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Plugin.Clipboard.ActionProvider;
 using SimpleInjector;
-using SimpleInjector.Packaging;
 using TextCopy;
 
 [UsedImplicitly]
-public class ClipboardPackage : IPackage
+public class ClipboardPackage : IPackageWithConfiguration
 {
-    public void RegisterServices(Container container)
+    public string Name => "ClipboardPackage";
+
+    public Task RegisterServicesAsync(Container container, IPackageConfiguration packageConfiguration)
     {
         RegisterPluginHooks(container);
         RegisterInternals(container);
+        return Task.CompletedTask;
     }
 
     private static void RegisterPluginHooks(Container container)

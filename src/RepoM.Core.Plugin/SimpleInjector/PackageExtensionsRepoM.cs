@@ -10,23 +10,12 @@ namespace SimpleInjector
     using System.Reflection;
     using System.Threading.Tasks;
     using RepoM.Core.Plugin;
-    using SimpleInjector.Packaging;
 
     /// <summary>
     /// Extension methods for working with packages.
     /// </summary>
     public static class PackageExtensionsRepoM
     {
-        /// <summary>
-        /// Loads all <see cref="IPackage"/> implementations from the given set of
-        /// <paramref name="assemblies"/> and calls their <see cref="IPackage.RegisterServices">Register</see> method.
-        /// Note that only publicly exposed classes that contain a public default constructor will be loaded.
-        /// </summary>
-        /// <param name="container">The container to which the packages will be applied to.</param>
-        /// <param name="assemblies">The assemblies that will be searched for packages.</param>
-        /// <param name="packageConfigurationFactoryMethod">The factory method to create an <see cref="IPackageConfiguration"/> instance based.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="container"/> is a null
-        /// reference.</exception>
         public static Task RegisterPackagesAsync(this Container container, IEnumerable<Assembly> assemblies, Func<string, IPackageConfiguration> packageConfigurationFactoryMethod)
         {
             if (container is null)
@@ -53,29 +42,22 @@ namespace SimpleInjector
             {
                 var assemblyName = assembly.GetName().Name ?? string.Empty;
 
-                foreach (IPackage package in container.GetPackagesToRegister(new[] { assembly, }))
+                foreach (IPackageWithConfiguration packageWithConfiguration in container.GetPackagesToRegister(new[] { assembly, }))
                 {
-                    if (package is IPackageWithConfiguration packageWithConfiguration)
+                    var fileName = assemblyName;
+                    if (fileName.StartsWith("RepoM.Plugin."))
                     {
-                        var fileName = assemblyName;
-                        if (fileName.StartsWith("RepoM.Plugin."))
-                        {
-                            fileName = fileName["RepoM.Plugin.".Length..];
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(packageWithConfiguration.Name))
-                        {
-                            fileName += "." + packageWithConfiguration.Name;
-                        }
-
-                        await packageWithConfiguration
-                              .RegisterServicesAsync(container, packageConfigurationFactoryMethod.Invoke(fileName))
-                              .ConfigureAwait(false);
+                        fileName = fileName["RepoM.Plugin.".Length..];
                     }
-                    else
+
+                    if (!string.IsNullOrWhiteSpace(packageWithConfiguration.Name))
                     {
-                        package.RegisterServices(container);
+                        fileName += "." + packageWithConfiguration.Name;
                     }
+
+                    await packageWithConfiguration
+                          .RegisterServicesAsync(container, packageConfigurationFactoryMethod.Invoke(fileName))
+                          .ConfigureAwait(false);
                 }
             }
         }

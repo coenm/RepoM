@@ -3,6 +3,7 @@ namespace RepoM.Plugin.WindowsExplorerGitInfo.Tests;
 using System;
 using FakeItEasy;
 using RepoM.Api.Git;
+using RepoM.Core.Plugin;
 using SimpleInjector;
 using Xunit;
 
@@ -41,5 +42,14 @@ public class WindowsExplorerGitInfoPackageTests
     private static void RegisterExternals(Container container)
     {
         container.RegisterSingleton(A.Dummy<IRepositoryInformationAggregator>);
+    }
+}
+
+file static class ExtensionIPackageWithConfiguration
+{
+    // tmp for fixing tests.
+    public static void RegisterServices(this IPackageWithConfiguration self, Container container)
+    {
+        self.RegisterServicesAsync(container, null!).GetAwaiter().GetResult();
     }
 }

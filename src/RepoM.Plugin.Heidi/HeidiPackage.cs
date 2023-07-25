@@ -1,6 +1,5 @@
 namespace RepoM.Plugin.Heidi;
 
-using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
@@ -10,7 +9,6 @@ using RepoM.Plugin.Heidi.Internal;
 using SimpleInjector;
 using RepoM.Plugin.Heidi.VariableProviders;
 using RepoM.Plugin.Heidi.ActionProvider;
-using SimpleInjector.Packaging;
 using RepoM.Plugin.Heidi.PersistentConfiguration;
 
 [UsedImplicitly]
@@ -95,10 +93,5 @@ public class HeidiPackage : IPackageWithConfiguration
         container.Register<IHeidiPortableConfigReader, HeidiPortableConfigReader>(Lifestyle.Singleton);
         container.RegisterInstance<IHeidiRepositoryExtractor>(ExtractRepositoryFromHeidi.Instance);
         container.RegisterInstance<IHeidiPasswordDecoder>(HeidiPasswordDecoder.Instance);
-    }
-
-    void IPackage.RegisterServices(Container container)
-    {
-        throw new NotImplementedException();
     }
 }

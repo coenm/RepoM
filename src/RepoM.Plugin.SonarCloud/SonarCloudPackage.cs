@@ -1,6 +1,5 @@
 namespace RepoM.Plugin.SonarCloud;
 
-using System;
 using System.Threading.Tasks;
 using ExpressionStringEvaluator.Methods;
 using JetBrains.Annotations;
@@ -9,7 +8,6 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
 using SimpleInjector;
-using SimpleInjector.Packaging;
 
 [UsedImplicitly]
 public class SonarCloudPackage : IPackageWithConfiguration
@@ -73,10 +71,5 @@ public class SonarCloudPackage : IPackageWithConfiguration
         container.Collection.Append<IMethod, SonarCloudIsFavoriteMethod>(Lifestyle.Singleton);
         container.Register<ISonarCloudFavoriteService, SonarCloudFavoriteService>(Lifestyle.Singleton);
         container.Collection.Append<IModule, SonarCloudModule>(Lifestyle.Singleton);
-    }
-
-    void IPackage.RegisterServices(Container container)
-    {
-        throw new NotImplementedException();
     }
 }

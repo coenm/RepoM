@@ -1,17 +1,20 @@
 namespace RepoM.Plugin.WindowsExplorerGitInfo;
 
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 using SimpleInjector;
-using SimpleInjector.Packaging;
 
 [UsedImplicitly]
-public class WindowsExplorerGitInfoPackage : IPackage
+public class WindowsExplorerGitInfoPackage : IPackageWithConfiguration
 {
-    public void RegisterServices(Container container)
+    public string Name => "WindowsExplorerGitInfoPackage";
+
+    public Task RegisterServicesAsync(Container container, IPackageConfiguration packageConfiguration)
     {
         container.Register<IWindowsExplorerHandler, WindowsExplorerHandler>(Lifestyle.Singleton);
         container.Collection.Append<IModule, WindowExplorerBarGitInfoModule>(Lifestyle.Singleton);
+        return Task.CompletedTask;
     }
 }

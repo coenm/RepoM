@@ -11,48 +11,23 @@ namespace SimpleInjector
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using SimpleInjector.Packaging;
+    using RepoM.Core.Plugin;
 
     /// <summary>
     /// Extension methods for working with packages.
     /// </summary>
     public static class PackageExtensions
     {
-        /// <summary>
-        /// Loads all <see cref="IPackage"/> implementations from the given set of
-        /// <paramref name="assemblies"/> and calls their <see cref="IPackage.RegisterServices">Register</see> method.
-        /// Note that only publicly exposed classes that contain a public default constructor will be loaded.
-        /// </summary>
-        /// <param name="container">The container to which the packages will be applied to.</param>
-        /// <param name="assemblies">The assemblies that will be searched for packages.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="container"/> is a null
-        /// reference.</exception>
-        public static void RegisterPackages(this Container container, IEnumerable<Assembly> assemblies)
-        {
-            if (container is null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
 
-            if (assemblies is null)
-            {
-                throw new ArgumentNullException(nameof(assemblies));
-            }
-
-            foreach (var package in container.GetPackagesToRegister(assemblies))
-            {
-                package.RegisterServices(container);
-            }
-        }
 
         /// <summary>
-        /// Loads all <see cref="IPackage"/> implementations from the given set of
+        /// Loads all <see cref="IPackageWithConfiguration"/> implementations from the given set of
         /// <paramref name="assemblies"/> and returns a list of created package instances.
         /// </summary>
         /// <param name="container">The container.</param>
         /// <param name="assemblies">The assemblies that will be searched for packages.</param>
         /// <returns>Returns a list of created packages.</returns>
-        public static IPackage[] GetPackagesToRegister(
+        public static IPackageWithConfiguration[] GetPackagesToRegister(
             this Container container, IEnumerable<Assembly> assemblies)
         {
             if (container is null)
@@ -75,7 +50,7 @@ namespace SimpleInjector
             var packageTypes = (
                 from assembly in assemblies
                 from type in GetExportedTypesFrom(assembly)
-                where typeof(IPackage).Info().IsAssignableFrom(type.Info())
+                where typeof(IPackageWithConfiguration).Info().IsAssignableFrom(type.Info())
                 where !type.Info().IsAbstract
                 where !type.Info().IsGenericTypeDefinition
                 select type)
@@ -116,11 +91,11 @@ namespace SimpleInjector
             }
         }
 
-        private static IPackage CreatePackage(Type packageType)
+        private static IPackageWithConfiguration CreatePackage(Type packageType)
         {
             try
             {
-                return (IPackage)Activator.CreateInstance(packageType)!;
+                return (IPackageWithConfiguration)Activator.CreateInstance(packageType)!;
             }
             catch (Exception ex)
             {

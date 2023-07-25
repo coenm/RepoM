@@ -13,7 +13,6 @@ using RepoM.Plugin.Statistics.PersistentConfiguration;
 using RepoM.Plugin.Statistics.RepositoryActions;
 using RepoM.Plugin.Statistics.VariableProviders;
 using SimpleInjector;
-using SimpleInjector.Packaging;
 
 [UsedImplicitly]
 public class StatisticsPackage : IPackageWithConfiguration
@@ -90,10 +89,5 @@ public class StatisticsPackage : IPackageWithConfiguration
     private static void RegisterInternals(Container container)
     {
         container.Register<IStatisticsService, StatisticsService>(Lifestyle.Singleton);
-    }
-
-    void IPackage.RegisterServices(Container container)
-    {
-        throw new NotImplementedException();
     }
 }
