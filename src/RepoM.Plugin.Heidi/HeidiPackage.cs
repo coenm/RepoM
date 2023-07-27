@@ -12,7 +12,7 @@ using RepoM.Plugin.Heidi.ActionProvider;
 using RepoM.Plugin.Heidi.PersistentConfiguration;
 
 [UsedImplicitly]
-public class HeidiPackage : IPackageWithConfiguration
+public class HeidiPackage : IPackage
 {
     public string Name => "HeidiPackage"; // do not change this name, it is part of the persistant filename
 

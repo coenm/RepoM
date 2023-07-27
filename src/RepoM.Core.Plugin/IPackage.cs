@@ -7,9 +7,9 @@ using SimpleInjector;
 /// Contract for types allow registering a set of services.
 /// </summary>
 /// <example>
-/// The following example shows an implementation of an <see cref="IPackageWithConfiguration"/>.
+/// The following example shows an implementation of an <see cref="IPackage"/>.
 /// <code lang="cs"><![CDATA[
-/// public class BusinessLayerPackage : IPackageWithConfiguration
+/// public class BusinessLayerPackage : IPackage
 /// {
 ///     public Task RegisterServicesAsync(Container container, IPackageConfiguration packageConfiguration)
 ///     {
@@ -20,7 +20,7 @@ using SimpleInjector;
 /// }
 /// ]]></code>
 /// </example>
-public interface IPackageWithConfiguration
+public interface IPackage
 {
     public string Name { get; }
 

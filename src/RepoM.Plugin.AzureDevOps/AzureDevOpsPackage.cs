@@ -13,7 +13,7 @@ using RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 using SimpleInjector;
 
 [UsedImplicitly]
-public class AzureDevOpsPackage : IPackageWithConfiguration
+public class AzureDevOpsPackage : IPackage
 {
     public string Name => "AzureDevOpsPackage"; // do not change this name, it is part of the persistant filename
 

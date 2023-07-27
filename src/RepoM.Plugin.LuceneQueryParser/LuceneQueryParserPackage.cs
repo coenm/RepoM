@@ -7,7 +7,7 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using SimpleInjector;
 
 [UsedImplicitly]
-public class LuceneQueryParserPackage : IPackageWithConfiguration
+public class LuceneQueryParserPackage : IPackage
 {
     public string Name => "LuceneQueryParserPackage";
 

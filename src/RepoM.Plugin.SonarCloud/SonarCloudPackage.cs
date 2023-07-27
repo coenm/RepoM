@@ -10,7 +10,7 @@ using RepoM.Plugin.SonarCloud.PersistentConfiguration;
 using SimpleInjector;
 
 [UsedImplicitly]
-public class SonarCloudPackage : IPackageWithConfiguration
+public class SonarCloudPackage : IPackage
 {
     public string Name => "SonarCloudPackage"; // do not change this name, it is part of the persistant filename
 

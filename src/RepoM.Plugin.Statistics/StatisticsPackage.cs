@@ -15,7 +15,7 @@ using RepoM.Plugin.Statistics.VariableProviders;
 using SimpleInjector;
 
 [UsedImplicitly]
-public class StatisticsPackage : IPackageWithConfiguration
+public class StatisticsPackage : IPackage
 {
     public string Name => "StatisticsPackage"; // do not change this name, it is part of the persistant filename
 

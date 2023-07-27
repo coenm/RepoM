@@ -7,7 +7,7 @@ using RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 using SimpleInjector;
 
 [UsedImplicitly]
-public class WindowsExplorerGitInfoPackage : IPackageWithConfiguration
+public class WindowsExplorerGitInfoPackage : IPackage
 {
     public string Name => "WindowsExplorerGitInfoPackage";
 

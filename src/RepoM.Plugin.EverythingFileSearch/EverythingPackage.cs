@@ -7,7 +7,7 @@ using RepoM.Core.Plugin.RepositoryFinder;
 using SimpleInjector;
 
 [UsedImplicitly]
-public class EverythingPackage : IPackageWithConfiguration
+public class EverythingPackage : IPackage
 {
     public string Name => "EverythingPackage";
 

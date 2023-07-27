@@ -10,7 +10,7 @@ using SimpleInjector;
 using TextCopy;
 
 [UsedImplicitly]
-public class ClipboardPackage : IPackageWithConfiguration
+public class ClipboardPackage : IPackage
 {
     public string Name => "ClipboardPackage";
 

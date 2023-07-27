@@ -47,10 +47,10 @@ public class ClipboardPackageTests
     }
 }
 
-file static class ExtensionIPackageWithConfiguration
+file static class PackageExtensions
 {
     // tmp for fixing tests.
-    public static void RegisterServices(this IPackageWithConfiguration self, Container container)
+    public static void RegisterServices(this IPackage self, Container container)
     {
         self.RegisterServicesAsync(container, null!).GetAwaiter().GetResult();
     }
