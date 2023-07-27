@@ -44,8 +44,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
 
         return new SetQuery(setBooleanClause);
     }
-
-
+    
     protected override void AddClause(IList<BooleanClause> clauses, int conj, int mods, Query q)
     {
         bool required, prohibited;
