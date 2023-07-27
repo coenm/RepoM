@@ -25,6 +25,21 @@ public class RecordStatisticsActionExecutorDecoratorTest
     }
 
     [Fact]
+    public void Ctor_ShouldThrow_WhenArgumentNull()
+    {
+        // arrange
+
+        // act
+        var act1 = () => new RecordStatisticsActionExecutorDecorator<DummyAction>(A.Dummy<IActionExecutor<DummyAction>>(), null!);
+        var act2 = () => new RecordStatisticsActionExecutorDecorator<DummyAction>(null!, A.Dummy<IStatisticsService>());
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
+        act2.Should().Throw<ArgumentNullException>();
+    }
+
+
+    [Fact]
     public void Execute_ShouldCallExecuteOnDecorateeWithSameArguments()
     {
         // arrange
@@ -41,6 +56,24 @@ public class RecordStatisticsActionExecutorDecoratorTest
     }
 
     [Fact]
+    public void Execute_ShouldCallExecuteOnDecorateeWithSameArguments_WhenRecordFailsOnService()
+    {
+        // arrange
+        IActionExecutor<DummyAction> decoratee = A.Fake<IActionExecutor<DummyAction>>();
+        IStatisticsService service = A.Fake<IStatisticsService>();
+        A.CallTo(() => service.Record(A<IRepository>._)).Throws(new Exception("Thrown by test"));
+        var sut = new RecordStatisticsActionExecutorDecorator<DummyAction>(decoratee, service);
+
+        // act
+        var action = new DummyAction();
+        sut.Execute(_repository, action);
+
+        // assert
+        A.CallTo(() => service.Record(_repository)).MustHaveHappenedOnceExactly();
+        _ = A.CallTo(() => decoratee.Execute(_repository, action)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
     public void Execute_ShouldRecordWhenTypeIsNotNullType()
     {
         // arrange
@@ -49,7 +82,6 @@ public class RecordStatisticsActionExecutorDecoratorTest
         var sut = new RecordStatisticsActionExecutorDecorator<DummyAction>(decoratee, service);
 
         // act
-        
         var action = new DummyAction();
         sut.Execute(_repository, action);
 
