@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -20,7 +19,6 @@ using RepoM.Core.Plugin.Repository;
 
 internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService, IDisposable
 {
-    private static readonly Regex _workItemRegex = DevOpsTaskMatchingRegex();
     private readonly HttpClient _httpClient;
     private readonly IAzureDevopsConfiguration _configuration;
     private readonly ILogger _logger;
@@ -148,22 +146,12 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
                 {
                     ExcludeReachableFrom = repo.Branches[toBranch].UpstreamBranchCanonicalName,
                 })
-                .Select(c => c.Message).ToList();
+                .Select(c => c.Message);
 
-            foreach (var commitMessage in commitMessages)
-            {
-                MatchCollection matches = _workItemRegex.Matches(commitMessage);
-                if (matches.Any(m => m.Success))
-                {
-                    foreach (Group group in matches.SelectMany(m => m.Groups.Values.Skip(1)))
-                    {
-                        _ = workItems.Add(new ResourceRef()
-                        {
-                            Id = group.Value,
-                        });
-                    }
-                }
-            }
+            workItems.AddRange(
+                WorkItemExtractor
+                    .GetDistinctWorkItemsFromCommitMessages(commitMessages)
+                    .Select(workItem => new ResourceRef { Id = workItem, }));
         }
 
         GitPullRequest prBody = new()
@@ -500,7 +488,4 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
         var searchRepoUrl = url.Scheme + "://" + url.Host + url.LocalPath;
         return searchRepoUrl;
     }
-
-    [GeneratedRegex("\\#(\\d+)", RegexOptions.Compiled)]
-    private static partial Regex DevOpsTaskMatchingRegex();
 }
