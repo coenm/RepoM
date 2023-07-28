@@ -61,7 +61,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                 }
                 else
                 {
-                    char[] allowedChars = { '.', '-', '_'/*, ' '*/, };
+                    char[] allowedChars = { '.', '-', '_', };
 
                     var k = 0;
                     var stop = false;
@@ -152,7 +152,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                         }
                         else
                         {
-                            char[] allowedChars = { '.', '-', '_'/*, ' '*/, };
+                            char[] allowedChars = { '.', '-', '_', };
 
                             var k = 0;
                             var stop = false;

@@ -151,9 +151,9 @@ public class ExtractRepositoryFromHeidiTests
     {
         // arrange
         var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
-        {
-            Comment = comment,
-        };
+            {
+                Comment = comment,
+            };
 
         // act
         var result = _sut.TryExtract(dbSettings, out RepoHeidi? repo);
@@ -172,9 +172,9 @@ public class ExtractRepositoryFromHeidiTests
     {
         // arrange
         var dbSettings = new HeidiSingleDatabaseConfiguration("dummy")
-        {
-            Comment = comment,
-        };
+            {
+                Comment = comment,
+            };
 
         // act
         var result = _sut.TryExtract(dbSettings, out RepoHeidi? repo);
@@ -191,7 +191,7 @@ public class ExtractRepositoryFromHeidiTests
     [InlineData("#repo:\"Abc\" quotes", "Abc")]
     [InlineData("#repo:\"  Abc  \" spaces are trimmed", "Abc")]
     [InlineData("#repo:\"  A b c \" spaces are trimmed", "A b c")]
-    [InlineData("#repo:\"0123456789-_\" valid chars", "0123456789-_")]
+    [InlineData("#repo:\"0123456789.-_\" valid chars", "0123456789.-_")]
     public void TryExtract_ShouldUseRepo_WhenInputHasRepo(string comment, string expectedName)
     {
         // arrange
