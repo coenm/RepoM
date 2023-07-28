@@ -5,4 +5,5 @@ namespace RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 /// </summary>
 public interface IRepositoriesComparerConfiguration
 {
+    string Type { get; set; }
 }

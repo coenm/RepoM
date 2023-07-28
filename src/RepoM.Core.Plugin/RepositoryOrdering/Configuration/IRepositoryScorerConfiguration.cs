@@ -5,4 +5,5 @@ namespace RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 /// </summary>
 public interface IRepositoryScorerConfiguration
 {
+    string Type { get; set; }
 }

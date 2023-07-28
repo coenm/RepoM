@@ -7,5 +7,5 @@ public class AlphabetComparerConfigurationV1Registration : IConfigurationRegistr
 {
     public Type ConfigurationType { get; } = typeof(AlphabetComparerConfigurationV1);
 
-    public string Tag => "az-comparer@1";
+    public string Tag => AlphabetComparerConfigurationV1.TYPE_VALUE;
 }

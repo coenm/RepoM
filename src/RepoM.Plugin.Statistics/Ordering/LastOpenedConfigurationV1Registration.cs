@@ -9,5 +9,5 @@ public class LastOpenedConfigurationV1Registration : IConfigurationRegistration
 {
     public Type ConfigurationType { get; } = typeof(LastOpenedConfigurationV1);
 
-    public string Tag => "last-opened-comparer@1";
+    public string Tag => LastOpenedConfigurationV1.TYPE_VALUE;
 }
