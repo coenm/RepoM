@@ -120,7 +120,7 @@ internal class FileBasedPackageConfiguration : IPackageConfiguration
 
     private string GetFilename()
     {
-        return Path.Combine(_appDataPathProvider.GetAppDataPath(), "Module", _filename + ".json");
+        return Path.Combine(_appDataPathProvider.AppDataPath, "Module", _filename + ".json");
     }
 
     private sealed class ConfigEnvelope<T>

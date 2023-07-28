@@ -37,7 +37,7 @@ public class FilesCompareSettingsService : ICompareSettingsService
 
     private string GetFileName()
     {
-        return _fileSystem.Path.Combine(_appDataPathProvider.GetAppDataPath(), "RepoM.Ordering.yaml");
+        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, "RepoM.Ordering.yaml");
     }
 
     private Dictionary<string, IRepositoriesComparerConfiguration> Load()

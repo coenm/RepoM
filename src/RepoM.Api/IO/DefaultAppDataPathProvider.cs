@@ -14,10 +14,7 @@ public class DefaultAppDataPathProvider : IAppDataPathProvider
 
     public static DefaultAppDataPathProvider Instance { get; } = new();
 
-    public string GetAppDataPath() 
-    {
-        return _applicationDataRepoM;
-    }
+    public string AppDataPath => _applicationDataRepoM;
 
     [Obsolete("Not used.")]
     public string GetAppResourcesPath()

@@ -92,7 +92,7 @@ public class RepositoryConfigurationReader
         RepositoryActionConfiguration? rootFile = null;
         RepositoryActionConfiguration? repoSpecificConfig = null;
 
-        var filename = GetRepositoryActionsFilename(_appDataPathProvider.GetAppDataPath());
+        var filename = GetRepositoryActionsFilename(_appDataPathProvider.AppDataPath);
         if (!_fileSystem.File.Exists(filename))
         {
             throw new ConfigurationFileNotFoundException(filename);

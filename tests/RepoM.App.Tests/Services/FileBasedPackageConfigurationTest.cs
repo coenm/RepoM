@@ -25,7 +25,7 @@ public class FileBasedPackageConfigurationTest
         _logger = A.Fake<ILogger>();
         _filename = "dummy";
 
-        A.CallTo(() => _appDataPathProvider.GetAppDataPath()).Returns("C:\\tmp-test\\");
+        A.CallTo(() => _appDataPathProvider.AppDataPath).Returns("C:\\tmp-test\\");
         A.CallTo(() => _fileSystem.File.Exists("C:\\tmp-test\\Module\\dummy.json")).Returns(true);
     }
 

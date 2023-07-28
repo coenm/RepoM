@@ -109,7 +109,7 @@ public partial class App : Application
     private static IConfiguration SetupConfiguration(IFileSystem fileSystem)
     {
         const string FILENAME = "appsettings.serilog.json";
-        var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.GetAppDataPath(), FILENAME);
+        var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.AppDataPath, FILENAME);
         if (!fileSystem.File.Exists(fullFilename))
         {
             fullFilename = FILENAME;

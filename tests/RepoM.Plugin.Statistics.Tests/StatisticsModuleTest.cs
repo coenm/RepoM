@@ -27,7 +27,7 @@ public class StatisticsModuleTest
         _clock = A.Fake<IClock>();
         A.CallTo(() => _clock.Now).Returns(_now);
         _pathProvider = A.Fake<IAppDataPathProvider>();
-        A.CallTo(() => _pathProvider.GetAppDataPath()).Returns("C:\\data");
+        A.CallTo(() => _pathProvider.AppDataPath).Returns("C:\\data");
         _logger = A.Fake<ILogger>();
         _configuration = A.Fake<IStatisticsConfiguration>();
     }

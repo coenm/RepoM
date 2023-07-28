@@ -61,7 +61,7 @@ public class RepositorySpecificConfigurationTest
         _fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>(), "C:\\");
 
         _appDataPathProvider = A.Fake<IAppDataPathProvider>();
-        A.CallTo(() => _appDataPathProvider.GetAppDataPath()).Returns(_tempPath);
+        A.CallTo(() => _appDataPathProvider.AppDataPath).Returns(_tempPath);
 
         _jsonAppSettingsDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
         _yamlAppSettingsDeserializer = new YamlDynamicRepositoryActionDeserializer(_jsonAppSettingsDeserializer);

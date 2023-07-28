@@ -20,7 +20,7 @@ public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgno
         : base(fileSystem)
     {
         _ = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-        _fullFilename = Path.Combine(appDataPathProvider.GetAppDataPath(), "Repositories.ignore");
+        _fullFilename = Path.Combine(appDataPathProvider.AppDataPath, "Repositories.ignore");
     }
 
     protected override string GetFileName()

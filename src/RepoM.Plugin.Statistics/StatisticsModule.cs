@@ -52,7 +52,7 @@ internal class StatisticsModule : IModule
 
     public async Task StartAsync()
     {
-        _basePath = _fileSystem.Path.Combine(_pathProvider.GetAppDataPath(), "Module", "Statistics");
+        _basePath = _fileSystem.Path.Combine(_pathProvider.AppDataPath, "Module", "Statistics");
         
         _disposable = WriteEventsToFile();
 
