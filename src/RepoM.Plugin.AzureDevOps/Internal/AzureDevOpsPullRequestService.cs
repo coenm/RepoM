@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ using Newtonsoft.Json;
 using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
 
-internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService, IDisposable
+internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService, IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly IAzureDevopsConfiguration _configuration;
@@ -135,23 +136,16 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
             repoId = await FindRepositoryGuidByProjectId(repository, projectId);
         }
 
-        HashSet<ResourceRef> workItems = new();
+        ResourceRef[] workItems = Array.Empty<ResourceRef>();
 
         if (includeWorkItems)
         {
-            using var repo = new LibGit2Sharp.Repository(repository.Path);
-            
-            var commitMessages = repo.Commits
-                .QueryBy(new LibGit2Sharp.CommitFilter()
-                {
-                    ExcludeReachableFrom = repo.Branches[toBranch].UpstreamBranchCanonicalName,
-                })
-                .Select(c => c.Message);
+            IEnumerable<string> commitMessages = CommitMessageExtractor.GetCommitMessagesUntilBranch(repository, toBranch);
 
-            workItems.AddRange(
-                WorkItemExtractor
-                    .GetDistinctWorkItemsFromCommitMessages(commitMessages)
-                    .Select(workItem => new ResourceRef { Id = workItem, }));
+            workItems = WorkItemExtractor
+                      .GetDistinctWorkItemsFromCommitMessages(commitMessages)
+                      .Select(workItem => new ResourceRef { Id = workItem, })
+                      .ToArray();
         }
 
         GitPullRequest prBody = new()
@@ -161,6 +155,7 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
             SourceRefName = $"refs/heads/{repository.CurrentBranch}",
             TargetRefName = $"refs/heads/{toBranch}",
             Reviewers = reviewersIds
+                .Distinct()
                 .Select(reviewerId =>
                     new IdentityRefWithVote()
                     {
@@ -168,7 +163,7 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
                     })
                 .ToArray(),
             SupportsIterations = true,
-            WorkItemRefs = workItems.ToArray(),
+            WorkItemRefs = workItems,
         };
 
         var prBodyJson = JsonConvert.SerializeObject(prBody);
@@ -470,6 +465,7 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
         return CreatePullRequestUrl(repo.WebUrl, pr.PullRequestId);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string CreatePullRequestUrl(string webUrl, int prId)
     {
         return $"{webUrl}/pullrequest/{prId}";
