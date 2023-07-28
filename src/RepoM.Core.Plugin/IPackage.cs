@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using SimpleInjector;
 
 /// <summary>
-/// Contract for types allow registering a set of services.
+/// Contract for a RepoM Plugin
 /// </summary>
 /// <example>
 /// The following example shows an implementation of an <see cref="IPackage"/>.
 /// <code lang="cs"><![CDATA[
-/// public class BusinessLayerPackage : IPackage
+/// public class MyPluginPackage : IPackage
 /// {
 ///     public Task RegisterServicesAsync(Container container, IPackageConfiguration packageConfiguration)
 ///     {

@@ -1,4 +1,4 @@
-namespace RepoM.App.Tests.Services;
+namespace RepoM.Api.Tests.Plugins;
 
 using System;
 using System.IO.Abstractions;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using RepoM.App.Services;
+using RepoM.Api.Plugins;
 using RepoM.Core.Plugin.Common;
 using Xunit;
 

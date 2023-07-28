@@ -35,20 +35,16 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Core.Plugin.RepositoryOrdering;
-using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.IO;
 using System.Reflection;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using SimpleInjector;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Plugins;
-using RepoM.Api.Plugins.SimpleInjector;
 using RepoM.App.Plugins;
 using RepoM.App.Services.HotKey;
+using RepoM.Api;
 
 internal static class Bootstrapper
 {
@@ -174,53 +170,17 @@ internal static class Bootstrapper
         Container.RegisterSingleton<WindowSizeService>();
     }
 
-    public static async Task RegisterPlugins(IPluginFinder pluginFinder, IFileSystem fileSystem, ILoggerFactory loggerFactory)
+    public static async Task RegisterPlugins(
+        IPluginFinder pluginFinder,
+        IFileSystem fileSystem,
+        ILoggerFactory loggerFactory)
     {
         Container.Register<ModuleService>(Lifestyle.Singleton);
         Container.RegisterInstance(pluginFinder);
 
-        var baseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
-        IEnumerable<PluginInfo> pluginInformation =  pluginFinder.FindPlugins(baseDirectory).ToArray();
-
-        static PluginSettings Convert(PluginInfo pluginInfo, string baseDir, bool enabled)
-        {
-            return new PluginSettings(pluginInfo.Name, pluginInfo.AssemblyPath.Replace(baseDir, string.Empty), enabled);
-        }
-
-        var appSettingsService = new FileAppSettingsService(DefaultAppDataPathProvider.Instance, fileSystem, NullLogger.Instance);
-
-        if (appSettingsService.Plugins.Count == 0)
-        {
-            appSettingsService.Plugins = pluginInformation.Select(plugin => Convert(plugin, baseDirectory, true)).ToList();
-        }
-        else
-        {
-            IEnumerable<PluginSettings> newFoundPlugins = pluginInformation
-                .Where(pluginInfo => appSettingsService.Plugins.TrueForAll(plugin => plugin.Name != pluginInfo.Name))
-                .Select(plugin => Convert(plugin, baseDirectory, false));
-
-            var pluginsListCopy = appSettingsService.Plugins.ToList();
-            pluginsListCopy.AddRange(newFoundPlugins);
-            appSettingsService.Plugins = pluginsListCopy;
-        }
-
-        IEnumerable<string> enabledPlugins = appSettingsService.Plugins.Where(x => x.Enabled).Select(xxx => xxx.Name);
-        
-        Assembly[] assemblies = pluginInformation
-            .Where(plugin => enabledPlugins.Contains(plugin.Name))
-            .Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)))
-            .ToArray();
-
-        if (assemblies.Any())
-        {
-            await Container.RegisterPackagesAsync(
-                assemblies,
-                filename => new FileBasedPackageConfiguration(
-                    DefaultAppDataPathProvider.Instance,
-                    fileSystem,
-                    loggerFactory.CreateLogger<FileBasedPackageConfiguration>(),
-                    filename)).ConfigureAwait(false); 
-        }
+        var coreBootstrapper = new CoreBootstrapper(pluginFinder, fileSystem, loggerFactory);
+        var baseDirectory = fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
+        await coreBootstrapper.LoadAndRegisterPluginsAsync(Container, baseDirectory).ConfigureAwait(false);
     }
 
     public static void RegisterLogging(ILoggerFactory loggerFactory)
