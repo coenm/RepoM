@@ -36,7 +36,7 @@ public class SonarCloudPackage : IPackage
         }
 
         // this is temporarly to support the old way of storing the configuration
-        if (string.IsNullOrWhiteSpace(config.BaseUrl) && string.IsNullOrWhiteSpace(config.PersonalAccessToken))
+        if (string.IsNullOrWhiteSpace(config.PersonalAccessToken))
         {
             container.RegisterSingleton<ISonarCloudConfiguration>(() =>
                 {
@@ -45,9 +45,9 @@ public class SonarCloudPackage : IPackage
                     var c = new SonarCloudConfigV1
                         {
                             PersonalAccessToken = appSettingsService.SonarCloudPersonalAccessToken,
-                            BaseUrl = "https://sonarcloud.io",
+                            BaseUrl = config.BaseUrl,
                         };
-                    _ = packageConfiguration.PersistConfigurationAsync(c, CurrentConfigVersion.VERSION); // fire and forget ;-)
+                   _ = packageConfiguration.PersistConfigurationAsync(c, CurrentConfigVersion.VERSION); // fire and forget ;-)
 
                     return new SonarCloudConfiguration(c.BaseUrl, c.PersonalAccessToken);
                 });
