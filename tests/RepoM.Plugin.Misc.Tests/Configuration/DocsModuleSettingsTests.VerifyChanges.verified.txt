@@ -9,7 +9,8 @@
   },
   LuceneQueryParserPackage: null,
   SonarCloudPackage: {
-    $type: SonarCloudConfigV1
+    $type: SonarCloudConfigV1,
+    BaseUrl: https://sonarcloud.io
   },
   StatisticsPackage: {
     $type: StatisticsConfigV1,
