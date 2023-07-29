@@ -2,7 +2,22 @@
 
 This module integrates with SonarCloud. Currently, the only functionality is to star a given repository in SonarCloud using the repository action.
 
-To enable this module, you should provide RepoM with a valid PAT by manually editing the RepoM configuration (when RepoM is not running).
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM. <!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
+
+This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running. <!-- include: DocsModuleSettingsTests.DocsModuleSettings_SonarCloudPackage#desc.verified.md -->
+
+The following default configuration is used
+
+```json
+{
+  "Version": 1,
+  "Settings": {
+    "PersonalAccessToken": null,
+    "BaseUrl": null
+  }
+}
+```
+<!-- endInclude -->
 
 ## sonarcloud-set-favorite@1 <!-- include: _plugins.sonarcloud.action. path: /docs/mdsource/_plugins.sonarcloud.action.include.md -->
 

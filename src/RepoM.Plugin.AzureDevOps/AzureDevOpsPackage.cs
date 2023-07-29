@@ -23,7 +23,7 @@ public class AzureDevOpsPackage : IPackage
         RegisterServices(container);
     }
 
-    private static async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
+    private async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
@@ -35,8 +35,7 @@ public class AzureDevOpsPackage : IPackage
         }
         else
         {
-            config = new AzureDevopsConfigV1();
-            await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
         }
 
         // this is temporarly to support the old way of storing the configuration
@@ -81,5 +80,13 @@ public class AzureDevOpsPackage : IPackage
 
         container.Collection.Append<IModule, AzureDevOpsModule>(Lifestyle.Singleton);
         container.Collection.Append<IQueryMatcher>(() => new HasPullRequestsMatcher(container.GetInstance<IAzureDevOpsPullRequestService>(), true), Lifestyle.Singleton);
+    }
+
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    private static async Task<AzureDevopsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
+    {
+        var config = new AzureDevopsConfigV1();
+        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        return config;
     }
 }

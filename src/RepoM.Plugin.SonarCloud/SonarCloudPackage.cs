@@ -32,8 +32,7 @@ public class SonarCloudPackage : IPackage
         }
         else
         {
-            config = new SonarCloudConfigV1();
-            await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
         }
 
         // this is temporarly to support the old way of storing the configuration
@@ -71,5 +70,17 @@ public class SonarCloudPackage : IPackage
         container.Collection.Append<IMethod, SonarCloudIsFavoriteMethod>(Lifestyle.Singleton);
         container.Register<ISonarCloudFavoriteService, SonarCloudFavoriteService>(Lifestyle.Singleton);
         container.Collection.Append<IModule, SonarCloudModule>(Lifestyle.Singleton);
+    }
+
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    private static async Task<SonarCloudConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
+    {
+        var config = new SonarCloudConfigV1()
+            {
+                BaseUrl = "https://sonarcloud.io",
+                PersonalAccessToken = null,
+            };
+        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        return config;
     }
 }

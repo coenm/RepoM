@@ -1,6 +1,24 @@
 # Heidi
 
-*todo*
+*todo description*
+
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM. <!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
+
+This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running. <!-- include: DocsModuleSettingsTests.DocsModuleSettings_HeidiPackage#desc.verified.md -->
+
+The following default configuration is used
+
+```json
+{
+  "Version": 1,
+  "Settings": {
+    "ConfigPath": null,
+    "ConfigFilename": null,
+    "ExecutableFilename": null
+  }
+}
+```
+<!-- endInclude -->
 
 ## heidi-databases@1 <!-- include: _plugins.heidi.action. path: /docs/mdsource/_plugins.heidi.action.include.md -->
 

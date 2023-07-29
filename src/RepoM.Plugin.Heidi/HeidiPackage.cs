@@ -22,7 +22,7 @@ public class HeidiPackage : IPackage
         RegisterServices(container);
     }
 
-    private static async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
+    private async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
@@ -34,8 +34,7 @@ public class HeidiPackage : IPackage
         }
         else
         {
-            config = new HeidiConfigV1();
-            await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
         }
 
         // this is temporarly to support the old way of storing the configuration
@@ -61,7 +60,7 @@ public class HeidiPackage : IPackage
             container.RegisterInstance<IHeidiSettings>(new HeidiModuleConfiguration(config.ConfigPath, config.ConfigFilename, config.ExecutableFilename));
         }
     }
-    
+
     private static void RegisterServices(Container container)
     {
         RegisterPluginHooks(container);
@@ -93,5 +92,13 @@ public class HeidiPackage : IPackage
         container.Register<IHeidiPortableConfigReader, HeidiPortableConfigReader>(Lifestyle.Singleton);
         container.RegisterInstance<IHeidiRepositoryExtractor>(ExtractRepositoryFromHeidi.Instance);
         container.RegisterInstance<IHeidiPasswordDecoder>(HeidiPasswordDecoder.Instance);
+    }
+
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    private static async Task<HeidiConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
+    {
+        var config = new HeidiConfigV1();
+        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        return config;
     }
 }

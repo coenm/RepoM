@@ -57,9 +57,9 @@ internal class FileBasedPackageConfiguration : IPackageConfiguration
         {
             await _fileSystem.File.WriteAllTextAsync(filename, json).ConfigureAwait(false);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // swallow for now
+            _logger.LogError(e, "Could not persist configuration {message}", e.Message);
         }
     }
 
