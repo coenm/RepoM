@@ -13,7 +13,7 @@ The following default configuration is used
   "Version": 1,
   "Settings": {
     "PersonalAccessToken": null,
-    "BaseUrl": null
+    "BaseUrl": "https://sonarcloud.io"
   }
 }
 ```
