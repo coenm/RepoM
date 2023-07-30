@@ -2,7 +2,9 @@
 
 To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM. <!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
 
-This module has no configuration. <!-- singleLineInclude: DocsModuleSettingsTests.DocsModuleSettings_LuceneQueryParserPackage#desc.verified.md -->
+## Configuration <!-- include: DocsModuleSettingsTests.DocsModuleSettings_LuceneQueryParserPackage#desc.verified.md -->
+
+This module has no configuration. <!-- endInclude -->
 
 To search for repositories, you can use a repom-dialect of Lucene query syntax.
 
