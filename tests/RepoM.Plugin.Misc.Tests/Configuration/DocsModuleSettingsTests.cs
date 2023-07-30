@@ -110,7 +110,6 @@ public class DocsModuleSettingsTests
                     continue;
                 }
 
-                // sb.Append(classWriter.Head);
                 sb.AppendLine("Properties:");
                 sb.AppendLine(string.Empty);
                 sb.Append(classWriter.Properties);
@@ -135,18 +134,27 @@ public class DocsModuleSettingsTests
     
     private static string CreateConfigWithSnippetDocumentationMarkdown(string? snippet)
     {
-        return "This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running." + Environment.NewLine +
-               Environment.NewLine +
-               "The following default configuration is used" + Environment.NewLine +
-               Environment.NewLine +
-               "```json" + Environment.NewLine +
-               snippet + Environment.NewLine +
-               "```" + Environment.NewLine;
+        return new StringBuilder()
+               .AppendLine("## Configuration")
+               .AppendLine(string.Empty)
+               .AppendLine("This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running.")
+               .AppendLine(string.Empty)
+               .AppendLine("The following default configuration is used:")
+               .AppendLine(string.Empty)
+               .AppendLine("```json")
+               .AppendLine(snippet)
+               .AppendLine("```")
+               .ToString();
     }
 
     private static string CreateConfigWithoutSnippetDocumentationMarkdown()
     {
-        return "This module has no configuration." + Environment.NewLine;
+        return new StringBuilder()
+            .AppendLine("## Configuration")
+            .AppendLine(string.Empty)
+            .AppendLine("This module has no configuration.")
+            .ToString();
+
     }
 
     private async Task<Tuple<object?, string?>> PersistDefaultConfigAsync(IPackage package)

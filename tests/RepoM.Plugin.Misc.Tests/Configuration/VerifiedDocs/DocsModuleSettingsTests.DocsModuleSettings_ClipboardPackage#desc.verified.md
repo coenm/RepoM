@@ -1,1 +1,3 @@
-﻿This module has no configuration.
+﻿## Configuration
+
+This module has no configuration.
