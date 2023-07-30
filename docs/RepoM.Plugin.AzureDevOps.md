@@ -17,9 +17,11 @@ The following default configuration is used
   }
 }
 ```
-<!-- endInclude -->
 
-Provide a `PersonalAccessToken` and a `BaseUrl`. The `BaseUrl` must end with the organisation and a slash (ie, `https://dev.azure.com/organisation/`) and the 'PAT' should be granted access to `XYZ` (TODO).
+Properties:
+
+- `PersonalAccessToken`: Personal access token (PAT) to access Azure Devops. The PAT should be granted access to `todo` rights
+- `BaseUrl`: The base url of azure devops for your organisation (ie. `https://dev.azure.com/my-organisation/`). <!-- endInclude -->
 
 ## azure-devops-create-prs@1 <!-- include: _plugins.azuredevops.action. path: /docs/mdsource/_plugins.azuredevops.action.include.md -->
 

@@ -12,3 +12,9 @@ The following default configuration is used
   }
 }
 ```
+
+Properties:
+
+- `ConfigPath`: The full directory where the configuration is stored.
+- `ConfigFilename`: The configurration filename (without path)
+- `ExecutableFilename`: The full executable of Heidi.

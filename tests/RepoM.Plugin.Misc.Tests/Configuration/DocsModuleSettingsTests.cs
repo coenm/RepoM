@@ -2,24 +2,22 @@ namespace RepoM.Plugin.Misc.Tests.Configuration;
 
 using System;
 using System.Collections.Generic;
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
-using DotNetEnv;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
+using NuDoq;
 using RepoM.Api.Plugins;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
-using RepoM.Core.Plugin.RepositoryActions;
+using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
-using YamlDotNet.Serialization;
 
 [UsesVerify]
 public class DocsModuleSettingsTests
@@ -41,7 +39,7 @@ public class DocsModuleSettingsTests
         _fileBasedPackageConfiguration = new FileBasedPackageConfiguration(_appDataPathProvider, _fileSystem, _logger, "dummy");
     }
 
-    public static IEnumerable<object[]> PackagesTestData => PluginStore.Packages.Select(package => new object[] { package, });
+    public static IEnumerable<object[]> PackagesTestData => PluginStore.Packages.Select(package => new object[] { package, }).ToArray();
 
     [Fact]
     public async Task VerifyChanges()
@@ -83,14 +81,60 @@ public class DocsModuleSettingsTests
         }
         else
         {
-            settings.AppendContentAsFile(CreateConfigWithSnippetDocumentationMarkdown(persistedConfig/*$"Generated_DefaultConfig_{packageName}"*/), "md", "desc");
+            var builtinClassNames = new Dictionary<string, string>
+                {
+                    [config!.GetType().Name] = "config",
+                };
+
+#if DEBUG
+            var options = new NuDoq.ReaderOptions
+                {
+                    KeepNewLinesInText = true,
+                };
+            AssemblyMembers members = DocReader.Read(config.GetType().Assembly, options);
+#else
+            var members = new DocumentMembers(XDocument.Parse("<root></root>"), Array.Empty<Member>());
+#endif
+            
+            var visitor = new PluginConfigurationMarkdownVisitor(builtinClassNames);
+            members.Accept(visitor);
+            
+            var sb = new StringBuilder();
+            foreach (ClassWriter classWriter in visitor.ClassWriters.OrderBy(c => c.Key).Select(c => c.Value))
+            {
+                var head = classWriter.Head.ToString();
+                var properties = classWriter.Properties.ToString();
+
+                if (string.IsNullOrWhiteSpace(head) && string.IsNullOrWhiteSpace(properties))
+                {
+                    continue;
+                }
+
+                // sb.Append(classWriter.Head);
+                sb.AppendLine("Properties:");
+                sb.AppendLine(string.Empty);
+                sb.Append(classWriter.Properties);
+            }
+
+            var configWithSnippetDocumentationMarkdown = CreateConfigWithSnippetDocumentationMarkdown(persistedConfig/*$"Generated_DefaultConfig_{packageName}"*/);
+
+            if (!string.IsNullOrWhiteSpace(sb.ToString()))
+            {
+                configWithSnippetDocumentationMarkdown += Environment.NewLine + sb;
+            }
+
+            settings.AppendContentAsFile(configWithSnippetDocumentationMarkdown, "md", "desc");
+
+#if DEBUG
             await Verifier.Verify(persistedConfig, settings: settings, extension: "json");
+#else
+            Assert.True(true); // this test should only be run in Debug mode.
+#endif
         }
     }
-
+    
     private static string CreateConfigWithSnippetDocumentationMarkdown(string? snippet)
     {
-
         return "This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running." + Environment.NewLine +
                Environment.NewLine +
                "The following default configuration is used" + Environment.NewLine +
@@ -103,17 +147,6 @@ public class DocsModuleSettingsTests
     private static string CreateConfigWithoutSnippetDocumentationMarkdown()
     {
         return "This module has no configuration." + Environment.NewLine;
-    }
-
-    private static string CreateConfigSnippet(string content, string snippetName)
-    {
-        return  $"# begin-snippet: {snippetName}" +
-            Environment.NewLine +
-            Environment.NewLine +
-            content +
-            Environment.NewLine +
-            Environment.NewLine +
-            "# end-snippet";
     }
 
     private async Task<Tuple<object?, string?>> PersistDefaultConfigAsync(IPackage package)

@@ -18,7 +18,12 @@ The following default configuration is used
   }
 }
 ```
-<!-- endInclude -->
+
+Properties:
+
+- `ConfigPath`: The full directory where the configuration is stored.
+- `ConfigFilename`: The configurration filename (without path)
+- `ExecutableFilename`: The full executable of Heidi. <!-- endInclude -->
 
 ## heidi-databases@1 <!-- include: _plugins.heidi.action. path: /docs/mdsource/_plugins.heidi.action.include.md -->
 

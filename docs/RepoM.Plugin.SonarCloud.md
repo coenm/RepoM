@@ -17,7 +17,11 @@ The following default configuration is used
   }
 }
 ```
-<!-- endInclude -->
+
+Properties:
+
+- `PersonalAccessToken`: Personal Access Token to access SonarCloud.
+- `BaseUrl`: SonarCloud url. Most likely `https//sonarcloud.io`. <!-- endInclude -->
 
 ## sonarcloud-set-favorite@1 <!-- include: _plugins.sonarcloud.action. path: /docs/mdsource/_plugins.sonarcloud.action.include.md -->
 
