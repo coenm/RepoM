@@ -13,7 +13,7 @@ internal class ActionClipboardCopyV1Deserializer : IActionDeserializer
 {
     public bool CanDeserialize(string type)
     {
-        return "clipboard-copy@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionClipboardCopyV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

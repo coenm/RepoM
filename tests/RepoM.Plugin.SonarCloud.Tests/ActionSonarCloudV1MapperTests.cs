@@ -61,7 +61,7 @@ public class ActionSonarCloudV1MapperTests
         // arrange
 
         // act
-        var result = ((IActionToRepositoryActionMapper)_sut).CanMap(new RepositoryAction());
+        var result = ((IActionToRepositoryActionMapper)_sut).CanMap(new DummyRepositoryAction());
 
         // assert
         result.Should().BeFalse();
@@ -92,4 +92,8 @@ public class ActionSonarCloudV1MapperTests
         // assert
         result.Should().BeTrue();
     }
+}
+
+file class DummyRepositoryAction : RepositoryAction
+{
 }

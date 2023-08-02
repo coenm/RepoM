@@ -37,6 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\RepoM.Api\RepoM.Api.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.App\RepoM.App.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.Clipboard\RepoM.Plugin.Clipboard.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.EverythingFileSearch\RepoM.Plugin.EverythingFileSearch.csproj" />
@@ -46,5 +49,9 @@
     <ProjectReference Include="..\..\src\RepoM.Plugin.Statistics\RepoM.Plugin.Statistics.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.WindowsExplorerGitInfo\RepoM.Plugin.WindowsExplorerGitInfo.csproj" />
     <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration\VerifiedDocs1\" />
   </ItemGroup>
 </Project>

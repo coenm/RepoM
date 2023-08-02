@@ -13,7 +13,7 @@ internal class ActionSonarCloudSetFavoriteV1Deserializer : IActionDeserializer
 {
     public bool CanDeserialize(string type)
     {
-        return "sonarcloud-set-favorite@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionSonarCloudSetFavoriteV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

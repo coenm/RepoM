@@ -10,7 +10,7 @@ public class ActionJustTextV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)
     {
-        return "just-text@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionJustTextV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

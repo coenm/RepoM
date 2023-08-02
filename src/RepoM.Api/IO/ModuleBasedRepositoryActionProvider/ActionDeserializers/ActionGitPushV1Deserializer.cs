@@ -10,7 +10,7 @@ public class ActionGitPushV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)
     {
-        return "git-push@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionGitPushV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

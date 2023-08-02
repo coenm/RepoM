@@ -14,7 +14,7 @@ internal class ActionAzureDevOpsCreatePullRequestsV1Deserializer : IActionDeseri
 {
     public bool CanDeserialize(string type)
     {
-        return "azure-devops-create-prs@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionAzureDevOpsCreatePullRequestsV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

@@ -12,7 +12,7 @@ public class ActionFolderV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)
     {
-        return "folder@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionFolderV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

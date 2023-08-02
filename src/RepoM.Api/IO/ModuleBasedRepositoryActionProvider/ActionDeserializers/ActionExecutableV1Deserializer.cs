@@ -12,7 +12,7 @@ public class ActionExecutableV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)
     {
-        return "executable@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionExecutableV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

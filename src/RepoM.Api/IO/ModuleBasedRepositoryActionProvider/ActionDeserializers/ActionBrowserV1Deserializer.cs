@@ -10,7 +10,7 @@ public class ActionBrowserV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)
     {
-        return "browser@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionBrowserV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

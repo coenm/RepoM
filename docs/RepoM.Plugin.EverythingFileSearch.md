@@ -4,4 +4,6 @@ This module integrates with VoidTool Everything in order to locate git repositor
 
 To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM. <!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
 
-This module has no configuration. <!-- singleLineInclude: DocsModuleSettingsTests.DocsModuleSettings_EverythingPackage#desc.verified.md -->
+## Configuration <!-- include: DocsModuleSettingsTests.DocsModuleSettings_EverythingPackage#desc.verified.md -->
+
+This module has no configuration. <!-- endInclude -->

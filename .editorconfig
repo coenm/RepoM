@@ -4,11 +4,11 @@ root = true
 # Code files
 [*.{cs,csx,vb,vbx}]
 indent_style = space
-tab_width = 4
+tab_width = 2
 trim_trailing_whitespace = true
 charset = utf-8
 insert_final_newline = false
-indent_size = 4
+indent_size = 2
 
 [*.{csproj,sln}]
 indent_style = space
@@ -22,7 +22,7 @@ tab_width = 2
 
 [{appsettings*json,package.json}]
 indent_style = space
-indent_size = 4
+indent_size = 2
 
 [*.xml]
 indent_style = space
@@ -289,6 +289,9 @@ dotnet_naming_rule.all.severity = error
 ###############################
 # Diagnostics                 #
 ###############################
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = none
 
 # CS8604: Possible null reference argument.
 dotnet_diagnostic.cs8604.severity = error

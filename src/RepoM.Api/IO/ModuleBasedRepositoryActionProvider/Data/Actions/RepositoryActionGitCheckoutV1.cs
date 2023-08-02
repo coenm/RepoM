@@ -1,6 +1,13 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
-public class RepositoryActionGitCheckoutV1 : RepositoryAction
+/// <summary>
+/// TODO
+/// </summary>
+[RepositoryAction(TYPE)]
+public sealed class RepositoryActionGitCheckoutV1 : RepositoryAction
 {
-    // intentionally empty
+    /// <summary>
+    /// RepositoryAction type.
+    /// </summary>
+    public const string TYPE = "git-checkout@1";
 }

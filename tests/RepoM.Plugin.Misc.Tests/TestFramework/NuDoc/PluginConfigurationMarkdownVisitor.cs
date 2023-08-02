@@ -32,6 +32,11 @@ internal class PluginConfigurationMarkdownVisitor : Visitor
             return false;
         }
 
+        if (string.IsNullOrWhiteSpace(type.Namespace))
+        {
+            return false;
+        }
+
         return type.Namespace.StartsWith("RepoM") && _builtinClassNames.TryGetValue(type.Name, out shortName);
     }
 

@@ -14,7 +14,7 @@ internal class ActionAzureDevOpsGetPullRequestsV1Deserializer : IActionDeseriali
 {
     public bool CanDeserialize(string type)
     {
-        return "azure-devops-get-prs@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionAzureDevOpsGetPullRequestsV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

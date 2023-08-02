@@ -1,6 +1,13 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
-public class RepositoryActionGitPullV1 : RepositoryAction
+/// <summary>
+/// TODO
+/// </summary>
+[RepositoryAction(TYPE)]
+public sealed class RepositoryActionGitPullV1 : RepositoryAction
 {
-    // intentionally empty
+    /// <summary>
+    /// RepositoryAction type.
+    /// </summary>
+    public const string TYPE = "git-pull@1";
 }

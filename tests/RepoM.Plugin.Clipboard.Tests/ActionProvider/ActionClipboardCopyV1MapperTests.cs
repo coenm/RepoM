@@ -103,7 +103,7 @@ public class ActionClipboardCopyV1MapperTests
         // arrange
 
         // act
-        var result = _sut.CanMap(new RepositoryAction());
+        var result = _sut.CanMap(new DummyRepositoryAction());
 
         // assert
         result.Should().BeFalse();
@@ -206,4 +206,8 @@ public class ActionClipboardCopyV1MapperTests
 
         await Verifier.Verify(result, _verifySettings).UseTextForParameters(paramText);
     }
+}
+
+file class DummyRepositoryAction : RepositoryAction
+{
 }

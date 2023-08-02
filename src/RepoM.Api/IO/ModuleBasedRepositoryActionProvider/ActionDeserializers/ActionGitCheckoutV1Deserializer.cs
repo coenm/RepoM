@@ -10,7 +10,7 @@ public class ActionGitCheckoutV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)
     {
-        return "git-checkout@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionGitCheckoutV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)

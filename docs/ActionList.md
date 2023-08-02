@@ -1,15 +1,23 @@
 # Actions
 
+Most of the repository actions are part of the core of RepoM and some are part of external plugins. All these repository actions have the same base:
+
+Properties: <!-- include: DocsRepositoryActionsTests.RepositoryActionBaseDocumentationGeneration_RepositoryAction.verified.md -->
+
+- `type`: RepositoryAction type. Should be a fixed value used to determine the action type. (required, string)
+- `name`: Name of the action. This is shown in the UI of RepoM. (required, evaluated, string)
+- `active`: Is the action active (ie. visible) or not. (optional, evaluated, boolean, default: `true`)
+- `variables`: A set of variables to be availabe within this action. (optional, list`1) <!-- endInclude -->
+
 The following actions are part of the core of RepoM and can always be used in your RepositoryActions.
 
 ## just-text@1
 
-Textual action to display some text in the action menu.
+Textual action to display some text in the action menu. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionJustTextV1.verified.md -->
 
-Custom properties:
+Action specific properties:
 
-- Name: The name of the item (required, string, evaulated)
-- Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
+- `enabled`: Show the menu as enabled (clickable) or disabled. (optional, evaluated, boolean, default: `true`) <!-- endInclude -->
 
 Example:
 
