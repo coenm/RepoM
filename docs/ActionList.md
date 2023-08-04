@@ -75,10 +75,6 @@ Action specific properties:
 
 - `first-only`: Property specifying only a menu item for the first remote is created. (optional, evaluated, boolean) <!-- endInclude -->
 
-Action to open the default webbrowser and go to the origin remote webinterface.
-
-No additional properties and assigning variables has no effect.
-
 Example:
 
 <!-- snippet: RepositoryActionsBrowseRepository01 -->
