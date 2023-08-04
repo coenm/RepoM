@@ -27,14 +27,6 @@ Properties:
 
 ## sonarcloud-set-favorite@1 <!-- include: _plugins.sonarcloud.action. path: /docs/mdsource/_plugins.sonarcloud.action.include.md -->
 
-Action to mark a repository as favorite within SonarCloud. This action requires the use of the SonarCloud plugin.
-
-Custom properties:
-
-- Name: The name of the item (required, string, evaulated)
-- Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
-- Project: The SonarCloud project key (required, string, evaluated)
-
 Action to mark a repository as favorite within SonarCloud. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionSonarCloudSetFavoriteV1.verified.md -->
 
 Action specific properties:

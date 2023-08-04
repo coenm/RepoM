@@ -112,7 +112,7 @@ public class DocsRepositoryActionsTests
         };
         AssemblyMembers members = DocReader.Read(typeof(RepositoryAction).Assembly, options);
 #else
-             var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
+        var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
 #endif
 
         var visitor = new RepositoryActionBaseMarkdownVisitor(typeof(RepositoryAction));
@@ -133,10 +133,10 @@ public class DocsRepositoryActionsTests
 #if DEBUG
         await Verifier.Verify(sb.ToString(), settings: settings, extension: "md");
 #else
-             Assert.True(true); // this test should only be run in Debug mode.
+        await Task.Yield();
+        Assert.True(true); // this test should only be run in Debug mode.
 #endif
     }
-
 
     [Theory]
     [MemberData(nameof(RepositoryActionsTestData))]
@@ -159,7 +159,7 @@ public class DocsRepositoryActionsTests
             };
         AssemblyMembers members = DocReader.Read(repositoryActionTestData.Assembly, options);
 #else
-             var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
+        var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
 #endif
 
         var visitor = new RepositoryActionMarkdownVisitor(builtinClassNames);
@@ -190,33 +190,8 @@ public class DocsRepositoryActionsTests
 #if DEBUG
         await Verifier.Verify(sb.ToString(), settings: settings, extension: "md");
 #else
-             Assert.True(true); // this test should only be run in Debug mode.
+        await Task.Yield();
+        Assert.True(true); // this test should only be run in Debug mode.
 #endif
     }
-
-    private static string CreateConfigWithSnippetDocumentationMarkdown(string? snippet)
-    {
-        return new StringBuilder()
-               .AppendLine("## Configuration")
-               .AppendLine(string.Empty)
-               .AppendLine("This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running.")
-               .AppendLine(string.Empty)
-               .AppendLine("The following default configuration is used:")
-               .AppendLine(string.Empty)
-               .AppendLine("```json")
-               .AppendLine(snippet)
-               .AppendLine("```")
-               .ToString();
-    }
-
-    private static string CreateConfigWithoutSnippetDocumentationMarkdown()
-    {
-        return new StringBuilder()
-            .AppendLine("## Configuration")
-            .AppendLine(string.Empty)
-            .AppendLine("This module has no configuration.")
-            .ToString();
-
-    }
-
 }

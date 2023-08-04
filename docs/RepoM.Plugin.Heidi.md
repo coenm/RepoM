@@ -29,15 +29,14 @@ Properties:
 
 ## heidi-databases@1 <!-- include: _plugins.heidi.action. path: /docs/mdsource/_plugins.heidi.action.include.md -->
 
-Action to list heidi databases and show action menues for them.
-
 <!-- todo, improve docs -->
+Action to list heidi databases and show action menus for them. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionHeidiDatabasesV1.verified.md -->
 
-Custom properties:
+Action specific properties:
 
-- Name: The name of the item (required, string, evaulated)
-- Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
-- Executable: The absolute path of the Heidi executable (optional, string, evaluated)
+- `key`: Repository key.
+If not provided, the repository `Remote.Origin.Name` is used as selector. (optional, string)
+- `executable`: The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used. (optional, evaluated, string) <!-- endInclude -->
 
 Example:
 

@@ -3,7 +3,7 @@ namespace RepoM.Plugin.Heidi.ActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
-/// TODO
+/// Action to list heidi databases and show action menus for them.
 /// </summary>
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionHeidiDatabasesV1 : RepositoryAction
@@ -15,18 +15,15 @@ public sealed class RepositoryActionHeidiDatabasesV1 : RepositoryAction
 
     /// <summary>
     /// Repository key.
-    /// If not provided, the Remote.Origin.Name is used as selector.
+    /// If not provided, the repository `Remote.Origin.Name` is used as selector.
     /// </summary>
-    [EvaluatedProperty] // todo ?
-    // [Required]
     [PropertyType(typeof(string))]
     public string? Key { get; set; }
 
     /// <summary>
-    /// Heidi Sql executable path. If not provided, the `TODO` is used.
+    /// The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used.
     /// </summary>
-    [EvaluatedProperty] // todo check
-    // [Required]
+    [EvaluatedProperty]
     [PropertyType(typeof(string))]
     public string? Executable { get; set; }
 }
