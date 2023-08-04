@@ -1,4 +1,4 @@
-﻿Action menu showing zero or more menu items with current opened pull requests for this repository.
+﻿This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.
 
 Action specific properties:
 

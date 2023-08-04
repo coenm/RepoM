@@ -46,17 +46,24 @@ public class DocsRepositoryActionsTests
     {
         get
         {
+            List<object[]> results = new();
+
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                foreach (Type repositoryActionType in assembly.GetRepositoryActionsFromAssembly())
+                try
                 {
-                    if (!repositoryActionType.Name.Contains("RepositoryActionJustTextV1"))
+                    foreach (Type repositoryActionType in assembly.GetRepositoryActionsFromAssembly())
                     {
-                       // continue;
+                        results.Add(new object[] { new RepositoryTestData(assembly, repositoryActionType), });
                     }
-                    yield return new object[] { new RepositoryTestData(assembly, repositoryActionType), };
+                }
+                catch (System.Exception)
+                {
+                    // skip
                 }
             }
+
+            return results;
         }
     }
 

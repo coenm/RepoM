@@ -1,7 +1,6 @@
 ## azure-devops-create-prs@1
 
-This action results in zero or one item in the contextmenu. This action makes it possible to create a pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.
-The AzureDevOps plugin is required.
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAzureDevOpsCreatePullRequestsV1.verified.md
 
 Example:
 
@@ -11,6 +10,8 @@ snippet: RepositoryActionsAzureDevopsCreatePrs01
 
 This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.
 The AzureDevOps plugin is required.
+
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAzureDevOpsGetPullRequestsV1.verified.md
 
 Custom properties:
 
