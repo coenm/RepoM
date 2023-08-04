@@ -8,6 +8,8 @@ Custom properties:
 - Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
 - Project: The SonarCloud project key (required, string, evaluated)
 
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionSonarCloudSetFavoriteV1.verified.md
+
 Example:
 
 snippet: RepositoryActionsSonarCloudSetFavorite01

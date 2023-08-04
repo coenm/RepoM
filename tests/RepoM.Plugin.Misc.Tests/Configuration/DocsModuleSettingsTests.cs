@@ -93,7 +93,7 @@ public class DocsModuleSettingsTests
                 };
             AssemblyMembers members = DocReader.Read(config.GetType().Assembly, options);
 #else
-            var members = new DocumentMembers(XDocument.Parse("<root></root>"), Array.Empty<Member>());
+            var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
 #endif
             
             var visitor = new PluginConfigurationMarkdownVisitor(builtinClassNames);

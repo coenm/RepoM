@@ -112,7 +112,7 @@ public class DocsRepositoryActionsTests
         };
         AssemblyMembers members = DocReader.Read(typeof(RepositoryAction).Assembly, options);
 #else
-             var members = new DocumentMembers(XDocument.Parse("<root></root>"), Array.Empty<Member>());
+             var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
 #endif
 
         var visitor = new RepositoryActionBaseMarkdownVisitor(typeof(RepositoryAction));
@@ -159,7 +159,7 @@ public class DocsRepositoryActionsTests
             };
         AssemblyMembers members = DocReader.Read(repositoryActionTestData.Assembly, options);
 #else
-             var members = new DocumentMembers(XDocument.Parse("<root></root>"), Array.Empty<Member>());
+             var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
 #endif
 
         var visitor = new RepositoryActionMarkdownVisitor(builtinClassNames);

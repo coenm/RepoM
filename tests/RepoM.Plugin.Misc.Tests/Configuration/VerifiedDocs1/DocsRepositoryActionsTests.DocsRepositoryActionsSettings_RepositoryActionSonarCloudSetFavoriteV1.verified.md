@@ -1,5 +1,5 @@
-﻿TODO
+﻿Action to mark a repository as favorite within SonarCloud.
 
 Action specific properties:
 
-- `project`: The SonarCloud Project id. (required, evaluated, string)
+- `project`: The SonarCloud project key. (required, evaluated, string)
