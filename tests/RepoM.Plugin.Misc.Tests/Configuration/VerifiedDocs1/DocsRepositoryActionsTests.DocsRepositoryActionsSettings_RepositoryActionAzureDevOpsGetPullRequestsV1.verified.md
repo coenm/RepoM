@@ -2,5 +2,6 @@
 
 Action specific properties:
 
-- `repo-id`: The repository Id. (optional, evaluated, string)
-- `show-when-empty`: When no pull requests are available, this property is used to determine if no or a message item is showed. (optional, evaluated, string)
+- `project-id`: The azure devops project id. (required, evaluated, string)
+- `repository-id`: The repository Id. If not provided, the repository id is located using the remote url. (optional, evaluated, string)
+- `show-when-empty`: When no pull requests are available, this property is used to determine if no or a message item is showed. (optional, evaluated, string, default: `true`)

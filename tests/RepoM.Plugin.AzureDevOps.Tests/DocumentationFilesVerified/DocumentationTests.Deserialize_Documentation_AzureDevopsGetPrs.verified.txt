@@ -4,15 +4,15 @@
     Actions: [
       {
         $type: RepositoryActionAzureDevOpsGetPullRequestsV1,
-        RepoId: ,
-        ShowWhenEmpty: true,
         ProjectId: ,
+        RepositoryId: ,
+        ShowWhenEmpty: true,
         Type: azure-devops-get-prs@1,
         Active: true
       },
       {
         $type: RepositoryActionAzureDevOpsGetPullRequestsV1,
-        RepoId: ,
+        RepositoryId: ,
         Type: azure-devops-get-prs@1
       }
     ]

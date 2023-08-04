@@ -32,14 +32,17 @@ Action menu item to create a pull request in Azure Devops. <!-- include: DocsRep
 
 Action specific properties:
 
-- `title`: TODO (optional)
-- `pr-title`: TODO (optional)
-- `to-branch`: TODO
-- `reviewer-ids`: TODO
-- `draft-pr`: TODO
-- `include-work-items`: TODO
-- `open-in-browser`: TODO
-- `auto-complete`: TODO <!-- endInclude -->
+- `project-id`: The azure devops project id. (required, evaluated, string)
+- `title`: Menu item title. When not provided, a title will be generated.
+This property will be used instead of the Name property. (optional, string)
+- `pr-title`: Pull Request title. When not provided, the title will be defined based on the branch name.
+Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch` (optional, string)
+- `to-branch`: Name of the branch the pull request should be merged into. For instance `develop`, or `main`. (required, string)
+- `reviewer-ids`: List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID). (optional, list`1)
+- `draft-pr`: Boolean specifying if th PR should be marked as draft. (required, boolean, default: `false`)
+- `include-work-items`: Boolean specifying if workitems should be included in the PR. The workitems will be found by using the commit messages. (required, boolean, default: `true`)
+- `open-in-browser`: Boolean specifying if the Pull request should be opened in the browser after creation. (required, boolean, default: `false`)
+- `auto-complete`: Auto complete options. Please take a look at the same for more information (required, repositoryactionazuredevopscreatepullrequestsautocompleteoptionsv1) <!-- endInclude -->
 
 Example:
 
@@ -90,21 +93,13 @@ repository-actions:
 
 ## azure-devops-get-prs@1
 
-This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.
-The AzureDevOps plugin is required.
-
 This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAzureDevOpsGetPullRequestsV1.verified.md -->
 
 Action specific properties:
 
-- `repo-id`: The repository Id. (optional, evaluated, string)
-- `show-when-empty`: When no pull requests are available, this property is used to determine if no or a message item is showed. (optional, evaluated, string) <!-- endInclude -->
-
-Custom properties:
-
-- ShowWhenEmpty: Show a menu item when no pull request found (optional, boolean/string, evaluated, default true)
-- RepositoryId: The DevOps git repository id (optional, string, evaluated, default empty)
-- ProjectId: The DevOps Project id (required, string, evaluated)
+- `project-id`: The azure devops project id. (required, evaluated, string)
+- `repository-id`: The repository Id. If not provided, the repository id is located using the remote url. (optional, evaluated, string)
+- `show-when-empty`: When no pull requests are available, this property is used to determine if no or a message item is showed. (optional, evaluated, string, default: `true`) <!-- endInclude -->
 
 Example:
 

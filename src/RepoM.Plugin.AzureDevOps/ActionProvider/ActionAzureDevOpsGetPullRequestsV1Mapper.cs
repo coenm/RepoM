@@ -71,9 +71,9 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
         }
 
         string? repoId = null;
-        if (action.RepoId != null)
+        if (action.RepositoryId != null)
         {
-            repoId = _expressionEvaluator.EvaluateStringExpression(action.RepoId!, repository);
+            repoId = _expressionEvaluator.EvaluateStringExpression(action.RepositoryId!, repository);
         }
 
         List<PullRequest> pullRequests;

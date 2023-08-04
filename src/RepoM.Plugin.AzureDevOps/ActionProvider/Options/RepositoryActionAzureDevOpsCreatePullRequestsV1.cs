@@ -1,13 +1,14 @@
 namespace RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
 /// Action menu item to create a pull request in Azure Devops.
 /// </summary>
 [RepositoryAction(TYPE)]
-public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : RepositoryActionAzureDevOpsBase
+public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : RepositoryAction
 {
     /// <summary>
     /// RepositoryAction type.
@@ -15,43 +16,72 @@ public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : Repository
     public const string TYPE = "azure-devops-create-prs@1";
 
     /// <summary>
-    /// TODO
+    /// The azure devops project id.
     /// </summary>
+    [EvaluatedProperty]
+    [Required]
+    [PropertyType(typeof(string))]
+    public string? ProjectId { get; set; }
+
+    // todo in v2, should be name (as others are)
+    /// <summary>
+    /// Menu item title. When not provided, a title will be generated.
+    /// This property will be used instead of the Name property.
+    /// </summary>
+    // [EvaluatedProperty] // todo
+    [PropertyType(typeof(string))]
     public string? Title { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Pull Request title. When not provided, the title will be defined based on the branch name.
+    /// Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch`
     /// </summary>
+    [PropertyType(typeof(string))]
     public string? PrTitle { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Name of the branch the pull request should be merged into. For instance `develop`, or `main`.
     /// </summary>
+    [Required]
+    [PropertyType(typeof(string))]
     public string ToBranch { get; set; }
 
     /// <summary>
-    /// TODO
+    /// List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
     /// </summary>
+    [PropertyType(typeof(List<string>))]
+    // [PropertyDefaultBoolValue(default)] //todo
     public List<string> ReviewerIds { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Boolean specifying if th PR should be marked as draft.
     /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(default)]
     public bool DraftPr { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Boolean specifying if workitems should be included in the PR. The workitems will be found by using the commit messages.
     /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(true)]
     public bool IncludeWorkItems { get; set; } = true;
 
     /// <summary>
-    /// TODO
+    /// Boolean specifying if the Pull request should be opened in the browser after creation.
     /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(default)]
     public bool OpenInBrowser { get; set; }
 
     /// <summary>
-    /// TODO
+    /// Auto complete options. Please take a look at the same for more information
     /// </summary>
+    [Required]
+    [PropertyType(typeof(RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1))]
     public RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1 AutoComplete { get; set; }
 
     public RepositoryActionAzureDevOpsCreatePullRequestsV1()

@@ -4,6 +4,7 @@
     Actions: [
       {
         $type: RepositoryActionAzureDevOpsCreatePullRequestsV1,
+        ProjectId: ,
         ToBranch: develop,
         ReviewerIds: [
           GUID
@@ -17,11 +18,11 @@
           DeleteSourceBranch: true,
           TransitionWorkItems: true
         },
-        ProjectId: ,
         Type: azure-devops-create-prs@1
       },
       {
         $type: RepositoryActionAzureDevOpsCreatePullRequestsV1,
+        ProjectId: ,
         ToBranch: develop,
         ReviewerIds: [
           GUID
@@ -35,11 +36,11 @@
           DeleteSourceBranch: true,
           TransitionWorkItems: true
         },
-        ProjectId: ,
         Type: azure-devops-create-prs@1
       },
       {
         $type: RepositoryActionAzureDevOpsCreatePullRequestsV1,
+        ProjectId: ,
         Title: Create PR,
         PrTitle: PR title,
         ToBranch: develop,
@@ -55,7 +56,6 @@
           DeleteSourceBranch: true,
           TransitionWorkItems: true
         },
-        ProjectId: ,
         Type: azure-devops-create-prs@1
       }
     ]

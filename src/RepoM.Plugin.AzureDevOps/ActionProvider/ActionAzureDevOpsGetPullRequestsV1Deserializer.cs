@@ -65,7 +65,7 @@ internal class ActionAzureDevOpsGetPullRequestsV1Deserializer : IActionDeseriali
         JToken? repositoryId = jToken["repository-id"];
         if (repositoryId != null && result != null && repositoryId.Type == JTokenType.String)
         {
-            result.RepoId = repositoryId.Value<string>();
+            result.RepositoryId = repositoryId.Value<string>();
         }
 
         return result;
