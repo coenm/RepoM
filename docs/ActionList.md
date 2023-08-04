@@ -522,8 +522,18 @@ See the [SonarCloud](RepoM.Plugin.SonarCloud.md) plugin for more information.
 
 ## azure-devops-create-prs@1 <!-- include: _plugins.azuredevops.action. path: /docs/mdsource/_plugins.azuredevops.action.include.md -->
 
-This action results in zero or one item in the contextmenu. This action makes it possible to create a pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.
-The AzureDevOps plugin is required.
+Action menu item to create a pull request in Azure Devops. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAzureDevOpsCreatePullRequestsV1.verified.md -->
+
+Action specific properties:
+
+- `title`: TODO (optional)
+- `pr-title`: TODO (optional)
+- `to-branch`: TODO
+- `reviewer-ids`: TODO
+- `draft-pr`: TODO
+- `include-work-items`: TODO
+- `open-in-browser`: TODO
+- `auto-complete`: TODO <!-- endInclude -->
 
 Example:
 
@@ -576,6 +586,13 @@ repository-actions:
 
 This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.
 The AzureDevOps plugin is required.
+
+This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAzureDevOpsGetPullRequestsV1.verified.md -->
+
+Action specific properties:
+
+- `repo-id`: The repository Id. (optional, evaluated, string)
+- `show-when-empty`: When no pull requests are available, this property is used to determine if no or a message item is showed. (optional, evaluated, string) <!-- endInclude -->
 
 Custom properties:
 
