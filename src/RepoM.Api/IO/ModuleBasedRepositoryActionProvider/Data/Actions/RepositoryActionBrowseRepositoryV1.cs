@@ -1,9 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
-using System.ComponentModel.DataAnnotations;
-
 /// <summary>
-/// TODO
+/// Action to open the default webbrowser and go to the origin remote webinterface. When multple remotes are available a sub menu is created for each remote.
 /// </summary>
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionBrowseRepositoryV1 : RepositoryAction
@@ -14,10 +12,10 @@ public sealed class RepositoryActionBrowseRepositoryV1 : RepositoryAction
     public const string TYPE = "browse-repository@1";
 
     /// <summary>
-    /// 
+    /// Property specifying only a menu item for the first remote is created.
     /// </summary>
     [EvaluatedProperty]
-    [Required]
-    [PropertyType(typeof(string))]
+    // [Required]
+    [PropertyType(typeof(bool))]
     public string? FirstOnly { get; set; }
 }

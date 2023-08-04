@@ -16,12 +16,7 @@ snippet: RepositoryActionsJustText01
 
 ## associate-file@1
 
-Action menu for opening files with a given extension. If files within the repository are found matching the extension, a submenu will be created with all matched files.
-
-Custom properties:
-
-- Name: The name of the item (required, string, evaulated)
-- Extension: The file extension to look for. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesnt support regular expressions.  (required, string non-evaluated)
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAssociateFileV1.verified.md
 
 Example:
 
@@ -29,9 +24,7 @@ snippet: RepositoryActionsAssociateFile01
 
 ## browse-repository@1
 
-Action to open the default webbrowser and go to the origin remote webinterface.
-
-No additional properties and assigning variables has no effect.
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionBrowseRepositoryV1.verified.md
 
 Example:
 

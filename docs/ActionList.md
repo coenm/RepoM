@@ -40,12 +40,12 @@ repository-actions:
 
 ## associate-file@1
 
-Action menu for opening files with a given extension. If files within the repository are found matching the extension, a submenu will be created with all matched files.
+Action menu for opening files with a given extension. If files within the repository are found matching the extension, a submenu will be created with all matched files. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAssociateFileV1.verified.md -->
 
-Custom properties:
+Action specific properties:
 
-- Name: The name of the item (required, string, evaulated)
-- Extension: The file extension to look for. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesnt support regular expressions.  (required, string non-evaluated)
+- `extension`: The file extension to look for. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesnt support regular expressions.
+For example `*.sln`. (required, string) <!-- endInclude -->
 
 Example:
 
@@ -68,6 +68,12 @@ repository-actions:
 <!-- endSnippet -->
 
 ## browse-repository@1
+
+Action to open the default webbrowser and go to the origin remote webinterface. When multple remotes are available a sub menu is created for each remote. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionBrowseRepositoryV1.verified.md -->
+
+Action specific properties:
+
+- `first-only`: Property specifying only a menu item for the first remote is created. (optional, evaluated, boolean) <!-- endInclude -->
 
 Action to open the default webbrowser and go to the origin remote webinterface.
 
