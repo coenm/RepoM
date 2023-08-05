@@ -52,6 +52,12 @@ public class DocsRepositoryActionsTests
             {
                 try
                 {
+                    // Workaround for Github Actions
+                    if (assembly.GetName().Name.Equals("RepoM.Plugin.Misc.Tests"))
+                    {
+                        continue;
+                    }
+
                     foreach (Type repositoryActionType in assembly.GetRepositoryActionsFromAssembly())
                     {
                         results.Add(new object[] { new RepositoryTestData(assembly, repositoryActionType), });
