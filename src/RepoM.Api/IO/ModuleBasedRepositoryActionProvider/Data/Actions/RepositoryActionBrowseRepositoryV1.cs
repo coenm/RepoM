@@ -15,7 +15,6 @@ public sealed class RepositoryActionBrowseRepositoryV1 : RepositoryAction
     /// Property specifying only a menu item for the first remote is created.
     /// </summary>
     [EvaluatedProperty]
-    // [Required]
     [PropertyType(typeof(bool))]
     public string? FirstOnly { get; set; }
 }

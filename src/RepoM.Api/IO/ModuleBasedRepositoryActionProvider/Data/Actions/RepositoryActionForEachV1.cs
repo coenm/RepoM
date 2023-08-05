@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>
-/// TODO
+/// Action to create repeated actions based on a variable.
 /// </summary>
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionForEachV1 : RepositoryAction
@@ -15,23 +15,7 @@ public sealed class RepositoryActionForEachV1 : RepositoryAction
     public const string TYPE = "foreach@1";
 
     /// <summary>
-    /// List of actions for the enumeration.
-    /// </summary>
-    [EvaluatedProperty]
-    [Required]
-    [PropertyType(typeof(string))]
-    public List<RepositoryAction> Actions { get; set; } = new List<RepositoryAction>();
-
-    /// <summary>
-    /// The name of the variable to access to current enumeration of the <see cref="Enumerable"/> items.
-    /// </summary>
-    // [EvaluatedProperty]
-    [Required]
-    [PropertyType(typeof(string))]
-    public string? Variable { get; set; }
-
-    /// <summary>
-    /// The list of items to enumerate on. TODO.
+    /// The list of items to enumerate on.
     /// </summary>
     [EvaluatedProperty]
     [Required]
@@ -39,10 +23,25 @@ public sealed class RepositoryActionForEachV1 : RepositoryAction
     public string? Enumerable { get; set; }
 
     /// <summary>
-    /// Contition to skip the current enumeration.
+    /// The name of the variable to access to current enumeration of the <see cref="Enumerable"/> items. For each iteration, the variable `{var.name}` has the value of the current iteration.
     /// </summary>
     [EvaluatedProperty]
-    // [Required]
+    [Required]
+    [PropertyType(typeof(string))]
+    public string? Variable { get; set; }
+    
+    /// <summary>
+    /// Predicate to skip the current item.
+    /// </summary>
+    [EvaluatedProperty]
     [PropertyType(typeof(string))]
     public string? Skip { get; set; }
+
+    /// <summary>
+    /// List of repeated actions.
+    /// </summary>
+    [EvaluatedProperty]
+    [Required]
+    [PropertyType(typeof(IEnumerable<RepositoryAction>))]
+    public List<RepositoryAction> Actions { get; set; } = new List<RepositoryAction>();
 }

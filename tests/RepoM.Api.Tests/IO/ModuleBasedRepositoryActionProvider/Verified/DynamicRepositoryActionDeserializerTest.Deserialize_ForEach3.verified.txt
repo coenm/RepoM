@@ -34,6 +34,9 @@
     Actions: [
       {
         $type: RepositoryActionForEachV1,
+        Enumerable: {var.DTAP},
+        Variable: environment,
+        Skip: {IsNull({var.environment.x})},
         Actions: [
           {
             $type: RepositoryActionBrowserV1,
@@ -42,9 +45,6 @@
             Name: {var.environment.key}
           }
         ],
-        Variable: environment,
-        Enumerable: {var.DTAP},
-        Skip: {IsNull({var.environment.x})},
         Type: foreach@1
       }
     ]

@@ -1,4 +1,4 @@
-﻿TODO
+﻿Action opening a webbrowser with the provided url.
 
 Action specific properties:
 

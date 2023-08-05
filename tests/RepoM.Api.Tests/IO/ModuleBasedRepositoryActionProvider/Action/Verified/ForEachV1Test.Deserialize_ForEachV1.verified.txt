@@ -4,8 +4,8 @@
     Actions: [
       {
         $type: RepositoryActionForEachV1,
-        Variable: environment,
         Enumerable: {var.DTAP},
+        Variable: environment,
         Type: foreach@1
       }
     ]

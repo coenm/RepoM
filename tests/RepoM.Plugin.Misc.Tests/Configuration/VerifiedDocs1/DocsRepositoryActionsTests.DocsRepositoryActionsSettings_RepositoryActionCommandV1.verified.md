@@ -1,4 +1,4 @@
-﻿TODO
+﻿Action to excute a command (related the the repository)
 
 Action specific properties:
 

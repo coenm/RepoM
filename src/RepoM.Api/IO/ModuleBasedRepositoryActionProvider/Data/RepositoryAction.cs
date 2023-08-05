@@ -100,3 +100,14 @@ public sealed class PropertyDefaultBoolValueAttribute : PropertyDefaultValueAttr
 
     public bool DefaultValue { get; }
 }
+
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class PropertyDefaultStringValueAttribute : PropertyDefaultValueAttribute
+{
+    public PropertyDefaultStringValueAttribute(string defaultValue)
+    {
+        DefaultValue = defaultValue;
+    }
+
+    public string DefaultValue { get; }
+}

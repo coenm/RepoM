@@ -3,7 +3,7 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>
-/// TODO
+/// Action to excute a command (related the the repository)
 /// </summary>
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionCommandV1 : RepositoryAction

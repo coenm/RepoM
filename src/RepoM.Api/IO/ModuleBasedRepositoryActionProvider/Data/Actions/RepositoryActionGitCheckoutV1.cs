@@ -1,7 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
 /// <summary>
-/// TODO
+/// This action will create a menu and sub menus with all local and remote branches for an easy checkout.
 /// </summary>
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionGitCheckoutV1 : RepositoryAction

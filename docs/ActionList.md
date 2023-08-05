@@ -93,12 +93,11 @@ repository-actions:
 
 ## browser@1
 
-Action opening a webbrowser with the provided url.
+Action opening a webbrowser with the provided url. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionBrowserV1.verified.md -->
 
-Custom properties:
+Action specific properties:
 
-- Name: The name of the item (required, string, evaulated)
-- Url: The url to browse to (required, string, evaluated)
+- `url`: The url to browse to. (required, evaluated, string) <!-- endInclude -->
 
 Example:
 
@@ -122,13 +121,12 @@ repository-actions:
 
 ## command@1
 
-Action to excute a command (related the the repository).
+Action to excute a command (related the the repository) <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionCommandV1.verified.md -->
 
-Custom properties:
+Action specific properties:
 
-- Name: The name of the item (required, string, evaulated)
-- Command: The command to execute (required, string, evaluted)
-- Arguments: The arguments to add to the command (optional, string, evaluted, default empty string)
+- `command`: The command to execute. (required, evaluated, string)
+- `arguments`: Arguments for the command. (optional, evaluated, string) <!-- endInclude -->
 
 Example:
 
@@ -154,17 +152,16 @@ repository-actions:
 
 ## executable@1
 
-Action to excute an application with additional arguments. This action is almost identical to the `command@1` action. When no existing executables are provided, the action will not show.
+Action to excute an application with additional arguments. This action is almost identical to the `command@1` action. When no existing executables are provided, the action will not show. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionExecutableV1.verified.md -->
 
-Custom properties:
+Action specific properties:
 
-- Name: The name of the item (required, string, evaulated)
-- Executables: Array of possible executables. The first executable that exists will be used. The paths should absolute. (required, string, evaluted)
-- Arguments: The arguments to add to the executable (optional, string, evaluted, default empty string)
+- `executables`: Set of possible executables. The first executable that exists will be used. The paths should absolute. (required, evaluated, string)
+- `arguments`: Arguments for the executable. (optional, evaluated, string) <!-- endInclude -->
 
 When you want to specify exacly one executable, you can replace the required property `Executables` with the following property:
 
-- Executable: Absolute path of the exeuctable to execute (required, string, evaluted)
+- `executable`: Absolute path of the exeuctable to execute (required, string, evaluted)
 
 Example:
 
@@ -210,12 +207,11 @@ repository-actions:
 
 ## folder@1
 
-Action to create a folder (sub menu) in the context menu of the repository allowing you to order actions.
+Action to create a folder (sub menu) in the context menu of the repository allowing you to order actions. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionFolderV1.verified.md -->
 
-Custom properties:
+Action specific properties:
 
-- Name: The name of the item (required, string, evaulated)
-- Items: Array of subitems (required, array of actions)
+- `items`: Menu items. (required, evaluated, list`1) <!-- endInclude -->
 
 Example:
 
@@ -247,14 +243,14 @@ repository-actions:
 
 ## foreach@1
 
-Action to create repeated actions based on a variable.
+Action to create repeated actions based on a variable. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionForeachV1.verified.md -->
 
-Custom properties:
+Action specific properties:
 
-- Enumerable: name of the variable to enumerate over (required, string).
-- Variable: variable name of the iteration. For each iteration, the variable `{var.name}` has the value of the current iteration (required, string, non-evaluated)
-- Skip: Predicate to skip the current item (optional, string, evaluted, default empty)
-- Actions: Array of repeated actions (required, array of actions)
+- `enumerable`: The list of items to enumerate on. (required, evaluated, string)
+- `variable`: The name of the variable to access to current enumeration of the  items. For each iteration, the variable `{var.name}` has the value of the current iteration. (required, evaluated, string)
+- `skip`: Predicate to skip the current item. (optional, evaluated, string)
+- `actions`: List of repeated actions. (required, evaluated, ienumerable`1) <!-- endInclude -->
 
 Example:
 
@@ -288,9 +284,9 @@ repository-actions:
 
 ## git-checkout@1
 
-This action will create a menu and sub menus with all local and remote branches for an easy checkout.
+This action will create a menu and sub menus with all local and remote branches for an easy checkout. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionGitCheckoutV1.verified.md -->
 
-No additional properties and assigning variables has no effect.
+This action does not have any specific properties. <!-- endInclude -->
 
 Example:
 

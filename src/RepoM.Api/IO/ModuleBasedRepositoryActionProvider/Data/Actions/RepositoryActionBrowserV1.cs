@@ -3,7 +3,7 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>
-/// TODO
+/// Action opening a webbrowser with the provided url.
 /// </summary>
 [RepositoryAction(TYPE)]
 
