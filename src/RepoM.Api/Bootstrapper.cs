@@ -33,23 +33,17 @@ public class CoreBootstrapper
 
         IEnumerable<PluginInfo> pluginInformation = _pluginFinder.FindPlugins(baseDirectory).ToArray();
 
-        static PluginSettings Convert(PluginInfo pluginInfo, string baseDir, bool enabled)
-        {
-            return new PluginSettings(pluginInfo.Name, pluginInfo.AssemblyPath.Replace(baseDir, string.Empty), enabled);
-        }
-
-        var appSettingsService =
-            new FileAppSettingsService(DefaultAppDataPathProvider.Instance, _fileSystem, NullLogger.Instance);
+        var appSettingsService = new FileAppSettingsService(DefaultAppDataPathProvider.Instance, _fileSystem, NullLogger.Instance);
 
         if (appSettingsService.Plugins.Count == 0)
         {
-            appSettingsService.Plugins = pluginInformation.Select(plugin => Convert(plugin, baseDirectory, true)).ToList();
+            appSettingsService.Plugins = pluginInformation.Select(plugin => ConvertToPluginSettings(plugin, baseDirectory, true)).ToList();
         }
         else
         {
             IEnumerable<PluginSettings> newFoundPlugins = pluginInformation
                 .Where(pluginInfo => appSettingsService.Plugins.TrueForAll(plugin => plugin.Name != pluginInfo.Name))
-                .Select(plugin => Convert(plugin, baseDirectory, false));
+                .Select(plugin => ConvertToPluginSettings(plugin, baseDirectory, false));
 
             var pluginsListCopy = appSettingsService.Plugins.ToList();
             pluginsListCopy.AddRange(newFoundPlugins);
@@ -75,5 +69,10 @@ public class CoreBootstrapper
                         filename))
                 .ConfigureAwait(false);
         }
+    }
+
+    private static PluginSettings ConvertToPluginSettings(PluginInfo pluginInfo, string baseDir, bool enabled)
+    {
+        return new PluginSettings(pluginInfo.Name, pluginInfo.AssemblyPath.Replace(baseDir, string.Empty), enabled);
     }
 }
