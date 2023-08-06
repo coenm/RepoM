@@ -372,7 +372,7 @@ repository-actions:
 
 ## ignore-repository@1
 
-Action to ignore the current repository. This repository will be added to the list of ignored repositories and will never show in RepoM.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionIgnoreRepositoriesV1.verified.md -->
+Action to ignore the current repository. This repository will be added to the list of ignored repositories and will never show in RepoM.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionIgnoreRepositoryV1.verified.md -->
 To undo this action, clear all ignored repositories or manually edit the ignored repositories file (when RepoM is not running).
 
 This action does not have any specific properties.<!-- endInclude -->
