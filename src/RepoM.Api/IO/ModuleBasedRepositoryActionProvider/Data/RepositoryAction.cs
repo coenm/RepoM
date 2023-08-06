@@ -111,3 +111,14 @@ public sealed class PropertyDefaultStringValueAttribute : PropertyDefaultValueAt
 
     public string DefaultValue { get; }
 }
+
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class PropertyDefaultTypedValueAttribute<T> : PropertyDefaultValueAttribute
+{
+    public PropertyDefaultTypedValueAttribute(T defaultValue)
+    {
+        DefaultValue = defaultValue;
+    }
+
+    public T DefaultValue { get; }
+}

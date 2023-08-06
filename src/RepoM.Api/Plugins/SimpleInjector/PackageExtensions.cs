@@ -148,7 +148,7 @@ public static class PackageExtensions
 
     private static bool HasDefaultConstructor(this Type type)
     {
-        return type.GetConstructors().Any(ctor => !ctor.GetParameters().Any());
+        return Array.Exists(type.GetConstructors(), ctor => !ctor.GetParameters().Any());
     }
 
     private static TypeInfo Info(this Type type)

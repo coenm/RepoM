@@ -28,7 +28,7 @@ public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : Repository
     /// Menu item title. When not provided, a title will be generated.
     /// This property will be used instead of the Name property.
     /// </summary>
-    // [EvaluatedProperty] // todo
+    // [EvaluatedProperty]
     [PropertyType(typeof(string))]
     public string? Title { get; set; }
 
@@ -92,26 +92,41 @@ public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : Repository
     }
 }
 
+/// <summary>
+/// Auto complete options.
+/// </summary>
 public class RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1
 {
     /// <summary>
-    /// TODO
+    /// Boolean specifying if the Pull Request should have set the `auto-complete` flag.
     /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(default)]
     public bool Enabled { get; set; }
 
     /// <summary>
-    /// TODO
+    /// The merge strategy. Possible values are `NoFastForward`, `Squash` and `Rebase`, and `RebaseMerge`.
     /// </summary>
+    [Required]
+    [PropertyType(typeof(RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1))]
+    [PropertyDefaultTypedValueAttribute<RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1>(RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1.NoFastForward)]
     public RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1 MergeStrategy { get; set; } = RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1.NoFastForward;
 
     /// <summary>
-    /// TODO
+    /// Boolean specifying if the source branche should be deleted afer completion.
     /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(true)]
     public bool DeleteSourceBranch { get; set; } = true;
 
     /// <summary>
-    /// TODO
+    /// Boolean specifying if related workitems should be transitioned to the next state.
     /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(true)]
     public bool TransitionWorkItems { get; set; } = true;
 }
 
