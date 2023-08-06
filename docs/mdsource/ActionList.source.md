@@ -124,9 +124,7 @@ snippet: RepositoryActionsPinRepository01
 
 ## separator@1
 
-Creates a visual separator in the action menu.
-
-No additional properties and assigning variables has no effect.
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionSeparatorV1.verified.md
 
 Example:
 

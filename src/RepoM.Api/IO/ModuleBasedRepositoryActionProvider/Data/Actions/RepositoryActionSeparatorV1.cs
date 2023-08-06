@@ -1,7 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
 /// <summary>
-/// A visual separation in the UI menu.
+/// Creates a visual separator in the action menu.
 /// </summary>
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionSeparatorV1 : RepositoryAction

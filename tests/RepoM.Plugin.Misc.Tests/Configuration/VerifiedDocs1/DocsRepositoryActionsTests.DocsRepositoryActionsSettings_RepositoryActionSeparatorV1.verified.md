@@ -1,3 +1,3 @@
-﻿A visual separation in the UI menu.
+﻿Creates a visual separator in the action menu.
 
 This action does not have any specific properties.

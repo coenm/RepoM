@@ -53,18 +53,20 @@ public class DocsRepositoryActionsTests
                 try
                 {
                     var assemblyName = assembly.GetName().Name;
-                    if (!string.IsNullOrEmpty(assemblyName) && assemblyName.Contains("RepoM"))
+                    if (string.IsNullOrEmpty(assemblyName) || !assemblyName.Contains("RepoM"))
                     {
-                        // Workaround for Github Actions
-                        if (assemblyName.Contains("Test"))
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        foreach (Type repositoryActionType in assembly.GetRepositoryActionsFromAssembly())
-                        {
-                            results.Add(new object[] { new RepositoryTestData(assembly, repositoryActionType), });
-                        }
+                    // Workaround for Github Actions
+                    if (assemblyName.Contains("Test"))
+                    {
+                        continue;
+                    }
+
+                    foreach (Type repositoryActionType in assembly.GetRepositoryActionsFromAssembly())
+                    {
+                        results.Add(new object[] { new RepositoryTestData(assembly, repositoryActionType), });
                     }
                 }
                 catch (System.Exception)

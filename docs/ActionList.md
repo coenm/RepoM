@@ -430,9 +430,9 @@ repository-actions:
 
 ## separator@1
 
-Creates a visual separator in the action menu.
+Creates a visual separator in the action menu. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionSeparatorV1.verified.md -->
 
-No additional properties and assigning variables has no effect.
+This action does not have any specific properties. <!-- endInclude -->
 
 Example:
 
