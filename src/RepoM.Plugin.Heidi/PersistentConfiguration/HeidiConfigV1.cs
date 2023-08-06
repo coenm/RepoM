@@ -5,12 +5,12 @@ namespace RepoM.Plugin.Heidi.PersistentConfiguration;
 public class HeidiConfigV1
 {
     /// <summary>
-    /// The full directory where the configuration is stored.
+    /// The full directory where the portable configuration file is stored.
     /// </summary>
     public string? ConfigPath { get; init; }
 
     /// <summary>
-    /// The configurration filename (without path)
+    /// The portable-configurration filename (without path). Most likely `portable_settings.txt`
     /// </summary>
     public string? ConfigFilename { get; init; }
 

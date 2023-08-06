@@ -17,6 +17,6 @@ The following default configuration is used:
 
 Properties:
 
-- `ConfigPath`: The full directory where the configuration is stored.
-- `ConfigFilename`: The configurration filename (without path)
+- `ConfigPath`: The full directory where the portable configuration file is stored.
+- `ConfigFilename`: The portable-configurration filename (without path). Most likely `portable_settings.txt`
 - `ExecutableFilename`: The full executable of Heidi.
