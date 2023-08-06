@@ -108,7 +108,7 @@ snippet: RepositoryActionsGitPush01
 
 ## ignore-repository@1
 
-include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionIgnoreRepositoriesV1.verified.md
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionIgnoreRepositoryV1.verified.md
 
 Example:
 
