@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using SimpleInjector;
 using Xunit;
+using RepoM.Core.Plugin.Common;
 
 public class BootstrapperTests
 {
@@ -16,15 +17,16 @@ public class BootstrapperTests
     private readonly IPluginFinder _pluginFinder;
     private readonly IFileSystem _fileSystem;
     private readonly ILoggerFactory _loggerFactory;
-
+    private readonly IAppDataPathProvider _appDataPathProvider;
     private const string BASE_DIRECTORY = @"C:\dir\";
 
     public BootstrapperTests()
     {
         _pluginFinder = A.Fake<IPluginFinder>();
         _fileSystem = A.Fake<IFileSystem>();
+        _appDataPathProvider = A.Fake<IAppDataPathProvider>();
         _loggerFactory = A.Fake<ILoggerFactory>();
-        _sut = new CoreBootstrapper(_pluginFinder, _fileSystem, _loggerFactory);
+        _sut = new CoreBootstrapper(_pluginFinder, _fileSystem, _appDataPathProvider, _loggerFactory);
     }
 
     [Fact]
@@ -33,14 +35,16 @@ public class BootstrapperTests
         // arrange
 
         // act
-        Func<CoreBootstrapper> act1 = () => new CoreBootstrapper(A.Dummy<IPluginFinder>(), A.Dummy<IFileSystem>(), null!);
-        Func<CoreBootstrapper> act2 = () => new CoreBootstrapper(A.Dummy<IPluginFinder>(), null!, A.Dummy<ILoggerFactory>());
-        Func<CoreBootstrapper> act3 = () => new CoreBootstrapper(null!, A.Dummy<IFileSystem>(), A.Dummy<ILoggerFactory>());
+        Func<CoreBootstrapper> act1 = () => new CoreBootstrapper(A.Dummy<IPluginFinder>(), A.Dummy<IFileSystem>(), A.Dummy<IAppDataPathProvider>(), null!);
+        Func<CoreBootstrapper> act2 = () => new CoreBootstrapper(A.Dummy<IPluginFinder>(), A.Dummy<IFileSystem>(), null!, A.Dummy<ILoggerFactory>());
+        Func<CoreBootstrapper> act3 = () => new CoreBootstrapper(A.Dummy<IPluginFinder>(), null!, A.Dummy<IAppDataPathProvider>(), A.Dummy<ILoggerFactory>());
+        Func<CoreBootstrapper> act4 = () => new CoreBootstrapper(null!, A.Dummy<IFileSystem>(), A.Dummy<IAppDataPathProvider>(), A.Dummy<ILoggerFactory>());
 
         // assert
         act1.Should().Throw<ArgumentNullException>();
         act2.Should().Throw<ArgumentNullException>();
         act3.Should().Throw<ArgumentNullException>();
+        act4.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

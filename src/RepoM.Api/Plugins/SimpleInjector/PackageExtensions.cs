@@ -115,8 +115,7 @@ public static class PackageExtensions
 
     private static void RequiresPackageTypesHaveDefaultConstructor(Type[] packageTypes)
     {
-        var invalidPackageType =
-            packageTypes.FirstOrDefault(type => !type.HasDefaultConstructor());
+        var invalidPackageType = packageTypes.FirstOrDefault(type => !type.HasDefaultConstructor());
 
         if (invalidPackageType != null)
         {
@@ -147,11 +146,13 @@ public static class PackageExtensions
         }
     }
 
-    private static bool HasDefaultConstructor(this Type type) =>
-        type.GetConstructors().Any(ctor => !ctor.GetParameters().Any());
+    private static bool HasDefaultConstructor(this Type type)
+    {
+        return type.GetConstructors().Any(ctor => !ctor.GetParameters().Any());
+    }
 
-    private static ConstructorInfo[] GetConstructors(this Type type) =>
-        type.GetTypeInfo().DeclaredConstructors.ToArray();
-
-    private static TypeInfo Info(this Type type) => type.GetTypeInfo();
+    private static TypeInfo Info(this Type type)
+    {
+        return type.GetTypeInfo();
+    }
 }

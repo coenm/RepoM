@@ -178,7 +178,7 @@ internal static class Bootstrapper
         Container.Register<ModuleService>(Lifestyle.Singleton);
         Container.RegisterInstance(pluginFinder);
 
-        var coreBootstrapper = new CoreBootstrapper(pluginFinder, fileSystem, loggerFactory);
+        var coreBootstrapper = new CoreBootstrapper(pluginFinder, fileSystem, DefaultAppDataPathProvider.Instance, loggerFactory);
         var baseDirectory = fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
         await coreBootstrapper.LoadAndRegisterPluginsAsync(Container, baseDirectory).ConfigureAwait(false);
     }

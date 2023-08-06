@@ -13,17 +13,20 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System;
 using RepoM.Api.Plugins.SimpleInjector;
+using RepoM.Core.Plugin.Common;
 
 public class CoreBootstrapper
 {
     private readonly IPluginFinder _pluginFinder;
     private readonly IFileSystem _fileSystem;
+    private readonly IAppDataPathProvider _appDataProvider;
     private readonly ILoggerFactory _loggerFactory;
 
-    public CoreBootstrapper(IPluginFinder pluginFinder, IFileSystem fileSystem, ILoggerFactory loggerFactory)
+    public CoreBootstrapper(IPluginFinder pluginFinder, IFileSystem fileSystem, IAppDataPathProvider appDataProvider, ILoggerFactory loggerFactory)
     {
         _pluginFinder = pluginFinder ?? throw new ArgumentNullException(nameof(pluginFinder));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _appDataProvider = appDataProvider ?? throw new ArgumentNullException(nameof(appDataProvider));
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
     }
 
@@ -33,7 +36,7 @@ public class CoreBootstrapper
 
         IEnumerable<PluginInfo> pluginInformation = _pluginFinder.FindPlugins(baseDirectory).ToArray();
 
-        var appSettingsService = new FileAppSettingsService(DefaultAppDataPathProvider.Instance, _fileSystem, NullLogger.Instance);
+        var appSettingsService = new FileAppSettingsService(_appDataProvider, _fileSystem, _loggerFactory.CreateLogger<FileAppSettingsService>());
 
         if (appSettingsService.Plugins.Count == 0)
         {
