@@ -2,9 +2,9 @@
 
 *todo description*
 
-To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM. <!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.<!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
 
-## Configuration <!-- include: DocsModuleSettingsTests.DocsModuleSettings_HeidiPackage#desc.verified.md -->
+## Configuration<!-- include: DocsModuleSettingsTests.DocsModuleSettings_HeidiPackage#desc.verified.md -->
 
 This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running.
 
@@ -25,18 +25,18 @@ Properties:
 
 - `ConfigPath`: The full directory where the configuration is stored.
 - `ConfigFilename`: The configurration filename (without path)
-- `ExecutableFilename`: The full executable of Heidi. <!-- endInclude -->
+- `ExecutableFilename`: The full executable of Heidi.<!-- endInclude -->
 
-## heidi-databases@1 <!-- include: _plugins.heidi.action. path: /docs/mdsource/_plugins.heidi.action.include.md -->
+## heidi-databases@1<!-- include: _plugins.heidi.action. path: /docs/mdsource/_plugins.heidi.action.include.md -->
 
 <!-- todo, improve docs -->
-Action to list heidi databases and show action menus for them. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionHeidiDatabasesV1.verified.md -->
+Action to list heidi databases and show action menus for them.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionHeidiDatabasesV1.verified.md -->
 
 Action specific properties:
 
 - `key`: Repository key.
 If not provided, the repository `Remote.Origin.Name` is used as selector. (optional, string)
-- `executable`: The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used. (optional, evaluated, string) <!-- endInclude -->
+- `executable`: The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used. (optional, evaluated, string)<!-- endInclude -->
 
 Example:
 
