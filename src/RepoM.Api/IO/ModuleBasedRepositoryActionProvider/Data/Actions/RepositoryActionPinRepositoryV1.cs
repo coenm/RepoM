@@ -3,7 +3,8 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>
-/// TODO
+/// Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.
+/// Pinning a repository allowed custom filtering, ordering and searching.
 /// </summary>
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionPinRepositoryV1 : RepositoryAction
@@ -13,12 +14,19 @@ public sealed class RepositoryActionPinRepositoryV1 : RepositoryAction
     /// </summary>
     public const string TYPE = "pin-repository@1";
 
+    // hide base property only for the documentation.
     /// <summary>
-    /// The pin mode [Toggle, Pin, UnPin].
+    /// Name of the action. This is shown in the UI of RepoM. When no value is provided, the name will be a default value based on the mode.
     /// </summary>
-    //[EvaluatedProperty] //todo
-    [Required]
+    [EvaluatedProperty]
     [PropertyType(typeof(string))]
+    public new string? Name { get; set; }
+    
+    /// <summary>
+    /// The pin mode `[Toggle, Pin, UnPin]`.
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(PinMode))]
     public PinMode Mode { get; set; }
 
     /// <summary>

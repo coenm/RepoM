@@ -306,9 +306,9 @@ repository-actions:
 
 ## git-fetch@1
 
-Action to execute a `git fetch` command.
+Action to execute a `git fetch` command. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionGitFetchV1.verified.md -->
 
-No additional properties and assigning variables has no effect.
+This action does not have any specific properties. <!-- endInclude -->
 
 Example:
 
@@ -328,9 +328,9 @@ repository-actions:
 
 ## git-pull@1
 
-Action to execute a `git pull` command.
+Action to execute a `git pull` command. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionGitPullV1.verified.md -->
 
-No additional properties and assigning variables has no effect.
+This action does not have any specific properties. <!-- endInclude -->
 
 Example:
 
@@ -350,9 +350,9 @@ repository-actions:
 
 ## git-push@1
 
-Action to execute a `git push` command.
+Action to execute a `git push` command. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionGitPushV1.verified.md -->
 
-No additional properties and assigning variables has no effect.
+This action does not have any specific properties. <!-- endInclude -->
 
 Example:
 
@@ -372,10 +372,10 @@ repository-actions:
 
 ## ignore-repository@1
 
-Action to ignore the current repository. This repository will be added to the list of ignored repositories and will never show in RepoM.
+Action to ignore the current repository. This repository will be added to the list of ignored repositories and will never show in RepoM. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionIgnoreRepositoriesV1.verified.md -->
 To undo this action, clear all ignored repositories or manually edit the ignored repositories file (when RepoM is not running).
 
-No additional properties and assigning variables has no effect.
+This action does not have any specific properties. <!-- endInclude -->
 
 Example:
 
@@ -395,13 +395,13 @@ repository-actions:
 
 ## pin-repository@1
 
-Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.
+Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionPinRepositoryV1.verified.md -->
 Pinning a repository allowed custom filtering, ordering and searching.
 
-Custom properties:
+Action specific properties:
 
-- Name: The name of the item. When not set, default text is used based on the mode (optional, string, evaulated, default empty)
-- Mode: Enum `[Toggle, Pin, Unpin]` (required)
+- `name`: Name of the action. This is shown in the UI of RepoM. When no value is provided, the name will be a default value based on the mode. (optional, evaluated, string)
+- `mode`: The pin mode `[Toggle, Pin, UnPin]`. (required, pinmode) <!-- endInclude -->
 
 Example:
 

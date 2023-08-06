@@ -1,7 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
 /// <summary>
-/// TODO
+/// Action to execute a `git pull` command.
 /// </summary>
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionGitPullV1 : RepositoryAction

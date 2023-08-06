@@ -84,9 +84,7 @@ snippet: RepositoryActionsGitCheckout01
 
 ## git-fetch@1
 
-Action to execute a `git fetch` command.
-
-No additional properties and assigning variables has no effect.
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionGitFetchV1.verified.md
 
 Example:
 
@@ -94,9 +92,7 @@ snippet: RepositoryActionsGitFetch01
 
 ## git-pull@1
 
-Action to execute a `git pull` command.
-
-No additional properties and assigning variables has no effect.
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionGitPullV1.verified.md
 
 Example:
 
@@ -104,9 +100,7 @@ snippet: RepositoryActionsGitPull01
 
 ## git-push@1
 
-Action to execute a `git push` command.
-
-No additional properties and assigning variables has no effect.
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionGitPushV1.verified.md
 
 Example:
 
@@ -114,10 +108,7 @@ snippet: RepositoryActionsGitPush01
 
 ## ignore-repository@1
 
-Action to ignore the current repository. This repository will be added to the list of ignored repositories and will never show in RepoM.
-To undo this action, clear all ignored repositories or manually edit the ignored repositories file (when RepoM is not running).
-
-No additional properties and assigning variables has no effect.
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionIgnoreRepositoriesV1.verified.md
 
 Example:
 
@@ -125,13 +116,7 @@ snippet: RepositoryActionsIgnoreRepository01
 
 ## pin-repository@1
 
-Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.
-Pinning a repository allowed custom filtering, ordering and searching.
-
-Custom properties:
-
-- Name: The name of the item. When not set, default text is used based on the mode (optional, string, evaulated, default empty)
-- Mode: Enum `[Toggle, Pin, Unpin]` (required)
+include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionPinRepositoryV1.verified.md
 
 Example:
 

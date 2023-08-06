@@ -1,7 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
 /// <summary>
-/// TODO
+/// Action to execute a `git fetch` command.
 /// </summary>
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionGitFetchV1 : RepositoryAction

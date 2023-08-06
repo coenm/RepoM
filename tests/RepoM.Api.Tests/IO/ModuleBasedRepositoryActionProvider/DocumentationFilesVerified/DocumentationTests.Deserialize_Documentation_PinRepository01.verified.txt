@@ -4,9 +4,9 @@
     Actions: [
       {
         $type: RepositoryActionPinRepositoryV1,
+        Name: this is some text to display,
         Mode: Toggle,
         Type: pin-repository@1,
-        Name: this is some text to display,
         Active: true
       },
       {
