@@ -5,7 +5,7 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 /// To undo this action, clear all ignored repositories or manually edit the ignored repositories file (when RepoM is not running).
 /// </summary>
 [RepositoryAction(TYPE)]
-public sealed class RepositoryActionIgnoreRepositoriesV1 : RepositoryAction
+public sealed class RepositoryActionIgnoreRepositoryV1 : RepositoryAction
 {
     /// <summary>
     /// RepositoryAction type.

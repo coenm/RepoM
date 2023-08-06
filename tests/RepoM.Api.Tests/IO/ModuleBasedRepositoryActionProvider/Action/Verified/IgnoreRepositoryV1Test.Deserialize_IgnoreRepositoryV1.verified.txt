@@ -3,8 +3,8 @@
   ActionsCollection: {
     Actions: [
       {
-        $type: RepositoryActionIgnoreRepositoriesV1,
-        Type: ignore-repositories@1
+        $type: RepositoryActionIgnoreRepositoryV1,
+        Type: ignore-repository@1
       }
     ]
   }

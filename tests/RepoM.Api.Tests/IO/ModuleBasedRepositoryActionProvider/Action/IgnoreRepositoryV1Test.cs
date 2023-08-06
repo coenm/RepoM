@@ -13,15 +13,15 @@ using Xunit;
 
 [UsesEasyTestFile]
 [UsesVerify]
-public class IgnoreRepositoriesV1Test
+public class IgnoreRepositoryV1Test
 {
     private readonly JsonDynamicRepositoryActionDeserializer _sut;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
 
-    public IgnoreRepositoriesV1Test()
+    public IgnoreRepositoryV1Test()
     {
-        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionIgnoreRepositoriesV1Deserializer());
+        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionIgnoreRepositoryV1Deserializer());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");
@@ -32,7 +32,7 @@ public class IgnoreRepositoriesV1Test
     }
 
     [Fact]
-    public async Task Deserialize_IgnoreRepositoriesV1()
+    public async Task Deserialize_IgnoreRepositoryV1()
     {
         // arrange
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
@@ -48,13 +48,13 @@ public class IgnoreRepositoriesV1Test
     public async Task Deserialize_ShouldBeOfExpectedType()
     {
         // arrange
-        _testFileSettings.UseMethodName(nameof(Deserialize_IgnoreRepositoriesV1));
+        _testFileSettings.UseMethodName(nameof(Deserialize_IgnoreRepositoryV1));
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
         var result = _sut.Deserialize(content);
 
         // assert
-        _ = result.ActionsCollection.Actions.Should().AllBeOfType<RepositoryActionIgnoreRepositoriesV1>();
+        _ = result.ActionsCollection.Actions.Should().AllBeOfType<RepositoryActionIgnoreRepositoryV1>();
     }
 }

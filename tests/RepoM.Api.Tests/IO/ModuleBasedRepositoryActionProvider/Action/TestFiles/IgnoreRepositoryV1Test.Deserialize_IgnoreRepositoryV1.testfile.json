@@ -2,7 +2,7 @@
   "repository-actions": {
     "actions": [
       {
-        "type": "ignore-repositories@1"
+        "type": "ignore-repository@1"
       }
     ]
   }

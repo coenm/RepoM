@@ -22,7 +22,7 @@ internal static class DynamicRepositoryActionDeserializerFactory
                         new ActionGitPushV1Deserializer(),
                         new ActionGitPullV1Deserializer(),
                         new ActionBrowseRepositoryV1Deserializer(),
-                        new ActionIgnoreRepositoriesV1Deserializer(),
+                        new ActionIgnoreRepositoryV1Deserializer(),
                         new ActionAssociateFileV1Deserializer(),
                         new ActionPinRepositoryV1Deserializer(),
                         new ActionForEachV1Deserializer(),
