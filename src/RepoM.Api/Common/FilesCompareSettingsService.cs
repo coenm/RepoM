@@ -44,19 +44,16 @@ public class FilesCompareSettingsService : ICompareSettingsService
     {
         try
         {
-            return LoadNew();
+            return LoadInner();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // swallow and use old mechanism
+            _logger.LogWarning(e, "Could not read and parse {filename} file. The structure has changed, maybe it is an easy fix by just replacing all '@' signs with the fixed string 'type: ' and you will be good to go. {message}", GetFileName(), e.Message);
+            throw;
         }
-
-        Dictionary<string, IRepositoriesComparerConfiguration> result = LoadOld();
-        _logger.LogWarning("Update '{filename}' to use new style. Replace all '@' signs with 'type: ' and you will be good to go.", GetFileName());
-        return result;
     }
 
-    private Dictionary<string, IRepositoriesComparerConfiguration> LoadNew()
+    private Dictionary<string, IRepositoriesComparerConfiguration> LoadInner()
     {
         var file = GetFileName();
 
@@ -88,40 +85,6 @@ public class FilesCompareSettingsService : ICompareSettingsService
                      maxDepth: -1,
                      maxLength: -1)
                 .Build();
-
-            return deserializer.Deserialize<Dictionary<string, IRepositoriesComparerConfiguration>>(yml);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Could not load configuration from file '{file}'. {message}", file, ex.Message);
-            throw;
-        }
-    }
-
-    [Obsolete("Will be removed in future version.")]
-    private Dictionary<string, IRepositoriesComparerConfiguration> LoadOld()
-    {
-        var file = GetFileName();
-
-        if (!_fileSystem.File.Exists(file))
-        {
-            throw new FileNotFoundException("Comparer configuration file not found", file);
-        }
-
-        try
-        {
-            var yml = _fileSystem.File.ReadAllText(file);
-
-            DeserializerBuilder builder = new DeserializerBuilder()
-                .WithNamingConvention(HyphenatedNamingConvention.Instance);
-
-            foreach (IConfigurationRegistration instance in _registrations)
-            {
-                var tag = instance.Tag.TrimStart('!');
-                builder.WithTagMapping("!" + tag, instance.ConfigurationType);
-            }
-
-            IDeserializer deserializer = builder.Build();
 
             return deserializer.Deserialize<Dictionary<string, IRepositoriesComparerConfiguration>>(yml);
         }
