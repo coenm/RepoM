@@ -3,9 +3,9 @@
 This module integrates with a portable [HeidiSQL](https://www.heidisql.com/) installation. The portable Heidi DB saves it's database configuration in a portable configuration file.
 This module monitors this file and provides an action menu and a variable provider to access this information.
 
-To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM. <!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.<!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
 
-## Configuration <!-- include: DocsModuleSettingsTests.DocsModuleSettings_HeidiPackage#desc.verified.md -->
+## Configuration<!-- include: DocsModuleSettingsTests.DocsModuleSettings_HeidiPackage#desc.verified.md -->
 
 This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running.
 
@@ -26,7 +26,7 @@ Properties:
 
 - `ConfigPath`: The full directory where the portable configuration file is stored.
 - `ConfigFilename`: The portable-configurration filename (without path). Most likely `portable_settings.txt`
-- `ExecutableFilename`: The full executable of Heidi. <!-- endInclude -->
+- `ExecutableFilename`: The full executable of Heidi.<!-- endInclude -->
 
 In order to let RepoM know what database configuration should be linked to what git repository the following should be added in the comment section when editing a database configuration in the Heidi's session manager.
 
@@ -45,16 +45,16 @@ Example:
 ![Screenshot](HeidiSQL.png)
 ![Screenshot](HeidiInRepoM.png)
 
-## heidi-databases@1 <!-- include: _plugins.heidi.action. path: /docs/mdsource/_plugins.heidi.action.include.md -->
+## heidi-databases@1<!-- include: _plugins.heidi.action. path: /docs/mdsource/_plugins.heidi.action.include.md -->
 
 <!-- todo, improve docs -->
-Action to list heidi databases and show action menus for them. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionHeidiDatabasesV1.verified.md -->
+Action to list heidi databases and show action menus for them.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionHeidiDatabasesV1.verified.md -->
 
 Action specific properties:
 
 - `key`: Repository key.
 If not provided, the repository `Remote.Origin.Name` is used as selector. (optional, string)
-- `executable`: The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used. (optional, evaluated, string) <!-- endInclude -->
+- `executable`: The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used. (optional, evaluated, string)<!-- endInclude -->
 
 Example:
 
