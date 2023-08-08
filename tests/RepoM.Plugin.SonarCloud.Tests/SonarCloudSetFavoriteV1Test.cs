@@ -27,7 +27,7 @@ public class SonarCloudSetFavoriteV1Test
 
     public SonarCloudSetFavoriteV1Test()
     {
-        _sutJson = CreateWithDeserializer(new ActionSonarCloudSetFavoriteV1Deserializer());
+        _sutJson = CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionSonarCloudSetFavoriteV1>());
         _sutYaml = new YamlDynamicRepositoryActionDeserializer(_sutJson);
 
         _testFileSettings = new EasyTestFileSettings();

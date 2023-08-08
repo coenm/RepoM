@@ -2,8 +2,10 @@ namespace RepoM.Plugin.AzureDevOps.Tests.TestFramework;
 
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Plugin.AzureDevOps.ActionProvider;
+using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 
 internal static class DynamicRepositoryActionDeserializerFactory
 {
@@ -13,7 +15,7 @@ internal static class DynamicRepositoryActionDeserializerFactory
             new ActionDeserializerComposition(
                 new IActionDeserializer[]
                     {
-                        new ActionAzureDevOpsCreatePullRequestsV1Deserializer(),
+                        new DefaultActionDeserializer<RepositoryActionAzureDevOpsCreatePullRequestsV1>(),
                         new ActionAzureDevOpsGetPullRequestsV1Deserializer(),
                     }));
     }

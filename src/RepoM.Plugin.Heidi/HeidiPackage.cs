@@ -3,6 +3,7 @@ namespace RepoM.Plugin.Heidi;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.VariableProviders;
 using RepoM.Plugin.Heidi.Internal;
@@ -70,7 +71,7 @@ public class HeidiPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
-        container.Collection.Append<IActionDeserializer, ActionHeidiDatabasesV1Deserializer>(Lifestyle.Singleton);
+        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionHeidiDatabasesV1>();
         container.Collection.Append<IActionToRepositoryActionMapper, ActionHeidiDatabasesV1Mapper>(Lifestyle.Singleton);
 
         // ordering

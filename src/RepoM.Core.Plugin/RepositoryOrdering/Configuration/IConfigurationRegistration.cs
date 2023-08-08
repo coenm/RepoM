@@ -11,3 +11,7 @@ public interface IConfigurationRegistration
 
     public string Tag { get; }
 }
+
+public interface IKeyTypeRegistration<T> : IConfigurationRegistration   
+{
+}

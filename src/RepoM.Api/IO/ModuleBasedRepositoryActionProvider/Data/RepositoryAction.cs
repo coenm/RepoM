@@ -3,6 +3,12 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+using SimpleInjector;
 
 // todo: move to plugin, make abstract
 /// <summary>
@@ -121,4 +127,50 @@ public sealed class PropertyDefaultTypedValueAttribute<T> : PropertyDefaultValue
     }
 
     public T DefaultValue { get; }
+}
+
+public static class ContainerExtensions
+{
+    public static void RegisterDefaultRepositoryActionDeserializerForType<T>(this Container container) where T : RepositoryAction
+    {
+        container.Collection.AppendInstance<IActionDeserializer>(new DefaultActionDeserializer<T>());
+        // container.Collection.AppendInstance<IKeyTypeRegistration<RepositoryAction>>(new RepositoryActionKeyTypeRegistration<T>());
+    }
+}
+
+public class DefaultActionDeserializer<T> : IActionDeserializer where T : RepositoryAction
+{
+    public DefaultActionDeserializer()
+    {
+        ConfigurationType = typeof(T);
+        Tag = typeof(T).GetCustomAttribute<RepositoryActionAttribute>()?.Type ?? throw new InvalidOperationException($"RepositoryActionAttribute not found on {typeof(T).FullName}");
+    }
+
+    private Type ConfigurationType { get; }
+
+    private string Tag { get; }
+
+
+    public bool CanDeserialize(string type)
+    {
+        return Tag.Equals(type, StringComparison.CurrentCultureIgnoreCase);
+    }
+
+    public RepositoryAction? Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
+    {
+        return jToken.ToObject(ConfigurationType, jsonSerializer) as RepositoryAction;
+    }
+}
+
+public class RepositoryActionKeyTypeRegistration<T> : IKeyTypeRegistration<RepositoryAction> where T : RepositoryAction
+{
+    public RepositoryActionKeyTypeRegistration()
+    {
+        ConfigurationType = typeof(T);
+        Tag = typeof(T).GetCustomAttribute<RepositoryActionAttribute>()?.Type ?? throw new InvalidOperationException($"RepositoryActionAttribute not found on {typeof(T).FullName}");
+    }
+
+    public Type ConfigurationType { get; }
+
+    public string Tag { get; }
 }

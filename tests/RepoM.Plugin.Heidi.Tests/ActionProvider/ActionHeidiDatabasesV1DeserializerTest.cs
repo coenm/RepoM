@@ -27,7 +27,7 @@ public class ActionHeidiDatabasesV1DeserializerTest
 
     public ActionHeidiDatabasesV1DeserializerTest()
     {
-        _sutJson = CreateWithDeserializer(new ActionHeidiDatabasesV1Deserializer());
+        _sutJson = CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionHeidiDatabasesV1>());
         _sutYaml = new YamlDynamicRepositoryActionDeserializer(_sutJson);
 
         _testFileSettings = new EasyTestFileSettings();

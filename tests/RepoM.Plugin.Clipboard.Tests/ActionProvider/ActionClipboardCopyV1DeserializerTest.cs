@@ -27,7 +27,7 @@ public class ActionClipboardCopyV1DeserializerTest
 
     public ActionClipboardCopyV1DeserializerTest()
     {
-        _sutJson = CreateWithDeserializer(new ActionClipboardCopyV1Deserializer());
+        _sutJson = CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionClipboardCopyV1>());
         _sutYaml = new YamlDynamicRepositoryActionDeserializer(_sutJson);
 
         _testFileSettings = new EasyTestFileSettings();

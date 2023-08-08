@@ -2,6 +2,8 @@ namespace RepoM.Api.Tests;
 
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 
 internal static class DynamicRepositoryActionDeserializerFactory
@@ -23,7 +25,8 @@ internal static class DynamicRepositoryActionDeserializerFactory
                         new ActionGitPullV1Deserializer(),
                         new ActionBrowseRepositoryV1Deserializer(),
                         new ActionIgnoreRepositoryV1Deserializer(),
-                        new ActionAssociateFileV1Deserializer(),
+                        // new ActionAssociateFileV1Deserializer(),
+                        new DefaultActionDeserializer<RepositoryActionAssociateFileV1>(),
                         new ActionPinRepositoryV1Deserializer(),
                         new ActionForEachV1Deserializer(),
                         new ActionJustTextV1Deserializer(),
