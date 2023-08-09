@@ -5,13 +5,16 @@ using System;
 /// <summary>
 /// Configuration registration per name
 /// </summary>
-public interface IConfigurationRegistration
+public interface IConfigurationRegistration : IKeyTypeRegistration<object>
+{
+}
+
+/// <summary>
+/// Configuration registration per name
+/// </summary>
+public interface IKeyTypeRegistration<T>   
 {
     public Type ConfigurationType { get; }
 
     public string Tag { get; }
-}
-
-public interface IKeyTypeRegistration<T> : IConfigurationRegistration   
-{
 }

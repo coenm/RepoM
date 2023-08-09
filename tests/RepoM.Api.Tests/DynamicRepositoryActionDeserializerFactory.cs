@@ -1,10 +1,13 @@
 namespace RepoM.Api.Tests;
 
+using System;
+using System.Collections.Generic;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 internal static class DynamicRepositoryActionDeserializerFactory
 {
@@ -29,11 +32,12 @@ internal static class DynamicRepositoryActionDeserializerFactory
                         new DefaultActionDeserializer<RepositoryActionPinRepositoryV1>(),
                         new ActionForEachV1Deserializer(),
                         new DefaultActionDeserializer<RepositoryActionJustTextV1>(),
-                    }));
+                    },
+                Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
     }
 
     public static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }));
+        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
     }
 }
