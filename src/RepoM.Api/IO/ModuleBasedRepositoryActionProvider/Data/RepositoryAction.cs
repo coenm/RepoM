@@ -138,7 +138,39 @@ public static class ContainerExtensions
         container.Collection.AppendInstance<IActionDeserializer>(new DefaultActionDeserializer<T>());
         // container.Collection.AppendInstance<IKeyTypeRegistration<RepositoryAction>>(new RepositoryActionKeyTypeRegistration<T>());
     }
+
+    public static void RegisterDefaultRepositoryActionDeserializerForType(this Container container, Type type)
+    {
+        container.Collection.AppendInstance<IActionDeserializer>(new DefaultActionDeserializer(type));
+        // container.Collection.AppendInstance<IKeyTypeRegistration<RepositoryAction>>(new RepositoryActionKeyTypeRegistration<T>());
+    }
 }
+
+
+public class DefaultActionDeserializer : IActionDeserializer
+{
+    public DefaultActionDeserializer(Type t)
+    {
+        ConfigurationType = t;
+        Tag = t.GetCustomAttribute<RepositoryActionAttribute>()?.Type ?? throw new InvalidOperationException($"RepositoryActionAttribute not found on {t.FullName}");
+    }
+
+    private Type ConfigurationType { get; }
+
+    private string Tag { get; }
+
+
+    public bool CanDeserialize(string type)
+    {
+        return Tag.Equals(type, StringComparison.CurrentCultureIgnoreCase);
+    }
+
+    public RepositoryAction? Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
+    {
+        return jToken.ToObject(ConfigurationType, jsonSerializer) as RepositoryAction;
+    }
+}
+
 
 public class DefaultActionDeserializer<T> : IActionDeserializer where T : RepositoryAction
 {

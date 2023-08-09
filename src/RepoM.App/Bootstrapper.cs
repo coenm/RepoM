@@ -45,6 +45,9 @@ using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using RepoM.App.Services.HotKey;
 using RepoM.Api;
+using System.Collections.Generic;
+using System.Linq;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 internal static class Bootstrapper
 {
@@ -130,10 +133,52 @@ internal static class Bootstrapper
         });
 
         Container.Register<ActionDeserializerComposition>(Lifestyle.Singleton);
-        Container.Collection.Register<IActionDeserializer>(
-            new[] { typeof(IActionDeserializer).Assembly, },
-            Lifestyle.Singleton);
+        //
+        // Container.Collection.Register<IActionDeserializer>(
+        //     new[] { typeof(IActionDeserializer).Assembly, },
+        //     Lifestyle.Singleton);
+        var types1 = GetExportedTypesFrom(typeof(IActionDeserializer).Assembly)
+                    .Where(t => typeof(IActionDeserializer).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
+                    .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, })
+                    // .Where(t => t != typeof(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction))
+                    .Where(t => t != typeof(DefaultActionDeserializer))
+                    .Where(t => t != typeof(DefaultActionDeserializer<>))
+                    .ToArray();
 
+        Container.Collection.Register<IActionDeserializer>(types1, Lifestyle.Singleton);
+
+        // foreach (var type in types1)
+        // {
+        //     Container.RegisterDefaultRepositoryActionDeserializerForType(type);
+        // }
+
+
+        var types = GetExportedTypesFrom(typeof(IActionDeserializer).Assembly)
+                    .Where(t => typeof(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
+                    .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, })
+                    .Where(t => t != typeof(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction))
+                    // .Where(t => t != typeof(DefaultActionDeserializer<>))
+                    .ToArray();
+        foreach (var type in types)
+        {
+            Container.RegisterDefaultRepositoryActionDeserializerForType(type);
+        }
+        
+
+        static IEnumerable<Type> GetExportedTypesFrom(Assembly assembly)
+        {
+            try
+            {
+                return assembly.DefinedTypes.Select(info => info.AsType());
+            }
+            catch (NotSupportedException)
+            {
+                // A type load exception would typically happen on an Anonymously Hosted DynamicMethods
+                // Assembly and it would be safe to skip this exception.
+                return Enumerable.Empty<Type>();
+            }
+        }
+        
         Container.Register<ActionMapperComposition>(Lifestyle.Singleton);
         Container.Collection.Register<IActionToRepositoryActionMapper>(
             new[] { typeof(IActionToRepositoryActionMapper).Assembly, },

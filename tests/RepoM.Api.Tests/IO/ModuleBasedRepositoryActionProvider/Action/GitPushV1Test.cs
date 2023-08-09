@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
 using FluentAssertions;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using VerifyTests;
@@ -21,7 +21,7 @@ public class GitPushV1Test
 
     public GitPushV1Test()
     {
-        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionGitPushV1Deserializer());
+        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionGitPushV1>());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

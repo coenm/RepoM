@@ -1,6 +1,5 @@
 namespace RepoM.Api;
 
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.IO;
@@ -53,12 +52,14 @@ public class CoreBootstrapper
             appSettingsService.Plugins = pluginsListCopy;
         }
 
-        IEnumerable<string> enabledPlugins = appSettingsService.Plugins.Where(x => x.Enabled).Select(xxx => xxx.Name);
+        IEnumerable<string> enabledPlugins = appSettingsService.Plugins
+            .Where(plugin => plugin.Enabled)
+            .Select(plugin => plugin.Name);
 
         Assembly[] assemblies = pluginInformation
-                                .Where(plugin => enabledPlugins.Contains(plugin.Name))
-                                .Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)))
-                                .ToArray();
+            .Where(plugin => enabledPlugins.Contains(plugin.Name))
+            .Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)))
+            .ToArray();
 
         if (assemblies.Any())
         {
