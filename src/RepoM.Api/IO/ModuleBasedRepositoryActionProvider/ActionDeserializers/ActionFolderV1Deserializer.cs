@@ -22,22 +22,11 @@ public class ActionFolderV1Deserializer : IActionDeserializer
 
     private static RepositoryActionFolderV1? Deserialize(JToken token, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
     {
-        RepositoryActionFolderV1? result = token.ToObject<RepositoryActionFolderV1>();
+        RepositoryActionFolderV1? result = token.ToObject<RepositoryActionFolderV1>(jsonSerializer);
 
         if (result == null)
         {
             return null;
-        }
-
-        JToken? isDeferredToken = token["is-deferred"];
-
-        if (isDeferredToken != null)
-        {
-            var isDeferredValue = isDeferredToken.Value<string>();
-            if (!string.IsNullOrWhiteSpace(isDeferredValue))
-            {
-                result.IsDeferred = isDeferredValue!;
-            }
         }
 
         JToken? actions = token.SelectToken("items");

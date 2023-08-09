@@ -22,7 +22,7 @@ public class ActionForEachV1Deserializer : IActionDeserializer
 
     private static RepositoryActionForEachV1? Deserialize(JToken token, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
     {
-        RepositoryActionForEachV1? result = token.ToObject<RepositoryActionForEachV1>();
+        RepositoryActionForEachV1? result = token.ToObject<RepositoryActionForEachV1>(jsonSerializer);
 
         if (result == null)
         {
