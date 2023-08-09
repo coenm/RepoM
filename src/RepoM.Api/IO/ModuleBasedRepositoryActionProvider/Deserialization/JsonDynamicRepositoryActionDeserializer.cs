@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
@@ -14,6 +15,10 @@ public class JsonDynamicRepositoryActionDeserializer
     private readonly ActionDeserializerComposition _deserializers;
     private static readonly JsonSerializer _jsonSerializer = new()
         {
+            ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new KebabCaseNamingStrategy(),
+                },
             Converters =
                 {
                     new BoolToStringJsonConverter(),
@@ -23,6 +28,7 @@ public class JsonDynamicRepositoryActionDeserializer
         {
             CommentHandling = CommentHandling.Ignore,
         };
+
 
     public JsonDynamicRepositoryActionDeserializer(ActionDeserializerComposition deserializers)
     {

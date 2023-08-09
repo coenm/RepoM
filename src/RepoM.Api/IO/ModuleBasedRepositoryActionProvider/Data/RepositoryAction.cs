@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
@@ -67,6 +68,7 @@ public sealed class EvaluatedPropertyAttribute : Attribute
 /// Attribute the textual type of the repository action.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
+[MeansImplicitUse]
 public sealed class RepositoryActionAttribute : Attribute
 {
     public RepositoryActionAttribute(string type)

@@ -74,10 +74,7 @@ public class AzureDevOpsPackage : IPackage
     private static void RegisterServices(Container container)
     {
         container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionAzureDevOpsCreatePullRequestsV1>();
-        // container.Collection.Append<IActionDeserializer, ActionAzureDevOpsCreatePullRequestsV1Deserializer>(Lifestyle.Singleton);
-
-        // container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionAzureDevOpsGetPullRequestsV1>();
-        container.Collection.Append<IActionDeserializer, ActionAzureDevOpsGetPullRequestsV1Deserializer>(Lifestyle.Singleton);
+        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionAzureDevOpsGetPullRequestsV1>();
 
         container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsCreatePullRequestsV1Mapper>(Lifestyle.Singleton);
         container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsGetPullRequestsV1Mapper>(Lifestyle.Singleton);

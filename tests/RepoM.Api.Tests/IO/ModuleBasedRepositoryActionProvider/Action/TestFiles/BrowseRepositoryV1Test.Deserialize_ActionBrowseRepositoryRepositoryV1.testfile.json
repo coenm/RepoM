@@ -4,12 +4,12 @@
       {
         "type": "browse-repository@1",
         "name": "fo true",
-        "FirstOnly": true
+        "first-only": true
       },
       {
         "type": "browse-repository@1",
         "name": "fo false",
-        "FirstOnly": false
+        "first-only": false
       },
       {
         "type": "browse-repository@1",
