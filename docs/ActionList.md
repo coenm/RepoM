@@ -456,13 +456,11 @@ These actions are available though the use of plugins.
 
 ## clipboard-copy@1<!-- include: _plugins.clipboard.action. path: /docs/mdsource/_plugins.clipboard.action.include.md -->
 
-This action makes it possible to copy text to the clipboard.
+This action makes it possible to copy text to the clipboard.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionClipboardCopyV1.verified.md -->
 
-Custom properties:
+Action specific properties:
 
-- Name: The name of the item (required, string, evaulated)
-- Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
-- Text: The text to copy to the clipboard (required, string, evaluated)
+- `text`: The text to copy to the clipboard. (required, evaluated, string)<!-- endInclude -->
 
 Example:
 
