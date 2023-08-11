@@ -144,7 +144,7 @@ public static class ContainerExtensions
     }
 }
 
-public class DefaultActionDeserializer<T> : IActionDeserializer where T : RepositoryAction
+public sealed class DefaultActionDeserializer<T> : IActionDeserializer where T : RepositoryAction
 {
     public DefaultActionDeserializer()
     {
@@ -168,7 +168,7 @@ public class DefaultActionDeserializer<T> : IActionDeserializer where T : Reposi
     }
 }
 
-public class RepositoryActionKeyTypeRegistration<T> : IKeyTypeRegistration<RepositoryAction> where T : RepositoryAction
+file sealed class RepositoryActionKeyTypeRegistration<T> : IKeyTypeRegistration<RepositoryAction> where T : RepositoryAction
 {
     public RepositoryActionKeyTypeRegistration()
     {
@@ -181,7 +181,7 @@ public class RepositoryActionKeyTypeRegistration<T> : IKeyTypeRegistration<Repos
     public string Tag { get; }
 }
 
-file class RepositoryActionKeyTypeRegistration : IKeyTypeRegistration<RepositoryAction>
+file sealed class RepositoryActionKeyTypeRegistration : IKeyTypeRegistration<RepositoryAction>
 {
     public RepositoryActionKeyTypeRegistration(Type t)
     {
