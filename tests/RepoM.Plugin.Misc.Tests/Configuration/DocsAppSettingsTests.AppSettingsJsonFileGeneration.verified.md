@@ -15,8 +15,6 @@ This is the default configuration.
   },
   "ReposRootDirectories": [],
   "EnabledSearchProviders": [],
-  "SonarCloudPersonalAccessToken": null,
-  "AzureDevOps": null,
   "Plugins": []
 }
 ```

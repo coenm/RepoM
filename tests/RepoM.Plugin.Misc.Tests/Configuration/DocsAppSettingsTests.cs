@@ -1,9 +1,6 @@
 namespace RepoM.Plugin.Misc.Tests.Configuration;
 
-using System;
-using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -11,15 +8,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Common;
-using RepoM.Api.Plugins;
-using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
-using RepoM.Plugin.Misc.Tests.TestFramework.AssemblyAndTypeHelpers;
 using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
-using YamlDotNet.Serialization;
 
 [UsesVerify]
 public class DocsAppSettingsTests
@@ -40,9 +33,6 @@ public class DocsAppSettingsTests
         _logger = NullLogger.Instance;
         _fileBasedPackageConfiguration = new FileAppSettingsService(_appDataPathProvider, _fileSystem, _logger);
     }
-
-    // FileAppSettingsService
-
 
     [Fact]
     public async Task AppSettingsJsonFileGeneration()

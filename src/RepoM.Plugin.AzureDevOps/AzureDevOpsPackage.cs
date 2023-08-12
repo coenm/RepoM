@@ -2,7 +2,6 @@ namespace RepoM.Plugin.AzureDevOps;
 
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
@@ -40,35 +39,7 @@ public class AzureDevOpsPackage : IPackage
             config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
         }
 
-        // this is temporarly to support the old way of storing the configuration
-        if (string.IsNullOrWhiteSpace(config.BaseUrl) && string.IsNullOrWhiteSpace(config.PersonalAccessToken))
-        {
-            container.RegisterSingleton<IAzureDevopsConfiguration>(() =>
-                {
-                    IAppSettingsService appSettingsService = container.GetInstance<IAppSettingsService>();
-
-                    var c = new AzureDevopsConfigV1
-                        {
-                            PersonalAccessToken = appSettingsService.AzureDevOpsPersonalAccessToken,
-                            BaseUrl = appSettingsService.AzureDevOpsBaseUrl,
-                        };
-                    _ = packageConfiguration.PersistConfigurationAsync(c, CurrentConfigVersion.VERSION); // do not await
-
-                    return new AzureDevopsConfiguration(c.BaseUrl, c.PersonalAccessToken);
-                });
-        }
-        else
-        {
-            container.RegisterSingleton<IAzureDevopsConfiguration>(() =>
-                {
-                    IAppSettingsService appSettingsService = container.GetInstance<IAppSettingsService>();
-
-                    appSettingsService.AzureDevOpsBaseUrl = "This value has been copied to the new configuration file for this module.";
-                    appSettingsService.AzureDevOpsPersonalAccessToken = "This value has been copied to the new configuration file for this module.";
-
-                    return new AzureDevopsConfiguration(config.BaseUrl, config.PersonalAccessToken);
-                });
-        }
+        container.RegisterInstance<IAzureDevopsConfiguration>(new AzureDevopsConfiguration(config.BaseUrl, config.PersonalAccessToken));
     }
 
     private static void RegisterServices(Container container)

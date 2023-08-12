@@ -34,9 +34,6 @@ public class AzureDevOpsPackageTests
         A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(1 as int?));
         A.CallTo(() => _packageConfiguration.LoadConfigurationAsync<AzureDevopsConfigV1>()).ReturnsLazily(() => azureDevopsConfigV1);
         A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<AzureDevopsConfigV1>._, 1)).Returns(Task.CompletedTask);
-
-        A.CallTo(() => _appSettingsService.AzureDevOpsBaseUrl).Returns("https://dev.azure.com/MyOrg123ABC");
-        A.CallTo(() => _appSettingsService.AzureDevOpsPersonalAccessToken).Returns("MY_TEST_PAT");
     }
 
     [Fact]
@@ -75,32 +72,6 @@ public class AzureDevOpsPackageTests
         _container.Verify(VerificationOption.VerifyAndDiagnose);
     }
     
-    [Theory]
-    [InlineData(null)]
-    [InlineData(2)]
-    [InlineData(10)]
-    public async Task RegisterServices_ShouldCopyExistingAppSettingsConfig_WhenNoCurrentCorrectConfig(int? version)
-    {
-        // arrange
-        AzureDevopsConfigV1? persistedConfig = null;
-        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
-        RegisterExternals(_container);
-        var sut = new AzureDevOpsPackage();
-        await sut.RegisterServicesAsync(_container, _packageConfiguration);
-
-        Fake.ClearRecordedCalls(_packageConfiguration);
-        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<AzureDevopsConfigV1>._, 1))
-         .Invokes(call => persistedConfig = call.Arguments[0] as AzureDevopsConfigV1);
-
-        // act
-        // make sure everyting is resolved. This will trigger the copy of the config.
-        _container.Verify(VerificationOption.VerifyAndDiagnose);
-        
-        // assert
-        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<AzureDevopsConfigV1>._, 1)).MustHaveHappenedOnceExactly();
-        await Verifier.Verify(persistedConfig).IgnoreParametersForVerified(nameof(version));
-    }
-
     [Fact]
     public async Task RegisterServices_ShouldFail_WhenExternalDependenciesAreNotRegistered()
     {
