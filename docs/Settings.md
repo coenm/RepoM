@@ -1,6 +1,6 @@
 # Settings
 
-When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but at this moment, at least one property must be altered manually.
+When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but, at this moment, one property must be altered manually.
 
 To do this, make sure RepoM is not running.
 
