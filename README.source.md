@@ -58,7 +58,7 @@ The `RepositoryActions.yaml` file also contains a section to define tags per rep
 
 ## Global configuration
 
- [Global settings](docs/Settings.md)
+When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but, at this moment, one property must be altered manually. Read more over [here](docs/Settings.md).
 
 ## Plugins
 
