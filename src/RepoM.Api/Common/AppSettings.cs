@@ -57,11 +57,15 @@ public sealed class AppSettings
     [UiConfigured]
     public List<string> EnabledSearchProviders { get; set; } = new();
 
-    // no xml docs because it is obsolete, this way, it will not appear in the docs.
+    /// <summary>
+    /// SonarCloud PAT.
+    /// </summary>
     [Obsolete("This is done using plugin.")]
     public string? SonarCloudPersonalAccessToken { get; set; } = string.Empty;
 
-    // no xml docs because it is obsolete, this way, it will not appear in the docs.
+    /// <summary>
+    /// Azure DevOps config.
+    /// </summary>
     [Obsolete("This is done using plugin.")]
     public AzureDevOpsOptions? AzureDevOps { get; set; } = AzureDevOpsOptions.Default;
 

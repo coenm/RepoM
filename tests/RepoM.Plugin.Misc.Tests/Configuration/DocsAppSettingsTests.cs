@@ -12,18 +12,20 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Common;
 using RepoM.Api.Plugins;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
 using RepoM.Plugin.Misc.Tests.TestFramework.AssemblyAndTypeHelpers;
 using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
+using YamlDotNet.Serialization;
 
 [UsesVerify]
 public class DocsAppSettingsTests
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
-    private FileBasedPackageConfiguration _fileBasedPackageConfiguration;
+    private FileAppSettingsService _fileBasedPackageConfiguration;
     private MockFileSystem _fileSystem;
     private ILogger _logger;
 
@@ -36,26 +38,28 @@ public class DocsAppSettingsTests
                 { "C:\\tmp\\x.tmp", new MockFileData("x") }, // make sure path exists.
             });
         _logger = NullLogger.Instance;
-        _fileBasedPackageConfiguration = new FileBasedPackageConfiguration(_appDataPathProvider, _fileSystem, _logger, "dummy");
+        _fileBasedPackageConfiguration = new FileAppSettingsService(_appDataPathProvider, _fileSystem, _logger);
     }
 
+    // FileAppSettingsService
+
+
     [Fact]
-    public async Task VerifyChanges()
+    public async Task AppSettingsJsonFileGeneration()
     {
         // arrange
-        var results = new Dictionary<string, Type[]>();
+        var originalValue = _fileBasedPackageConfiguration.PruneOnFetch;
 
         // act
-        foreach (Assembly assembly in PluginStore.Assemblies)
-        {
-            results.Add(
-                assembly.GetName().Name ?? assembly.ToString(),
-                assembly.GetRepositoryActionsFromAssembly());
-        }
+        // trigger a save.
+        _fileBasedPackageConfiguration.PruneOnFetch = !originalValue; // saves
+        _fileBasedPackageConfiguration.PruneOnFetch = originalValue; // saves again with default value.
 
         // assert
-        var settings = new VerifySettings();
-        await Verifier.Verify(results, settings);
+        var persistedContent = _fileSystem.GetFile("C:\\tmp\\appsettings.json").TextContents;
+        var configWithSnippetDocumentationMarkdown = CreateConfigWithSnippetDocumentationMarkdown(persistedContent);
+        
+        await Verifier.Verify(configWithSnippetDocumentationMarkdown, extension: "md");
     }
 
     [Fact]
@@ -95,5 +99,18 @@ public class DocsAppSettingsTests
         await Task.Yield();
         Assert.True(true); // this test should only be run in Debug mode.
 #endif
+    }
+
+    private static string CreateConfigWithSnippetDocumentationMarkdown(string? snippet)
+    {
+        return new StringBuilder()
+           .AppendLine("## Configuration")
+           .AppendLine(string.Empty)
+           .AppendLine("This is the default configuration.")
+           .AppendLine(string.Empty)
+           .AppendLine("```json")
+           .AppendLine(snippet)
+           .AppendLine("```")
+           .ToString();
     }
 }

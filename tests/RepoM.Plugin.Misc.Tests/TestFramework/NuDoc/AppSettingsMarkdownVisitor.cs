@@ -50,8 +50,21 @@ internal class AppSettingsMarkdownVisitor : Visitor
         {
             if (propertyInfo.IsObsolete())
             {
-                // skip because it obsolete
+                // obsolete
+                var propertyName = propertyInfo.Name;
+
+                _writer = ClassWriter.Properties;
+
                 base.VisitMember(member);
+
+                _writer = ClassWriter.Properties;
+
+                var propertyAttributes = " (<span style=\"color: red;\">Obsolete, moved to plugin config</span>)";
+
+                var summary = _writerSummary.ToString();
+                _writer.WriteLine(string.IsNullOrWhiteSpace(summary)
+                    ? $"- `{propertyName}` (no description known){propertyAttributes}"
+                    : $"- `{propertyName}`: {summary}{propertyAttributes}");
             }
             else
             {

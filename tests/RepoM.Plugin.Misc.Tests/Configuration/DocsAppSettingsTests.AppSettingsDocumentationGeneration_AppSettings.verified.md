@@ -8,4 +8,6 @@
 - `MenuSize`: The menu size of RepoM. This is set when the window is resized. (optional, UI configured)
 - `ReposRootDirectories`: List of root directories where RepoM will search for git repositories. If null or empty, all fixed drives will be searched from the root. (optional, Manual configured)
 - `EnabledSearchProviders`: List of search providers. Search providers can be added by plugins. (optional, UI configured)
+- `SonarCloudPersonalAccessToken`: SonarCloud PAT. (<span style="color: red;">Obsolete, moved to plugin config</span>)
+- `AzureDevOps`: Azure DevOps config. (<span style="color: red;">Obsolete, moved to plugin config</span>)
 - `Plugins`: List of plugins. (optional, UI configured)
