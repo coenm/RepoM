@@ -1,43 +1,81 @@
 namespace RepoM.Api.Common;
 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 using RepoM.Api.Git.AutoFetch;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
-public class AppSettings
+/// <summary>
+/// RepoM application settings. Most of them are configurable in the UI but not all.
+/// </summary>
+public sealed class AppSettings
 {
-    public AppSettings()
-    {
-        MenuSize = Size.Default;
-        ReposRootDirectories= new List<string>();
-        EnabledSearchProviders = new List<string>();
-        SonarCloudPersonalAccessToken = string.Empty;
-        AzureDevOps = AzureDevOpsOptions.Default;
-        SortKey = string.Empty;
-        SelectedQueryParser = string.Empty;
-        SelectedFilter = string.Empty;
-        Plugins = new List<PluginOptions>();
-    }
-    public string SortKey { get; set; }
+    /// <summary>
+    /// The selected sorting strategy. Sorting strategies can be configured manually in `RepoM.Ordering.yaml`.
+    /// </summary>
+    [UiConfigured]
+    [PropertyDefaultStringValue("")]
+    public string SortKey { get; set; } = string.Empty;
 
-    public string SelectedQueryParser { get; set; }
+    /// <summary>
+    /// The selected query parser. Query parsers can be added by plugins.
+    /// </summary>
+    [UiConfigured]
+    [PropertyDefaultStringValue("")]
+    public string SelectedQueryParser { get; set; } = string.Empty;
 
-    public string SelectedFilter { get; set; }
+    /// <summary>
+    /// The selected filtering strategy. Filtering strategies can be configured manually in `RepoM.Filtering.yaml`.
+    /// </summary>
+    [UiConfigured]
+    [PropertyDefaultStringValue("")]
+    public string SelectedFilter { get; set; } = string.Empty;
 
-    public AutoFetchMode AutoFetchMode { get; set; }
+    /// <summary>
+    /// The git fetching strategy. This determines how often RepoM will fetch from git.
+    /// </summary>
+    [UiConfigured]
+    public AutoFetchMode AutoFetchMode { get; set; } = AutoFetchMode.Off;
 
-    public bool PruneOnFetch { get; set; }
+    /// <summary>
+    /// This option determines if RepoM should prune branches when fetching from git.
+    /// </summary>
+    [UiConfigured]
+    public bool PruneOnFetch { get; set; } = false;
 
-    public Size MenuSize { get; set; }
+    /// <summary>
+    /// The menu size of RepoM. This is set when the window is resized.
+    /// </summary>
+    [UiConfigured]
+    public Size MenuSize { get; set; } = Size.Default;
 
-    public List<string> ReposRootDirectories { get; set; }
+    /// <summary>
+    /// List of root directories where RepoM will search for git repositories. If null or empty, all fixed drives will be searched from the root.
+    /// </summary>
+    [ManualConfigured]
+    public List<string> ReposRootDirectories { get; set; } = new();
 
-    public List<string> EnabledSearchProviders { get; set; }
+    /// <summary>
+    /// List of search providers. Search providers can be added by plugins.
+    /// </summary>
+    [UiConfigured]
+    public List<string> EnabledSearchProviders { get; set; } = new();
 
-    public string? SonarCloudPersonalAccessToken { get; set; }
+    // no xml docs because it is obsolete, this way, it will not appear in the docs.
+    [Obsolete("This is done using plugin.")]
+    public string? SonarCloudPersonalAccessToken { get; set; } = string.Empty;
 
-    public AzureDevOpsOptions? AzureDevOps { get; set; }
+    // no xml docs because it is obsolete, this way, it will not appear in the docs.
+    [Obsolete("This is done using plugin.")]
+    public AzureDevOpsOptions? AzureDevOps { get; set; } = AzureDevOpsOptions.Default;
 
-    public List<PluginOptions> Plugins { get; set; } 
+    /// <summary>
+    /// List of plugins.
+    /// </summary>
+    [UiConfigured]
+    public List<PluginOptions> Plugins { get; set; } = new();
 
     public static AppSettings Default => new()
         {
@@ -51,6 +89,12 @@ public class AppSettings
             Plugins = new List<PluginOptions>(),
         };
 }
+
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+public sealed class UiConfiguredAttribute : Attribute { }
+
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+public sealed class ManualConfiguredAttribute : Attribute { }
 
 public class AzureDevOpsOptions
 {

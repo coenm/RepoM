@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 internal static class PropertyInfoExtensions
@@ -38,6 +39,12 @@ internal static class PropertyInfoExtensions
         return sb.ToString();
     }
 
+    public static bool IsObsolete(this PropertyInfo propertyInfo)
+    {
+        Attribute[] attributes = propertyInfo.GetCustomAttributes().ToArray();
+        return attributes.OfType<ObsoleteAttribute>().SingleOrDefault() != null;
+    }
+
     public static string PropertyAttributesToString(this PropertyInfo propertyInfo)
     {
         Attribute[] attributes = propertyInfo.GetCustomAttributes().ToArray();
@@ -55,6 +62,15 @@ internal static class PropertyInfoExtensions
         if (attributes.Any(attribute => attribute is EvaluatedPropertyAttribute))
         {
             props.Add("evaluated");
+        }
+
+        if (attributes.Any(attribute => attribute is UiConfiguredAttribute))
+        {
+            props.Add("UI configured");
+        }
+        else if (attributes.Any(attribute => attribute is ManualConfiguredAttribute))
+        {
+            props.Add("Manual configured");
         }
 
         PropertyTypeAttribute? propertyTypeAttribute = attributes.OfType<PropertyTypeAttribute>().SingleOrDefault();

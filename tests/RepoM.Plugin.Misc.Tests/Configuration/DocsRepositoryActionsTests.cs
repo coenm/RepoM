@@ -139,14 +139,14 @@ public class DocsRepositoryActionsTests
 
         var sb = new StringBuilder();
 
-        var head = visitor.classWriter.Head.ToString();
-        var properties = visitor.classWriter.Properties.ToString();
+        var head = visitor.ClassWriter.Head.ToString();
+        var properties = visitor.ClassWriter.Properties.ToString();
 
         if (!string.IsNullOrWhiteSpace(head) || !string.IsNullOrWhiteSpace(properties))
         {
             sb.AppendLine("Properties:");
             sb.AppendLine(string.Empty);
-            sb.Append(visitor.classWriter.Properties);
+            sb.Append(visitor.ClassWriter.Properties);
         }
 
 #if DEBUG

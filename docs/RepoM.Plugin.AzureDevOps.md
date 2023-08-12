@@ -2,9 +2,9 @@
 
 The AzureDevops module enables integration with one azure devops environment. The integration currently focusses on Pull Requests.
 
-To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.<!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM. <!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
 
-## Configuration<!-- include: DocsModuleSettingsTests.DocsModuleSettings_AzureDevOpsPackage#desc.verified.md -->
+## Configuration <!-- include: DocsModuleSettingsTests.DocsModuleSettings_AzureDevOpsPackage#desc.verified.md -->
 
 This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running.
 
@@ -24,11 +24,11 @@ Properties:
 
 - `PersonalAccessToken`: Personal access token (PAT) to access Azure Devops. The PAT should be granted access to `todo` rights.
 To create a PAT, goto `https://dev.azure.com/[my-organisation]/_usersSettings/tokens`.
-- `BaseUrl`: The base url of azure devops for your organisation (ie. `https://dev.azure.com/[my-organisation]/`).<!-- endInclude -->
+- `BaseUrl`: The base url of azure devops for your organisation (ie. `https://dev.azure.com/[my-organisation]/`). <!-- endInclude -->
 
-## azure-devops-create-prs@1<!-- include: _plugins.azuredevops.action. path: /docs/mdsource/_plugins.azuredevops.action.include.md -->
+## azure-devops-create-prs@1 <!-- include: _plugins.azuredevops.action. path: /docs/mdsource/_plugins.azuredevops.action.include.md -->
 
-Action menu item to create a pull request in Azure Devops.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAzureDevOpsCreatePullRequestsV1.verified.md -->
+Action menu item to create a pull request in Azure Devops. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAzureDevOpsCreatePullRequestsV1.verified.md -->
 
 Action specific properties:
 
@@ -42,7 +42,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 - `draft-pr`: Boolean specifying if th PR should be marked as draft. (required, boolean, default: `false`)
 - `include-work-items`: Boolean specifying if workitems should be included in the PR. The workitems will be found by using the commit messages. (required, boolean, default: `true`)
 - `open-in-browser`: Boolean specifying if the Pull request should be opened in the browser after creation. (required, boolean, default: `false`)
-- `auto-complete`: Auto complete options. Please take a look at the same for more information (required, repositoryactionazuredevopscreatepullrequestsautocompleteoptionsv1)<!-- endInclude -->
+- `auto-complete`: Auto complete options. Please take a look at the same for more information (required, repositoryactionazuredevopscreatepullrequestsautocompleteoptionsv1) <!-- endInclude -->
 
 Example:
 
@@ -93,13 +93,13 @@ repository-actions:
 
 ## azure-devops-get-prs@1
 
-This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAzureDevOpsGetPullRequestsV1.verified.md -->
+This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser. <!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAzureDevOpsGetPullRequestsV1.verified.md -->
 
 Action specific properties:
 
 - `project-id`: The azure devops project id. (required, evaluated, string)
 - `repository-id`: The repository Id. If not provided, the repository id is located using the remote url. (optional, evaluated, string)
-- `show-when-empty`: When no pull requests are available, this property is used to determine if no or a message item is showed. (optional, evaluated, string, default: `true`)<!-- endInclude -->
+- `show-when-empty`: When no pull requests are available, this property is used to determine if no or a message item is showed. (optional, evaluated, string, default: `true`) <!-- endInclude -->
 
 Example:
 

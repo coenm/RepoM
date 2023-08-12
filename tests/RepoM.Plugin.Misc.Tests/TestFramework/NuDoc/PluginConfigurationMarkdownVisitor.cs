@@ -58,7 +58,7 @@ internal class PluginConfigurationMarkdownVisitor : Visitor
         }
         else if (member.Info is PropertyInfo propertyInfo && IsBuiltinType(propertyInfo.DeclaringType, out shortName))
         {
-            var methodShortName = propertyInfo.Name;
+            var propertyName = propertyInfo.Name;
 
             ClassWriter classWriter = ClassWriters[shortName];
 
@@ -70,8 +70,8 @@ internal class PluginConfigurationMarkdownVisitor : Visitor
 
             var summary = _writerSummary.ToString();
             _writer.WriteLine(string.IsNullOrWhiteSpace(summary)
-                ? $"- `{methodShortName}` (no description known)"
-                : $"- `{methodShortName}`: {summary}");
+                ? $"- `{propertyName}` (no description known)"
+                : $"- `{propertyName}`: {summary}");
         }
 
         _writerSummary = new StringWriter();

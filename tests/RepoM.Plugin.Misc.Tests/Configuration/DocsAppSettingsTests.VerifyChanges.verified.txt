@@ -1,0 +1,15 @@
+﻿{
+  RepoM.Plugin.AzureDevOps: [
+    RepositoryActionAzureDevOpsCreatePullRequestsV1,
+    RepositoryActionAzureDevOpsGetPullRequestsV1
+  ],
+  RepoM.Plugin.Clipboard: [
+    RepositoryActionClipboardCopyV1
+  ],
+  RepoM.Plugin.Heidi: [
+    RepositoryActionHeidiDatabasesV1
+  ],
+  RepoM.Plugin.SonarCloud: [
+    RepositoryActionSonarCloudSetFavoriteV1
+  ]
+}
