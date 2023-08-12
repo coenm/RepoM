@@ -1,0 +1,1 @@
+﻿No config in LuceneQueryParserPackage

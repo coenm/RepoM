@@ -13,10 +13,9 @@ using RepoM.Plugin.Statistics.PersistentConfiguration;
 using RepoM.Plugin.Statistics.RepositoryActions;
 using RepoM.Plugin.Statistics.VariableProviders;
 using SimpleInjector;
-using SimpleInjector.Packaging;
 
 [UsedImplicitly]
-public class StatisticsPackage : IPackageWithConfiguration
+public class StatisticsPackage : IPackage
 {
     public string Name => "StatisticsPackage"; // do not change this name, it is part of the persistant filename
 
@@ -31,18 +30,14 @@ public class StatisticsPackage : IPackageWithConfiguration
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
-        var config = new StatisticsConfigV1
-            {
-                PersistenceBuffer = TimeSpan.FromMinutes(5),
-                RetentionDays = 30,
-            };
+        StatisticsConfigV1 config;
 
         if (version == CurrentConfigVersion.VERSION)
         {
             StatisticsConfigV1? result = await packageConfiguration.LoadConfigurationAsync<StatisticsConfigV1>().ConfigureAwait(false);
             if (result == null)
             {
-                await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+                config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
             }
             else
             {
@@ -51,7 +46,7 @@ public class StatisticsPackage : IPackageWithConfiguration
         }
         else
         {
-            await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
         }
 
         var retentionDays = config.RetentionDays ?? 30;
@@ -92,8 +87,15 @@ public class StatisticsPackage : IPackageWithConfiguration
         container.Register<IStatisticsService, StatisticsService>(Lifestyle.Singleton);
     }
 
-    void IPackage.RegisterServices(Container container)
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    private static async Task<StatisticsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
-        throw new NotImplementedException();
+        var config = new StatisticsConfigV1
+            {
+                PersistenceBuffer = TimeSpan.FromMinutes(5),
+                RetentionDays = 30,
+            };
+        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        return config;
     }
 }

@@ -1,0 +1,21 @@
+﻿{
+  AzureDevOpsPackage: {
+    $type: AzureDevopsConfigV1
+  },
+  ClipboardPackage: null,
+  EverythingPackage: null,
+  HeidiPackage: {
+    $type: HeidiConfigV1
+  },
+  LuceneQueryParserPackage: null,
+  SonarCloudPackage: {
+    $type: SonarCloudConfigV1,
+    BaseUrl: https://sonarcloud.io
+  },
+  StatisticsPackage: {
+    $type: StatisticsConfigV1,
+    PersistenceBuffer: 00:05:00,
+    RetentionDays: 30
+  },
+  WindowsExplorerGitInfoPackage: null
+}

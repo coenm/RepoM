@@ -31,7 +31,7 @@ public class FilesFilterSettingsService : IFilterSettingsService
 
     private string GetFileName()
     {
-        return _fileSystem.Path.Combine(_appDataPathProvider.GetAppDataPath(), "RepoM.Filtering.yaml");
+        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, "RepoM.Filtering.yaml");
     }
 
     private Dictionary<string, RepositoryFilterConfiguration> Load()

@@ -2,6 +2,7 @@ namespace RepoM.Plugin.EverythingFileSearch.Tests;
 
 using System;
 using FakeItEasy;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.Plugin.EverythingFileSearch;
 using SimpleInjector;
@@ -42,5 +43,14 @@ public class EverythingPackageTests
     private static void RegisterExternals(Container container)
     {
         container.RegisterSingleton(A.Dummy<IPathSkipper>);
+    }
+}
+
+file static class PackageExtensions
+{
+    // tmp for fixing tests.
+    public static void RegisterServices(this IPackage self, Container container)
+    {
+        self.RegisterServicesAsync(container, null!).GetAwaiter().GetResult();
     }
 }

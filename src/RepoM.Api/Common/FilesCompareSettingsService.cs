@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
@@ -36,10 +37,23 @@ public class FilesCompareSettingsService : ICompareSettingsService
 
     private string GetFileName()
     {
-        return _fileSystem.Path.Combine(_appDataPathProvider.GetAppDataPath(), "RepoM.Ordering.yaml");
+        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, "RepoM.Ordering.yaml");
     }
 
     private Dictionary<string, IRepositoriesComparerConfiguration> Load()
+    {
+        try
+        {
+            return LoadInner();
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning(e, "Could not read and parse {filename} file. The structure has changed, maybe it is an easy fix by just replacing all '@' signs with the fixed string 'type: ' and you will be good to go. {message}", GetFileName(), e.Message);
+            throw;
+        }
+    }
+
+    private Dictionary<string, IRepositoriesComparerConfiguration> LoadInner()
     {
         var file = GetFileName();
 
@@ -52,16 +66,25 @@ public class FilesCompareSettingsService : ICompareSettingsService
         {
             var yml = _fileSystem.File.ReadAllText(file);
 
-            DeserializerBuilder builder = new DeserializerBuilder()
-                .WithNamingConvention(HyphenatedNamingConvention.Instance);
+            IDeserializer deserializer = new DeserializerBuilder()
+                .WithNamingConvention(HyphenatedNamingConvention.Instance)
+                .WithTypeDiscriminatingNodeDeserializer(options =>
+                        {
+                            options.AddKeyValueTypeDiscriminator<IRepositoryScorerConfiguration>(
+                                "type",
+                                _registrations
+                                    .Where(reg => typeof(IRepositoryScorerConfiguration).GetTypeInfo().IsAssignableFrom(reg.ConfigurationType.GetTypeInfo()))
+                                    .ToDictionary(registration => registration.Tag, x => x.ConfigurationType));
 
-            foreach (IConfigurationRegistration instance in _registrations)
-            {
-                var tag = instance.Tag.TrimStart('!');
-                builder.WithTagMapping("!" + tag, instance.ConfigurationType);
-            }
-
-            IDeserializer deserializer = builder.Build();
+                            options.AddKeyValueTypeDiscriminator<IRepositoriesComparerConfiguration>(
+                                "type",
+                                _registrations
+                                    .Where(reg => typeof(IRepositoriesComparerConfiguration).GetTypeInfo().IsAssignableFrom(reg.ConfigurationType.GetTypeInfo()))
+                                    .ToDictionary(registration => registration.Tag, x => x.ConfigurationType));
+                        },
+                     maxDepth: -1,
+                     maxLength: -1)
+                .Build();
 
             return deserializer.Deserialize<Dictionary<string, IRepositoriesComparerConfiguration>>(yml);
         }

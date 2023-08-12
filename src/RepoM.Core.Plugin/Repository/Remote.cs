@@ -4,8 +4,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
+/// <summary>
+/// Entity of a Git remote.
+/// </summary>
 [DebuggerDisplay("{Key}/{Name}")]
-public class Remote
+public sealed class Remote
 {
     public Remote(string key, string url)
     {

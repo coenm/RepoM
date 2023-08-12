@@ -3,6 +3,7 @@ namespace RepoM.Plugin.Clipboard.Tests;
 using System;
 using FakeItEasy;
 using RepoM.Api.Common;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Expressions;
 using SimpleInjector;
 using Xunit;
@@ -43,5 +44,14 @@ public class ClipboardPackageTests
     {
         container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
         container.RegisterSingleton(A.Dummy<ITranslationService>);
+    }
+}
+
+file static class PackageExtensions
+{
+    // tmp for fixing tests.
+    public static void RegisterServices(this IPackage self, Container container)
+    {
+        self.RegisterServicesAsync(container, null!).GetAwaiter().GetResult();
     }
 }

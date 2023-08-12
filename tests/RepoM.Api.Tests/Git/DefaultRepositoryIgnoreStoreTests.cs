@@ -14,7 +14,7 @@ public class DefaultRepositoryIgnoreStoreTests
     public DefaultRepositoryIgnoreStoreTests()
     {
         IAppDataPathProvider appDataPathProvider = A.Fake<IAppDataPathProvider>();
-        A.CallTo(() => appDataPathProvider.GetAppDataPath()).Returns(""); //dummy value
+        A.CallTo(() => appDataPathProvider.AppDataPath).Returns(""); //dummy value
         _sut = new DefaultRepositoryIgnoreStore(appDataPathProvider, new MockFileSystem());
 
         _sut.IgnoreByPath(@"C:\data\repos\first");

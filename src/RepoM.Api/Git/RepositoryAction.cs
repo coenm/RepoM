@@ -14,7 +14,6 @@ public class RepositorySeparatorAction : RepositoryActionBase
     }
 }
 
-
 public class RepositoryAction : RepositoryActionBase
 {
     public RepositoryAction(string name, IRepository repository):

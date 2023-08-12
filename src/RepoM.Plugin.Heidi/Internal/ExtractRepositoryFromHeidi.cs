@@ -61,42 +61,65 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                 }
                 else
                 {
-                    char[] allowedChars = { '.', '-', '_'/*, ' '*/, };
-
-                    var k = 0;
-                    var stop = false;
-                    while (k < comment.Length && !stop )
+                    int k = FindEndCharIndex(comment);
+                    if (k > 0 && (k == comment.Length || comment[k] == ' '))
                     {
-                        if (comment[k] is >= 'a' and <= 'z')
-                        {
-                            k++;
-                            continue;
-                        }
-                        if (comment[k] is >= 'A' and <= 'Z')
-                        {
-                            k++;
-                            continue;
-                        }
-                        if (comment[k] is >= '0' and <= '9')
-                        {
-                            k++;
-                            continue;
-                        }
-                        if (allowedChars.Contains(comment[k]))
-                        {
-                            k++;
-                            continue;
-                        }
-
-                        stop = true;
+                        repos.Add(comment[..k].ToString());
                     }
 
-                    if (k > 0)
+                    comment = comment[k..];
+                }
+            }
+            else if (comment.StartsWith(HASH_TAG_ORDER, COMPARISON))
+            {
+                comment = comment[HASH_TAG_ORDER.Length..];
+
+                var k = 0;
+                var stop = false;
+                while (k < comment.Length && !stop)
+                {
+                    if (comment[k] is >= '0' and <= '9')
                     {
-                        if (k == comment.Length || comment[k] == ' ')
+                        k++;
+                        continue;
+                    }
+
+                    stop = true;
+                }
+
+                if (k > 0 && int.TryParse(comment[..k], out var orderInt))
+                {
+                    if (k == comment.Length || comment[k] == ' ')
+                    {
+                        orders.Add(orderInt);
+                    }
+                }
+
+                comment = comment[k..];
+            }
+            else if (comment.StartsWith(HASH_TAG_NAME, COMPARISON))
+            {
+                comment = comment[HASH_TAG_NAME.Length..];
+
+                if (comment[0].Equals('"'))
+                {
+                    comment = comment[1..];
+                    var endIndex = comment.IndexOf('"');
+                    if (endIndex > 0)
+                    {
+                        var name = comment[..endIndex].ToString();
+                        if (!string.IsNullOrWhiteSpace(name))
                         {
-                            repos.Add(comment[..k].ToString());
+                            names.Add(name.Trim());
                         }
+                    }
+                }
+                else
+                {
+                    int k = FindEndCharIndex(comment);
+                    if (k > 0 && (k == comment.Length || comment[k] == ' '))
+                    {
+                        names.Add(comment[..k].ToString());
                     }
 
                     comment = comment[k..];
@@ -104,140 +127,15 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
             }
             else
             {
-                if (comment.StartsWith(HASH_TAG_ORDER, COMPARISON))
+                comment = comment["#".Length..];
+
+                int k = FindEndCharIndex(comment);
+                if (k > 0 && (k == comment.Length || comment[k] == ' '))
                 {
-                    comment = comment[HASH_TAG_ORDER.Length..];
-
-                    var k = 0;
-                    var stop = false;
-                    while (k < comment.Length && !stop)
-                    {
-                        if (comment[k] is >= '0' and <= '9')
-                        {
-                            k++;
-                            continue;
-                        }
-
-                        stop = true;
-                    }
-
-                    if (k > 0 && int.TryParse(comment[..k], out var orderInt))
-                    {
-                        if (k == comment.Length || comment[k] == ' ')
-                        {
-                            orders.Add(orderInt);
-                        }
-                    }
-
-                    comment = comment[k..];
+                    tags.Add(comment[..k].ToString());
                 }
-                else
-                {
-                    if (comment.StartsWith(HASH_TAG_NAME, COMPARISON))
-                    {
-                        comment = comment[HASH_TAG_NAME.Length..];
 
-                        if (comment[0].Equals('"'))
-                        {
-                            comment = comment[1..];
-                            var endIndex = comment.IndexOf('"');
-                            if (endIndex > 0)
-                            {
-                                var name = comment[..endIndex].ToString();
-                                if (!string.IsNullOrWhiteSpace(name))
-                                {
-                                    names.Add(name.Trim());
-                                }
-                            }
-                        }
-                        else
-                        {
-                            char[] allowedChars = { '.', '-', '_'/*, ' '*/, };
-
-                            var k = 0;
-                            var stop = false;
-                            while (k < comment.Length && !stop)
-                            {
-                                if (comment[k] is >= 'a' and <= 'z')
-                                {
-                                    k++;
-                                    continue;
-                                }
-                                if (comment[k] is >= 'A' and <= 'Z')
-                                {
-                                    k++;
-                                    continue;
-                                }
-                                if (comment[k] is >= '0' and <= '9')
-                                {
-                                    k++;
-                                    continue;
-                                }
-                                if (allowedChars.Contains(comment[k]))
-                                {
-                                    k++;
-                                    continue;
-                                }
-                        
-                                stop = true;
-                            }
-
-                            if (k > 0)
-                            {
-                                if (k == comment.Length || comment[k] == ' ')
-                                {
-                                    names.Add(comment[..k].ToString());
-                                }
-                            }
-
-                            comment = comment[k..];
-                        }
-                    }
-                    else
-                    {
-                        comment = comment["#".Length..];
-
-                        char[] allowedChars = { '.', '-', '_', };
-
-                        var k = 0;
-                        var stop = false;
-                        while (k < comment.Length && !stop)
-                        {
-                            if (comment[k] is >= 'a' and <= 'z')
-                            {
-                                k++;
-                                continue;
-                            }
-                            if (comment[k] is >= 'A' and <= 'Z')
-                            {
-                                k++;
-                                continue;
-                            }
-                            if (comment[k] is >= '0' and <= '9')
-                            {
-                                k++;
-                                continue;
-                            }
-                            if (allowedChars.Contains(comment[k]))
-                            {
-                                k++;
-                                continue;
-                            }
-
-                            stop = true;
-                        }
-
-                        if (k > 0)
-                        {
-                            if (k == comment.Length || comment[k] == ' ')
-                            {
-                                tags.Add(comment[..k].ToString());
-                            }
-                        }
-
-                        comment = comment[k..];
-                    }
-                }
+                comment = comment[k..];
             }
 
             index = comment.IndexOf(" #");
@@ -256,5 +154,44 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                 Tags = tags.Distinct().ToArray(),
             };
         return true;
+    }
+
+    private static int FindEndCharIndex(ReadOnlySpan<char> comment)
+    {
+        char[] allowedChars = { '.', '-', '_', };
+
+        var k = 0;
+        var stop = false;
+        while (k < comment.Length && !stop)
+        {
+            if (IsValidChar(comment[k]))
+            {
+                k++;
+                continue;
+            }
+
+            if (allowedChars.Contains(comment[k]))
+            {
+                k++;
+                continue;
+            }
+
+            stop = true;
+        }
+
+        return k;
+    }
+
+    private static bool IsValidChar(char c)
+    {
+        switch (c)
+        {
+            case >= 'a' and <= 'z':
+            case >= 'A' and <= 'Z':
+            case >= '0' and <= '9':
+                return true;
+            default:
+                return false;
+        }
     }
 }

@@ -38,7 +38,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         };
         _repository = new Repository("")
         {
-            Branches = new string[1]
+            Branches = new[]
             {
                 "main",
             },

@@ -63,12 +63,14 @@ public class UsageVariableProviderTests
         // arrange
 
         // act
-        Action act = () => _sut.Provide("any", null);
+        Action act1 = () => _sut.Provide("any", null);
+        Action act2 = () => _sut.Provide(_repositoryContext, "any", null);
 
         // assert
-        act.Should().Throw<NotImplementedException>();
+        act1.Should().Throw<NotImplementedException>();
+        act2.Should().Throw<NotImplementedException>();
     }
-
+    
     [Theory]
     [InlineData("usage")] // obsolete
     [InlineData("statistics.count")]

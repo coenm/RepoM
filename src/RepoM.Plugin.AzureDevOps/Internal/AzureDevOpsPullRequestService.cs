@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -18,9 +18,8 @@ using Newtonsoft.Json;
 using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
 
-internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService, IDisposable
+internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestService, IDisposable
 {
-    private static readonly Regex _workItemRegex = DevOpsTaskMatchingRegex();
     private readonly HttpClient _httpClient;
     private readonly IAzureDevopsConfiguration _configuration;
     private readonly ILogger _logger;
@@ -81,8 +80,8 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
             return Task.CompletedTask;
         }
 
-        _updateTimer1 = new Timer(async _ => await UpdatePullRequests(_azureDevopsGitClient!), null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(4));
-        _updateTimer2 = new Timer(async _ => await UpdateProjects(_azureDevopsGitClient!), null, TimeSpan.FromSeconds(7), TimeSpan.FromMinutes(10));
+        _updateTimer1 = new Timer(async _ => await UpdatePullRequests(_azureDevopsGitClient), null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(4));
+        _updateTimer2 = new Timer(async _ => await UpdateProjectsAsync(_azureDevopsGitClient), null, TimeSpan.FromSeconds(7), TimeSpan.FromMinutes(10));
 
         return Task.CompletedTask;
     }
@@ -137,35 +136,16 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
             repoId = await FindRepositoryGuidByProjectId(repository, projectId);
         }
 
-        HashSet<ResourceRef> workItems = new();
+        ResourceRef[] workItems = Array.Empty<ResourceRef>();
 
         if (includeWorkItems)
         {
-            using var repo = new LibGit2Sharp.Repository(repository.Path);
+            IEnumerable<string> commitMessages = CommitMessageExtractor.GetCommitMessagesUntilBranch(repository, toBranch);
 
-            
-
-            var commitMessages = repo.Commits
-                .QueryBy(new LibGit2Sharp.CommitFilter()
-                {
-                    ExcludeReachableFrom = repo.Branches[toBranch].UpstreamBranchCanonicalName,
-                })
-                .Select(c => c.Message).ToList();
-
-            foreach (var commitMessage in commitMessages)
-            {
-                MatchCollection matches = _workItemRegex.Matches(commitMessage);
-                if (matches.Any(m => m.Success))
-                {
-                    foreach (Group group in matches.SelectMany(m => m.Groups.Values.Skip(1)))
-                    {
-                        _ = workItems.Add(new ResourceRef()
-                        {
-                            Id = group.Value,
-                        });
-                    }
-                }
-            }
+            workItems = WorkItemExtractor
+                      .GetDistinctWorkItemsFromCommitMessages(commitMessages)
+                      .Select(workItem => new ResourceRef { Id = workItem, })
+                      .ToArray();
         }
 
         GitPullRequest prBody = new()
@@ -175,6 +155,7 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
             SourceRefName = $"refs/heads/{repository.CurrentBranch}",
             TargetRefName = $"refs/heads/{toBranch}",
             Reviewers = reviewersIds
+                .Distinct()
                 .Select(reviewerId =>
                     new IdentityRefWithVote()
                     {
@@ -182,7 +163,7 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
                     })
                 .ToArray(),
             SupportsIterations = true,
-            WorkItemRefs = workItems.ToArray(),
+            WorkItemRefs = workItems,
         };
 
         var prBodyJson = JsonConvert.SerializeObject(prBody);
@@ -228,7 +209,7 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
         RegisterProjectId(projectId);
         if (_gitRepositoriesPerProject.IsEmpty)
         {
-            _ = UpdateProjects(_azureDevopsGitClient!);
+            _ = UpdateProjectsAsync(_azureDevopsGitClient);
         }
 
         return Task.Run(() => GetPullRequestsTask(repository, projectId, repoId)).GetAwaiter().GetResult();
@@ -252,23 +233,30 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
         if (!_gitRepositoriesPerProject.ContainsKey(projectId))
         {
             _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, gitRepositories) => gitRepositories);
-            _ = UpdateProjects(_azureDevopsGitClient!);
+            _ = UpdateProjectsAsync(_azureDevopsGitClient);
         }
 
         if (!_pullRequestsPerProject.ContainsKey(projectId))
         {
             _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, prs) => prs);
-            _ = UpdatePullRequests(_azureDevopsGitClient!);
+            _ = UpdatePullRequests(_azureDevopsGitClient);
         }
     }
 
-    private async Task UpdateProjects(GitHttpClient gitClient)
+    private async Task UpdateProjectsAsync(GitHttpClient? gitClient)
     {
         var projectIds = _gitRepositoriesPerProject.Keys.ToArray();
 
         if (projectIds.Length == 0)
         {
             _logger.LogWarning("No projects for grabbing repositories.");
+            return;
+        }
+
+        if (gitClient == null)
+        {
+            _logger.LogWarning("GitClient is null, Cannot Update projects.");
+            return;
         }
 
         foreach (var projectId in projectIds)
@@ -308,13 +296,20 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
         }
     }
 
-    private async Task UpdatePullRequests(GitHttpClient gitClient)
+    private async Task UpdatePullRequests(GitHttpClient? gitClient)
     {
         var projectIds = _pullRequestsPerProject.Keys.ToArray();
 
         if (projectIds.Length == 0)
         {
             _logger.LogWarning("No projects for grabbing PRs.");
+            return;
+        }
+
+        if (gitClient == null)
+        {
+            _logger.LogWarning("GitClient is null, Cannot Update pull requests.");
+            return;
         }
 
         foreach (var projectId in projectIds)
@@ -470,6 +465,7 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
         return CreatePullRequestUrl(repo.WebUrl, pr.PullRequestId);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string CreatePullRequestUrl(string webUrl, int prId)
     {
         return $"{webUrl}/pullrequest/{prId}";
@@ -488,7 +484,4 @@ internal sealed partial class AzureDevOpsPullRequestService : IAzureDevOpsPullRe
         var searchRepoUrl = url.Scheme + "://" + url.Host + url.LocalPath;
         return searchRepoUrl;
     }
-
-    [GeneratedRegex("\\#(\\d+)", RegexOptions.Compiled)]
-    private static partial Regex DevOpsTaskMatchingRegex();
 }

@@ -1,5 +1,9 @@
 # Clipboard
 
-When this module is enabled, you can create repository actions to copy specific (evaluated) text to the clipboard using the action provider type `clipboard-copy`.
+This module provides a repository actions to copy specific (evaluated) text to the clipboard using the action provider type `clipboard-copy`.
+
+include: _plugin_enable
+
+include: DocsModuleSettingsTests.DocsModuleSettings_ClipboardPackage#desc.verified.md
 
 include: _plugins.clipboard.action

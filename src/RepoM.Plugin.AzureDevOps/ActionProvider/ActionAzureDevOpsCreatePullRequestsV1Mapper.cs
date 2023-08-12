@@ -77,6 +77,7 @@ internal class ActionAzureDevOpsCreatePullRequestsV1Mapper : IActionToRepository
 			// check if branch exists!
 			if (!repository.Branches.Contains(action.ToBranch))
 			{
+                _logger.LogInformation("Branch '{branch}' does not exist", action.ToBranch);
 				return Array.Empty<Api.Git.RepositoryAction>();
 			}
 		}

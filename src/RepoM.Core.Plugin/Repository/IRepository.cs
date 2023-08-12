@@ -2,6 +2,9 @@ namespace RepoM.Core.Plugin.Repository;
 
 using System.Collections.Generic;
 
+/// <summary>
+/// Git Repository entity.
+/// </summary>
 public interface IRepository
 {
     string Name { get; }

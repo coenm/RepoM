@@ -7,5 +7,5 @@ public class ScoreComparerConfigurationV1Registration : IConfigurationRegistrati
 {
     public Type ConfigurationType { get; } = typeof(ScoreComparerConfigurationV1);
 
-    public string Tag => "score-comparer@1";
+    public string Tag => ScoreComparerConfigurationV1.TYPE_VALUE;
 }

@@ -1,15 +1,19 @@
 namespace RepoM.Plugin.EverythingFileSearch;
 
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryFinder;
 using SimpleInjector;
-using SimpleInjector.Packaging;
 
 [UsedImplicitly]
 public class EverythingPackage : IPackage
 {
-    public void RegisterServices(Container container)
+    public string Name => "EverythingPackage";
+
+    public Task RegisterServicesAsync(Container container, IPackageConfiguration packageConfiguration)
     {
         container.Collection.Append<ISingleGitRepositoryFinderFactory, EverythingGitRepositoryFinderFactory>(Lifestyle.Singleton);
+        return Task.CompletedTask;
     }
 }

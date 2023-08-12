@@ -47,7 +47,7 @@ public class IntegrationTest
         container.RegisterSingleton(A.Dummy<ILogger>);
         container.RegisterInstance<IFileSystem>(_fileSystem);
 
-       A.CallTo(() => _appDataPathProvider.GetAppDataPath()).Returns("C:\\\\dir");
+       A.CallTo(() => _appDataPathProvider.AppDataPath).Returns("C:\\\\dir");
 
         container.Verify();
 

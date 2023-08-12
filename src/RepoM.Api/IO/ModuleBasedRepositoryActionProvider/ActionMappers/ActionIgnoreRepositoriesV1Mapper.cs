@@ -26,7 +26,7 @@ public class ActionIgnoreRepositoriesV1Mapper : IActionToRepositoryActionMapper
 
     bool IActionToRepositoryActionMapper.CanMap(Data.RepositoryAction action)
     {
-        return action is RepositoryActionIgnoreRepositoriesV1;
+        return action is RepositoryActionIgnoreRepositoryV1;
     }
 
     bool IActionToRepositoryActionMapper.CanHandleMultipleRepositories()

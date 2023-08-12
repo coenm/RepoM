@@ -10,7 +10,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Plugin.AzureDevOps.ActionProvider;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using VerifyTests;
 using VerifyXunit;
@@ -28,7 +28,7 @@ public class AzureDevOpsGetPullRequestsV1Test
 
     public AzureDevOpsGetPullRequestsV1Test()
     {
-        _sutJson = CreateWithDeserializer(new ActionAzureDevOpsGetPullRequestsV1Deserializer());
+        _sutJson = CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionAzureDevOpsGetPullRequestsV1>());
         _sutYaml = new YamlDynamicRepositoryActionDeserializer(_sutJson);
 
         _testFileSettings = new EasyTestFileSettings();
@@ -79,6 +79,6 @@ public class AzureDevOpsGetPullRequestsV1Test
 
     private static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }));
+        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
     }
 }

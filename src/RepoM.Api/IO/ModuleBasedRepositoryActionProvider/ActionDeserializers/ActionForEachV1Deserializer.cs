@@ -12,7 +12,7 @@ public class ActionForEachV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)
     {
-        return "foreach@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return RepositoryActionForEachV1.TYPE.Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
     RepositoryAction? IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
@@ -22,7 +22,7 @@ public class ActionForEachV1Deserializer : IActionDeserializer
 
     private static RepositoryActionForEachV1? Deserialize(JToken token, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
     {
-        RepositoryActionForEachV1? result = token.ToObject<RepositoryActionForEachV1>();
+        RepositoryActionForEachV1? result = token.ToObject<RepositoryActionForEachV1>(jsonSerializer);
 
         if (result == null)
         {

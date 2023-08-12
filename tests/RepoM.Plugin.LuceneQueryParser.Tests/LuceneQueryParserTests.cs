@@ -2,6 +2,9 @@ namespace RepoM.Plugin.LuceneQueryParser.Tests;
 
 using System.Threading.Tasks;
 using Argon;
+using FluentAssertions;
+using Lucene.Net.QueryParsers.Classic;
+using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Plugin.LuceneQueryParser;
 using VerifyTests;
@@ -17,7 +20,7 @@ public class LuceneQueryParserTests
 
     public LuceneQueryParserTests()
     {
-        _sut = new LuceneQueryParser();
+        _sut = new LuceneQueryParser(NullLogger.Instance);
 
         _settings = new VerifySettings();
         _settings.AddExtraSettings(settings =>
@@ -27,6 +30,18 @@ public class LuceneQueryParserTests
 
             });
         _settings.DisableRequireUniquePrefix();
+    }
+
+    [Fact]
+    public void Name_ShouldReturnLucene()
+    {
+        // arrange
+
+        // act
+        var result = _sut.Name;
+
+        // assert
+        result.Should().Be("Lucene");
     }
 
     [Theory]
@@ -160,5 +175,19 @@ public class LuceneQueryParserTests
                     Model = result,
                 },
             _settings).UseTextForParameters(outputName);
+    }
+
+    [Theory]
+    [InlineData("a:")]
+    [InlineData(":")]
+    public void Parse_ShouldThrownParseException_WhenInputCannotBeParsed(string input)
+    {
+        // arrange
+
+        // act
+        var act = () => _ = _sut.Parse(input);
+
+        // assert
+        act.Should().ThrowExactly<ParseException>();
     }
 }

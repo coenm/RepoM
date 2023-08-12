@@ -10,6 +10,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Plugin.Clipboard.ActionProvider;
 using VerifyTests;
 using VerifyXunit;
@@ -27,7 +28,7 @@ public class ActionClipboardCopyV1DeserializerTest
 
     public ActionClipboardCopyV1DeserializerTest()
     {
-        _sutJson = CreateWithDeserializer(new ActionClipboardCopyV1Deserializer());
+        _sutJson = CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionClipboardCopyV1>());
         _sutYaml = new YamlDynamicRepositoryActionDeserializer(_sutJson);
 
         _testFileSettings = new EasyTestFileSettings();
@@ -78,6 +79,6 @@ public class ActionClipboardCopyV1DeserializerTest
 
     private static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }));
+        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
     }
 }

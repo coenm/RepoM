@@ -10,6 +10,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Plugin.SonarCloud;
 using VerifyTests;
 using VerifyXunit;
@@ -27,7 +28,7 @@ public class SonarCloudSetFavoriteV1Test
 
     public SonarCloudSetFavoriteV1Test()
     {
-        _sutJson = CreateWithDeserializer(new ActionSonarCloudSetFavoriteV1Deserializer());
+        _sutJson = CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionSonarCloudSetFavoriteV1>());
         _sutYaml = new YamlDynamicRepositoryActionDeserializer(_sutJson);
 
         _testFileSettings = new EasyTestFileSettings();
@@ -78,6 +79,6 @@ public class SonarCloudSetFavoriteV1Test
 
     private static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }));
+        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
     }
 }

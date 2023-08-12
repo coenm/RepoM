@@ -1,18 +1,17 @@
 namespace RepoM.Plugin.SonarCloud;
 
-using System;
 using System.Threading.Tasks;
 using ExpressionStringEvaluator.Methods;
 using JetBrains.Annotations;
 using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
 using SimpleInjector;
-using SimpleInjector.Packaging;
 
 [UsedImplicitly]
-public class SonarCloudPackage : IPackageWithConfiguration
+public class SonarCloudPackage : IPackage
 {
     public string Name => "SonarCloudPackage"; // do not change this name, it is part of the persistant filename
 
@@ -34,12 +33,11 @@ public class SonarCloudPackage : IPackageWithConfiguration
         }
         else
         {
-            config = new SonarCloudConfigV1();
-            await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
         }
 
         // this is temporarly to support the old way of storing the configuration
-        if (string.IsNullOrWhiteSpace(config.BaseUrl) && string.IsNullOrWhiteSpace(config.PersonalAccessToken))
+        if (string.IsNullOrWhiteSpace(config.PersonalAccessToken))
         {
             container.RegisterSingleton<ISonarCloudConfiguration>(() =>
                 {
@@ -48,9 +46,9 @@ public class SonarCloudPackage : IPackageWithConfiguration
                     var c = new SonarCloudConfigV1
                         {
                             PersonalAccessToken = appSettingsService.SonarCloudPersonalAccessToken,
-                            BaseUrl = "https://sonarcloud.io",
+                            BaseUrl = config.BaseUrl,
                         };
-                    _ = packageConfiguration.PersistConfigurationAsync(c, CurrentConfigVersion.VERSION); // fire and forget ;-)
+                   _ = packageConfiguration.PersistConfigurationAsync(c, CurrentConfigVersion.VERSION); // fire and forget ;-)
 
                     return new SonarCloudConfiguration(c.BaseUrl, c.PersonalAccessToken);
                 });
@@ -68,15 +66,22 @@ public class SonarCloudPackage : IPackageWithConfiguration
 
     private static void RegisterServices(Container container)
     {
-        container.Collection.Append<IActionDeserializer, ActionSonarCloudSetFavoriteV1Deserializer>(Lifestyle.Singleton);
+        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionSonarCloudSetFavoriteV1>();
         container.Collection.Append<IActionToRepositoryActionMapper, ActionSonarCloudV1Mapper>(Lifestyle.Singleton);
         container.Collection.Append<IMethod, SonarCloudIsFavoriteMethod>(Lifestyle.Singleton);
         container.Register<ISonarCloudFavoriteService, SonarCloudFavoriteService>(Lifestyle.Singleton);
         container.Collection.Append<IModule, SonarCloudModule>(Lifestyle.Singleton);
     }
 
-    void IPackage.RegisterServices(Container container)
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    private static async Task<SonarCloudConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
-        throw new NotImplementedException();
+        var config = new SonarCloudConfigV1()
+            {
+                BaseUrl = "https://sonarcloud.io",
+                PersonalAccessToken = null,
+            };
+        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        return config;
     }
 }

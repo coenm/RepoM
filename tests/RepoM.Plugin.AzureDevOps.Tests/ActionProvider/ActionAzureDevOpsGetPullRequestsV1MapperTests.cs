@@ -40,7 +40,7 @@ public class ActionAzureDevOpsGetPullRequestsV1MapperTests
         // default test behavior.
         _action.Active = "dummy-Active-property";
         _action.ProjectId = "dummy-project-id";
-        _action.RepoId = null;
+        _action.RepositoryId = null;
         A.CallTo(() => _evaluator.EvaluateBooleanExpression("dummy-Active-property", _repository)).Returns(true);
         A.CallTo(() => _evaluator.EvaluateStringExpression("dummy-project-id", A<IRepository[]>._)).Returns("real-project-id");
     }
@@ -153,7 +153,7 @@ public class ActionAzureDevOpsGetPullRequestsV1MapperTests
     public void Map_ShouldReturnEmptySet_WhenServiceReturnsNoPullRequests()
     {
         // arrange
-        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepoId))
+        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepositoryId))
          .Returns(new List<PullRequest>(0));
 
         // act
@@ -162,14 +162,14 @@ public class ActionAzureDevOpsGetPullRequestsV1MapperTests
         // assert
         result.Should().BeEmpty();
         A.CallTo(_service).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepoId)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepositoryId)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
     public void Map_ShouldReturnRepositoryActions_WhenServiceReturnsPullRequests()
     {
         // arrange
-        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepoId))
+        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepositoryId))
          .Returns(new List<PullRequest>
              {
                  new (Guid.Empty, "x", "y"),
@@ -182,7 +182,7 @@ public class ActionAzureDevOpsGetPullRequestsV1MapperTests
         // assert
         result.Should().HaveCount(2).And.AllBeOfType<Api.Git.RepositoryAction>();
         A.CallTo(_service).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepoId)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepositoryId)).MustHaveHappenedOnceExactly();
     }
 }
 

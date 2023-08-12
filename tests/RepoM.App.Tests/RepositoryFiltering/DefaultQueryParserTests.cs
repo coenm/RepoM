@@ -1,7 +1,6 @@
 namespace RepoM.App.Tests.RepositoryFiltering;
 
 using FluentAssertions;
-using Lucene.Net.Search;
 using RepoM.App.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;

@@ -44,8 +44,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
 
         return new SetQuery(setBooleanClause);
     }
-
-
+    
     protected override void AddClause(IList<BooleanClause> clauses, int conj, int mods, Query q)
     {
         bool required, prohibited;
@@ -105,7 +104,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
         if (conj is CONJ_NONE or CONJ_AND)
         {
             // and
-            var currentClause = (SetBooleanClause)clauses.First();
+            var currentClause = (SetBooleanClause)clauses[0];
 
             if (currentClause.Mode == SetBooleanClause.BoolMode.And)
             {
@@ -125,7 +124,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
         {
             // or
 
-            var currentClause = (SetBooleanClause)clauses.First();
+            var currentClause = (SetBooleanClause)clauses[0];
 
             if (currentClause.Mode == SetBooleanClause.BoolMode.Or)
             {

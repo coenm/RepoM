@@ -1,0 +1,2 @@
+Copied code from SimpleInjector repository in order to fix this issue: https://github.com/simpleinjector/SimpleInjector/issues/964
+Also changed IPackage interface for RepoM needs. So it will not be possible to use original package.

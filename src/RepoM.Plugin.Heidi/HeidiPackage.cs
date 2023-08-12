@@ -1,20 +1,19 @@
 namespace RepoM.Plugin.Heidi;
 
-using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.VariableProviders;
 using RepoM.Plugin.Heidi.Internal;
 using SimpleInjector;
 using RepoM.Plugin.Heidi.VariableProviders;
 using RepoM.Plugin.Heidi.ActionProvider;
-using SimpleInjector.Packaging;
 using RepoM.Plugin.Heidi.PersistentConfiguration;
 
 [UsedImplicitly]
-public class HeidiPackage : IPackageWithConfiguration
+public class HeidiPackage : IPackage
 {
     public string Name => "HeidiPackage"; // do not change this name, it is part of the persistant filename
 
@@ -24,7 +23,7 @@ public class HeidiPackage : IPackageWithConfiguration
         RegisterServices(container);
     }
 
-    private static async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
+    private async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
@@ -36,8 +35,7 @@ public class HeidiPackage : IPackageWithConfiguration
         }
         else
         {
-            config = new HeidiConfigV1();
-            await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
         }
 
         // this is temporarly to support the old way of storing the configuration
@@ -63,7 +61,7 @@ public class HeidiPackage : IPackageWithConfiguration
             container.RegisterInstance<IHeidiSettings>(new HeidiModuleConfiguration(config.ConfigPath, config.ConfigFilename, config.ExecutableFilename));
         }
     }
-    
+
     private static void RegisterServices(Container container)
     {
         RegisterPluginHooks(container);
@@ -73,7 +71,7 @@ public class HeidiPackage : IPackageWithConfiguration
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
-        container.Collection.Append<IActionDeserializer, ActionHeidiDatabasesV1Deserializer>(Lifestyle.Singleton);
+        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionHeidiDatabasesV1>();
         container.Collection.Append<IActionToRepositoryActionMapper, ActionHeidiDatabasesV1Mapper>(Lifestyle.Singleton);
 
         // ordering
@@ -97,8 +95,11 @@ public class HeidiPackage : IPackageWithConfiguration
         container.RegisterInstance<IHeidiPasswordDecoder>(HeidiPasswordDecoder.Instance);
     }
 
-    void IPackage.RegisterServices(Container container)
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    private static async Task<HeidiConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
-        throw new NotImplementedException();
+        var config = new HeidiConfigV1();
+        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        return config;
     }
 }

@@ -1,16 +1,20 @@
 # Clipboard
 
-When this module is enabled, you can create repository actions to copy specific (evaluated) text to the clipboard using the action provider type `clipboard-copy`.
+This module provides a repository actions to copy specific (evaluated) text to the clipboard using the action provider type `clipboard-copy`.
 
-## clipboard-copy@1 <!-- include: _plugins.clipboard.action. path: /docs/mdsource/_plugins.clipboard.action.include.md -->
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.<!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
 
-This action makes it possible to copy text to the clipboard.
+## Configuration<!-- include: DocsModuleSettingsTests.DocsModuleSettings_ClipboardPackage#desc.verified.md -->
 
-Custom properties:
+This module has no configuration.<!-- endInclude -->
 
-- Name: The name of the item (required, string, evaulated)
-- Enabled: If the action is clickable (optional, boolean/string, evaluated, default true)
-- Text: The text to copy to the clipboard (required, string, evaluated)
+## clipboard-copy@1<!-- include: _plugins.clipboard.action. path: /docs/mdsource/_plugins.clipboard.action.include.md -->
+
+This action makes it possible to copy text to the clipboard.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionClipboardCopyV1.verified.md -->
+
+Action specific properties:
+
+- `text`: The text to copy to the clipboard. (required, evaluated, string)<!-- endInclude -->
 
 Example:
 

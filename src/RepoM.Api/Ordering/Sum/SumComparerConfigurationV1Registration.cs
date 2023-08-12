@@ -7,5 +7,5 @@ public class SumComparerConfigurationV1Registration : IConfigurationRegistration
 {
     public Type ConfigurationType { get; } = typeof(SumComparerConfigurationV1);
 
-    public string Tag => "sum-comparer@1";
+    public string Tag => SumComparerConfigurationV1.TYPE_VALUE;
 }

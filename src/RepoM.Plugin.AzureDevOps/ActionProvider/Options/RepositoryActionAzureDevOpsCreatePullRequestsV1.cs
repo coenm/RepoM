@@ -1,16 +1,87 @@
 namespace RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
-public class RepositoryActionAzureDevOpsCreatePullRequestsV1 : RepositoryActionAzureDevOpsBase
+/// <summary>
+/// Action menu item to create a pull request in Azure Devops.
+/// </summary>
+[RepositoryAction(TYPE)]
+public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : RepositoryAction
 {
+    /// <summary>
+    /// RepositoryAction type.
+    /// </summary>
+    public const string TYPE = "azure-devops-create-prs@1";
+
+    /// <summary>
+    /// The azure devops project id.
+    /// </summary>
+    [EvaluatedProperty]
+    [Required]
+    [PropertyType(typeof(string))]
+    public string? ProjectId { get; set; }
+
+    // todo in v2, should be name (as others are)
+    /// <summary>
+    /// Menu item title. When not provided, a title will be generated.
+    /// This property will be used instead of the Name property.
+    /// </summary>
+    // [EvaluatedProperty]
+    [PropertyType(typeof(string))]
     public string? Title { get; set; }
+
+    /// <summary>
+    /// Pull Request title. When not provided, the title will be defined based on the branch name.
+    /// Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch`
+    /// </summary>
+    [PropertyType(typeof(string))]
     public string? PrTitle { get; set; }
+
+    /// <summary>
+    /// Name of the branch the pull request should be merged into. For instance `develop`, or `main`.
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(string))]
     public string ToBranch { get; set; }
+
+    /// <summary>
+    /// List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
+    /// </summary>
+    [PropertyType(typeof(List<string>))]
+    // [PropertyDefaultBoolValue(default)] //todo
     public List<string> ReviewerIds { get; set; }
+
+    /// <summary>
+    /// Boolean specifying if th PR should be marked as draft.
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(default)]
     public bool DraftPr { get; set; }
+
+    /// <summary>
+    /// Boolean specifying if workitems should be included in the PR. The workitems will be found by using the commit messages.
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(true)]
     public bool IncludeWorkItems { get; set; } = true;
+
+    /// <summary>
+    /// Boolean specifying if the Pull request should be opened in the browser after creation.
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(default)]
     public bool OpenInBrowser { get; set; }
+
+    /// <summary>
+    /// Auto complete options. Please take a look at the same for more information
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1))]
     public RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1 AutoComplete { get; set; }
 
     public RepositoryActionAzureDevOpsCreatePullRequestsV1()
@@ -21,11 +92,41 @@ public class RepositoryActionAzureDevOpsCreatePullRequestsV1 : RepositoryActionA
     }
 }
 
+/// <summary>
+/// Auto complete options.
+/// </summary>
 public class RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1
 {
+    /// <summary>
+    /// Boolean specifying if the Pull Request should have set the `auto-complete` flag.
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(default)]
     public bool Enabled { get; set; }
+
+    /// <summary>
+    /// The merge strategy. Possible values are `NoFastForward`, `Squash` and `Rebase`, and `RebaseMerge`.
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1))]
+    [PropertyDefaultTypedValueAttribute<RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1>(RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1.NoFastForward)]
     public RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1 MergeStrategy { get; set; } = RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1.NoFastForward;
+
+    /// <summary>
+    /// Boolean specifying if the source branche should be deleted afer completion.
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(true)]
     public bool DeleteSourceBranch { get; set; } = true;
+
+    /// <summary>
+    /// Boolean specifying if related workitems should be transitioned to the next state.
+    /// </summary>
+    [Required]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(true)]
     public bool TransitionWorkItems { get; set; } = true;
 }
 

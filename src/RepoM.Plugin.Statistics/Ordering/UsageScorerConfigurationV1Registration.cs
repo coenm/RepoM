@@ -9,5 +9,5 @@ public class UsageScorerConfigurationV1Registration : IConfigurationRegistration
 {
     public Type ConfigurationType { get; } = typeof(UsageScorerConfigurationV1);
 
-    public string Tag => "usage-scorer@1";
+    public string Tag => UsageScorerConfigurationV1.TYPE_VALUE;
 }

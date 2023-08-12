@@ -2,6 +2,10 @@ namespace RepoM.Core.Plugin.AssemblyInformation;
 
 using System;
 
+/// <summary>
+/// This attribute is required for Plugins.
+/// RepoM uses this attribute to extract plugin information without loading the assembly.
+/// </summary>
 [AttributeUsage(AttributeTargets.Assembly)]
 public sealed class PackageAttribute : Attribute
 {

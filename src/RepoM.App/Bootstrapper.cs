@@ -35,19 +35,20 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Core.Plugin.RepositoryOrdering;
-using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.IO;
 using System.Reflection;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using SimpleInjector;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using RepoM.App.Services.HotKey;
+using RepoM.Api;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.Services.Common;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 internal static class Bootstrapper
 {
@@ -133,10 +134,35 @@ internal static class Bootstrapper
         });
 
         Container.Register<ActionDeserializerComposition>(Lifestyle.Singleton);
-        Container.Collection.Register<IActionDeserializer>(
-            new[] { typeof(IActionDeserializer).Assembly, },
-            Lifestyle.Singleton);
 
+        // Register custom Repository Action deserializers
+        var actionDeserializerTypes = GetExportedTypesFrom(typeof(IActionDeserializer).Assembly)
+          .Where(t => typeof(IActionDeserializer).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
+          .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, })
+          .Where(t => t != typeof(DefaultActionDeserializer<>));
+        Container.Collection.Register<IActionDeserializer>(actionDeserializerTypes, Lifestyle.Singleton);
+
+        // Register all repository action types
+        GetExportedTypesFrom(typeof(IActionDeserializer).Assembly)
+            .Where(t => typeof(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
+            .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, })
+            .Where(t => t != typeof(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction))
+            .ForEach(t => Container.RegisterDefaultRepositoryActionDeserializerForType(t));
+
+        static IEnumerable<Type> GetExportedTypesFrom(Assembly assembly)
+        {
+            try
+            {
+                return assembly.DefinedTypes.Select(info => info.AsType());
+            }
+            catch (NotSupportedException)
+            {
+                // A type load exception would typically happen on an Anonymously Hosted DynamicMethods
+                // Assembly and it would be safe to skip this exception.
+                return Enumerable.Empty<Type>();
+            }
+        }
+        
         Container.Register<ActionMapperComposition>(Lifestyle.Singleton);
         Container.Collection.Register<IActionToRepositoryActionMapper>(
             new[] { typeof(IActionToRepositoryActionMapper).Assembly, },
@@ -173,53 +199,17 @@ internal static class Bootstrapper
         Container.RegisterSingleton<WindowSizeService>();
     }
 
-    public static async Task RegisterPlugins(IPluginFinder pluginFinder, IFileSystem fileSystem, ILoggerFactory loggerFactory)
+    public static async Task RegisterPlugins(
+        IPluginFinder pluginFinder,
+        IFileSystem fileSystem,
+        ILoggerFactory loggerFactory)
     {
         Container.Register<ModuleService>(Lifestyle.Singleton);
         Container.RegisterInstance(pluginFinder);
 
-        var baseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
-        IEnumerable<PluginInfo> pluginInformation =  pluginFinder.FindPlugins(baseDirectory).ToArray();
-
-        static PluginSettings Convert(PluginInfo pluginInfo, string baseDir, bool enabled)
-        {
-            return new PluginSettings(pluginInfo.Name, pluginInfo.AssemblyPath.Replace(baseDir, string.Empty), enabled);
-        }
-
-        var appSettingsService = new FileAppSettingsService(DefaultAppDataPathProvider.Instance, fileSystem, NullLogger.Instance);
-
-        if (appSettingsService.Plugins.Count == 0)
-        {
-            appSettingsService.Plugins = pluginInformation.Select(plugin => Convert(plugin, baseDirectory, true)).ToList();
-        }
-        else
-        {
-            IEnumerable<PluginSettings> newFoundPlugins = pluginInformation
-                .Where(pluginInfo => appSettingsService.Plugins.TrueForAll(plugin => plugin.Name != pluginInfo.Name))
-                .Select(plugin => Convert(plugin, baseDirectory, false));
-
-            var pluginsListCopy = appSettingsService.Plugins.ToList();
-            pluginsListCopy.AddRange(newFoundPlugins);
-            appSettingsService.Plugins = pluginsListCopy;
-        }
-
-        IEnumerable<string> enabledPlugins = appSettingsService.Plugins.Where(x => x.Enabled).Select(xxx => xxx.Name);
-        
-        Assembly[] assemblies = pluginInformation
-            .Where(plugin => enabledPlugins.Contains(plugin.Name))
-            .Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)))
-            .ToArray();
-
-        if (assemblies.Any())
-        {
-            await Container.RegisterPackagesAsync(
-                assemblies,
-                filename => new FileBasedPackageConfiguration(
-                    DefaultAppDataPathProvider.Instance,
-                    fileSystem,
-                    loggerFactory.CreateLogger<FileBasedPackageConfiguration>(),
-                    filename)).ConfigureAwait(false); 
-        }
+        var coreBootstrapper = new CoreBootstrapper(pluginFinder, fileSystem, DefaultAppDataPathProvider.Instance, loggerFactory);
+        var baseDirectory = fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
+        await coreBootstrapper.LoadAndRegisterPluginsAsync(Container, baseDirectory).ConfigureAwait(false);
     }
 
     public static void RegisterLogging(ILoggerFactory loggerFactory)

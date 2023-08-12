@@ -2,17 +2,28 @@ namespace RepoM.Plugin.Heidi.ActionProvider;
 
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
-public class RepositoryActionHeidiDatabasesV1 : RepositoryAction
+/// <summary>
+/// Action to list heidi databases and show action menus for them.
+/// </summary>
+[RepositoryAction(TYPE)]
+public sealed class RepositoryActionHeidiDatabasesV1 : RepositoryAction
 {
     /// <summary>
-    /// Repository key (optional).
-    /// If not provided, the Remote.Origin.Name is used as selector.
+    /// RepositoryAction type.
     /// </summary>
-    public string? Key { get; set; }
-
+    public const string TYPE = "heidi-databases@1";
 
     /// <summary>
-    /// Heidi Sql executable path. (Optional)
+    /// Repository key.
+    /// If not provided, the repository `Remote.Origin.Name` is used as selector.
     /// </summary>
+    [PropertyType(typeof(string))]
+    public string? Key { get; set; }
+
+    /// <summary>
+    /// The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used.
+    /// </summary>
+    [EvaluatedProperty]
+    [PropertyType(typeof(string))]
     public string? Executable { get; set; }
 }

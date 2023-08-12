@@ -1,21 +1,21 @@
 namespace RepoM.Plugin.AzureDevOps;
 
-using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Plugin.AzureDevOps.ActionProvider;
+using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
 using RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 using SimpleInjector;
-using SimpleInjector.Packaging;
 
 [UsedImplicitly]
-public class AzureDevOpsPackage : IPackageWithConfiguration
+public class AzureDevOpsPackage : IPackage
 {
     public string Name => "AzureDevOpsPackage"; // do not change this name, it is part of the persistant filename
 
@@ -25,7 +25,7 @@ public class AzureDevOpsPackage : IPackageWithConfiguration
         RegisterServices(container);
     }
 
-    private static async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
+    private async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
@@ -37,8 +37,7 @@ public class AzureDevOpsPackage : IPackageWithConfiguration
         }
         else
         {
-            config = new AzureDevopsConfigV1();
-            await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
         }
 
         // this is temporarly to support the old way of storing the configuration
@@ -74,8 +73,9 @@ public class AzureDevOpsPackage : IPackageWithConfiguration
 
     private static void RegisterServices(Container container)
     {
-        container.Collection.Append<IActionDeserializer, ActionAzureDevOpsCreatePullRequestsV1Deserializer>(Lifestyle.Singleton);
-        container.Collection.Append<IActionDeserializer, ActionAzureDevOpsGetPullRequestsV1Deserializer>(Lifestyle.Singleton);
+        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionAzureDevOpsCreatePullRequestsV1>();
+        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionAzureDevOpsGetPullRequestsV1>();
+
         container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsCreatePullRequestsV1Mapper>(Lifestyle.Singleton);
         container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsGetPullRequestsV1Mapper>(Lifestyle.Singleton);
 
@@ -85,8 +85,11 @@ public class AzureDevOpsPackage : IPackageWithConfiguration
         container.Collection.Append<IQueryMatcher>(() => new HasPullRequestsMatcher(container.GetInstance<IAzureDevOpsPullRequestService>(), true), Lifestyle.Singleton);
     }
 
-    void IPackage.RegisterServices(Container container)
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    private static async Task<AzureDevopsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
-        throw new NotImplementedException();
+        var config = new AzureDevopsConfigV1();
+        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        return config;
     }
 }

@@ -325,7 +325,7 @@ public partial class MainWindow
 
     private void CustomizeContextMenu_Click(object sender, RoutedEventArgs e)
     {
-        var directoryName = _appDataPathProvider.GetAppDataPath();
+        var directoryName = _appDataPathProvider.AppDataPath;
 
         if (_fileSystem.Directory.Exists(directoryName))
         {

@@ -86,7 +86,7 @@ public class FileAppSettingsService : IAppSettingsService
 
     private string GetFileName()
     {
-        return Path.Combine(_appDataPathProvider.GetAppDataPath(), "appsettings.json");
+        return Path.Combine(_appDataPathProvider.AppDataPath, "appsettings.json");
     }
 
     private AppSettings Settings => _settings ??= Load();

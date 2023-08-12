@@ -124,7 +124,7 @@ public class ActionHeidiDatabasesV1MapperTests
         // arrange
 
         // act
-        var result = _sut.CanMap(new RepositoryAction());
+        var result = _sut.CanMap(new DummyRepositoryAction());
 
         // assert
         result.Should().BeFalse();
@@ -335,4 +335,8 @@ public class ActionHeidiDatabasesV1MapperTests
         // assert
         await Verifier.Verify(result, _verifySettings);
     }
+}
+
+file class DummyRepositoryAction : RepositoryAction
+{
 }
