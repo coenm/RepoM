@@ -1,20 +1,17 @@
 namespace RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
 
 using System;
-using System.Dynamic;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
 using FluentAssertions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
-using XunitEnumMemberData;
 
 [UsesEasyTestFile]
 [UsesVerify]
@@ -42,38 +39,18 @@ public class DynamicRepositoryActionDeserializerTest
 
     private RepositoryActionConfiguration SutDeserialize(string rawContent, SerializationType type)
     {
-        if (type == SerializationType.Json)
-        {
-            var expConverter = new ExpandoObjectConverter();
-            dynamic deserializedObject = JsonConvert.DeserializeObject<ExpandoObject>(rawContent, expConverter)!;
-            
-            var serializer = new YamlDotNet.Serialization.Serializer();
-            string yaml = serializer.Serialize(deserializedObject);
-
-            _outputHelper.WriteLine(string.Empty);
-            _outputHelper.WriteLine("----------------------------------------");
-            _outputHelper.WriteLine(rawContent);
-            _outputHelper.WriteLine("----------------------------------------");
-            _outputHelper.WriteLine(string.Empty);
-            _outputHelper.WriteLine("----------------------------------------");
-            _outputHelper.WriteLine(yaml);
-            _outputHelper.WriteLine("----------------------------------------");
-            _outputHelper.WriteLine(string.Empty);
-        }
-
         return type switch
             {
-                SerializationType.Json => _sutJson.Deserialize(rawContent),
                 SerializationType.Yaml => _sutYaml.Deserialize(rawContent),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
             };
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnData_WhenContentIsEmptyVersion1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnData_WhenContentIsEmptyVersion1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("Version1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -83,12 +60,12 @@ public class DynamicRepositoryActionDeserializerTest
         // assert
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
-
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_RepositorySpecificEnvFiles_1(SerializationType type)
+    
+    [Fact]
+    public async Task Deserialize_RepositorySpecificEnvFiles_1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositorySpecificEnvFilesExplanation1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -99,11 +76,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_RepositoryTagsFiles_1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_RepositoryTagsFiles_1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositoryTagsExplanation1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -114,11 +91,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnEmptyObject_WhenContentIsEmpty(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnEmptyObject_WhenContentIsEmpty()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("Empty");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -129,11 +106,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnEmptyObject_WhenVersionIsUnknown(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnEmptyObject_WhenVersionIsUnknown()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("Version100");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -144,11 +121,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithVariables_WhenContentIsVariablesOnly(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithVariables_WhenContentIsVariablesOnly()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("VariablesOnly1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -159,11 +136,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithRepositoryTags_WhenContentIsRepositoryTags1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRepositoryTags_WhenContentIsRepositoryTags1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositoryTags1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -174,11 +151,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithLatestTags_WhenContentHasDoubleTags(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithLatestTags_WhenContentHasDoubleTags()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositoryTagsDouble");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -189,11 +166,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithRepositoryTags_WhenContentIsRepositoryTags2(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRepositoryTags_WhenContentIsRepositoryTags2()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositoryTags2");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -206,11 +183,11 @@ public class DynamicRepositoryActionDeserializerTest
                       .IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithRepositoryTags_WhenContentIsRepositoryTags3(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRepositoryTags_WhenContentIsRepositoryTags3()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositoryTags3");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -221,11 +198,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositoryActions1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -236,11 +213,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions2(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions2()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositoryActions2");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -253,11 +230,11 @@ public class DynamicRepositoryActionDeserializerTest
                       .UseMethodName(nameof(Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions1));
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions3(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions3()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositoryActions3");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -268,11 +245,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("Redirect1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -283,11 +260,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect2(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect2()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("Redirect2");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -300,11 +277,11 @@ public class DynamicRepositoryActionDeserializerTest
                       .UseMethodName(nameof(Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect1));
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect3(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect3()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("Redirect3");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -315,11 +292,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObject_WhenContentIsRepositorySpecificEnvFile1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObject_WhenContentIsRepositorySpecificEnvFile1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositorySpecificEnvFile1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -330,11 +307,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ShouldReturnObject_WhenContentIsRepositorySpecificConfigFile1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ShouldReturnObject_WhenContentIsRepositorySpecificConfigFile1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("RepositorySpecificConfigFile1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -345,11 +322,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_Sample1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_Sample1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("Sample1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -360,11 +337,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_Sample2(SerializationType type)
+    [Fact]
+    public async Task Deserialize_Sample2()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("Sample2");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -375,11 +352,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_Sample3(SerializationType type)
+    [Fact]
+    public async Task Deserialize_Sample3()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("Sample3");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -390,11 +367,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_VariableObject1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_VariableObject1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("VariableObject1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -405,11 +382,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_VariableObject2(SerializationType type)
+    [Fact]
+    public async Task Deserialize_VariableObject2()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("VariableObject2");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -420,11 +397,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ForEach1(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ForEach1()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("ForEach1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -435,11 +412,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ForEach2(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ForEach2()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("ForEach2");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
@@ -450,11 +427,11 @@ public class DynamicRepositoryActionDeserializerTest
         await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize_ForEach3(SerializationType type)
+    [Fact]
+    public async Task Deserialize_ForEach3()
     {
         // arrange
+        SerializationType type = SerializationType.Yaml;
         _testFileSettings.UseFileName("ForEach3");
         var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
 
