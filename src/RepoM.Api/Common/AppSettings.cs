@@ -2,10 +2,7 @@ namespace RepoM.Api.Common;
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
 using RepoM.Api.Git.AutoFetch;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
 /// RepoM application settings. Most of them are configurable in the UI but not all.
@@ -16,21 +13,18 @@ public sealed class AppSettings
     /// The selected sorting strategy. Sorting strategies can be configured manually in `RepoM.Ordering.yaml`.
     /// </summary>
     [UiConfigured]
-    [PropertyDefaultStringValue("")]
     public string SortKey { get; set; } = string.Empty;
 
     /// <summary>
     /// The selected query parser. Query parsers can be added by plugins.
     /// </summary>
     [UiConfigured]
-    [PropertyDefaultStringValue("")]
     public string SelectedQueryParser { get; set; } = string.Empty;
 
     /// <summary>
     /// The selected filtering strategy. Filtering strategies can be configured manually in `RepoM.Filtering.yaml`.
     /// </summary>
     [UiConfigured]
-    [PropertyDefaultStringValue("")]
     public string SelectedFilter { get; set; } = string.Empty;
 
     /// <summary>
