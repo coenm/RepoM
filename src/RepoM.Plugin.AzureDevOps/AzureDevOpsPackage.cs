@@ -28,16 +28,13 @@ public class AzureDevOpsPackage : IPackage
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
-        AzureDevopsConfigV1 config;
+        AzureDevopsConfigV1? config = null;
         if (version == CurrentConfigVersion.VERSION)
         {
-            AzureDevopsConfigV1? result = await packageConfiguration.LoadConfigurationAsync<AzureDevopsConfigV1>().ConfigureAwait(false);
-            config = result ?? new AzureDevopsConfigV1();
+            config = await packageConfiguration.LoadConfigurationAsync<AzureDevopsConfigV1>().ConfigureAwait(false);
         }
-        else
-        {
-            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
-        }
+
+        config ??= await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
 
         container.RegisterInstance<IAzureDevopsConfiguration>(new AzureDevopsConfiguration(config.BaseUrl, config.PersonalAccessToken));
     }

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 
-
 internal static class EnvironmentVariableManager
 {
     private static readonly ConcurrentDictionary<string, AutoResetEvent> _envVarLocks = new();

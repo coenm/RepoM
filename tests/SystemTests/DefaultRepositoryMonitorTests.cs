@@ -74,9 +74,12 @@ public class DefaultRepositoryMonitorTests
                 new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
-                new CustomEnvironmentVariableVariableProvider(),
-                new RepoMVariableProvider(),
-                new RepositoryVariableProvider(),
+                new VariableProviderAdapter(new []
+                    {
+                        (RepoM.Core.Plugin.VariableProviders.IVariableProvider)new CustomEnvironmentVariableVariableProvider(),
+                        (RepoM.Core.Plugin.VariableProviders.IVariableProvider)new RepoMVariableProvider(),
+                        (RepoM.Core.Plugin.VariableProviders.IVariableProvider)new RepositoryVariableProvider(),
+                    }),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
             };

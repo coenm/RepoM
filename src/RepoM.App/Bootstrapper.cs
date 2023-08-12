@@ -108,15 +108,11 @@ internal static class Bootstrapper
                 typeof(IRepositoryExpressionEvaluator).Assembly,
             };
 
-        Container.Collection.Append<IVariableProvider, DateTimeNowVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, DateTimeTimeVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, DateTimeDateVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, EmptyVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, CustomEnvironmentVariableVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, RepoMVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, RepositoryVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, SlashVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, BackslashVariableProvider>(Lifestyle.Singleton);
+        RegisterExpressionStringVariableProviders();
+
+        Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, CustomEnvironmentVariableVariableProvider>(Lifestyle.Singleton);
+        Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, RepoMVariableProvider>(Lifestyle.Singleton);
+        Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, RepositoryVariableProvider>(Lifestyle.Singleton);
         Container.Collection.Append<IVariableProvider, VariableProviderAdapter>(Lifestyle.Singleton);
 
         Container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);
@@ -197,6 +193,16 @@ internal static class Bootstrapper
 
         Container.RegisterSingleton<HotKeyService>();
         Container.RegisterSingleton<WindowSizeService>();
+    }
+
+    private static void RegisterExpressionStringVariableProviders()
+    {
+        Container.Collection.Append<IVariableProvider, DateTimeNowVariableProvider>(Lifestyle.Singleton);
+        Container.Collection.Append<IVariableProvider, DateTimeTimeVariableProvider>(Lifestyle.Singleton);
+        Container.Collection.Append<IVariableProvider, DateTimeDateVariableProvider>(Lifestyle.Singleton);
+        Container.Collection.Append<IVariableProvider, EmptyVariableProvider>(Lifestyle.Singleton);
+        Container.Collection.Append<IVariableProvider, SlashVariableProvider>(Lifestyle.Singleton);
+        Container.Collection.Append<IVariableProvider, BackslashVariableProvider>(Lifestyle.Singleton);
     }
 
     public static async Task RegisterPlugins(

@@ -85,6 +85,24 @@ public class AzureDevOpsPackageTests
         Assert.Throws<InvalidOperationException>(() => _container.Verify(VerificationOption.VerifyAndDiagnose));
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData(2)]
+    [InlineData(10)]
+    public async Task RegisterServices_ShouldPersistConfigWhenNotCorrectVersion(int? version)
+    {
+        // arrange
+        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
+        RegisterExternals(_container);
+        var sut = new AzureDevOpsPackage();
+      
+        // act
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
+
+        // assert
+        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<AzureDevopsConfigV1>._, 1)).MustHaveHappenedOnceExactly();
+    }
+
     private void RegisterExternals(Container container)
     {
         container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);

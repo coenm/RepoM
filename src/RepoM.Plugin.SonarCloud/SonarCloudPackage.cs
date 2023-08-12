@@ -24,18 +24,15 @@ public class SonarCloudPackage : IPackage
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
-        SonarCloudConfigV1 config;
+        SonarCloudConfigV1? config = null;
         if (version == CurrentConfigVersion.VERSION)
         {
-            SonarCloudConfigV1? result = await packageConfiguration.LoadConfigurationAsync<SonarCloudConfigV1>().ConfigureAwait(false);
-            config = result ?? new SonarCloudConfigV1();
-        }
-        else
-        {
-            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
+            config = await packageConfiguration.LoadConfigurationAsync<SonarCloudConfigV1>().ConfigureAwait(false);
         }
 
-        container.RegisterSingleton<ISonarCloudConfiguration>(() => new SonarCloudConfiguration(config.BaseUrl, config.PersonalAccessToken));
+        config ??= await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
+
+        container.RegisterInstance<ISonarCloudConfiguration>(new SonarCloudConfiguration(config.BaseUrl, config.PersonalAccessToken));
     }
 
     private static void RegisterServices(Container container)

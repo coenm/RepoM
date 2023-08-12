@@ -1,4 +1,0 @@
-﻿{
-  PersonalAccessToken: MY_TEST_PAT,
-  BaseUrl: https://dev.azure.com/MyOrg123ABC
-}

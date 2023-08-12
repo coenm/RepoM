@@ -33,7 +33,7 @@ public class SonarCloudPackageTest
         A.CallTo(() => _packageConfiguration.LoadConfigurationAsync<SonarCloudConfigV1>()).ReturnsLazily(() => sonarCloudConfigV1);
         A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<SonarCloudConfigV1>._, 1)).Returns(Task.CompletedTask);
     }
-
+   
     [Fact]
     public async Task RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
     {
