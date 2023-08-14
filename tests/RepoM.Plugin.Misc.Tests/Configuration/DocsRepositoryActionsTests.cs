@@ -2,18 +2,12 @@ namespace RepoM.Plugin.Misc.Tests.Configuration;
 
 using System;
 using System.Collections.Generic;
-using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using FakeItEasy;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
-using RepoM.Api.Plugins;
-using RepoM.Core.Plugin.Common;
 using RepoM.Plugin.Misc.Tests.TestFramework.AssemblyAndTypeHelpers;
 using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
@@ -23,23 +17,6 @@ using Xunit;
 [UsesVerify]
 public class DocsRepositoryActionsTests
 {
-    private readonly IAppDataPathProvider _appDataPathProvider;
-    private FileBasedPackageConfiguration _fileBasedPackageConfiguration;
-    private MockFileSystem _fileSystem;
-    private ILogger _logger;
-
-    public DocsRepositoryActionsTests()
-    {
-        _appDataPathProvider = A.Fake<IAppDataPathProvider>();
-        A.CallTo(() => _appDataPathProvider.AppDataPath).Returns("C:\\tmp\\");
-        _fileSystem = new MockFileSystem(new J2N.Collections.Generic.Dictionary<string, MockFileData>()
-            {
-                { "C:\\tmp\\x.tmp", new MockFileData("x") }, // make sure path exists.
-            });
-        _logger = NullLogger.Instance;
-        _fileBasedPackageConfiguration = new FileBasedPackageConfiguration(_appDataPathProvider, _fileSystem, _logger, "dummy");
-    }
-
     public static IEnumerable<object[]> AssemblyTestData => PluginStore.Assemblies.Select(assembly => new object[] { assembly, }).ToArray();
 
     public static IEnumerable<object[]> RepositoryActionsTestData
@@ -96,24 +73,6 @@ public class DocsRepositoryActionsTests
         // assert
         var settings = new VerifySettings();
         await Verifier.Verify(results, settings);
-    }
-
-    public class RepositoryTestData
-    {
-        public RepositoryTestData(Assembly assembly, Type type)
-        {
-            Assembly = assembly;
-            Type = type;
-        }
-
-        public Assembly Assembly { get; }
-
-        public Type Type { get; }
-
-        public override string ToString()
-        {
-            return Assembly.GetName().Name + "-" + Type.Name;
-        }
     }
 
     [Fact]
@@ -212,5 +171,23 @@ public class DocsRepositoryActionsTests
         await Task.Yield();
         Assert.True(true); // this test should only be run in Debug mode.
 #endif
+    }
+}
+
+public class RepositoryTestData
+{
+    public RepositoryTestData(Assembly assembly, Type type)
+    {
+        Assembly = assembly;
+        Type = type;
+    }
+
+    public Assembly Assembly { get; }
+
+    public Type Type { get; }
+
+    public override string ToString()
+    {
+        return Assembly.GetName().Name + "-" + Type.Name;
     }
 }

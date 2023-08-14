@@ -1,10 +1,10 @@
 namespace RepoM.Plugin.Misc.Tests.Configuration;
 
+using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 using System.Threading.Tasks;
 using FakeItEasy;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Common;
@@ -14,24 +14,34 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
-public class DocsAppSettingsTests
+internal static class MockFileSystemFactory
 {
-    private readonly IAppDataPathProvider _appDataPathProvider;
-    private FileAppSettingsService _fileBasedPackageConfiguration;
-    private MockFileSystem _fileSystem;
-    private ILogger _logger;
-
-    public DocsAppSettingsTests()
+    public static MockFileSystem CreateDefaultFileSystem()
     {
-        _appDataPathProvider = A.Fake<IAppDataPathProvider>();
-        A.CallTo(() => _appDataPathProvider.AppDataPath).Returns("C:\\tmp\\");
-        _fileSystem = new MockFileSystem(new J2N.Collections.Generic.Dictionary<string, MockFileData>()
+        return new MockFileSystem(new Dictionary<string, MockFileData>()
             {
                 { "C:\\tmp\\x.tmp", new MockFileData("x") }, // make sure path exists.
             });
-        _logger = NullLogger.Instance;
-        _fileBasedPackageConfiguration = new FileAppSettingsService(_appDataPathProvider, _fileSystem, _logger);
+    }
+
+    public static IAppDataPathProvider CreateDefaultAppDataProvider()
+    {
+        IAppDataPathProvider appDataPathProvider = A.Fake<IAppDataPathProvider>();
+        A.CallTo(() => appDataPathProvider.AppDataPath).Returns("C:\\tmp\\");
+        return appDataPathProvider;
+    }
+}
+
+[UsesVerify]
+public class DocsAppSettingsTests
+{
+    private FileAppSettingsService _fileBasedPackageConfiguration;
+    private readonly MockFileSystem _fileSystem;
+
+    public DocsAppSettingsTests()
+    {
+        _fileSystem = MockFileSystemFactory.CreateDefaultFileSystem();
+        _fileBasedPackageConfiguration = new FileAppSettingsService(MockFileSystemFactory.CreateDefaultAppDataProvider(), _fileSystem, NullLogger.Instance);
     }
 
     [Fact]
