@@ -12,7 +12,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System;
 using RepoM.Api.Plugins.SimpleInjector;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 public class CoreBootstrapper
 {
@@ -21,12 +23,30 @@ public class CoreBootstrapper
     private readonly IAppDataPathProvider _appDataProvider;
     private readonly ILoggerFactory _loggerFactory;
 
+    private static readonly Assembly _thisAssembly = typeof(CoreBootstrapper).Assembly;
+
     public CoreBootstrapper(IPluginFinder pluginFinder, IFileSystem fileSystem, IAppDataPathProvider appDataProvider, ILoggerFactory loggerFactory)
     {
         _pluginFinder = pluginFinder ?? throw new ArgumentNullException(nameof(pluginFinder));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _appDataProvider = appDataProvider ?? throw new ArgumentNullException(nameof(appDataProvider));
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+    }
+
+    public static void RegisterRepositoryScorerConfigurationsTypes(Container container)
+    {
+        foreach (Type type in GetNonAbstractNonGenericInheritedExportedTypesFrom<IRepositoryScorerConfiguration>(_thisAssembly))
+        {
+            container.RegisterScorerConfigurationForType(type);
+        }
+    }
+
+    public static void RegisterRepositoryComparerConfigurationsTypes(Container container)
+    {
+        foreach (Type type in GetNonAbstractNonGenericInheritedExportedTypesFrom<IRepositoriesComparerConfiguration>(_thisAssembly))
+        {
+            container.RegisterComparerConfigurationForType(type);
+        }
     }
 
     public async Task LoadAndRegisterPluginsAsync(Container container, string baseDirectory)
@@ -78,5 +98,27 @@ public class CoreBootstrapper
     private static PluginSettings ConvertToPluginSettings(PluginInfo pluginInfo, string baseDir, bool enabled)
     {
         return new PluginSettings(pluginInfo.Name, pluginInfo.AssemblyPath.Replace(baseDir, string.Empty), enabled);
+    }
+
+    static IEnumerable<Type> GetExportedTypesFrom(Assembly assembly)
+    {
+        try
+        {
+            return assembly.DefinedTypes.Select(info => info.AsType());
+        }
+        catch (NotSupportedException)
+        {
+            // A type load exception would typically happen on an Anonymously Hosted DynamicMethods
+            // Assembly and it would be safe to skip this exception.
+            return Enumerable.Empty<Type>();
+        }
+    }
+
+    static IEnumerable<Type> GetNonAbstractNonGenericInheritedExportedTypesFrom<T>(Assembly assembly)
+    {
+        return GetExportedTypesFrom(assembly)
+               .Where(t => typeof(T).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
+               .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, });
+
     }
 }

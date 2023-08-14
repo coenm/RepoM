@@ -33,7 +33,6 @@ using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFinder;
-using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using System.IO.Abstractions;
 using System.Reflection;
@@ -94,8 +93,7 @@ internal static class Bootstrapper
         Container.Collection.Append<IQueryMatcher>(() => new FreeTextMatcher(ignoreCase: true, ignoreCaseTag: true), Lifestyle.Singleton);
 
         Container.Register<IModuleManager, ModuleManager>(Lifestyle.Singleton);
-
-
+        
         Container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
         Container.RegisterInstance<IFileSystem>(fileSystem);
@@ -172,11 +170,9 @@ internal static class Bootstrapper
         Container.RegisterSingleton<IRepositoryComparerFactory, RepositoryComparerCompositionFactory>();
         Container.RegisterSingleton<IRepositoryScoreCalculatorFactory, RepositoryScoreCalculatorFactory>();
 
-        Container.Collection.Register(
-            typeof(IConfigurationRegistration),
-            new[] { typeof(IConfigurationRegistration).Assembly, typeof(IsPinnedScorerConfigurationV1Registration).Assembly, },
-            Lifestyle.Singleton);
-
+        CoreBootstrapper.RegisterRepositoryComparerConfigurationsTypes(Container);
+        CoreBootstrapper.RegisterRepositoryScorerConfigurationsTypes(Container);
+        
         Container.Register<IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>, IsPinnedScorerFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryScoreCalculatorFactory<TagScorerConfigurationV1>, TagScorerFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryComparerFactory<AlphabetComparerConfigurationV1>, AzRepositoryComparerFactory>(Lifestyle.Singleton);

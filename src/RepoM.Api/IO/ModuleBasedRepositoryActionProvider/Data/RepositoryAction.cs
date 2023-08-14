@@ -135,26 +135,20 @@ public static class ContainerExtensions
 {
     public static void RegisterDefaultRepositoryActionDeserializerForType<T>(this Container container) where T : RepositoryAction
     {
-        container.Collection.AppendInstance<IKeyTypeRegistration<RepositoryAction>>(new RepositoryActionKeyTypeRegistration<T>());
+        RegisterDefaultRepositoryActionDeserializerForType(container, typeof(T));
     }
 
     public static void RegisterDefaultRepositoryActionDeserializerForType(this Container container, Type type)
     {
-        container.Collection.AppendInstance<IKeyTypeRegistration<RepositoryAction>>(new RepositoryActionKeyTypeRegistration(type));
+        container.Collection.AppendInstance<IKeyTypeRegistration<RepositoryAction>>(new FixedTypeRegistration<RepositoryAction>(type, TypeRepositoryActionAttributeReader.GetValue(type)));
     }
 }
 
 public sealed class DefaultActionDeserializer<T> : IActionDeserializer where T : RepositoryAction
 {
-    public DefaultActionDeserializer()
-    {
-        ConfigurationType = typeof(T);
-        Tag = typeof(T).GetCustomAttribute<RepositoryActionAttribute>()?.Type ?? throw new InvalidOperationException($"RepositoryActionAttribute not found on {typeof(T).FullName}");
-    }
+    private Type ConfigurationType { get; } = typeof(T);    
 
-    private Type ConfigurationType { get; }
-
-    private string Tag { get; }
+    private string Tag { get; } = TypeRepositoryActionAttributeReader.GetValue(typeof(T));
 
 
     public bool CanDeserialize(string type)
@@ -168,28 +162,13 @@ public sealed class DefaultActionDeserializer<T> : IActionDeserializer where T :
     }
 }
 
-file sealed class RepositoryActionKeyTypeRegistration<T> : IKeyTypeRegistration<RepositoryAction> where T : RepositoryAction
+/// <summary>
+/// This class 'assumes' that the type has a custom attribute of type <see cref="RepositoryActionAttribute"/> with a property 'Type' that is the type value.
+/// </summary>
+file static class TypeRepositoryActionAttributeReader
 {
-    public RepositoryActionKeyTypeRegistration()
+    public static string GetValue(Type type)
     {
-        ConfigurationType = typeof(T);
-        Tag = typeof(T).GetCustomAttribute<RepositoryActionAttribute>()?.Type ?? throw new InvalidOperationException($"RepositoryActionAttribute not found on {typeof(T).FullName}");
+        return type.GetCustomAttribute<RepositoryActionAttribute>()?.Type ?? throw new InvalidOperationException($"RepositoryActionAttribute not found on {type.FullName}");
     }
-
-    public Type ConfigurationType { get; }
-
-    public string Tag { get; }
-}
-
-file sealed class RepositoryActionKeyTypeRegistration : IKeyTypeRegistration<RepositoryAction>
-{
-    public RepositoryActionKeyTypeRegistration(Type t)
-    {
-        ConfigurationType = t;
-        Tag = t.GetCustomAttribute<RepositoryActionAttribute>()?.Type ?? throw new InvalidOperationException($"RepositoryActionAttribute not found on {t.FullName}");
-    }
-
-    public Type ConfigurationType { get; }
-
-    public string Tag { get; }
 }
