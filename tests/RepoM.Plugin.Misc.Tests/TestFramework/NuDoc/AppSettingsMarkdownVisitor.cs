@@ -5,7 +5,6 @@ using System.IO;
 using System.Reflection;
 using NuDoq;
 using RepoM.Api.Common;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 internal class AppSettingsMarkdownVisitor : Visitor
 {

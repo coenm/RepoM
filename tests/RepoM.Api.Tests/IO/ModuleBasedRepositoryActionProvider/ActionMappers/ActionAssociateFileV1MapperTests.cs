@@ -1,11 +1,9 @@
 namespace RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using FakeItEasy;
 using FluentAssertions;
-using LibGit2Sharp;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;

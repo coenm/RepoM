@@ -1,9 +1,0 @@
-{
-  "repository-actions": {
-    "actions": [
-      {
-        "type": "git-pull@1"
-      }
-    ]
-  }
-}

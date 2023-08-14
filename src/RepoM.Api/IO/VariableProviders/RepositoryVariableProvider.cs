@@ -2,7 +2,6 @@ namespace RepoM.Api.IO.VariableProviders;
 
 using System;
 using System.Linq;
-using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Core.Plugin.Repository;
 
 public class RepositoryVariableProvider : RepoM.Core.Plugin.VariableProviders.IVariableProvider<RepositoryContext>

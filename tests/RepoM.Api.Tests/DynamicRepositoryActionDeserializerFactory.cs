@@ -1,7 +1,6 @@
 namespace RepoM.Api.Tests;
 
 using System;
-using System.Collections.Generic;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -36,8 +35,9 @@ internal static class DynamicRepositoryActionDeserializerFactory
                 Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
     }
 
-    public static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
+    public static YamlDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
+        var jsonDynamicRepositoryActionDeserializer = new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
+        return new YamlDynamicRepositoryActionDeserializer(jsonDynamicRepositoryActionDeserializer);
     }
 }

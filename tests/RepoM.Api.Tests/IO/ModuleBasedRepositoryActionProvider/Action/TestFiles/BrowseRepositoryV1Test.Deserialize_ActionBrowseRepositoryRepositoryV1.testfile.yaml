@@ -1,0 +1,10 @@
+repository-actions:
+  actions:
+  - type: browse-repository@1
+    name: fo true
+    first-only: true
+  - type: browse-repository@1
+    name: fo false
+    first-only: false
+  - type: browse-repository@1
+    name: fo empty

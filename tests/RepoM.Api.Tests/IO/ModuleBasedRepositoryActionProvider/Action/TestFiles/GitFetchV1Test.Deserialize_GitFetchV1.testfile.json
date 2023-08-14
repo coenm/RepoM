@@ -1,9 +1,0 @@
-{
-  "repository-actions": {
-    "actions": [
-      {
-        "type": "git-fetch@1"
-      }
-    ]
-  }
-}
