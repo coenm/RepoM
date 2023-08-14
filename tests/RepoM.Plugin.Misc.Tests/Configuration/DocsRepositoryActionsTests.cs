@@ -17,6 +17,14 @@ using Xunit;
 [UsesVerify]
 public class DocsRepositoryActionsTests
 {
+    private const string VERIFY_DIRECTORY = "VerifiedDocs1";
+    private readonly VerifySettings _verifySettings = new();
+
+    public DocsRepositoryActionsTests()
+    {
+        _verifySettings.UseDirectory(VERIFY_DIRECTORY);
+    }
+
     public static IEnumerable<object[]> AssemblyTestData => PluginStore.Assemblies.Select(assembly => new object[] { assembly, }).ToArray();
 
     public static IEnumerable<object[]> RepositoryActionsTestData
@@ -71,17 +79,13 @@ public class DocsRepositoryActionsTests
         }
 
         // assert
-        var settings = new VerifySettings();
-        await Verifier.Verify(results, settings);
+        await Verifier.Verify(results, _verifySettings);
     }
 
     [Fact]
     public async Task RepositoryActionBaseDocumentationGeneration()
     {
-        var settings = new VerifySettings();
-        // settings.AutoVerify();
-        settings.UseDirectory("VerifiedDocs1");
-        settings.UseTextForParameters(nameof(RepositoryAction));
+        _verifySettings.UseTextForParameters(nameof(RepositoryAction));
 
 #if DEBUG
         var options = new NuDoq.ReaderOptions
@@ -109,7 +113,7 @@ public class DocsRepositoryActionsTests
         }
 
 #if DEBUG
-        await Verifier.Verify(sb.ToString(), settings: settings, extension: "md");
+        await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
 #else
         await Task.Yield();
         Assert.True(true); // this test should only be run in Debug mode.
@@ -120,10 +124,7 @@ public class DocsRepositoryActionsTests
     [MemberData(nameof(RepositoryActionsTestData))]
     public async Task DocsRepositoryActionsSettings(RepositoryTestData repositoryActionTestData)
     {
-        var settings = new VerifySettings();
-        // settings.AutoVerify();
-        settings.UseDirectory("VerifiedDocs1");
-        settings.UseTextForParameters(repositoryActionTestData.Type.Name);
+        _verifySettings.UseTextForParameters(repositoryActionTestData.Type.Name);
 
         var builtinClassNames = new Dictionary<string, string>
             {
@@ -166,7 +167,7 @@ public class DocsRepositoryActionsTests
         }
 
 #if DEBUG
-        await Verifier.Verify(sb.ToString(), settings: settings, extension: "md");
+        await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
 #else
         await Task.Yield();
         Assert.True(true); // this test should only be run in Debug mode.
@@ -174,6 +175,9 @@ public class DocsRepositoryActionsTests
     }
 }
 
+/// <summary>
+/// Helper class used for naming arguments in xunits test name generation.
+/// </summary>
 public class RepositoryTestData
 {
     public RepositoryTestData(Assembly assembly, Type type)

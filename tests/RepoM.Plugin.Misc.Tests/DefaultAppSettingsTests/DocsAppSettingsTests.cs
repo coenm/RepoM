@@ -1,41 +1,22 @@
-namespace RepoM.Plugin.Misc.Tests.Configuration;
+namespace RepoM.Plugin.Misc.Tests.DefaultAppSettingsTests;
 
-using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 using System.Threading.Tasks;
-using FakeItEasy;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Common;
-using RepoM.Core.Plugin.Common;
+using RepoM.Plugin.Misc.Tests.TestFramework;
 using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-internal static class MockFileSystemFactory
-{
-    public static MockFileSystem CreateDefaultFileSystem()
-    {
-        return new MockFileSystem(new Dictionary<string, MockFileData>()
-            {
-                { "C:\\tmp\\x.tmp", new MockFileData("x") }, // make sure path exists.
-            });
-    }
-
-    public static IAppDataPathProvider CreateDefaultAppDataProvider()
-    {
-        IAppDataPathProvider appDataPathProvider = A.Fake<IAppDataPathProvider>();
-        A.CallTo(() => appDataPathProvider.AppDataPath).Returns("C:\\tmp\\");
-        return appDataPathProvider;
-    }
-}
-
 [UsesVerify]
 public class DocsAppSettingsTests
 {
-    private FileAppSettingsService _fileBasedPackageConfiguration;
+    private readonly VerifySettings _verifySettings = new();
+    private readonly FileAppSettingsService _fileBasedPackageConfiguration;
     private readonly MockFileSystem _fileSystem;
 
     public DocsAppSettingsTests()
@@ -65,10 +46,10 @@ public class DocsAppSettingsTests
     [Fact]
     public async Task AppSettingsDocumentationGeneration()
     {
-        var settings = new VerifySettings();
-        settings.UseTextForParameters(nameof(AppSettings));
+        _verifySettings.UseTextForParameters(nameof(AppSettings));
 
 #if DEBUG
+        // ReSharper disable once RedundantNameQualifier
         var options = new NuDoq.ReaderOptions
         {
             KeepNewLinesInText = true,
@@ -94,7 +75,7 @@ public class DocsAppSettingsTests
         }
 
 #if DEBUG
-        await Verifier.Verify(sb.ToString(), settings: settings, extension: "md");
+        await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
 #else
         await Task.Yield();
         Assert.True(true); // this test should only be run in Debug mode.

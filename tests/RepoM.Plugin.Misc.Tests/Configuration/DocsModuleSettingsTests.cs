@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Plugins;
 using RepoM.Core.Plugin;
+using RepoM.Plugin.Misc.Tests.TestFramework;
 using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
@@ -19,13 +20,17 @@ using Xunit;
 [UsesVerify]
 public class DocsModuleSettingsTests
 {
-    private FileBasedPackageConfiguration _fileBasedPackageConfiguration;
+    private const string VERIFY_DIRECTORY = "VerifiedDocs";
+    private readonly VerifySettings _verifySettings = new();
+    private readonly FileBasedPackageConfiguration _fileBasedPackageConfiguration;
     private readonly MockFileSystem _fileSystem;
 
     public DocsModuleSettingsTests()
     {
         _fileSystem = MockFileSystemFactory.CreateDefaultFileSystem();
         _fileBasedPackageConfiguration = new FileBasedPackageConfiguration(MockFileSystemFactory.CreateDefaultAppDataProvider(), _fileSystem, NullLogger.Instance, "dummy");
+
+        _verifySettings.UseDirectory(VERIFY_DIRECTORY);
     }
 
     public static IEnumerable<object[]> PackagesTestData => PluginStore.Packages.Select(package => new object[] { package, }).ToArray();
@@ -44,8 +49,7 @@ public class DocsModuleSettingsTests
         }
 
         // assert
-        var settings = new VerifySettings();
-        await Verifier.Verify(results, settings);
+        await Verifier.Verify(results, _verifySettings);
     }
 
     [Theory]
@@ -59,14 +63,11 @@ public class DocsModuleSettingsTests
         (object? config, string? persistedConfig) = await PersistDefaultConfigAsync(package);
 
         // assert
-        var settings = new VerifySettings();
-        // settings.AutoVerify();
-        settings.UseDirectory("VerifiedDocs");
-        settings.UseTextForParameters(package.GetType().Name);
+        _verifySettings.UseTextForParameters(package.GetType().Name);
         if (config == null && persistedConfig == null)
         {
-            settings.AppendContentAsFile(CreateConfigWithoutSnippetDocumentationMarkdown(), "md", "desc");
-            await Verifier.Verify($"No config in {packageName}", settings: settings);
+            _verifySettings.AppendContentAsFile(CreateConfigWithoutSnippetDocumentationMarkdown(), "md", "desc");
+            await Verifier.Verify($"No config in {packageName}", settings: _verifySettings);
         }
         else
         {
@@ -111,10 +112,10 @@ public class DocsModuleSettingsTests
                 configWithSnippetDocumentationMarkdown += Environment.NewLine + sb;
             }
 
-            settings.AppendContentAsFile(configWithSnippetDocumentationMarkdown, "md", "desc");
+            _verifySettings.AppendContentAsFile(configWithSnippetDocumentationMarkdown, "md", "desc");
 
 #if DEBUG
-            await Verifier.Verify(persistedConfig, settings: settings, extension: "json");
+            await Verifier.Verify(persistedConfig, settings: _verifySettings, extension: "json");
 #else
             Assert.True(true); // this test should only be run in Debug mode.
 #endif
