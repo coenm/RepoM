@@ -21,7 +21,7 @@ Comparer specific properties:
 - `property`: Repository property. Currently, only `Name`, and `Location` are supported. Otherwise, comparison will always result in `0`. (optional)
 - `weight`: The weight of this comparer. The higher the weight, the higher the impact.<!-- endInclude -->
 
-### composition@1
+### composition-comparer@1
 
 Compares two repositories by a composition of comparers.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_CompositionComparerConfigurationV1.verified.md -->
 
