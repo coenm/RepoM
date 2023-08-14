@@ -8,7 +8,7 @@ using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 /// </summary>
 public sealed class CompositionComparerConfigurationV1 : IRepositoriesComparerConfiguration
 {
-    public const string TYPE_VALUE = "composition@1";
+    public const string TYPE_VALUE = "composition-comparer@1";
 
     public string Type
     {

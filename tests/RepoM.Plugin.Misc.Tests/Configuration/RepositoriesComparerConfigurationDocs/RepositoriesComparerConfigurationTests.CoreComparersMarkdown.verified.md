@@ -2,7 +2,7 @@
 
 include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_AlphabetComparerConfigurationV1.verified.md
 
-### composition@1
+### composition-comparer@1
 
 include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_CompositionComparerConfigurationV1.verified.md
 
