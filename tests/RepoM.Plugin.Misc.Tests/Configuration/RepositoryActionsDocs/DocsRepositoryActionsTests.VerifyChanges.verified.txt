@@ -1,0 +1,33 @@
+﻿{
+  RepoM.Api: [
+    RepositoryAction,
+    RepositoryActionAssociateFileV1,
+    RepositoryActionBrowseRepositoryV1,
+    RepositoryActionBrowserV1,
+    RepositoryActionCommandV1,
+    RepositoryActionExecutableV1,
+    RepositoryActionFolderV1,
+    RepositoryActionForEachV1,
+    RepositoryActionGitCheckoutV1,
+    RepositoryActionGitFetchV1,
+    RepositoryActionGitPullV1,
+    RepositoryActionGitPushV1,
+    RepositoryActionIgnoreRepositoryV1,
+    RepositoryActionJustTextV1,
+    RepositoryActionPinRepositoryV1,
+    RepositoryActionSeparatorV1
+  ],
+  RepoM.Plugin.AzureDevOps: [
+    RepositoryActionAzureDevOpsCreatePullRequestsV1,
+    RepositoryActionAzureDevOpsGetPullRequestsV1
+  ],
+  RepoM.Plugin.Clipboard: [
+    RepositoryActionClipboardCopyV1
+  ],
+  RepoM.Plugin.Heidi: [
+    RepositoryActionHeidiDatabasesV1
+  ],
+  RepoM.Plugin.SonarCloud: [
+    RepositoryActionSonarCloudSetFavoriteV1
+  ]
+}

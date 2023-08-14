@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NuDoq;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Plugin.Misc.Tests.TestFramework;
 using RepoM.Plugin.Misc.Tests.TestFramework.AssemblyAndTypeHelpers;
 using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
@@ -16,31 +15,31 @@ using VerifyXunit;
 using Xunit;
 
 [UsesVerify]
-public class DocsRepositoryActionsTests
+public class RepositoriesComparerConfigurationTests
 {
-    private const string VERIFY_DIRECTORY = "RepositoryActionsDocs";
+    private const string VERIFY_DIRECTORY = "RepositoriesComparerConfigurationDocs";
     private readonly VerifySettings _verifySettings = new();
 
-    public DocsRepositoryActionsTests()
+    public RepositoriesComparerConfigurationTests()
     {
         _verifySettings.UseDirectory(VERIFY_DIRECTORY);
     }
 
-    public static IEnumerable<object[]> AssemblyTestData => PluginStore.Assemblies.Select(assembly => new object[] { assembly, }).ToArray();
+    public static IEnumerable<object[]> PackagesTestData => PluginStore.Packages.Select(package => new object[] { package, }).ToArray();
 
-    public static IEnumerable<object[]> RepositoryActionsTestData
+    public static IEnumerable<RepositoryTestData> RepositoryComparersData
     {
         get
         {
-            List<object[]> results = new();
+            List<RepositoryTestData> results = new();
 
             foreach (Assembly assembly in RepoMAssemblyStore.GetAssemblies())
             {
                 try
                 {
-                    foreach (Type repositoryActionType in assembly.GetRepositoryActionsFromAssembly())
+                    foreach (Type repositoryActionType in assembly.GetRepositoriesComparerConfigurationFromAssembly())
                     {
-                        results.Add(new object[] { new RepositoryTestData(assembly, repositoryActionType), });
+                        results.Add(new RepositoryTestData(assembly, repositoryActionType));
                     }
                 }
                 catch (System.Exception)
@@ -50,6 +49,14 @@ public class DocsRepositoryActionsTests
             }
 
             return results;
+        }
+    }
+
+    public static IEnumerable<object[]> RepositoryComparersDataXunit
+    {
+        get
+        {
+            return RepositoryComparersData.Select(x => new object[] { x, }).ToArray();
         }
     }
 
@@ -65,53 +72,38 @@ public class DocsRepositoryActionsTests
         // act
         var results = assemblies.ToDictionary(
             assembly => assembly.GetName().Name ?? assembly.ToString(),
-            assembly => assembly.GetRepositoryActionsFromAssembly());
+            assembly => assembly.GetRepositoriesComparerConfigurationFromAssembly());
 
         // assert
         await Verifier.Verify(results, _verifySettings);
     }
 
     [Fact]
-    public async Task RepositoryActionBaseDocumentationGeneration()
+    public async Task CoreComparersMarkdown()
     {
-        _verifySettings.UseTextForParameters(nameof(RepositoryAction));
-
-#if DEBUG
-        var options = new NuDoq.ReaderOptions
-        {
-            KeepNewLinesInText = true,
-        };
-        AssemblyMembers members = DocReader.Read(typeof(RepositoryAction).Assembly, options);
-#else
-        var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
-#endif
-
-        var visitor = new RepositoryActionBaseMarkdownVisitor(typeof(RepositoryAction));
-        members.Accept(visitor);
-
         var sb = new StringBuilder();
+        var comparerTypes = RepositoryComparersData
+                .Where(x => !x.Assembly.GetName().Name.Contains("Plugin"))
+                .OrderBy(x => x.Assembly.GetName().Name)
+                .ThenBy(x => x.Type.Name);
 
-        var head = visitor.ClassWriter.Head.ToString();
-        var properties = visitor.ClassWriter.Properties.ToString();
+        const string PREFIX = $"{nameof(RepositoriesComparerConfigurationTests)}.{nameof(DocsRepositoriesComparerConfiguration)}_";
+        const string SUFFIX = ".verified.md";
 
-        if (!string.IsNullOrWhiteSpace(head) || !string.IsNullOrWhiteSpace(properties))
+        foreach (var item in comparerTypes)
         {
-            sb.AppendLine("Properties:");
+            sb.AppendLine($"### {item.Type.Name}");
             sb.AppendLine(string.Empty);
-            sb.Append(visitor.ClassWriter.Properties);
+            sb.AppendLine($"include: {PREFIX}{item.Type}{SUFFIX}");
+            sb.AppendLine(string.Empty);
         }
 
-#if DEBUG
         await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
-#else
-        await Task.Yield();
-        Assert.True(true); // this test should only be run in Debug mode.
-#endif
     }
 
     [Theory]
-    [MemberData(nameof(RepositoryActionsTestData))]
-    public async Task DocsRepositoryActionsSettings(RepositoryTestData repositoryActionTestData)
+    [MemberData(nameof(RepositoryComparersDataXunit))]
+    public async Task DocsRepositoriesComparerConfiguration(RepositoryTestData repositoryActionTestData)
     {
         _verifySettings.UseTextForParameters(repositoryActionTestData.Type.Name);
 
@@ -130,7 +122,7 @@ public class DocsRepositoryActionsTests
         var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
 #endif
 
-        var visitor = new RepositoryActionMarkdownVisitor(builtinClassNames);
+        var visitor = new RepositoryComparerSettingMarkdownVisitor(builtinClassNames);
         members.Accept(visitor);
 
         var sb = new StringBuilder();
@@ -145,11 +137,11 @@ public class DocsRepositoryActionsTests
 
             if (string.IsNullOrWhiteSpace(properties))
             {
-                sb.AppendLine("This action does not have any specific properties.");
+                sb.AppendLine("This comparer does not have any specific properties.");
             }
             else
             {
-                sb.AppendLine("Action specific properties:");
+                sb.AppendLine("Comparer specific properties:");
                 sb.AppendLine(string.Empty);
                 sb.Append(classWriter.Properties);
             }

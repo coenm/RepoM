@@ -1,0 +1,16 @@
+﻿### AlphabetComparerConfigurationV1
+
+include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_RepoM.Api.Ordering.Az.AlphabetComparerConfigurationV1.verified.md
+
+### CompositionComparerConfigurationV1
+
+include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_RepoM.Api.Ordering.Composition.CompositionComparerConfigurationV1.verified.md
+
+### ScoreComparerConfigurationV1
+
+include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_RepoM.Api.Ordering.Score.ScoreComparerConfigurationV1.verified.md
+
+### SumComparerConfigurationV1
+
+include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_RepoM.Api.Ordering.Sum.SumComparerConfigurationV1.verified.md
+

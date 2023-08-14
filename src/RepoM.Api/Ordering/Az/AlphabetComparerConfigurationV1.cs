@@ -16,12 +16,12 @@ public class AlphabetComparerConfigurationV1 : IRepositoriesComparerConfiguratio
     }
 
     /// <summary>
-    /// Repository property. Currently, only `Name`, and `Location` are supported.
+    /// Repository property. Currently, only `Name`, and `Location` are supported. Otherwise, comparison will always result in `0`.
     /// </summary>
     public string? Property { get; set; }
     
     /// <summary>
-    /// The weight of this comparer. The higher the weight, the higher the priority.
+    /// The weight of this comparer. The higher the weight, the higher the impact.
     /// </summary>
     public int Weight { get; set; }
 }

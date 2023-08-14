@@ -20,7 +20,7 @@ using Xunit;
 [UsesVerify]
 public class DocsModuleSettingsTests
 {
-    private const string VERIFY_DIRECTORY = "VerifiedDocs";
+    private const string VERIFY_DIRECTORY = "ModuleSettingsDocs";
     private readonly VerifySettings _verifySettings = new();
     private readonly FileBasedPackageConfiguration _fileBasedPackageConfiguration;
     private readonly MockFileSystem _fileSystem;
