@@ -13,6 +13,16 @@ using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
+using Exception = System.Exception;
+
+public static class TypeExtension
+{
+    public static string GetTypeValue(this Type type)
+    {
+        FieldInfo fieldInfo = type.GetField("TYPE_VALUE") ?? throw new Exception("Could not locate field 'TYPE_VALUE'");
+        return fieldInfo.GetValue(null)?.ToString() ?? throw new Exception("Could not get value of property 'TYPE_VALUE'");
+    }
+}
 
 [UsesVerify]
 public class RepositoriesComparerConfigurationTests
@@ -81,23 +91,26 @@ public class RepositoriesComparerConfigurationTests
     [Fact]
     public async Task CoreComparersMarkdown()
     {
+        // arrange
         var sb = new StringBuilder();
         var comparerTypes = RepositoryComparersData
                 .Where(x => !x.Assembly.GetName().Name.Contains("Plugin"))
                 .OrderBy(x => x.Assembly.GetName().Name)
-                .ThenBy(x => x.Type.Name);
+                .ThenBy(x => x.Type.GetTypeValue());
 
         const string PREFIX = $"{nameof(RepositoriesComparerConfigurationTests)}.{nameof(DocsRepositoriesComparerConfiguration)}_";
         const string SUFFIX = ".verified.md";
 
-        foreach (var item in comparerTypes)
+        // act
+        foreach (RepositoryTestData item in comparerTypes)
         {
-            sb.AppendLine($"### {item.Type.Name}");
+            sb.AppendLine($"### {item.Type.GetTypeValue()}");
             sb.AppendLine(string.Empty);
-            sb.AppendLine($"include: {PREFIX}{item.Type}{SUFFIX}");
+            sb.AppendLine($"include: {PREFIX}{item.Type.Name}{SUFFIX}"); // mdsnippet
             sb.AppendLine(string.Empty);
         }
 
+        // assert
         await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
     }
 
