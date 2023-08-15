@@ -86,11 +86,11 @@ public class RepositorySpecificConfigurationTest
                 new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
-                new VariableProviderAdapter(new []
+                new VariableProviderAdapter(new Core.Plugin.VariableProviders.IVariableProvider[]
                     {
-                        (RepoM.Core.Plugin.VariableProviders.IVariableProvider)new CustomEnvironmentVariableVariableProvider(),
-                        (RepoM.Core.Plugin.VariableProviders.IVariableProvider)new RepoMVariableProvider(),
-                        (RepoM.Core.Plugin.VariableProviders.IVariableProvider)new RepositoryVariableProvider(),
+                        new CustomEnvironmentVariableVariableProvider(),
+                        new RepoMVariableProvider(),
+                        new RepositoryVariableProvider(),
                     }),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
@@ -142,17 +142,7 @@ public class RepositorySpecificConfigurationTest
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(
-            _fileSystem,
-            _repositoryExpressionEvaluator,
-            _actionMapperComposition,
-            _translationService,
-            new RepositoryConfigurationReader(
-                _appDataPathProvider,
-                _fileSystem,
-                _yamlAppSettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                NullLogger.Instance));
+        RepositorySpecificConfiguration sut = CreateSut();
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"), new Repository("path2"));
@@ -168,17 +158,7 @@ public class RepositorySpecificConfigurationTest
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(
-            _fileSystem,
-            _repositoryExpressionEvaluator,
-            _actionMapperComposition,
-            _translationService,
-            new RepositoryConfigurationReader(
-                _appDataPathProvider,
-                _fileSystem,
-                _yamlAppSettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                NullLogger.Instance));
+        RepositorySpecificConfiguration sut = CreateSut();
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
@@ -194,17 +174,7 @@ public class RepositorySpecificConfigurationTest
         _testFileSettings.UseFileName("RepositoryActions1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(
-            _fileSystem,
-            _repositoryExpressionEvaluator,
-            _actionMapperComposition,
-            _translationService,
-            new RepositoryConfigurationReader(
-                _appDataPathProvider,
-                _fileSystem,
-                _yamlAppSettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                NullLogger.Instance));
+        RepositorySpecificConfiguration sut = CreateSut();
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
@@ -220,7 +190,18 @@ public class RepositorySpecificConfigurationTest
         _testFileSettings.UseFileName("RepositoryActionsWithSeparator1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(
+        RepositorySpecificConfiguration sut = CreateSut();
+
+        // act
+        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
+
+        // assert
+        await Verifier.Verify(result, _verifySettings);
+    }
+
+    private RepositorySpecificConfiguration CreateSut()
+    {
+        return new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
@@ -231,11 +212,5 @@ public class RepositorySpecificConfigurationTest
                 _yamlAppSettingsDeserializer,
                 _repositoryExpressionEvaluator,
                 NullLogger.Instance));
-
-        // act
-        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
     }
 }
