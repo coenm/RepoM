@@ -46,7 +46,7 @@ public class DefaultRepositoryMonitorTests
 
         var defaultRepositoryReader = new DefaultRepositoryReader(new Mock<IRepositoryTagsFactory>().Object, NullLogger.Instance);
         _monitor = new DefaultRepositoryMonitor(
-            new GivenPathProvider(new string[] { repoPath, }),
+            new GivenPathProvider(new [] { repoPath, }),
             defaultRepositoryReader,
             new DefaultRepositoryDetectorFactory(defaultRepositoryReader),
             new DefaultRepositoryObserverFactory(),
