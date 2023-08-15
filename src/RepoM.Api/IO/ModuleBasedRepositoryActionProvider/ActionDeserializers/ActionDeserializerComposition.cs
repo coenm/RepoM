@@ -48,7 +48,7 @@ public class ActionDeserializerComposition
 
     private RepositoryAction? DeserializeWithDefaultDeserializers(string type, JToken jToken, JsonSerializer jsonSerializer)
     {
-        IKeyTypeRegistration<RepositoryAction>? registration = _typeRegistrations.FirstOrDefault(x => x.Tag.Equals(type, StringComparison.CurrentCultureIgnoreCase));
+        IKeyTypeRegistration<RepositoryAction>? registration = Array.Find(_typeRegistrations, x => x.Tag.Equals(type, StringComparison.CurrentCultureIgnoreCase));
 
         if (registration != null)
         {
