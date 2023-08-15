@@ -13,6 +13,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public class FilesCompareSettingsService : ICompareSettingsService
 {
+    private const string FILENAME = "RepoM.Ordering.yaml";
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
     private readonly IAppDataPathProvider _appDataPathProvider;
@@ -50,7 +51,7 @@ public class FilesCompareSettingsService : ICompareSettingsService
     
     private string GetFileName()
     {
-        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, "RepoM.Ordering.yaml");
+        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, FILENAME);
     }
 
     private Dictionary<string, IRepositoriesComparerConfiguration> Load()
@@ -72,7 +73,23 @@ public class FilesCompareSettingsService : ICompareSettingsService
 
         if (!_fileSystem.File.Exists(file))
         {
-            throw new FileNotFoundException("Comparer configuration file not found", file);
+            var templateFilename = _fileSystem.Path.Combine(_appDataPathProvider.AppResourcesPath, FILENAME);
+            if (_fileSystem.File.Exists(templateFilename))
+            {
+                try
+                {
+                    _fileSystem.File.Copy(templateFilename, file);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Could not copy template file '{templateFilename}' to '{file}'", templateFilename, file);
+                }
+            }
+
+            if (!_fileSystem.File.Exists(file))
+            {
+                throw new FileNotFoundException("Comparer configuration file not found", file);
+            }
         }
 
         try

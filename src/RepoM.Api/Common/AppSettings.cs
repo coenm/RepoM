@@ -95,16 +95,9 @@ public class Size
 
 public class PluginOptions
 {
-    public PluginOptions()
-    {
-        Name = string.Empty;
-        DllName = string.Empty;
-        Enabled = false;
-    }
+    public string Name { get; init; } = string.Empty;
 
-    public string Name { get; init; }
+    public string DllName { get; init; } = string.Empty;
 
-    public string DllName { get; init; }
-
-    public bool Enabled { get; init; }
+    public bool Enabled { get; init; } = false;
 }
