@@ -7,6 +7,7 @@ using RepoM.Core.Plugin.Common;
 public class DefaultAppDataPathProvider : IAppDataPathProvider
 { 
     private static readonly string _applicationDataRepoM = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoM");
+    private static readonly string _appResourcesPath = GetAppResourcePath();
 
     private DefaultAppDataPathProvider()
     {
@@ -16,8 +17,10 @@ public class DefaultAppDataPathProvider : IAppDataPathProvider
 
     public string AppDataPath => _applicationDataRepoM;
 
-    [Obsolete("Not used.")]
-    public string GetAppResourcesPath()
+    
+    public string AppResourcesPath => _appResourcesPath;
+
+    private static string GetAppResourcePath()
     {
         var entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
         if (entryAssembly == null)
