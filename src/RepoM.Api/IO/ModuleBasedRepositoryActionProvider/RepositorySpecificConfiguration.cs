@@ -63,7 +63,7 @@ public class RepositoryConfigurationReader
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Could not copy default {FILENAME} to {_appDataPathProvider.AppDataPath}");
+                _logger.LogError(e, "Could not copy default {FILENAME} to {AppDataPath}", FILENAME, _appDataPathProvider.AppDataPath);
             }
 
             if (_fileSystem.File.Exists(filename))
