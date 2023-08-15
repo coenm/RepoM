@@ -27,7 +27,6 @@ public class RepositoryConfigurationReader
     public const string FILENAME = "RepositoryActions.yaml";
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly IFileSystem _fileSystem;
-    private readonly JsonDynamicRepositoryActionDeserializer _jsonAppSettingsDeserializer;
     private readonly YamlDynamicRepositoryActionDeserializer _yamlAppSettingsDeserializer;
     private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ILogger _logger;
@@ -36,14 +35,12 @@ public class RepositoryConfigurationReader
     public RepositoryConfigurationReader(
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem,
-        JsonDynamicRepositoryActionDeserializer jsonAppSettingsDeserializer,
         YamlDynamicRepositoryActionDeserializer yamlAppSettingsDeserializer,
         IRepositoryExpressionEvaluator repoExpressionEvaluator,
         ILogger logger)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _jsonAppSettingsDeserializer = jsonAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(jsonAppSettingsDeserializer));
         _yamlAppSettingsDeserializer = yamlAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(yamlAppSettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

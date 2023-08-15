@@ -38,7 +38,6 @@ public class RepositorySpecificConfigurationTest
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly MockFileSystem _fileSystem;
-    private readonly JsonDynamicRepositoryActionDeserializer _jsonAppSettingsDeserializer;
     private readonly YamlDynamicRepositoryActionDeserializer _yamlAppSettingsDeserializer;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
@@ -63,8 +62,8 @@ public class RepositorySpecificConfigurationTest
         _appDataPathProvider = A.Fake<IAppDataPathProvider>();
         A.CallTo(() => _appDataPathProvider.AppDataPath).Returns(_tempPath);
 
-        _jsonAppSettingsDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
-        _yamlAppSettingsDeserializer = new YamlDynamicRepositoryActionDeserializer(_jsonAppSettingsDeserializer);
+        JsonDynamicRepositoryActionDeserializer jsonAppSettingsDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
+        _yamlAppSettingsDeserializer = new YamlDynamicRepositoryActionDeserializer(jsonAppSettingsDeserializer);
 
         var dateTimeTimeVariableProviderOptions = new DateTimeVariableProviderOptions()
         {
@@ -151,7 +150,6 @@ public class RepositorySpecificConfigurationTest
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
-                _jsonAppSettingsDeserializer,
                 _yamlAppSettingsDeserializer,
                 _repositoryExpressionEvaluator,
                 NullLogger.Instance));
@@ -178,7 +176,6 @@ public class RepositorySpecificConfigurationTest
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
-                _jsonAppSettingsDeserializer,
                 _yamlAppSettingsDeserializer,
                 _repositoryExpressionEvaluator,
                 NullLogger.Instance));
@@ -205,7 +202,6 @@ public class RepositorySpecificConfigurationTest
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
-                _jsonAppSettingsDeserializer,
                 _yamlAppSettingsDeserializer,
                 _repositoryExpressionEvaluator,
                 NullLogger.Instance));
@@ -232,7 +228,6 @@ public class RepositorySpecificConfigurationTest
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
-                _jsonAppSettingsDeserializer,
                 _yamlAppSettingsDeserializer,
                 _repositoryExpressionEvaluator,
                 NullLogger.Instance));
