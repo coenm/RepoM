@@ -12,41 +12,56 @@ A `comparer` compares two repositories resulting in an order between the two. Th
 
 ## Comparers
 
-### az-comparer@1<!-- include: RepositoriesComparerConfigurationTests.CoreComparersMarkdown.verified.md -->
+- [`az-comparer@1`](#az-comparer1)<!-- include: RepositoriesComparerConfigurationTests.CoreComparersMarkdown.verified.md -->
+- [`composition-comparer@1`](#composition-comparer1)
+- [`score-comparer@1`](#score-comparer1)
+- [`sum-comparer@1`](#sum-comparer1)
 
-Compares two repositories by a given property.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_AlphabetComparerConfigurationV1.verified.md -->
+These comparers are available by using the corresponding plugin.
+- [`last-opened-comparer@1`](#last-opened-comparer1)
 
-Comparer specific properties:
+### `az-comparer@1`
+
+Compares two repositories by a given property alphabetically in ascending order.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_AlphabetComparerConfigurationV1.verified.md -->
+
+Properties:
 
 - `property`: Repository property. Currently, only `Name`, and `Location` are supported. Otherwise, comparison will always result in `0`. (optional)
 - `weight`: The weight of this comparer. The higher the weight, the higher the impact.<!-- endInclude -->
 
-### composition-comparer@1
+### `composition-comparer@1`
 
 Compares two repositories by a composition of comparers.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_CompositionComparerConfigurationV1.verified.md -->
 
-Comparer specific properties:
+Properties:
 
 - `comparers`: List of comparers. The first comparer not resulting in `0` will be used as final result.<!-- endInclude -->
 
-### score-comparer@1
+### `score-comparer@1`
 
 Compares two repositories by a repository score. The calculation of the repository score is defined in the score provider.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_ScoreComparerConfigurationV1.verified.md -->
 
-Comparer specific properties:
+Properties:
 
 - `score-provider`: The score provider to calculate a score for a repository. (optional)<!-- endInclude -->
 
-### sum-comparer@1
+### `sum-comparer@1`
 
 Compares two repositories by the sum of the results of the comparers.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_SumComparerConfigurationV1.verified.md -->
 
-Comparer specific properties:
+Properties:
 
 - `comparers`: A list of comparers. The sum of the results of the comparers will be used as final result.<!-- endInclude -->
+
+### `last-opened-comparer@1`
+
+Compares two repositories by the timestamp of the last action RepoM performed on the repository.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_LastOpenedConfigurationV1.verified.md -->
+
+Properties:
+
+- `weight`: The weight of this comparer. The higher the weight, the higher the impact.<!-- endInclude -->
 <!-- endInclude -->
 
 ## Scorers
 
 ** Could not find include 'RepositoriesScorerConfigurationTests.CoreScorersMarkdown.verified.md' ** <!-- singleLineInclude: RepositoriesScorerConfigurationTests.CoreScorersMarkdown.verified.md -->
-

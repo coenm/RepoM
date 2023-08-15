@@ -1,6 +1,6 @@
 # Heidi
 
-This module integrates with a portable [HeidiSQL](https://www.heidisql.com/) installation. The portable Heidi DB saves it's database configuration in a portable configuration file.
+This module integrates with a portable [HeidiSQL](https://www.heidisql.com/) installation. The portable Heidi DB saves its database configuration in a portable configuration file.
 This module monitors this file and provides an action menu and a variable provider to access this information.
 
 To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.<!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
