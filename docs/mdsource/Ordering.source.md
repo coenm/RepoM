@@ -6,9 +6,9 @@ Orderings are defined in yaml using repository-`comparers` and repository-`score
 
 ## Definitions
 
-A `comparer` compares two repositories resulting in an order between the two. The comparison is defined by the type of comparer. It is possible to compare by repository name (assending order) or to compare repositories by the timestamp of the last action performed by RepoM.
+A [`comparer`](#comparers) compares two repositories resulting in an order between the two. The comparison is defined by the type of comparer. It is possible to compare by repository name (assending order) or to compare repositories by the timestamp of the last action performed by RepoM.
 
-`Scorers` however calculate a score over exactly one repository. It does not compare repositories. Comparing repositories by score, use the `score-comparer@1`.
+[`Scorers`](#scorers) however calculate a score over exactly one repository. It does not compare repositories. Comparing repositories by score, use the `score-comparer@1`.
 
 ## Comparers
 
