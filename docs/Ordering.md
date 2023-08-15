@@ -64,4 +64,35 @@ Properties:
 
 ## Scorers
 
-** Could not find include 'RepositoriesScorerConfigurationTests.CoreScorersMarkdown.verified.md' ** <!-- singleLineInclude: RepositoriesScorerConfigurationTests.CoreScorersMarkdown.verified.md -->
+- [`is-pinned-scorer@1`](#is-pinned-scorer1)<!-- include: RepositoriesScorerConfigurationTests.CoreScorersMarkdown.verified.md -->
+- [`tag-scorer@1`](#tag-scorer1)
+
+These scorers are available by using the corresponding plugin.
+- [`usage-scorer@1`](#usage-scorer1)
+
+### `is-pinned-scorer@1`
+
+Repository scorer based on the pinned state of a repository.<!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_IsPinnedScorerConfigurationV1.verified.md -->
+
+Properties:
+
+- `weight`: The weight of this scorer. The higher the weight, the higher the impact.<!-- endInclude -->
+
+### `tag-scorer@1`
+
+Repository scorer based on the tags of a repository.<!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_TagScorerConfigurationV1.verified.md -->
+
+Properties:
+
+- `weight`: The weight of this scorer. The higher the weight, the higher the impact.
+- `tag`: The tag to match on. If the repository has this tag, the score will return the weight, otherwise, `0`. (optional)<!-- endInclude -->
+
+### `usage-scorer@1`
+
+Repository scorer based on it's usage by RepoM. The more it's used, the higher the score.<!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_UsageScorerConfigurationV1.verified.md -->
+
+Properties:
+
+- `windows`: Specific 'windows' to calculate the score for. 
+- `max-score`: The maximum score a repository can get.<!-- endInclude -->
+<!-- endInclude -->
