@@ -3,7 +3,7 @@ namespace RepoM.Api.Ordering.Az;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 /// <summary>
-/// Compares two repositories by a given property.
+/// Compares two repositories by a given property alphabetically in ascending order.
 /// </summary>
 public class AlphabetComparerConfigurationV1 : IRepositoriesComparerConfiguration
 {

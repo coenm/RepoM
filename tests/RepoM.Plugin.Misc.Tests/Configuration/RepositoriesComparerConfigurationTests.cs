@@ -93,18 +93,49 @@ public class RepositoriesComparerConfigurationTests
     {
         // arrange
         var sb = new StringBuilder();
-        var comparerTypes = RepositoryComparersData
+        var coreComparerTypes = RepositoryComparersData
                 .Where(x => !x.Assembly.GetName().Name.Contains("Plugin"))
                 .OrderBy(x => x.Assembly.GetName().Name)
-                .ThenBy(x => x.Type.GetTypeValue());
+                .ThenBy(x => x.Type.GetTypeValue())
+                .ToArray();
+        var pluginComparerTypes = RepositoryComparersData
+                .Where(x => x.Assembly.GetName().Name.Contains("Plugin"))
+                .OrderBy(x => x.Assembly.GetName().Name)
+                .ThenBy(x => x.Type.GetTypeValue())
+                .ToArray();
 
         const string PREFIX = $"{nameof(RepositoriesComparerConfigurationTests)}.{nameof(DocsRepositoriesComparerConfiguration)}_";
         const string SUFFIX = ".verified.md";
 
         // act
-        foreach (RepositoryTestData item in comparerTypes)
+        foreach (RepositoryTestData item in coreComparerTypes)
         {
-            sb.AppendLine($"### {item.Type.GetTypeValue()}");
+            sb.AppendLine($"- [`{item.Type.GetTypeValue()}`](#{MarkdownHelpers.CreateGithubMarkdownAnchor(item.Type.GetTypeValue())})");
+        }
+
+        if (pluginComparerTypes.Length > 0)
+        {
+            sb.AppendLine(string.Empty);
+            sb.AppendLine("These comparers are available by using the corresponding plugin.");
+            foreach (RepositoryTestData item in pluginComparerTypes)
+            {
+                sb.AppendLine($"- [`{item.Type.GetTypeValue()}`](#{MarkdownHelpers.CreateGithubMarkdownAnchor(item.Type.GetTypeValue())})");
+            }
+        }
+
+        sb.AppendLine(string.Empty);
+
+        foreach (RepositoryTestData item in coreComparerTypes)
+        {
+            sb.AppendLine($"### `{item.Type.GetTypeValue()}`");
+            sb.AppendLine(string.Empty);
+            sb.AppendLine($"include: {PREFIX}{item.Type.Name}{SUFFIX}"); // mdsnippet
+            sb.AppendLine(string.Empty);
+        }
+
+        foreach (RepositoryTestData item in pluginComparerTypes)
+        {
+            sb.AppendLine($"### `{item.Type.GetTypeValue()}`");
             sb.AppendLine(string.Empty);
             sb.AppendLine($"include: {PREFIX}{item.Type.Name}{SUFFIX}"); // mdsnippet
             sb.AppendLine(string.Empty);
@@ -150,11 +181,11 @@ public class RepositoriesComparerConfigurationTests
 
             if (string.IsNullOrWhiteSpace(properties))
             {
-                sb.AppendLine("This comparer does not have any specific properties.");
+                sb.AppendLine("This comparer does not have properties.");
             }
             else
             {
-                sb.AppendLine("Comparer specific properties:");
+                sb.AppendLine("Properties:");
                 sb.AppendLine(string.Empty);
                 sb.Append(classWriter.Properties);
             }

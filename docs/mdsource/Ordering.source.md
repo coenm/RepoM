@@ -17,4 +17,3 @@ include: RepositoriesComparerConfigurationTests.CoreComparersMarkdown.verified.m
 ## Scorers
 
 include: RepositoriesScorerConfigurationTests.CoreScorersMarkdown.verified.md
-
