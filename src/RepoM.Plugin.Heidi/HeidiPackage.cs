@@ -23,7 +23,7 @@ public class HeidiPackage : IPackage
         RegisterServices(container);
     }
 
-    private async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
+    private static async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
