@@ -15,19 +15,19 @@ using VerifyXunit;
 using Xunit;
 
 [UsesVerify]
-public class RepositoriesComparerConfigurationTests
+public class RepositoriesScorerConfigurationTests
 {
-    private const string VERIFY_DIRECTORY = "RepositoriesComparerConfigurationDocs";
+    private const string VERIFY_DIRECTORY = "RepositoriesScorerConfigurationDocs";
     private readonly VerifySettings _verifySettings = new();
 
-    public RepositoriesComparerConfigurationTests()
+    public RepositoriesScorerConfigurationTests()
     {
         _verifySettings.UseDirectory(VERIFY_DIRECTORY);
     }
 
     public static IEnumerable<object[]> PackagesTestData => PluginStore.Packages.Select(package => new object[] { package, }).ToArray();
 
-    public static IEnumerable<RepositoryTestData> RepositoryComparersData
+    public static IEnumerable<RepositoryTestData> RepositoryScorersData
     {
         get
         {
@@ -37,7 +37,7 @@ public class RepositoriesComparerConfigurationTests
             {
                 try
                 {
-                    foreach (Type repositoryActionType in assembly.GetRepositoriesComparerConfigurationFromAssembly())
+                    foreach (Type repositoryActionType in assembly.GetRepositoriesScorerConfigurationFromAssembly())
                     {
                         results.Add(new RepositoryTestData(assembly, repositoryActionType));
                     }
@@ -56,7 +56,7 @@ public class RepositoriesComparerConfigurationTests
     {
         get
         {
-            return RepositoryComparersData.Select(x => new object[] { x, }).ToArray();
+            return RepositoryScorersData.Select(x => new object[] { x, }).ToArray();
         }
     }
 
@@ -72,29 +72,29 @@ public class RepositoriesComparerConfigurationTests
         // act
         var results = assemblies.ToDictionary(
             assembly => assembly.GetName().Name ?? assembly.ToString(),
-            assembly => assembly.GetRepositoriesComparerConfigurationFromAssembly());
+            assembly => assembly.GetRepositoriesScorerConfigurationFromAssembly());
 
         // assert
         await Verifier.Verify(results, _verifySettings);
     }
 
     [Fact]
-    public async Task CoreComparersMarkdown()
+    public async Task CoreScorersMarkdown()
     {
         // arrange
         var sb = new StringBuilder();
-        var coreComparerTypes = RepositoryComparersData
+        var coreScorerTypes = RepositoryScorersData
                 .Where(x => !x.Assembly.IsRepoMPluginAssembly())
                 .OrderBy(x => x.Assembly.GetName().Name)
                 .ThenBy(x => x.Type.GetTypeValue())
                 .ToArray();
-        var pluginComparerTypes = RepositoryComparersData
+        var pluginScorerTypes = RepositoryScorersData
                 .Where(x => x.Assembly.IsRepoMPluginAssembly())
                 .OrderBy(x => x.Assembly.GetName().Name)
                 .ThenBy(x => x.Type.GetTypeValue())
                 .ToArray();
 
-        const string PREFIX = $"{nameof(RepositoriesComparerConfigurationTests)}.{nameof(DocsRepositoriesComparerConfiguration)}_";
+        const string PREFIX = $"{nameof(RepositoriesScorerConfigurationTests)}.{nameof(DocsRepositoriesScorerConfiguration)}_";
         const string SUFFIX = ".verified.md";
 
         static string CreateTableOfContentItem(Type type)
@@ -111,17 +111,16 @@ public class RepositoriesComparerConfigurationTests
         }
 
         // act
-
-        foreach (RepositoryTestData item in coreComparerTypes)
+        foreach (RepositoryTestData item in coreScorerTypes)
         {
             sb.AppendLine(CreateTableOfContentItem(item.Type));
         }
 
-        if (pluginComparerTypes.Length > 0)
+        if (pluginScorerTypes.Length > 0)
         {
             sb.AppendLine(string.Empty);
-            sb.AppendLine("These comparers are available by using the corresponding plugin.");
-            foreach (RepositoryTestData item in pluginComparerTypes)
+            sb.AppendLine("These scorers are available by using the corresponding plugin.");
+            foreach (RepositoryTestData item in pluginScorerTypes)
             {
                 sb.AppendLine(CreateTableOfContentItem(item.Type));
             }
@@ -129,12 +128,12 @@ public class RepositoriesComparerConfigurationTests
 
         sb.AppendLine(string.Empty);
 
-        foreach (RepositoryTestData item in coreComparerTypes)
+        foreach (RepositoryTestData item in coreScorerTypes)
         {
             AppendToStringBuilder(sb, item.Type);
         }
 
-        foreach (RepositoryTestData item in pluginComparerTypes)
+        foreach (RepositoryTestData item in pluginScorerTypes)
         {
             AppendToStringBuilder(sb, item.Type);
         }
@@ -145,7 +144,7 @@ public class RepositoriesComparerConfigurationTests
 
     [Theory]
     [MemberData(nameof(RepositoryComparersDataXunit))]
-    public async Task DocsRepositoriesComparerConfiguration(RepositoryTestData repositoryActionTestData)
+    public async Task DocsRepositoriesScorerConfiguration(RepositoryTestData repositoryActionTestData)
     {
         _verifySettings.UseTextForParameters(repositoryActionTestData.Type.Name);
 
@@ -179,7 +178,7 @@ public class RepositoriesComparerConfigurationTests
 
             if (string.IsNullOrWhiteSpace(properties))
             {
-                sb.AppendLine("This comparer does not have properties.");
+                sb.AppendLine("This scorer does not have properties.");
             }
             else
             {

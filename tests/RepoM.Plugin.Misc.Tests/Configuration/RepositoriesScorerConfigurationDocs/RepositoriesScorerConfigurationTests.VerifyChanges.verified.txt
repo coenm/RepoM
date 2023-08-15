@@ -1,0 +1,9 @@
+﻿{
+  RepoM.Api: [
+    TagScorerConfigurationV1,
+    IsPinnedScorerConfigurationV1
+  ],
+  RepoM.Plugin.Statistics: [
+    UsageScorerConfigurationV1
+  ]
+}

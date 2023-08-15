@@ -2,7 +2,10 @@ namespace RepoM.Api.Ordering.IsPinned;
 
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
-public class IsPinnedScorerConfigurationV1 : IRepositoryScorerConfiguration
+/// <summary>
+/// Repository scorer based on the pinned state of a repository.
+/// </summary>
+public sealed class IsPinnedScorerConfigurationV1 : IRepositoryScorerConfiguration
 {
     public const string TYPE_VALUE = "is-pinned-scorer@1";
 
@@ -12,5 +15,8 @@ public class IsPinnedScorerConfigurationV1 : IRepositoryScorerConfiguration
         set => _ = value;
     }
 
+    /// <summary>
+    /// The weight of this scorer. The higher the weight, the higher the impact.
+    /// </summary>
     public int Weight { get; set; }
 }
