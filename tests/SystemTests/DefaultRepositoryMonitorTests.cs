@@ -7,14 +7,6 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
-using ExpressionStringEvaluator.Methods;
-using ExpressionStringEvaluator.Methods.BooleanToBoolean;
-using ExpressionStringEvaluator.Methods.Flow;
-using ExpressionStringEvaluator.Methods.StringToBoolean;
-using ExpressionStringEvaluator.Methods.StringToInt;
-using ExpressionStringEvaluator.Methods.StringToString;
-using ExpressionStringEvaluator.VariableProviders;
-using ExpressionStringEvaluator.VariableProviders.DateTime;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -24,7 +16,6 @@ using RepoM.Api.Git;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.IO.VariableProviders;
 using RepoM.Core.Plugin.RepositoryFinder;
 using SystemTests.IO;
 using SystemTests.Mocks;
@@ -52,61 +43,6 @@ public class DefaultRepositoryMonitorTests
 
         var appSettingsService = new Mock<IAppSettingsService>();
         appSettingsService.Setup(x => x.EnabledSearchProviders).Returns(new List<string>(0));
-
-        var dateTimeTimeVariableProviderOptions = new DateTimeVariableProviderOptions()
-            {
-                DateTimeProvider = () => DateTime.Now,
-            };
-
-        var dateTimeNowVariableProviderOptions = new DateTimeNowVariableProviderOptions()
-            {
-                DateTimeProvider = () => DateTime.Now,
-            };
-
-        var dateTimeDateVariableProviderOptions = new DateTimeDateVariableProviderOptions()
-            {
-                DateTimeProvider = () => DateTime.Now,
-            };
-
-        var providers = new List<IVariableProvider>
-            {
-                new DateTimeNowVariableProvider(dateTimeNowVariableProviderOptions),
-                new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
-                new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
-                new EmptyVariableProvider(),
-                new VariableProviderAdapter(new []
-                    {
-                        (RepoM.Core.Plugin.VariableProviders.IVariableProvider)new CustomEnvironmentVariableVariableProvider(),
-                        (RepoM.Core.Plugin.VariableProviders.IVariableProvider)new RepoMVariableProvider(),
-                        (RepoM.Core.Plugin.VariableProviders.IVariableProvider)new RepositoryVariableProvider(),
-                    }),
-                new SlashVariableProvider(),
-                new BackslashVariableProvider(),
-            };
-
-        var methods = new List<IMethod>
-            {
-                new StringTrimEndStringMethod(),
-                new StringTrimStartStringMethod(),
-                new StringTrimStringMethod(),
-                new StringContainsStringMethod(),
-                new StringLowerStringMethod(),
-                new StringUpperStringMethod(),
-                new UrlEncodeStringMethod(),
-                new UrlDecodeStringMethod(),
-                new StringEqualsStringMethod(),
-                new AndBooleanMethod(),
-                new OrBooleanMethod(),
-                new StringIsNullOrEmptyBooleanMethod(),
-                new FileExistsBooleanMethod(),
-                new NotBooleanMethod(),
-                new StringLengthMethod(),
-                new IfThenElseMethod(),
-                new IfThenMethod(),
-                new InMethod(),
-                new StringReplaceMethod(),
-                new SubstringMethod(),
-            };
 
         var defaultRepositoryReader = new DefaultRepositoryReader(new Mock<IRepositoryTagsFactory>().Object, NullLogger.Instance);
         _monitor = new DefaultRepositoryMonitor(
