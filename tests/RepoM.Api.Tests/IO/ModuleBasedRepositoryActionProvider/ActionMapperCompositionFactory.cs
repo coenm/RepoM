@@ -1,6 +1,5 @@
 namespace RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
 
-using System.Collections.Generic;
 using System.IO.Abstractions;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
@@ -40,9 +39,9 @@ internal static class ActionMapperCompositionFactory
 
     public static ActionMapperComposition CreateSmall(IRepositoryExpressionEvaluator expressionEvaluator, IActionToRepositoryActionMapper actionToRepositoryActionMapper)
     {
-        var list = new IActionToRepositoryActionMapper[1]
+        var list = new[]
             {
-                actionToRepositoryActionMapper
+                actionToRepositoryActionMapper,
             };
         return new ActionMapperComposition(list, expressionEvaluator);
     }

@@ -15,7 +15,7 @@ using Xunit;
 [UsesVerify]
 public class JustTextV1Test
 {
-    private readonly JsonDynamicRepositoryActionDeserializer _sut;
+    private readonly YamlDynamicRepositoryActionDeserializer _sut;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
 
@@ -25,7 +25,7 @@ public class JustTextV1Test
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");
-        _testFileSettings.UseExtension("json");
+        _testFileSettings.UseExtension("yaml");
 
         _verifySettings = new VerifySettings();
         _verifySettings.UseDirectory("Verified");

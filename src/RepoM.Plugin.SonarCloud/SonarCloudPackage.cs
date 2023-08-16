@@ -3,7 +3,6 @@ namespace RepoM.Plugin.SonarCloud;
 using System.Threading.Tasks;
 using ExpressionStringEvaluator.Methods;
 using JetBrains.Annotations;
-using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
@@ -25,43 +24,15 @@ public class SonarCloudPackage : IPackage
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
-        SonarCloudConfigV1 config;
+        SonarCloudConfigV1? config = null;
         if (version == CurrentConfigVersion.VERSION)
         {
-            SonarCloudConfigV1? result = await packageConfiguration.LoadConfigurationAsync<SonarCloudConfigV1>().ConfigureAwait(false);
-            config = result ?? new SonarCloudConfigV1();
-        }
-        else
-        {
-            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
+            config = await packageConfiguration.LoadConfigurationAsync<SonarCloudConfigV1>().ConfigureAwait(false);
         }
 
-        // this is temporarly to support the old way of storing the configuration
-        if (string.IsNullOrWhiteSpace(config.PersonalAccessToken))
-        {
-            container.RegisterSingleton<ISonarCloudConfiguration>(() =>
-                {
-                    IAppSettingsService appSettingsService = container.GetInstance<IAppSettingsService>();
+        config ??= await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
 
-                    var c = new SonarCloudConfigV1
-                        {
-                            PersonalAccessToken = appSettingsService.SonarCloudPersonalAccessToken,
-                            BaseUrl = config.BaseUrl,
-                        };
-                   _ = packageConfiguration.PersistConfigurationAsync(c, CurrentConfigVersion.VERSION); // fire and forget ;-)
-
-                    return new SonarCloudConfiguration(c.BaseUrl, c.PersonalAccessToken);
-                });
-        }
-        else
-        {
-            container.RegisterSingleton<ISonarCloudConfiguration>(() =>
-                {
-                    IAppSettingsService appSettingsService = container.GetInstance<IAppSettingsService>();
-                    appSettingsService.SonarCloudPersonalAccessToken = "This value has been copied to the new configuration file for this module.";
-                    return new SonarCloudConfiguration(config.BaseUrl, config.PersonalAccessToken);
-                });
-        }
+        container.RegisterInstance<ISonarCloudConfiguration>(new SonarCloudConfiguration(config.BaseUrl, config.PersonalAccessToken));
     }
 
     private static void RegisterServices(Container container)

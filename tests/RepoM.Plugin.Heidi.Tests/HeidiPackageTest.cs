@@ -76,27 +76,13 @@ public class HeidiPackageTest
     [InlineData(10)]
     public async Task RegisterServices_ShouldCopyExistingAppSettingsConfig_WhenNoCurrentCorrectConfig(int? version)
     {
-        // This test is not complete but has some issues running in AzureDevops. Propbably due to the environment variables.
-        // Because this functionality will be stripped in a few months (ie, october 2023) this test is not a priority.
-
         // arrange
-        // using IDisposable d1 = EnvironmentVariableManager.SetEnvironmentVariable("REPOM_HEIDI_CONFIG_PATH", "heidi-configpath-envvar");
-        // using IDisposable d2 = EnvironmentVariableManager.SetEnvironmentVariable("REPOM_HEIDI_CONFIG_FILENAME", "heidi-filename-envvar");
-        // using IDisposable d3 = EnvironmentVariableManager.SetEnvironmentVariable("REPOM_HEIDI_EXE", "heidi-exe-envvar");
-
-        HeidiConfigV1? persistedConfig = null;
         A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
         RegisterExternals(_container);
         var sut = new HeidiPackage();
-        await sut.RegisterServicesAsync(_container, _packageConfiguration);
-
-        Fake.ClearRecordedCalls(_packageConfiguration);
-        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<HeidiConfigV1>._, 1))
-         .Invokes(call => persistedConfig = call.Arguments[0] as HeidiConfigV1);
 
         // act
-        // make sure everyting is resolved. This will trigger the copy of the config.
-        _container.Verify(VerificationOption.VerifyAndDiagnose);
+        await sut.RegisterServicesAsync(_container, _packageConfiguration);
 
         // assert
         A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<HeidiConfigV1>._, 1)).MustHaveHappenedOnceExactly();

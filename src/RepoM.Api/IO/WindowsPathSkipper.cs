@@ -2,7 +2,6 @@ namespace RepoM.Api.IO;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using RepoM.Core.Plugin.RepositoryFinder;
 
 public class WindowsPathSkipper : IPathSkipper

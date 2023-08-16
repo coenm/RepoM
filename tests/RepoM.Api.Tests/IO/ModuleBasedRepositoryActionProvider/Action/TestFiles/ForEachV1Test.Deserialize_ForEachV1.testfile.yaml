@@ -1,0 +1,9 @@
+repository-actions:
+  actions:
+  - type: foreach@1
+    enumerable: '{var.DTAP}'
+    variable: environment
+    actions:
+    - type: browser@1
+      name: '{var.environment}'
+      url: '{var.url}'

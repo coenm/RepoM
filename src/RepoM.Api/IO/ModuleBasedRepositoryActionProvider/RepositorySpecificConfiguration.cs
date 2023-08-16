@@ -24,27 +24,23 @@ using RepositoryAction = RepoM.Api.Git.RepositoryAction;
 
 public class RepositoryConfigurationReader
 {
+    public const string FILENAME = "RepositoryActions.yaml";
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly IFileSystem _fileSystem;
-    private readonly JsonDynamicRepositoryActionDeserializer _jsonAppSettingsDeserializer;
     private readonly YamlDynamicRepositoryActionDeserializer _yamlAppSettingsDeserializer;
     private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ILogger _logger;
 
-    private const string FILENAME = "RepositoryActions.";
-    public const string FILENAME_JSON = FILENAME + "json";
 
     public RepositoryConfigurationReader(
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem,
-        JsonDynamicRepositoryActionDeserializer jsonAppSettingsDeserializer,
         YamlDynamicRepositoryActionDeserializer yamlAppSettingsDeserializer,
         IRepositoryExpressionEvaluator repoExpressionEvaluator,
         ILogger logger)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _jsonAppSettingsDeserializer = jsonAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(jsonAppSettingsDeserializer));
         _yamlAppSettingsDeserializer = yamlAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(yamlAppSettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -52,20 +48,31 @@ public class RepositoryConfigurationReader
 
     private string GetRepositoryActionsFilename(string basePath)
     {
-        var extensions = new [] { "yml", "yaml", "json", };
-
-        var path = Path.Combine(basePath, FILENAME);
-        foreach (var ext in extensions)
+        var filename = Path.Combine(basePath, FILENAME);
+        if (_fileSystem.File.Exists(filename))
         {
-            var filename = path + ext;
+            return filename;
+        }
+
+        var filenameTemplate = Path.Combine(_appDataPathProvider.AppResourcesPath, FILENAME);
+        if (_fileSystem.File.Exists(filenameTemplate))
+        {
+            try
+            {
+                _fileSystem.File.Copy(filenameTemplate, filename);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Could not copy default {FILENAME} to {AppDataPath}", FILENAME, _appDataPathProvider.AppDataPath);
+            }
+
             if (_fileSystem.File.Exists(filename))
             {
                 return filename;
             }
         }
 
-        var failingFilename = path + "{" +  string.Join(",",extensions) + "}";
-        throw new ConfigurationFileNotFoundException(failingFilename);
+        throw new ConfigurationFileNotFoundException(filename);
     }
 
     public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params IRepository[] repositories)
@@ -101,7 +108,7 @@ public class RepositoryConfigurationReader
         try
         {
             var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
-            rootFile = Deserialize(Path.GetExtension(filename), content);
+            rootFile = Deserialize(_fileSystem.Path.GetExtension(filename), content);
         }
         catch (Exception e)
         {
@@ -119,7 +126,7 @@ public class RepositoryConfigurationReader
                     try
                     {
                         var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
-                        rootFile = Deserialize(Path.GetExtension(filename), content);
+                        rootFile = Deserialize(_fileSystem.Path.GetExtension(filename), content);
                     }
                     catch (Exception e)
                     {
@@ -225,7 +232,7 @@ public class RepositoryConfigurationReader
                 try
                 {
                     var content = _fileSystem.File.ReadAllText(f, Encoding.UTF8);
-                    repoSpecificConfig = Deserialize(Path.GetExtension(f), content);
+                    repoSpecificConfig = Deserialize(_fileSystem.Path.GetExtension(f), content);
                 }
                 catch (Exception)
                 {
@@ -267,7 +274,7 @@ public class RepositoryConfigurationReader
 
     private string EvaluateString(string? input, IRepository? repository)
     {
-        object? v = Evaluate(input, repository);
+        var v = Evaluate(input, repository);
         return v?.ToString() ?? string.Empty;
     }
 
@@ -283,11 +290,6 @@ public class RepositoryConfigurationReader
         if (extension.StartsWith('.'))
         {
             extension = extension[1..];
-        }
-
-        if ("json".Equals(extension, StringComparison.CurrentCultureIgnoreCase))
-        {
-            return _jsonAppSettingsDeserializer.Deserialize(rawContent);
         }
 
         if ("yaml".Equals(extension, StringComparison.CurrentCultureIgnoreCase) || "yml".Equals(extension, StringComparison.CurrentCultureIgnoreCase))
@@ -490,7 +492,7 @@ public class RepositorySpecificConfiguration
         }
     }
 
-    private List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars, Repository? repository)
+    private List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars, IRepository? repository)
     {
         if (vars == null || repository == null)
         {
@@ -549,6 +551,6 @@ public class RepositorySpecificConfiguration
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty
-            : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression!, repository);
+            : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
     }
 }

@@ -92,7 +92,7 @@ class PropertyHandler : IItemHandler<PropertySelector>
     }
 }
 
-public class RepoMVariableProvider : IVariableProvider
+public class RepoMVariableProvider : RepoM.Core.Plugin.VariableProviders.IVariableProvider
 {
     private static readonly char[] _separatorChars = { '.', '[', };
     private const string PREFIX = "var.";

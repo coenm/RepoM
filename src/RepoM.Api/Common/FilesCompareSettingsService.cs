@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
@@ -14,30 +13,45 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public class FilesCompareSettingsService : ICompareSettingsService
 {
+    private const string FILENAME = "RepoM.Ordering.yaml";
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
-    private readonly IEnumerable<IConfigurationRegistration> _registrations;
     private readonly IAppDataPathProvider _appDataPathProvider;
     private Dictionary<string, IRepositoriesComparerConfiguration>? _configuration;
-    
+    private readonly IDeserializer _deserializer;
+
     public FilesCompareSettingsService(
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem,
-        IEnumerable<IConfigurationRegistration> registrations,
+        IEnumerable<IKeyTypeRegistration<IRepositoriesComparerConfiguration>> comparerRegistrations,
+        IEnumerable<IKeyTypeRegistration<IRepositoryScorerConfiguration>> scorerRegistrations,
         ILogger logger)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _registrations = registrations.ToList();
+
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+
+        var comparerTypesDictionary = comparerRegistrations.ToDictionary(registration => registration.Tag, registration => registration.ConfigurationType);
+        var scorerTypesDictionary = scorerRegistrations.ToDictionary(registration => registration.Tag, registration => registration.ConfigurationType);
+
+        _deserializer = new DeserializerBuilder()
+             .WithNamingConvention(HyphenatedNamingConvention.Instance)
+             .WithTypeDiscriminatingNodeDeserializer(options =>
+                     {
+                         options.AddKeyValueTypeDiscriminator<IRepositoryScorerConfiguration>(nameof(IRepositoryScorerConfiguration.Type).ToLower(), scorerTypesDictionary);
+                         options.AddKeyValueTypeDiscriminator<IRepositoriesComparerConfiguration>(nameof(IRepositoriesComparerConfiguration.Type).ToLower(), comparerTypesDictionary);
+                     },
+                 maxDepth: -1,
+                 maxLength: -1)
+             .Build();
     }
 
     public Dictionary<string, IRepositoriesComparerConfiguration> Configuration => _configuration ??= Load();
-
-
+    
     private string GetFileName()
     {
-        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, "RepoM.Ordering.yaml");
+        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, FILENAME);
     }
 
     private Dictionary<string, IRepositoriesComparerConfiguration> Load()
@@ -59,34 +73,29 @@ public class FilesCompareSettingsService : ICompareSettingsService
 
         if (!_fileSystem.File.Exists(file))
         {
-            throw new FileNotFoundException("Comparer configuration file not found", file);
+            var templateFilename = _fileSystem.Path.Combine(_appDataPathProvider.AppResourcesPath, FILENAME);
+            if (_fileSystem.File.Exists(templateFilename))
+            {
+                try
+                {
+                    _fileSystem.File.Copy(templateFilename, file);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Could not copy template file '{templateFilename}' to '{file}'", templateFilename, file);
+                }
+            }
+
+            if (!_fileSystem.File.Exists(file))
+            {
+                throw new FileNotFoundException("Comparer configuration file not found", file);
+            }
         }
 
         try
         {
             var yml = _fileSystem.File.ReadAllText(file);
-
-            IDeserializer deserializer = new DeserializerBuilder()
-                .WithNamingConvention(HyphenatedNamingConvention.Instance)
-                .WithTypeDiscriminatingNodeDeserializer(options =>
-                        {
-                            options.AddKeyValueTypeDiscriminator<IRepositoryScorerConfiguration>(
-                                "type",
-                                _registrations
-                                    .Where(reg => typeof(IRepositoryScorerConfiguration).GetTypeInfo().IsAssignableFrom(reg.ConfigurationType.GetTypeInfo()))
-                                    .ToDictionary(registration => registration.Tag, x => x.ConfigurationType));
-
-                            options.AddKeyValueTypeDiscriminator<IRepositoriesComparerConfiguration>(
-                                "type",
-                                _registrations
-                                    .Where(reg => typeof(IRepositoriesComparerConfiguration).GetTypeInfo().IsAssignableFrom(reg.ConfigurationType.GetTypeInfo()))
-                                    .ToDictionary(registration => registration.Tag, x => x.ConfigurationType));
-                        },
-                     maxDepth: -1,
-                     maxLength: -1)
-                .Build();
-
-            return deserializer.Deserialize<Dictionary<string, IRepositoriesComparerConfiguration>>(yml);
+            return _deserializer.Deserialize<Dictionary<string, IRepositoriesComparerConfiguration>>(yml);
         }
         catch (Exception ex)
         {

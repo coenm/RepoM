@@ -23,43 +23,19 @@ public class HeidiPackage : IPackage
         RegisterServices(container);
     }
 
-    private async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
+    private static async Task ExtractAndRegisterConfiguration(Container container, IPackageConfiguration packageConfiguration)
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
-        HeidiConfigV1 config;
+        HeidiConfigV1? config = null;
         if (version == CurrentConfigVersion.VERSION)
         {
-            HeidiConfigV1? result = await packageConfiguration.LoadConfigurationAsync<HeidiConfigV1>().ConfigureAwait(false);
-            config = result ?? new HeidiConfigV1();
-        }
-        else
-        {
-            config = await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
+            config = await packageConfiguration.LoadConfigurationAsync<HeidiConfigV1>().ConfigureAwait(false);
         }
 
-        // this is temporarly to support the old way of storing the configuration
-        if (string.IsNullOrWhiteSpace(config.ConfigPath) && string.IsNullOrWhiteSpace(config.ConfigFilename) && string.IsNullOrWhiteSpace(config.ExecutableFilename))
-        {
-            container.RegisterSingleton<IHeidiSettings>(() =>
-            {
-                var oldSettingsProvider = new EnvironmentVariablesHeidiSettings();
-                
-                var c = new HeidiConfigV1
-                {
-                    ConfigPath = oldSettingsProvider.ConfigPath,
-                    ConfigFilename = oldSettingsProvider.ConfigFilename,
-                    ExecutableFilename = oldSettingsProvider.DefaultExe,
-                };
-                _ = packageConfiguration.PersistConfigurationAsync(c, CurrentConfigVersion.VERSION); // do not await
+        config ??= await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
 
-                return new HeidiModuleConfiguration(c.ConfigPath, c.ConfigFilename, c.ExecutableFilename);
-            });
-        }
-        else
-        {
-            container.RegisterInstance<IHeidiSettings>(new HeidiModuleConfiguration(config.ConfigPath, config.ConfigFilename, config.ExecutableFilename));
-        }
+        container.RegisterInstance<IHeidiSettings>(new HeidiModuleConfiguration(config.ConfigPath, config.ConfigFilename, config.ExecutableFilename));
     }
 
     private static void RegisterServices(Container container)

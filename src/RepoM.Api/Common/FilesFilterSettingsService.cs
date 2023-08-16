@@ -12,6 +12,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public class FilesFilterSettingsService : IFilterSettingsService
 {
+    private const string FILENAME = "RepoM.Filtering.yaml";
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
     private readonly IAppDataPathProvider _appDataPathProvider;
@@ -31,7 +32,7 @@ public class FilesFilterSettingsService : IFilterSettingsService
 
     private string GetFileName()
     {
-        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, "RepoM.Filtering.yaml");
+        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, FILENAME);
     }
 
     private Dictionary<string, RepositoryFilterConfiguration> Load()
@@ -40,7 +41,23 @@ public class FilesFilterSettingsService : IFilterSettingsService
 
         if (!_fileSystem.File.Exists(file))
         {
-            throw new FileNotFoundException("Comparer configuration file not found", file);
+            var templateFilename = _fileSystem.Path.Combine(_appDataPathProvider.AppResourcesPath, FILENAME);
+            if (_fileSystem.File.Exists(templateFilename))
+            {
+                try
+                {
+                    _fileSystem.File.Copy(templateFilename, file);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Could not copy template file '{templateFilename}' to '{file}'", templateFilename, file);
+                }
+            }
+
+            if (!_fileSystem.File.Exists(file))
+            {
+                throw new FileNotFoundException("Filtering configuration file not found", file);
+            }
         }
 
         try

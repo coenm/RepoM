@@ -32,10 +32,8 @@ public class SonarCloudPackageTest
         A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(1 as int?));
         A.CallTo(() => _packageConfiguration.LoadConfigurationAsync<SonarCloudConfigV1>()).ReturnsLazily(() => sonarCloudConfigV1);
         A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<SonarCloudConfigV1>._, 1)).Returns(Task.CompletedTask);
-
-        A.CallTo(() => _appSettingsService.SonarCloudPersonalAccessToken).Returns("MY_TEST_PAT_SONAR");
     }
-
+   
     [Fact]
     public async Task RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
     {
@@ -70,32 +68,6 @@ public class SonarCloudPackageTest
 
         // implicit, Verify throws when container is not valid.
         _container.Verify(VerificationOption.VerifyAndDiagnose);
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData(2)]
-    [InlineData(10)]
-    public async Task RegisterServices_ShouldCopyExistingAppSettingsConfig_WhenNoCurrentCorrectConfig(int? version)
-    {
-        // arrange
-        SonarCloudConfigV1? persistedConfig = null;
-        A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
-        RegisterExternals(_container);
-        var sut = new SonarCloudPackage();
-        await sut.RegisterServicesAsync(_container, _packageConfiguration);
-
-        Fake.ClearRecordedCalls(_packageConfiguration);
-        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<SonarCloudConfigV1>._, 1))
-         .Invokes(call => persistedConfig = call.Arguments[0] as SonarCloudConfigV1);
-
-        // act
-        // make sure everyting is resolved. This will trigger the copy of the config.
-        _container.Verify(VerificationOption.VerifyAndDiagnose);
-
-        // assert
-        A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<SonarCloudConfigV1>._, 1)).MustHaveHappenedOnceExactly();
-        await Verifier.Verify(persistedConfig).IgnoreParametersForVerified(nameof(version));
     }
 
     [Fact]

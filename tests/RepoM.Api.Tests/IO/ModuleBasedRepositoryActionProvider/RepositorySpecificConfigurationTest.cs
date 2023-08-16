@@ -38,7 +38,6 @@ public class RepositorySpecificConfigurationTest
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly MockFileSystem _fileSystem;
-    private readonly JsonDynamicRepositoryActionDeserializer _jsonAppSettingsDeserializer;
     private readonly YamlDynamicRepositoryActionDeserializer _yamlAppSettingsDeserializer;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
@@ -51,7 +50,7 @@ public class RepositorySpecificConfigurationTest
     {
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");
-        _testFileSettings.UseExtension("json");
+        _testFileSettings.UseExtension("yaml");
 
         _verifySettings = new VerifySettings();
         _verifySettings.UseDirectory("Verified");
@@ -63,8 +62,8 @@ public class RepositorySpecificConfigurationTest
         _appDataPathProvider = A.Fake<IAppDataPathProvider>();
         A.CallTo(() => _appDataPathProvider.AppDataPath).Returns(_tempPath);
 
-        _jsonAppSettingsDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
-        _yamlAppSettingsDeserializer = new YamlDynamicRepositoryActionDeserializer(_jsonAppSettingsDeserializer);
+        JsonDynamicRepositoryActionDeserializer jsonAppSettingsDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
+        _yamlAppSettingsDeserializer = new YamlDynamicRepositoryActionDeserializer(jsonAppSettingsDeserializer);
 
         var dateTimeTimeVariableProviderOptions = new DateTimeVariableProviderOptions()
         {
@@ -87,9 +86,12 @@ public class RepositorySpecificConfigurationTest
                 new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
-                new CustomEnvironmentVariableVariableProvider(),
-                new RepoMVariableProvider(),
-                new RepositoryVariableProvider(),
+                new VariableProviderAdapter(new Core.Plugin.VariableProviders.IVariableProvider[]
+                    {
+                        new CustomEnvironmentVariableVariableProvider(),
+                        new RepoMVariableProvider(),
+                        new RepositoryVariableProvider(),
+                    }),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
             };
@@ -139,19 +141,8 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(
-            _fileSystem,
-            _repositoryExpressionEvaluator,
-            _actionMapperComposition,
-            _translationService,
-            new RepositoryConfigurationReader(
-                _appDataPathProvider,
-                _fileSystem,
-                _jsonAppSettingsDeserializer,
-                _yamlAppSettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                NullLogger.Instance));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        RepositorySpecificConfiguration sut = CreateSut();
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"), new Repository("path2"));
@@ -166,19 +157,8 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(
-            _fileSystem,
-            _repositoryExpressionEvaluator,
-            _actionMapperComposition,
-            _translationService,
-            new RepositoryConfigurationReader(
-                _appDataPathProvider,
-                _fileSystem,
-                _jsonAppSettingsDeserializer,
-                _yamlAppSettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                NullLogger.Instance));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        RepositorySpecificConfiguration sut = CreateSut();
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
@@ -193,19 +173,8 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActions1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(
-            _fileSystem,
-            _repositoryExpressionEvaluator,
-            _actionMapperComposition,
-            _translationService,
-            new RepositoryConfigurationReader(
-                _appDataPathProvider,
-                _fileSystem,
-                _jsonAppSettingsDeserializer,
-                _yamlAppSettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                NullLogger.Instance));
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        RepositorySpecificConfiguration sut = CreateSut();
 
         // act
         IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
@@ -220,8 +189,19 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsWithSeparator1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME_JSON), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
+        RepositorySpecificConfiguration sut = CreateSut();
+
+        // act
+        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
+
+        // assert
+        await Verifier.Verify(result, _verifySettings);
+    }
+
+    private RepositorySpecificConfiguration CreateSut()
+    {
+        return new RepositorySpecificConfiguration(
             _fileSystem,
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
@@ -229,15 +209,8 @@ public class RepositorySpecificConfigurationTest
             new RepositoryConfigurationReader(
                 _appDataPathProvider,
                 _fileSystem,
-                _jsonAppSettingsDeserializer,
                 _yamlAppSettingsDeserializer,
                 _repositoryExpressionEvaluator,
                 NullLogger.Instance));
-
-        // act
-        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
     }
 }

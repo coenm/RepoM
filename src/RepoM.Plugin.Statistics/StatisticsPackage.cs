@@ -6,7 +6,6 @@ using JetBrains.Annotations;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryOrdering;
-using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Core.Plugin.VariableProviders;
 using RepoM.Plugin.Statistics.Ordering;
 using RepoM.Plugin.Statistics.PersistentConfiguration;
@@ -66,10 +65,10 @@ public class StatisticsPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // ordering
-        container.Collection.Append<IConfigurationRegistration, UsageScorerConfigurationV1Registration>(Lifestyle.Singleton);
+        container.RegisterScorerConfigurationForType<UsageScorerConfigurationV1>();
         container.Register<IRepositoryScoreCalculatorFactory<UsageScorerConfigurationV1>, UsageScorerFactory>(Lifestyle.Singleton);
 
-        container.Collection.Append<IConfigurationRegistration, LastOpenedConfigurationV1Registration>(Lifestyle.Singleton);
+        container.RegisterComparerConfigurationForType<LastOpenedConfigurationV1>();
         container.Register<IRepositoryComparerFactory<LastOpenedConfigurationV1>, LastOpenedComparerFactory>(Lifestyle.Singleton);
 
         // action executor

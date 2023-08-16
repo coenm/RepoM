@@ -2,18 +2,13 @@ namespace RepoM.Plugin.Misc.Tests.Configuration;
 
 using System;
 using System.Collections.Generic;
-using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using FakeItEasy;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
-using RepoM.Api.Plugins;
-using RepoM.Core.Plugin.Common;
+using RepoM.Plugin.Misc.Tests.TestFramework;
 using RepoM.Plugin.Misc.Tests.TestFramework.AssemblyAndTypeHelpers;
 using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
@@ -23,21 +18,12 @@ using Xunit;
 [UsesVerify]
 public class DocsRepositoryActionsTests
 {
-    private readonly IAppDataPathProvider _appDataPathProvider;
-    private FileBasedPackageConfiguration _fileBasedPackageConfiguration;
-    private MockFileSystem _fileSystem;
-    private ILogger _logger;
+    private const string VERIFY_DIRECTORY = "RepositoryActionsDocs";
+    private readonly VerifySettings _verifySettings = new();
 
     public DocsRepositoryActionsTests()
     {
-        _appDataPathProvider = A.Fake<IAppDataPathProvider>();
-        A.CallTo(() => _appDataPathProvider.AppDataPath).Returns("C:\\tmp\\");
-        _fileSystem = new MockFileSystem(new J2N.Collections.Generic.Dictionary<string, MockFileData>()
-            {
-                { "C:\\tmp\\x.tmp", new MockFileData("x") }, // make sure path exists.
-            });
-        _logger = NullLogger.Instance;
-        _fileBasedPackageConfiguration = new FileBasedPackageConfiguration(_appDataPathProvider, _fileSystem, _logger, "dummy");
+        _verifySettings.UseDirectory(VERIFY_DIRECTORY);
     }
 
     public static IEnumerable<object[]> AssemblyTestData => PluginStore.Assemblies.Select(assembly => new object[] { assembly, }).ToArray();
@@ -48,22 +34,10 @@ public class DocsRepositoryActionsTests
         {
             List<object[]> results = new();
 
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Assembly assembly in RepoMAssemblyStore.GetAssemblies())
             {
                 try
                 {
-                    var assemblyName = assembly.GetName().Name;
-                    if (string.IsNullOrEmpty(assemblyName) || !assemblyName.Contains("RepoM"))
-                    {
-                        continue;
-                    }
-
-                    // Workaround for Github Actions
-                    if (assemblyName.Contains("Test"))
-                    {
-                        continue;
-                    }
-
                     foreach (Type repositoryActionType in assembly.GetRepositoryActionsFromAssembly())
                     {
                         results.Add(new object[] { new RepositoryTestData(assembly, repositoryActionType), });
@@ -83,46 +57,24 @@ public class DocsRepositoryActionsTests
     public async Task VerifyChanges()
     {
         // arrange
-        var results = new Dictionary<string, Type[]>();
+        var assemblies = RepoMAssemblyStore.GetAssemblies()
+                                           .Concat(PluginStore.Assemblies)
+                                           .Distinct()
+                                           .OrderBy(a => a.FullName);
 
         // act
-        foreach (Assembly assembly in PluginStore.Assemblies)
-        {
-            results.Add(
-                assembly.GetName().Name ?? assembly.ToString(),
-                assembly.GetRepositoryActionsFromAssembly());
-        }
+        var results = assemblies.ToDictionary(
+            assembly => assembly.GetName().Name ?? assembly.ToString(),
+            assembly => assembly.GetRepositoryActionsFromAssembly());
 
         // assert
-        var settings = new VerifySettings();
-        await Verifier.Verify(results, settings);
-    }
-
-    public class RepositoryTestData
-    {
-        public RepositoryTestData(Assembly assembly, Type type)
-        {
-            Assembly = assembly;
-            Type = type;
-        }
-
-        public Assembly Assembly { get; }
-
-        public Type Type { get; }
-
-        public override string ToString()
-        {
-            return Assembly.GetName().Name + "-" + Type.Name;
-        }
+        await Verifier.Verify(results, _verifySettings);
     }
 
     [Fact]
     public async Task RepositoryActionBaseDocumentationGeneration()
     {
-        var settings = new VerifySettings();
-        // settings.AutoVerify();
-        settings.UseDirectory("VerifiedDocs1");
-        settings.UseTextForParameters(nameof(RepositoryAction));
+        _verifySettings.UseTextForParameters(nameof(RepositoryAction));
 
 #if DEBUG
         var options = new NuDoq.ReaderOptions
@@ -150,7 +102,7 @@ public class DocsRepositoryActionsTests
         }
 
 #if DEBUG
-        await Verifier.Verify(sb.ToString(), settings: settings, extension: "md");
+        await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
 #else
         await Task.Yield();
         Assert.True(true); // this test should only be run in Debug mode.
@@ -161,10 +113,7 @@ public class DocsRepositoryActionsTests
     [MemberData(nameof(RepositoryActionsTestData))]
     public async Task DocsRepositoryActionsSettings(RepositoryTestData repositoryActionTestData)
     {
-        var settings = new VerifySettings();
-        // settings.AutoVerify();
-        settings.UseDirectory("VerifiedDocs1");
-        settings.UseTextForParameters(repositoryActionTestData.Type.Name);
+        _verifySettings.UseTextForParameters(repositoryActionTestData.Type.Name);
 
         var builtinClassNames = new Dictionary<string, string>
             {
@@ -207,7 +156,7 @@ public class DocsRepositoryActionsTests
         }
 
 #if DEBUG
-        await Verifier.Verify(sb.ToString(), settings: settings, extension: "md");
+        await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
 #else
         await Task.Yield();
         Assert.True(true); // this test should only be run in Debug mode.

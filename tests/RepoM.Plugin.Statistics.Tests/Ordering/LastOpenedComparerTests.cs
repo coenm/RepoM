@@ -1,7 +1,6 @@
 namespace RepoM.Plugin.Statistics.Tests.Ordering;
 
 using System;
-using System.Collections.Generic;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.Core.Plugin.Repository;

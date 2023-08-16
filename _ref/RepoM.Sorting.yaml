@@ -1,5 +1,5 @@
 Work: 
-  type: composition@1
+  type: composition-comparer@1
   comparers:
   - type: score-comparer@1
     score-provider: 
@@ -19,7 +19,7 @@ Work:
     property: Name
     weight: 1
 Work Dynamic: 
-  type: composition@1
+  type: composition-comparer@1
   comparers:
   - type: score-comparer@1
     score-provider:
@@ -58,7 +58,7 @@ Work Dynamic:
     property: Name
     weight: 1
 Prive: 
-  type: composition@1
+  type: composition-comparer@1
   comparers:
   - type: score-comparer@1
     score-provider:

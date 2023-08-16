@@ -5,7 +5,7 @@
       {
         $type: RepositoryActionSeparatorV1,
         Type: separator@1,
-        Name: doesn't matter'
+        Name: doesn't matter
       }
     ]
   }

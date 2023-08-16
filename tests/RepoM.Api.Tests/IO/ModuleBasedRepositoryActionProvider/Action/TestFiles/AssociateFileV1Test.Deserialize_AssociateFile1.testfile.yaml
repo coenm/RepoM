@@ -1,0 +1,6 @@
+repository-actions:
+  actions:
+  - type: associate-file@1
+    name: Goto google.com
+    active: false
+    extension: '*.sln'

@@ -58,18 +58,6 @@ public sealed class AppSettings
     public List<string> EnabledSearchProviders { get; set; } = new();
 
     /// <summary>
-    /// SonarCloud PAT.
-    /// </summary>
-    [Obsolete("This is done using plugin.")]
-    public string? SonarCloudPersonalAccessToken { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Azure DevOps config.
-    /// </summary>
-    [Obsolete("This is done using plugin.")]
-    public AzureDevOpsOptions? AzureDevOps { get; set; } = AzureDevOpsOptions.Default;
-
-    /// <summary>
     /// List of plugins.
     /// </summary>
     [UiConfigured]
@@ -82,8 +70,6 @@ public sealed class AppSettings
             MenuSize = Size.Default,
             ReposRootDirectories = new(),
             EnabledSearchProviders = new List<string>(1),
-            SonarCloudPersonalAccessToken = null,
-            AzureDevOps = AzureDevOpsOptions.Default,
             Plugins = new List<PluginOptions>(),
         };
 }
@@ -93,15 +79,6 @@ public sealed class UiConfiguredAttribute : Attribute { }
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public sealed class ManualConfiguredAttribute : Attribute { }
-
-public class AzureDevOpsOptions
-{
-    public string? PersonalAccessToken { get; set; } = string.Empty;
-
-    public string? BaseUrl { get; set; } = string.Empty;
-
-    public static AzureDevOpsOptions? Default => null;
-}
 
 public class Size
 {
@@ -118,16 +95,9 @@ public class Size
 
 public class PluginOptions
 {
-    public PluginOptions()
-    {
-        Name = string.Empty;
-        DllName = string.Empty;
-        Enabled = false;
-    }
+    public string Name { get; init; } = string.Empty;
 
-    public string Name { get; init; }
+    public string DllName { get; init; } = string.Empty;
 
-    public string DllName { get; init; }
-
-    public bool Enabled { get; init; }
+    public bool Enabled { get; init; } = false;
 }

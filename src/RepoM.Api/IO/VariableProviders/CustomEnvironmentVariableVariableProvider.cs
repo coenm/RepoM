@@ -9,7 +9,7 @@ using RepoM.Api.IO.Variables;
 using RepoM.Core.Plugin.Repository;
 
 [UsedImplicitly]
-public class CustomEnvironmentVariableVariableProvider : IVariableProvider<RepositoryContext>
+public class CustomEnvironmentVariableVariableProvider : RepoM.Core.Plugin.VariableProviders.IVariableProvider<RepositoryContext>
 {
     private const string PREFIX = "Env.";
 

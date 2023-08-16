@@ -1,7 +1,6 @@
 namespace RepoM.App.RepositoryFiltering.QueryMatchers;
 
 using System;
-using System.Linq;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;

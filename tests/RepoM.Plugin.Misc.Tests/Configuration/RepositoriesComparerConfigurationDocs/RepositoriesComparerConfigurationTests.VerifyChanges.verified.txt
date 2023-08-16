@@ -1,0 +1,11 @@
+﻿{
+  RepoM.Api: [
+    SumComparerConfigurationV1,
+    ScoreComparerConfigurationV1,
+    CompositionComparerConfigurationV1,
+    AlphabetComparerConfigurationV1
+  ],
+  RepoM.Plugin.Statistics: [
+    LastOpenedConfigurationV1
+  ]
+}
