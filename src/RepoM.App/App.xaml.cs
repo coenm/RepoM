@@ -12,7 +12,6 @@ using Hardcodet.Wpf.TaskbarNotification;
 using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.App.i18n;
-using SimpleInjector;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Plugins;
@@ -23,6 +22,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 using RepoM.App.Services;
 using Container = SimpleInjector.Container;
 using RepoM.App.Services.HotKey;
+using Serilog.Enrichers;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -39,6 +39,7 @@ public partial class App : Application
     [STAThread]
     public static void Main()
     {
+        Thread.CurrentThread.Name ??= "UI";
         var app = new App();
         app.InitializeComponent();
         app.Run();
@@ -73,7 +74,7 @@ public partial class App : Application
         Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory).GetAwaiter().GetResult();
 
 #if DEBUG
-        Bootstrapper.Container.Verify(VerificationOption.VerifyAndDiagnose);
+        Bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
 #endif
 
         UseRepositoryMonitor(Bootstrapper.Container);
@@ -112,6 +113,22 @@ public partial class App : Application
         var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.AppDataPath, FILENAME);
         if (!fileSystem.File.Exists(fullFilename))
         {
+            try
+            {
+                var fullFilenameTemplate = Path.Combine(DefaultAppDataPathProvider.Instance.AppResourcesPath, FILENAME);
+                if (fileSystem.File.Exists(fullFilenameTemplate))
+                {
+                    fileSystem.File.Copy(fullFilenameTemplate, fullFilename);
+                }
+            }
+            catch (Exception)
+            {
+                // swallow
+            }
+        }
+
+        if (!fileSystem.File.Exists(fullFilename))
+        {
             fullFilename = FILENAME;
         }
 
@@ -127,6 +144,9 @@ public partial class App : Application
         ILoggerFactory loggerFactory = new LoggerFactory();
 
         LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
+            .Enrich.WithThreadId()
+            .Enrich.WithThreadName()
+            .Enrich.WithProperty(ThreadNameEnricher.ThreadNamePropertyName, "BG")
             .ReadFrom.Configuration(config);
 
         Logger logger = loggerConfiguration.CreateLogger();
