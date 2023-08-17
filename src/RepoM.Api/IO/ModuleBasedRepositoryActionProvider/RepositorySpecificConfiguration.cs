@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Text;
+using System.Runtime.Caching;
 using DotNetEnv;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
@@ -27,23 +27,26 @@ public class RepositoryConfigurationReader
     public const string FILENAME = "RepositoryActions.yaml";
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly IFileSystem _fileSystem;
-    private readonly YamlDynamicRepositoryActionDeserializer _yamlAppSettingsDeserializer;
     private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ILogger _logger;
-
+    private readonly RepositoryActionsFileStore _repositoryActionsFileStore;
+    private readonly EnvFileStore _envFileStore;
 
     public RepositoryConfigurationReader(
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem,
-        YamlDynamicRepositoryActionDeserializer yamlAppSettingsDeserializer,
+        IRepositoryActionDeserializer repositoryActionsDeserializer,
         IRepositoryExpressionEvaluator repoExpressionEvaluator,
-        ILogger logger)
+        ILogger logger,
+        ObjectCache cache)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _yamlAppSettingsDeserializer = yamlAppSettingsDeserializer ?? throw new ArgumentNullException(nameof(yamlAppSettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+        _repositoryActionsFileStore = new RepositoryActionsFileStore(_fileSystem, repositoryActionsDeserializer, cache);
+        _envFileStore = new EnvFileStore(cache);
     }
 
     private string GetRepositoryActionsFilename(string basePath)
@@ -107,32 +110,37 @@ public class RepositoryConfigurationReader
 
         try
         {
-            var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
-            rootFile = Deserialize(_fileSystem.Path.GetExtension(filename), content);
+            rootFile = _repositoryActionsFileStore.TryGet(filename);
         }
         catch (Exception e)
         {
             throw new InvalidConfigurationException(filename, e.Message, e);
         }
-        
-        Redirect? redirect = rootFile.Redirect;
-        if (!string.IsNullOrWhiteSpace(redirect?.Filename))
+
+        if (rootFile == null)
         {
-            if (IsEnabled(redirect.Enabled, true, null))
+            throw new InvalidConfigurationException(filename, "Could not read and deserialize file");
+        }
+
+        Redirect? redirect = rootFile.Redirect;
+        if (!string.IsNullOrWhiteSpace(redirect?.Filename) && IsEnabled(redirect.Enabled, true, null))
+        {
+            filename = EvaluateString(redirect.Filename, null);
+            if (_fileSystem.File.Exists(filename))
             {
-                filename = EvaluateString(redirect.Filename, null);
-                if (_fileSystem.File.Exists(filename))
+                try
                 {
-                    try
-                    {
-                        var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
-                        rootFile = Deserialize(_fileSystem.Path.GetExtension(filename), content);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogWarning(e, "Could not read and deserialize file '{file}'", filename);
-                        throw new InvalidConfigurationException(filename, e.Message, e);
-                    }
+                    rootFile = _repositoryActionsFileStore.TryGet(filename);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e, "Could not read and deserialize file '{file}'", filename);
+                    throw new InvalidConfigurationException(filename, e.Message, e);
+                }
+
+                if (rootFile == null)
+                {
+                    throw new InvalidConfigurationException(filename, "Could not read and deserialize file");
                 }
             }
         }
@@ -177,7 +185,7 @@ public class RepositoryConfigurationReader
 
                 try
                 {
-                    IEnumerable<KeyValuePair<string, string>>? currentEnvVars = Env.Load(f, new LoadOptions(setEnvVars: false));
+                    IDictionary<string, string> currentEnvVars = _envFileStore.TryGet(f);
                     if (envVars == null || !envVars.Any())
                     {
                         envVars = currentEnvVars.ToDictionary();
@@ -231,8 +239,7 @@ public class RepositoryConfigurationReader
 
                 try
                 {
-                    var content = _fileSystem.File.ReadAllText(f, Encoding.UTF8);
-                    repoSpecificConfig = Deserialize(_fileSystem.Path.GetExtension(f), content);
+                    repoSpecificConfig = _repositoryActionsFileStore.TryGet(filename);
                 }
                 catch (Exception)
                 {
@@ -283,21 +290,6 @@ public class RepositoryConfigurationReader
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty
             : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression!, repository);
-    }
-
-    private RepositoryActionConfiguration Deserialize(string extension, string rawContent)
-    {
-        if (extension.StartsWith('.'))
-        {
-            extension = extension[1..];
-        }
-
-        if ("yaml".Equals(extension, StringComparison.CurrentCultureIgnoreCase) || "yml".Equals(extension, StringComparison.CurrentCultureIgnoreCase))
-        {
-            return _yamlAppSettingsDeserializer.Deserialize(rawContent);
-        }
-
-        throw new NotImplementedException("Unknown extension");
     }
 }
 

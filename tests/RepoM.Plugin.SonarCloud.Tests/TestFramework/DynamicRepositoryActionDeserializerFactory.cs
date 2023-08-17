@@ -9,9 +9,9 @@ using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 internal static class DynamicRepositoryActionDeserializerFactory
 {
-    public static JsonDynamicRepositoryActionDeserializer Create()
+    public static YamlDynamicRepositoryActionDeserializer Create()
     {
-        return new JsonDynamicRepositoryActionDeserializer(
+        return new YamlDynamicRepositoryActionDeserializer(
             new ActionDeserializerComposition(
                 new IActionDeserializer[]
                     {
@@ -20,8 +20,8 @@ internal static class DynamicRepositoryActionDeserializerFactory
                 Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
     }
 
-    public static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
+    public static YamlDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
+        return new YamlDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
     }
 }

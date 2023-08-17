@@ -9,48 +9,43 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
-using RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Plugin.SonarCloud;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
-using XunitEnumMemberData;
 
 [UsesEasyTestFile]
 [UsesVerify]
 public class SonarCloudSetFavoriteV1Test
 {
-    private readonly JsonDynamicRepositoryActionDeserializer _sutJson;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
-    private readonly YamlDynamicRepositoryActionDeserializer _sutYaml;
+    private readonly YamlDynamicRepositoryActionDeserializer _sut;
 
     public SonarCloudSetFavoriteV1Test()
     {
-        _sutJson = CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionSonarCloudSetFavoriteV1>());
-        _sutYaml = new YamlDynamicRepositoryActionDeserializer(_sutJson);
+        _sut = CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionSonarCloudSetFavoriteV1>());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");
-        _testFileSettings.UseExtension("json");
+        _testFileSettings.UseExtension("yaml");
 
         _verifySettings = new VerifySettings();
         _verifySettings.UseDirectory("Verified");
     }
 
-    [Theory]
-    [EnumMemberData(typeof(SerializationType))]
-    public async Task Deserialize(SerializationType type)
+    [Fact]
+    public async Task Deserialize()
     {
         // arrange
-        var content = await EasyTestFile.LoadAsText(_testFileSettings.SetExtension(type));
+        var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        RepositoryActionConfiguration result = SutDeserialize(content, type);
+        RepositoryActionConfiguration result = _sut.Deserialize(content);
 
         // assert
-        await Verifier.Verify(result, _verifySettings).IgnoreParametersForVerified(type);
+        await Verifier.Verify(result, _verifySettings);
     }
 
     [Fact]
@@ -61,24 +56,14 @@ public class SonarCloudSetFavoriteV1Test
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        RepositoryActionConfiguration result = SutDeserialize(content, SerializationType.Json);
+        RepositoryActionConfiguration result = _sut.Deserialize(content);
 
         // assert
         _ = result.ActionsCollection.Actions.Should().AllBeOfType<RepositoryActionSonarCloudSetFavoriteV1>();
     }
 
-    private RepositoryActionConfiguration SutDeserialize(string rawContent, SerializationType type)
+    private static YamlDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
     {
-        return type switch
-            {
-                SerializationType.Json => _sutJson.Deserialize(rawContent),
-                SerializationType.Yaml => _sutYaml.Deserialize(rawContent),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
-            };
-    }
-
-    private static JsonDynamicRepositoryActionDeserializer CreateWithDeserializer(IActionDeserializer actionDeserializer)
-    {
-        return new JsonDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
+        return new YamlDynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { actionDeserializer, }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>()));
     }
 }

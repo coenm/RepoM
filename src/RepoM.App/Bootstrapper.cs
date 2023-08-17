@@ -48,6 +48,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.Services.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
+using System.Runtime.Caching;
 
 internal static class Bootstrapper
 {
@@ -55,6 +56,7 @@ internal static class Bootstrapper
 
     public static void RegisterServices(IFileSystem fileSystem)
     {
+        Container.RegisterInstance<ObjectCache>(MemoryCache.Default);
         Container.Register<MainWindow>(Lifestyle.Singleton);
         Container.RegisterInstance(StatusCharacterMap.Instance);
         Container.Register<StatusCompressor>(Lifestyle.Singleton);
@@ -162,8 +164,7 @@ internal static class Bootstrapper
             new[] { typeof(IActionToRepositoryActionMapper).Assembly, },
             Lifestyle.Singleton);
 
-        Container.Register<JsonDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
-        Container.Register<YamlDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
+        Container.Register<IRepositoryActionDeserializer, YamlDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
         Container.Register<RepositorySpecificConfiguration>(Lifestyle.Singleton);
 
 
