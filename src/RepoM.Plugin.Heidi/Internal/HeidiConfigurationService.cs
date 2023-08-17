@@ -24,7 +24,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     private IFileSystemWatcher? _fileWatcher;
     private IDisposable? _eventSubscription;
     private Dictionary<string, List<RepositoryHeidiConfiguration>> _repositoryHeidiConfigs = new();
-    private ImmutableArray<HeidiSingleDatabaseConfiguration> _rawDatabases = new();
+    private ImmutableArray<HeidiSingleDatabaseConfiguration> _rawDatabases;
     private string? _heidiConfigFile;
 
     public event EventHandler? ConfigurationUpdated;
@@ -110,7 +110,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     {
         try
         {
-            _logger.LogDebug("Filename changed '{name}' '{type}' '{fullPath}'", e.Name, e.ChangeType, e.FullPath);
+            _logger.LogDebug("Filename {name} {type} ({fullPath})", e.Name, e.ChangeType, e.FullPath);
 
             // for now, check exact path and file
             if (!e.FullPath.Equals(_heidiConfigFile, StringComparison.CurrentCultureIgnoreCase))
