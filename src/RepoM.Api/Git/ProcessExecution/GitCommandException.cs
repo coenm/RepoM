@@ -2,9 +2,10 @@ namespace RepoM.Api.Git.ProcessExecution;
 
 using System;
 
+[Serializable]
 public class GitCommandException : Exception
 {
-    public GitCommandException() : base() { }
+    public GitCommandException() { } 
 
     public GitCommandException(string message) : base(message) { }
 

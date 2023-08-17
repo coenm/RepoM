@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
+using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
 using EasyTestFile;
@@ -62,8 +63,7 @@ public class RepositorySpecificConfigurationTest
         _appDataPathProvider = A.Fake<IAppDataPathProvider>();
         A.CallTo(() => _appDataPathProvider.AppDataPath).Returns(_tempPath);
 
-        JsonDynamicRepositoryActionDeserializer jsonAppSettingsDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
-        _yamlAppSettingsDeserializer = new YamlDynamicRepositoryActionDeserializer(jsonAppSettingsDeserializer);
+        _yamlAppSettingsDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
 
         var dateTimeTimeVariableProviderOptions = new DateTimeVariableProviderOptions()
         {
@@ -211,6 +211,7 @@ public class RepositorySpecificConfigurationTest
                 _fileSystem,
                 _yamlAppSettingsDeserializer,
                 _repositoryExpressionEvaluator,
-                NullLogger.Instance));
+                NullLogger.Instance,
+                new MemoryCache(Guid.NewGuid().ToString())));
     }
 }

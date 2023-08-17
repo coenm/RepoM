@@ -1,29 +1,29 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 
-using System;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using YamlDotNet.Serialization;
 
-public class YamlDynamicRepositoryActionDeserializer
+public class YamlDynamicRepositoryActionDeserializer : IRepositoryActionDeserializer
 {
     private readonly JsonDynamicRepositoryActionDeserializer _jsonDynamicRepositoryActionDeserializer;
     private readonly IDeserializer _deserializer;
     private readonly ISerializer _serializer;
 
-    public YamlDynamicRepositoryActionDeserializer(JsonDynamicRepositoryActionDeserializer jsonDynamicRepositoryActionDeserializer)
+    public YamlDynamicRepositoryActionDeserializer(ActionDeserializerComposition deserializers)
     {
-        _jsonDynamicRepositoryActionDeserializer = jsonDynamicRepositoryActionDeserializer ?? throw new ArgumentNullException(nameof(jsonDynamicRepositoryActionDeserializer));
+        _jsonDynamicRepositoryActionDeserializer = new JsonDynamicRepositoryActionDeserializer(deserializers);
         _deserializer = new DeserializerBuilder().Build();
         _serializer = new SerializerBuilder().JsonCompatible().Build();
     }
 
-    public RepositoryActionConfiguration Deserialize(string rawContent)
+    public RepositoryActionConfiguration Deserialize(string content)
     {
-        var yamlObject = _deserializer.Deserialize(rawContent, typeof(object));
+        var yamlObject = _deserializer.Deserialize(content, typeof(object));
         if (yamlObject == null)
         {
-            // todo, log, throw?, ..
-            return _jsonDynamicRepositoryActionDeserializer.Deserialize(rawContent);
+            // maybe it is json, just give it a try
+            return _jsonDynamicRepositoryActionDeserializer.Deserialize(content);
         }
 
         var json = _serializer.Serialize(yamlObject);

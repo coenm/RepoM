@@ -22,7 +22,7 @@ public class DynamicRepositoryActionDeserializerTest
 
     public DynamicRepositoryActionDeserializerTest()
     {
-        _sut = new YamlDynamicRepositoryActionDeserializer(DynamicRepositoryActionDeserializerFactory.Create());
+        _sut = DynamicRepositoryActionDeserializerFactory.Create();
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

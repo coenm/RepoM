@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
-public class JsonDynamicRepositoryActionDeserializer
+internal class JsonDynamicRepositoryActionDeserializer
 {
     private readonly ActionDeserializerComposition _deserializers;
     private static readonly JsonSerializer _jsonSerializer = new()
@@ -28,7 +28,6 @@ public class JsonDynamicRepositoryActionDeserializer
         {
             CommentHandling = CommentHandling.Ignore,
         };
-
 
     public JsonDynamicRepositoryActionDeserializer(ActionDeserializerComposition deserializers)
     {
@@ -99,7 +98,7 @@ public class JsonDynamicRepositoryActionDeserializer
                 continue;
             }
 
-            RepositoryAction? customAction = _deserializers.DeserializeSingleAction(typeValue!, variable, _jsonSerializer);
+            RepositoryAction? customAction = _deserializers.DeserializeSingleAction(typeValue, variable, _jsonSerializer);
             if (customAction == null)
             {
                 continue;
@@ -230,11 +229,9 @@ public class JsonDynamicRepositoryActionDeserializer
             return DEFAULT_VERSION;
         }
 
-        var version = DEFAULT_VERSION;
-
         if (versionToken.Type == JTokenType.Integer)
         {
-            version = versionToken.Value<int>();
+            var version = versionToken.Value<int>();
             return version < 1 ? DEFAULT_VERSION : version;
         }
 
@@ -246,7 +243,7 @@ public class JsonDynamicRepositoryActionDeserializer
                 return DEFAULT_VERSION;
             }
 
-            if (int.TryParse(versionString, out version))
+            if (int.TryParse(versionString, out var version))
             {
                 return version < 1 ? DEFAULT_VERSION : version;
             }

@@ -6,11 +6,15 @@
 
   <ItemGroup>
     <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
     <ProjectReference Include="..\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="JetBrains.Annotations" Version="2023.2.0" />
   </ItemGroup>
 </Project>

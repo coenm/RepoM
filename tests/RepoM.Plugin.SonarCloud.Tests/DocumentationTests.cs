@@ -20,7 +20,7 @@ public class DocumentationTests
 
     public DocumentationTests()
     {
-        _sut = new YamlDynamicRepositoryActionDeserializer(DynamicRepositoryActionDeserializerFactory.Create());
+        _sut = DynamicRepositoryActionDeserializerFactory.Create();
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("DocumentationFiles");
