@@ -39,7 +39,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="7.0.0" />
@@ -47,7 +47,7 @@
     <PackageReference Include="SimpleInjector" Version="5.4.1" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.4" />
     <PackageReference Include="DotNetEnv" Version="2.5.0" />
     <PackageReference Include="FluentWPF" Version="0.9.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.2" />
@@ -69,5 +69,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="JetBrains.Annotations" Version="2023.2.0" />
   </ItemGroup>
 </Project>
