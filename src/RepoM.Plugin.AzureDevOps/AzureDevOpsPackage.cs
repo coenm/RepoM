@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.AzureDevOps;
 
+using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
@@ -28,15 +29,27 @@ public class AzureDevOpsPackage : IPackage
     {
         var version = await packageConfiguration.GetConfigurationVersionAsync().ConfigureAwait(false);
 
-        AzureDevopsConfigV1? config = null;
-        if (version == CurrentConfigVersion.VERSION)
+        AzureDevopsConfigV2? config = null!;
+
+        if (version == AzureDevopsConfigV1.VERSION)
         {
-            config = await packageConfiguration.LoadConfigurationAsync<AzureDevopsConfigV1>().ConfigureAwait(false);
+            AzureDevopsConfigV1? configV1 = await packageConfiguration.LoadConfigurationAsync<AzureDevopsConfigV1>().ConfigureAwait(false);
+            config = ConvertV1ToV2(configV1);
+            await packageConfiguration.PersistConfigurationAsync(config, AzureDevopsConfigV2.VERSION).ConfigureAwait(false);
+        }
+        else if (version == AzureDevopsConfigV2.VERSION)
+        {
+            config = await packageConfiguration.LoadConfigurationAsync<AzureDevopsConfigV2>().ConfigureAwait(false);
         }
 
         config ??= await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
 
-        container.RegisterInstance<IAzureDevopsConfiguration>(new AzureDevopsConfiguration(config.BaseUrl, config.PersonalAccessToken));
+        container.RegisterInstance<IAzureDevopsConfiguration>(new AzureDevopsConfiguration(
+            config.BaseUrl,
+            config.PersonalAccessToken,
+            config.DefaultProjectId,
+            config.IntervalUpdateProjects ?? TimeSpan.FromMinutes(10),
+            config.IntervalUpdatePullRequests ?? TimeSpan.FromMinutes(4)));
     }
 
     private static void RegisterServices(Container container)
@@ -54,10 +67,35 @@ public class AzureDevOpsPackage : IPackage
     }
 
     /// <remarks>This method is used by reflection to generate documentation file</remarks>>
-    private static async Task<AzureDevopsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
+    private static async Task<AzureDevopsConfigV2> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
-        var config = new AzureDevopsConfigV1();
+        var config = CreateDefaultAzureDevopsConfigV2();
         await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
         return config;
+    }
+
+    private static AzureDevopsConfigV2 CreateDefaultAzureDevopsConfigV2()
+    {
+        return new AzureDevopsConfigV2
+            {
+                BaseUrl = null,
+                PersonalAccessToken = null,
+                DefaultProjectId = null,
+                IntervalUpdateProjects = TimeSpan.FromMinutes(10),
+                IntervalUpdatePullRequests = TimeSpan.FromMinutes(4),
+            };
+    }
+
+    private static AzureDevopsConfigV2 ConvertV1ToV2(AzureDevopsConfigV1? configV1)
+    {
+        AzureDevopsConfigV2 defaultConfig = CreateDefaultAzureDevopsConfigV2();
+        return new AzureDevopsConfigV2
+            {
+                BaseUrl = configV1?.BaseUrl,
+                PersonalAccessToken = configV1?.PersonalAccessToken,
+                DefaultProjectId = defaultConfig.DefaultProjectId,
+                IntervalUpdateProjects = defaultConfig.IntervalUpdateProjects,
+                IntervalUpdatePullRequests = defaultConfig.IntervalUpdatePullRequests,
+            };
     }
 }

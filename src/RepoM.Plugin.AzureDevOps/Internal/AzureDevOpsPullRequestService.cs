@@ -80,8 +80,8 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             return Task.CompletedTask;
         }
 
-        _updateTimer1 = new Timer(async _ => await UpdatePullRequests(_azureDevopsGitClient), null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(4));
-        _updateTimer2 = new Timer(async _ => await UpdateProjectsAsync(_azureDevopsGitClient), null, TimeSpan.FromSeconds(7), TimeSpan.FromMinutes(10));
+        _updateTimer1 = new Timer(async _ => await UpdatePullRequests(_azureDevopsGitClient), null, TimeSpan.FromSeconds(5), _configuration.IntervalUpdatePullRequests);
+        _updateTimer2 = new Timer(async _ => await UpdateProjectsAsync(_azureDevopsGitClient), null, TimeSpan.FromSeconds(7), _configuration.IntervalUpdateProjects);
 
         return Task.CompletedTask;
     }

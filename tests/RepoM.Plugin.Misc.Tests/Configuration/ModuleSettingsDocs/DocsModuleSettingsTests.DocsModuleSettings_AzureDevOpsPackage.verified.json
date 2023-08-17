@@ -1,7 +1,10 @@
 ﻿{
-  "Version": 1,
+  "Version": 2,
   "Settings": {
     "PersonalAccessToken": null,
-    "BaseUrl": null
+    "BaseUrl": null,
+    "DefaultProjectId": null,
+    "RepeatIntervalUpdatePullRequests": "00:04:00",
+    "IntervalUpdateProjects": "00:10:00"
   }
 }
