@@ -8,68 +8,87 @@ using DotNetEnv;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 
-internal class RepositoryActionsFileStore
+internal abstract class FileStore<T> where T : class
 {
-    private readonly IFileSystem _fileSystem;
-    private readonly IRepositoryActionDeserializer _repositoryActionsDeserializer;
     private readonly ObjectCache _cache;
 
-    public RepositoryActionsFileStore(IFileSystem fileSystem, IRepositoryActionDeserializer repositoryActionsDeserializer, ObjectCache cache)
+    protected FileStore(ObjectCache cache)
     {
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _repositoryActionsDeserializer = repositoryActionsDeserializer ?? throw new ArgumentNullException(nameof(repositoryActionsDeserializer));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     }
 
-    public RepositoryActionConfiguration? TryGet(string filename)
+    internal T? Get(string filename) 
     {
-        if (_cache[filename] is RepositoryActionConfiguration fileContents)
+        if (_cache[filename] is T fileContents)
         {
             return fileContents;
         }
 
+        return null;
+    }
+
+    internal T AddOrGetExisting(string filename, T value)
+    {
         var policy = new CacheItemPolicy();
         var filePaths = new List<string>(1) { filename, };
         policy.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths));
+        var cacheResult = _cache.AddOrGetExisting(filename, value, policy) as T;
+        return cacheResult ?? value;
+    }
+}
+
+internal class RepositoryActionsFileStore : FileStore<RepositoryActionConfiguration>
+{
+    private readonly IFileSystem _fileSystem;
+    private readonly IRepositoryActionDeserializer _repositoryActionsDeserializer;
+
+
+    public RepositoryActionsFileStore(IFileSystem fileSystem, IRepositoryActionDeserializer repositoryActionsDeserializer, ObjectCache cache) : base(cache)
+    {
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _repositoryActionsDeserializer = repositoryActionsDeserializer ?? throw new ArgumentNullException(nameof(repositoryActionsDeserializer));
+    }
+
+    public RepositoryActionConfiguration? TryGet(string filename)
+    {
+        RepositoryActionConfiguration? result = Get(filename);
+
+        if (result != null)
+        {
+            return result;
+        }
 
         var payload = _fileSystem.File.ReadAllText(filename);
-        fileContents = _repositoryActionsDeserializer.Deserialize(payload);
+        RepositoryActionConfiguration? fileContents = _repositoryActionsDeserializer.Deserialize(payload);
 
         if (fileContents == null)
         {
             return null;
         }
 
-        var cacheResult = _cache.AddOrGetExisting(filename, fileContents, policy) as RepositoryActionConfiguration;
-        return cacheResult ?? fileContents;
+        return AddOrGetExisting(filename, fileContents);
     }
 }
 
-internal class EnvFileStore
+internal class EnvFileStore : FileStore<Dictionary<string, string>>
 {
-    private readonly ObjectCache _cache;
-
-    public EnvFileStore(ObjectCache cache)
+    public EnvFileStore(ObjectCache cache) : base(cache)
     {
-        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     }
 
     public IDictionary<string, string> TryGet(string filename)
     {
-        if (_cache[filename] is Dictionary<string, string> fileContents)
+        Dictionary<string, string>? result = Get(filename);
+
+        if (result != null)
         {
-            return fileContents;
+            return result;
         }
 
-        var policy = new CacheItemPolicy();
-        var filePaths = new List<string>(1) { filename, };
-        policy.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths));
+        IEnumerable<KeyValuePair<string, string>>? envResult = Env.Load(filename, new LoadOptions(setEnvVars: false));
 
-        IEnumerable<KeyValuePair<string, string>>? result = Env.Load(filename, new LoadOptions(setEnvVars: false));
+        Dictionary<string, string>? fileContents = envResult == null ? new Dictionary<string, string>(0) : envResult.ToDictionary();
 
-        fileContents = result == null ? new Dictionary<string, string>(0) : result.ToDictionary();
-
-        var cacheResult = _cache.AddOrGetExisting(filename, fileContents, policy) as Dictionary<string, string>;
-        return cacheResult ?? fileContents;
+        return AddOrGetExisting(filename, fileContents);
     }
 }
