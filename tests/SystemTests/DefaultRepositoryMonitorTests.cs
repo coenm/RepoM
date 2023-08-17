@@ -7,9 +7,9 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
+using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 using NUnit.Framework;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
@@ -41,21 +41,21 @@ public class DefaultRepositoryMonitorTests
         var repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
         _fileSystem.Directory.CreateDirectory(repoPath);
 
-        var appSettingsService = new Mock<IAppSettingsService>();
-        appSettingsService.Setup(x => x.EnabledSearchProviders).Returns(new List<string>(0));
+        IAppSettingsService appSettingsService = A.Fake<IAppSettingsService>();
+        A.CallTo(() => appSettingsService.EnabledSearchProviders).Returns(new List<string>(0));
 
-        var defaultRepositoryReader = new DefaultRepositoryReader(new Mock<IRepositoryTagsFactory>().Object, NullLogger.Instance);
+        var defaultRepositoryReader = new DefaultRepositoryReader(A.Dummy<IRepositoryTagsFactory>(), NullLogger.Instance);
         _monitor = new DefaultRepositoryMonitor(
             new GivenPathProvider(new [] { repoPath, }),
             defaultRepositoryReader,
             new DefaultRepositoryDetectorFactory(defaultRepositoryReader),
             new DefaultRepositoryObserverFactory(),
-            new GitRepositoryFinderFactory(appSettingsService.Object, new List<ISingleGitRepositoryFinderFactory>() { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem), }),
+            new GitRepositoryFinderFactory(appSettingsService, new List<ISingleGitRepositoryFinderFactory>() { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem), }),
             new UselessRepositoryStore(),
             new DefaultRepositoryInformationAggregator(
                 new DirectThreadDispatcher()),
-            new Mock<IAutoFetchHandler>().Object,
-            new Mock<IRepositoryIgnoreStore>().Object,
+            A.Dummy<IAutoFetchHandler>(),
+            A.Dummy<IRepositoryIgnoreStore>(),
             _fileSystem)
             {
                 DelayGitRepositoryStatusAfterCreationMilliseconds = 100,
