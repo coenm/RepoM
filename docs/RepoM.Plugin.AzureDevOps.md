@@ -12,10 +12,13 @@ The following default configuration is used:
 
 ```json
 {
-  "Version": 1,
+  "Version": 2,
   "Settings": {
     "PersonalAccessToken": null,
-    "BaseUrl": null
+    "BaseUrl": null,
+    "DefaultProjectId": null,
+    "RepeatIntervalUpdatePullRequests": "00:04:00",
+    "IntervalUpdateProjects": "00:10:00"
   }
 }
 ```
@@ -24,7 +27,10 @@ Properties:
 
 - `PersonalAccessToken`: Personal access token (PAT) to access Azure Devops. The PAT should be granted access to `todo` rights.
 To create a PAT, goto `https://dev.azure.com/[my-organisation]/_usersSettings/tokens`.
-- `BaseUrl`: The base url of azure devops for your organisation (ie. `https://dev.azure.com/[my-organisation]/`).<!-- endInclude -->
+- `BaseUrl`: The base url of azure devops for your organisation (ie. `https://dev.azure.com/[my-organisation]/`).
+- `DefaultProjectId`: Default project id to use when no project id provided in the repository action. Should be a GUID.
+- `RepeatIntervalUpdatePullRequests`: Interval RepoM should update the list of open pull requests from Azure DevOps. Defaults to `4` minutes (ie. `00:04:00`).
+- `IntervalUpdateProjects`: Interval RepoM should update the list of projects from Azure DevOps. Defaults to `10` minutes (ie. `00:10:00`).<!-- endInclude -->
 
 ## azure-devops-create-prs@1<!-- include: _plugins.azuredevops.action. path: /docs/mdsource/_plugins.azuredevops.action.include.md -->
 
