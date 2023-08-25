@@ -68,12 +68,12 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
         if (string.IsNullOrWhiteSpace(_appSettingsService.SortKey))
         {
             _logger.LogInformation("Custom sorter key was not set. Pick first one.");
-            SetRepositoryComparer(_repositoryComparerKeys.First());
+            SetRepositoryComparer(_repositoryComparerKeys[0]);
         }
         else if (!SetRepositoryComparer(_appSettingsService.SortKey))
         {
             _logger.LogInformation("Could not set comparer '{key}'. Falling back to first comparer.", _appSettingsService.SortKey);
-            SetRepositoryComparer(_repositoryComparerKeys.First());
+            SetRepositoryComparer(_repositoryComparerKeys[0]);
         }
     }
 

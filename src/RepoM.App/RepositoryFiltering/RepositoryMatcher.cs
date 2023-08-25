@@ -1,9 +1,7 @@
 namespace RepoM.App.RepositoryFiltering;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
@@ -11,12 +9,10 @@ using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 internal class RepositoryMatcher : IRepositoryMatcher
 {
-    private readonly ILogger _logger;
     private readonly IQueryMatcher[] _queryMatchers;
 
-    public RepositoryMatcher(ILogger logger, IEnumerable<IQueryMatcher> matchers)
+    public RepositoryMatcher(IEnumerable<IQueryMatcher> matchers)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _queryMatchers = matchers.ToArray();
     }
 

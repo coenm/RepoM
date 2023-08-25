@@ -14,7 +14,7 @@ internal class QueryParserComposition : IQueryParser
     public QueryParserComposition(INamedQueryParser[] namedNamedQueryParsers)
     {
         _namedQueryParsers = namedNamedQueryParsers;
-        _selected = _namedQueryParsers.First();
+        _selected = _namedQueryParsers[0];
     }
 
     public bool SetComparer(string key)
