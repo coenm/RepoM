@@ -41,14 +41,6 @@ public /*abstract*/ class RepositoryAction
     public string? Active { get; set; }
 
     /// <summary>
-    /// Multiselect enabled.
-    /// </summary>
-    [EvaluatedProperty]
-    [PropertyType(typeof(bool))] // todo
-    [PropertyDefaultBoolValue(false)]
-    public string? MultiSelectEnabled { get; set; }
-
-    /// <summary>
     /// A set of variables to be availabe within this action.
     /// </summary>
     // [EvaluatedProperty]

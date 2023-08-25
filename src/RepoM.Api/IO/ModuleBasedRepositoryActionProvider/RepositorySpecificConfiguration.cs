@@ -78,20 +78,12 @@ public class RepositoryConfigurationReader
         throw new ConfigurationFileNotFoundException(filename);
     }
 
-    public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(params IRepository[] repositories)
+    public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(IRepository repository)
     {
-        if (!repositories.Any())
-        {
-            return (null, null, null, null);
-        }
-
-        IRepository? repository = repositories.FirstOrDefault(); //todo
         if (repository == null)
         {
             return (null, null, null, null);
         }
-
-        var multipleRepositoriesSelected = repositories.Length > 1;
 
         var variables = new List<EvaluatedVariable>();
         Dictionary<string, string>? envVars = null;
@@ -166,88 +158,82 @@ public class RepositoryConfigurationReader
         variables.AddRange(list);
         using IDisposable rootVariables = RepoMVariableProviderStore.Push(list);
 
-        if (!multipleRepositoriesSelected)
+        // load repo specific environment variables
+        foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles.Where(fileRef => fileRef != null))
         {
-            // load repo specific environment variables
-            foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles.Where(fileRef => fileRef != null))
+            if (!IsEnabled(fileRef.When, true, repository))
             {
-                if (!IsEnabled(fileRef.When, true, repository))
+                continue;
+            }
+
+            var f = EvaluateString(fileRef.Filename, repository);
+            if (!_fileSystem.File.Exists(f))
+            {
+                // log warning?
+                continue;
+            }
+
+            try
+            {
+                IDictionary<string, string> currentEnvVars = _envFileStore.TryGet(f);
+                if (envVars == null || !envVars.Any())
                 {
+                    envVars = currentEnvVars.ToDictionary();
                     continue;
                 }
 
-                var f = EvaluateString(fileRef.Filename, repository);
-                if (!_fileSystem.File.Exists(f))
+                foreach (KeyValuePair<string, string> item in currentEnvVars)
                 {
-                    // log warning?
-                    continue;
-                }
-
-                try
-                {
-                    IDictionary<string, string> currentEnvVars = _envFileStore.TryGet(f);
-                    if (envVars == null || !envVars.Any())
+                    if (!envVars.ContainsKey(item.Key))
                     {
-                        envVars = currentEnvVars.ToDictionary();
-                        continue;
+                        envVars.Add(item.Key, item.Value);
                     }
-
-                    foreach (KeyValuePair<string, string> item in currentEnvVars)
+                    else
                     {
-                        if (!envVars.ContainsKey(item.Key))
-                        {
-                            envVars.Add(item.Key, item.Value);
-                        }
-                        else
-                        {
-                            _logger.LogTrace("Environment key was '{Key}' already set.", item.Key);
-                        }
+                        _logger.LogTrace("Environment key was '{Key}' already set.", item.Key);
                     }
                 }
-                catch (Exception e)
-                {
-                    _logger.LogWarning(e, "Something went wrong loading an environment file");
-                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Something went wrong loading an environment file");
             }
         }
 
         using IDisposable repoSpecificEnvVariables = EnvironmentVariableStore.Set(envVars ?? new Dictionary<string, string>(0));
 
-        if (!multipleRepositoriesSelected)
+        // load repo specific config
+        foreach (FileReference fileRef in rootFile.RepositorySpecificConfigFiles)
         {
-            // load repo specific config
-            foreach (FileReference fileRef in rootFile.RepositorySpecificConfigFiles)
+            if (repoSpecificConfig != null)
             {
-                if (repoSpecificConfig != null)
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                if (fileRef == null || !IsEnabled(fileRef.When, true, repository))
-                {
-                    continue;
-                }
+            if (fileRef == null || !IsEnabled(fileRef.When, true, repository))
+            {
+                continue;
+            }
 
-                var f = EvaluateString(fileRef.Filename, repository);
-                if (!_fileSystem.File.Exists(f))
-                {
-                    // warning
-                    continue;
-                }
+            var f = EvaluateString(fileRef.Filename, repository);
+            if (!_fileSystem.File.Exists(f))
+            {
+                // warning
+                continue;
+            }
 
-                // todo redirect
+            // todo redirect
 
-                try
-                {
-                    repoSpecificConfig = _repositoryActionsFileStore.TryGet(filename);
-                }
-                catch (Exception)
-                {
-                    // warning.
-                }
+            try
+            {
+                repoSpecificConfig = _repositoryActionsFileStore.TryGet(filename);
+            }
+            catch (Exception)
+            {
+                // warning.
             }
         }
-        
+
         List<EvaluatedVariable> list2 = EvaluateVariables(repoSpecificConfig?.Variables);
         variables.AddRange(list2);
         using IDisposable repoSpecificVariables = RepoMVariableProviderStore.Push(list2);
@@ -406,18 +392,11 @@ public class RepositorySpecificConfiguration
         _repoConfigReader = repoConfigReader ?? throw new ArgumentNullException(nameof(repoConfigReader));
     }
 
-    public IEnumerable<RepositoryActionBase> CreateActions(params Repository[] repositories)
+    public IEnumerable<RepositoryActionBase> CreateActions(Repository repository)
     {
-        if (repositories == null)
+        if (repository == null)
         {
-            throw new ArgumentNullException(nameof(repositories));
-        }
-
-        Repository? singleRepository = null;
-        var multiSelectRequired = repositories.Length > 1;
-        if (!multiSelectRequired)
-        {
-            singleRepository = repositories.FirstOrDefault();
+            throw new ArgumentNullException(nameof(repository));
         }
 
         Dictionary<string, string>? repositoryEnvVars = null;
@@ -426,7 +405,7 @@ public class RepositorySpecificConfiguration
         Exception? ex = null;
         try
         {
-            (repositoryEnvVars,  variables, actions, _) = _repoConfigReader.Get(repositories);
+            (repositoryEnvVars,  variables, actions, _) = _repoConfigReader.Get(repository);
         }
         catch (Exception e)
         {
@@ -437,14 +416,14 @@ public class RepositorySpecificConfiguration
         {
             if (ex is ConfigurationFileNotFoundException configurationFileNotFoundException)
             {
-                foreach (RepositoryAction failingItem in CreateFailing(configurationFileNotFoundException, configurationFileNotFoundException.Filename, singleRepository!)) // todo coenm
+                foreach (RepositoryAction failingItem in CreateFailing(configurationFileNotFoundException, configurationFileNotFoundException.Filename, repository)) // todo coenm
                 {
                     yield return failingItem;
                 }
             }
             else
             {
-                foreach (RepositoryAction failingItem in CreateFailing(ex, null, singleRepository!)) // todo coenm
+                foreach (RepositoryAction failingItem in CreateFailing(ex, null, repository)) // todo coenm
                 {
                     yield return failingItem;
                 }
@@ -459,22 +438,13 @@ public class RepositorySpecificConfiguration
         // load variables global
         foreach (ActionsCollection actionsCollection in ((IEnumerable<ActionsCollection>?)actions) ?? Array.Empty<ActionsCollection>())
         {
-            using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(actionsCollection.Variables, singleRepository));
+            using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(actionsCollection.Variables, repository));
 
             foreach (Data.RepositoryAction action in actionsCollection.Actions)
             {
-                using IDisposable d4 = RepoMVariableProviderStore.Push(EvaluateVariables(action.Variables, singleRepository));
+                using IDisposable d4 = RepoMVariableProviderStore.Push(EvaluateVariables(action.Variables, repository));
 
-                if (multiSelectRequired)
-                {
-                    var actionNotCapableForMultipleRepos = Array.Exists(repositories, repo => !IsEnabled(action.MultiSelectEnabled, false, repo));
-                    if (actionNotCapableForMultipleRepos)
-                    {
-                        continue;
-                    }
-                }
-
-                IEnumerable<RepositoryActionBase> result = _actionMapper.Map(action, repositories);
+                IEnumerable<RepositoryActionBase> result = _actionMapper.Map(action, repository);
 
                 foreach (RepositoryActionBase singleItem in result)
                 {

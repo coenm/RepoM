@@ -26,27 +26,25 @@ public class DefaultRepositoryActionProvider : IRepositoryActionProvider
 
     public RepositoryActionBase? GetPrimaryAction(Repository repository)
     {
-        return GetContextMenuActions(new[] { repository, }).FirstOrDefault();
+        return GetContextMenuActions(repository).FirstOrDefault();
     }
 
     public RepositoryActionBase? GetSecondaryAction(Repository repository)
     {
-        RepositoryActionBase[] actions = GetContextMenuActions(new[] { repository, }).Take(2).ToArray();
+        RepositoryActionBase[] actions = GetContextMenuActions(repository).Take(2).ToArray();
         return actions.Length > 1 ? actions[1] : null;
     }
 
-    public IEnumerable<RepositoryActionBase> GetContextMenuActions(IEnumerable<Repository> repositories)
+    public IEnumerable<RepositoryActionBase> GetContextMenuActions(Repository repository)
     {
-        return GetContextMenuActionsInternal(repositories.Where(r => _fileSystem.Directory.Exists(r.SafePath))).Where(a => a != null);
+        return GetContextMenuActionsInternal(repository);
     }
 
-    private IEnumerable<RepositoryActionBase> GetContextMenuActionsInternal(IEnumerable<Repository> repos)
+    private IEnumerable<RepositoryActionBase> GetContextMenuActionsInternal(Repository repository)
     {
-        Repository[] repositories = repos.ToArray();
-
         try
         {
-            return _repoSpecificConfig.CreateActions(repositories);
+            return _repoSpecificConfig.CreateActions(repository);
         }
         catch (Exception ex)
         {

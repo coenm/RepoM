@@ -8,5 +8,5 @@ public interface IRepositoryActionProvider
 
     RepositoryActionBase? GetSecondaryAction(Repository repository);
 
-    IEnumerable<RepositoryActionBase> GetContextMenuActions(IEnumerable<Repository> repositories);
+    IEnumerable<RepositoryActionBase> GetContextMenuActions(Repository repository);
 }

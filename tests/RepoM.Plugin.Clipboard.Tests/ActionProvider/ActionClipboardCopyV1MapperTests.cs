@@ -20,7 +20,6 @@ using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.R
 [UsesVerify]
 public class ActionClipboardCopyV1MapperTests
 {
-    private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
     private readonly Repository _repository;
     private readonly ActionMapperComposition _actionMapperComposition;
     private readonly VerifySettings _verifySettings;
@@ -34,11 +33,11 @@ public class ActionClipboardCopyV1MapperTests
 
         _actionMapperComposition = new ActionMapperComposition(new List<IActionToRepositoryActionMapper>(), A.Dummy<IRepositoryExpressionEvaluator>());
         _repository = new Repository("dummy");
-        _expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
+        IRepositoryExpressionEvaluator expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
         ITranslationService translationService = A.Fake<ITranslationService>();
 
         _sut = new ActionClipboardCopyV1Mapper(
-            _expressionEvaluator,
+            expressionEvaluator,
             translationService);
 
         _action = new RepositoryActionClipboardCopyV1
@@ -46,11 +45,10 @@ public class ActionClipboardCopyV1MapperTests
                 Active = "true",
                 Name = "Abc",
                 Text = "text123",
-                MultiSelectEnabled = "false",
             };
-        A.CallTo(() => _expressionEvaluator.EvaluateBooleanExpression("true", _repository)).Returns(true);
-        A.CallTo(() => _expressionEvaluator.EvaluateBooleanExpression("false", _repository)).Returns(false);
-        A.CallTo(() => _expressionEvaluator.EvaluateStringExpression(A<string>._, _repository))
+        A.CallTo(() => expressionEvaluator.EvaluateBooleanExpression("true", _repository)).Returns(true);
+        A.CallTo(() => expressionEvaluator.EvaluateBooleanExpression("false", _repository)).Returns(false);
+        A.CallTo(() => expressionEvaluator.EvaluateStringExpression(A<string>._, _repository))
          .ReturnsLazily(call =>
              {
                  if (call.Arguments[0] is string s)

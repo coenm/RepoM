@@ -59,7 +59,6 @@ public class ActionHeidiDatabasesV1MapperTests
                 Name = "Abc",
                 Executable = "heidi-test.exe",
                 Key = null,
-                MultiSelectEnabled = "false",
             };
         A.CallTo(() => _expressionEvaluator.EvaluateBooleanExpression("true", _repository)).Returns(true);
         A.CallTo(() => _expressionEvaluator.EvaluateBooleanExpression("false", _repository)).Returns(false);

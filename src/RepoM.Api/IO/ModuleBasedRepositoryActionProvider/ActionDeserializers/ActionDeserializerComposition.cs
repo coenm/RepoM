@@ -21,23 +21,9 @@ public class ActionDeserializerComposition
 
     public RepositoryAction? DeserializeSingleAction(string type, JToken jToken, JsonSerializer jsonSerializer)
     {
-        RepositoryAction? result = DeserializeWithCustomDeserializers(type, jToken, jsonSerializer)
-                                   ??
-                                   DeserializeWithDefaultDeserializers(type, jToken, jsonSerializer);
-
-        if (result == null)
-        {
-            return null;
-        }
-
-        JToken? multiSelectEnabledToken = jToken["multi-select-enabled"];
-
-        if (multiSelectEnabledToken != null)
-        {
-            result.MultiSelectEnabled = multiSelectEnabledToken.Value<string>();
-        }
-
-        return result;
+        return DeserializeWithCustomDeserializers(type, jToken, jsonSerializer)
+               ??
+               DeserializeWithDefaultDeserializers(type, jToken, jsonSerializer);
     }
 
     private RepositoryAction? DeserializeWithCustomDeserializers(string type, JToken jToken, JsonSerializer jsonSerializer)
