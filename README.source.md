@@ -19,7 +19,7 @@ RepoM will not compete with your favourite git clients, so keep them. It's not a
 ## Credits
 
 RepoM is a fork of [RepoZ](https://github.com/awaescher/RepoZ), which was created by [Andreas Wäscher](https://github.com/awaescher).
-RepoZ contains functionality that has been stripped in RepoM like supporting MacOS, releasing versions using chocolatey, and the commandline sidekick (grr).
+RepoZ contains functionality that has been stripped in RepoM like supporting MacOS, releasing versions using chocolatey, the commandline sidekick (`grr``), and performing actions at multiple repostitories at once.
 
 ## The Hub
 
