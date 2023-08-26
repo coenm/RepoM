@@ -2,7 +2,6 @@ namespace RepoM.Api.IO.VariableProviders;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using ExpressionStringEvaluator.VariableProviders;
 using JetBrains.Annotations;
 using RepoM.Api.IO.Variables;
@@ -37,13 +36,13 @@ public class CustomEnvironmentVariableVariableProvider : RepoM.Core.Plugin.Varia
 
     public object? Provide(RepositoryContext context, string key, string? arg)
     {
-        IRepository? singleContext = context?.Repositories?.SingleOrDefault();
-        if (singleContext == null)
+        IRepository? repository = context?.Repository;
+        if (repository == null)
         {
             return Provide(key, arg);
         }
 
-        Dictionary<string, string> envVars = GetRepoEnvironmentVariables(singleContext);
+        Dictionary<string, string> envVars = GetRepoEnvironmentVariables(repository);
 
         var envKey = key[PREFIX.Length..];
 

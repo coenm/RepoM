@@ -1,25 +1,15 @@
 namespace RepoM.Core.Plugin.Repository;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 public sealed class RepositoryContext
 {
-    public RepositoryContext()
+    public RepositoryContext() : this(null)
     {
-        Repositories = Array.Empty<IRepository>();
     }
 
-    public RepositoryContext(params IRepository[] repositories)
+    public RepositoryContext(IRepository? repository)
     {
-        Repositories = repositories.ToArray();
+        Repository = repository;
     }
 
-    public RepositoryContext(IEnumerable<IRepository> repositories)
-    {
-        Repositories = repositories.ToArray();
-    }
-
-    public IRepository[] Repositories { get; }
+    public IRepository? Repository { get; }
 }

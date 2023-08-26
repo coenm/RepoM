@@ -46,7 +46,7 @@ public class UsageVariableProvider : IVariableProvider<RepositoryContext>
     {
         if ("statistics.count".Equals(key, COMPARISON) || "usage".Equals(key, COMPARISON))
         {
-            return _service.GetRecordings(context.Repositories[0]).Count;
+            return context.Repository == null ? 0 : _service.GetRecordings(context.Repository).Count;
         }
 
         if ("statistics.totalcount".Equals(key, COMPARISON))

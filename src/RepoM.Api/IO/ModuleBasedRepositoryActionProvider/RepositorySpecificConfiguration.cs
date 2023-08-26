@@ -260,9 +260,7 @@ public class RepositoryConfigurationReader
             return input;
         }
 
-        IRepository[] repositories = repository == null ? Array.Empty<IRepository>() : new[] { repository, };
-        return _repoExpressionEvaluator.EvaluateValueExpression(s, repositories);
-
+        return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
     }
 
     private string EvaluateString(string? input, IRepository? repository)
