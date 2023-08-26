@@ -50,7 +50,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         _action.Active = "dummy-Active-property";
         _action.ProjectId = "dummy-project-id";
         A.CallTo(() => _evaluator.EvaluateBooleanExpression("dummy-Active-property", _repository)).Returns(true);
-        A.CallTo(() => _evaluator.EvaluateStringExpression("dummy-project-id", A<IRepository[]>._)).Returns("real-project-id");
+        A.CallTo(() => _evaluator.EvaluateStringExpression("dummy-project-id", A<IRepository>._)).Returns("real-project-id");
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
     {
         // arrange
         _action.ProjectId = "dummy-project-id";
-        A.CallTo(() => _evaluator.EvaluateStringExpression("dummy-project-id", A<IRepository[]>._)).Returns(projectId!);
+        A.CallTo(() => _evaluator.EvaluateStringExpression("dummy-project-id", A<IRepository>._)).Returns(projectId!);
 
         // act
         IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repositories, _composition);

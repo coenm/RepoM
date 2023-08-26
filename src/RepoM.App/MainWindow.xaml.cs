@@ -1,7 +1,6 @@
 namespace RepoM.App;
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Abstractions;
@@ -44,7 +43,6 @@ public partial class MainWindow
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
     private readonly IRepositoryMatcher _repositoryMatcher;
     private readonly IAppDataPathProvider _appDataPathProvider;
-    private readonly IModuleManager _moduleManager;
 
     public MainWindow(
         StatusCharacterMap statusCharacterMap,
@@ -71,7 +69,6 @@ public partial class MainWindow
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _executor = executor ?? throw new ArgumentNullException(nameof(executor));
-        _moduleManager = moduleManager ?? throw new ArgumentNullException(nameof(moduleManager));
 
         InitializeComponent();
 
@@ -80,7 +77,7 @@ public partial class MainWindow
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
         var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var pluginsViewModel = new PluginCollectionViewModel(_moduleManager);
+        var pluginsViewModel = new PluginCollectionViewModel(moduleManager);
 
         DataContext = new MainWindowViewModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel, pluginsViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
@@ -203,9 +200,7 @@ public partial class MainWindow
 
     private bool LstRepositoriesContextMenuOpening(object sender, ContextMenu ctxMenu)
     {
-        RepositoryViewModel[] selectedViews = lstRepositories.SelectedItems.OfType<RepositoryViewModel>().ToArray();
-
-        if (!selectedViews.Any())
+        if (lstRepositories.SelectedItem is not RepositoryViewModel vm)
         {
             return false;
         }
@@ -213,8 +208,7 @@ public partial class MainWindow
         ItemCollection items = ctxMenu.Items;
         items.Clear();
 
-        IEnumerable<Repository> innerRepositories = selectedViews.Select(view => view.Repository);
-        foreach (RepositoryActionBase action in _repositoryActionProvider.GetContextMenuActions(innerRepositories))
+        foreach (RepositoryActionBase action in _repositoryActionProvider.GetContextMenuActions(vm.Repository))
         {
             if (action is RepositorySeparatorAction)
             {
@@ -225,7 +219,7 @@ public partial class MainWindow
             }
             else if (action is RepositoryAction _)
             {
-                Control? controlItem = CreateMenuItem(sender, action, selectedViews);
+                Control? controlItem = CreateMenuItem(sender, action, vm);
                 if (controlItem != null)
                 {
                     items.Add(controlItem);
@@ -246,8 +240,10 @@ public partial class MainWindow
         if (e.Key is Key.Return or Key.Enter)
         {
             InvokeActionOnCurrentRepository();
+            return;
         }
-        else if (e.Key is Key.Left or Key.Right)
+
+        if (e.Key is Key.Left or Key.Right)
         {
             if (sender == null)
             {
@@ -408,7 +404,7 @@ public partial class MainWindow
         parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
     }
 
-    private Control? /*MenuItem*/ CreateMenuItem(object sender, RepositoryActionBase action, IEnumerable<RepositoryViewModel>? affectedViews = null)
+    private Control? /*MenuItem*/ CreateMenuItem(object sender, RepositoryActionBase action, RepositoryViewModel? affectedViews = null)
     {
         if (action is RepositorySeparatorAction)
         {
@@ -431,9 +427,9 @@ public partial class MainWindow
                 // run actions in the UI async to not block it
                 if (repositoryAction.ExecutionCausesSynchronizing)
                 {
-                    Task.Run(() => SetViewsSynchronizing(affectedViews, true))
+                    Task.Run(() => SetVmSynchronizing(affectedViews, true))
                         .ContinueWith(t => _executor.Execute(action.Repository, action.Action))
-                        .ContinueWith(t => SetViewsSynchronizing(affectedViews, false));
+                        .ContinueWith(t => SetVmSynchronizing(affectedViews, false));
                 }
                 else
                 {
@@ -491,16 +487,11 @@ public partial class MainWindow
         return item;
     }
 
-    private static void SetViewsSynchronizing(IEnumerable<RepositoryViewModel>? affectedViews, bool synchronizing)
+    private static void SetVmSynchronizing(RepositoryViewModel? affectedVm, bool synchronizing)
     {
-        if (affectedViews == null)
+        if (affectedVm != null)
         {
-            return;
-        }
-
-        foreach (RepositoryViewModel view in affectedViews)
-        {
-            view.IsSynchronizing = synchronizing;
+            affectedVm.IsSynchronizing = synchronizing;
         }
     }
 

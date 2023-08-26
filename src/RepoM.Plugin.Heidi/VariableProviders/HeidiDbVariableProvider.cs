@@ -66,7 +66,7 @@ internal class HeidiDbVariableProvider : IVariableProvider<RepositoryContext>
         {
             var keySuffixInner = keySuffix[".repo".Length..];
 
-            IRepository? repo = context.Repositories.FirstOrDefault();
+            IRepository? repo = context.Repository;
             if (repo == null)
             {
                 return null;

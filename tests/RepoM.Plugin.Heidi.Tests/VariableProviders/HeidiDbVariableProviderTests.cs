@@ -106,19 +106,7 @@ public class HeidiDbVariableProviderTests
         // arrange
 
         // act
-        var result = _sut.Provide(new RepositoryContext(new IRepository[] { null!, }), "heidi-db.repo.any", null);
-
-        // assert
-        result.Should().BeNull();
-    }
-
-    [Fact]
-    public void Provide_ShouldReturnNull_WhenRepositoryContextIsEmpty()
-    {
-        // arrange
-
-        // act
-        var result = _sut.Provide(new RepositoryContext(Array.Empty<IRepository>()), "heidi-db.repo.any", null);
+        var result = _sut.Provide(new RepositoryContext(null!), "heidi-db.repo.any", null);
 
         // assert
         result.Should().BeNull();

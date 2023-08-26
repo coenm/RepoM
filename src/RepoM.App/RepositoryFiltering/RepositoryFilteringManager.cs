@@ -32,7 +32,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         INamedQueryParser[] queryParsersArray = queryParsers.ToArray();
         if (!queryParsersArray.Any())
         {
-            throw new ArgumentOutOfRangeException("Cannot be empty", nameof(queryParsers));
+            throw new ArgumentOutOfRangeException(nameof(queryParsers));
         }
 
         INamedQueryParser defaultParser = queryParsersArray.First(x => x.Name != "Lucene");

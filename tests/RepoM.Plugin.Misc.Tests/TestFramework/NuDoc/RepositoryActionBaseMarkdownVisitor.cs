@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using NuDoq;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 internal class RepositoryActionBaseMarkdownVisitor : Visitor
 {
@@ -47,29 +46,21 @@ internal class RepositoryActionBaseMarkdownVisitor : Visitor
         }
         else if (member.Info is PropertyInfo propertyInfo && IsBuiltinType(propertyInfo.DeclaringType))
         {
-           
-            if (propertyInfo.Name.Equals(nameof(RepositoryAction.MultiSelectEnabled)))
-            {
-                // skip because it is sort of obsolete
-                base.VisitMember(member);
-            }
-            else
-            {
-                var propertyName = propertyInfo.SanitizePropertyName();
 
-                _writer = ClassWriter.Properties;
+            var propertyName = propertyInfo.SanitizePropertyName();
 
-                base.VisitMember(member);
+            _writer = ClassWriter.Properties;
 
-                _writer = ClassWriter.Properties;
+            base.VisitMember(member);
 
-                var propertyAttributes = propertyInfo.PropertyAttributesToString();
+            _writer = ClassWriter.Properties;
 
-                var summary = _writerSummary.ToString();
-                _writer.WriteLine(string.IsNullOrWhiteSpace(summary)
-                    ? $"- `{propertyName}` (no description known){propertyAttributes}"
-                    : $"- `{propertyName}`: {summary}{propertyAttributes}");
-            }
+            var propertyAttributes = propertyInfo.PropertyAttributesToString();
+
+            var summary = _writerSummary.ToString();
+            _writer.WriteLine(string.IsNullOrWhiteSpace(summary)
+                ? $"- `{propertyName}` (no description known){propertyAttributes}"
+                : $"- `{propertyName}`: {summary}{propertyAttributes}");
         }
 
         _writerSummary = new StringWriter();

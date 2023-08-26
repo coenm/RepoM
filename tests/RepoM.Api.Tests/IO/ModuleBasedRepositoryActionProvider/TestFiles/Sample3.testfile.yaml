@@ -48,7 +48,6 @@ repository-actions:
   - type: browser@1
     name: '{OpenIn} Windows File Explorer'
     active: false
-    multi-select-enabled: true
     variables:
     - name: name
       value: '{StringContains({Repository.SafePath}, "abc")}'

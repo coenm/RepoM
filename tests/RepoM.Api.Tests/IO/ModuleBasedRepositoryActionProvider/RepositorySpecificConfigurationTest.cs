@@ -136,38 +136,6 @@ public class RepositorySpecificConfigurationTest
     }
 
     [Fact]
-    public async Task Create_ShouldRespectMultiSelectRepos()
-    {
-        // arrange
-        _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
-        RepositorySpecificConfiguration sut = CreateSut();
-
-        // act
-        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"), new Repository("path2"));
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
-    [Fact]
-    public async Task Create_ShouldNotCareAboutMultiSelectRepos_WhenSingleRepo()
-    {
-        // arrange
-        _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
-        RepositorySpecificConfiguration sut = CreateSut();
-
-        // act
-        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
-    [Fact]
     public async Task Create_ShouldOnlyProcessActiveItems()
     {
         // arrange

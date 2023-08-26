@@ -20,7 +20,6 @@
         Type: browser@1,
         Name: {OpenIn} Windows File Explorer,
         Active: false,
-        MultiSelectEnabled: true,
         Variables: [
           {
             Name: name,

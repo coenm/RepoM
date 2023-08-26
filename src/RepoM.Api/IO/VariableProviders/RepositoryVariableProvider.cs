@@ -23,7 +23,7 @@ public class RepositoryVariableProvider : RepoM.Core.Plugin.VariableProviders.IV
 
     private static string ProvideString(RepositoryContext context, string key)
     {
-        IRepository? repository = context.Repositories.SingleOrDefault();
+        IRepository? repository = context.Repository;
         if (repository == null)
         {
             return string.Empty;
