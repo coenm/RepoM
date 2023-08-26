@@ -14,6 +14,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Exceptions;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.FileCache;
 using RepoM.Api.IO.Variables;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
@@ -414,14 +415,14 @@ public class RepositorySpecificConfiguration
         {
             if (ex is ConfigurationFileNotFoundException configurationFileNotFoundException)
             {
-                foreach (RepositoryAction failingItem in CreateFailing(configurationFileNotFoundException, configurationFileNotFoundException.Filename, repository)) // todo coenm
+                foreach (RepositoryAction failingItem in CreateFailing(configurationFileNotFoundException, configurationFileNotFoundException.Filename, repository))
                 {
                     yield return failingItem;
                 }
             }
             else
             {
-                foreach (RepositoryAction failingItem in CreateFailing(ex, null, repository)) // todo coenm
+                foreach (RepositoryAction failingItem in CreateFailing(ex, null, repository))
                 {
                     yield return failingItem;
                 }
