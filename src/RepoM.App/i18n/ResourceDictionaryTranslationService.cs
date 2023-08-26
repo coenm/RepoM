@@ -9,7 +9,7 @@ using RepoM.Api.Common;
 
 public class ResourceDictionaryTranslationService : ITranslationService
 {
-    private static ResourceDictionary? _dictionary = null;
+    private static ResourceDictionary? _dictionary;
 
     public string Translate(string value)
     {
