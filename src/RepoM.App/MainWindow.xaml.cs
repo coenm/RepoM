@@ -43,7 +43,6 @@ public partial class MainWindow
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
     private readonly IRepositoryMatcher _repositoryMatcher;
     private readonly IAppDataPathProvider _appDataPathProvider;
-    private readonly IModuleManager _moduleManager;
 
     public MainWindow(
         StatusCharacterMap statusCharacterMap,
@@ -70,7 +69,6 @@ public partial class MainWindow
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _executor = executor ?? throw new ArgumentNullException(nameof(executor));
-        _moduleManager = moduleManager ?? throw new ArgumentNullException(nameof(moduleManager));
 
         InitializeComponent();
 
@@ -79,7 +77,7 @@ public partial class MainWindow
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
         var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var pluginsViewModel = new PluginCollectionViewModel(_moduleManager);
+        var pluginsViewModel = new PluginCollectionViewModel(moduleManager);
 
         DataContext = new MainWindowViewModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel, pluginsViewModel);
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree

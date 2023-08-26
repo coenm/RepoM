@@ -2,7 +2,6 @@ namespace RepoM.Api.IO.ExpressionEvaluator;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.Parser;
 using ExpressionStringEvaluator.VariableProviders;
@@ -15,10 +14,7 @@ public class RepositoryExpressionEvaluator : IRepositoryExpressionEvaluator
 
     public RepositoryExpressionEvaluator(IEnumerable<IVariableProvider> variableProviders, IEnumerable<IMethod> methods)
     {
-        List<IVariableProvider> v = variableProviders.ToList() ?? throw new ArgumentNullException(nameof(variableProviders));
-        List<IMethod> m = methods.ToList() ?? throw new ArgumentNullException(nameof(methods));
-
-        _expressionExecutor = new ExpressionExecutor(v, m);
+        _expressionExecutor = new ExpressionExecutor(variableProviders, methods);
     }
 
     public bool EvaluateBooleanExpression(string? value, IRepository? repository)
@@ -40,7 +36,7 @@ public class RepositoryExpressionEvaluator : IRepositoryExpressionEvaluator
 
         try
         {
-            object? result = _expressionExecutor.Execute(new RepositoryContext(repository), value!);
+            object? result = _expressionExecutor.Execute(RepositoryContext.Create(repository), value!);
 
             if (result is null)
             {
@@ -69,7 +65,7 @@ public class RepositoryExpressionEvaluator : IRepositoryExpressionEvaluator
     {
         try
         {
-            return _expressionExecutor.Execute(new RepositoryContext(repository), value);
+            return _expressionExecutor.Execute(RepositoryContext.Create(repository), value);
         }
         catch (Exception)
         {
@@ -81,7 +77,7 @@ public class RepositoryExpressionEvaluator : IRepositoryExpressionEvaluator
     {
         try
         {
-            object? result = _expressionExecutor.Execute(new RepositoryContext(repository), value);
+            object? result = _expressionExecutor.Execute(RepositoryContext.Create(repository), value);
 
             // seems to be possible
             if (result == null)
