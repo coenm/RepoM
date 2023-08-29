@@ -34,9 +34,6 @@ public sealed class RepositoryActionPinRepositoryV1 : RepositoryAction
     /// </summary>
     public enum PinMode
     {
-        // when deserialization fails, this is the value.
-        Unknown,
-
         /// <summary>
         /// Toggle
         /// </summary>

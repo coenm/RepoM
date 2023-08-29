@@ -26,11 +26,6 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionForEachV1;
     }
 
-    bool IActionToRepositoryActionMapper.CanHandleMultipleRepositories()
-    {
-        return false;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionForEachV1, repository.First(), actionMapperComposition);

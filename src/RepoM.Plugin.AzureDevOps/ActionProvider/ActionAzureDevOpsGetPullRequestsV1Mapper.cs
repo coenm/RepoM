@@ -34,11 +34,6 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
         return action is RepositoryActionAzureDevOpsGetPullRequestsV1;
     }
 
-    public bool CanHandleMultipleRepositories()
-    {
-        return false;
-    }
-
     public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionAzureDevOpsGetPullRequestsV1, repository.First());

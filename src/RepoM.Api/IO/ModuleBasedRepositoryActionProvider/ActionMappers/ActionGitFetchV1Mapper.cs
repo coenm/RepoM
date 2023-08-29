@@ -27,11 +27,6 @@ public class ActionGitFetchV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionGitFetchV1;
     }
 
-    bool IActionToRepositoryActionMapper.CanHandleMultipleRepositories()
-    {
-        return true;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repositories, ActionMapperComposition actionMapperComposition)
     {
         Repository[] repos = repositories as Repository[] ?? repositories.ToArray();

@@ -28,11 +28,6 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionAssociateFileV1;
     }
 
-    public bool CanHandleMultipleRepositories()
-    {
-        return false;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionAssociateFileV1, repository.First());

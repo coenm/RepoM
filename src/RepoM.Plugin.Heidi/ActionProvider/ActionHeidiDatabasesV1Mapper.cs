@@ -45,11 +45,6 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionHeidiDatabasesV1;
     }
 
-    public bool CanHandleMultipleRepositories()
-    {
-        return false;
-    }
-
     public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionHeidiDatabasesV1, repository.First());

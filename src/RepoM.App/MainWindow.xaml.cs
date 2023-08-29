@@ -31,12 +31,12 @@ using SourceChord.FluentWPF;
 /// </summary>
 public partial class MainWindow
 {
+    private volatile bool _refreshDelayed;
     private readonly IRepositoryActionProvider _repositoryActionProvider;
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly DefaultRepositoryMonitor? _monitor;
     private readonly ITranslationService _translationService;
     private bool _closeOnDeactivate = true;
-    private bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
     private readonly IFileSystem _fileSystem;
     private readonly ActionExecutor _executor;
@@ -540,11 +540,11 @@ public partial class MainWindow
         // Text has changed, capture the timestamp
         if (sender != null)
         {
-            _timeOfLastRefresh = DateTime.Now;
+            _timeOfLastRefresh = DateTime.UtcNow;
         }
 
         // Spin while updates are in progress
-        if (DateTime.Now - _timeOfLastRefresh < TimeSpan.FromMilliseconds(100))
+        if (DateTime.UtcNow - _timeOfLastRefresh < TimeSpan.FromMilliseconds(100))
         {
             if (!_refreshDelayed)
             {

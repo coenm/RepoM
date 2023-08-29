@@ -54,19 +54,6 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
     }
 
     [Fact]
-    public void CanHandleMultipleRepositories_ShouldReturnFalse()
-    {
-        // arrange
-
-        // act
-        var result = _sut.CanHandleMultipleRepositories();
-
-        // assert
-        result.Should().BeFalse();
-        A.CallTo(_service).MustNotHaveHappened();
-    }
-
-    [Fact]
     public void CanMap_ShouldReturnFalse_WhenInputIsNotValidType()
     {
         // arrange

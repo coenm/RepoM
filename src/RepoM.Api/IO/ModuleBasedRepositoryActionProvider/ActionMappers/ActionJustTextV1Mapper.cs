@@ -26,11 +26,6 @@ public class ActionJustTextV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionJustTextV1;
     }
 
-    public bool CanHandleMultipleRepositories()
-    {
-        return false;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionJustTextV1, repository.First());

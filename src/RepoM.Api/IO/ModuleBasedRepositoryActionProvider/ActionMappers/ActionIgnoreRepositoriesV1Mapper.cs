@@ -29,11 +29,6 @@ public class ActionIgnoreRepositoriesV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionIgnoreRepositoryV1;
     }
 
-    bool IActionToRepositoryActionMapper.CanHandleMultipleRepositories()
-    {
-        return true;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, IEnumerable<Repository> repositories, ActionMapperComposition actionMapperComposition)
     {
         Repository[] repos = repositories as Repository[] ?? repositories.ToArray();

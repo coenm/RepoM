@@ -26,11 +26,6 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionBrowserV1;
     }
 
-    bool IActionToRepositoryActionMapper.CanHandleMultipleRepositories()
-    {
-        return false;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionBrowserV1, repository.First());

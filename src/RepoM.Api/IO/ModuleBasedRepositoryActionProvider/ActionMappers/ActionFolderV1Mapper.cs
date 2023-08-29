@@ -25,11 +25,6 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionFolderV1;
     }
 
-    bool IActionToRepositoryActionMapper.CanHandleMultipleRepositories()
-    {
-        return false;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionFolderV1, repository.First(), actionMapperComposition);

@@ -27,14 +27,9 @@ public class ActionGitPullV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionGitPullV1;
     }
 
-    bool IActionToRepositoryActionMapper.CanHandleMultipleRepositories()
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
-        return true;
-    }
-
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repositories, ActionMapperComposition actionMapperComposition)
-    {
-        Repository[] repos = repositories as Repository[] ?? repositories.ToArray();
+        Repository[] repos = repository as Repository[] ?? repository.ToArray();
         if (Array.Exists(repos, r => !_expressionEvaluator.EvaluateBooleanExpression(action.Active, r)))
         {
             yield break;

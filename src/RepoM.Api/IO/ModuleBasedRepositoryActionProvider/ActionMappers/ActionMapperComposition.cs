@@ -18,7 +18,7 @@ public class ActionMapperComposition
     public ActionMapperComposition(IEnumerable<IActionToRepositoryActionMapper> deserializers, IRepositoryExpressionEvaluator repoExpressionEvaluator)
     {
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
-        _deserializers = deserializers.ToArray() ?? throw new ArgumentNullException(nameof(deserializers));
+        _deserializers = deserializers.ToArray();
     }
 
     public RepositoryActionBase[] Map(Data.RepositoryAction action, params Repository[] repositories)

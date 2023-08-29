@@ -31,11 +31,6 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionPinRepositoryV1;
     }
 
-    public bool CanHandleMultipleRepositories()
-    {
-        return true;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         foreach (Repository r in repository)
@@ -76,12 +71,12 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
         if (string.IsNullOrWhiteSpace(name))
         {
             name = action.Mode switch
-                {
-                    RepositoryActionPinRepositoryV1.PinMode.Toggle => currentlyPinned ? UNPIN : PIN,
-                    RepositoryActionPinRepositoryV1.PinMode.Pin => PIN,
-                    RepositoryActionPinRepositoryV1.PinMode.UnPin => UNPIN,
-                    _ => throw new ArgumentOutOfRangeException("Unexpected value for mode."),
-                };
+            {
+                RepositoryActionPinRepositoryV1.PinMode.Toggle => currentlyPinned ? UNPIN : PIN,
+                RepositoryActionPinRepositoryV1.PinMode.Pin => PIN,
+                RepositoryActionPinRepositoryV1.PinMode.UnPin => UNPIN,
+                _ => throw new NotImplementedException(),
+            };
         }
 
         Git.RepositoryAction CreateAction(string name, Repository repository, bool newPinnedValue)
@@ -97,7 +92,7 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
                 RepositoryActionPinRepositoryV1.PinMode.Toggle => CreateAction(name, repository, !currentlyPinned),
                 RepositoryActionPinRepositoryV1.PinMode.Pin => CreateAction(name, repository, true),
                 RepositoryActionPinRepositoryV1.PinMode.UnPin => CreateAction(name, repository, false),
-                _ => throw new ArgumentOutOfRangeException(nameof(action.Mode), action.Mode, "Not expected"),
+                _ => throw new NotImplementedException(),
             };
     }
 }

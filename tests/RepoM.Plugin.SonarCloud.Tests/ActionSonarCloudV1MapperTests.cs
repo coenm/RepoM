@@ -44,18 +44,6 @@ public class ActionSonarCloudV1MapperTests
     }
 
     [Fact]
-    public void CanHandleMultipleRepositories_ShouldReturnFalse()
-    {
-        // arrange
-
-        // act
-        var result = _sut.CanHandleMultipleRepositories();
-
-        // assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
     public void CanMap_ShouldReturnFalse_WhenWrongType()
     {
         // arrange

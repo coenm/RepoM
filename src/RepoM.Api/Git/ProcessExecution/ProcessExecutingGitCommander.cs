@@ -7,9 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using RepoM.Core.Plugin.Repository;
 
 public partial class ProcessExecutingGitCommander : IGitCommander
 {
+    private const string GIT_EXE = "git";
+    
     /// <summary>
     /// Starting with version 1.7.10, Git uses UTF-8.
     /// Use this encoding for Git input and output.
@@ -108,13 +111,13 @@ public partial class ProcessExecutingGitCommander : IGitCommander
         startInfo.StandardErrorEncoding = _encoding;
     }
 
-    private static string Start(Repository repository, string[] command, Action<ProcessStartInfo> initialize)
+    private static string Start(IRepository repository, string[] command, Action<ProcessStartInfo> initialize)
     {
         var timeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
 
         var psi = new ProcessStartInfo
             {
-                FileName = "git",
+                FileName = GIT_EXE,
                 WorkingDirectory = repository.Path,
             };
 

@@ -22,11 +22,6 @@ public class ActionSeparatorV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionSeparatorV1;
     }
 
-    public bool CanHandleMultipleRepositories()
-    {
-        return true;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         foreach (Repository r in repository)

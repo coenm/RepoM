@@ -36,7 +36,7 @@ public class RepositoryExpressionEvaluator : IRepositoryExpressionEvaluator
 
         try
         {
-            object? result = _expressionExecutor.Execute(RepositoryContext.Create(repository), value!);
+            var result = _expressionExecutor.Execute(RepositoryContext.Create(repository), value);
 
             if (result is null)
             {
@@ -77,13 +77,7 @@ public class RepositoryExpressionEvaluator : IRepositoryExpressionEvaluator
     {
         try
         {
-            object? result = _expressionExecutor.Execute(RepositoryContext.Create(repository), value);
-
-            // seems to be possible
-            if (result == null)
-            {
-                return string.Empty;
-            }
+            var result = _expressionExecutor.Execute(RepositoryContext.Create(repository), value);
 
             if (result is string s)
             {

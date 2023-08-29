@@ -84,18 +84,6 @@ public class ActionClipboardCopyV1MapperTests
     }
 
     [Fact]
-    public void CanHandleMultipleRepositories_ShouldBeFalse()
-    {
-        // arrange
-
-        // act
-        var result = _sut.CanHandleMultipleRepositories();
-
-        // assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
     public void CanMap_ShouldReturnFalse_WhenWrongType()
     {
         // arrange

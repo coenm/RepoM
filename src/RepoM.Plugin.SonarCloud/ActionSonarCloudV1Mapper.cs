@@ -32,11 +32,6 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionSonarCloudSetFavoriteV1;
     }
 
-    public bool CanHandleMultipleRepositories()
-    {
-        return false;
-    }
-
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionSonarCloudSetFavoriteV1, repository.First());
