@@ -9,5 +9,5 @@ public interface IActionToRepositoryActionMapper
 {
     bool CanMap(RepositoryAction action);
 
-    IEnumerable<RepositoryActionBase> Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition);
+    IEnumerable<RepositoryActionBase> Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition);
 }

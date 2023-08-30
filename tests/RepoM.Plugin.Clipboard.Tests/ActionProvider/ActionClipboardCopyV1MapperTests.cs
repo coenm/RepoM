@@ -127,7 +127,7 @@ public class ActionClipboardCopyV1MapperTests
         // arrange
 
         // act
-        var result = _sut.Map(null!, new []{ _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(null!, _repository, _actionMapperComposition).ToArray();
 
         // assert
         result.Should().BeEmpty();
@@ -140,7 +140,7 @@ public class ActionClipboardCopyV1MapperTests
         _action.Active = "false";
 
         // act
-        var result = _sut.Map(_action, new []{ _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         result.Should().BeEmpty();
@@ -158,7 +158,7 @@ public class ActionClipboardCopyV1MapperTests
         _action.Text = text;
 
         // act
-        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         var paramText = text ?? "null";
@@ -181,7 +181,7 @@ public class ActionClipboardCopyV1MapperTests
         _action.Name = name;
         
         // act
-        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         var paramText = name ?? "null";

@@ -28,9 +28,9 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionAssociateFileV1;
     }
 
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return Map(action as RepositoryActionAssociateFileV1, repository.First());
+        return Map(action as RepositoryActionAssociateFileV1, repository);
     }
 
     private IEnumerable<Git.RepositoryAction> Map(RepositoryActionAssociateFileV1? action, Repository repository)

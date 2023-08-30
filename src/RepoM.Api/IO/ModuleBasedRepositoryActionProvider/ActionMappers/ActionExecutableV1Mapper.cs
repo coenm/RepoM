@@ -29,9 +29,9 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionExecutableV1;
     }
 
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return Map(action as RepositoryActionExecutableV1, repository.First());
+        return Map(action as RepositoryActionExecutableV1, repository);
     }
 
     private IEnumerable<Git.RepositoryAction> Map(RepositoryActionExecutableV1? action, Repository repository)

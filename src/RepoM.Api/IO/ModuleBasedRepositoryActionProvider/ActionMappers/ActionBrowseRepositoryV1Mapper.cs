@@ -26,9 +26,9 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionBrowseRepositoryV1;
     }
 
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return Map(action as RepositoryActionBrowseRepositoryV1, repository.First());
+        return Map(action as RepositoryActionBrowseRepositoryV1, repository);
     }
 
     private IEnumerable<RepositoryAction> Map(RepositoryActionBrowseRepositoryV1? action, Repository repository)

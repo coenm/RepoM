@@ -26,9 +26,9 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionForEachV1;
     }
 
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return Map(action as RepositoryActionForEachV1, repository.First(), actionMapperComposition);
+        return Map(action as RepositoryActionForEachV1, repository, actionMapperComposition);
     }
 
     private object? Evaluate(object? input, IRepository repository)

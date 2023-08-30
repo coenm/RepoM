@@ -34,9 +34,9 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
         return action is RepositoryActionAzureDevOpsGetPullRequestsV1;
     }
 
-    public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return Map(action as RepositoryActionAzureDevOpsGetPullRequestsV1, repository.First());
+        return Map(action as RepositoryActionAzureDevOpsGetPullRequestsV1, repository);
     }
 
     private Api.Git.RepositoryAction[] Map(RepositoryActionAzureDevOpsGetPullRequestsV1? action, Repository repository)

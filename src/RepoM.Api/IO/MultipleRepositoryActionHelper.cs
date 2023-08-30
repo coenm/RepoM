@@ -8,6 +8,7 @@ using RepoM.Core.Plugin.RepositoryActions.Actions;
 
 public static class MultipleRepositoryActionHelper
 {
+    [Obsolete("Multiple repository actions will be removed. Use a single repository action instead.")]
     public static RepositoryAction CreateActionForMultipleRepositories(
         string name,
         IEnumerable<Repository> repositories,

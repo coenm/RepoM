@@ -2,7 +2,6 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
@@ -31,18 +30,9 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionPinRepositoryV1;
     }
 
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        foreach (Repository r in repository)
-        {
-            RepositoryActionBase[] result = Map(action as RepositoryActionPinRepositoryV1, r).ToArray();
-            if (result.Any())
-            {
-                return result;
-            }
-        }
-
-        return Array.Empty<Git.RepositoryAction>();
+        return Map(action as RepositoryActionPinRepositoryV1, repository);
     }
 
     private IEnumerable<RepositoryActionBase> Map(RepositoryActionPinRepositoryV1? action, Repository repository)

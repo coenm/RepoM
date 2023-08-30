@@ -26,9 +26,9 @@ public class ActionJustTextV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionJustTextV1;
     }
 
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return Map(action as RepositoryActionJustTextV1, repository.First());
+        return Map(action as RepositoryActionJustTextV1, repository);
     }
 
     private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionJustTextV1? action, Repository repository)

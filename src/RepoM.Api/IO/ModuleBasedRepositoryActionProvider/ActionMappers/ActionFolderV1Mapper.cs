@@ -25,9 +25,9 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionFolderV1;
     }
 
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return Map(action as RepositoryActionFolderV1, repository.First(), actionMapperComposition);
+        return Map(action as RepositoryActionFolderV1, repository, actionMapperComposition);
     }
 
     private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionFolderV1? action, Repository repository, ActionMapperComposition actionMapperComposition)

@@ -45,9 +45,9 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionHeidiDatabasesV1;
     }
 
-    public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return Map(action as RepositoryActionHeidiDatabasesV1, repository.First());
+        return Map(action as RepositoryActionHeidiDatabasesV1, repository);
     }
 
     private IEnumerable<RepositoryActionBase> Map(RepositoryActionHeidiDatabasesV1? action, Repository repository)
@@ -62,56 +62,51 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var executable = string.IsNullOrWhiteSpace(action.Executable)
-            ? _settings.DefaultExe
-            : _expressionEvaluator.EvaluateStringExpression(action.Executable, repository);
-
+        var executable = GetHeidiExecutable(action, repository);
         if (string.IsNullOrWhiteSpace(executable))
         {
             _logger.LogWarning("HeidiSQL executable was empty");
             yield break;
         }
 
-        RepositoryHeidiConfiguration[] databases = (string.IsNullOrWhiteSpace(action.Key)
-                ? _service.GetByRepository(repository)
-                : _service.GetByKey(action.Key))
-            .ToArray();
+        RepositoryHeidiConfiguration[] databases = GetHeidiDatabases(action, repository);
 
         string? name = action.Name;
 
         if (!string.IsNullOrWhiteSpace(name))
         {
             name = NameHelper.EvaluateName(name, repository, _translationService, _expressionEvaluator);
-
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                if (databases.Length > 0)
-                {
-                    yield return new Api.Git.RepositoryAction(name, repository)
-                        {
-                            CanExecute = true,
-                            SubActions = GetDbActions(repository, databases, executable),
-                        };
-                }
-                else
-                {
-                    yield return new Api.Git.RepositoryAction(name, repository)
-                        {
-                            CanExecute = true,
-                            SubActions = new[]
-                                {
-                                    new Api.Git.RepositoryAction("NO databases found!", repository)
-                                        {
-                                            Action = NullAction.Instance,
-                                            CanExecute = false,
-                                        },
-                                },
-                        };
-                }
-      
-                yield break;
-            }
         }
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            if (databases.Length > 0)
+            {
+                yield return new Api.Git.RepositoryAction(name, repository)
+                    {
+                        CanExecute = true,
+                        SubActions = GetDbActions(repository, databases, executable),
+                    };
+            }
+            else
+            {
+                yield return new Api.Git.RepositoryAction(name, repository)
+                    {
+                        CanExecute = true,
+                        SubActions = new[]
+                            {
+                                new Api.Git.RepositoryAction("NO databases found!", repository)
+                                    {
+                                        Action = NullAction.Instance,
+                                        CanExecute = false,
+                                    },
+                            },
+                    };
+            }
+  
+            yield break;
+        }
+      
 
         if (databases.Length > 0)
         {
@@ -128,6 +123,21 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
                     CanExecute = false,
                 };
         }
+    }
+
+    private RepositoryHeidiConfiguration[] GetHeidiDatabases(RepositoryActionHeidiDatabasesV1 action, IRepository repository)
+    {
+        return (string.IsNullOrWhiteSpace(action.Key)
+                ? _service.GetByRepository(repository)
+                : _service.GetByKey(action.Key))
+            .ToArray();
+    }
+
+    private string GetHeidiExecutable(RepositoryActionHeidiDatabasesV1 action, IRepository repository)
+    {
+        return string.IsNullOrWhiteSpace(action.Executable)
+            ? _settings.DefaultExe
+            : _expressionEvaluator.EvaluateStringExpression(action.Executable, repository);
     }
 
     private static IEnumerable<RepositoryActionBase> GetDbActions(IRepository repository, IEnumerable<RepositoryHeidiConfiguration> databases, string executable)

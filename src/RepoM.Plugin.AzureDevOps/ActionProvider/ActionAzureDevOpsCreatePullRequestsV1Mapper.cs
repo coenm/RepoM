@@ -32,10 +32,10 @@ internal class ActionAzureDevOpsCreatePullRequestsV1Mapper : IActionToRepository
 	{
 		return action is RepositoryActionAzureDevOpsCreatePullRequestsV1;
 	}
-
-	public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    
+	public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
 	{
-		return Map(action as RepositoryActionAzureDevOpsCreatePullRequestsV1, repository.First());
+		return Map(action as RepositoryActionAzureDevOpsCreatePullRequestsV1, repository);
 	}
 
 	private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionAzureDevOpsCreatePullRequestsV1? action, Repository repository)

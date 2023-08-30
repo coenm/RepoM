@@ -21,23 +21,21 @@ public class ActionMapperComposition
         _deserializers = deserializers.ToArray();
     }
 
-    public RepositoryActionBase[] Map(Data.RepositoryAction action, params Repository[] repositories)
+    public RepositoryActionBase[] Map(Data.RepositoryAction action, Repository repository)
     {
-        Repository? singleRepository = repositories.Length <= 1 ? repositories.SingleOrDefault() : null;
-        
+        if (repository == null)
+        {
+            throw new ArgumentNullException(nameof(repository));
+        }
+
         List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable> vars)
         {
-            if (singleRepository == null)
-            {
-                return new List<EvaluatedVariable>(0);
-            }
-
             return vars
-                   .Where(v => IsEnabled(v.Enabled, true, singleRepository))
+                   .Where(v => IsEnabled(v.Enabled, true, repository))
                    .Select(v => new EvaluatedVariable
                        {
                            Name = v.Name,
-                           Value = Evaluate(v.Value, singleRepository),
+                           Value = Evaluate(v.Value, repository),
                        })
                    .ToList();
         }
@@ -46,7 +44,7 @@ public class ActionMapperComposition
 
         using IDisposable disposable = RepoMVariableProviderStore.Push(EvaluateVariables(action.Variables));
 
-        IEnumerable<RepositoryActionBase> result = deserializer?.Map(action, repositories, this) ?? Enumerable.Empty<RepositoryAction>();
+        IEnumerable<RepositoryActionBase> result = deserializer?.Map(action, repository, this) ?? Enumerable.Empty<RepositoryAction>();
 
         return result.ToArray();
     }
