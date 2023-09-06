@@ -6,6 +6,7 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionGitPushV1Mapper : IActionToRepositoryActionMapper
@@ -28,16 +29,30 @@ public class ActionGitPushV1Mapper : IActionToRepositoryActionMapper
 
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        var repos = new Repository[1] { repository, };
-        if (Array.Exists(repos, r => !_expressionEvaluator.EvaluateBooleanExpression(action.Active, r)))
+        if (action == null)
         {
             yield break;
         }
 
-        yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(
-            _translationService.Translate("Push"),
-            repos,
-            _repositoryWriter.Push,
-            executionCausesSynchronizing: true);
+        if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
+        {
+            yield break;
+        }
+
+        yield return new Git.RepositoryAction(_translationService.Translate("Push"), repository)
+            {
+                Action = new DelegateAction((_, _) =>
+                    {
+                        try
+                        {
+                            _repositoryWriter.Push(repository);
+                        }
+                        catch
+                        {
+                            // nothing to see here
+                        }
+                    }),
+                ExecutionCausesSynchronizing = true,
+            };
     }
 }

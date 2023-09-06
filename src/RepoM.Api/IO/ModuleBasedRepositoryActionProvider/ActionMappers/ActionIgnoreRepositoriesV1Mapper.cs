@@ -6,6 +6,7 @@ using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 
 public class ActionIgnoreRepositoriesV1Mapper : IActionToRepositoryActionMapper
 {
@@ -30,15 +31,30 @@ public class ActionIgnoreRepositoriesV1Mapper : IActionToRepositoryActionMapper
 
     IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        var repos = new Repository[1] { repository };
-        if (Array.Exists(repos, r => !_expressionEvaluator.EvaluateBooleanExpression(action.Active, r)))
+        if (action == null)
         {
             yield break;
         }
-        
-        yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(
-            _translationService.Translate("Ignore"),
-            repos,
-            repository => _repositoryMonitor.IgnoreByPath(repository.Path));
+
+        if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
+        {
+            yield break;
+        }
+
+        yield return new RepositoryAction(_translationService.Translate("Ignore"), repository)
+            {
+                Action = new DelegateAction((_, _) =>
+                    {
+                        try
+                        {
+                            _repositoryMonitor.IgnoreByPath(repository.Path);
+                        }
+                        catch
+                        {
+                            // nothing to see here
+                        }
+                    }),
+                ExecutionCausesSynchronizing = true,
+            };
     }
 }
