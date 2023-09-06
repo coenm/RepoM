@@ -27,7 +27,7 @@ public sealed class RepositoryActionPinRepositoryV1 : RepositoryAction
     /// </summary>
     [Required]
     [PropertyType(typeof(PinMode))]
-    public PinMode Mode { get; set; }
+    public PinMode? Mode { get; set; }
 
     /// <summary>
     /// The PinModes
