@@ -223,11 +223,9 @@ public class RepositoryConfigurationReader
                 continue;
             }
 
-            // todo redirect
-
             try
             {
-                repoSpecificConfig = _repositoryActionsFileStore.TryGet(filename);
+                repoSpecificConfig = _repositoryActionsFileStore.TryGet(f);
             }
             catch (Exception)
             {
@@ -235,20 +233,23 @@ public class RepositoryConfigurationReader
             }
         }
 
-        List<EvaluatedVariable> list2 = EvaluateVariables(repoSpecificConfig?.Variables);
-        variables.AddRange(list2);
-        using IDisposable repoSpecificVariables = RepoMVariableProviderStore.Push(list2);
-
-        actions.Add(rootFile.ActionsCollection);
-        if (repoSpecificConfig?.ActionsCollection != null)
+        if (repoSpecificConfig != null)
         {
-            actions.Add(repoSpecificConfig.ActionsCollection);
-        }
+            List<EvaluatedVariable> list2 = EvaluateVariables(repoSpecificConfig.Variables);
+            variables.AddRange(list2);
+            using IDisposable repoSpecificVariables = RepoMVariableProviderStore.Push(list2);
 
-        tags.Add(rootFile.TagsCollection);
-        if (repoSpecificConfig?.TagsCollection != null)
-        {
-            tags.Add(repoSpecificConfig.TagsCollection);
+            actions.Add(rootFile.ActionsCollection);
+            if (repoSpecificConfig.ActionsCollection != null)
+            {
+                actions.Add(repoSpecificConfig.ActionsCollection);
+            }
+
+            tags.Add(rootFile.TagsCollection);
+            if (repoSpecificConfig.TagsCollection != null)
+            {
+                tags.Add(repoSpecificConfig.TagsCollection);
+            }
         }
 
         return (envVars, variables, actions, tags);
