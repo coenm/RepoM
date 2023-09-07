@@ -1,14 +1,13 @@
 namespace RepoM.Api.Git;
 
 using System;
+using RepoM.Core.Plugin.Repository;
 
 public interface IGitCommander
 {
-    string Command(Repository repository, params string[] command);
+    string Command(IRepository repository, params string[] command);
 
-    string CommandOneline(Repository repository, params string[] command);
+    void CommandNoisy(IRepository repository, params string[] command);
 
-    void CommandNoisy(Repository repository, params string[] command);
-
-    void CommandOutputPipe(Repository repository, Action<string> handleOutput, params string[] command);
+    void CommandOutputPipe(IRepository repository, Action<string> handleOutput, params string[] command);
 }

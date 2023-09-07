@@ -7,10 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Repository;
 
 public partial class ProcessExecutingGitCommander : IGitCommander
 {
+    private readonly ILogger _logger;
     private const string GIT_EXE = "git";
     
     /// <summary>
@@ -21,20 +23,15 @@ public partial class ProcessExecutingGitCommander : IGitCommander
 
     private static readonly Regex _validCommandName = ValidCommandNameRegex();
 
-    /// <summary>
-    /// Runs the given git command, and returns the contents of its STDOUT.
-    /// </summary>
-    public string Command(Repository repository, params string[] command)
+    public ProcessExecutingGitCommander(ILogger logger)
     {
-        var retVal = string.Empty;
-        CommandOutputPipe(repository, output => retVal = output, command);
-        return retVal;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <summary>
-    /// Runs the given git command, and returns the first line of its STDOUT.
+    /// Runs the given git command, and returns the contents of its STDOUT.
     /// </summary>
-    public string CommandOneline(Repository repository, params string[] command)
+    public string Command(IRepository repository, params string[] command)
     {
         var retVal = string.Empty;
         CommandOutputPipe(repository, output => retVal = output, command);
@@ -44,7 +41,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
     /// <summary>
     /// Runs the given git command, and passes STDOUT through to the current process's STDOUT.
     /// </summary>
-    public void CommandNoisy(Repository repository, params string[] command)
+    public void CommandNoisy(IRepository repository, params string[] command)
     {
         CommandOutputPipe(repository, output => Trace.TraceInformation(output), command);
     }
@@ -52,7 +49,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
     /// <summary>
     /// Runs the given git command, and redirects STDOUT to the provided action.
     /// </summary>
-    public void CommandOutputPipe(Repository repository, Action<string> handleOutput, params string[] command)
+    public void CommandOutputPipe(IRepository repository, Action<string> handleOutput, params string[] command)
     {
         Time(command, () =>
             {
@@ -84,7 +81,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
         return new StreamWriter(stream.BaseStream, encoding);
     }
 
-    private static void Time(string[] command, Action action)
+    private void Time(string[] command, Action action)
     {
         DateTime start = DateTime.Now;
 
@@ -95,7 +92,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
         finally
         {
             DateTime end = DateTime.Now;
-            Trace.WriteLine($"[{end - start}] {string.Join(" ", command)}", "git command time");
+            _logger.LogTrace($"[{end - start}] {string.Join(" ", command)}", "git command time");
         }
     }
 

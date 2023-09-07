@@ -1,12 +1,14 @@
 namespace RepoM.Api.Git;
 
+using RepoM.Core.Plugin.Repository;
+
 public interface IRepositoryWriter
 {
-    bool Checkout(Repository repository, string branchName);
+    bool Checkout(IRepository repository, string branchName);
 
-    void Fetch(Repository repository);
+    void Fetch(IRepository repository);
 
-    void Pull(Repository repository);
+    void Pull(IRepository repository);
 
-    void Push(Repository repository);
+    void Push(IRepository repository);
 }
