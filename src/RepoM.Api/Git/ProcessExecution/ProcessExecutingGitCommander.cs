@@ -92,7 +92,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
         finally
         {
             DateTime end = DateTime.Now;
-            _logger.LogTrace($"[{end - start}] {string.Join(" ", command)}", "git command time");
+            _logger.LogTrace("git command '{command}' time took {duration}", string.Join(" ", command), end - start);
         }
     }
 
