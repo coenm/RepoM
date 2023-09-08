@@ -1,7 +1,6 @@
 namespace RepoM.Api.IO.Methods;
 
 using System;
-using System.Linq;
 using ExpressionStringEvaluator.Methods;
 using JetBrains.Annotations;
 
@@ -15,6 +14,6 @@ public class IsNullMethod : IMethod
 
     public object? Handle(string method, params object?[] args)
     {
-        return args == null || args.Any(arg => arg is null);
+        return args == null || Array.Exists(args, arg => arg is null);
     }
 }
