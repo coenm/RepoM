@@ -67,6 +67,7 @@ internal static class Bootstrapper
         Container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>(Lifestyle.Singleton);
         Container.RegisterInstance<IAppDataPathProvider>(DefaultAppDataPathProvider.Instance);
         Container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>(Lifestyle.Singleton);
+        Container.RegisterDecorator<IRepositoryActionProvider, LoggingRepositoryActionProviderDecorator>(Lifestyle.Singleton);
         Container.Register<IRepositoryReader, DefaultRepositoryReader>(Lifestyle.Singleton);
         Container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);
         Container.Register<IRepositoryStore, DefaultRepositoryStore>(Lifestyle.Singleton);
