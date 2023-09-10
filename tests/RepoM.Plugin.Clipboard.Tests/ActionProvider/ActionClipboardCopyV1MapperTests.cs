@@ -36,9 +36,7 @@ public class ActionClipboardCopyV1MapperTests
         IRepositoryExpressionEvaluator expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
         ITranslationService translationService = A.Fake<ITranslationService>();
 
-        _sut = new ActionClipboardCopyV1Mapper(
-            expressionEvaluator,
-            translationService);
+        _sut = new ActionClipboardCopyV1Mapper(expressionEvaluator);
 
         _action = new RepositoryActionClipboardCopyV1
             {
@@ -66,14 +64,11 @@ public class ActionClipboardCopyV1MapperTests
     public void Ctor_ShouldThrowArgumentNullException_WhenAnArgumentIsNull()
     {
         // arrange
-        IRepositoryExpressionEvaluator expressionEvaluator = A.Dummy<IRepositoryExpressionEvaluator>();
-        ITranslationService translationService = A.Dummy<ITranslationService>();
 
         // act
         var actions = new List<Action>
             {
-                () => _ = new ActionClipboardCopyV1Mapper(expressionEvaluator, null!),
-                () => _ = new ActionClipboardCopyV1Mapper(null!, translationService),
+                () => _ = new ActionClipboardCopyV1Mapper(null!),
             };
 
         // assert

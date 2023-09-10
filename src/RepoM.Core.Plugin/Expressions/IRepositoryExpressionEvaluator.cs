@@ -10,3 +10,16 @@ public interface IRepositoryExpressionEvaluator
 
     bool EvaluateBooleanExpression(string? value, IRepository? repository);
 }
+
+public static class RepositoryExpressionEvaluatorExtensions
+{
+    public static string EvaluateNullStringExpression(this IRepositoryExpressionEvaluator evaluator, string? value, IRepository? repository)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return string.Empty;
+        }
+
+        return evaluator.EvaluateStringExpression(value, repository);
+    }
+}
