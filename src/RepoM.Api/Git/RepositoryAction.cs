@@ -18,42 +18,36 @@ public class RepositorySeparatorAction : RepositoryActionBase
 public class DeferredRepositoryAction : RepositoryAction
 {
     private readonly Func<RepositoryActionBase[]>? _action;
-    private readonly Dictionary<string, string> _envVars;
+    private readonly Dictionary<string, string>? _envVars;
     private readonly Scope? _scope;
-    private IRepository _repository;
 
     public DeferredRepositoryAction(string name, IRepository repository, bool captureScope)
         : base(name, repository)
     {
-        _repository = repository;
-
         if (captureScope)
         {
-            _envVars = EnvironmentVariableStore.Get(_repository);
+            _envVars = EnvironmentVariableStore.Get(repository);
             _scope = RepoMVariableProviderStore.VariableScope.Value?.Clone();
         }
     }
 
-    public Func<RepositoryActionBase[]>? DeferredSubActionsEnumerator
+    public Func<RepositoryActionBase[]> DeferredSubActionsEnumerator
     {
         get
         {
             if (_action == null)
             {
-                return null;
+                return () => Array.Empty<RepositoryActionBase>();
             }
 
             return () =>
                 {
-                    using IDisposable _ = EnvironmentVariableStore.Set(_envVars);
+                    using IDisposable _ = _envVars == null ? CreateDummy() : EnvironmentVariableStore.Set(_envVars);
                     using IDisposable __ = _scope == null ? CreateDummy() : RepoMVariableProviderStore.Set(_scope);
                     return _action.Invoke();
                 };
         }
-        init
-        {
-            _action = value;
-        }
+        init => _action = value;
     }
 
     private static IDisposable CreateDummy()
