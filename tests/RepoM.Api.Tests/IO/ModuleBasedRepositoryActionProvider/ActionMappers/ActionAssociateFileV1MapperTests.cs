@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using FakeItEasy;
 using FluentAssertions;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
@@ -15,18 +14,8 @@ using Repository = RepoM.Api.Git.Repository;
 
 public class ActionAssociateFileV1MapperTests
 {
-    private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly ITranslationService _translationService;
-    private Repository _repository;
-
-    public ActionAssociateFileV1MapperTests()
-    {
-        _repository = new Repository("");
-        _expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
-        _translationService = A.Fake<ITranslationService>();
-        A.CallTo(() => _translationService.Translate(A<string>._, A<object[]>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "dummy");
-        A.CallTo(() => _translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "dummy");
-    }
+    private readonly IRepositoryExpressionEvaluator _expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
+    private readonly Repository _repository = new("");
 
     [Fact]
     public void Ctor_ShouldThrown_WhenArgumentIsNull()
@@ -34,19 +23,17 @@ public class ActionAssociateFileV1MapperTests
         // arrange
 
         // act
-        Action act1 = () => _ = new ActionAssociateFileV1Mapper(_expressionEvaluator, null!);
-        Action act2 = () => _ = new ActionAssociateFileV1Mapper(null!, _translationService);
+        Action act = () => _ = new ActionAssociateFileV1Mapper(null!);
 
         // assert
-        act1.Should().ThrowExactly<ArgumentNullException>();
-        act2.Should().ThrowExactly<ArgumentNullException>();
+        act.Should().ThrowExactly<ArgumentNullException>();
     }
     
    [Fact]
     public void CanMap_ShouldReturnFalse_WhenInputNull()
     {
         // arrange
-        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
+        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator) as IActionToRepositoryActionMapper;
 
         // act
         var result = sut.CanMap(null!);
@@ -60,7 +47,7 @@ public class ActionAssociateFileV1MapperTests
     {
         // arrange
 
-        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
+        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator) as IActionToRepositoryActionMapper;
 
         // act
         var result = sut.CanMap(new DummyRepositoryAction());
@@ -73,7 +60,7 @@ public class ActionAssociateFileV1MapperTests
     public void CanMap_ShouldReturnTrue_WhenInputIsOfTypeRepositoryActionAssociateFileV1()
     {
         // arrange
-        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
+        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator) as IActionToRepositoryActionMapper;
 
         // act
         var result = sut.CanMap(new RepositoryActionAssociateFileV1());
@@ -87,7 +74,7 @@ public class ActionAssociateFileV1MapperTests
     {
         // arrange
         var action = new DummyRepositoryAction();
-        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
+        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator) as IActionToRepositoryActionMapper;
 
         // act
         RepositoryActionBase[] result = sut.Map(action, _repository, ActionMapperCompositionFactory.CreateSmall(_expressionEvaluator, A.Dummy<IActionToRepositoryActionMapper>())).ToArray();
@@ -105,7 +92,7 @@ public class ActionAssociateFileV1MapperTests
                 Active = "dummy active string",
             };
         A.CallTo(() => _expressionEvaluator.EvaluateBooleanExpression(action.Active, _repository)).Returns(false);
-        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
+        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator) as IActionToRepositoryActionMapper;
 
         // act
         RepositoryActionBase[] result = sut.Map(action, _repository, ActionMapperCompositionFactory.CreateSmall(_expressionEvaluator, A.Dummy<IActionToRepositoryActionMapper>())).ToArray();
@@ -123,7 +110,7 @@ public class ActionAssociateFileV1MapperTests
                 Extension = null,
             };
         A.CallTo(() => _expressionEvaluator.EvaluateBooleanExpression(A<string?>._, _repository)).Returns(true);
-        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
+        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator) as IActionToRepositoryActionMapper;
 
         // act
         RepositoryActionBase[] result = sut.Map(action, _repository, ActionMapperCompositionFactory.CreateSmall(_expressionEvaluator, A.Dummy<IActionToRepositoryActionMapper>())).ToArray();
