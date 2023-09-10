@@ -1,7 +1,7 @@
 ﻿[
   {
     $type: RepositoryAction,
-    Name: ES_,
+    Name: ,
     Action: {
       $type: CopyToClipboardAction,
       Text: ES_text123
