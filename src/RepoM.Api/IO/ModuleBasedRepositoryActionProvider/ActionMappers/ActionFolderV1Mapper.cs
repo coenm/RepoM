@@ -3,7 +3,6 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Core.Plugin.Expressions;
@@ -12,12 +11,10 @@ using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.R
 public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly ITranslationService _translationService;
 
-    public ActionFolderV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
+    public ActionFolderV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
-        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
     }
     
     bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
@@ -48,7 +45,7 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
             deferred = _expressionEvaluator.EvaluateBooleanExpression(action.IsDeferred, repository);
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
+        var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
 
         if (deferred)
         {

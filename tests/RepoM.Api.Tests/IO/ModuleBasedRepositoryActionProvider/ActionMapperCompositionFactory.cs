@@ -22,7 +22,7 @@ internal static class ActionMapperCompositionFactory
                 new ActionBrowserV1Mapper(expressionEvaluator),
                 new ActionCommandV1Mapper(expressionEvaluator),
                 new ActionExecutableV1Mapper(expressionEvaluator, fileSystem),
-                new ActionFolderV1Mapper(expressionEvaluator, translationService),
+                new ActionFolderV1Mapper(expressionEvaluator),
                 new ActionForEachV1Mapper(expressionEvaluator),
                 new ActionGitCheckoutV1Mapper(expressionEvaluator, translationService, repositoryWriter),
                 new ActionGitFetchV1Mapper(expressionEvaluator, translationService, repositoryWriter),
