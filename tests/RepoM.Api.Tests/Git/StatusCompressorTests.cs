@@ -7,29 +7,28 @@ using Xunit;
 public class StatusCompressorTests
 {
     private readonly RepositoryBuilder _builder = new();
-    private readonly StatusCompressor _compressor = new();
 
-    private string Compress(Repository repo)
+    private static string Compress(Repository repo)
     {
-        return _compressor.Compress(repo);
+        return StatusCompressor.Compress(repo);
     }
 
-    private string CompressWithBranch(Repository repo)
+    private static string CompressWithBranch(Repository repo)
     {
-        return _compressor.CompressWithBranch(repo);
+        return StatusCompressor.CompressWithBranch(repo);
     }
 
-    private string Up => StatusCharacterMap.ArrowUpSign;
+    private string Up => StatusCharacterMap.ARROW_UP_SIGN.ToString();
 
-    private string Down => StatusCharacterMap.ArrowDownSign;
+    private string Down => StatusCharacterMap.ARROW_DOWN_SIGN.ToString();
 
-    private string Eq => StatusCharacterMap.IdenticalSign;
+    private string Eq => StatusCharacterMap.IDENTICAL_SIGN.ToString();
 
-    private string NoUp => StatusCharacterMap.NoUpstreamSign;
+    private string NoUp => StatusCharacterMap.NO_UPSTREAM_SIGN.ToString();
 
-    private string Ellipses => StatusCharacterMap.EllipsesSign;
+    private string Ellipses => StatusCharacterMap.ELLIPSES_SIGN.ToString();
 
-    private string StashCount => StatusCharacterMap.StashSign;
+    private string StashCount => StatusCharacterMap.STASH_SIGN.ToString();
 
     public class CompressMethod : StatusCompressorTests
     {

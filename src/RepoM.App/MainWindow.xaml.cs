@@ -641,13 +641,13 @@ public partial class MainWindow
     {
         return _translationService.Translate(
             "Help Detail",
-            StatusCharacterMap.IdenticalSign,
-            StatusCharacterMap.StashSign,
-            StatusCharacterMap.IdenticalSign,
-            StatusCharacterMap.ArrowUpSign,
-            StatusCharacterMap.ArrowDownSign,
-            StatusCharacterMap.NoUpstreamSign,
-            StatusCharacterMap.StashSign
+            StatusCharacterMap.IDENTICAL_SIGN,
+            StatusCharacterMap.STASH_SIGN,
+            StatusCharacterMap.IDENTICAL_SIGN,
+            StatusCharacterMap.ARROW_UP_SIGN,
+            StatusCharacterMap.ARROW_DOWN_SIGN,
+            StatusCharacterMap.NO_UPSTREAM_SIGN,
+            StatusCharacterMap.STASH_SIGN
         );
     }
 
