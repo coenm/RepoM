@@ -107,7 +107,6 @@ public class AzureDevOpsPackageTests
     {
         container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
         container.RegisterSingleton(A.Dummy<IActionToRepositoryActionMapper>);
-        container.RegisterSingleton(A.Dummy<ITranslationService>);
         container.RegisterInstance(_appSettingsService);
         container.RegisterSingleton(A.Dummy<ILogger>);
     }

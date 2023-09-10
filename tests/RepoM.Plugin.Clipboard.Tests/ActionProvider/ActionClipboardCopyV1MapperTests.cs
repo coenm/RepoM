@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
-using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Core.Plugin.Expressions;
@@ -34,7 +33,6 @@ public class ActionClipboardCopyV1MapperTests
         _actionMapperComposition = new ActionMapperComposition(new List<IActionToRepositoryActionMapper>(), A.Dummy<IRepositoryExpressionEvaluator>());
         _repository = new Repository("dummy");
         IRepositoryExpressionEvaluator expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
-        ITranslationService translationService = A.Fake<ITranslationService>();
 
         _sut = new ActionClipboardCopyV1Mapper(expressionEvaluator);
 
@@ -56,8 +54,6 @@ public class ActionClipboardCopyV1MapperTests
 
                  throw new Exception("Thrown by test, Not expected");
              });
-        A.CallTo(() => translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
-        A.CallTo(() => translationService.Translate(A<string>._, A<object[]>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
     }
 
     [Fact]
