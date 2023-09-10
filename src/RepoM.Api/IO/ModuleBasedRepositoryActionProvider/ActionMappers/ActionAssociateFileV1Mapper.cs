@@ -67,7 +67,7 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             return null;
         }
 
-        return new Git.RepositoryAction(actionName, repository)
+        return new Git.DeferredRepositoryAction(actionName, repository, false)
             {
                 DeferredSubActionsEnumerator = () =>
                     GetFiles(repository, filePattern)

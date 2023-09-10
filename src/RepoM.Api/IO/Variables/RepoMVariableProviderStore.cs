@@ -14,4 +14,10 @@ public static class RepoMVariableProviderStore
         VariableScope.Value = new Scope(VariableScope.Value, vars);
         return VariableScope.Value;
     }
+
+    public static IDisposable Set(Scope scope)
+    {
+        VariableScope.Value = scope;
+        return VariableScope.Value;
+    }
 }

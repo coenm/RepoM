@@ -52,7 +52,7 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
             name = _translationService.Translate("Checkout");
         }
 
-        yield return new Git.RepositoryAction(name, repository)
+        yield return new DeferredRepositoryAction(name, repository, false) 
             {
                 DeferredSubActionsEnumerator = () =>
                     repository.LocalBranches
@@ -65,7 +65,7 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
                               .Union(new RepositoryActionBase[]
                                   {
                                       new RepositorySeparatorAction(repository), // doesn't work todo
-                                      new Git.RepositoryAction(_translationService.Translate("Remote branches"), repository)
+                                      new DeferredRepositoryAction(_translationService.Translate("Remote branches"), repository, false)
                                           {
                                               DeferredSubActionsEnumerator = () =>
                                                   {

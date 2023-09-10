@@ -130,6 +130,9 @@ public class RepoMVariableProvider : RepoM.Core.Plugin.VariableProviders.IVariab
             envSearchKey = envKey[..index];
         }
 
+        var ph = new PropertyHandler();
+        var ah = new ArrayHandler();
+
         Scope? scope = RepoMVariableProviderStore.VariableScope.Value;
 
         while (true)
@@ -148,9 +151,6 @@ public class RepoMVariableProvider : RepoM.Core.Plugin.VariableProviders.IVariab
 
                 IEnumerable<IItem> selectors = FindSelectors(envKey[index..]);
                 var r = result;
-
-                var ph = new PropertyHandler();
-                var ah = new ArrayHandler();
 
                 foreach (IItem selector in selectors)
                 {

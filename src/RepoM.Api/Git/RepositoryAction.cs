@@ -2,6 +2,7 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.Collections.Generic;
+using RepoM.Api.IO.Variables;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
@@ -11,6 +12,61 @@ public class RepositorySeparatorAction : RepositoryActionBase
     public RepositorySeparatorAction(IRepository repository)
         : base(repository)
     {
+    }
+}
+
+public class DeferredRepositoryAction : RepositoryAction
+{
+    private readonly Func<RepositoryActionBase[]>? _action;
+    private readonly Dictionary<string, string> _envVars;
+    private readonly Scope? _scope;
+    private IRepository _repository;
+
+    public DeferredRepositoryAction(string name, IRepository repository, bool captureScope)
+        : base(name, repository)
+    {
+        _repository = repository;
+
+        if (captureScope)
+        {
+            _envVars = EnvironmentVariableStore.Get(_repository);
+            _scope = RepoMVariableProviderStore.VariableScope.Value?.Clone();
+        }
+    }
+
+    public Func<RepositoryActionBase[]>? DeferredSubActionsEnumerator
+    {
+        get
+        {
+            if (_action == null)
+            {
+                return null;
+            }
+
+            return () =>
+                {
+                    using IDisposable _ = EnvironmentVariableStore.Set(_envVars);
+                    using IDisposable __ = _scope == null ? CreateDummy() : RepoMVariableProviderStore.Set(_scope);
+                    return _action.Invoke();
+                };
+        }
+        init
+        {
+            _action = value;
+        }
+    }
+
+    private static IDisposable CreateDummy()
+    {
+        return new DummyIDisposable();
+    }
+
+    private sealed class DummyIDisposable : IDisposable
+    {
+        public void Dispose()
+        {
+            // intentionally do nothing
+        }
     }
 }
 
@@ -39,8 +95,6 @@ public abstract class RepositoryActionBase
     public bool ExecutionCausesSynchronizing { get; init; }
 
     public bool CanExecute { get; init; } = true;
-
-    public Func<RepositoryActionBase[]>? DeferredSubActionsEnumerator { get; init; }
 
     public IEnumerable<RepositoryActionBase>? SubActions { get; init; }
 }

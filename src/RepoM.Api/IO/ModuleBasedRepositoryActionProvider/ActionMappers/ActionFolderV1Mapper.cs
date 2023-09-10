@@ -27,7 +27,7 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionFolderV1, repository, actionMapperComposition);
     }
 
-    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionFolderV1? action, Repository repository, ActionMapperComposition actionMapperComposition)
+    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionFolderV1? action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
         if (action == null)
         {
@@ -49,25 +49,25 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
 
         if (deferred)
         {
-            yield return new RepoM.Api.Git.RepositoryAction(name, repository)
+            yield return new DeferredRepositoryAction(name, repository, true)
                 {
                     CanExecute = true,
                     DeferredSubActionsEnumerator = () =>
                         action.Items
-                              .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
-                              .SelectMany(x => actionMapperComposition.Map(x, repository))
-                              .ToArray(),
+                          .Where(repoAction => _expressionEvaluator.EvaluateBooleanExpression(repoAction.Active, repository))
+                          .SelectMany(repoAction => actionMapperComposition.Map(repoAction, repository))
+                          .ToArray(),
                 };
         }
         else
         {
-            yield return new RepoM.Api.Git.RepositoryAction(name, repository)
+            yield return new Git.RepositoryAction(name, repository)
                 {
                     CanExecute = true,
                     SubActions = action.Items
-                                       .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
-                                       .SelectMany(x => actionMapperComposition.Map(x, repository))
-                                       .ToArray(),
+                       .Where(repoAction => _expressionEvaluator.EvaluateBooleanExpression(repoAction.Active, repository))
+                       .SelectMany(repoAction => actionMapperComposition.Map(repoAction, repository))
+                       .ToArray(),
                 };
         }
     }

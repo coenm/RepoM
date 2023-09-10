@@ -216,18 +216,13 @@ public partial class MainWindow
                     items.Add(new Separator());
                 }
             }
-            else if (action is RepositoryAction _)
+            else
             {
                 Control? controlItem = CreateMenuItem(sender, action, vm);
                 if (controlItem != null)
                 {
                     items.Add(controlItem);
                 }
-            }
-            else
-            {
-                // do nothing.
-                // log?
             }
         }
 
@@ -418,7 +413,7 @@ public partial class MainWindow
 
         Action<object, object> clickAction = (object clickSender, object clickArgs) =>
             {
-                if (repositoryAction?.Action == null || repositoryAction.Action is NullAction)
+                if (repositoryAction?.Action is null or NullAction)
                 {
                     return;
                 }
@@ -446,7 +441,7 @@ public partial class MainWindow
         // this is a deferred submenu. We want to make sure that the context menu can pop up
         // fast, while submenus are not evaluated yet. We don't want to make the context menu
         // itself slow because the creation of the submenu items takes some time.
-        if (repositoryAction?.DeferredSubActionsEnumerator != null)
+        if (repositoryAction is DeferredRepositoryAction deferredRepositoryAction && deferredRepositoryAction.DeferredSubActionsEnumerator != null)
         {
             // this is a template submenu item to enable submenus under the current
             // menu item. this item gets removed when the real subitems are created
@@ -457,7 +452,7 @@ public partial class MainWindow
                 item.SubmenuOpened -= SelfDetachingEventHandler;
                 item.Items.Clear();
 
-                foreach (RepositoryActionBase subAction in repositoryAction.DeferredSubActionsEnumerator())
+                foreach (RepositoryActionBase subAction in deferredRepositoryAction.DeferredSubActionsEnumerator())
                 {
                     Control? controlItem = CreateMenuItem(sender, subAction);
                     if (controlItem != null)
@@ -465,13 +460,11 @@ public partial class MainWindow
                         item.Items.Add(controlItem);
                     }
                 }
-
-                Console.WriteLine($"Added {item.Items.Count} deferred sub action(s).");
             }
 
             item.SubmenuOpened += SelfDetachingEventHandler;
         }
-        else if (repositoryAction?.SubActions != null)
+        else if (repositoryAction.SubActions != null)
         {
             foreach (RepositoryActionBase subAction in repositoryAction.SubActions)
             {

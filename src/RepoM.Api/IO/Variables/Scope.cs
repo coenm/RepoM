@@ -35,4 +35,10 @@ public sealed class Scope : IDisposable
             _isDisposed = true;
         }
     }
+
+    public Scope Clone()
+    {
+        // this is not a real clone as it uses a reference to Variables. this is ok.
+        return new Scope(Parent?.Clone(), Variables);
+    }
 }

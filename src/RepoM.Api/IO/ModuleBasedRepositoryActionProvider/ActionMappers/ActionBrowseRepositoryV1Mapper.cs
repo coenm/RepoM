@@ -70,12 +70,12 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
             return CreateProcessRunnerAction(actionName, repository.Remotes[0].Url, repository);
         }
 
-        return new RepositoryAction(actionName, repository)
+        return new DeferredRepositoryAction(actionName, repository, false)
             {
                 DeferredSubActionsEnumerator = () => repository.Remotes
-                                                               .Take(50)
-                                                               .Select(remote => CreateProcessRunnerAction(remote.Name, remote.Url, repository))
-                                                               .ToArray(),
+                   .Take(50)
+                   .Select(remote => CreateProcessRunnerAction(remote.Name, remote.Url, repository))
+                   .ToArray(),
             };
     }
 
