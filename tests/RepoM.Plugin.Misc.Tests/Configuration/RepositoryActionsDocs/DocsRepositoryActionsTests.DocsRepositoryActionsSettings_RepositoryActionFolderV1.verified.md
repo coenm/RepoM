@@ -3,3 +3,4 @@
 Action specific properties:
 
 - `items`: Menu items. (required, evaluated, list`1)
+- `is-deferred`: Menu is deferred. This will speed up visualisation. (optional, evaluated, boolean, default: `false`)
