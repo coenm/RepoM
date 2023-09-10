@@ -31,7 +31,7 @@ internal static class ActionMapperCompositionFactory
                 new ActionIgnoreRepositoriesV1Mapper(expressionEvaluator, translationService, repositoryMonitor),
                 new ActionSeparatorV1Mapper(expressionEvaluator),
                 new ActionAssociateFileV1Mapper(expressionEvaluator),
-                new ActionJustTextV1Mapper(expressionEvaluator, translationService),
+                new ActionJustTextV1Mapper(expressionEvaluator),
             };
 
         return new ActionMapperComposition(mappers, expressionEvaluator);
@@ -39,10 +39,6 @@ internal static class ActionMapperCompositionFactory
 
     public static ActionMapperComposition CreateSmall(IRepositoryExpressionEvaluator expressionEvaluator, IActionToRepositoryActionMapper actionToRepositoryActionMapper)
     {
-        var list = new[]
-            {
-                actionToRepositoryActionMapper,
-            };
-        return new ActionMapperComposition(list, expressionEvaluator);
+        return new ActionMapperComposition(new[] { actionToRepositoryActionMapper, }, expressionEvaluator);
     }
 }
