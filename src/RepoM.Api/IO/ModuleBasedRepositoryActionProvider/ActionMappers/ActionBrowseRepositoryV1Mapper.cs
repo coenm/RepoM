@@ -50,7 +50,7 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
         }
     }
 
-    private RepositoryAction? CreateBrowseRemoteAction(Repository repository, RepositoryActionBrowseRepositoryV1 action)
+    private RepositoryAction? CreateBrowseRemoteAction(IRepository repository, RepositoryActionBrowseRepositoryV1 action)
     {
         if (repository.Remotes.Count == 0)
         {
