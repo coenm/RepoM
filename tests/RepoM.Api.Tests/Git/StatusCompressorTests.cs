@@ -1,22 +1,13 @@
 namespace RepoM.Api.Tests.Git;
 
-using System;
 using FluentAssertions;
 using RepoM.Api.Git;
 using Xunit;
 
 public class StatusCompressorTests
 {
-    private readonly RepositoryBuilder _builder;
-    private readonly StatusCharacterMap _characterMap;
-    private readonly StatusCompressor _compressor;
-
-    public StatusCompressorTests()
-    {
-        _builder = new RepositoryBuilder();
-        _characterMap = StatusCharacterMap.Instance;
-        _compressor = new StatusCompressor(_characterMap);
-    }
+    private readonly RepositoryBuilder _builder = new();
+    private readonly StatusCompressor _compressor = new();
 
     private string Compress(Repository repo)
     {
@@ -28,32 +19,20 @@ public class StatusCompressorTests
         return _compressor.CompressWithBranch(repo);
     }
 
-    private string Up => _characterMap.ArrowUpSign;
+    private string Up => StatusCharacterMap.ArrowUpSign;
 
-    private string Down => _characterMap.ArrowDownSign;
+    private string Down => StatusCharacterMap.ArrowDownSign;
 
-    private string Eq => _characterMap.IdenticalSign;
+    private string Eq => StatusCharacterMap.IdenticalSign;
 
-    private string NoUp => _characterMap.NoUpstreamSign;
+    private string NoUp => StatusCharacterMap.NoUpstreamSign;
 
-    private string Ellipses => _characterMap.EllipsesSign;
+    private string Ellipses => StatusCharacterMap.EllipsesSign;
 
-    private string StashCount => _characterMap.StashSign;
+    private string StashCount => StatusCharacterMap.StashSign;
 
     public class CompressMethod : StatusCompressorTests
     {
-        [Fact]
-        public void Ctor_ShouldThrow_WhenArgumentIsNull()
-        {
-            // arrange
-
-            // act
-            Action act = () => _ = new StatusCompressor(null!);
-
-            // asset
-            act.Should().Throw<ArgumentNullException>();
-        }
-
         [Fact]
         public void Returns_Empty_String_For_Empty_Repositories()
         {

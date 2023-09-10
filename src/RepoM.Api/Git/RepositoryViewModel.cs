@@ -46,7 +46,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
             return;
         }
 
-        var compressor = new StatusCompressor(StatusCharacterMap.Instance);
+        var compressor = new StatusCompressor();
         _cachedRepositoryStatus = compressor.Compress(Repository);
         _cachedRepositoryStatusWithBranch = compressor.CompressWithBranch(Repository);
 

@@ -58,7 +58,6 @@ internal static class Bootstrapper
     {
         Container.RegisterInstance<ObjectCache>(MemoryCache.Default);
         Container.Register<MainWindow>(Lifestyle.Singleton);
-        Container.RegisterInstance(StatusCharacterMap.Instance);
         Container.Register<StatusCompressor>(Lifestyle.Singleton);
         Container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>(Lifestyle.Singleton);
         Container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>(Lifestyle.Singleton);

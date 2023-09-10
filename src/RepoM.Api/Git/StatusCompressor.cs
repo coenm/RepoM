@@ -1,18 +1,10 @@
 namespace RepoM.Api.Git;
 
-using System;
 using System.Text;
 
 public class StatusCompressor
 {
     private const int COMMIT_SHA_DISPLAY_CHARS = 7;
-
-    private readonly StatusCharacterMap _statusCharacterMap;
-
-    public StatusCompressor(StatusCharacterMap statusCharacterMap)
-    {
-        _statusCharacterMap = statusCharacterMap ?? throw new ArgumentNullException(nameof(statusCharacterMap));
-    }
 
     public string Compress(Repository repository)
     {
@@ -35,13 +27,13 @@ public class StatusCompressor
         {
             if (isOnCommitLevel)
             {
-                builder.Append(_statusCharacterMap.IdenticalSign);
+                builder.Append(StatusCharacterMap.IdenticalSign);
             }
             else
             {
                 if (isBehind)
                 {
-                    builder.Append($"{_statusCharacterMap.ArrowDownSign}{repository.BehindBy}");
+                    builder.Append($"{StatusCharacterMap.ArrowDownSign}{repository.BehindBy}");
                 }
 
                 if (isAhead)
@@ -51,13 +43,13 @@ public class StatusCompressor
                         builder.Append(' ');
                     }
 
-                    builder.Append($"{_statusCharacterMap.ArrowUpSign}{repository.AheadBy}");
+                    builder.Append($"{StatusCharacterMap.ArrowUpSign}{repository.AheadBy}");
                 }
             }
         }
         else
         {
-            builder.Append(_statusCharacterMap.NoUpstreamSign);
+            builder.Append(StatusCharacterMap.NoUpstreamSign);
         }
 
         if (printAddStagedRemoved)
@@ -92,7 +84,7 @@ public class StatusCompressor
                 builder.Append(' ');
             }
 
-            builder.Append(_statusCharacterMap.StashSign + repository.StashCount);
+            builder.Append(StatusCharacterMap.StashSign + repository.StashCount);
         }
 
         return builder.ToString();
@@ -112,7 +104,7 @@ public class StatusCompressor
             // put commit shas in parenthesis (), shorten them and show ellipses afterwards
             if (repository.CurrentBranchIsDetached && branch.Length > COMMIT_SHA_DISPLAY_CHARS)
             {
-                branch = $"({branch[..COMMIT_SHA_DISPLAY_CHARS]}{_statusCharacterMap.EllipsesSign})";
+                branch = $"({branch[..COMMIT_SHA_DISPLAY_CHARS]}{StatusCharacterMap.EllipsesSign})";
             }
         }
 
