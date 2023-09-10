@@ -18,17 +18,17 @@ public class StatusCompressorTests
         return StatusCompressor.CompressWithBranch(repo);
     }
 
-    private string Up => StatusCharacterMap.ARROW_UP_SIGN.ToString();
+    private static string Up => StatusCharacterMap.ARROW_UP_SIGN.ToString();
 
-    private string Down => StatusCharacterMap.ARROW_DOWN_SIGN.ToString();
+    private static string Down => StatusCharacterMap.ARROW_DOWN_SIGN.ToString();
 
-    private string Eq => StatusCharacterMap.IDENTICAL_SIGN.ToString();
+    private static string Eq => StatusCharacterMap.IDENTICAL_SIGN.ToString();
 
-    private string NoUp => StatusCharacterMap.NO_UPSTREAM_SIGN.ToString();
+    private static string NoUp => StatusCharacterMap.NO_UPSTREAM_SIGN.ToString();
 
-    private string Ellipses => StatusCharacterMap.ELLIPSES_SIGN.ToString();
+    private static string Ellipses => StatusCharacterMap.ELLIPSES_SIGN.ToString();
 
-    private string StashCount => StatusCharacterMap.STASH_SIGN.ToString();
+    private static string StashCount => StatusCharacterMap.STASH_SIGN.ToString();
 
     public class CompressMethod : StatusCompressorTests
     {
