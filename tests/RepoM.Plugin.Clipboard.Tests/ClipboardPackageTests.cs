@@ -43,7 +43,6 @@ public class ClipboardPackageTests
     private static void RegisterExternals(Container container)
     {
         container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
-        container.RegisterSingleton(A.Dummy<ITranslationService>);
     }
 }
 

@@ -3,24 +3,21 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Linq;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = Data.RepositoryAction;
 
 public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly ITranslationService _translationService;
     private readonly IFileSystem _fileSystem;
 
-    public ActionExecutableV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IFileSystem fileSystem)
+    public ActionExecutableV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator, IFileSystem fileSystem)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
-        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 
@@ -34,7 +31,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionExecutableV1, repository);
     }
 
-    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionExecutableV1? action, Repository repository)
+    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionExecutableV1? action, IRepository repository)
     {
         if (action == null)
         {
@@ -46,7 +43,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
+        var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
 
         var found = false;
         foreach (var executable in action.Executables)

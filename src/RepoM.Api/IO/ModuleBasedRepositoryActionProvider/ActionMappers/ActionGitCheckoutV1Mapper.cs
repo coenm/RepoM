@@ -45,11 +45,7 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = action.Name;
-        if (!string.IsNullOrEmpty(name))
-        {
-            name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
-        }
+        var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
 
         if (string.IsNullOrWhiteSpace(name))
         {

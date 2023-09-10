@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Core.Plugin.Expressions;
@@ -15,12 +14,10 @@ using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.R
 public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly ITranslationService _translationService;
 
-    public ActionAssociateFileV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
+    public ActionAssociateFileV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
-        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
@@ -50,8 +47,8 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
-        
+        var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
+
         Git.RepositoryAction? menuItem = CreateFileAssociationSubMenu(
             repository,
             name,

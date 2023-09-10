@@ -1,6 +1,5 @@
 namespace RepoM.Plugin.Misc.Tests.DefaultAppSettingsTests;
 
-using System;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,7 +56,7 @@ public class DocsAppSettingsTests
         };
         AssemblyMembers members = DocReader.Read(typeof(AppSettings).Assembly, options);
 #else
-        var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
+        var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), System.Array.Empty<Member>());
 #endif
 
         var visitor = new AppSettingsMarkdownVisitor();

@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Core.Plugin.Expressions;
@@ -22,20 +20,17 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly IHeidiConfigurationService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly ITranslationService _translationService;
     private readonly IHeidiSettings _settings;
     private readonly ILogger _logger;
     
     public ActionHeidiDatabasesV1Mapper(
         IHeidiConfigurationService service,
         IRepositoryExpressionEvaluator expressionEvaluator,
-        ITranslationService translationService,
         IHeidiSettings settings,
         ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
-        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -50,7 +45,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionHeidiDatabasesV1, repository);
     }
 
-    private IEnumerable<RepositoryActionBase> Map(RepositoryActionHeidiDatabasesV1? action, Repository repository)
+    private IEnumerable<RepositoryActionBase> Map(RepositoryActionHeidiDatabasesV1? action, IRepository repository)
     {
         if (action == null)
         {
@@ -71,12 +66,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
 
         RepositoryHeidiConfiguration[] databases = GetHeidiDatabases(action, repository);
 
-        string? name = action.Name;
-
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            name = NameHelper.EvaluateName(name, repository, _translationService, _expressionEvaluator);
-        }
+        var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
 
         if (!string.IsNullOrWhiteSpace(name))
         {

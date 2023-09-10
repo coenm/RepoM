@@ -19,10 +19,10 @@ internal static class ActionMapperCompositionFactory
         var mappers = new IActionToRepositoryActionMapper[]
             {
                 new ActionBrowseRepositoryV1Mapper(expressionEvaluator, translationService),
-                new ActionBrowserV1Mapper(expressionEvaluator, translationService),
-                new ActionCommandV1Mapper(expressionEvaluator, translationService),
-                new ActionExecutableV1Mapper(expressionEvaluator,translationService, fileSystem),
-                new ActionFolderV1Mapper(expressionEvaluator, translationService),
+                new ActionBrowserV1Mapper(expressionEvaluator),
+                new ActionCommandV1Mapper(expressionEvaluator),
+                new ActionExecutableV1Mapper(expressionEvaluator, fileSystem),
+                new ActionFolderV1Mapper(expressionEvaluator),
                 new ActionForEachV1Mapper(expressionEvaluator),
                 new ActionGitCheckoutV1Mapper(expressionEvaluator, translationService, repositoryWriter),
                 new ActionGitFetchV1Mapper(expressionEvaluator, translationService, repositoryWriter),
@@ -30,8 +30,8 @@ internal static class ActionMapperCompositionFactory
                 new ActionGitPushV1Mapper(expressionEvaluator, translationService, repositoryWriter),
                 new ActionIgnoreRepositoriesV1Mapper(expressionEvaluator, translationService, repositoryMonitor),
                 new ActionSeparatorV1Mapper(expressionEvaluator),
-                new ActionAssociateFileV1Mapper(expressionEvaluator, translationService),
-                new ActionJustTextV1Mapper(expressionEvaluator, translationService),
+                new ActionAssociateFileV1Mapper(expressionEvaluator),
+                new ActionJustTextV1Mapper(expressionEvaluator),
             };
 
         return new ActionMapperComposition(mappers, expressionEvaluator);
@@ -39,10 +39,6 @@ internal static class ActionMapperCompositionFactory
 
     public static ActionMapperComposition CreateSmall(IRepositoryExpressionEvaluator expressionEvaluator, IActionToRepositoryActionMapper actionToRepositoryActionMapper)
     {
-        var list = new[]
-            {
-                actionToRepositoryActionMapper,
-            };
-        return new ActionMapperComposition(list, expressionEvaluator);
+        return new ActionMapperComposition(new[] { actionToRepositoryActionMapper, }, expressionEvaluator);
     }
 }

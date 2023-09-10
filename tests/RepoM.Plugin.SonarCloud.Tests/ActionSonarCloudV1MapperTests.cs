@@ -3,7 +3,6 @@ namespace RepoM.Plugin.SonarCloud.Tests;
 using System;
 using FakeItEasy;
 using FluentAssertions;
-using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using Xunit;
 using RepoM.Core.Plugin.Expressions;
@@ -13,15 +12,13 @@ public class ActionSonarCloudV1MapperTests
 {
     private readonly ISonarCloudFavoriteService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly ITranslationService _translationService;
     private readonly ActionSonarCloudV1Mapper _sut;
 
     public ActionSonarCloudV1MapperTests()
     {
         _service = A.Fake<ISonarCloudFavoriteService>();
         _expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
-        _translationService = A.Fake<ITranslationService>();
-        _sut = new ActionSonarCloudV1Mapper(_service, _expressionEvaluator, _translationService);
+        _sut = new ActionSonarCloudV1Mapper(_service, _expressionEvaluator);
     }
 
     [Fact]
@@ -30,17 +27,14 @@ public class ActionSonarCloudV1MapperTests
         // arrange
         ISonarCloudFavoriteService service = A.Fake<ISonarCloudFavoriteService>();
         IRepositoryExpressionEvaluator expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
-        ITranslationService translationService = A.Fake<ITranslationService>();
 
         // act
-        Func<ActionSonarCloudV1Mapper> act1 = () => new ActionSonarCloudV1Mapper(service, expressionEvaluator, null!);
-        Func<ActionSonarCloudV1Mapper> act2 = () => new ActionSonarCloudV1Mapper(service, null!, translationService);
-        Func<ActionSonarCloudV1Mapper> act3 = () => new ActionSonarCloudV1Mapper(null!, expressionEvaluator, translationService);
+        Func<ActionSonarCloudV1Mapper> act1 = () => new ActionSonarCloudV1Mapper(service, null!);
+        Func<ActionSonarCloudV1Mapper> act2 = () => new ActionSonarCloudV1Mapper(null!, expressionEvaluator);
 
         // assert
         act1.Should().Throw<ArgumentNullException>();
         act2.Should().Throw<ArgumentNullException>();
-        act3.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

@@ -8,7 +8,6 @@ using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Core.Plugin.Expressions;
@@ -44,12 +43,10 @@ public class ActionHeidiDatabasesV1MapperTests
         _service = A.Fake<IHeidiConfigurationService>();
         _expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();
         _settings = A.Fake<IHeidiSettings>();
-        ITranslationService translationService = A.Fake<ITranslationService>();
 
         _sut = new ActionHeidiDatabasesV1Mapper(
             _service,
             _expressionEvaluator,
-            translationService,
             _settings,
             NullLogger.Instance);
 
@@ -74,8 +71,6 @@ public class ActionHeidiDatabasesV1MapperTests
              });
         A.CallTo(() => _service.GetByKey(A<string>._)).Returns(Array.Empty<RepositoryHeidiConfiguration>());
         A.CallTo(() => _service.GetByRepository(_repository)).Returns(Array.Empty<RepositoryHeidiConfiguration>());
-        A.CallTo(() => translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
-        A.CallTo(() => translationService.Translate(A<string>._, A<object[]>._)).ReturnsLazily(call => call.Arguments[0] as string ?? "unexpected by test.");
     }
 
     [Fact]
@@ -84,18 +79,16 @@ public class ActionHeidiDatabasesV1MapperTests
         // arrange
         IHeidiConfigurationService service = A.Dummy<IHeidiConfigurationService>();
         IRepositoryExpressionEvaluator expressionEvaluator = A.Dummy<IRepositoryExpressionEvaluator>();
-        ITranslationService translationService = A.Dummy<ITranslationService>();
         IHeidiSettings settings = A.Dummy<IHeidiSettings>();
         ILogger logger = A.Dummy<ILogger>();
 
         // act
         var actions = new List<Action>
             {
-                () => _ = new ActionHeidiDatabasesV1Mapper(service, expressionEvaluator, translationService, settings, null!),
-                () => _ = new ActionHeidiDatabasesV1Mapper(service, expressionEvaluator, translationService, null!, logger),
-                () => _ = new ActionHeidiDatabasesV1Mapper(service, expressionEvaluator, null!, settings, logger),
-                () => _ = new ActionHeidiDatabasesV1Mapper(service, null!, translationService, settings, logger),
-                () => _ = new ActionHeidiDatabasesV1Mapper(null!, expressionEvaluator, translationService, settings, logger),
+                () => _ = new ActionHeidiDatabasesV1Mapper(service, expressionEvaluator, settings, null!),
+                () => _ = new ActionHeidiDatabasesV1Mapper(service, expressionEvaluator, null!, logger),
+                () => _ = new ActionHeidiDatabasesV1Mapper(service, null!, settings, logger),
+                () => _ = new ActionHeidiDatabasesV1Mapper(null!, expressionEvaluator, settings, logger),
             };
 
         // assert
