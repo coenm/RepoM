@@ -1,6 +1,5 @@
 namespace RepoM.Plugin.Misc.Tests.DefaultAppSettingsTests;
 
-using System;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 using System.Threading.Tasks;

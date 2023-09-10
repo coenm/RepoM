@@ -2,7 +2,6 @@ namespace RepoM.Plugin.SonarCloud;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
