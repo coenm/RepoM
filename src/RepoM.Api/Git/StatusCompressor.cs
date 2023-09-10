@@ -1,20 +1,12 @@
 namespace RepoM.Api.Git;
 
-using System;
 using System.Text;
 
-public class StatusCompressor
+public static class StatusCompressor
 {
     private const int COMMIT_SHA_DISPLAY_CHARS = 7;
 
-    private readonly StatusCharacterMap _statusCharacterMap;
-
-    public StatusCompressor(StatusCharacterMap statusCharacterMap)
-    {
-        _statusCharacterMap = statusCharacterMap ?? throw new ArgumentNullException(nameof(statusCharacterMap));
-    }
-
-    public string Compress(Repository repository)
+    public static string Compress(Repository repository)
     {
         if (string.IsNullOrEmpty(repository.CurrentBranch))
         {
@@ -35,13 +27,13 @@ public class StatusCompressor
         {
             if (isOnCommitLevel)
             {
-                builder.Append(_statusCharacterMap.IdenticalSign);
+                builder.Append(StatusCharacterMap.IDENTICAL_SIGN);
             }
             else
             {
                 if (isBehind)
                 {
-                    builder.Append($"{_statusCharacterMap.ArrowDownSign}{repository.BehindBy}");
+                    builder.Append($"{StatusCharacterMap.ARROW_DOWN_SIGN}{repository.BehindBy}");
                 }
 
                 if (isAhead)
@@ -51,13 +43,13 @@ public class StatusCompressor
                         builder.Append(' ');
                     }
 
-                    builder.Append($"{_statusCharacterMap.ArrowUpSign}{repository.AheadBy}");
+                    builder.Append($"{StatusCharacterMap.ARROW_UP_SIGN}{repository.AheadBy}");
                 }
             }
         }
         else
         {
-            builder.Append(_statusCharacterMap.NoUpstreamSign);
+            builder.Append(StatusCharacterMap.NO_UPSTREAM_SIGN);
         }
 
         if (printAddStagedRemoved)
@@ -92,13 +84,14 @@ public class StatusCompressor
                 builder.Append(' ');
             }
 
-            builder.Append(_statusCharacterMap.StashSign + repository.StashCount);
+            builder.Append(StatusCharacterMap.STASH_SIGN);
+            builder.Append(repository.StashCount);
         }
 
         return builder.ToString();
     }
 
-    public string CompressWithBranch(Repository repository)
+    public static string CompressWithBranch(Repository repository)
     {
         var branch = repository.CurrentBranch;
 
@@ -112,7 +105,7 @@ public class StatusCompressor
             // put commit shas in parenthesis (), shorten them and show ellipses afterwards
             if (repository.CurrentBranchIsDetached && branch.Length > COMMIT_SHA_DISPLAY_CHARS)
             {
-                branch = $"({branch[..COMMIT_SHA_DISPLAY_CHARS]}{_statusCharacterMap.EllipsesSign})";
+                branch = $"({branch[..COMMIT_SHA_DISPLAY_CHARS]}{StatusCharacterMap.ELLIPSES_SIGN})";
             }
         }
 

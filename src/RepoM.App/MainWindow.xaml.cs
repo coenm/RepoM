@@ -45,7 +45,6 @@ public partial class MainWindow
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     public MainWindow(
-        StatusCharacterMap statusCharacterMap,
         IRepositoryInformationAggregator aggregator,
         IRepositoryMonitor repositoryMonitor,
         IRepositoryActionProvider repositoryActionProvider,
@@ -101,7 +100,7 @@ public partial class MainWindow
 
         AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
         txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);
-        txtHelp.Text = GetHelp(statusCharacterMap);
+        txtHelp.Text = GetHelp();
 
         PlaceFormByTaskBarLocation();
     }
@@ -638,17 +637,17 @@ public partial class MainWindow
         item?.Focus();
     }
 
-    private string GetHelp(StatusCharacterMap statusCharacterMap)
+    private string GetHelp()
     {
         return _translationService.Translate(
             "Help Detail",
-            statusCharacterMap.IdenticalSign,
-            statusCharacterMap.StashSign,
-            statusCharacterMap.IdenticalSign,
-            statusCharacterMap.ArrowUpSign,
-            statusCharacterMap.ArrowDownSign,
-            statusCharacterMap.NoUpstreamSign,
-            statusCharacterMap.StashSign
+            StatusCharacterMap.IDENTICAL_SIGN,
+            StatusCharacterMap.STASH_SIGN,
+            StatusCharacterMap.IDENTICAL_SIGN,
+            StatusCharacterMap.ARROW_UP_SIGN,
+            StatusCharacterMap.ARROW_DOWN_SIGN,
+            StatusCharacterMap.NO_UPSTREAM_SIGN,
+            StatusCharacterMap.STASH_SIGN
         );
     }
 

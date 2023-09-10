@@ -1,59 +1,37 @@
 namespace RepoM.Api.Tests.Git;
 
-using System;
 using FluentAssertions;
 using RepoM.Api.Git;
 using Xunit;
 
 public class StatusCompressorTests
 {
-    private readonly RepositoryBuilder _builder;
-    private readonly StatusCharacterMap _characterMap;
-    private readonly StatusCompressor _compressor;
+    private readonly RepositoryBuilder _builder = new();
 
-    public StatusCompressorTests()
+    private static string Compress(Repository repo)
     {
-        _builder = new RepositoryBuilder();
-        _characterMap = StatusCharacterMap.Instance;
-        _compressor = new StatusCompressor(_characterMap);
+        return StatusCompressor.Compress(repo);
     }
 
-    private string Compress(Repository repo)
+    private static string CompressWithBranch(Repository repo)
     {
-        return _compressor.Compress(repo);
+        return StatusCompressor.CompressWithBranch(repo);
     }
 
-    private string CompressWithBranch(Repository repo)
-    {
-        return _compressor.CompressWithBranch(repo);
-    }
+    private static string Up => StatusCharacterMap.ARROW_UP_SIGN.ToString();
 
-    private string Up => _characterMap.ArrowUpSign;
+    private static string Down => StatusCharacterMap.ARROW_DOWN_SIGN.ToString();
 
-    private string Down => _characterMap.ArrowDownSign;
+    private static string Eq => StatusCharacterMap.IDENTICAL_SIGN.ToString();
 
-    private string Eq => _characterMap.IdenticalSign;
+    private static string NoUp => StatusCharacterMap.NO_UPSTREAM_SIGN.ToString();
 
-    private string NoUp => _characterMap.NoUpstreamSign;
+    private static string Ellipses => StatusCharacterMap.ELLIPSES_SIGN.ToString();
 
-    private string Ellipses => _characterMap.EllipsesSign;
-
-    private string StashCount => _characterMap.StashSign;
+    private static string StashCount => StatusCharacterMap.STASH_SIGN.ToString();
 
     public class CompressMethod : StatusCompressorTests
     {
-        [Fact]
-        public void Ctor_ShouldThrow_WhenArgumentIsNull()
-        {
-            // arrange
-
-            // act
-            Action act = () => _ = new StatusCompressor(null!);
-
-            // asset
-            act.Should().Throw<ArgumentNullException>();
-        }
-
         [Fact]
         public void Returns_Empty_String_For_Empty_Repositories()
         {

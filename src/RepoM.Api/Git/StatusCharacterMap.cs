@@ -1,22 +1,16 @@
 namespace RepoM.Api.Git;
 
-public class StatusCharacterMap
+public static class StatusCharacterMap
 {
-    private StatusCharacterMap()
-    {
-    }
+    public const char IDENTICAL_SIGN = '\u2261';
 
-    public static StatusCharacterMap Instance { get; } = new StatusCharacterMap();
+    public const char NO_UPSTREAM_SIGN = '\u2302';
 
-    public string IdenticalSign => "\u2261";
+    public const char ARROW_UP_SIGN = '\u2191';
 
-    public string NoUpstreamSign => "\u2302";
+    public const char ARROW_DOWN_SIGN = '\u2193';
 
-    public string ArrowUpSign => "\u2191";
+    public const char ELLIPSES_SIGN = '\u2026';
 
-    public string ArrowDownSign => "\u2193";
-
-    public string EllipsesSign => "\u2026";
-
-    public string StashSign => "\u205E";
+    public const char STASH_SIGN = '\u205E';
 }
