@@ -22,7 +22,6 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
     private readonly IRepositoryExpressionEvaluator _evaluator;
     private readonly ActionAzureDevOpsCreatePullRequestsV1Mapper _sut;
     private readonly RepositoryActionAzureDevOpsCreatePullRequestsV1 _action;
-    private readonly IEnumerable<Repository> _repositories;
     private readonly Repository _repository;
     private readonly ActionMapperComposition _composition;
 
@@ -43,7 +42,6 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
                 "main",
             },
         };
-        _repositories = new [] { _repository, };
         _composition = new ActionMapperComposition(Array.Empty<IActionToRepositoryActionMapper>(), _evaluator);
 
         // default test behavior.
@@ -51,19 +49,6 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         _action.ProjectId = "dummy-project-id";
         A.CallTo(() => _evaluator.EvaluateBooleanExpression("dummy-Active-property", _repository)).Returns(true);
         A.CallTo(() => _evaluator.EvaluateStringExpression("dummy-project-id", A<IRepository>._)).Returns("real-project-id");
-    }
-
-    [Fact]
-    public void CanHandleMultipleRepositories_ShouldReturnFalse()
-    {
-        // arrange
-
-        // act
-        var result = _sut.CanHandleMultipleRepositories();
-
-        // assert
-        result.Should().BeFalse();
-        A.CallTo(_service).MustNotHaveHappened();
     }
 
     [Fact]
@@ -100,7 +85,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         // arrange
 
         // act
-        IEnumerable<RepositoryActionBase> result = _sut.Map(new DummyRepositoryAction(), _repositories, _composition);
+        IEnumerable<RepositoryActionBase> result = _sut.Map(new DummyRepositoryAction(), _repository, _composition);
 
         // assert
         result.Should().BeEmpty();
@@ -115,7 +100,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         A.CallTo(() => _evaluator.EvaluateBooleanExpression("dummy", _repository)).Returns(false);
 
         // act
-        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repositories, _composition);
+        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
         result.Should().BeEmpty();
@@ -132,7 +117,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         _action.ProjectId = projectId;
 
         // act
-        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repositories, _composition);
+        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
         result.Should().BeEmpty();
@@ -150,7 +135,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         A.CallTo(() => _evaluator.EvaluateStringExpression("dummy-project-id", A<IRepository>._)).Returns(projectId!);
 
         // act
-        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repositories, _composition);
+        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
         result.Should().BeEmpty();
@@ -163,7 +148,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         // arrange
 
         // act
-        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repositories, _composition);
+        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
         result.Should().HaveCount(1).And.AllBeOfType<Api.Git.RepositoryAction>();
@@ -175,7 +160,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         // arrange
 
         // act
-        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repositories, _composition);
+        IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
         result.Should().HaveCount(1).And.AllBeOfType<Api.Git.RepositoryAction>();

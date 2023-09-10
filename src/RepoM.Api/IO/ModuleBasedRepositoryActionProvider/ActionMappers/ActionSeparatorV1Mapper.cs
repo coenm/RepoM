@@ -22,23 +22,9 @@ public class ActionSeparatorV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionSeparatorV1;
     }
 
-    public bool CanHandleMultipleRepositories()
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return true;
-    }
-
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
-    {
-        foreach (Repository r in repository)
-        {
-            RepositoryActionBase[] result = Map(action as RepositoryActionSeparatorV1, r).ToArray();
-            if (result.Any())
-            {
-                return result;
-            }
-        }
-
-        return Array.Empty<RepoM.Api.Git.RepositoryAction>();
+        return Map(action as RepositoryActionSeparatorV1, repository).ToArray();
     }
 
     private IEnumerable<RepositoryActionBase> Map(RepositoryActionSeparatorV1? action, Repository repository)

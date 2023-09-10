@@ -2,11 +2,11 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionGitPullV1Mapper : IActionToRepositoryActionMapper
@@ -27,23 +27,32 @@ public class ActionGitPullV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionGitPullV1;
     }
 
-    bool IActionToRepositoryActionMapper.CanHandleMultipleRepositories()
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return true;
-    }
-
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repositories, ActionMapperComposition actionMapperComposition)
-    {
-        Repository[] repos = repositories as Repository[] ?? repositories.ToArray();
-        if (Array.Exists(repos, r => !_expressionEvaluator.EvaluateBooleanExpression(action.Active, r)))
+        if (action == null)
         {
             yield break;
         }
 
-        yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(
-            _translationService.Translate("Pull"),
-            repos,
-            _repositoryWriter.Pull,
-            executionCausesSynchronizing: true);
+        if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
+        {
+            yield break;
+        }
+
+        yield return new Git.RepositoryAction(_translationService.Translate("Pull"), repository)
+            {
+                Action = new DelegateAction((_, _) =>
+                    {
+                        try
+                        {
+                            _repositoryWriter.Pull(repository);
+                        }
+                        catch
+                        {
+                            // nothing to see here
+                        }
+                    }),
+                ExecutionCausesSynchronizing = true,
+            };
     }
 }

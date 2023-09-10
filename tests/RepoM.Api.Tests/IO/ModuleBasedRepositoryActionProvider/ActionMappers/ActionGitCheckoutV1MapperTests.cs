@@ -41,19 +41,6 @@ public class ActionGitCheckoutV1MapperTests
     }
     
     [Fact]
-    public void CanHandleMultipleRepositories_ShouldReturnFalse()
-    {
-        // arrange
-        var sut = new ActionGitCheckoutV1Mapper(_expressionEvaluator, _translationService, _repositoryWriter) as IActionToRepositoryActionMapper;
-
-        // act
-        var result = sut.CanHandleMultipleRepositories();
-
-        // assert
-        result.Should().BeFalse();
-    }
-    
-    [Fact]
     public void CanMap_ShouldReturnFalse_WhenInputNull()
     {
         // arrange

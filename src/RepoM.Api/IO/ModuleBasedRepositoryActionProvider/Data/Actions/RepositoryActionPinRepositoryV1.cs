@@ -27,16 +27,13 @@ public sealed class RepositoryActionPinRepositoryV1 : RepositoryAction
     /// </summary>
     [Required]
     [PropertyType(typeof(PinMode))]
-    public PinMode Mode { get; set; }
+    public PinMode? Mode { get; set; }
 
     /// <summary>
     /// The PinModes
     /// </summary>
     public enum PinMode
     {
-        // when deserialization fails, this is the value.
-        Unknown,
-
         /// <summary>
         /// Toggle
         /// </summary>

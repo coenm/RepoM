@@ -106,18 +106,6 @@ public class ActionHeidiDatabasesV1MapperTests
     }
 
     [Fact]
-    public void CanHandleMultipleRepositories_ShouldBeFalse()
-    {
-        // arrange
-
-        // act
-        var result = _sut.CanHandleMultipleRepositories();
-
-        // assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
     public void CanMap_ShouldReturnFalse_WhenWrongType()
     {
         // arrange
@@ -161,7 +149,7 @@ public class ActionHeidiDatabasesV1MapperTests
         // arrange
 
         // act
-        var result = _sut.Map(null!, new []{ _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(null!, _repository, _actionMapperComposition).ToArray();
 
         // assert
         result.Should().BeEmpty();
@@ -175,7 +163,7 @@ public class ActionHeidiDatabasesV1MapperTests
         _action.Active = "false";
 
         // act
-        var result = _sut.Map(_action, new []{ _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         result.Should().BeEmpty();
@@ -189,7 +177,7 @@ public class ActionHeidiDatabasesV1MapperTests
         _action.Executable = string.Empty;
 
         // act
-        _ = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+        _ = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         A.CallTo(() => _settings.DefaultExe).MustHaveHappenedOnceExactly();
@@ -202,7 +190,7 @@ public class ActionHeidiDatabasesV1MapperTests
         _action.Executable = "heidi123.exe";
 
         // act
-        _ = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+        _ = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         A.CallTo(() => _expressionEvaluator.EvaluateStringExpression("heidi123.exe", _repository)).MustHaveHappenedOnceExactly();
@@ -217,7 +205,7 @@ public class ActionHeidiDatabasesV1MapperTests
         A.CallTo(() => _settings.DefaultExe).Returns(string.Empty);
 
         // act
-        var result = _sut.Map(_action, new []{ _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         result.Should().BeEmpty();
@@ -233,7 +221,7 @@ public class ActionHeidiDatabasesV1MapperTests
          .Returns(string.Empty);
 
         // act
-        var result = _sut.Map(_action, new []{ _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         result.Should().BeEmpty();
@@ -247,7 +235,7 @@ public class ActionHeidiDatabasesV1MapperTests
         _action.Key = "key1";
 
         // act
-        _ = _sut.Map(_action, new []{ _repository, }, _actionMapperComposition).ToArray();
+        _ = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         A.CallTo(() => _service.GetByKey("key1")).MustHaveHappenedOnceExactly();
@@ -264,7 +252,7 @@ public class ActionHeidiDatabasesV1MapperTests
         _action.Key = keyValue;
 
         // act
-        _ = _sut.Map(_action, new []{ _repository, }, _actionMapperComposition).ToArray();
+        _ = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         A.CallTo(() => _service.GetByRepository(_repository)).MustHaveHappenedOnceExactly();
@@ -278,7 +266,7 @@ public class ActionHeidiDatabasesV1MapperTests
         _action.Name = string.Empty;
         
         // act
-        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -297,7 +285,7 @@ public class ActionHeidiDatabasesV1MapperTests
              });
 
         // act
-        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -310,7 +298,7 @@ public class ActionHeidiDatabasesV1MapperTests
         _action.Name = "Databases";
 
         // act
-        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -329,7 +317,7 @@ public class ActionHeidiDatabasesV1MapperTests
              });
     
         // act
-        var result = _sut.Map(_action, new[] { _repository, }, _actionMapperComposition).ToArray();
+        var result = _sut.Map(_action, _repository, _actionMapperComposition).ToArray();
     
         // assert
         await Verifier.Verify(result, _verifySettings);

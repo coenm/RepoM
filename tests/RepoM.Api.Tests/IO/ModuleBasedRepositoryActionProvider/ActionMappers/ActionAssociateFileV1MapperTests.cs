@@ -42,20 +42,7 @@ public class ActionAssociateFileV1MapperTests
         act2.Should().ThrowExactly<ArgumentNullException>();
     }
     
-    [Fact]
-    public void CanHandleMultipleRepositories_ShouldReturnFalse()
-    {
-        // arrange
-        var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
-
-        // act
-        var result = sut.CanHandleMultipleRepositories();
-
-        // assert
-        result.Should().BeFalse();
-    }
-    
-    [Fact]
+   [Fact]
     public void CanMap_ShouldReturnFalse_WhenInputNull()
     {
         // arrange
@@ -103,7 +90,7 @@ public class ActionAssociateFileV1MapperTests
         var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
 
         // act
-        RepositoryActionBase[] result = sut.Map(action, new [] { _repository, }, ActionMapperCompositionFactory.CreateSmall(_expressionEvaluator, A.Dummy<IActionToRepositoryActionMapper>())).ToArray();
+        RepositoryActionBase[] result = sut.Map(action, _repository, ActionMapperCompositionFactory.CreateSmall(_expressionEvaluator, A.Dummy<IActionToRepositoryActionMapper>())).ToArray();
 
         // assert
         result.Should().BeEmpty();
@@ -121,7 +108,7 @@ public class ActionAssociateFileV1MapperTests
         var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
 
         // act
-        RepositoryActionBase[] result = sut.Map(action, new [] { _repository, }, ActionMapperCompositionFactory.CreateSmall(_expressionEvaluator, A.Dummy<IActionToRepositoryActionMapper>())).ToArray();
+        RepositoryActionBase[] result = sut.Map(action, _repository, ActionMapperCompositionFactory.CreateSmall(_expressionEvaluator, A.Dummy<IActionToRepositoryActionMapper>())).ToArray();
 
         // assert
         result.Should().BeEmpty();
@@ -139,7 +126,7 @@ public class ActionAssociateFileV1MapperTests
         var sut = new ActionAssociateFileV1Mapper(_expressionEvaluator, _translationService) as IActionToRepositoryActionMapper;
 
         // act
-        RepositoryActionBase[] result = sut.Map(action, new [] { _repository, }, ActionMapperCompositionFactory.CreateSmall(_expressionEvaluator, A.Dummy<IActionToRepositoryActionMapper>())).ToArray();
+        RepositoryActionBase[] result = sut.Map(action, _repository, ActionMapperCompositionFactory.CreateSmall(_expressionEvaluator, A.Dummy<IActionToRepositoryActionMapper>())).ToArray();
 
         // assert
         result.Should().BeEmpty();

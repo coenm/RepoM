@@ -21,6 +21,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
         _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         UpdateStampUtc = DateTime.UtcNow;
+        Tags = Repository.Tags.Select(tag => new TagViewModel(tag)).ToArray();
     }
 
     public override bool Equals(object? obj)
@@ -88,7 +89,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
 
-    public TagViewModel[] Tags  => Repository.Tags.Select(x => new TagViewModel(x)).ToArray() ?? Array.Empty<TagViewModel>();
+    public TagViewModel[] Tags { get; }
 
     public override int GetHashCode()
     {

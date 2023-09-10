@@ -32,14 +32,9 @@ internal class ActionClipboardCopyV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionClipboardCopyV1;
     }
 
-    public bool CanHandleMultipleRepositories()
+    public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return false;
-    }
-
-    public IEnumerable<RepositoryActionBase> Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
-    {
-        return Map(action as RepositoryActionClipboardCopyV1, repository.First());
+        return Map(action as RepositoryActionClipboardCopyV1, repository);
     }
 
     private IEnumerable<RepositoryActionBase> Map(RepositoryActionClipboardCopyV1? action, Repository repository)

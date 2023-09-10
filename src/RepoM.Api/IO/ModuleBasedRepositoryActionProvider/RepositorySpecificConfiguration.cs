@@ -223,11 +223,9 @@ public class RepositoryConfigurationReader
                 continue;
             }
 
-            // todo redirect
-
             try
             {
-                repoSpecificConfig = _repositoryActionsFileStore.TryGet(filename);
+                repoSpecificConfig = _repositoryActionsFileStore.TryGet(f);
             }
             catch (Exception)
             {
@@ -435,7 +433,9 @@ public class RepositorySpecificConfiguration
         using IDisposable d2 = EnvironmentVariableStore.Set(repositoryEnvVars ?? new Dictionary<string, string>());
 
         // load variables global
-        foreach (ActionsCollection actionsCollection in ((IEnumerable<ActionsCollection>?)actions) ?? Array.Empty<ActionsCollection>())
+        IEnumerable<ActionsCollection> iterateOverActions = actions != null ? actions : Array.Empty<ActionsCollection>();
+
+        foreach (ActionsCollection actionsCollection in iterateOverActions)
         {
             using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(actionsCollection.Variables, repository));
 

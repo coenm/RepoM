@@ -28,14 +28,9 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionGitCheckoutV1;
     }
 
-    bool IActionToRepositoryActionMapper.CanHandleMultipleRepositories()
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return false;
-    }
-
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
-    {
-        return Map(action as RepositoryActionGitCheckoutV1, repository.First());
+        return Map(action as RepositoryActionGitCheckoutV1, repository);
     }
 
     private IEnumerable<RepositoryActionBase> Map(RepositoryActionGitCheckoutV1? action, Repository repository)

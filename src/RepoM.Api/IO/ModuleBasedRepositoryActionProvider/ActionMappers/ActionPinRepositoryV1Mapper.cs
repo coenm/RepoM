@@ -2,7 +2,6 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
@@ -31,23 +30,9 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionPinRepositoryV1;
     }
 
-    public bool CanHandleMultipleRepositories()
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
-        return true;
-    }
-
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
-    {
-        foreach (Repository r in repository)
-        {
-            RepositoryActionBase[] result = Map(action as RepositoryActionPinRepositoryV1, r).ToArray();
-            if (result.Any())
-            {
-                return result;
-            }
-        }
-
-        return Array.Empty<Git.RepositoryAction>();
+        return Map(action as RepositoryActionPinRepositoryV1, repository);
     }
 
     private IEnumerable<RepositoryActionBase> Map(RepositoryActionPinRepositoryV1? action, Repository repository)
@@ -76,12 +61,12 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
         if (string.IsNullOrWhiteSpace(name))
         {
             name = action.Mode switch
-                {
-                    RepositoryActionPinRepositoryV1.PinMode.Toggle => currentlyPinned ? UNPIN : PIN,
-                    RepositoryActionPinRepositoryV1.PinMode.Pin => PIN,
-                    RepositoryActionPinRepositoryV1.PinMode.UnPin => UNPIN,
-                    _ => throw new ArgumentOutOfRangeException("Unexpected value for mode."),
-                };
+            {
+                RepositoryActionPinRepositoryV1.PinMode.Toggle => currentlyPinned ? UNPIN : PIN,
+                RepositoryActionPinRepositoryV1.PinMode.Pin => PIN,
+                RepositoryActionPinRepositoryV1.PinMode.UnPin => UNPIN,
+                _ => throw new NotImplementedException(),
+            };
         }
 
         Git.RepositoryAction CreateAction(string name, Repository repository, bool newPinnedValue)
@@ -97,7 +82,7 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
                 RepositoryActionPinRepositoryV1.PinMode.Toggle => CreateAction(name, repository, !currentlyPinned),
                 RepositoryActionPinRepositoryV1.PinMode.Pin => CreateAction(name, repository, true),
                 RepositoryActionPinRepositoryV1.PinMode.UnPin => CreateAction(name, repository, false),
-                _ => throw new ArgumentOutOfRangeException(nameof(action.Mode), action.Mode, "Not expected"),
+                _ => throw new NotImplementedException(),
             };
     }
 }
