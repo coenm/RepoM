@@ -3,9 +3,7 @@ namespace RepoM.Plugin.SonarCloud;
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Core.Plugin.Expressions;
@@ -17,13 +15,11 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly ISonarCloudFavoriteService _service;
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly ITranslationService _translationService;
 
-    public ActionSonarCloudV1Mapper(ISonarCloudFavoriteService service, IRepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
+    public ActionSonarCloudV1Mapper(ISonarCloudFavoriteService service, IRepositoryExpressionEvaluator expressionEvaluator)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
-        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
@@ -53,7 +49,7 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
+        var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
         var key = _expressionEvaluator.EvaluateStringExpression(action.Project!, repository);
 
         if (_service.IsInitialized)
