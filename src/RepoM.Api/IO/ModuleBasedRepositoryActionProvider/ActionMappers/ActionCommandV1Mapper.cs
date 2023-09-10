@@ -2,22 +2,20 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
 using System;
 using System.Collections.Generic;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
-    private readonly ITranslationService _translationService;
 
-    public ActionCommandV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService)
+    public ActionCommandV1Mapper(IRepositoryExpressionEvaluator expressionEvaluator)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
-        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(RepositoryAction action)
@@ -30,7 +28,7 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionCommandV1, repository);
     }
 
-    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionCommandV1? action, Repository repository)
+    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionCommandV1? action, IRepository repository)
     {
         if (action == null)
         {
@@ -42,9 +40,9 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
-        var command = _expressionEvaluator.EvaluateStringExpression(action.Command ?? string.Empty, repository);
-        var arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments ?? string.Empty, repository); 
+        var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
+        var command = _expressionEvaluator.EvaluateNullStringExpression(action.Command, repository);
+        var arguments = _expressionEvaluator.EvaluateNullStringExpression(action.Arguments, repository); 
 
         yield return new Git.RepositoryAction(name, repository)
             {
