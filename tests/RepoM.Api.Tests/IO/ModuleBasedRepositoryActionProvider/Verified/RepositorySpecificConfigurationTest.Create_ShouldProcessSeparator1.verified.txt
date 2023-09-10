@@ -6,7 +6,7 @@
       $type: DelegateAction,
       Action: {
         Type: Action<object, object>,
-        Target: ActionBrowserV1Mapper.<>c__DisplayClass5_0,
+        Target: ActionBrowserV1Mapper.<>c__DisplayClass4_0,
         Method: Void Map(System.Object, System.Object)
       }
     },
@@ -28,7 +28,7 @@
       $type: DelegateAction,
       Action: {
         Type: Action<object, object>,
-        Target: ActionBrowserV1Mapper.<>c__DisplayClass5_0,
+        Target: ActionBrowserV1Mapper.<>c__DisplayClass4_0,
         Method: Void Map(System.Object, System.Object)
       }
     },
