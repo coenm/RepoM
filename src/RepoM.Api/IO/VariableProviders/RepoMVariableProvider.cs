@@ -97,6 +97,9 @@ public class RepoMVariableProvider : RepoM.Core.Plugin.VariableProviders.IVariab
     private static readonly char[] _separatorChars = { '.', '[', };
     private const string PREFIX = "var.";
 
+    private readonly PropertyHandler _propertyHandler = new();
+    private readonly ArrayHandler _arrayHandler = new();
+
     /// <inheritdoc cref="IVariableProvider.CanProvide"/>
     public bool CanProvide(string key)
     {
@@ -130,9 +133,6 @@ public class RepoMVariableProvider : RepoM.Core.Plugin.VariableProviders.IVariab
             envSearchKey = envKey[..index];
         }
 
-        var ph = new PropertyHandler();
-        var ah = new ArrayHandler();
-
         Scope? scope = RepoMVariableProviderStore.VariableScope.Value;
 
         while (true)
@@ -156,12 +156,12 @@ public class RepoMVariableProvider : RepoM.Core.Plugin.VariableProviders.IVariab
                 {
                     if (selector is PropertySelector ps)
                     {
-                        r = ph.Handle(ps, r);
+                        r = _propertyHandler.Handle(ps, r);
                     }
 
                     else if (selector is ArraySelector @as)
                     {
-                        r = ah.Handle(@as, r);
+                        r = _arrayHandler.Handle(@as, r);
                     }
                 }
 
