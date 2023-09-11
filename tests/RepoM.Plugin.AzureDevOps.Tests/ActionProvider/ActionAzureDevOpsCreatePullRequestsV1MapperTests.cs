@@ -152,7 +152,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
-        result.Should().HaveCount(1).And.AllBeOfType<Api.RepositoryActions.RepositoryAction>();
+        result.Should().ContainSingle().And.AllBeOfType<Api.RepositoryActions.RepositoryAction>();
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
-        result.Should().HaveCount(1).And.AllBeOfType<Api.RepositoryActions.RepositoryAction>();
+        result.Should().ContainSingle().And.AllBeOfType<Api.RepositoryActions.RepositoryAction>();
     }
 }
 
