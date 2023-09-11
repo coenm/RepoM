@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
@@ -32,7 +33,7 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionSonarCloudSetFavoriteV1, repository);
     }
 
-    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionSonarCloudSetFavoriteV1? action, Repository repository)
+    private IEnumerable<Api.RepositoryActions.RepositoryAction> Map(RepositoryActionSonarCloudSetFavoriteV1? action, Repository repository)
     {
         if (action == null)
         {
@@ -54,7 +55,7 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
 
         if (_service.IsInitialized)
         {
-            yield return new Api.Git.RepositoryAction(name, repository)
+            yield return new Api.RepositoryActions.RepositoryAction(name, repository)
                 {
                     Action = new DelegateAction((_, _) =>
                         {
@@ -72,7 +73,7 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
         }
         else
         {
-            yield return new Api.Git.RepositoryAction(name, repository)
+            yield return new Api.RepositoryActions.RepositoryAction(name, repository)
                 {
                     CanExecute = false,
                 };

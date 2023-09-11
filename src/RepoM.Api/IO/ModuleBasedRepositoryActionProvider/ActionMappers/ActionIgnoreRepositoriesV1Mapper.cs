@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 

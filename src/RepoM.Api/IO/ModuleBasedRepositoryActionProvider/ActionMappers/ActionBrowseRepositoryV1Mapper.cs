@@ -6,6 +6,7 @@ using System.Linq;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
@@ -70,7 +71,7 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
             return CreateProcessRunnerAction(actionName, repository.Remotes[0].Url, repository);
         }
 
-        return new DeferredRepositoryAction(actionName, repository, false)
+        return new DeferredSubActionsRepositoryAction(actionName, repository, false)
             {
                 DeferredSubActionsEnumerator = () => repository.Remotes
                    .Take(50)

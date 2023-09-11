@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
@@ -38,33 +39,33 @@ internal class ActionAzureDevOpsCreatePullRequestsV1Mapper : IActionToRepository
 		return Map(action as RepositoryActionAzureDevOpsCreatePullRequestsV1, repository);
 	}
 
-	private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionAzureDevOpsCreatePullRequestsV1? action, Repository repository)
+	private IEnumerable<Api.RepositoryActions.RepositoryAction> Map(RepositoryActionAzureDevOpsCreatePullRequestsV1? action, Repository repository)
 	{
 		if (action == null)
 		{
-			return Array.Empty<Api.Git.RepositoryAction>();
+			return Array.Empty<Api.RepositoryActions.RepositoryAction>();
 		}
 
 		if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
 		{
-			return Array.Empty<Api.Git.RepositoryAction>();
+			return Array.Empty<Api.RepositoryActions.RepositoryAction>();
 		}
 
 		if (repository.HasLocalChanges || repository.CurrentBranch.Equals(action.ToBranch, StringComparison.OrdinalIgnoreCase))
 		{
-			return Array.Empty<Api.Git.RepositoryAction>();
+			return Array.Empty<Api.RepositoryActions.RepositoryAction>();
 		}
 
 		if (string.IsNullOrWhiteSpace(action.ProjectId))
 		{
-			return Array.Empty<Api.Git.RepositoryAction>();
+			return Array.Empty<Api.RepositoryActions.RepositoryAction>();
 		}
 
 		var projectId = _expressionEvaluator.EvaluateStringExpression(action.ProjectId, repository);
 
 		if (string.IsNullOrWhiteSpace(projectId))
 		{
-			return Array.Empty<Api.Git.RepositoryAction>();
+			return Array.Empty<Api.RepositoryActions.RepositoryAction>();
 		}
 
 		if (!string.IsNullOrWhiteSpace(action.ToBranch))
@@ -73,15 +74,15 @@ internal class ActionAzureDevOpsCreatePullRequestsV1Mapper : IActionToRepository
 			if (!repository.Branches.Contains(action.ToBranch))
 			{
                 _logger.LogInformation("Branch {branch} does not exist", action.ToBranch);
-				return Array.Empty<Api.Git.RepositoryAction>();
+				return Array.Empty<Api.RepositoryActions.RepositoryAction>();
 			}
 		}
 		else
 		{
-		   return Array.Empty<Api.Git.RepositoryAction>();
+		   return Array.Empty<Api.RepositoryActions.RepositoryAction>();
 		}
 
-		return new List<Api.Git.RepositoryAction>()
+		return new List<Api.RepositoryActions.RepositoryAction>()
 		{
 			new(action.Title ?? $"Create Pull Request {(action.AutoComplete.Enabled ? "(with auto-complete)" : string.Empty)}", repository)
 			{

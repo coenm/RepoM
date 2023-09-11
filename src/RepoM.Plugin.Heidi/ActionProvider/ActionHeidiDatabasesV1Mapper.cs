@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
@@ -72,7 +73,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         {
             if (databases.Length > 0)
             {
-                yield return new Api.Git.RepositoryAction(name, repository)
+                yield return new Api.RepositoryActions.RepositoryAction(name, repository)
                     {
                         CanExecute = true,
                         SubActions = GetDbActions(repository, databases, executable),
@@ -80,12 +81,12 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
             }
             else
             {
-                yield return new Api.Git.RepositoryAction(name, repository)
+                yield return new Api.RepositoryActions.RepositoryAction(name, repository)
                     {
                         CanExecute = true,
                         SubActions = new[]
                             {
-                                new Api.Git.RepositoryAction("NO databases found!", repository)
+                                new Api.RepositoryActions.RepositoryAction("NO databases found!", repository)
                                     {
                                         Action = NullAction.Instance,
                                         CanExecute = false,
@@ -107,7 +108,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         }
         else
         {
-            yield return new Api.Git.RepositoryAction("NO databases found!", repository)
+            yield return new Api.RepositoryActions.RepositoryAction("NO databases found!", repository)
                 {
                     Action = NullAction.Instance,
                     CanExecute = false,
@@ -132,7 +133,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
 
     private static IEnumerable<RepositoryActionBase> GetDbActions(IRepository repository, IEnumerable<RepositoryHeidiConfiguration> databases, string executable)
     {
-        return databases.Select(database => new Api.Git.RepositoryAction(database.Name, repository)
+        return databases.Select(database => new Api.RepositoryActions.RepositoryAction(database.Name, repository)
             {
                Action = new StartProcessAction(executable, new[] { "--description" , $"\"{database.DbConfig.Key}\"", }),
                ExecutionCausesSynchronizing = false,

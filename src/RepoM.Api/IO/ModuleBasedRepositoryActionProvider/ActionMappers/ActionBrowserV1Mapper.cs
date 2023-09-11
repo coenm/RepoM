@@ -4,9 +4,10 @@ using System;
 using System.Collections.Generic;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
-using RepositoryAction = RepoM.Api.Git.RepositoryAction;
+using RepositoryAction = RepoM.Api.RepositoryActions.RepositoryAction;
 
 public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
 {

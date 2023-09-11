@@ -27,6 +27,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.VariableProviders;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
 using VerifyTests;

@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
+using RepoM.Api.RepositoryActions;
 using RepoM.App.Controls;
 using RepoM.App.Plugins;
 using RepoM.App.RepositoryActions;
@@ -441,7 +442,7 @@ public partial class MainWindow
         // this is a deferred submenu. We want to make sure that the context menu can pop up
         // fast, while submenus are not evaluated yet. We don't want to make the context menu
         // itself slow because the creation of the submenu items takes some time.
-        if (repositoryAction is DeferredRepositoryAction deferredRepositoryAction && deferredRepositoryAction.DeferredSubActionsEnumerator != null)
+        if (repositoryAction is DeferredSubActionsRepositoryAction deferredRepositoryAction && deferredRepositoryAction.DeferredSubActionsEnumerator != null)
         {
             // this is a template submenu item to enable submenus under the current
             // menu item. this item gets removed when the real subitems are created

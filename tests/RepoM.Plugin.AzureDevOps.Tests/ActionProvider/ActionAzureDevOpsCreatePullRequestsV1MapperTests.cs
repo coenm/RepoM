@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.ActionProvider;
@@ -151,7 +152,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
-        result.Should().HaveCount(1).And.AllBeOfType<Api.Git.RepositoryAction>();
+        result.Should().HaveCount(1).And.AllBeOfType<Api.RepositoryActions.RepositoryAction>();
     }
 
     [Fact]
@@ -163,7 +164,7 @@ public class ActionAzureDevOpsCreatePullRequestsV1MapperTests
         IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
-        result.Should().HaveCount(1).And.AllBeOfType<Api.Git.RepositoryAction>();
+        result.Should().HaveCount(1).And.AllBeOfType<Api.RepositoryActions.RepositoryAction>();
     }
 }
 

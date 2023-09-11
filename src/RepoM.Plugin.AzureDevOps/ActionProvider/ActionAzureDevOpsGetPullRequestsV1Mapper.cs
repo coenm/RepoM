@@ -9,6 +9,7 @@ using RepoM.Api.Git;
 using RepoM.Api.IO;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
@@ -39,21 +40,21 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
         return Map(action as RepositoryActionAzureDevOpsGetPullRequestsV1, repository);
     }
 
-    private Api.Git.RepositoryAction[] Map(RepositoryActionAzureDevOpsGetPullRequestsV1? action, Repository repository)
+    private Api.RepositoryActions.RepositoryAction[] Map(RepositoryActionAzureDevOpsGetPullRequestsV1? action, Repository repository)
     {
         if (action == null)
         {
-            return Array.Empty<Api.Git.RepositoryAction>();
+            return Array.Empty<Api.RepositoryActions.RepositoryAction>();
         }
 
         if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
         {
-            return Array.Empty<Api.Git.RepositoryAction>();
+            return Array.Empty<Api.RepositoryActions.RepositoryAction>();
         }
 
         if (string.IsNullOrWhiteSpace(action.ProjectId))
         {
-            return Array.Empty<Api.Git.RepositoryAction>();
+            return Array.Empty<Api.RepositoryActions.RepositoryAction>();
         }
 
         // var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
@@ -62,7 +63,7 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
 
         if (string.IsNullOrWhiteSpace(projectId))
         {
-            return Array.Empty<Api.Git.RepositoryAction>();
+            return Array.Empty<Api.RepositoryActions.RepositoryAction>();
         }
 
         string? repoId = null;
@@ -78,7 +79,7 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
         }
         catch (Exception e)
         {
-            var notificationItem = new Api.Git.RepositoryAction($"An error occurred grabbing pull requests. {e.Message}", repository)
+            var notificationItem = new Api.RepositoryActions.RepositoryAction($"An error occurred grabbing pull requests. {e.Message}", repository)
             {
                 CanExecute = false,
                 ExecutionCausesSynchronizing = false,
@@ -88,8 +89,8 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
 
         if (pullRequests.Any())
         {
-            var results = new List<Api.Git.RepositoryAction>(pullRequests.Count);
-            results.AddRange(pullRequests.Select(pr => new Api.Git.RepositoryAction(pr.Name, repository)
+            var results = new List<Api.RepositoryActions.RepositoryAction>(pullRequests.Count);
+            results.AddRange(pullRequests.Select(pr => new Api.RepositoryActions.RepositoryAction(pr.Name, repository)
             {
                 Action = new DelegateAction((_, _) =>
                     {
@@ -105,7 +106,7 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
         // check if user wants a notification
         if (_expressionEvaluator.EvaluateBooleanExpression(action.ShowWhenEmpty, repository))
         {
-            var notificationItem = new Api.Git.RepositoryAction("No PRs found.", repository)
+            var notificationItem = new Api.RepositoryActions.RepositoryAction("No PRs found.", repository)
             {
                 CanExecute = false,
                 ExecutionCausesSynchronizing = false,
@@ -113,6 +114,6 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
             return new[] { notificationItem, };
         }
 
-        return Array.Empty<Api.Git.RepositoryAction>();
+        return Array.Empty<Api.RepositoryActions.RepositoryAction>();
     }
 }
