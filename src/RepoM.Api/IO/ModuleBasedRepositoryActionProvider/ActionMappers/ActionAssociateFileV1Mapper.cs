@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
@@ -30,7 +31,7 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionAssociateFileV1, repository);
     }
 
-    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionAssociateFileV1? action, Repository repository)
+    private IEnumerable<RepositoryActions.RepositoryAction> Map(RepositoryActionAssociateFileV1? action, Repository repository)
     {
         if (action == null)
         {
@@ -49,7 +50,7 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
 
         var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
 
-        Git.RepositoryAction? menuItem = CreateFileAssociationSubMenu(
+        RepositoryActions.RepositoryAction? menuItem = CreateFileAssociationSubMenu(
             repository,
             name,
             action.Extension);
@@ -60,14 +61,14 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
         }
     }
 
-    private static Git.RepositoryAction? CreateFileAssociationSubMenu(IRepository repository, string actionName, string filePattern)
+    private static RepositoryActions.RepositoryAction? CreateFileAssociationSubMenu(IRepository repository, string actionName, string filePattern)
     {
         if (!HasFiles(repository, filePattern))
         {
             return null;
         }
 
-        return new Git.RepositoryAction(actionName, repository)
+        return new DeferredSubActionsRepositoryAction(actionName, repository, false)
             {
                 DeferredSubActionsEnumerator = () =>
                     GetFiles(repository, filePattern)
@@ -76,9 +77,9 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             };
     }
 
-    private static Git.RepositoryAction CreateProcessRunnerAction(string name, string process, IRepository repository, string arguments = "")
+    private static RepositoryActions.RepositoryAction CreateProcessRunnerAction(string name, string process, IRepository repository, string arguments = "")
     {
-        return new Git.RepositoryAction(name, repository)
+        return new RepositoryActions.RepositoryAction(name, repository)
             {
                 Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(process, arguments)),
             };

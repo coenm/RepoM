@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Plugin.Clipboard.RepositoryAction.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
@@ -45,7 +46,7 @@ internal class ActionClipboardCopyV1Mapper : IActionToRepositoryActionMapper
         var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
         var txt = _expressionEvaluator.EvaluateNullStringExpression(action.Text, repository);
 
-        yield return new Api.Git.RepositoryAction(name, repository)
+        yield return new Api.RepositoryActions.RepositoryAction(name, repository)
             {
                 Action = new CopyToClipboardAction(txt),
                 ExecutionCausesSynchronizing = false,

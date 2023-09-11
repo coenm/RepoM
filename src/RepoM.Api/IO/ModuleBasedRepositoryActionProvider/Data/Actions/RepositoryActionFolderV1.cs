@@ -22,9 +22,11 @@ public sealed class RepositoryActionFolderV1 : RepositoryAction
     [PropertyType(typeof(List<RepositoryAction>))]
     public List<RepositoryAction> Items { get; set; } = new List<RepositoryAction>();
 
-    // This property has no xml documentation because then it is skipped when generating the documentation.
-    // IsDeferred is used to indicate that the items in the folder are genereted lazy. This is used to improve performance.
-    // The problem is that variables at this deferred geneartion are not available anymore resulting in unwanted behaviour.
-    // At this moment, IsDeferred is not suggested to be used.
+    /// <summary>
+    /// Menu is deferred. This will speed up visualisation.
+    /// </summary>
+    [EvaluatedProperty]
+    [PropertyType(typeof(bool))]
+    [PropertyDefaultBoolValue(false)]
     public string? IsDeferred { get; set; }
 }

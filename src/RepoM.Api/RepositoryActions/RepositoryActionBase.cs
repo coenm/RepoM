@@ -1,29 +1,10 @@
-namespace RepoM.Api.Git;
+namespace RepoM.Api.RepositoryActions;
 
 using System;
 using System.Collections.Generic;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
-
-public class RepositorySeparatorAction : RepositoryActionBase
-{
-    public RepositorySeparatorAction(IRepository repository)
-        : base(repository)
-    {
-    }
-}
-
-public class RepositoryAction : RepositoryActionBase
-{
-    public RepositoryAction(string name, IRepository repository):
-        base(repository)
-    {
-        Name = name;
-    }
-
-    public string Name { get; }
-}
 
 public abstract class RepositoryActionBase
 {
@@ -39,8 +20,6 @@ public abstract class RepositoryActionBase
     public bool ExecutionCausesSynchronizing { get; init; }
 
     public bool CanExecute { get; init; } = true;
-
-    public Func<RepositoryActionBase[]>? DeferredSubActionsEnumerator { get; init; }
 
     public IEnumerable<RepositoryActionBase>? SubActions { get; init; }
 }

@@ -115,7 +115,7 @@ public static class PackageExtensions
 
     private static void RequiresPackageTypesHaveDefaultConstructor(Type[] packageTypes)
     {
-        var invalidPackageType = packageTypes.FirstOrDefault(type => !type.HasDefaultConstructor());
+        Type? invalidPackageType = Array.Find(packageTypes, type => !type.HasDefaultConstructor());
 
         if (invalidPackageType != null)
         {

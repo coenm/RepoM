@@ -6,9 +6,10 @@ using System.Linq;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.Variables;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
-using RepositoryAction = RepoM.Api.Git.RepositoryAction;
+using RepositoryAction = RepoM.Api.RepositoryActions.RepositoryAction;
 
 public class ActionMapperComposition
 {

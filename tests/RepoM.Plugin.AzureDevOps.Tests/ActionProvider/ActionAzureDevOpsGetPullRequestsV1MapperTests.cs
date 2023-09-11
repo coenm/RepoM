@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.ActionProvider;
@@ -165,7 +166,7 @@ public class ActionAzureDevOpsGetPullRequestsV1MapperTests
         IEnumerable<RepositoryActionBase> result = _sut.Map(_action, _repository, _composition);
 
         // assert
-        result.Should().HaveCount(2).And.AllBeOfType<Api.Git.RepositoryAction>();
+        result.Should().HaveCount(2).And.AllBeOfType<Api.RepositoryActions.RepositoryAction>();
         A.CallTo(_service).MustHaveHappenedOnceExactly();
         A.CallTo(() => _service.GetPullRequests(_repository, "real-project-id", _action.RepositoryId)).MustHaveHappenedOnceExactly();
     }

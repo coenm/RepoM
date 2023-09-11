@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
@@ -31,7 +32,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionExecutableV1, repository);
     }
 
-    private IEnumerable<Git.RepositoryAction> Map(RepositoryActionExecutableV1? action, IRepository repository)
+    private IEnumerable<RepositoryActions.RepositoryAction> Map(RepositoryActionExecutableV1? action, IRepository repository)
     {
         if (action == null)
         {
@@ -68,7 +69,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
                 arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
             }
 
-            yield return new Git.RepositoryAction(name, repository)
+            yield return new RepositoryActions.RepositoryAction(name, repository)
                 {
                     Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(normalized, arguments)),
                 };

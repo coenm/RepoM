@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
@@ -39,7 +40,7 @@ public class ActionGitPullV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        yield return new Git.RepositoryAction(_translationService.Translate("Pull"), repository)
+        yield return new RepositoryActions.RepositoryAction(_translationService.Translate("Pull"), repository)
             {
                 Action = new DelegateAction((_, _) =>
                     {

@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.RepositoryActions;
 
 public class DefaultRepositoryActionProvider : IRepositoryActionProvider
 {

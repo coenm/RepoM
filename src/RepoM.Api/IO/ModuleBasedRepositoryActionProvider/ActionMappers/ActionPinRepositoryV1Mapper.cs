@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
@@ -71,9 +72,9 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
                 _ => throw new NotImplementedException(),
             };
 
-        Git.RepositoryAction CreateAction(string actionName, Repository repo, bool newPinnedValue)
+        RepositoryActions.RepositoryAction CreateAction(string actionName, Repository repo, bool newPinnedValue)
         {
-            return new Git.RepositoryAction(actionName, repo)
+            return new RepositoryActions.RepositoryAction(actionName, repo)
                 {
                     Action = new DelegateAction((_, _) => _repositoryMonitor.SetPinned(newPinnedValue, repo)),
                 };

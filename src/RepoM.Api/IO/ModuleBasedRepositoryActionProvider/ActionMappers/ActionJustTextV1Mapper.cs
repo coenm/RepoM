@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
@@ -28,7 +29,7 @@ public class ActionJustTextV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionJustTextV1, repository);
     }
 
-    private IEnumerable<RepoM.Api.Git.RepositoryAction> Map(RepositoryActionJustTextV1? action, IRepository repository)
+    private IEnumerable<RepositoryActions.RepositoryAction> Map(RepositoryActionJustTextV1? action, IRepository repository)
     {
         if (action == null)
         {
@@ -42,7 +43,7 @@ public class ActionJustTextV1Mapper : IActionToRepositoryActionMapper
 
         var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
 
-        yield return new Git.RepositoryAction(name, repository)
+        yield return new RepositoryActions.RepositoryAction(name, repository)
             {
                 Action = NullAction.Instance,
                 CanExecute = _expressionEvaluator.EvaluateBooleanExpression(action.Enabled, repository),
