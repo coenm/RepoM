@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 internal class WebBrowserConfiguration
 {
-    public Dictionary<string, string> Browsers { get; init; }
+    public Dictionary<string, string> Browsers { get; init; } = new();
 
-    public Dictionary<string, BrowserProfileConfig> Profiles { get; init; }
+    public Dictionary<string, BrowserProfileConfig> Profiles { get; init; } = new();
 }
 
 internal class BrowserProfileConfig
