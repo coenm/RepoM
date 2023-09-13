@@ -44,98 +44,19 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
 
             if (comment.StartsWith(HASH_TAG_REPO, COMPARISON))
             {
-                comment = comment[HASH_TAG_REPO.Length..];
-
-                if (comment[0].Equals('"'))
-                {
-                    comment = comment[1..];
-                    var endIndex = comment.IndexOf('"');
-                    if (endIndex > 0)
-                    {
-                        var repo = comment[..endIndex].ToString();
-                        if (!string.IsNullOrWhiteSpace(repo))
-                        {
-                            repos.Add(repo.Trim());
-                        }
-                    }
-                }
-                else
-                {
-                    int k = FindEndCharIndex(comment);
-                    if (k > 0 && (k == comment.Length || comment[k] == ' '))
-                    {
-                        repos.Add(comment[..k].ToString());
-                    }
-
-                    comment = comment[k..];
-                }
+                comment = HandleHashTagRepo(comment, repos);
             }
             else if (comment.StartsWith(HASH_TAG_ORDER, COMPARISON))
             {
-                comment = comment[HASH_TAG_ORDER.Length..];
-
-                var k = 0;
-                var stop = false;
-                while (k < comment.Length && !stop)
-                {
-                    if (comment[k] is >= '0' and <= '9')
-                    {
-                        k++;
-                        continue;
-                    }
-
-                    stop = true;
-                }
-
-                if (k > 0 && int.TryParse(comment[..k], out var orderInt))
-                {
-                    if (k == comment.Length || comment[k] == ' ')
-                    {
-                        orders.Add(orderInt);
-                    }
-                }
-
-                comment = comment[k..];
+                comment = HandleHashTagOrder(comment, orders);
             }
             else if (comment.StartsWith(HASH_TAG_NAME, COMPARISON))
             {
-                comment = comment[HASH_TAG_NAME.Length..];
-
-                if (comment[0].Equals('"'))
-                {
-                    comment = comment[1..];
-                    var endIndex = comment.IndexOf('"');
-                    if (endIndex > 0)
-                    {
-                        var name = comment[..endIndex].ToString();
-                        if (!string.IsNullOrWhiteSpace(name))
-                        {
-                            names.Add(name.Trim());
-                        }
-                    }
-                }
-                else
-                {
-                    int k = FindEndCharIndex(comment);
-                    if (k > 0 && (k == comment.Length || comment[k] == ' '))
-                    {
-                        names.Add(comment[..k].ToString());
-                    }
-
-                    comment = comment[k..];
-                }
+                comment = HandleHashTagName(comment, names);
             }
             else
             {
-                comment = comment["#".Length..];
-
-                int k = FindEndCharIndex(comment);
-                if (k > 0 && (k == comment.Length || comment[k] == ' '))
-                {
-                    tags.Add(comment[..k].ToString());
-                }
-
-                comment = comment[k..];
+                comment = HandleHashTag(comment, tags);
             }
 
             index = comment.IndexOf(" #");
@@ -154,6 +75,115 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                 Tags = tags.Distinct().ToArray(),
             };
         return true;
+    }
+
+    private static ReadOnlySpan<char> HandleHashTag(ReadOnlySpan<char> comment, ICollection<string> tags)
+    {
+        comment = comment["#".Length..];
+
+        var k = FindEndCharIndex(comment);
+        if (k > 0 && (k == comment.Length || comment[k] == ' '))
+        {
+            tags.Add(comment[..k].ToString());
+        }
+
+        comment = comment[k..];
+        return comment;
+    }
+
+    private static ReadOnlySpan<char> HandleHashTagName(ReadOnlySpan<char> comment, ICollection<string> names)
+    {
+        comment = comment[HASH_TAG_NAME.Length..];
+
+        if (comment[0].Equals('"'))
+        {
+            comment = comment[1..];
+            var endIndex = comment.IndexOf('"');
+            if (endIndex <= 0)
+            {
+                return comment;
+            }
+
+            var name = comment[..endIndex].ToString();
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                names.Add(name.Trim());
+            }
+        }
+        else
+        {
+            var k = FindEndCharIndex(comment);
+            if (k > 0 && (k == comment.Length || comment[k] == ' '))
+            {
+                names.Add(comment[..k].ToString());
+            }
+
+            comment = comment[k..];
+        }
+
+        return comment;
+    }
+
+    private static ReadOnlySpan<char> HandleHashTagOrder(ReadOnlySpan<char> comment, ICollection<int> orders)
+    {
+        comment = comment[HASH_TAG_ORDER.Length..];
+
+        var k = 0;
+        var stop = false;
+        while (k < comment.Length && !stop)
+        {
+            if (comment[k] is >= '0' and <= '9')
+            {
+                k++;
+                continue;
+            }
+
+            stop = true;
+        }
+
+        if (k > 0 && int.TryParse(comment[..k], out var orderInt))
+        {
+            if (k == comment.Length || comment[k] == ' ')
+            {
+                orders.Add(orderInt);
+            }
+        }
+
+        comment = comment[k..];
+        return comment;
+    }
+
+    private static ReadOnlySpan<char> HandleHashTagRepo(ReadOnlySpan<char> comment, ICollection<string> repos)
+    {
+        comment = comment[HASH_TAG_REPO.Length..];
+
+        if (comment[0].Equals('"'))
+        {
+            comment = comment[1..];
+            var endIndex = comment.IndexOf('"');
+            if (endIndex <= 0)
+            {
+                return comment;
+            }
+
+            var repo = comment[..endIndex].ToString();
+            if (!string.IsNullOrWhiteSpace(repo))
+            {
+                repos.Add(repo.Trim());
+            }
+        }
+        else
+        {
+            var k = FindEndCharIndex(comment);
+            if (k > 0 && (k == comment.Length || comment[k] == ' '))
+            {
+                repos.Add(comment[..k].ToString());
+            }
+
+            comment = comment[k..];
+        }
+
+        return comment;
     }
 
     private static int FindEndCharIndex(ReadOnlySpan<char> comment)

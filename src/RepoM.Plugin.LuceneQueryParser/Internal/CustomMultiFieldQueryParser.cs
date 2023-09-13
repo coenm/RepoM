@@ -115,7 +115,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
                 // or (x, y, z)
                 // pick last item to make it
                 // or (x, y, (and (z, zz))
-                WrappedBooleanClause lastItem = currentClause.Items.Last();
+                WrappedBooleanClause lastItem = currentClause.Items[^1];
                 Debug.Assert(((SetBooleanClause)lastItem).Mode == SetBooleanClause.BoolMode.And);
                 ((SetBooleanClause)lastItem).Items.Add(new SetBooleanClause(clause));
             }

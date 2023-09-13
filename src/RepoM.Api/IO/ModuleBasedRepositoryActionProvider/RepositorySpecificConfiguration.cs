@@ -6,10 +6,8 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Runtime.Caching;
-using DotNetEnv;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
-using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
@@ -88,14 +86,12 @@ public class RepositoryConfigurationReader
         }
 
         var variables = new List<EvaluatedVariable>();
-        Dictionary<string, string>? envVars = null;
         var actions = new List<ActionsCollection>();
         var tags = new List<TagsCollection>();
 
         // load default file
-        RepositoryActionConfiguration? rootFile = null;
-        RepositoryActionConfiguration? repoSpecificConfig = null;
-
+        RepositoryActionConfiguration? rootFile;
+        
         var filename = GetRepositoryActionsFilename(_appDataPathProvider.AppDataPath);
         if (!_fileSystem.File.Exists(filename))
         {
@@ -116,95 +112,41 @@ public class RepositoryConfigurationReader
             throw new InvalidConfigurationException(filename, "Could not read and deserialize file");
         }
 
-        Redirect? redirect = rootFile.Redirect;
-        if (!string.IsNullOrWhiteSpace(redirect?.Filename) && IsEnabled(redirect.Enabled, true, null))
-        {
-            filename = EvaluateString(redirect.Filename, null);
-            if (_fileSystem.File.Exists(filename))
-            {
-                try
-                {
-                    rootFile = _repositoryActionsFileStore.TryGet(filename);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogWarning(e, "Could not read and deserialize file '{file}'", filename);
-                    throw new InvalidConfigurationException(filename, e.Message, e);
-                }
+        rootFile = RedirectRootFile(rootFile);
 
-                if (rootFile == null)
-                {
-                    throw new InvalidConfigurationException(filename, "Could not read and deserialize file");
-                }
-            }
-        }
-
-        List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars)
-        {
-            if (vars == null)
-            {
-                return new List<EvaluatedVariable>(0);
-            }
-
-            return vars
-                   .Where(v => IsEnabled(v.Enabled, true, repository))
-                   .Select(v => new EvaluatedVariable
-                       {
-                           Name = v.Name,
-                           Value = Evaluate(v.Value, repository),
-                       })
-                   .ToList();
-        }
-
-        List<EvaluatedVariable> list = EvaluateVariables(rootFile.Variables);
+        List<EvaluatedVariable> list = EvaluateVariables(rootFile.Variables, repository);
         variables.AddRange(list);
         using IDisposable rootVariables = RepoMVariableProviderStore.Push(list);
 
-        // load repo specific environment variables
-        foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles.Where(fileRef => fileRef != null))
+        // Load repo specific environment variables
+        Dictionary<string, string> envVars = LoadRepoEnvironmentVariables(repository, rootFile);
+        using IDisposable repoSpecificEnvVariables = EnvironmentVariableStore.Set(envVars);
+
+        // Load repo specific config
+        RepositoryActionConfiguration? repoSpecificConfig = LoadRepoSpecificConfig(repository, rootFile);
+        List<EvaluatedVariable> repoSpecificVariables = EvaluateVariables(repoSpecificConfig?.Variables, repository);
+        variables.AddRange(repoSpecificVariables);
+        using IDisposable repoSpecificVariablesRegistration = RepoMVariableProviderStore.Push(repoSpecificVariables);
+
+        actions.Add(rootFile.ActionsCollection);
+        if (repoSpecificConfig?.ActionsCollection != null)
         {
-            if (!IsEnabled(fileRef.When, true, repository))
-            {
-                continue;
-            }
-
-            var f = EvaluateString(fileRef.Filename, repository);
-            if (!_fileSystem.File.Exists(f))
-            {
-                // log warning?
-                continue;
-            }
-
-            try
-            {
-                IDictionary<string, string> currentEnvVars = _envFileStore.TryGet(f);
-                if (envVars == null || !envVars.Any())
-                {
-                    envVars = currentEnvVars.ToDictionary();
-                    continue;
-                }
-
-                foreach (KeyValuePair<string, string> item in currentEnvVars)
-                {
-                    if (!envVars.ContainsKey(item.Key))
-                    {
-                        envVars.Add(item.Key, item.Value);
-                    }
-                    else
-                    {
-                        _logger.LogTrace("Environment key was '{Key}' already set.", item.Key);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, "Something went wrong loading an environment file");
-            }
+            actions.Add(repoSpecificConfig.ActionsCollection);
         }
 
-        using IDisposable repoSpecificEnvVariables = EnvironmentVariableStore.Set(envVars ?? new Dictionary<string, string>(0));
+        tags.Add(rootFile.TagsCollection);
+        if (repoSpecificConfig?.TagsCollection != null)
+        {
+            tags.Add(repoSpecificConfig.TagsCollection);
+        }
 
-        // load repo specific config
+        return (envVars, variables, actions, tags);
+    }
+
+    private RepositoryActionConfiguration? LoadRepoSpecificConfig(IRepository repository, RepositoryActionConfiguration rootFile)
+    {
+        RepositoryActionConfiguration? repoSpecificConfig = null;
+
         foreach (FileReference fileRef in rootFile.RepositorySpecificConfigFiles)
         {
             if (repoSpecificConfig != null)
@@ -234,23 +176,102 @@ public class RepositoryConfigurationReader
             }
         }
 
-        List<EvaluatedVariable> list2 = EvaluateVariables(repoSpecificConfig?.Variables);
-        variables.AddRange(list2);
-        using IDisposable repoSpecificVariables = RepoMVariableProviderStore.Push(list2);
+        return repoSpecificConfig;
+    }
 
-        actions.Add(rootFile.ActionsCollection);
-        if (repoSpecificConfig?.ActionsCollection != null)
+    private Dictionary<string, string> LoadRepoEnvironmentVariables(IRepository repository, RepositoryActionConfiguration rootFile)
+    {
+        var envVars = new Dictionary<string, string>();
+
+        foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles.Where(fileRef => fileRef != null))
         {
-            actions.Add(repoSpecificConfig.ActionsCollection);
+            if (!IsEnabled(fileRef.When, true, repository))
+            {
+                continue;
+            }
+
+            var f = EvaluateString(fileRef.Filename, repository);
+            if (!_fileSystem.File.Exists(f))
+            {
+                // log warning?
+                continue;
+            }
+
+            try
+            {
+                IDictionary<string, string> currentEnvVars = _envFileStore.TryGet(f);
+
+                foreach (KeyValuePair<string, string> item in currentEnvVars)
+                {
+                    if (!envVars.ContainsKey(item.Key))
+                    {
+                        envVars.Add(item.Key, item.Value);
+                    }
+                    else
+                    {
+                        _logger.LogTrace("Environment key was '{Key}' already set.", item.Key);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Something went wrong loading an environment file");
+            }
         }
 
-        tags.Add(rootFile.TagsCollection);
-        if (repoSpecificConfig?.TagsCollection != null)
+        return envVars;
+    }
+
+    private List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars, IRepository repository)
+    {
+        if (vars == null)
         {
-            tags.Add(repoSpecificConfig.TagsCollection);
+            return new List<EvaluatedVariable>(0);
         }
 
-        return (envVars, variables, actions, tags);
+        return vars
+               .Where(v => IsEnabled(v.Enabled, true, repository))
+               .Select(v => new EvaluatedVariable
+                   {
+                       Name = v.Name,
+                       Value = Evaluate(v.Value, repository),
+                   })
+               .ToList();
+    }
+
+    private RepositoryActionConfiguration RedirectRootFile(RepositoryActionConfiguration rootFile)
+    {
+        Redirect? redirect = rootFile.Redirect;
+
+        if (string.IsNullOrWhiteSpace(redirect?.Filename) || !IsEnabled(redirect.Enabled, true, null))
+        {
+            return rootFile;
+        }
+
+        var filename = EvaluateString(redirect.Filename, null);
+        if (!_fileSystem.File.Exists(filename))
+        {
+            return rootFile;
+        }
+
+        RepositoryActionConfiguration? result;
+
+        try
+        {
+            result = _repositoryActionsFileStore.TryGet(filename);
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning(e, "Could not read and deserialize file '{file}'", filename);
+            throw new InvalidConfigurationException(filename, e.Message, e);
+        }
+
+        if (result == null)
+        {
+            throw new InvalidConfigurationException(filename, "Could not read and deserialize file");
+        }
+
+        return result;
     }
 
     private object? Evaluate(object? input, IRepository? repository)
@@ -392,11 +413,6 @@ public class RepositorySpecificConfiguration
 
     public IEnumerable<RepositoryActionBase> CreateActions(Repository repository)
     {
-        if (repository == null)
-        {
-            throw new ArgumentNullException(nameof(repository));
-        }
-
         Dictionary<string, string>? repositoryEnvVars = null;
         List<EvaluatedVariable>? variables = null;
         List<ActionsCollection>? actions = null;

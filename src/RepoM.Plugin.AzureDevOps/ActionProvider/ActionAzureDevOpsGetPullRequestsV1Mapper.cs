@@ -57,8 +57,6 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
             return Array.Empty<Api.RepositoryActions.RepositoryAction>();
         }
 
-        // var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
-
         var projectId = _expressionEvaluator.EvaluateStringExpression(action.ProjectId, repository);
 
         if (string.IsNullOrWhiteSpace(projectId))

@@ -1,7 +1,6 @@
 namespace RepoM.App.RepositoryFiltering;
 
 using System;
-using System.Linq;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
@@ -19,7 +18,7 @@ internal class QueryParserComposition : IQueryParser
 
     public bool SetComparer(string key)
     {
-        INamedQueryParser? foundQueryParser = _namedQueryParsers.FirstOrDefault(x => x.Name.Equals(key, StringComparison.CurrentCultureIgnoreCase));
+        INamedQueryParser? foundQueryParser = Array.Find(_namedQueryParsers, item => item.Name.Equals(key, StringComparison.CurrentCultureIgnoreCase));
         
         if (foundQueryParser != null)
         {

@@ -6,7 +6,6 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 public sealed class Scope : IDisposable
 {
-    // private readonly LoggerFactoryScopeProvider _provider;
     private bool _isDisposed;
 
     private Scope()

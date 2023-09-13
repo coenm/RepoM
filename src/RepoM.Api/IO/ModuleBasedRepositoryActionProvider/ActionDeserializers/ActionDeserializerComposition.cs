@@ -28,7 +28,7 @@ public class ActionDeserializerComposition
 
     private RepositoryAction? DeserializeWithCustomDeserializers(string type, JToken jToken, JsonSerializer jsonSerializer)
     {
-        IActionDeserializer? deserializer = _deserializers.FirstOrDefault(x => x.CanDeserialize(type));
+        IActionDeserializer? deserializer = Array.Find(_deserializers, item => item.CanDeserialize(type));
         return deserializer?.Deserialize(jToken, this, jsonSerializer);
     }
 

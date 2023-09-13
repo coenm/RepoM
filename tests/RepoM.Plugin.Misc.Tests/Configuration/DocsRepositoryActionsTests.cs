@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NuDoq;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Plugin.Misc.Tests.TestFramework;
@@ -105,7 +106,7 @@ public class DocsRepositoryActionsTests
         await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
 #else
         await Task.Yield();
-        Assert.True(true); // this test should only be run in Debug mode.
+        true.Should().BeTrue(); // this test should only be run in Debug mode.
 #endif
     }
 
@@ -159,7 +160,7 @@ public class DocsRepositoryActionsTests
         await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
 #else
         await Task.Yield();
-        Assert.True(true); // this test should only be run in Debug mode.
+        true.Should().BeTrue(); // this test should only be run in Debug mode.
 #endif
     }
 }

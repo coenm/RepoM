@@ -47,6 +47,6 @@ public class VariableProviderAdapter : ExpressionStringEvaluator.VariableProvide
 
     private PluginVariableProvider? GetProvider(string key)
     {
-        return _variableProviderImplementation.FirstOrDefault(x => x.CanProvide(key));
+        return Array.Find(_variableProviderImplementation, item => item.CanProvide(key));
     }
 }

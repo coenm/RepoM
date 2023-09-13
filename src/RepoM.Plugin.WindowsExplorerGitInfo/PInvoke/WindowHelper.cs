@@ -41,7 +41,10 @@ internal static class WindowHelper
 
     public static void SetWindowText(IntPtr handle, string text)
     {
-        SetWindowTextApi(handle, text);
+        if (handle != IntPtr.Zero && text != null)
+        {
+            SetWindowTextApi(handle, text);
+        }
     }
 
     public static void AppendWindowText(IntPtr handle, string uniqueSplitter, string text)
@@ -62,10 +65,12 @@ internal static class WindowHelper
         var current = GetWindowText(handle);
 
         var at = current.IndexOf(uniqueSplitter, StringComparison.OrdinalIgnoreCase);
-        if (at > -1)
+        if (at <= -1)
         {
-            current = current[..at];
-            SetWindowTextApi(handle, current);
+            return;
         }
+
+        current = current[..at];
+        SetWindowTextApi(handle, current);
     }
 }
