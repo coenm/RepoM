@@ -132,16 +132,16 @@ public class DocsModuleSettingsTests
     
     private static string CreateConfigWithSnippetDocumentationMarkdown(string? snippet, string? exampleSnippet = null)
     {
-        var sb = new StringBuilder()
-               .AppendLine("## Configuration")
-               .AppendLine(string.Empty)
-               .AppendLine("This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running.")
-               .AppendLine(string.Empty)
-               .AppendLine("The following default configuration is used:")
-               .AppendLine(string.Empty)
-               .AppendLine("```json")
-               .AppendLine(snippet)
-               .AppendLine("```");
+        StringBuilder sb = new StringBuilder()
+          .AppendLine("## Configuration")
+          .AppendLine(string.Empty)
+          .AppendLine("This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running.")
+          .AppendLine(string.Empty)
+          .AppendLine("The following default configuration is used:")
+          .AppendLine(string.Empty)
+          .AppendLine("```json")
+          .AppendLine(snippet)
+          .AppendLine("```");
 
         if (!string.IsNullOrWhiteSpace(exampleSnippet))
         {
@@ -159,11 +159,10 @@ public class DocsModuleSettingsTests
     private static string CreateConfigWithoutSnippetDocumentationMarkdown()
     {
         return new StringBuilder()
-            .AppendLine("## Configuration")
-            .AppendLine(string.Empty)
-            .AppendLine("This module has no configuration.")
-            .ToString();
-
+          .AppendLine("## Configuration")
+          .AppendLine(string.Empty)
+          .AppendLine("This module has no configuration.")
+          .ToString();
     }
 
     private async Task<Tuple<object?, string?>> PersistDefaultConfigAsync(IPackage package)
