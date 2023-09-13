@@ -45,12 +45,12 @@ repository-actions:
     value: true
     enabled: false
   actions:
-  - type: browser@1
-    name: '{OpenIn} Windows File Explorer'
+  - type: command@1
+    name: 'Open in Windows File Explorer'
     active: false
     variables:
     - name: name
       value: '{StringContains({Repository.SafePath}, "abc")}'
-  - type: browser@1
-    name: '{OpenIn} Windows File Explorer'
+  - type: command@1
+    name: 'Open in Windows File Explorer'
     active: false

@@ -47,6 +47,7 @@
     <ProjectReference Include="..\..\src\RepoM.Plugin.LuceneQueryParser\RepoM.Plugin.LuceneQueryParser.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.Statistics\RepoM.Plugin.Statistics.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.Plugin.WebBrowser\RepoM.Plugin.WebBrowser.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.WindowsExplorerGitInfo\RepoM.Plugin.WindowsExplorerGitInfo.csproj" />
     <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
   </ItemGroup>

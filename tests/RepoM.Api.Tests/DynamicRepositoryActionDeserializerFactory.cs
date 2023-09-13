@@ -28,7 +28,6 @@ internal static class DynamicRepositoryActionDeserializerFactory
                 {
                     new ActionExecutableV1Deserializer(),
                     new DefaultActionDeserializer<RepositoryActionCommandV1>(),
-                    new DefaultActionDeserializer<RepositoryActionBrowserV1>(),
                     new ActionFolderV1Deserializer(),
                     new DefaultActionDeserializer<RepositoryActionSeparatorV1>(),
                     new DefaultActionDeserializer<RepositoryActionGitCheckoutV1>(),

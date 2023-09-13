@@ -1,0 +1,59 @@
+namespace RepoM.Plugin.WebBrowser.Services;
+
+using System;
+using RepoM.Api.IO;
+
+internal class WebBrowserService : IWebBrowserService
+{
+    private readonly WebBrowserConfiguration _configuration;
+
+    public WebBrowserService(WebBrowserConfiguration configuration)
+    {
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+    }
+
+    public bool ProfileExist(string name)
+    {
+        return _configuration.Profiles.ContainsKey(name);
+    }
+
+    public void OpenUrl(string url)
+    {
+        ProcessHelper.StartProcess(url, string.Empty);
+    }
+
+    public void OpenUrl(string url, string profile)
+    {
+
+        if (!_configuration.Profiles.TryGetValue(profile, out BrowserProfileConfig? profileConfig))
+        {
+            OpenUrl(url);
+            return;
+        }
+
+        if (!_configuration.Browsers.TryGetValue(profileConfig.BrowserName!, out string? browser))
+        {
+            OpenUrl(url);
+            return;
+        }
+
+
+        if (string.IsNullOrWhiteSpace(profileConfig.CommandLineArguments))
+        {
+            ProcessHelper.StartProcess(browser, url);
+            return;
+        }
+
+        var commandLinesArgs = profileConfig.CommandLineArguments;
+        if (commandLinesArgs.Contains("{url}"))
+        {
+            commandLinesArgs = commandLinesArgs.Replace("{url}", url);
+        }
+        else
+        {
+            commandLinesArgs += " " + url;
+        }
+
+        ProcessHelper.StartProcess(browser, commandLinesArgs);
+    }
+}

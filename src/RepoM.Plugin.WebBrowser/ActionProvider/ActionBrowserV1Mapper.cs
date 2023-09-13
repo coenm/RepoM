@@ -1,15 +1,19 @@
-namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+namespace RepoM.Plugin.WebBrowser.ActionProvider;
 
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using RepoM.Api.Git;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.Repository;
+using RepoM.Plugin.WebBrowser.RepositoryActions.Actions;
 using RepositoryAction = RepoM.Api.RepositoryActions.RepositoryAction;
 
-public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
+[UsedImplicitly]
+internal class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
 
@@ -18,17 +22,17 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
     }
 
-    bool IActionToRepositoryActionMapper.CanMap(Data.RepositoryAction action)
+    bool IActionToRepositoryActionMapper.CanMap(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction action)
     {
         return action is RepositoryActionBrowserV1;
     }
 
-    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
+    IEnumerable<RepositoryActionBase> IActionToRepositoryActionMapper.Map(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionBrowserV1, repository);
     }
 
-    private IEnumerable<RepositoryAction> Map(RepositoryActionBrowserV1? action, Repository repository)
+    private IEnumerable<RepositoryAction> Map(RepositoryActionBrowserV1? action, IRepository repository)
     {
         if (action == null)
         {
@@ -47,9 +51,11 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
 
         var name = _expressionEvaluator.EvaluateNullStringExpression(action.Name, repository);
         var url = _expressionEvaluator.EvaluateStringExpression(action.Url, repository);
+        var profile = _expressionEvaluator.EvaluateNullStringExpression(action.Profile, repository);
+
         yield return new RepositoryAction(name, repository)
             {
-                Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(url, string.Empty)),
+                Action = new BrowseAction(url, profile),
             };
     }
 }

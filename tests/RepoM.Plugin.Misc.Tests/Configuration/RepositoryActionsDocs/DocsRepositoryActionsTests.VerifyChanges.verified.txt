@@ -3,7 +3,6 @@
     RepositoryAction,
     RepositoryActionAssociateFileV1,
     RepositoryActionBrowseRepositoryV1,
-    RepositoryActionBrowserV1,
     RepositoryActionCommandV1,
     RepositoryActionExecutableV1,
     RepositoryActionFolderV1,
@@ -29,5 +28,8 @@
   ],
   RepoM.Plugin.SonarCloud: [
     RepositoryActionSonarCloudSetFavoriteV1
+  ],
+  RepoM.Plugin.WebBrowser: [
+    RepositoryActionBrowserV1
   ]
 }

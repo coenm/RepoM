@@ -16,6 +16,5 @@ repository-actions:
     variable: environment
     skip: '{IsNull({var.environment.x})}'
     actions:
-    - type: browser@1
-      name: '{var.environment.key}'
-      url: '{var.environment.url}'
+    - type: just-text@1
+      name: '{var.key} - {var.environment.url}'

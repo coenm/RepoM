@@ -17,5 +17,8 @@
     PersistenceBuffer: 00:05:00,
     RetentionDays: 30
   },
+  WebBrowserPackage: {
+    $type: WebBrowserConfigV1
+  },
   WindowsExplorerGitInfoPackage: null
 }

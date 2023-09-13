@@ -38,7 +38,6 @@ public class DocumentationTests
     [InlineData("GitPush01")]
     [InlineData("BrowseRepository01")]
     [InlineData("Separator01")]
-    [InlineData("Browser01")]
     [InlineData("Folder01")]
     [InlineData("AssociateFile01")]
     [InlineData("Command01")]

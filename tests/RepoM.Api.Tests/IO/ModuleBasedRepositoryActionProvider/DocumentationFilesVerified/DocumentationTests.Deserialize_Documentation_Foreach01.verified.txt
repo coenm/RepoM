@@ -39,10 +39,9 @@
         Skip: ,
         Actions: [
           {
-            $type: RepositoryActionBrowserV1,
-            Url: {var.environment.url},
-            Type: browser@1,
-            Name: {var.environment.key}
+            $type: RepositoryActionJustTextV1,
+            Type: just-text@1,
+            Name: {var.environment.key} - {var.environment.url}
           }
         ],
         Type: foreach@1

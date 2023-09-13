@@ -13,5 +13,6 @@ repository-actions:
   - type: browser@1
     name: 'My Github'
     url: 'https://github.com/coenm'
+    profile: edge
 
 # end-snippet

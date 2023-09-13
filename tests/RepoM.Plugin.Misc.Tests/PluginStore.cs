@@ -11,6 +11,7 @@ using RepoM.Plugin.Heidi;
 using RepoM.Plugin.LuceneQueryParser;
 using RepoM.Plugin.SonarCloud;
 using RepoM.Plugin.Statistics;
+using RepoM.Plugin.WebBrowser;
 using RepoM.Plugin.WindowsExplorerGitInfo;
 
 internal static class PluginStore
@@ -27,6 +28,7 @@ internal static class PluginStore
             yield return new SonarCloudPackage();
             yield return new StatisticsPackage();
             yield return new WindowsExplorerGitInfoPackage();
+            yield return new WebBrowserPackage();
         }
     }
 
