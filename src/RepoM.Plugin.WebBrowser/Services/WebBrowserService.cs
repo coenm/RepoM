@@ -19,7 +19,7 @@ internal class WebBrowserService : IWebBrowserService
 
     public void OpenUrl(string url)
     {
-        ProcessHelper.StartProcess(url, string.Empty);
+        StartProcess(url, string.Empty);
     }
 
     public void OpenUrl(string url, string profile)
@@ -40,7 +40,7 @@ internal class WebBrowserService : IWebBrowserService
 
         if (string.IsNullOrWhiteSpace(profileConfig.CommandLineArguments))
         {
-            ProcessHelper.StartProcess(browser, url);
+            StartProcess(browser, url);
             return;
         }
 
@@ -54,6 +54,12 @@ internal class WebBrowserService : IWebBrowserService
             commandLinesArgs += " " + url;
         }
 
-        ProcessHelper.StartProcess(browser, commandLinesArgs);
+        StartProcess(browser, commandLinesArgs);
+    }
+
+    // virtual because of testing
+    protected virtual void StartProcess(string process, string arguments)
+    {
+        ProcessHelper.StartProcess(process, arguments);
     }
 }
