@@ -82,9 +82,34 @@ public class WebBrowserPackage : IPackage
     {
         var config = new WebBrowserConfigV1
         {
-            Browsers = new Dictionary<string, string>(),
-            Profiles = new Dictionary<string, ProfileConfig>(),
+            Browsers = null,
+            Profiles = null,
         };
+
+        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        return config;
+    }
+
+
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    [UsedImplicitly]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Reflection")]
+    private static async Task<WebBrowserConfigV1> PersistExampleConfigAsync(IPackageConfiguration packageConfiguration)
+    {
+        var config = new WebBrowserConfigV1
+            {
+                Browsers = new Dictionary<string, string>
+                    {
+                        { "Edge", "C:\\PathTo\\msedge.exe" },
+                        { "FireFox", "C:\\PathTo\\Mozilla\\firefox.exe" },
+                    },
+                Profiles = new Dictionary<string, ProfileConfig>
+                    {
+                        { "Work", new ProfileConfig { BrowserName = "Edge", CommandLineArguments = "\"--profile-directory=Profile 4\" {url}", } },
+                        { "Incognito", new ProfileConfig { BrowserName = "Edge", CommandLineArguments = "-inprivate", } },
+                        { "Incognito2", new ProfileConfig { BrowserName = "FireFox", CommandLineArguments = "-inprivate {url}", } },
+                    },
+            };
 
         await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
         return config;

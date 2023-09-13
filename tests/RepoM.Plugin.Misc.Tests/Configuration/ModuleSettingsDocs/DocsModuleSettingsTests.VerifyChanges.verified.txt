@@ -20,5 +20,26 @@
   WebBrowserPackage: {
     $type: WebBrowserConfigV1
   },
+  WebBrowserPackage_Example: {
+    $type: WebBrowserConfigV1,
+    Browsers: {
+      Edge: C:\PathTo\msedge.exe,
+      FireFox: C:\PathTo\Mozilla\firefox.exe
+    },
+    Profiles: {
+      Incognito: {
+        BrowserName: Edge,
+        CommandLineArguments: -inprivate
+      },
+      Incognito2: {
+        BrowserName: FireFox,
+        CommandLineArguments: -inprivate {url}
+      },
+      Work: {
+        BrowserName: Edge,
+        CommandLineArguments: "--profile-directory=Profile 4" {url}
+      }
+    }
+  },
   WindowsExplorerGitInfoPackage: null
 }

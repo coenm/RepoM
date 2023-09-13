@@ -9,10 +9,10 @@ public class WebBrowserConfigV1
     /// <summary>
     /// Dictionary of known browsers and their path to use for opening urls.
     /// </summary>
-    public Dictionary<string, string>? Browsers { get; set; } = new();
+    public Dictionary<string, string>? Browsers { get; set; }
 
     /// <summary>
     /// Profiles to use. 
     /// </summary>
-    public Dictionary<string, ProfileConfig>? Profiles { get; set; } = new();
+    public Dictionary<string, ProfileConfig>? Profiles { get; set; }
 }

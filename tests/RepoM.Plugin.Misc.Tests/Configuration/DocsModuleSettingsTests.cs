@@ -46,6 +46,12 @@ public class DocsModuleSettingsTests
         {
             var (config, _) = await PersistDefaultConfigAsync(p);
             results.Add(p.GetType().Name, config);
+
+            var (configExample, _) = await PersistExampleConfigAsync(p);
+            if (configExample != null)
+            {
+                results.Add(p.GetType().Name + "_Example", configExample);
+            }
         }
 
         // assert
@@ -71,6 +77,8 @@ public class DocsModuleSettingsTests
         }
         else
         {
+            (_,  string? examplePersistedConfig) = await PersistExampleConfigAsync(package);
+
             var builtinClassNames = new Dictionary<string, string>
                 {
                     [config!.GetType().Name] = "config",
@@ -105,7 +113,7 @@ public class DocsModuleSettingsTests
                 sb.Append(classWriter.Properties);
             }
 
-            var configWithSnippetDocumentationMarkdown = CreateConfigWithSnippetDocumentationMarkdown(persistedConfig/*$"Generated_DefaultConfig_{packageName}"*/);
+            var configWithSnippetDocumentationMarkdown = CreateConfigWithSnippetDocumentationMarkdown(persistedConfig, examplePersistedConfig);
 
             if (!string.IsNullOrWhiteSpace(sb.ToString()))
             {
@@ -122,9 +130,9 @@ public class DocsModuleSettingsTests
         }
     }
     
-    private static string CreateConfigWithSnippetDocumentationMarkdown(string? snippet)
+    private static string CreateConfigWithSnippetDocumentationMarkdown(string? snippet, string? exampleSnippet = null)
     {
-        return new StringBuilder()
+        var sb = new StringBuilder()
                .AppendLine("## Configuration")
                .AppendLine(string.Empty)
                .AppendLine("This plugin has specific configuration stored in a separate configuration file stored in `%APPDATA%/RepoM/Module/` directory. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running.")
@@ -133,8 +141,19 @@ public class DocsModuleSettingsTests
                .AppendLine(string.Empty)
                .AppendLine("```json")
                .AppendLine(snippet)
-               .AppendLine("```")
-               .ToString();
+               .AppendLine("```");
+
+        if (!string.IsNullOrWhiteSpace(exampleSnippet))
+        {
+            sb.AppendLine(string.Empty)
+              .AppendLine("For example:")
+              .AppendLine(string.Empty)
+              .AppendLine("```json")
+              .AppendLine(exampleSnippet)
+              .AppendLine("```");
+        }
+
+        return sb.ToString();
     }
 
     private static string CreateConfigWithoutSnippetDocumentationMarkdown()
@@ -149,9 +168,18 @@ public class DocsModuleSettingsTests
 
     private async Task<Tuple<object?, string?>> PersistDefaultConfigAsync(IPackage package)
     {
-        Type type = package.GetType();
-        MethodInfo? methodInfo = type.GetMethod("PersistDefaultConfigAsync", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+        MethodInfo? methodInfo = package.GetType().GetMethod("PersistDefaultConfigAsync", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+        return await PersistUsingMethodAsync(package, methodInfo).ConfigureAwait(false);
+    }
 
+    private async Task<Tuple<object?, string?>> PersistExampleConfigAsync(IPackage package)
+    {
+        MethodInfo? methodInfo = package.GetType().GetMethod("PersistExampleConfigAsync", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+        return await PersistUsingMethodAsync(package, methodInfo).ConfigureAwait(false);
+    }
+
+    private async Task<Tuple<object?, string?>> PersistUsingMethodAsync(IPackage package, MethodInfo? methodInfo)
+    {
         if (methodInfo == null)
         {
             return new Tuple<object?, string?>(null, null);
