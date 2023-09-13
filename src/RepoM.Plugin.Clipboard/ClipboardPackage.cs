@@ -26,7 +26,6 @@ public class ClipboardPackage : IPackage
     {
         // repository actions
         container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionClipboardCopyV1>();
-        // container.Collection.Append<IActionDeserializer, ActionClipboardCopyV1Deserializer>(Lifestyle.Singleton);
         container.Collection.Append<IActionToRepositoryActionMapper, ActionClipboardCopyV1Mapper>(Lifestyle.Singleton);
 
         // ordering

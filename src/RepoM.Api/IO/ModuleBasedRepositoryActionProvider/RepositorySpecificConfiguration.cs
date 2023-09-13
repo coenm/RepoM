@@ -294,7 +294,7 @@ public class RepositoryConfigurationReader
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty
-            : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression!, repository);
+            : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
     }
 }
 
@@ -302,13 +302,16 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
 {
     private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly RepositoryConfigurationReader _repoConfigReader;
+    private readonly ILogger _logger;
 
     public RepositoryTagsConfigurationFactory(
         IRepositoryExpressionEvaluator repoExpressionEvaluator,
-        RepositoryConfigurationReader repoConfigReader)
+        RepositoryConfigurationReader repoConfigReader,
+        ILogger logger)
     {
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _repoConfigReader = repoConfigReader ?? throw new ArgumentNullException(nameof(repoConfigReader));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public IEnumerable<string> GetTags(Repository repository)
@@ -318,23 +321,6 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
 
     private IEnumerable<string> GetTagsInner(IRepository repository)
     {
-        List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars)
-        {
-            if (vars == null)
-            {
-                return new List<EvaluatedVariable>(0);
-            }
-
-            return vars
-                   .Where(v => IsEnabled(v.Enabled, true, repository))
-                   .Select(v => new EvaluatedVariable
-                       {
-                           Name = v.Name,
-                           Value = Evaluate(v.Value, repository),
-                       })
-                   .ToList();
-        }
-
         Dictionary<string, string>? repositoryEnvVars;
         List<EvaluatedVariable>? variables;
         List<TagsCollection>? tags;
@@ -343,10 +329,10 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         {
             (repositoryEnvVars,  variables, _,  tags) = _repoConfigReader.Get(repository);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-             // todo, log
-             yield break;
+            _logger.LogError(e, "Could not get the configuration for repository {repository} {message}.", repository.Name, e.Message);
+            yield break;
         }
 
         using IDisposable d1 = RepoMVariableProviderStore.Push(variables ?? new List<EvaluatedVariable>(0));
@@ -354,7 +340,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
 
         foreach (TagsCollection tagsCollection in ((IEnumerable<TagsCollection>?)tags) ?? Array.Empty<TagsCollection>())
         {
-            using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(tagsCollection.Variables));
+            using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(tagsCollection.Variables, repository));
 
             foreach (RepositoryActionTag action in tagsCollection.Tags)
             {
@@ -369,6 +355,23 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
                 }
             }
         }
+    }
+
+    private List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars, IRepository repository)
+    {
+        if (vars == null)
+        {
+            return new List<EvaluatedVariable>(0);
+        }
+
+        return vars
+               .Where(v => IsEnabled(v.Enabled, true, repository))
+               .Select(v => new EvaluatedVariable
+                   {
+                       Name = v.Name,
+                       Value = Evaluate(v.Value, repository),
+                   })
+               .ToList();
     }
 
     private object? Evaluate(object? input, IRepository repository)

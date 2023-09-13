@@ -1,11 +1,11 @@
 repository-actions:
   actions:
   - type: command@1
-    name: '{OpenIn} Windows Terminal'
+    name: 'Open in Windows Terminal'
     command: wt
     arguments: -d "{Repository.SafePath}"
   - type: command@1
-    name: '{OpenIn} Windows Command Shell'
+    name: 'Open in Windows Command Shell'
     command: cmd
     arguments: /K "cd /d {Repository.SafePath}"
     active: false

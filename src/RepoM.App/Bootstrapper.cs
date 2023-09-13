@@ -181,7 +181,7 @@ internal static class Bootstrapper
         Container.Register<IRepositoryComparerFactory<SumComparerConfigurationV1>, SumRepositoryComparerFactory>(Lifestyle.Singleton);
 
         Container.RegisterSingleton<ActionExecutor>();
-        Container.Register(typeof(IActionExecutor<>), new[] { typeof(BrowseActionExecutor).Assembly, }, Lifestyle.Singleton);
+        Container.Register(typeof(IActionExecutor<>), new[] { typeof(DelegateActionExecutor).Assembly, }, Lifestyle.Singleton);
         Container.RegisterDecorator(
             typeof(IActionExecutor<>),
             typeof(LoggerActionExecutorDecorator<>),

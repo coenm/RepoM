@@ -10,7 +10,7 @@
         ],
         Arguments: -f "{Repository.Location}{backslash}{Repository.Name}",
         Type: executable@1,
-        Name: {OpenIn} Sourcetree,
+        Name: Open in Sourcetree,
         Active: true
       },
       {
@@ -19,7 +19,7 @@
           %PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe
         ],
         Type: executable@1,
-        Name: {OpenIn} Sourcetree 1
+        Name: Open in Sourcetree 1
       },
       {
         $type: RepositoryActionExecutableV1,
@@ -27,7 +27,7 @@
           %PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe
         ],
         Type: executable@1,
-        Name: {OpenIn} Sourcetree 1.1
+        Name: Open in Sourcetree 1.1
       },
       {
         $type: RepositoryActionExecutableV1,
@@ -36,7 +36,7 @@
           %PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe
         ],
         Type: executable@1,
-        Name: {OpenIn} Sourcetree 2
+        Name: Open in Sourcetree 2
       }
     ]
   }

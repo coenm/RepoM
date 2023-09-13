@@ -20,8 +20,7 @@ repository-actions:
     variable: environment
     skip: ''
     actions:
-    - type: browser@1
-      name: '{var.environment.key}'
-      url: '{var.environment.url}'
+    - type: just-text@1
+      name: '{var.environment.key} - {var.environment.url}'
 
 # end-snippet

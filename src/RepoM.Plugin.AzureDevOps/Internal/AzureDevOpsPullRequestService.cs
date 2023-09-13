@@ -88,7 +88,12 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
     public async Task CreatePullRequestWithAutoCompleteAsync(IRepository repository, string projectId, List<string> reviewersIds, string toBranch, int mergeStrategy, string? title = null, bool isDraft = false, bool includeWorkItems = true, bool openInBrowser = false, bool deleteSourceBranch = true, bool transitionWorkItems = true, CancellationToken cancellationToken = default)
     {
-        GitPullRequest pr = await CreatePullRequestInternalAsync(repository, projectId, reviewersIds, toBranch, title, isDraft, includeWorkItems, cancellationToken);
+        GitPullRequest? pr = await CreatePullRequestInternalAsync(repository, projectId, reviewersIds, toBranch, title, isDraft, includeWorkItems, cancellationToken);
+
+        if (pr == null)
+        {
+            return;
+        }
 
         Guid repoId = FindRepositoryGuid(repository);
 
@@ -117,7 +122,12 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
     public async Task CreatePullRequestAsync(IRepository repository, string projectId, List<string> reviewersIds, string toBranch, string? title = null, bool isDraft = false, bool includeWorkItems = true, bool openInBrowser = false, CancellationToken cancellationToken = default)
     {
-        GitPullRequest pr = await CreatePullRequestInternalAsync(repository, projectId, reviewersIds, toBranch, title, isDraft, includeWorkItems, cancellationToken);
+        GitPullRequest? pr = await CreatePullRequestInternalAsync(repository, projectId, reviewersIds, toBranch, title, isDraft, includeWorkItems, cancellationToken);
+
+        if (pr == null)
+        {
+            return;
+        }
 
         if (openInBrowser)
         {
@@ -125,7 +135,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         }
     }
 
-    private async Task<GitPullRequest> CreatePullRequestInternalAsync(IRepository repository, string projectId, List<string> reviewersIds, string toBranch, string? title = null, bool isDraft = false, bool includeWorkItems = true, CancellationToken cancellationToken = default)
+    private async Task<GitPullRequest?> CreatePullRequestInternalAsync(IRepository repository, string projectId, List<string> reviewersIds, string toBranch, string? title = null, bool isDraft = false, bool includeWorkItems = true, CancellationToken cancellationToken = default)
     {
         title ??= repository.CurrentBranch[(repository.CurrentBranch.IndexOf('/') + 1)..];
 
@@ -172,7 +182,14 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         _ = response.EnsureSuccessStatusCode();
         
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken) ?? throw new Exception("Invalid return type");
-        return JsonConvert.DeserializeObject<GitPullRequest>(responseContent);
+        GitPullRequest? result = JsonConvert.DeserializeObject<GitPullRequest>(responseContent);
+
+        if (result == null)
+        {
+            _logger.LogWarning($"Could not Deserialize as {nameof(GetPullRequests)}.");
+        }
+
+        return result;
     }
 
     public int CountPullRequests(IRepository repository)

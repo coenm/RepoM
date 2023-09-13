@@ -1,6 +1,7 @@
-namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
+namespace RepoM.Plugin.WebBrowser.ActionProvider;
 
 using System.ComponentModel.DataAnnotations;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
 /// Action opening a webbrowser with the provided url.
@@ -21,4 +22,12 @@ public sealed class RepositoryActionBrowserV1 : RepositoryAction
     [Required]
     [PropertyType(typeof(string))]
     public string? Url { get; set; }
+
+
+    /// <summary>
+    /// profile name used to select browser and browser profile
+    /// </summary>
+    [EvaluatedProperty]
+    [PropertyType(typeof(string))]
+    public string? Profile { get; set; }
 }
