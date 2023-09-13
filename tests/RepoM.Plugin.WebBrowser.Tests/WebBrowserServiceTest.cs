@@ -126,6 +126,54 @@ public class WebBrowserServiceTest
         // assert
         sut.StartProcessCalled.Should().BeEquivalentTo("msedge.exe - \"--profile 23 \" https://google.com");
     }
+
+    [Fact]
+    public void OpenUrl_WithProfile_ShouldStartProcessWithoutProfile_WhenProfileNotExists()
+    {
+        // arrange
+        var config = new WebBrowserConfiguration
+            {
+                Profiles = new()
+                    {
+                        { "Private", new BrowserProfileConfig { BrowserName = "Edge", CommandLineArguments = "\"--profile 23 \" {url}", } },
+                    },
+                Browsers = new()
+                    {
+                        { "Edge", "msedge.exe" },
+                    },
+            };
+        var sut = new DummyWebBrowserService(config);
+
+        // act
+        sut.OpenUrl("https://google.com", "Private-Not-Exists");
+
+        // assert
+        sut.StartProcessCalled.Should().BeEquivalentTo("https://google.com - ");
+    }
+
+    [Fact]
+    public void OpenUrl_WithProfile_ShouldStartProcessWithoutProfile_WhenBrowserNotExists()
+    {
+        // arrange
+        var config = new WebBrowserConfiguration
+            {
+                Profiles = new()
+                    {
+                        { "Private", new BrowserProfileConfig { BrowserName = "InvalidBrowser", CommandLineArguments = "\"--profile 23 \" {url}", } },
+                    },
+                Browsers = new()
+                    {
+                        { "Edge", "msedge.exe" },
+                    },
+            };
+        var sut = new DummyWebBrowserService(config);
+
+        // act
+        sut.OpenUrl("https://google.com", "Private");
+
+        // assert
+        sut.StartProcessCalled.Should().BeEquivalentTo("https://google.com - ");
+    }
 }
 
 file class DummyWebBrowserService : WebBrowserService
