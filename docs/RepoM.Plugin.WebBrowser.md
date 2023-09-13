@@ -72,12 +72,12 @@ repository-actions:
   - type: browser@1
     active: true 
     variables: []
-    name: 'My Github'
-    url: 'https://github.com/coenm'
+    name: My Github
+    url: https://github.com/coenm
 
   - type: browser@1
-    name: 'My Github'
-    url: 'https://github.com/coenm'
+    name: My Github
+    url: https://github.com/coenm
     profile: edge
 ```
 <sup><a href='/tests/RepoM.Plugin.WebBrowser.Tests/DocumentationFiles/Browser01.testfile.yaml#L3-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowser01' title='Start of snippet'>anchor</a></sup>
