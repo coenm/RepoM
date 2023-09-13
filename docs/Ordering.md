@@ -12,7 +12,7 @@ A [`comparer`](#comparers) compares two repositories resulting in an order betwe
 
 ## Comparers
 
-- [`az-comparer@1`](#az-comparer1) <!-- include: RepositoriesComparerConfigurationTests.CoreComparersMarkdown.verified.md -->
+- [`az-comparer@1`](#az-comparer1)<!-- include: RepositoriesComparerConfigurationTests.CoreComparersMarkdown.verified.md -->
 - [`composition-comparer@1`](#composition-comparer1)
 - [`score-comparer@1`](#score-comparer1)
 - [`sum-comparer@1`](#sum-comparer1)
@@ -22,49 +22,49 @@ These comparers are available by using the corresponding plugin.
 
 ### `az-comparer@1`
 
-Compares two repositories by a given property alphabetically in ascending order. <!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_AlphabetComparerConfigurationV1.verified.md -->
+Compares two repositories by a given property alphabetically in ascending order.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_AlphabetComparerConfigurationV1.verified.md -->
 
 Properties:
 
 - `property`: Repository property. Currently, only `Name`, and `Location` are supported. Otherwise, comparison will always result in `0`. (optional)
-- `weight`: The weight of this comparer. The higher the weight, the higher the impact. <!-- endInclude -->
+- `weight`: The weight of this comparer. The higher the weight, the higher the impact.<!-- endInclude -->
 
 ### `composition-comparer@1`
 
-Compares two repositories by a composition of comparers. <!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_CompositionComparerConfigurationV1.verified.md -->
+Compares two repositories by a composition of comparers.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_CompositionComparerConfigurationV1.verified.md -->
 
 Properties:
 
-- `comparers`: List of comparers. The first comparer not resulting in `0` will be used as final result. <!-- endInclude -->
+- `comparers`: List of comparers. The first comparer not resulting in `0` will be used as final result.<!-- endInclude -->
 
 ### `score-comparer@1`
 
-Compares two repositories by a repository score. The calculation of the repository score is defined in the score provider. <!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_ScoreComparerConfigurationV1.verified.md -->
+Compares two repositories by a repository score. The calculation of the repository score is defined in the score provider.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_ScoreComparerConfigurationV1.verified.md -->
 
 Properties:
 
-- `score-provider`: The score provider to calculate a score for a repository. (optional) <!-- endInclude -->
+- `score-provider`: The score provider to calculate a score for a repository. (optional)<!-- endInclude -->
 
 ### `sum-comparer@1`
 
-Compares two repositories by the sum of the results of the comparers. <!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_SumComparerConfigurationV1.verified.md -->
+Compares two repositories by the sum of the results of the comparers.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_SumComparerConfigurationV1.verified.md -->
 
 Properties:
 
-- `comparers`: A list of comparers. The sum of the results of the comparers will be used as final result. <!-- endInclude -->
+- `comparers`: A list of comparers. The sum of the results of the comparers will be used as final result.<!-- endInclude -->
 
 ### `last-opened-comparer@1`
 
-Compares two repositories by the timestamp of the last action RepoM performed on the repository. <!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_LastOpenedConfigurationV1.verified.md -->
+Compares two repositories by the timestamp of the last action RepoM performed on the repository.<!-- include: RepositoriesComparerConfigurationTests.DocsRepositoriesComparerConfiguration_LastOpenedConfigurationV1.verified.md -->
 
 Properties:
 
-- `weight`: The weight of this comparer. The higher the weight, the higher the impact. <!-- endInclude -->
- <!-- endInclude -->
+- `weight`: The weight of this comparer. The higher the weight, the higher the impact.<!-- endInclude -->
+<!-- endInclude -->
 
 ## Scorers
 
-- [`is-pinned-scorer@1`](#is-pinned-scorer1) <!-- include: RepositoriesScorerConfigurationTests.CoreScorersMarkdown.verified.md -->
+- [`is-pinned-scorer@1`](#is-pinned-scorer1)<!-- include: RepositoriesScorerConfigurationTests.CoreScorersMarkdown.verified.md -->
 - [`tag-scorer@1`](#tag-scorer1)
 
 These scorers are available by using the corresponding plugin.
@@ -72,27 +72,27 @@ These scorers are available by using the corresponding plugin.
 
 ### `is-pinned-scorer@1`
 
-Repository scorer based on the pinned state of a repository. <!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_IsPinnedScorerConfigurationV1.verified.md -->
+Repository scorer based on the pinned state of a repository.<!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_IsPinnedScorerConfigurationV1.verified.md -->
 
 Properties:
 
-- `weight`: The weight of this scorer. The higher the weight, the higher the impact. <!-- endInclude -->
+- `weight`: The weight of this scorer. The higher the weight, the higher the impact.<!-- endInclude -->
 
 ### `tag-scorer@1`
 
-Repository scorer based on the tags of a repository. <!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_TagScorerConfigurationV1.verified.md -->
+Repository scorer based on the tags of a repository.<!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_TagScorerConfigurationV1.verified.md -->
 
 Properties:
 
 - `weight`: The weight of this scorer. The higher the weight, the higher the impact.
-- `tag`: The tag to match on. If the repository has this tag, the score will return the weight, otherwise, `0`. (optional) <!-- endInclude -->
+- `tag`: The tag to match on. If the repository has this tag, the score will return the weight, otherwise, `0`. (optional)<!-- endInclude -->
 
 ### `usage-scorer@1`
 
-Repository scorer based on it's usage by RepoM. The more it's used, the higher the score. <!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_UsageScorerConfigurationV1.verified.md -->
+Repository scorer based on it's usage by RepoM. The more it's used, the higher the score.<!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_UsageScorerConfigurationV1.verified.md -->
 
 Properties:
 
 - `windows`: Specific 'windows' to calculate the score for. 
-- `max-score`: The maximum score a repository can get. <!-- endInclude -->
- <!-- endInclude -->
+- `max-score`: The maximum score a repository can get.<!-- endInclude -->
+<!-- endInclude -->
