@@ -1,8 +1,9 @@
 repository-actions:
-- type: browser@1
-  name: Google 1
-  url: https://google.com
+- type: just-text@1
+  name: 'Open in Windows File Explorer'
+  active: true
+
 - type: separator@1
-- type: browser@1
-  name: Google 2
-  url: https://google.com
+
+- type: just-text@1
+  name: 'Open in Windows File Explorer 2'

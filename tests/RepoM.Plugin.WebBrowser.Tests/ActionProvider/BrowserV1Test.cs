@@ -1,12 +1,15 @@
-namespace RepoM.Api.Tests.IO.ModuleBasedRepositoryActionProvider.Action;
+namespace RepoM.Plugin.WebBrowser.Tests.ActionProvider;
 
+using System;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
 using FluentAssertions;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+using RepoM.Plugin.WebBrowser.ActionProvider;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -21,7 +24,8 @@ public class BrowserV1Test
 
     public BrowserV1Test()
     {
-        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new DefaultActionDeserializer<RepositoryActionBrowserV1>());
+        var actionDeserializerComposition = new ActionDeserializerComposition(new[] { new DefaultActionDeserializer<RepositoryActionBrowserV1>(), }, Array.Empty<IKeyTypeRegistration<RepositoryAction>>());
+        _sut = new YamlDynamicRepositoryActionDeserializer(actionDeserializerComposition);
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

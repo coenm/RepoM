@@ -9,7 +9,6 @@ public static class ProcessHelper
     {
         try
         {
-            Debug.WriteLine("Starting: " + process + arguments);
             Process.Start(process, arguments);
             return;
         }

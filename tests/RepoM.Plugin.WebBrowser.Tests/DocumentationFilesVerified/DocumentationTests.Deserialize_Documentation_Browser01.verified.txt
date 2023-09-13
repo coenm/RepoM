@@ -12,6 +12,7 @@
       {
         $type: RepositoryActionBrowserV1,
         Url: https://github.com/coenm,
+        Profile: edge,
         Type: browser@1,
         Name: My Github
       }

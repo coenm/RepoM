@@ -91,34 +91,6 @@ repository-actions:
 <sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/BrowseRepository01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowserepository01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-## browser@1
-
-Action opening a webbrowser with the provided url.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionBrowserV1.verified.md -->
-
-Action specific properties:
-
-- `url`: The url to browse to. (required, evaluated, string)<!-- endInclude -->
-
-Example:
-
-<!-- snippet: RepositoryActionsBrowser01 -->
-<a id='snippet-repositoryactionsbrowser01'></a>
-```yaml
-repository-actions:
-  actions:
-  - type: browser@1
-    active: true 
-    variables: []
-    name: 'My Github'
-    url: 'https://github.com/coenm'
-
-  - type: browser@1
-    name: 'My Github'
-    url: 'https://github.com/coenm'
-```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Browser01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowser01' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
 ## command@1
 
 Action to excute a command (related the the repository)<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionCommandV1.verified.md -->
@@ -276,11 +248,10 @@ repository-actions:
     variable: environment
     skip: ''
     actions:
-    - type: browser@1
-      name: '{var.environment.key}'
-      url: '{var.environment.url}'
+    - type: just-text@1
+      name: '{var.environment.key} - {var.environment.url}'
 ```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Foreach01.testfile.yaml#L3-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsforeach01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Foreach01.testfile.yaml#L3-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsforeach01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## git-checkout@1
@@ -651,6 +622,10 @@ repository-actions:
 <!-- endInclude -->
 
 See the [Heidi](RepoM.Plugin.Heidi.md) plugin for more information.
+
+include _plugins.webbrowser.action
+
+See the [WebBrowser](RepoM.Plugin.WebBrowser.md) plugin for more information.
 
 # Repository Actions
 

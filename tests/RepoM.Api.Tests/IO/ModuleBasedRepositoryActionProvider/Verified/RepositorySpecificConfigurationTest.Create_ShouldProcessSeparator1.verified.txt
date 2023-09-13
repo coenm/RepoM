@@ -1,14 +1,9 @@
 ﻿[
   {
     $type: RepositoryAction,
-    Name: Google 1,
+    Name: Open in Windows File Explorer,
     Action: {
-      $type: DelegateAction,
-      Action: {
-        Type: Action<object, object>,
-        Target: ActionBrowserV1Mapper.<>c__DisplayClass4_0,
-        Method: Void Map(System.Object, System.Object)
-      }
+      $type: NullAction
     },
     ExecutionCausesSynchronizing: false,
     CanExecute: true
@@ -23,14 +18,9 @@
   },
   {
     $type: RepositoryAction,
-    Name: Google 2,
+    Name: Open in Windows File Explorer 2,
     Action: {
-      $type: DelegateAction,
-      Action: {
-        Type: Action<object, object>,
-        Target: ActionBrowserV1Mapper.<>c__DisplayClass4_0,
-        Method: Void Map(System.Object, System.Object)
-      }
+      $type: NullAction
     },
     ExecutionCausesSynchronizing: false,
     CanExecute: true

@@ -15,6 +15,5 @@ repository-actions:
     enumerable: '{var.DTAP}'
     variable: environment
     actions:
-    - type: browser@1
-      name: '{var.environment.key}'
-      url: '{var.environment.url}'
+    - type: just-text@1
+      name: '{var.key} - {var.environment.url}'

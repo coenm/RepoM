@@ -1,21 +1,21 @@
 repository-actions:
   actions:
   - type: executable@1
-    name: '{OpenIn} Sourcetree'
+    name: 'Open in Sourcetree'
     executables:
     - '%LocalAppData%/SourceTree/SourceTree.exe'
     - '%PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe'
     arguments: -f "{Repository.Location}{backslash}{Repository.Name}"
     active: true
   - type: executable@1
-    name: '{OpenIn} Sourcetree 1'
+    name: 'Open in Sourcetree 1'
     executable: '%PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe'
   - type: executable@1
-    name: '{OpenIn} Sourcetree 1.1'
+    name: 'Open in Sourcetree 1.1'
     executables: []
     executable: '%PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe'
   - type: executable@1
-    name: '{OpenIn} Sourcetree 2'
+    name: 'Open in Sourcetree 2'
     executables:
     - '%LocalAppData%/SourceTree/SourceTree.exe'
     - '%PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe'

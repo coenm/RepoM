@@ -30,14 +30,6 @@ Example:
 
 snippet: RepositoryActionsBrowseRepository01
 
-## browser@1
-
-include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionBrowserV1.verified.md
-
-Example:
-
-snippet: RepositoryActionsBrowser01
-
 ## command@1
 
 include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionCommandV1.verified.md
@@ -149,6 +141,10 @@ See the [AzureDevOps](RepoM.Plugin.AzureDevOps.md) plugin for more information.
 include: _plugins.heidi.action
 
 See the [Heidi](RepoM.Plugin.Heidi.md) plugin for more information.
+
+include _plugins.webbrowser.action
+
+See the [WebBrowser](RepoM.Plugin.WebBrowser.md) plugin for more information.
 
 # Repository Actions
 
