@@ -7,6 +7,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
@@ -29,6 +30,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly Dictionary<string, IRepositoryObserver> _repositoryObservers;
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
     private readonly IAutoFetchHandler _autoFetchHandler;
 
     private readonly ConcurrentDictionary<string, bool> _pinned = new();
@@ -43,7 +45,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         IRepositoryInformationAggregator repositoryInformationAggregator,
         IAutoFetchHandler autoFetchHandler,
         IRepositoryIgnoreStore repositoryIgnoreStore,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        ILogger logger)
     {
         _repositoryReader = repositoryReader ?? throw new ArgumentNullException(nameof(repositoryReader));
         _repositoryDetectorFactory = repositoryDetectorFactory ?? throw new ArgumentNullException(nameof(repositoryDetectorFactory));
@@ -55,12 +58,14 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
         _repositoryIgnoreStore = repositoryIgnoreStore;
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _autoFetchHandler = autoFetchHandler ?? throw new ArgumentNullException(nameof(autoFetchHandler));
         _storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
     }
 
     public Task ScanForLocalRepositoriesAsync()
     {
+        _logger.LogDebug("{method} - repo scanning", nameof(ScanForLocalRepositoriesAsync));
         Scanning = true;
         OnScanStateChanged?.Invoke(this, Scanning);
 
@@ -89,6 +94,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             {
                 foreach (var head in _repositoryStore.Get())
                 {
+                    _logger.LogDebug("{method} - repo {head}", nameof(ScanRepositoriesFromStoreAsync), head);
                     OnCheckKnownRepository(head, KnownRepositoryNotifications.WhenFound);
                 }
             });
@@ -102,6 +108,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private void OnFoundNewRepository(string file)
     {
+        _logger.LogDebug("{method} - repo {file}", nameof(OnFoundNewRepository), file);
+
         Repository? repo = _repositoryReader.ReadRepository(file);
         if (repo?.WasFound ?? false)
         {
@@ -152,9 +160,6 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
     {
         if (_detectors == null)
         {
-            // see https://answers.unity.com/questions/959106/how-to-monitor-file-system-in-mac.html
-            Environment.SetEnvironmentVariable("MONO_MANAGED_WATCHER", "enabled");
-
             ScanRepositoriesFromStoreAsync();
 
             ObserveRepositoryChanges();
@@ -238,6 +243,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             return;
         }
 
+        _logger.LogDebug("{method} - repo {head}", nameof(OnRepositoryChangeDetected), repo.Path);
+
         if (_repositoryIgnoreStore.IsIgnored(repo.Path))
         {
             return;
@@ -279,6 +286,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         {
             return;
         }
+
+        _logger.LogDebug("{method} - repo {head}", nameof(OnRepositoryDeletionDetected), repoPath);
 
         if (_repositoryIgnoreStore.IsIgnored(repoPath))
         {

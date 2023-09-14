@@ -48,15 +48,16 @@ public class DefaultRepositoryMonitorTests
         _monitor = new DefaultRepositoryMonitor(
             new GivenPathProvider(new [] { repoPath, }),
             defaultRepositoryReader,
-            new DefaultRepositoryDetectorFactory(defaultRepositoryReader),
+            new DefaultRepositoryDetectorFactory(defaultRepositoryReader, NullLoggerFactory.Instance),
             new DefaultRepositoryObserverFactory(),
-            new GitRepositoryFinderFactory(appSettingsService, new List<ISingleGitRepositoryFinderFactory>() { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem), }),
+            new GitRepositoryFinderFactory(appSettingsService, new List<ISingleGitRepositoryFinderFactory> { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem), }),
             new UselessRepositoryStore(),
             new DefaultRepositoryInformationAggregator(
                 new DirectThreadDispatcher()),
             A.Dummy<IAutoFetchHandler>(),
             A.Dummy<IRepositoryIgnoreStore>(),
-            _fileSystem)
+            _fileSystem,
+            NullLogger.Instance)
             {
                 DelayGitRepositoryStatusAfterCreationMilliseconds = 100,
                 DelayGitStatusAfterFileOperationMilliseconds = 100,
