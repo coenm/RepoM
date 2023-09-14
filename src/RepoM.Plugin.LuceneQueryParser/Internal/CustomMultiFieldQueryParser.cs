@@ -72,21 +72,20 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
         }
 
         WrappedBooleanClause clause;
-        if (required && !prohibited)
+        if (!prohibited)
         {
             clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST);
-        }
-        else if (!required && !prohibited)
-        {
-            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST);
-        }
-        else if (!required && prohibited)
-        {
-            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST_NOT);
         }
         else
         {
-            throw new Exception();
+            if (!required)
+            {
+                clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST_NOT);
+            }
+            else
+            {
+                throw new Exception();
+            }
         }
 
         if (!clauses.Any())
