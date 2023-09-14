@@ -1,6 +1,5 @@
 namespace RepoM.Plugin.LuceneQueryParser.Internal;
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -47,7 +46,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
     
     protected override void AddClause(IList<BooleanClause> clauses, int conj, int mods, Query q)
     {
-        bool required, prohibited;
+        bool prohibited;
 
         // We might have been passed a null query; the term might have been
         // filtered away by the analyzer.
@@ -61,31 +60,22 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
             // We set REQUIRED if we're introduced by AND or +; PROHIBITED if
             // introduced by NOT or -; make sure not to set both.
             prohibited = mods == MOD_NOT;
-            required = mods == MOD_REQ || (conj == CONJ_AND && !prohibited);
         }
         else
         {
             // We set PROHIBITED if we're introduced by NOT or -; We set REQUIRED
             // if not PROHIBITED and not introduced by OR
             prohibited = mods == MOD_NOT;
-            required = !prohibited && conj != CONJ_OR;
         }
 
         WrappedBooleanClause clause;
-        if (!prohibited)
+        if (prohibited)
         {
-            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST);
+            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST_NOT);
         }
         else
         {
-            if (!required)
-            {
-                clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST_NOT);
-            }
-            else
-            {
-                throw new Exception();
-            }
+            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST);
         }
 
         if (!clauses.Any())
