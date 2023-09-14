@@ -72,7 +72,7 @@ internal class WindowFinder
     {
         IntPtr handle = FindActiveWindow();
 
-        GetWindowThreadProcessId(handle, out var procId);
+        _ = GetWindowThreadProcessId(handle, out var procId);
 
         var proc = Process.GetProcessById((int)procId);
         var processName = proc?.ProcessName;
