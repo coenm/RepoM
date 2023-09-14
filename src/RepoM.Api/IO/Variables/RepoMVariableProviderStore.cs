@@ -7,7 +7,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 public static class RepoMVariableProviderStore
 {
-    public static readonly AsyncLocal<Scope?> VariableScope = new();
+    public static readonly ThreadLocal<Scope?> VariableScope = new();
 
     public static IDisposable Push(List<EvaluatedVariable> vars)
     {

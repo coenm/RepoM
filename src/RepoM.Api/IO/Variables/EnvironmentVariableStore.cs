@@ -7,8 +7,8 @@ using RepoM.Core.Plugin.Repository;
 
 public static class EnvironmentVariableStore
 {
-    private static readonly AsyncLocal<Dictionary<string, string>> _envVars = new();
-
+    private static readonly ThreadLocal<Dictionary<string, string>> _envVars = new();
+    
     public static IDisposable Set(Dictionary<string, string>? envVars)
     {
         if (envVars == null)
