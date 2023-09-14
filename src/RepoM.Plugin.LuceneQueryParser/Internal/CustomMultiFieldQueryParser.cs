@@ -61,11 +61,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
             // We set REQUIRED if we're introduced by AND or +; PROHIBITED if
             // introduced by NOT or -; make sure not to set both.
             prohibited = mods == MOD_NOT;
-            required = mods == MOD_REQ;
-            if (conj == CONJ_AND && !prohibited)
-            {
-                required = true;
-            }
+            required = mods == MOD_REQ || (conj == CONJ_AND && !prohibited);
         }
         else
         {
@@ -149,11 +145,8 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
 
         BooleanClause result = base.NewBooleanClause(q, occur);
 
-        if (occur == Occur.MUST_NOT)
-        {
-            return new NotBooleanClause(result);
-        }
-
-        return new WrappedBooleanClause(result);
+        return occur == Occur.MUST_NOT
+            ? new NotBooleanClause(result)
+            : new WrappedBooleanClause(result);
     }
 }

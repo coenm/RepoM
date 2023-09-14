@@ -13,10 +13,7 @@ using System.Runtime.InteropServices;
 ///   - Use this class within a using block only! Otherwise COM objects might not be released as planned.
 ///   - Using this class will be slower than accessing COM properties and methods via dynamic objects. Decide for yourself: Performance vs. memory.
 /// </summary>
-/// <remarks>
-/// This class is not related to any cities or universities located in the UK.
-/// </remarks>
-internal class ComBridge : IDisposable
+internal sealed class ComBridge : IDisposable
 {
     private readonly Lazy<Type> _comType;
 

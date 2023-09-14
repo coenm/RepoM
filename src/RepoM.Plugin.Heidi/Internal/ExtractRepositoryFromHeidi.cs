@@ -141,12 +141,9 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
             stop = true;
         }
 
-        if (k > 0 && int.TryParse(comment[..k], out var orderInt))
+        if (k > 0 && int.TryParse(comment[..k], out var orderInt) && (k == comment.Length || comment[k] == ' '))
         {
-            if (k == comment.Length || comment[k] == ' ')
-            {
-                orders.Add(orderInt);
-            }
+            orders.Add(orderInt);
         }
 
         comment = comment[k..];
