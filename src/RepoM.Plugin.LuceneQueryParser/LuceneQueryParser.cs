@@ -45,7 +45,7 @@ public class LuceneQueryParser : INamedQueryParser
         }
         catch (ParseException e)
         {
-            _logger.LogDebug(e, "Parse exception '{text}' could not be parsed {message}", text, e.Message);
+            _logger.LogDebug(e, "Parse exception '{text}' could not be parsed", text);
             throw;
         }
         catch (Exception e)
@@ -68,16 +68,16 @@ public class LuceneQueryParser : INamedQueryParser
             return new NotQuery(ConvertQueryToClause(nbc.Query));
         }
 
-        if (input is SetBooleanClause x)
+        if (input is SetBooleanClause setBooleanClause)
         {
-            if (x.Items.Count == 1)
+            if (setBooleanClause.Items.Count == 1)
             {
-                return ConvertWrappedBooleanClause(x.Items.Single());
+                return ConvertWrappedBooleanClause(setBooleanClause.Items.Single());
             }
 
-            IQuery[] array = x.Items.Select(ConvertWrappedBooleanClause).ToArray();
+            IQuery[] array = setBooleanClause.Items.Select(ConvertWrappedBooleanClause).ToArray();
 
-            return x.Mode == SetBooleanClause.BoolMode.And
+            return setBooleanClause.Mode == SetBooleanClause.BoolMode.And
                 ? new AndQuery(array)
                 : new OrQuery(array);
         }
