@@ -11,6 +11,7 @@ using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 public sealed class DefaultRepositoryObserver : IRepositoryObserver
 {
     private readonly ILogger _logger;
+    private int _detectionToAlertDelayMilliseconds;
     private Repository? _repository;
     private FileSystemWatcher? _watcher;
     private bool _ioDetected;
@@ -22,27 +23,25 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
-
-    public int DetectionToAlertDelayMilliseconds { get; private set; }
     
     public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
     {
-        DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
+        _detectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
         _repository = repository;
         try
         {
             _gitRepo = new LibGit2Sharp.Repository(repository.Path);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             _logger.LogWarning("Could not create LibGit2Sharp Repository from path {path}", repository.Path);
         }
 
         _watcher = new FileSystemWatcher(_repository.Path);
-        _watcher.Created += WatcherCreated;
-        _watcher.Changed += WatcherChanged;
-        _watcher.Deleted += WatcherDeleted;
+        _watcher.Created += WatcherChangedCreatedOrDeleted;
+        _watcher.Changed += WatcherChangedCreatedOrDeleted;
+        _watcher.Deleted += WatcherChangedCreatedOrDeleted;
         _watcher.Renamed += WatcherRenamed;
         _watcher.IncludeSubdirectories = true;
     }
@@ -61,16 +60,6 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         {
             _watcher.EnableRaisingEvents = false;
         }
-    }
-
-    private void WatcherDeleted(object sender, FileSystemEventArgs e)
-    {
-        if (IsIgnored(e))
-        {
-            return;
-        }
-        LogTrace(e);
-        PauseWatcherAndScheduleCallback();
     }
 
     private bool IsIgnored(FileSystemEventArgs fileSystemEventArgs)
@@ -95,7 +84,19 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
 
             name = name.Replace('\\', '/');
 
-            return _gitRepo.Ignore.IsPathIgnored(name);
+            if (_gitRepo.Ignore.IsPathIgnored(name))
+            {
+                return true;
+            }
+
+            // handle directories, it makes no sense to check if directory exists because it might have been deleted.
+            if (_gitRepo.Ignore.IsPathIgnored($"{name}/"))
+            {
+                return true;
+            }
+
+            return false;
+
         }
         catch (Exception e)
         {
@@ -122,17 +123,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         PauseWatcherAndScheduleCallback();
     }
 
-    private void WatcherChanged(object sender, FileSystemEventArgs e)
-    {
-        if (IsIgnored(e))
-        {
-            return;
-        }
-        LogTrace(e);
-        PauseWatcherAndScheduleCallback();
-    }
-
-    private void WatcherCreated(object sender, FileSystemEventArgs e)
+    private void WatcherChangedCreatedOrDeleted(object sender, FileSystemEventArgs e)
     {
         if (IsIgnored(e))
         {
@@ -156,11 +147,11 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
 
         // ... and schedule a method to reactivate the watchers again
         // if nothing happened in between (regarding IO) it should also fire the OnChange-event
-        Task.Run(() => Thread.Sleep(DetectionToAlertDelayMilliseconds))
-            .ContinueWith(AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected);
+        Task.Run(() => Thread.Sleep(_detectionToAlertDelayMilliseconds))
+            .ContinueWith(AwakeWatcherAndScheduleEventInvocationIfNoFurtherIoGetsDetected);
     }
 
-    private void AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected(object state)
+    private void AwakeWatcherAndScheduleEventInvocationIfNoFurtherIoGetsDetected(object state)
     {
         if (!_ioDetected)
         {
@@ -172,7 +163,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         Start();
 
         // ... and if nothing happened during the delay, invoke the OnChange-event
-        Task.Run(() => Thread.Sleep(DetectionToAlertDelayMilliseconds))
+        Task.Run(() => Thread.Sleep(_detectionToAlertDelayMilliseconds))
             .ContinueWith(t =>
                 {
                     if (_ioDetected)
@@ -195,15 +186,15 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
     {
         if (_watcher != null)
         {
-            _watcher.Created -= WatcherCreated;
-            _watcher.Changed -= WatcherChanged;
-            _watcher.Deleted -= WatcherDeleted;
+            _watcher.Created -= WatcherChangedCreatedOrDeleted;
+            _watcher.Changed -= WatcherChangedCreatedOrDeleted;
+            _watcher.Deleted -= WatcherChangedCreatedOrDeleted;
             _watcher.Renamed -= WatcherRenamed;
             _watcher.Dispose();
             _watcher = null;
         }
 
-        var gr = _gitRepo;
+        LibGit2Sharp.Repository? gr = _gitRepo;
         _gitRepo = null;
         gr?.Dispose();
         
