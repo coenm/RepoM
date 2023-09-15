@@ -119,6 +119,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private void OnCheckKnownRepository(string file, KnownRepositoryNotifications notification)
     {
+        _logger.LogDebug("{method} - start {head}", nameof(OnCheckKnownRepository), file);
+
         Repository? repo = _repositoryReader.ReadRepository(file);
         if (repo?.WasFound ?? false)
         {
@@ -232,6 +234,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         }
 
         _repositoryObservers[path].Start();
+        _logger.LogDebug("{method} - repo {repo}, path: {path} (total length: {repositoryObserversLength})", nameof(CreateRepositoryObserver), repo.Name, path, _repositoryObservers.Count);
     }
 
     private void OnRepositoryChangeDetected(Repository repo)
@@ -243,15 +246,16 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             return;
         }
 
-        _logger.LogDebug("{method} - repo {head}", nameof(OnRepositoryChangeDetected), repo.Path);
-
         if (_repositoryIgnoreStore.IsIgnored(repo.Path))
         {
             return;
         }
 
+        _logger.LogDebug("{method} - repo {head}", nameof(OnRepositoryChangeDetected), repo.Path);
+
         if (!_repositoryInformationAggregator.HasRepository(path))
         {
+            _logger.LogDebug("{method} - create observer {head}", nameof(OnRepositoryChangeDetected), repo.Path);
             CreateRepositoryObserver(repo, path);
 
             // use that delay to prevent a lot of sequential writes 
@@ -266,6 +270,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private void OnRepositoryObserverChange(Repository repository)
     {
+        _logger.LogDebug("{method} - repo {path}", nameof(OnRepositoryObserverChange), repository.Path);
         OnCheckKnownRepository(repository.Path, KnownRepositoryNotifications.WhenFound | KnownRepositoryNotifications.WhenNotFound);
     }
 

@@ -49,7 +49,7 @@ public class DefaultRepositoryMonitorTests
             new GivenPathProvider(new [] { repoPath, }),
             defaultRepositoryReader,
             new DefaultRepositoryDetectorFactory(defaultRepositoryReader, NullLoggerFactory.Instance),
-            new DefaultRepositoryObserverFactory(),
+            new DefaultRepositoryObserverFactory(NullLoggerFactory.Instance),
             new GitRepositoryFinderFactory(appSettingsService, new List<ISingleGitRepositoryFinderFactory> { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem), }),
             new UselessRepositoryStore(),
             new DefaultRepositoryInformationAggregator(

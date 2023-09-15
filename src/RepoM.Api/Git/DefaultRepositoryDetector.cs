@@ -25,6 +25,8 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 
     public void Setup(string path, int detectionToAlertDelayMilliseconds)
     {
+        _logger.LogDebug("DefaultRepositoryDetector {method} - start {head} (delay: {delay})", nameof(Setup), path, detectionToAlertDelayMilliseconds);
+
         DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
         _watcher = new FileSystemWatcher(path);

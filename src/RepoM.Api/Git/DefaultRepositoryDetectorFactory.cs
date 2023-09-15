@@ -16,6 +16,7 @@ public class DefaultRepositoryDetectorFactory : IRepositoryDetectorFactory
 
     public IRepositoryDetector Create()
     {
-        return new DefaultRepositoryDetector(_repositoryReader, _factory.CreateLogger<DefaultRepositoryDetector>());
+        ILogger<DefaultRepositoryDetector> logger = _factory.CreateLogger<DefaultRepositoryDetector>();
+        return new DefaultRepositoryDetector(_repositoryReader, logger);
     }
 }

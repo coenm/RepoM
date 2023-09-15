@@ -11,6 +11,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Actions;
 using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
@@ -40,7 +41,7 @@ internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryAct
         return Map(action as RepositoryActionAzureDevOpsGetPullRequestsV1, repository);
     }
 
-    private Api.RepositoryActions.RepositoryAction[] Map(RepositoryActionAzureDevOpsGetPullRequestsV1? action, Repository repository)
+    private Api.RepositoryActions.RepositoryAction[] Map(RepositoryActionAzureDevOpsGetPullRequestsV1? action, IRepository repository)
     {
         if (action == null)
         {
