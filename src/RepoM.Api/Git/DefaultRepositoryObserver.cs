@@ -81,26 +81,27 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
 
     private bool IsIgnored(FileSystemEventArgs fileSystemEventArgs)
     {
+        if (_gitRepo == null)
+        {
+            return false;
+        }
+
+        string? name = fileSystemEventArgs.Name;
+        if (string.IsNullOrEmpty(name))
+        {
+            return false;
+        }
+
+        if (name.StartsWith(".git", StringComparison.InvariantCulture))
+        {
+            return false;
+        }
+
+        name = name.Replace('\\', '/');
+
         try
         {
-            if (_gitRepo == null)
-            {
-                return false;
-            }
-
-            string? name = fileSystemEventArgs.Name;
-            if (string.IsNullOrEmpty(name))
-            {
-                return false;
-            }
-
-            if (name.StartsWith(".git", StringComparison.InvariantCulture))
-            {
-                return false;
-            }
-
-            name = name.Replace('\\', '/');
-
+            // when it is a file, check if it is ignored
             if (_gitRepo.Ignore.IsPathIgnored(name))
             {
                 return true;
@@ -111,15 +112,14 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
             {
                 return true;
             }
-
-            return false;
-
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Could not determine ignored. {message}", e.Message);
-            return false;
         }
+
+
+        return false;
     }
 
     private void LogTrace(FileSystemEventArgs fileSystemEventArgs, [CallerMemberName] string caller = "")
