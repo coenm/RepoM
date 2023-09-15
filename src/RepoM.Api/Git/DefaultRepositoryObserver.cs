@@ -92,25 +92,44 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
             return false;
         }
 
+        if (name.Equals(".git\\index.lock", StringComparison.InvariantCulture))
+        {
+            return true;
+        }
+
         if (name.StartsWith(".git", StringComparison.InvariantCulture))
         {
             return false;
         }
-
+        
         name = name.Replace('\\', '/');
 
         try
         {
+            if (_gitRepo.Ignore.IsPathIgnored($"{name}/"))
+            {
+                return true;
+            }
+
             // when it is a file, check if it is ignored
             if (_gitRepo.Ignore.IsPathIgnored(name))
             {
                 return true;
             }
 
-            // handle directories, it makes no sense to check if directory exists because it might have been deleted.
-            if (_gitRepo.Ignore.IsPathIgnored($"{name}/"))
+            if (fileSystemEventArgs.ChangeType == WatcherChangeTypes.Changed)
             {
-                return true;
+                try
+                {
+                    if (Directory.Exists(fileSystemEventArgs.FullPath))
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning("Directory exists failed {dir} {msg}", fileSystemEventArgs.FullPath, e.Message);
+                }
             }
         }
         catch (Exception e)
