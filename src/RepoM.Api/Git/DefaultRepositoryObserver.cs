@@ -177,7 +177,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
                         return;
                     }
 
-                    _logger.LogDebug($"ONCHANGE on {repo.Name}");
+                    _logger.LogDebug("ONCHANGE on {repo}", repo.Name);
                     OnChange?.Invoke(repo);
                 });
     }
