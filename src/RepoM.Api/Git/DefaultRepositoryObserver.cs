@@ -30,7 +30,14 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
         _repository = repository;
-        _gitRepo = new LibGit2Sharp.Repository(repository.Path);
+        try
+        {
+            _gitRepo = new LibGit2Sharp.Repository(repository.Path);
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning("Could not create LibGit2Sharp Repository from path {path}", repository.Path);
+        }
 
         _watcher = new FileSystemWatcher(_repository.Path);
         _watcher.Created += WatcherCreated;
@@ -81,22 +88,14 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
                 return false;
             }
 
-            name = name.Replace('\\', '/');
-
-            bool? result = _gitRepo?.Ignore.IsPathIgnored(name) ?? null;
-
-            if (result == null)
+            if (name.StartsWith(".git", StringComparison.InvariantCulture))
             {
                 return false;
             }
 
-            if (result.Value)
-            {
-                return true;
-            }
+            name = name.Replace('\\', '/');
 
-            return false;
-
+            return _gitRepo.Ignore.IsPathIgnored(name);
         }
         catch (Exception e)
         {
