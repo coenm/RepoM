@@ -62,6 +62,23 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         }
     }
 
+    public void Dispose()
+    {
+        if (_watcher != null)
+        {
+            _watcher.Created -= WatcherChangedCreatedOrDeleted;
+            _watcher.Changed -= WatcherChangedCreatedOrDeleted;
+            _watcher.Deleted -= WatcherChangedCreatedOrDeleted;
+            _watcher.Renamed -= WatcherRenamed;
+            _watcher.Dispose();
+            _watcher = null;
+        }
+
+        LibGit2Sharp.Repository? gr = _gitRepo;
+        _gitRepo = null;
+        gr?.Dispose();
+    }
+
     private bool IsIgnored(FileSystemEventArgs fileSystemEventArgs)
     {
         try
@@ -164,7 +181,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
 
         // ... and if nothing happened during the delay, invoke the OnChange-event
         Task.Run(() => Thread.Sleep(_detectionToAlertDelayMilliseconds))
-            .ContinueWith(t =>
+            .ContinueWith(_ =>
                 {
                     if (_ioDetected)
                     {
@@ -178,25 +195,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
                     }
 
                     _logger.LogDebug("ONCHANGE on {repo}", repo.Name);
-                    OnChange?.Invoke(repo);
+                    OnChange.Invoke(repo);
                 });
-    }
-
-    public void Dispose()
-    {
-        if (_watcher != null)
-        {
-            _watcher.Created -= WatcherChangedCreatedOrDeleted;
-            _watcher.Changed -= WatcherChangedCreatedOrDeleted;
-            _watcher.Deleted -= WatcherChangedCreatedOrDeleted;
-            _watcher.Renamed -= WatcherRenamed;
-            _watcher.Dispose();
-            _watcher = null;
-        }
-
-        LibGit2Sharp.Repository? gr = _gitRepo;
-        _gitRepo = null;
-        gr?.Dispose();
-        
     }
 }
