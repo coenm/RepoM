@@ -2,26 +2,27 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
+using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 public sealed class DefaultRepositoryObserver : IRepositoryObserver
 {
     private readonly ILogger _logger;
+    private readonly IFileSystem _fileSystem;
     private int _detectionToAlertDelayMilliseconds;
     private Repository? _repository;
-    private FileSystemWatcher? _watcher;
+    private IFileSystemWatcher? _watcher;
     private bool _ioDetected;
     private LibGit2Sharp.Repository? _gitRepo;
 
     public Action<Repository> OnChange { get; set; } = delegate { };
 
-    public DefaultRepositoryObserver(ILogger logger)
+    public DefaultRepositoryObserver(ILogger logger, IFileSystem fileSystem)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
     
     public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
@@ -38,11 +39,12 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
             _logger.LogWarning("Could not create LibGit2Sharp Repository from path {path}", repository.Path);
         }
 
-        _watcher = new FileSystemWatcher(_repository.Path);
-        _watcher.Created += WatcherChangedCreatedOrDeleted;
-        _watcher.Changed += WatcherChangedCreatedOrDeleted;
-        _watcher.Deleted += WatcherChangedCreatedOrDeleted;
-        _watcher.Renamed += WatcherRenamed;
+        
+        _watcher = _fileSystem.FileSystemWatcher.New(_repository.Path);
+        _watcher.Created += FileSystemUpdated;
+        _watcher.Changed += FileSystemUpdated;
+        _watcher.Deleted += FileSystemUpdated;
+        _watcher.Renamed += FileSystemUpdated;
         _watcher.IncludeSubdirectories = true;
     }
 
@@ -66,10 +68,10 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
     {
         if (_watcher != null)
         {
-            _watcher.Created -= WatcherChangedCreatedOrDeleted;
-            _watcher.Changed -= WatcherChangedCreatedOrDeleted;
-            _watcher.Deleted -= WatcherChangedCreatedOrDeleted;
-            _watcher.Renamed -= WatcherRenamed;
+            _watcher.Created -= FileSystemUpdated;
+            _watcher.Changed -= FileSystemUpdated;
+            _watcher.Deleted -= FileSystemUpdated;
+            _watcher.Renamed -= FileSystemUpdated;
             _watcher.Dispose();
             _watcher = null;
         }
@@ -86,7 +88,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
             return false;
         }
 
-        string? name = fileSystemEventArgs.Name;
+        var name = fileSystemEventArgs.Name;
         if (string.IsNullOrEmpty(name))
         {
             return false;
@@ -101,7 +103,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         {
             return false;
         }
-        
+
         name = name.Replace('\\', '/');
 
         try
@@ -141,31 +143,14 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         return false;
     }
 
-    private void LogTrace(FileSystemEventArgs fileSystemEventArgs, [CallerMemberName] string caller = "")
-    {
-        if (_logger.IsEnabled(LogLevel.Trace))
-        {
-            _logger.LogTrace("[DefaultRepositoryObserver] {caller} ({name} - {changeType} - {path})", caller, fileSystemEventArgs.Name, fileSystemEventArgs.ChangeType, fileSystemEventArgs.FullPath);
-        }
-    }
-
-    private void WatcherRenamed(object sender, RenamedEventArgs e)
+    private void FileSystemUpdated(object sender, FileSystemEventArgs e)
     {
         if (IsIgnored(e))
         {
             return;
         }
-        LogTrace(e);
-        PauseWatcherAndScheduleCallback();
-    }
 
-    private void WatcherChangedCreatedOrDeleted(object sender, FileSystemEventArgs e)
-    {
-        if (IsIgnored(e))
-        {
-            return;
-        }
-        LogTrace(e);
+        _logger.LogTrace("[DefaultRepositoryObserver] {caller} ({name} - {changeType} - {path})", "", e.Name, e.ChangeType, e.FullPath);
         PauseWatcherAndScheduleCallback();
     }
 

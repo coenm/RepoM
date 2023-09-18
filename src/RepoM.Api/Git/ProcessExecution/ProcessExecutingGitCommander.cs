@@ -59,18 +59,6 @@ public partial class ProcessExecutingGitCommander : IGitCommander
             });
     }
 
-    public static Action<T> And<T>(Action<T> originalAction, params Action<T>[] additionalActions)
-    {
-        return x =>
-            {
-                originalAction(x);
-                foreach (Action<T> action in additionalActions)
-                {
-                    action(x);
-                }
-            };
-    }
-
     /// <summary>
     /// The encoding used by a stream is a read-only property. Use this method to
     /// create a new stream based on <paramref name="stream"/> that uses
