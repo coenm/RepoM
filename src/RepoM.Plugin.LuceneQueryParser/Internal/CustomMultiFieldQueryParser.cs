@@ -1,7 +1,6 @@
 namespace RepoM.Plugin.LuceneQueryParser.Internal;
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Lucene.Net.Analysis;
 using Lucene.Net.QueryParsers.Classic;
@@ -46,8 +45,6 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
     
     protected override void AddClause(IList<BooleanClause> clauses, int conj, int mods, Query q)
     {
-        bool prohibited;
-
         // We might have been passed a null query; the term might have been
         // filtered away by the analyzer.
         if (q is null)
@@ -55,28 +52,9 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
             return;
         }
 
-        if (DefaultOperator == OR_OPERATOR)
-        {
-            // We set REQUIRED if we're introduced by AND or +; PROHIBITED if
-            // introduced by NOT or -; make sure not to set both.
-            prohibited = mods == MOD_NOT;
-        }
-        else
-        {
-            // We set PROHIBITED if we're introduced by NOT or -; We set REQUIRED
-            // if not PROHIBITED and not introduced by OR
-            prohibited = mods == MOD_NOT;
-        }
+        Occur occur = mods == MOD_NOT ? Occur.MUST_NOT : Occur.MUST;
 
-        WrappedBooleanClause clause;
-        if (prohibited)
-        {
-            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST_NOT);
-        }
-        else
-        {
-            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST);
-        }
+        var clause = (WrappedBooleanClause)NewBooleanClause(q, occur);
 
         if (!clauses.Any())
         {
@@ -101,7 +79,6 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
                 // pick last item to make it
                 // or (x, y, (and (z, zz))
                 WrappedBooleanClause lastItem = currentClause.Items[^1];
-                Debug.Assert(((SetBooleanClause)lastItem).Mode == SetBooleanClause.BoolMode.And);
                 ((SetBooleanClause)lastItem).Items.Add(new SetBooleanClause(clause));
             }
         }
