@@ -2,6 +2,7 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,13 +10,15 @@ using Microsoft.Extensions.Logging;
 public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 {
     private const string HEAD_LOG_FILE = @".git\logs\HEAD";
-    private FileSystemWatcher? _watcher;
+    private IFileSystemWatcher? _watcher;
     private readonly IRepositoryReader _repositoryReader;
     private readonly ILogger _logger;
+    private readonly IFileSystem _fileSystem;
 
-    public DefaultRepositoryDetector(IRepositoryReader repositoryReader, ILogger logger)
+    public DefaultRepositoryDetector(IRepositoryReader repositoryReader, IFileSystem fileSystem, ILogger logger)
     {
         _repositoryReader = repositoryReader ?? throw new ArgumentNullException(nameof(repositoryReader));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -29,7 +32,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 
         DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
-        _watcher = new FileSystemWatcher(path);
+        _watcher = _fileSystem.FileSystemWatcher.New(path);
         _watcher.Created += WatcherCreated;
         _watcher.Changed += WatcherChanged;
         _watcher.Deleted += WatcherDeleted;

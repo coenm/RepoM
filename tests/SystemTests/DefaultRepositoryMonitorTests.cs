@@ -44,12 +44,13 @@ public class DefaultRepositoryMonitorTests
         IAppSettingsService appSettingsService = A.Fake<IAppSettingsService>();
         A.CallTo(() => appSettingsService.EnabledSearchProviders).Returns(new List<string>(0));
 
+        IFileSystem fs = new FileSystem();
         var defaultRepositoryReader = new DefaultRepositoryReader(A.Dummy<IRepositoryTagsFactory>(), NullLogger.Instance);
         _monitor = new DefaultRepositoryMonitor(
             new GivenPathProvider(new [] { repoPath, }),
             defaultRepositoryReader,
-            new DefaultRepositoryDetectorFactory(defaultRepositoryReader, NullLoggerFactory.Instance),
-            new DefaultRepositoryObserverFactory(NullLoggerFactory.Instance, new FileSystem()),
+            new DefaultRepositoryDetectorFactory(defaultRepositoryReader, fs, NullLoggerFactory.Instance),
+            new DefaultRepositoryObserverFactory(NullLoggerFactory.Instance, fs),
             new GitRepositoryFinderFactory(appSettingsService, new List<ISingleGitRepositoryFinderFactory> { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem), }),
             new UselessRepositoryStore(),
             new DefaultRepositoryInformationAggregator(
