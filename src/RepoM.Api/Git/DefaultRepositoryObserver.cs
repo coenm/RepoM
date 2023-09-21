@@ -11,7 +11,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
 {
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
-    private int _detectionToAlertDelayMilliseconds;
+    private TimeSpan _detectionToAlertDelay = TimeSpan.FromMilliseconds(500);
     private Repository? _repository;
     private IFileSystemWatcher? _watcher;
     private bool _ioDetected;
@@ -24,10 +24,10 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
-    
-    public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
+
+    public void Setup(Repository repository, TimeSpan detectionToAlertDelay)
     {
-        _detectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
+        _detectionToAlertDelay = detectionToAlertDelay;
 
         _repository = repository;
         try
@@ -39,7 +39,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
             _logger.LogWarning("Could not create LibGit2Sharp Repository from path {path}", repository.Path);
         }
 
-        
+
         _watcher = _fileSystem.FileSystemWatcher.New(_repository.Path);
         _watcher.Created += FileSystemUpdated;
         _watcher.Changed += FileSystemUpdated;
@@ -72,13 +72,13 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
             _watcher.Changed -= FileSystemUpdated;
             _watcher.Deleted -= FileSystemUpdated;
             _watcher.Renamed -= FileSystemUpdated;
-            _watcher.Dispose();
-            _watcher = null;
         }
 
-        LibGit2Sharp.Repository? gr = _gitRepo;
+        _watcher?.Dispose();
+        _watcher = null;
+
+        _gitRepo?.Dispose();
         _gitRepo = null;
-        gr?.Dispose();
     }
 
     private bool IsIgnored(FileSystemEventArgs fileSystemEventArgs)
@@ -149,55 +149,55 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         {
             return;
         }
-
+    
         _logger.LogTrace("[DefaultRepositoryObserver] {caller} ({name} - {changeType} - {path})", "", e.Name, e.ChangeType, e.FullPath);
         PauseWatcherAndScheduleCallback();
     }
-
+    
     private void PauseWatcherAndScheduleCallback()
     {
         if (_ioDetected)
         {
             return;
         }
-
+    
         _ioDetected = true;
-
+    
         // stop the watcher once we found IO ...
         Stop();
-
+    
         // ... and schedule a method to reactivate the watchers again
         // if nothing happened in between (regarding IO) it should also fire the OnChange-event
-        Task.Run(() => Thread.Sleep(_detectionToAlertDelayMilliseconds))
+        Task.Run(() => Thread.Sleep(_detectionToAlertDelay))
             .ContinueWith(AwakeWatcherAndScheduleEventInvocationIfNoFurtherIoGetsDetected);
     }
-
+    
     private void AwakeWatcherAndScheduleEventInvocationIfNoFurtherIoGetsDetected(object state)
     {
         if (!_ioDetected)
         {
             return;
         }
-
+    
         // reset the flag, wait for further IO ...
         _ioDetected = false;
         Start();
-
+    
         // ... and if nothing happened during the delay, invoke the OnChange-event
-        Task.Run(() => Thread.Sleep(_detectionToAlertDelayMilliseconds))
+        Task.Run(() => Thread.Sleep(_detectionToAlertDelay))
             .ContinueWith(_ =>
                 {
                     if (_ioDetected)
                     {
                         return;
                     }
-
+    
                     Repository? repo = _repository;
                     if (repo == null)
                     {
                         return;
                     }
-
+    
                     _logger.LogDebug("ONCHANGE on {repo}", repo.Name);
                     OnChange.Invoke(repo);
                 });

@@ -227,7 +227,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         if (!_repositoryObservers.ContainsKey(path))
         {
             IRepositoryObserver observer = _repositoryObserverFactory.Create();
-            observer.Setup(repo, DelayGitStatusAfterFileOperationMilliseconds);
+            observer.Setup(repo, TimeSpan.FromMilliseconds(DelayGitStatusAfterFileOperationMilliseconds));
             _repositoryObservers.Add(path, observer);
 
             observer.OnChange += OnRepositoryObserverChange;
@@ -281,7 +281,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             return;
         }
 
-        observer.Stop();
+        observer.Dispose();
         _repositoryObservers.Remove(path);
     }
 
@@ -308,9 +308,9 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     public bool Scanning { get; private set; } = false;
 
-    public int DelayGitRepositoryStatusAfterCreationMilliseconds { get; set; } = 5000;
+    public int DelayGitRepositoryStatusAfterCreationMilliseconds { get; init; } = 5000;
 
-    public int DelayGitStatusAfterFileOperationMilliseconds { get; set; } = 500;
+    public int DelayGitStatusAfterFileOperationMilliseconds { get; init; } = 500;
 
     [Flags]
     private enum KnownRepositoryNotifications
