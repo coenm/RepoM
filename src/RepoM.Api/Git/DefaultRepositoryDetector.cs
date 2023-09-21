@@ -28,8 +28,6 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 
     public void Setup(string path, int detectionToAlertDelayMilliseconds)
     {
-        _logger.LogDebug("DefaultRepositoryDetector {method} - start {head} (delay: {delay})", nameof(Setup), path, detectionToAlertDelayMilliseconds);
-
         DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
         _watcher = _fileSystem.FileSystemWatcher.New(path);
@@ -92,8 +90,6 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         {
             return;
         }
-
-        _logger.LogDebug("{method} - repo {head}", nameof(WatcherCreated), e.FullPath);
 
         Task.Run(() => Task.Delay(DetectionToAlertDelayMilliseconds))
             .ContinueWith(t => EatRepo(e.FullPath));
