@@ -11,11 +11,6 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
 {
     private static readonly BooleanClause _dummy = new(new BooleanQuery(), Occur.MUST_NOT);
 
-    public CustomMultiFieldQueryParser(LuceneVersion matchVersion, string[] fields, Analyzer analyzer, IDictionary<string, float> boosts)
-        : base(matchVersion, fields, analyzer, boosts)
-    {
-    }
-
     public CustomMultiFieldQueryParser(LuceneVersion matchVersion, string[] fields, Analyzer analyzer)
         : base(matchVersion, fields, analyzer)
     {
