@@ -4,7 +4,7 @@ using System;
 
 public interface IRepositoryObserver : IDisposable
 {
-    void Setup(Repository repository, TimeSpan detectionToAlertDelay);
+    void Setup(Repository repository, int detectionToAlertDelayMilliseconds);
 
     void Start();
 

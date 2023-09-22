@@ -72,6 +72,7 @@ public sealed class LoggingRepositoryTagsFactoryDecorator : IRepositoryTagsFacto
             {
                 _logger = logger ?? throw new ArgumentNullException(nameof(logger));
                 _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+                _logger.LogDebug("GetTags {repository} Start", _repo.Name);
                 _sw = Stopwatch.StartNew();
             }
 
