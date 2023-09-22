@@ -1,8 +1,6 @@
 namespace RepoM.Plugin.LuceneQueryParser.Internal;
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Lucene.Net.Analysis;
 using Lucene.Net.QueryParsers.Classic;
@@ -12,11 +10,6 @@ using Lucene.Net.Util;
 internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
 {
     private static readonly BooleanClause _dummy = new(new BooleanQuery(), Occur.MUST_NOT);
-
-    public CustomMultiFieldQueryParser(LuceneVersion matchVersion, string[] fields, Analyzer analyzer, IDictionary<string, float> boosts)
-        : base(matchVersion, fields, analyzer, boosts)
-    {
-    }
 
     public CustomMultiFieldQueryParser(LuceneVersion matchVersion, string[] fields, Analyzer analyzer)
         : base(matchVersion, fields, analyzer)
@@ -47,8 +40,6 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
     
     protected override void AddClause(IList<BooleanClause> clauses, int conj, int mods, Query q)
     {
-        bool required, prohibited;
-
         // We might have been passed a null query; the term might have been
         // filtered away by the analyzer.
         if (q is null)
@@ -56,42 +47,9 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
             return;
         }
 
-        if (DefaultOperator == OR_OPERATOR)
-        {
-            // We set REQUIRED if we're introduced by AND or +; PROHIBITED if
-            // introduced by NOT or -; make sure not to set both.
-            prohibited = mods == MOD_NOT;
-            required = mods == MOD_REQ;
-            if (conj == CONJ_AND && !prohibited)
-            {
-                required = true;
-            }
-        }
-        else
-        {
-            // We set PROHIBITED if we're introduced by NOT or -; We set REQUIRED
-            // if not PROHIBITED and not introduced by OR
-            prohibited = mods == MOD_NOT;
-            required = !prohibited && conj != CONJ_OR;
-        }
+        Occur occur = mods == MOD_NOT ? Occur.MUST_NOT : Occur.MUST;
 
-        WrappedBooleanClause clause;
-        if (required && !prohibited)
-        {
-            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST);
-        }
-        else if (!required && !prohibited)
-        {
-            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST);
-        }
-        else if (!required && prohibited)
-        {
-            clause = (WrappedBooleanClause)NewBooleanClause(q, Occur.MUST_NOT);
-        }
-        else
-        {
-            throw new Exception();
-        }
+        var clause = (WrappedBooleanClause)NewBooleanClause(q, occur);
 
         if (!clauses.Any())
         {
@@ -115,8 +73,7 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
                 // or (x, y, z)
                 // pick last item to make it
                 // or (x, y, (and (z, zz))
-                WrappedBooleanClause lastItem = currentClause.Items.Last();
-                Debug.Assert(((SetBooleanClause)lastItem).Mode == SetBooleanClause.BoolMode.And);
+                WrappedBooleanClause lastItem = currentClause.Items[^1];
                 ((SetBooleanClause)lastItem).Items.Add(new SetBooleanClause(clause));
             }
         }
@@ -149,11 +106,8 @@ internal class CustomMultiFieldQueryParser : MultiFieldQueryParser
 
         BooleanClause result = base.NewBooleanClause(q, occur);
 
-        if (occur == Occur.MUST_NOT)
-        {
-            return new NotBooleanClause(result);
-        }
-
-        return new WrappedBooleanClause(result);
+        return occur == Occur.MUST_NOT
+            ? new NotBooleanClause(result)
+            : new WrappedBooleanClause(result);
     }
 }

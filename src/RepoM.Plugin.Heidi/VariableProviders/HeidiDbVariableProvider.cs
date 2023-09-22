@@ -1,11 +1,16 @@
 namespace RepoM.Plugin.Heidi.VariableProviders;
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.VariableProviders;
+using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
+using RepoM.Plugin.Heidi.Internal.Config;
 
 [UsedImplicitly]
 internal class HeidiDbVariableProvider : IVariableProvider<RepositoryContext>
@@ -31,6 +36,11 @@ internal class HeidiDbVariableProvider : IVariableProvider<RepositoryContext>
         return !string.IsNullOrWhiteSpace(key) && key.StartsWith("heidi-db.", StringComparison.CurrentCultureIgnoreCase);
     }
 
+    public object? Provide(string key, string? arg)
+    {
+        throw new NotImplementedException();
+    }
+
     public object? Provide(RepositoryContext context, string key, string? arg)
     {
         var startIndex = "heidi-db".Length;
@@ -38,63 +48,14 @@ internal class HeidiDbVariableProvider : IVariableProvider<RepositoryContext>
 
         if (keySuffix.StartsWith(".all", StringComparison.CurrentCultureIgnoreCase))
         {
-            var keySuffixInner = keySuffix[".all".Length..];
-            var dbs = _service.GetAllDatabases();
-
-            if (".count".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return dbs.Length;
-            }
-
-            if (".any".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return dbs.Any();
-            }
-
-            if (".empty".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return dbs.IsEmpty;
-            }
-
-            if (".dbs".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return dbs.ToArray();
-            }
+            _ = TryProcessAllPart(keySuffix, out var result);
+            return result;
         }
 
-        else if (keySuffix.StartsWith(".repo", StringComparison.CurrentCultureIgnoreCase))
+        if (keySuffix.StartsWith(".repo", StringComparison.CurrentCultureIgnoreCase))
         {
-            var keySuffixInner = keySuffix[".repo".Length..];
-
-            IRepository? repo = context.Repository;
-            if (repo == null)
-            {
-                return null;
-            }
-
-            var dbs = _service.GetByRepository(repo);
-
-            if (".count".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return dbs.Count();
-            }
-
-            if (".any".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return dbs.Any();
-            }
-
-            if (".empty".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return !dbs.Any();
-            }
-
-            if (".dbs".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return dbs.OrderBy(x => x.Order)
-                          .ThenBy(x => x.Name)
-                          .ToArray();
-            }
+            _ = TryProcessRepoPart(context, keySuffix, out var result);
+            return result;
         }
 
         // heidi-db[D].count
@@ -102,8 +63,79 @@ internal class HeidiDbVariableProvider : IVariableProvider<RepositoryContext>
         return null;
     }
 
-    public object? Provide(string key, string? arg)
+    private bool TryProcessRepoPart(RepositoryContext context, string keySuffix, [NotNullWhen(true)] out object? result)
     {
-        throw new NotImplementedException();
+        var keySuffixInner = keySuffix[".repo".Length..];
+        result = null;
+        
+        IRepository? repo = context.Repository;
+        if (repo == null)
+        {
+            result = null;
+            return false;
+        }
+
+        IEnumerable<RepositoryHeidiConfiguration> dbs = _service.GetByRepository(repo);
+
+        if (".count".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+        {
+            result = dbs.Count();
+            return true;
+        }
+
+        if (".any".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+        {
+            result = dbs.Any();
+            return true;
+        }
+
+        if (".empty".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+        {
+            result = !dbs.Any();
+            return true;
+        }
+
+        if (".dbs".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+        {
+            result = dbs.OrderBy(x => x.Order)
+                        .ThenBy(x => x.Name)
+                        .ToArray();
+            return true;
+        }
+        
+        return false;
+    }
+
+    private bool TryProcessAllPart(string keySuffix, [NotNullWhen(true)] out object? result)
+    {
+        var keySuffixInner = keySuffix[".all".Length..];
+        ImmutableArray<HeidiSingleDatabaseConfiguration> dbs = _service.GetAllDatabases();
+        result = null;
+
+        if (".count".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+        {
+            result = dbs.Length;
+            return true;
+        }
+
+        if (".any".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+        {
+            result = dbs.Any();
+            return true;
+        }
+
+        if (".empty".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+        {
+            result = dbs.IsEmpty;
+            return true;
+        }
+
+        if (".dbs".Equals(keySuffixInner, StringComparison.CurrentCultureIgnoreCase))
+        {
+            result = dbs.ToArray();
+            return true;
+        }
+
+        return false;
     }
 }

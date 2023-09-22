@@ -9,7 +9,7 @@ using RepoM.Api.IO.Variables;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
-using RepositoryAction = RepoM.Api.RepositoryActions.RepositoryAction;
+using RepositoryAction = RepositoryActions.RepositoryAction;
 
 public class ActionMapperComposition
 {
@@ -41,7 +41,7 @@ public class ActionMapperComposition
                    .ToList();
         }
 
-        IActionToRepositoryActionMapper? deserializer = _deserializers.FirstOrDefault(x => x.CanMap(action));
+        IActionToRepositoryActionMapper? deserializer = Array.Find(_deserializers, item => item.CanMap(action));
 
         using IDisposable disposable = RepoMVariableProviderStore.Push(EvaluateVariables(action.Variables));
 

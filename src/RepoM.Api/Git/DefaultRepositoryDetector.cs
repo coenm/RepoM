@@ -2,17 +2,24 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.IO;
+using System.IO.Abstractions;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 {
     private const string HEAD_LOG_FILE = @".git\logs\HEAD";
-    private FileSystemWatcher? _watcher;
+    private IFileSystemWatcher? _watcher;
     private readonly IRepositoryReader _repositoryReader;
+    private readonly ILogger _logger;
+    private readonly IFileSystem _fileSystem;
 
-    public DefaultRepositoryDetector(IRepositoryReader repositoryReader)
+    public DefaultRepositoryDetector(IRepositoryReader repositoryReader, IFileSystem fileSystem, ILogger logger)
     {
-        _repositoryReader = repositoryReader;
+        _repositoryReader = repositoryReader ?? throw new ArgumentNullException(nameof(repositoryReader));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public Action<Repository>? OnAddOrChange { get; set; }
@@ -23,7 +30,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
     {
         DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
-        _watcher = new FileSystemWatcher(path);
+        _watcher = _fileSystem.FileSystemWatcher.New(path);
         _watcher.Created += WatcherCreated;
         _watcher.Changed += WatcherChanged;
         _watcher.Deleted += WatcherDeleted;
@@ -91,7 +98,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
     private static bool IsHead(string path)
     {
         var index = GetGitPathEndFromHeadFile(path);
-        return index == (path.Length - HEAD_LOG_FILE.Length);
+        return index == path.Length - HEAD_LOG_FILE.Length;
     }
 
     private static string GetRepositoryPathFromHead(string headFile)
@@ -103,9 +110,10 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
             return string.Empty;
         }
 
-        return headFile.Substring(0, end);
+        return headFile[..end];
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int GetGitPathEndFromHeadFile(string path)
     {
         return path.IndexOf(HEAD_LOG_FILE, StringComparison.OrdinalIgnoreCase);
@@ -113,6 +121,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 
     private void EatRepo(string path)
     {
+        _logger.LogDebug("{method} - repo {head}", nameof(EatRepo), path);
         Repository? repo = _repositoryReader.ReadRepository(path);
 
         if (repo?.WasFound ?? false)
@@ -126,6 +135,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         var path = GetRepositoryPathFromHead(headFile);
         if (!string.IsNullOrEmpty(path))
         {
+            _logger.LogDebug("{method} - repo {head}", nameof(NotifyHeadDeletion), path);
             OnDelete?.Invoke(path);
         }
     }

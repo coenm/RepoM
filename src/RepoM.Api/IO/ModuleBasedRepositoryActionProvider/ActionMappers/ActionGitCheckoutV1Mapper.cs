@@ -65,7 +65,7 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
                                   })
                               .Union(new RepositoryActionBase[]
                                   {
-                                      new RepositorySeparatorAction(repository), // doesn't work todo
+                                      new RepositorySeparatorAction(repository),
                                       new DeferredSubActionsRepositoryAction(_translationService.Translate("Remote branches"), repository, false)
                                           {
                                               DeferredSubActionsEnumerator = () =>

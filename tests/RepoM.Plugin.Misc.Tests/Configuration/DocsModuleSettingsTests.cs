@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Plugins;
@@ -125,7 +126,7 @@ public class DocsModuleSettingsTests
 #if DEBUG
             await Verifier.Verify(persistedConfig, settings: _verifySettings, extension: "json");
 #else
-            Assert.True(true); // this test should only be run in Debug mode.
+            true.Should().BeTrue(); // this test should only be run in Debug mode.
 #endif
         }
     }

@@ -1,7 +1,6 @@
 namespace RepoM.App.RepositoryFiltering;
 
 using System;
-using System.Linq;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
@@ -10,7 +9,9 @@ internal class QueryParserComposition : IQueryParser
 {
     private readonly INamedQueryParser[] _namedQueryParsers;
     private IQueryParser _selected;
-    
+    private string _cacheText = string.Empty;
+    private IQuery _cacheQuery = new FreeText(string.Empty);
+
     public QueryParserComposition(INamedQueryParser[] namedNamedQueryParsers)
     {
         _namedQueryParsers = namedNamedQueryParsers;
@@ -19,7 +20,7 @@ internal class QueryParserComposition : IQueryParser
 
     public bool SetComparer(string key)
     {
-        INamedQueryParser? foundQueryParser = _namedQueryParsers.FirstOrDefault(x => x.Name.Equals(key, StringComparison.CurrentCultureIgnoreCase));
+        INamedQueryParser? foundQueryParser = Array.Find(_namedQueryParsers, item => item.Name.Equals(key, StringComparison.CurrentCultureIgnoreCase));
         
         if (foundQueryParser != null)
         {
@@ -41,8 +42,4 @@ internal class QueryParserComposition : IQueryParser
         _cacheQuery = queryParser.Parse(text);
         return _cacheQuery;
     }
-
-    private string _cacheText = string.Empty;
-
-    private IQuery _cacheQuery = new FreeText(string.Empty);
 }

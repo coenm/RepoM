@@ -30,12 +30,8 @@ public class VariableProviderAdapter : ExpressionStringEvaluator.VariableProvide
 
     public object? Provide(RepositoryContext context, string key, string? arg)
     {
-        PluginVariableProvider? instance = GetProvider(key);
-
-        if (instance == null)
-        {
-            throw new NullReferenceException();
-        }
+        // Suppress nullable warning because we know that GetProvider will return a non-null value (see CanProvide)
+        PluginVariableProvider instance = GetProvider(key)!;
 
         if (instance is PluginRepositoryContextVariableProvider typedInstance)
         {

@@ -372,14 +372,11 @@ public partial class MainWindow
                 Top = topY;
                 Left = rightX;
                 break;
-            case TaskBarLocator.TaskBarLocation.Bottom:
-                Top = bottomY;
-                Left = rightX;
-                break;
             case TaskBarLocator.TaskBarLocation.Left:
                 Top = bottomY;
                 Left = leftX;
                 break;
+            case TaskBarLocator.TaskBarLocation.Bottom:
             case TaskBarLocator.TaskBarLocation.Right:
                 Top = bottomY;
                 Left = rightX;

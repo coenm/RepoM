@@ -3,6 +3,7 @@ namespace RepoM.Plugin.Misc.Tests.DefaultAppSettingsTests;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Common;
@@ -78,7 +79,7 @@ public class DocsAppSettingsTests
         await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
 #else
         await Task.Yield();
-        Assert.True(true); // this test should only be run in Debug mode.
+        true.Should().BeTrue(); // this test should only be run in Debug mode.
 #endif
     }
 

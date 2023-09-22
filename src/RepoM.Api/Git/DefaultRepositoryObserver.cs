@@ -2,30 +2,49 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 public sealed class DefaultRepositoryObserver : IRepositoryObserver
 {
+    private readonly ILogger _logger;
+    private readonly IFileSystem _fileSystem;
+    private int _detectionToAlertDelayMilliseconds;
     private Repository? _repository;
-    private FileSystemWatcher? _watcher;
+    private IFileSystemWatcher? _watcher;
     private bool _ioDetected;
+    private LibGit2Sharp.Repository? _gitRepo;
 
     public Action<Repository> OnChange { get; set; } = delegate { };
 
-    public int DetectionToAlertDelayMilliseconds { get; private set; }
-
+    public DefaultRepositoryObserver(ILogger logger, IFileSystem fileSystem)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+    }
+    
     public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
     {
-        DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
+        _detectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
         _repository = repository;
+        try
+        {
+            _gitRepo = new LibGit2Sharp.Repository(repository.Path);
+        }
+        catch (Exception)
+        {
+            _logger.LogWarning("Could not create LibGit2Sharp Repository from path {path}", repository.Path);
+        }
 
-        _watcher = new FileSystemWatcher(_repository.Path);
-        _watcher.Created += WatcherCreated;
-        _watcher.Changed += WatcherChanged;
-        _watcher.Deleted += WatcherDeleted;
-        _watcher.Renamed += WatcherRenamed;
+        
+        _watcher = _fileSystem.FileSystemWatcher.New(_repository.Path);
+        _watcher.Created += FileSystemUpdated;
+        _watcher.Changed += FileSystemUpdated;
+        _watcher.Deleted += FileSystemUpdated;
+        _watcher.Renamed += FileSystemUpdated;
         _watcher.IncludeSubdirectories = true;
     }
 
@@ -45,23 +64,93 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         }
     }
 
-    private void WatcherDeleted(object sender, FileSystemEventArgs e)
+    public void Dispose()
     {
-        PauseWatcherAndScheduleCallback();
+        if (_watcher != null)
+        {
+            _watcher.Created -= FileSystemUpdated;
+            _watcher.Changed -= FileSystemUpdated;
+            _watcher.Deleted -= FileSystemUpdated;
+            _watcher.Renamed -= FileSystemUpdated;
+            _watcher.Dispose();
+            _watcher = null;
+        }
+
+        LibGit2Sharp.Repository? gr = _gitRepo;
+        _gitRepo = null;
+        gr?.Dispose();
     }
 
-    private void WatcherRenamed(object sender, RenamedEventArgs e)
+    private bool IsIgnored(FileSystemEventArgs fileSystemEventArgs)
     {
-        PauseWatcherAndScheduleCallback();
+        if (_gitRepo == null)
+        {
+            return false;
+        }
+
+        var name = fileSystemEventArgs.Name;
+        if (string.IsNullOrEmpty(name))
+        {
+            return false;
+        }
+
+        if (name.Equals(".git\\index.lock", StringComparison.InvariantCulture))
+        {
+            return true;
+        }
+
+        if (name.StartsWith(".git", StringComparison.InvariantCulture))
+        {
+            return false;
+        }
+
+        name = name.Replace('\\', '/');
+
+        try
+        {
+            if (_gitRepo.Ignore.IsPathIgnored($"{name}/"))
+            {
+                return true;
+            }
+
+            // when it is a file, check if it is ignored
+            if (_gitRepo.Ignore.IsPathIgnored(name))
+            {
+                return true;
+            }
+
+            if (fileSystemEventArgs.ChangeType == WatcherChangeTypes.Changed)
+            {
+                try
+                {
+                    if (Directory.Exists(fileSystemEventArgs.FullPath))
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning("Directory exists failed {dir} {msg}", fileSystemEventArgs.FullPath, e.Message);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Could not determine ignored. {message}", e.Message);
+        }
+
+
+        return false;
     }
 
-    private void WatcherChanged(object sender, FileSystemEventArgs e)
+    private void FileSystemUpdated(object sender, FileSystemEventArgs e)
     {
-        PauseWatcherAndScheduleCallback();
-    }
+        if (IsIgnored(e))
+        {
+            return;
+        }
 
-    private void WatcherCreated(object sender, FileSystemEventArgs e)
-    {
+        _logger.LogTrace("[DefaultRepositoryObserver] {caller} ({name} - {changeType} - {path})", "", e.Name, e.ChangeType, e.FullPath);
         PauseWatcherAndScheduleCallback();
     }
 
@@ -79,11 +168,11 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
 
         // ... and schedule a method to reactivate the watchers again
         // if nothing happened in between (regarding IO) it should also fire the OnChange-event
-        Task.Run(() => Thread.Sleep(DetectionToAlertDelayMilliseconds))
-            .ContinueWith(AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected);
+        Task.Run(() => Thread.Sleep(_detectionToAlertDelayMilliseconds))
+            .ContinueWith(AwakeWatcherAndScheduleEventInvocationIfNoFurtherIoGetsDetected);
     }
 
-    private void AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected(object state)
+    private void AwakeWatcherAndScheduleEventInvocationIfNoFurtherIoGetsDetected(object state)
     {
         if (!_ioDetected)
         {
@@ -95,8 +184,8 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         Start();
 
         // ... and if nothing happened during the delay, invoke the OnChange-event
-        Task.Run(() => Thread.Sleep(DetectionToAlertDelayMilliseconds))
-            .ContinueWith(t =>
+        Task.Run(() => Thread.Sleep(_detectionToAlertDelayMilliseconds))
+            .ContinueWith(_ =>
                 {
                     if (_ioDetected)
                     {
@@ -108,22 +197,9 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
                     {
                         return;
                     }
-                            
-                    Console.WriteLine($"ONCHANGE on {repo.Name}");
-                    OnChange?.Invoke(repo);
-                });
-    }
 
-    public void Dispose()
-    {
-        if (_watcher != null)
-        {
-            _watcher.Created -= WatcherCreated;
-            _watcher.Changed -= WatcherChanged;
-            _watcher.Deleted -= WatcherDeleted;
-            _watcher.Renamed -= WatcherRenamed;
-            _watcher.Dispose();
-            _watcher = null;
-        }
+                    _logger.LogDebug("ONCHANGE on {repo}", repo.Name);
+                    OnChange.Invoke(repo);
+                });
     }
 }

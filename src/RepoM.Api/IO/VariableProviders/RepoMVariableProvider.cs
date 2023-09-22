@@ -142,34 +142,41 @@ public class RepoMVariableProvider : RepoM.Core.Plugin.VariableProviders.IVariab
                 return null;
             }
 
-            if (TryGetValueFromScope(scope, envSearchKey, out var result))
+            if (!TryGetValueFromScope(scope, envSearchKey, out var result))
             {
-                if (index < 0)
-                {
-                    return result;
-                }
-
-                IEnumerable<IItem> selectors = FindSelectors(envKey[index..]);
-                var r = result;
-
-                foreach (IItem selector in selectors)
-                {
-                    if (selector is PropertySelector ps)
-                    {
-                        r = _propertyHandler.Handle(ps, r);
-                    }
-
-                    else if (selector is ArraySelector @as)
-                    {
-                        r = _arrayHandler.Handle(@as, r);
-                    }
-                }
-
-                return r;
+                scope = scope.Parent;
+                continue;
             }
 
-            scope = scope.Parent;
+            if (index < 0)
+            {
+                return result;
+            }
+
+            IEnumerable<IItem> selectors = FindSelectors(envKey[index..]);
+
+            foreach (IItem selector in selectors)
+            {
+                result = HandlePropertySelector(selector, result);
+            }
+
+            return result;
         }
+    }
+
+    private object? HandlePropertySelector(IItem selector, object? r)
+    {
+        if (selector is PropertySelector ps)
+        {
+            r = _propertyHandler.Handle(ps, r);
+        }
+
+        else if (selector is ArraySelector @as)
+        {
+            r = _arrayHandler.Handle(@as, r);
+        }
+
+        return r;
     }
 
     private static IEnumerable<IItem> FindSelectors(string selector)

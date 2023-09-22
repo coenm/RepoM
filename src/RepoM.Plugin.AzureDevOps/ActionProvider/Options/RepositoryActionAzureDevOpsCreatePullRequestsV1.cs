@@ -23,7 +23,7 @@ public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : Repository
     [PropertyType(typeof(string))]
     public string? ProjectId { get; set; }
 
-    // todo in v2, should be name (as others are)
+    // in v2, should be name (as others are)
     /// <summary>
     /// Menu item title. When not provided, a title will be generated.
     /// This property will be used instead of the Name property.
@@ -44,14 +44,13 @@ public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : Repository
     /// </summary>
     [Required]
     [PropertyType(typeof(string))]
-    public string ToBranch { get; set; }
+    public string ToBranch { get; set; } = string.Empty;
 
     /// <summary>
     /// List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
     /// </summary>
     [PropertyType(typeof(List<string>))]
-    // [PropertyDefaultBoolValue(default)] //todo
-    public List<string> ReviewerIds { get; set; }
+    public List<string> ReviewerIds { get; set; } = new();
 
     /// <summary>
     /// Boolean specifying if th PR should be marked as draft.
@@ -82,14 +81,7 @@ public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : Repository
     /// </summary>
     [Required]
     [PropertyType(typeof(RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1))]
-    public RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1 AutoComplete { get; set; }
-
-    public RepositoryActionAzureDevOpsCreatePullRequestsV1()
-    {
-        ToBranch = string.Empty;
-        ReviewerIds = new();
-        AutoComplete = new();
-    }
+    public RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1 AutoComplete { get; set; } = new();
 }
 
 /// <summary>
