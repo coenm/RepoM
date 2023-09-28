@@ -8,11 +8,36 @@ using System.Text;
 
 /// <summary>Wrapper for Everything.</summary>
 /// <remarks>See <see href="https://www.voidtools.com/support/everything/sdk/csharp/"/> for the SDK.</remarks>
-internal static partial class Everything64Api
+internal static class Everything64Api
 {
     private static readonly object _lock = new();
     private const int EVERYTHING_REQUEST_FILE_NAME = 0x00000001;
     private const int EVERYTHING_REQUEST_PATH = 0x00000002;
+
+    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
+    public static extern void Everything_SetSearch(string lpSearchString);
+
+    [DllImport("Everything64.dll")]
+    public static extern void Everything_SetMatchCase(bool bEnable);
+
+    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
+    public static extern bool Everything_Query(bool bWait);
+
+    [DllImport("Everything64.dll")]
+    public static extern uint Everything_GetNumResults();
+
+    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
+    public static extern void Everything_GetResultFullPathName(uint nIndex, StringBuilder lpString, uint nMaxCount);
+
+    [DllImport("Everything64.dll")]
+    public static extern void Everything_CleanUp();
+
+    [DllImport("Everything64.dll")]
+    public static extern uint Everything_GetMajorVersion();
+
+    // Everything 1.4
+    [DllImport("Everything64.dll")]
+    public static extern void Everything_SetRequestFlags(uint dwRequestFlags);
 
     public static IEnumerable<string> Search(string query)
     {
@@ -63,7 +88,7 @@ internal static partial class Everything64Api
         {
             try
             {
-                _ = Everything_GetMajorVersion();
+                Everything_GetMajorVersion();
                 return true;
             }
             catch (Exception)
@@ -84,30 +109,4 @@ internal static partial class Everything64Api
             // intentionally do nothing
         }
     }
-
-    [LibraryImport("Everything64.dll", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial void Everything_SetSearch(string lpSearchString);
-
-    [LibraryImport("Everything64.dll")]
-    private static partial void Everything_SetMatchCase([MarshalAs(UnmanagedType.Bool)] bool bEnable);
-
-    [LibraryImport("Everything64.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool Everything_Query([MarshalAs(UnmanagedType.Bool)] bool bWait);
-
-    [LibraryImport("Everything64.dll")]
-    private static partial uint Everything_GetNumResults();
-
-    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
-    private static extern void Everything_GetResultFullPathName(uint nIndex, StringBuilder lpString, uint nMaxCount);
-
-    [LibraryImport("Everything64.dll")]
-    private static partial void Everything_CleanUp();
-
-    [LibraryImport("Everything64.dll")]
-    private static partial uint Everything_GetMajorVersion();
-
-    // Everything 1.4
-    [LibraryImport("Everything64.dll")]
-    private static partial void Everything_SetRequestFlags(uint dwRequestFlags);
 }
