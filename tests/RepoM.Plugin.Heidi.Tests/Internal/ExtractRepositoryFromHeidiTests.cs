@@ -42,7 +42,7 @@ public class ExtractRepositoryFromHeidiTests
         // assert
         result.Should().BeTrue();
         repo!.Value.Tags.Should().BeEquivalentTo("tagX");
-        repo!.Value.Tags.Length.Should().Be(1);
+        repo!.Value.Tags.Should().ContainSingle();
     }
     
     [Theory]
@@ -61,7 +61,7 @@ public class ExtractRepositoryFromHeidiTests
         // assert
         result.Should().BeTrue();
         repo!.Value.Tags.Should().BeEquivalentTo("tagX", "tAgX");
-        repo!.Value.Tags.Length.Should().Be(2);
+        repo!.Value.Tags.Should().HaveCount(2);
     }
     
     [Theory]

@@ -28,7 +28,7 @@ public class HmacSha256ServiceTests
         var result = _sut.GetHmac(_stream1);
 
         // assert
-        result.Length.Should().Be(96);
+        result.Should().HaveCount(96);
     }
 
     [Fact]
