@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Plugin.RepositoryFinder;
 
 public class DefaultRepositoryMonitor : IRepositoryMonitor
 {
@@ -72,8 +73,9 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         var scannedPaths = 0;
 
         var paths = _pathProvider.GetPaths();
+        IGitRepositoryFinder gitRepositoryFinder = _gitRepositoryFinderFactory.Create();
 
-        IEnumerable<Task> tasks = paths.Select(path => Task.Run(() => _gitRepositoryFinderFactory.Create().Find(path, OnFoundNewRepository))
+        IEnumerable<Task> tasks = paths.Select(path => Task.Run(() => gitRepositoryFinder.Find(path, OnFoundNewRepository))
                            .ContinueWith(_ =>
                                {
                                    if (Interlocked.Increment(ref scannedPaths) != paths.Length)

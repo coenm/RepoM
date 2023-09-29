@@ -8,36 +8,37 @@ using System.Text;
 
 /// <summary>Wrapper for Everything.</summary>
 /// <remarks>See <see href="https://www.voidtools.com/support/everything/sdk/csharp/"/> for the SDK.</remarks>
-internal static class Everything64Api
+internal static partial class Everything64Api
 {
     private static readonly object _lock = new();
     private const int EVERYTHING_REQUEST_FILE_NAME = 0x00000001;
     private const int EVERYTHING_REQUEST_PATH = 0x00000002;
 
+    [LibraryImport("Everything64.dll", EntryPoint = "Everything_SetSearchW", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial void Everything_SetSearch(string lpSearchString);
+
+    [LibraryImport("Everything64.dll", EntryPoint = "Everything_SetMatchCase")]
+    private static partial void Everything_SetMatchCase([MarshalAs(UnmanagedType.Bool)] bool bEnable);
+
+    [LibraryImport("Everything64.dll", EntryPoint = "Everything_QueryW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool Everything_Query([MarshalAs(UnmanagedType.Bool)] bool bWait);
+
+    [LibraryImport("Everything64.dll", EntryPoint = "Everything_GetNumResults")]
+    private static partial uint Everything_GetNumResults();
+
     [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
-    public static extern void Everything_SetSearch(string lpSearchString);
+    private static extern void Everything_GetResultFullPathName(uint nIndex, StringBuilder lpString, uint nMaxCount);
 
-    [DllImport("Everything64.dll")]
-    public static extern void Everything_SetMatchCase(bool bEnable);
+    [LibraryImport("Everything64.dll", EntryPoint = "Everything_CleanUp")]
+    private static partial void Everything_CleanUp();
 
-    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
-    public static extern bool Everything_Query(bool bWait);
-
-    [DllImport("Everything64.dll")]
-    public static extern uint Everything_GetNumResults();
-
-    [DllImport("Everything64.dll", CharSet = CharSet.Unicode)]
-    public static extern void Everything_GetResultFullPathName(uint nIndex, StringBuilder lpString, uint nMaxCount);
-
-    [DllImport("Everything64.dll")]
-    public static extern void Everything_CleanUp();
-
-    [DllImport("Everything64.dll")]
-    public static extern uint Everything_GetMajorVersion();
+    [LibraryImport("Everything64.dll", EntryPoint = "Everything_GetMajorVersion")]
+    private static partial uint Everything_GetMajorVersion();
 
     // Everything 1.4
-    [DllImport("Everything64.dll")]
-    public static extern void Everything_SetRequestFlags(uint dwRequestFlags);
+    [LibraryImport("Everything64.dll", EntryPoint = "Everything_SetRequestFlags")]
+    private static partial void Everything_SetRequestFlags(uint dwRequestFlags);
 
     public static IEnumerable<string> Search(string query)
     {
@@ -88,8 +89,7 @@ internal static class Everything64Api
         {
             try
             {
-                Everything_GetMajorVersion();
-                return true;
+                return Everything_GetMajorVersion() > 0;
             }
             catch (Exception)
             {
