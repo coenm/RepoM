@@ -56,11 +56,11 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
         _repositoryStore = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
         _repositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
-        _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
-        _repositoryIgnoreStore = repositoryIgnoreStore;
+        _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _autoFetchHandler = autoFetchHandler ?? throw new ArgumentNullException(nameof(autoFetchHandler));
+        _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
         _storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
     }
 
