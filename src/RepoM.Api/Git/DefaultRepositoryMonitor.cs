@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Plugin.RepositoryFinder;
 
 public class DefaultRepositoryMonitor : IRepositoryMonitor
 {
@@ -55,11 +56,11 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
         _repositoryStore = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
         _repositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
-        _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
-        _repositoryIgnoreStore = repositoryIgnoreStore;
+        _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _autoFetchHandler = autoFetchHandler ?? throw new ArgumentNullException(nameof(autoFetchHandler));
+        _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
         _storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
     }
 
@@ -72,8 +73,9 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         var scannedPaths = 0;
 
         var paths = _pathProvider.GetPaths();
+        IGitRepositoryFinder gitRepositoryFinder = _gitRepositoryFinderFactory.Create();
 
-        IEnumerable<Task> tasks = paths.Select(path => Task.Run(() => _gitRepositoryFinderFactory.Create().Find(path, OnFoundNewRepository))
+        IEnumerable<Task> tasks = paths.Select(path => Task.Run(() => gitRepositoryFinder.Find(path, OnFoundNewRepository))
                            .ContinueWith(_ =>
                                {
                                    if (Interlocked.Increment(ref scannedPaths) != paths.Length)
