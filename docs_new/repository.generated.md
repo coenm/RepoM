@@ -51,6 +51,21 @@ Gets the name of the repository.
 
 The name of the repository.
 
+### Example
+
+
+
+#### Input
+```yaml
+repository.name
+```
+
+#### Result
+
+```yaml
+"RepoM"
+```
+
 ## path
 
 `path`
