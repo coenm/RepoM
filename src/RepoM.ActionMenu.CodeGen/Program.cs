@@ -278,8 +278,7 @@ public partial class Program
         Console.WriteLine($"{functionWithMissingDoc} functions with missing doc.");
         Console.WriteLine($"{functionWithMissingTests} functions with missing tests.");
     }
-
-
+    
     private static async Task GenerateModuleSiteDocumentation(KalkModuleToGenerate module, string siteFolder)
     {
         if (module.Name == "KalkEngine")
@@ -397,42 +396,6 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
         await File.WriteAllTextAsync(Path.Combine(apiFolder, $"{name}.generated.md"), result);
     }
 
-    private static (string, string)? TryParseTest(string text)
-    {
-        var testLines = new StringReader(text);
-        string? line;
-        string input = null;
-        var output = string.Empty;
-        var startColumn = -1;
-        while ((line = testLines.ReadLine()) != null)
-        {
-            line = line.TrimEnd();
-            var matchPrompt = _promptRegex.Match(line);
-            if (matchPrompt.Success)
-            {
-                startColumn = matchPrompt.Groups[1].Length;
-                input += line.Substring(matchPrompt.Length) + Environment.NewLine;
-            }
-            else
-            {
-                if (startColumn < 0)
-                {
-                    throw new InvalidOperationException($"Expecting a previous prompt line >>> before `{line}`");
-                }
-
-                line = line.Length >= startColumn ? line[startColumn..] : line;
-                // If we have a result with ellipsis `...` we can't test this text.
-                if (line.StartsWith("..."))
-                {
-                    return null;
-                }
-                output += line + Environment.NewLine;
-            }
-        }
-
-        return input != null ? (input.TrimEnd(), output.TrimEnd()) : null;
-    }
-
     private static void ExtractDocumentation(ISymbol symbol, KalkDescriptorToGenerate desc)
     {
         var xmlStr = symbol.GetDocumentationCommentXml();
@@ -494,12 +457,7 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
                     }
                     else if (element.Name == "test")
                     {
-                        text = _removeCode.Replace(text, string.Empty);
-                        // var test = TryParseTest(text);
-                        // if (test != null)
-                        // {
-                        //     desc.Tests.Add(test.Value);
-                        // }
+                        _ = _removeCode.Replace(text, string.Empty);
                     }
                 }
             }
@@ -509,8 +467,7 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
             throw new InvalidOperationException($"Error while processing `{symbol}` with XML doc `{xmlStr}", ex);
         }
     }
-
-
+    
     static string GetTypeName(ITypeSymbol typeSymbol)
     {
         //if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
@@ -630,41 +587,6 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
         }
 
         return result;
-        //
-        // text = element.Attribute("name")?.Value ?? string.Empty;
-        //
-        //
-        // if (node.NodeType == XmlNodeType.Text)
-        // {
-        //     result.Description = node.ToString();
-        //     return result;
-        // }
-        //
-        // var element = (XElement)node;
-        // string text;
-        // if (element.Name == "paramref")
-        // {
-        //     text = element.Attribute("name")?.Value ?? string.Empty;
-        // }
-        // else
-        // {
-        //
-        //     var builder = new StringBuilder();
-        //     foreach (var subElement in element.Nodes())
-        //     {
-        //         builder.Append(GetCleanedString(subElement));
-        //     }
-        //
-        //     text = builder.ToString();
-        // }
-        //
-        // if (element.Name == "para")
-        // {
-        //     text += "\n";
-        // }
-
-        // result.Description = HttpUtility.HtmlDecode(text);
-        // return result;
     }
 
     [GeneratedRegex("^\\s*```\\w*[ \\t]*[\\r\\n]*", RegexOptions.Multiline)]
