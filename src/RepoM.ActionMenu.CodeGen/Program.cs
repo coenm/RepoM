@@ -21,7 +21,12 @@ using Scriban.Runtime;
 public partial class Program
 {
     private static readonly Regex _removeCode = RemoveCodeRegex();
-    
+
+    private static AttributeData? FindAttribute<T>(ISymbol symbol)
+    {
+        return symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass!.Name == typeof(T).Name);
+    }
+
     static async Task Main(string[] args)
     {
         // not sure why Kalk has this.
@@ -57,24 +62,27 @@ public partial class Program
         // _ = compilation.GetTypeByMetadataName("Kalk.Core.KalkEngine");
         var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>();
 
-        foreach (ISymbol type in compilation.GetSymbolsWithName(x => true, SymbolFilter.Type))
+        foreach (ISymbol type in compilation.GetSymbolsWithName(_ => true, SymbolFilter.Type))
         {
             if (type is not ITypeSymbol typeSymbol)
             {
                 continue;
             }
-                
-            var moduleAttribute = typeSymbol.GetAttributes().FirstOrDefault(x => x.AttributeClass.Name == nameof(ActionMenuModuleAttribute));
+
+            AttributeData? moduleAttribute = FindAttribute<ActionMenuModuleAttribute>(typeSymbol);
             KalkModuleToGenerate? moduleToGenerate = null;
             if (moduleAttribute != null)
             {
                 GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule);
             }
 
-            foreach (var member in typeSymbol.GetMembers())
+            foreach (ISymbol member in typeSymbol.GetMembers())
             {
-                var attr = member.GetAttributes().FirstOrDefault(x => x.AttributeClass.Name == nameof(ActionMenuMemberAttribute));
-                if (attr == null) continue;
+                AttributeData? attr = FindAttribute<ActionMenuMemberAttribute>(member);
+                if (attr == null)
+                {
+                    continue;
+                }
 
                 var name = attr.ConstructorArguments[0].Value?.ToString();
                 if (string.IsNullOrWhiteSpace(name))
@@ -95,7 +103,7 @@ public partial class Program
                 var desc = new KalkMemberToGenerate()
                     {
                         Name = name,
-                        XmlId = member.GetDocumentationCommentId(),
+                        XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                         Category = string.Empty,
                         IsCommand = method?.ReturnsVoid ?? false,
                         Module = moduleToGenerate,
@@ -118,7 +126,7 @@ public partial class Program
 
                     for (var i = 0; i < method.Parameters.Length; i++)
                     {
-                        var parameter = method.Parameters[i];
+                        IParameterSymbol parameter = method.Parameters[i];
                         if (i > 0)
                         {
                             builder.Append(", ");
@@ -308,56 +316,61 @@ public partial class Program
             xmlStr = xmlStr;
         }
 
+        if (string.IsNullOrEmpty(xmlStr))
+        {
+            return;
+        }
+
         try
         {
-            if (!string.IsNullOrEmpty(xmlStr))
+            var xmlDoc = XElement.Parse(xmlStr);
+            var elements = xmlDoc.Elements().ToList();
+
+            foreach (XElement element in elements)
             {
-                var xmlDoc = XElement.Parse(xmlStr);
-                var elements = xmlDoc.Elements().ToList();
-
-                foreach (var element in elements)
+                var text = GetCleanedString(element).Trim();
+                if (element.Name == "summary")
                 {
-                    var text = GetCleanedString(element).Trim();
-                    if (element.Name == "summary")
+                    desc.Description = text;
+                }
+                else if (element.Name == "param")
+                {
+                    var argName = element.Attribute("name")?.Value;
+                    if (argName == null || symbol is not IMethodSymbol method)
                     {
-                        desc.Description = text;
+                        continue;
                     }
-                    else if (element.Name == "param")
-                    {
-                        var argName = element.Attribute("name")?.Value;
-                        if (argName != null && symbol is IMethodSymbol method)
-                        {
-                            var parameterSymbol = method.Parameters.FirstOrDefault(x => x.Name == argName);
-                            var isOptional = false;
-                            if (parameterSymbol == null)
-                            {
-                                Console.WriteLine($"Invalid XML doc parameter name {argName} not found on method {method}");
-                            }
-                            else
-                            {
-                                isOptional = parameterSymbol.IsOptional;
-                            }
 
-                            desc.Params.Add(new KalkParamDescriptor(argName, text) { IsOptional = isOptional, });
-                        }
-                    }
-                    else if (element.Name == "returns")
+                    IParameterSymbol? parameterSymbol = method.Parameters.FirstOrDefault(x => x.Name == argName);
+                    var isOptional = false;
+                    if (parameterSymbol == null)
                     {
-                        desc.Returns = text;
+                        Console.WriteLine($"Invalid XML doc parameter name {argName} not found on method {method}");
                     }
-                    else if (element.Name == "remarks")
+                    else
                     {
-                        desc.Remarks = text;
+                        isOptional = parameterSymbol.IsOptional;
                     }
-                    else if (element.Name == "example")
-                    {
-                        ExamplesDescriptor examplesDescriptor = GetExampleData(element);
-                        desc.Examples.Add(examplesDescriptor);
-                    }
-                    else if (element.Name == "test")
-                    {
-                        _ = _removeCode.Replace(text, string.Empty);
-                    }
+
+                    desc.Params.Add(new KalkParamDescriptor(argName, text) { IsOptional = isOptional, });
+                }
+                else if (element.Name == "returns")
+                {
+                    desc.Returns = text;
+                }
+                else if (element.Name == "remarks")
+                {
+                    desc.Remarks = text;
+                }
+                else if (element.Name == "example")
+                {
+                    ExamplesDescriptor examplesDescriptor = GetExampleData(element);
+                    desc.Examples.Add(examplesDescriptor);
+                }
+                else if (element.Name == "test")
+                {
+                    // todo?
+                    _ = _removeCode.Replace(text, string.Empty);
                 }
             }
         }
@@ -369,23 +382,6 @@ public partial class Program
     
     static string GetTypeName(ITypeSymbol typeSymbol)
     {
-        //if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
-        //{
-        //    return GetTypeName(arrayTypeSymbol.ElementType) + "[]";
-        //}
-
-        //if (typeSymbol.Name == typeof(Nullable).Name)
-        //{
-        //    return typeSymbol.ToDisplayString();
-        //}
-           
-        //if (typeSymbol.Name == "String") return "string";
-        //if (typeSymbol.Name == "Object") return "object";
-        //if (typeSymbol.Name == "Boolean") return "bool";
-        //if (typeSymbol.Name == "Single") return "float";
-        //if (typeSymbol.Name == "Double") return "double";
-        //if (typeSymbol.Name == "Int32") return "int";
-        //if (typeSymbol.Name == "Int64") return "long";
         return typeSymbol.ToDisplayString();
     }
 
@@ -404,7 +400,6 @@ public partial class Program
         }
         else
         {
-
             var builder = new StringBuilder();
             foreach (var subElement in element.Nodes())
             {
