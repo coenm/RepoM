@@ -21,7 +21,7 @@ namespace RepoM.ActionMenu.Core.Tests
     {
         private readonly IRepository _repository = new DummyRepository();
 
-        private const string File1Env =
+        private const string FILE1_ENV =
             """
             # just a comment
             ABC=my abc
@@ -30,13 +30,13 @@ namespace RepoM.ActionMenu.Core.Tests
             DEF=my def 12
             """;
 
-        private const string File2Env =
+        private const string FILE2_ENV =
             """
             DEF=my def 12-second!
             GHI=GHI GHI GHI-second
             """;
 
-        private const string Sub =
+        private const string SUB =
             """
             context:
             # - type: set-variable@1
@@ -124,14 +124,6 @@ namespace RepoM.ActionMenu.Core.Tests
                 text: 'file name {{ file }}'
                 
             - type: foreach@1
-              enumerable: 'file.pwd2("c:\\", "*.env")'
-              variable: file
-              actions:
-              - type: just-text@1
-                text: 'file name {{ file }}'
-                
-                      
-            - type: foreach@1
               enumerable: devopsEnvironments
               variable: environment
               actions:
@@ -177,9 +169,9 @@ namespace RepoM.ActionMenu.Core.Tests
                 new Dictionary<string, MockFileData>()
                 {
                     { "C:\\RepositoryActionsV2.yaml", new MockFileData(Yaml, Encoding.UTF8) },
-                    { "C:\\SubV2.yaml", new MockFileData(Sub, Encoding.UTF8) },
-                    { "C:\\file1.env", new MockFileData(File1Env, Encoding.UTF8) },
-                    { "C:\\file2.env", new MockFileData(File2Env, Encoding.UTF8) },
+                    { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
+                    { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
+                    { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
                 });
             var sut = new Factory(fileSystem, new ITemplateContextRegistration[0]);
             var factory = sut.Create("C:\\RepositoryActionsV2.yaml");
@@ -196,9 +188,9 @@ namespace RepoM.ActionMenu.Core.Tests
                 new Dictionary<string, MockFileData>()
                 {
                     { "C:\\RepositoryActionsV2.yaml", new MockFileData(Yaml, Encoding.UTF8) },
-                    { "C:\\SubV2.yaml", new MockFileData(Sub, Encoding.UTF8) },
-                    { "C:\\file1.env", new MockFileData(File1Env, Encoding.UTF8) },
-                    { "C:\\file2.env", new MockFileData(File2Env, Encoding.UTF8) },
+                    { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
+                    { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
+                    { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
                 });
             var sut = new Factory(fileSystem, new ITemplateContextRegistration[0]);
             var factory = sut.Create("C:\\RepositoryActionsV2.yaml");

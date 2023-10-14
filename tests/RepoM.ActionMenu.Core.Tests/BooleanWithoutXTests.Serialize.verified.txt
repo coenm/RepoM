@@ -1,11 +1,11 @@
 ﻿tags:
-- tag: coen1
+- tag: private
   when: 1 == 1
-- tag: coentje2
+- tag: github
   when: 1 == 2
-- tag: coentje3
+- tag: github
   when: 1 == 2  || true
-- tag: rian
+- tag: work
   when: ''
 action-menu:
 - type: just-text@1
@@ -16,17 +16,6 @@ action-menu:
 - type: foreach@1
   active: 
   enumerable: file.find_files("c:\\", "*.env")
-  variable: file
-  skip: 
-  actions:
-  - type: just-text@1
-    text: file name {{ file }}
-    active: 
-    enabled: 
-    context: 
-- type: foreach@1
-  active: 
-  enumerable: file.pwd2("c:\\", "*.env")
   variable: file
   skip: 
   actions:
