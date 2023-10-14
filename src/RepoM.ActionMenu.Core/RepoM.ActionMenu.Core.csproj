@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="2.5.0" />
+    <PackageReference Include="Scriban" Version="5.9.0" />
+    <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
+    <PackageReference Include="YamlDotNet" Version="13.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RepoM.ActionMenu.Interface\RepoM.ActionMenu.Interface.csproj" />
+  </ItemGroup>
+
+</Project>

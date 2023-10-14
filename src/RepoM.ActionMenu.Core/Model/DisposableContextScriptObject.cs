@@ -1,0 +1,78 @@
+namespace RepoM.ActionMenu.Core.Model;
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using RepoM.ActionMenu.Core.Model.Env;
+using RepoM.ActionMenu.Core.Yaml.Model.Ctx;
+using RepoM.ActionMenu.Interface.ActionMenuFactory;
+using RepoM.ActionMenu.Interface.YamlModel;
+using Scriban.Runtime;
+
+internal sealed class DisposableContextScriptObject : ScriptObject, IScope
+{
+    private readonly ActionMenuGenerationContext _context;
+    private readonly EnvSetScriptObject _envSetScriptObject;
+    private readonly List<IContextActionMapper> _mappers;
+    private int _envCounter;
+
+    internal DisposableContextScriptObject(ActionMenuGenerationContext context, EnvSetScriptObject envSetScriptObject, List<IContextActionMapper> mappers)
+    {
+        _envCounter = 0;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _envSetScriptObject = envSetScriptObject ?? throw new ArgumentNullException(nameof(envSetScriptObject));
+        _mappers = mappers;
+        _context.PushGlobal(this);
+    }
+
+    public async Task AddContextActionAsync(IContextAction contextItem)
+    {
+        var enabled = await IsActionEnabled(contextItem).ConfigureAwait(false);
+        if (!enabled)
+        {
+            return;
+        }
+
+        var mapper = _mappers.Find(mapper => mapper.CanMap(contextItem));
+        if (mapper == null)
+        {
+            throw new Exception("Cannot find mapper");
+        }
+
+        await mapper.MapAsync(contextItem, _context, this).ConfigureAwait(false);
+    }
+    
+    public void Dispose()
+    {
+        if (_envCounter != 0)
+        {
+            while (_envCounter > 0)
+            {
+                _ = _envSetScriptObject.Pop();
+                _envCounter--;
+            }
+        }
+        
+        if (_context.PopGlobal() != this)
+        {
+            throw new Exception("Popped wrong script object");
+        }
+    }
+
+    public void PushEnvironmentVariable(Dictionary<string, string> envVars)
+    {
+        _envSetScriptObject.Push(new EnvScriptObject(envVars));
+        _envCounter++;
+    }
+
+    private async Task<bool> IsActionEnabled(IContextAction contextItem)
+    {
+        // action does not implement interface and is therfore always enabled.
+        if (contextItem is not IEnabled ea)
+        {
+            return true;
+        }
+
+        return await _context.EvaluateToBooleanAsync(ea.Enabled, true).ConfigureAwait(false);
+    }
+}
