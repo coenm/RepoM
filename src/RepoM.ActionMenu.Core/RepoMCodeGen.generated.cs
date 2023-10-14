@@ -16,8 +16,7 @@ namespace RepoM.ActionMenu.Core.Model.Functions
     {
         protected sealed override void RegisterFunctions()
         {
-            RegisterFunction("find_files", (Func<RepoM.ActionMenu.Core.Model.ActionMenuGenerationContext, Scriban.Parsing.SourceSpan, string, string, string[]>)FindFiles);
-            RegisterFunction("find_files_interface", (Func<RepoM.ActionMenu.Interface.ActionMenuFactory.IMenuContext, Scriban.Parsing.SourceSpan, string, string, string[]>)FindFilesUsingInterface);
+            RegisterFunction("find_files", (Func<RepoM.ActionMenu.Interface.ActionMenuFactory.IMenuContext, Scriban.Parsing.SourceSpan, string, string, string[]>)FindFiles);
             RegisterFunction("file_exists", (Func<RepoM.ActionMenu.Interface.ActionMenuFactory.IMenuContext, string, bool>)FileExists);
             RegisterFunction("dir_exists", (Func<RepoM.ActionMenu.Interface.ActionMenuFactory.IMenuContext, string, bool>)DirectoryExists);
         }

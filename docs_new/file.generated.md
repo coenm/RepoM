@@ -90,32 +90,3 @@ find_files 'C:\Users\coenm\RepoM' '*.sln'
 ```yaml
 ["C:\Users\coenm\RepoM\src\RepoM.sln"]
 ```
-
-## find_files_interface
-
-`find_files_interface(rootPath,searchPattern)`
-
-Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.
-
-- `rootPath`: The root folder.
-- `searchPattern`: The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesn't support regular expressions.
-
-### Returns
-
-Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.
-
-### Example
-
-Locate all solution files in the given directory.
-
-#### Input
-```yaml
-find_files_interface 'C:\Users\coenm\RepoM' '*.sln'
-# find_files_interface('C:\Users\coenm\RepoM','*.sln')
-```
-
-#### Result
-
-```yaml
-["C:\Users\coenm\RepoM\src\RepoM.sln"]
-```

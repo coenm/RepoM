@@ -35,29 +35,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// </code>
     /// </example>
     [ActionMenuMember("find_files")]
-    public static string[] FindFiles(ActionMenuGenerationContext context, SourceSpan span, string rootPath, string searchPattern)
-    {
-        return FindFilesUsingInterface(context, span, rootPath, searchPattern);
-    }
-
-    /// <summary>
-    /// Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.
-    /// </summary>
-    /// <param name="rootPath">The root folder.</param>
-    /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesn't support regular expressions.</param>
-    /// <returns>Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.</returns>
-    /// <example>
-    /// Locate all solution files in the given directory.
-    /// <code>
-    /// find_files_interface 'C:\Users\coenm\RepoM' '*.sln'
-    /// # find_files_interface('C:\Users\coenm\RepoM','*.sln')
-    /// </code>
-    /// <code>
-    /// ["C:\Users\coenm\RepoM\src\RepoM.sln"]
-    /// </code>
-    /// </example>
-    [ActionMenuMember("find_files_interface")]
-    public static string[] FindFilesUsingInterface(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
+    public static string[] FindFiles(/*ActionMenuGenerationContext*/ IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
     {
         try
         {
