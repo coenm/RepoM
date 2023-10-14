@@ -1,4 +1,4 @@
-﻿namespace Kalk.Core;
+namespace Kalk.Core;
 
 using System.Collections.Generic;
 
@@ -8,6 +8,7 @@ public class KalkDescriptor
     {
         Names = new List<string>();
         Params = new List<KalkParamDescriptor>();
+        Examples = new List<ExamplesDescriptor>();
     }
 
     public List<string> Names { get; }
@@ -26,5 +27,5 @@ public class KalkDescriptor
 
     public string Remarks { get; set; }
 
-    public string Example { get; set; }
+    public List<ExamplesDescriptor> Examples { get; } 
 }

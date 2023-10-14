@@ -35,6 +35,7 @@ out = true
 out = false
 ```
 
+
 ## file_exists
 
 `file_exists(path)`
@@ -60,6 +61,7 @@ out = false
 out = true
 ```
 
+
 ## find_files
 
 `find_files(rootPath,searchPattern)`
@@ -75,18 +77,69 @@ Returns an enumerable collection of full paths of the files or directories that 
 
 ### Example
 
-```kalk
-firstsecond
+text without para
 
+#### Input
+```scriban
 find_files 'C:\Users\coenm\RepoM\src' '*.sln'
+find_files('C:\Users\coenm\RepoM\src','*.sln')
+```
 
-xxx
-  sdf
-find_files 'C:\Users\coenm\RepoM\src' '*.csproj'
-[1, 2, 3, 4]
+#### Result
+
+```
+1aa349585ed7ecbd3b9c486a30067e395ca4b356
+```
+### Example
+
+text without para2
+
+#### Input
+```scriban
+find_files 'C:\Users\coenm\RepoM\src' '*.txt'
+find_files('C:\Users\coenm\RepoM\src','*.txt')
+```
+
+#### Result
+
+```
+[]
 ```
 
 ## find_files_interface
 
-`find_files_interface`
+`find_files_interface(rootPath,searchPattern)`
 
+Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.
+
+- `rootPath`: The root folder.
+- `searchPattern`: The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesn't support regular expressions.
+
+### Returns
+
+Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.
+
+### Example
+
+text without para
+
+```scriban
+find_files_interface 'C:\Users\coenm\RepoM\src' '*.sln'
+find_files_interface('C:\Users\coenm\RepoM\src','*.sln')
+```
+
+### Example
+
+text without para2
+
+#### Input
+```scriban
+find_files_interface 'C:\Users\coenm\RepoM\src' '*.txt'
+find_files_interface('C:\Users\coenm\RepoM\src','*.txt')
+```
+
+#### Result
+
+```
+[]
+```

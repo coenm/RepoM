@@ -13,37 +13,36 @@ using Scriban.Syntax;
 [ActionMenuModule("File")]
 internal partial class FileFunctions : ScribanModuleWithFunctions
 {
-    private readonly IFileSystem _fileSystem;
-
-    public FileFunctions(IFileSystem fileSystem)
+    public FileFunctions()
     {
-        _fileSystem = fileSystem;
         RegisterFunctions();
     }
-
-
+    
     /// <summary>
     /// Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.
     /// </summary>
     /// <param name="rootPath">The root folder.</param>
     /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesn't support regular expressions.</param>
     /// <returns>Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.</returns>
-    /// <example>first</example>
     /// <example>
-    /// second
+    /// text without para
     /// <code>
     /// find_files 'C:\Users\coenm\RepoM\src' '*.sln'
+    /// find_files('C:\Users\coenm\RepoM\src','*.sln')
     /// </code>
-    /// <para>
-    /// xxx</para>
-    /// sdf
-    /// 
-    /// ```scribanhtml
-    /// find_files 'C:\Users\coenm\RepoM\src' '*.csproj'
-    /// ```
-    /// ```html
-    /// [1, 2, 3, 4]
-    /// ```
+    /// <code>
+    /// 1aa349585ed7ecbd3b9c486a30067e395ca4b356
+    /// </code>
+    /// </example>
+    /// <example>
+    /// text without para2
+    /// <code>
+    /// find_files 'C:\Users\coenm\RepoM\src' '*.txt'
+    /// find_files('C:\Users\coenm\RepoM\src','*.txt')
+    /// </code>
+    /// <code>
+    /// []
+    /// </code>
     /// </example>
     [ActionMenuMember("find_files")]
     public static string[] FindFiles(ActionMenuGenerationContext context, SourceSpan span, string rootPath, string searchPattern)
@@ -51,7 +50,32 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
         return FindFilesUsingInterface(context, span, rootPath, searchPattern);
     }
 
-    /// <inheritdoc cref="FindFiles"/>
+    /// <summary>
+    /// Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.
+    /// </summary>
+    /// <param name="rootPath">The root folder.</param>
+    /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesn't support regular expressions.</param>
+    /// <returns>Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.</returns>
+    /// <example>
+    /// text without para
+    /// <code>
+    /// find_files_interface 'C:\Users\coenm\RepoM\src' '*.sln'
+    /// find_files_interface('C:\Users\coenm\RepoM\src','*.sln')
+    /// </code>
+    /// <para>
+    /// The result is an enumerable of strings.
+    /// </para>
+    /// </example>
+    /// <example>
+    /// text without para2
+    /// <code>
+    /// find_files_interface 'C:\Users\coenm\RepoM\src' '*.txt'
+    /// find_files_interface('C:\Users\coenm\RepoM\src','*.txt')
+    /// </code>
+    /// <code>
+    /// []
+    /// </code>
+    /// </example>
     [ActionMenuMember("find_files_interface")]
     public static string[] FindFilesUsingInterface(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
     {

@@ -31,6 +31,7 @@ The capitalized input string
 out = "Test"
 ```
 
+
 ## capitalize_words
 
 `capitalize_words(text)`
@@ -51,6 +52,7 @@ The capitalized input string
 out = "This Is Easy"
 ```
 
+
 ## downcase
 
 `downcase(text)`
@@ -70,6 +72,7 @@ The input string lower case
 # "TeSt" |> downcase
 out = "test"
 ```
+
 
 ## endswith
 
@@ -95,6 +98,7 @@ out = true
 out = false
 ```
 
+
 ## escape
 
 `escape(text)`
@@ -114,6 +118,7 @@ The two strings concatenated
 # "Hel\tlo\n\"W\\orld" |> escape
 out = "Hel\\tlo\\n\\\"W\\\\orld"
 ```
+
 
 ## handleize
 
@@ -135,6 +140,7 @@ A url handle
 out = "100-m-ms"
 ```
 
+
 ## lstrip
 
 `lstrip(text)`
@@ -154,6 +160,7 @@ The input string without any left whitespace characters
 # '   too many spaces' |> lstrip
 out = "too many spaces"
 ```
+
 
 ## pad_left
 
@@ -176,6 +183,7 @@ The input string padded
 out = "     world"
 ```
 
+
 ## pad_right
 
 `pad_right(text,width)`
@@ -196,6 +204,7 @@ The input string padded
 # "hello" |> pad_right(10)
 out = "hello     "
 ```
+
 
 ## pluralize
 
@@ -219,6 +228,7 @@ The singular or plural string based on number
 out = "products"
 ```
 
+
 ## regex_escape
 
 `regex_escape(text)`
@@ -240,6 +250,7 @@ A string of characters with metacharacters converted to their escaped form.
 # "(abc.*)" |> regex_escape
 out = "\\(abc\\.\\*\\)"
 ```
+
 
 ## regex_match
 
@@ -266,6 +277,7 @@ An array that contains all the match groups. The first group contains the entire
 # "this is a text123" |> regex_match(`(\w+) a ([a-z]+\d+)`)
 out = ["is a text123", "is", "text123"]
 ```
+
 
 ## regex_matches
 
@@ -294,6 +306,7 @@ An array of matches that contains all the match groups. The first group contains
 out = [["this", "this"], ["is", "is"], ["a", "a"], ["text123", "text123"]]
 ```
 
+
 ## regex_replace
 
 `regex_replace(text,pattern,replace,options?)`
@@ -321,6 +334,7 @@ A new string that is identical to the input string, except that the replacement 
 out = "a-Yo-d"
 ```
 
+
 ## regex_split
 
 `regex_split(text,pattern,options?)`
@@ -347,6 +361,7 @@ A string array.
 out = ["a", "b", "c", "d"]
 ```
 
+
 ## regex_unescape
 
 `regex_unescape(text)`
@@ -367,6 +382,7 @@ A string of characters with any escaped characters converted to their unescaped 
 out = "(abc.*)"
 ```
 
+
 ## rstrip
 
 `rstrip(text)`
@@ -386,6 +402,7 @@ The input string without any left whitespace characters
 # '   too many spaces           ' |> rstrip
 out = "   too many spaces"
 ```
+
 
 ## split
 
@@ -408,6 +425,7 @@ An enumeration of the substrings
 # "Hi, how are you today?" |> split(' ')
 out = ["Hi,", "how", "are", "you", "today?"]
 ```
+
 
 ## startswith
 
@@ -433,6 +451,7 @@ out = true
 out = false
 ```
 
+
 ## strip
 
 `strip(text)`
@@ -452,6 +471,7 @@ The input string without any left and right whitespace characters
 # '   too many spaces           ' |> strip
 out = "too many spaces"
 ```
+
 
 ## strip_newlines
 
@@ -473,6 +493,7 @@ The input string without any breaks/newlines characters
 out = "This is a string. With another string"
 ```
 
+
 ## upcase
 
 `upcase(text)`
@@ -492,3 +513,4 @@ The input string upper case
 # "test" |> upcase
 out = "TEST"
 ```
+

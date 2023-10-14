@@ -62,7 +62,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         var rootScriptObject = new RepoMScriptObject();
         
-        rootScriptObject.SetValue("file", new FileFunctions(fileSystem), true);
+        rootScriptObject.SetValue("file", new FileFunctions(), true);
 
 
         rootScriptObject.Add("repository", new RepositoryFunctions(Repository));

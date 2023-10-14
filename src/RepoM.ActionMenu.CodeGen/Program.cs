@@ -14,10 +14,12 @@ using System.Xml.Linq;
 using Broslyn;
 using Kalk.CodeGen;
 using Kalk.Core;
+using Microsoft.Build.Framework;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.Interface.Attributes;
 using Scriban;
 using Scriban.Runtime;
+using StructuredLogViewer;
 
 public partial class Program
 {
@@ -349,26 +351,36 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
 
 {{ member.Remarks | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
 {{~ end ~}}
-{{~ if member.Example ~}}
+{{~ if member.Examples.size > 0 ~}}
 
+{{~ for example in member.Examples ~}}
 ### Example
 
-```kalk
-{{ member.Example | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+{{ example.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+
+{{~ if example.Input ~}}
+{{~ if example.Output ~}}
+#### Input
+{{~ end ~}}
+```scriban
+{{ example.Input | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
 ```
+
+{{~ end ~}}
+{{~ if example.Output ~}}
+#### Result
+
+```
+{{ example.Output | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+```
+{{~ end ~}}
+{{~ end ~}}
 {{~ end ~}}
 {{~ end ~}}
 ";
         var template = Template.Parse(templateText);
 
         var apiFolder = siteFolder;
-
-        //
-        // // Don't generate hardware.generated.md
-        // if (name == "hardware")
-        // {
-        //     return;
-        // }
 
         var context = new TemplateContext
             {
@@ -424,10 +436,16 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
     private static void ExtractDocumentation(ISymbol symbol, KalkDescriptorToGenerate desc)
     {
         var xmlStr = symbol.GetDocumentationCommentXml();
-        if (xmlStr.Contains("Find files in a given directory based on the search pattern. Resulting filenames are absolute path based."))
+        if (xmlStr.Contains("Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern."))
         {
             xmlStr = xmlStr;
         }
+
+        if (xmlStr.Contains("Checks if the specified file path exists on the disk."))
+        {
+            xmlStr = xmlStr;
+        }
+
         try
         {
             if (!string.IsNullOrEmpty(xmlStr))
@@ -471,13 +489,8 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
                     }
                     else if (element.Name == "example")
                     {
-                        text = _removeCode.Replace(text, string.Empty);
-                        desc.Example += text;
-                        // var test = TryParseTest(text);
-                        // if (test != null)
-                        // {
-                        //     desc.Tests.Add(test.Value);
-                        // }
+                        ExamplesDescriptor examplesDescriptor = GetExampleData(element);
+                        desc.Examples.Add(examplesDescriptor);
                     }
                     else if (element.Name == "test")
                     {
@@ -550,6 +563,108 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
             text += "\n";
         }
         return HttpUtility.HtmlDecode(text);
+    }
+
+    private static ExamplesDescriptor GetExampleData(XNode node)
+    {
+        var result = new ExamplesDescriptor();
+
+        if (node.NodeType != XmlNodeType.Element)
+        {
+            return result;
+            // expect example node
+        }
+
+        var element = (XElement)node;
+        if (element.Name != "example")
+        {
+            return result;
+            // expect example node
+        }
+
+        XNode[] nodes = element.Nodes().ToArray();
+        if (nodes.Length == 0)
+        {
+            result.Description = element.Value.Trim();
+            return result;
+        }
+
+        string current = "";
+
+        foreach (var item in nodes)
+        {
+            if (item is XText xtext)
+            {
+                current += xtext.Value.Trim() + Environment.NewLine;
+            }
+            else if (item is XElement xelement)
+            {
+                if (xelement.Name == "code")
+                {
+                    if (result.Input != null)
+                    {
+                        // switch next
+                        result.Output = xelement.Value.Trim();
+                    }
+                    else       
+                    {
+                        // switch next
+                        result.Description = current;
+                        result.Input = xelement.Value.Trim();
+                    }
+                }
+                else if (xelement.Name == "para")
+                {
+                    current += xelement.Value.Trim() + Environment.NewLine;
+                }
+                else
+                {
+                    throw new Exception($"'{xelement.Name}' Not expected");
+                }
+            }       
+        }
+
+        if (string.IsNullOrEmpty(result.Description))
+        {
+            result.Description = current;
+        }
+
+        return result;
+        //
+        // text = element.Attribute("name")?.Value ?? string.Empty;
+        //
+        //
+        // if (node.NodeType == XmlNodeType.Text)
+        // {
+        //     result.Description = node.ToString();
+        //     return result;
+        // }
+        //
+        // var element = (XElement)node;
+        // string text;
+        // if (element.Name == "paramref")
+        // {
+        //     text = element.Attribute("name")?.Value ?? string.Empty;
+        // }
+        // else
+        // {
+        //
+        //     var builder = new StringBuilder();
+        //     foreach (var subElement in element.Nodes())
+        //     {
+        //         builder.Append(GetCleanedString(subElement));
+        //     }
+        //
+        //     text = builder.ToString();
+        // }
+        //
+        // if (element.Name == "para")
+        // {
+        //     text += "\n";
+        // }
+
+        // result.Description = HttpUtility.HtmlDecode(text);
+        // return result;
     }
 
     [GeneratedRegex("^\\s*```\\w*[ \\t]*[\\r\\n]*", RegexOptions.Multiline)]
