@@ -12,20 +12,15 @@ using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 using Broslyn;
-using Kalk.CodeGen;
-using Kalk.Core;
-using Microsoft.Build.Framework;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.Interface.Attributes;
 using Scriban;
 using Scriban.Runtime;
-using StructuredLogViewer;
 
 public partial class Program
 {
     private static readonly Regex _removeCode = RemoveCodeRegex();
-    private static readonly Regex _promptRegex = PromptRegex();
-
+    
     static async Task Main(string[] args)
     {
         // not sure why Kalk has this.
@@ -38,26 +33,14 @@ public partial class Program
         var pathToSolution = Path.Combine(srcFolder, projectName, $"{projectName}.csproj");
         var pathToGeneratedCode = Path.Combine(srcFolder, projectName, "RepoMCodeGen.generated.cs");
 
-        if (!Directory.Exists(Path.Combine(rootFolder, ".git")))
-        {
-            throw new Exception("Wrong root folder");
-        }
-        
-        if (!Directory.Exists(srcFolder))
-        {
-            throw new Exception($"src folder `{srcFolder}` doesn't exist");
-        }
-        
-        if (!Directory.Exists(docsFolder))
-        {
-            throw new Exception($"docsFolder folder `{docsFolder}` doesn't exist");
-        }
-        
-        if (!File.Exists(pathToSolution))
-        {
-            throw new Exception($"File `{pathToSolution}` does not exist");
-        }
+        CheckDirectory(Path.Combine(rootFolder, ".git"));
+        CheckDirectory(srcFolder);
+        CheckDirectory(docsFolder);
+        CheckFile(pathToSolution);
 
+        Template templateModule = await LoadTemplateAsync("Templates/Module.scriban-cs");
+        Template templateDocs = await LoadTemplateAsync("Templates/Docs.scriban-txt");
+        
         CSharpCompilationCaptureResult compilationCaptureResult = CSharpCompilationCapture.Build(pathToSolution);
         Solution solution = compilationCaptureResult.Workspace.CurrentSolution;
         Project[] solutionProjects = solution.Projects.ToArray();
@@ -68,23 +51,9 @@ public partial class Program
 
         // Compile the project
         Compilation compilation = await project.GetCompilationAsync() ?? throw new Exception("Compilation failed");
+        ValidateCompilation(compilation);
 
-        ImmutableArray<Diagnostic> diagnostics = compilation.GetDiagnostics();
-        Diagnostic[] errors = diagnostics.Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error).ToArray();
-        if (errors.Length > 0)
-        {
-            Console.WriteLine("Compilation errors:");
-            foreach (var error in errors)
-            {
-                Console.WriteLine(error);
-            }
-
-            Console.WriteLine("Error, Exiting.");
-            Environment.Exit(1);
-            return;
-        }
-
-        //var kalkEngine = compilation.GetTypeByMetadataName("Kalk.Core.KalkEngine");
+        // _ = compilation.GetTypeByMetadataName("Kalk.Core.KalkEngine");
         var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>();
 
         void GetOrCreateModule(ITypeSymbol typeSymbol, string className, AttributeData moduleAttribute, out KalkModuleToGenerate moduleToGenerate)
@@ -157,7 +126,7 @@ public partial class Program
                         Name = name,
                         XmlId = member.GetDocumentationCommentId(),
                         Category = string.Empty,
-                        IsCommand = method != null && method.ReturnsVoid,
+                        IsCommand = method?.ReturnsVoid ?? false,
                         Module = moduleToGenerate,
                     };
                 desc.Names.Add(name);
@@ -179,7 +148,11 @@ public partial class Program
                     for (var i = 0; i < method.Parameters.Length; i++)
                     {
                         var parameter = method.Parameters[i];
-                        if (i > 0) builder.Append(", ");
+                        if (i > 0)
+                        {
+                            builder.Append(", ");
+                        }
+
                         builder.Append(GetTypeName(parameter.Type));
                     }
 
@@ -211,13 +184,11 @@ public partial class Program
         }
 
         var modules = mapNameToModule.Values.OrderBy(x => x.ClassName).ToList();
-        var templateStr = await File.ReadAllTextAsync("Templates/Module.scriban-cs");
-        var template = Template.Parse(templateStr);
 
         var context = new TemplateContext
             {
                 LoopLimit = 0,
-                MemberRenamer = x => x.Name
+                MemberRenamer = x => x.Name,
             };
         var scriptObject = new ScriptObject()
             { 
@@ -225,15 +196,14 @@ public partial class Program
             };
         context.PushGlobal(scriptObject);
 
-        var result = await template.RenderAsync(context);
+        var result = await templateModule.RenderAsync(context);
         await File.WriteAllTextAsync(pathToGeneratedCode, result);
-        // await File.WriteAllTextAsync(Path.Combine(srcFolder, "ScribanRepoM.Tests", "RepoM.ActionMenu", "Generated", "Coen.generated.cs"), result);
 
         
         // Generate module site documentation
         foreach(KalkModuleToGenerate module in modules)
         {
-            await GenerateModuleSiteDocumentation(module, docsFolder);
+            await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
         }
 
         return;
@@ -247,7 +217,7 @@ public partial class Program
             {
                 var hasNoDesc = string.IsNullOrEmpty(member.Description);
                 var hasNoTests = member.Tests.Count == 0;
-                if ((!hasNoDesc && !hasNoTests) || module.ClassName.Contains("Intrinsics"))
+                if ((!hasNoDesc && !hasNoTests))
                 {
                     continue;
                 }
@@ -278,8 +248,29 @@ public partial class Program
         Console.WriteLine($"{functionWithMissingDoc} functions with missing doc.");
         Console.WriteLine($"{functionWithMissingTests} functions with missing tests.");
     }
-    
-    private static async Task GenerateModuleSiteDocumentation(KalkModuleToGenerate module, string siteFolder)
+
+    private static void ValidateCompilation(Compilation compilation)
+    {
+        ImmutableArray<Diagnostic> diagnostics = compilation.GetDiagnostics();
+        Diagnostic[] errors = diagnostics.Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error).ToArray();
+
+        if (errors.Length <= 0)
+        {
+            return;
+        }
+
+        Console.WriteLine("Compilation errors:");
+        foreach (Diagnostic error in errors)
+        {
+            Console.WriteLine(error);
+        }
+
+        Console.WriteLine("Error, Exiting.");
+        Environment.Exit(1);
+        throw new Exception("Compilation error");
+    }
+
+    private static async Task GenerateModuleSiteDocumentation(KalkModuleToGenerate module, string siteFolder, Template templateDocs)
     {
         if (module.Name == "KalkEngine")
         {
@@ -293,92 +284,6 @@ public partial class Program
         var name = module.Name.ToLowerInvariant();
         module.Url = $"/doc/api/{name}/";
 
-        const string templateText = @"---
-title: {{module.Title}}
-url: {{module.Url}}
----
-{{~ if !module.IsBuiltin ~}}
-
-{{ module.Description }}
-
-In order to use the functions provided by this module, you need to import this module:
-
-```kalk
->>> import {{module.Name}}
-```
-{{~ end ~}}
-{{~ if (module.Title | string.contains 'Intrinsics') ~}}
-
-In order to use the functions provided by this module, you need to import this module:
-
-```kalk
->>> import HardwareIntrinsics
-```
-{%{~
-{{NOTE do}}
-~}%}
-These intrinsic functions are only available if your CPU supports `{{module.Name}}` features.
-{%{~
-{{end}}
-~}%}
-
-{{~ end ~}}
-{{~ for member in module.Members ~}}
-
-## {{member.Name}}
-
-`{{member.Name}}{{~ if member.Params.size > 0 ~}}({{~ for param in member.Params ~}}{{ param.Name }}{{ param.IsOptional?'?':''}}{{ for.last?'':',' }}{{~ end ~}}){{~ end ~}}`
-
-{{~ if member.Description ~}}
-{{ member.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-{{~ end ~}}
-{{~ if member.Params.size > 0 ~}}
-
-    {{~ for param in member.Params ~}}
-- `{{ param.Name }}`: {{ param.Description}}
-    {{~end ~}}
-{{~ end ~}}
-{{~ if member.Returns ~}}
-
-### Returns
-
-{{ member.Returns | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-{{~ end ~}}
-{{~ if member.Remarks ~}}
-
-### Remarks
-
-{{ member.Remarks | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-{{~ end ~}}
-{{~ if member.Examples.size > 0 ~}}
-
-{{~ for example in member.Examples ~}}
-### Example
-
-{{ example.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-
-{{~ if example.Input ~}}
-{{~ if example.Output ~}}
-#### Input
-{{~ end ~}}
-```scriban
-{{ example.Input | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-```
-
-{{~ end ~}}
-{{~ if example.Output ~}}
-#### Result
-
-```
-{{ example.Output | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-```
-{{~ end ~}}
-{{~ end ~}}
-{{~ end ~}}
-{{~ end ~}}
-";
-        var template = Template.Parse(templateText);
-
         var apiFolder = siteFolder;
 
         var context = new TemplateContext
@@ -391,7 +296,7 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
             };
         context.PushGlobal(scriptObject);
         context.MemberRenamer = x => x.Name;
-        var result = await template.RenderAsync(context);
+        var result = await templateDocs.RenderAsync(context);
 
         await File.WriteAllTextAsync(Path.Combine(apiFolder, $"{name}.generated.md"), result);
     }
@@ -589,9 +494,34 @@ These intrinsic functions are only available if your CPU supports `{{module.Name
         return result;
     }
 
+    private static void CheckDirectory(string path)
+    {
+        if (!Directory.Exists(path))
+        {
+            throw new Exception($"Folder '{path}' does not exist");
+        }
+    }
+
+    private static void CheckFile(string path)
+    {
+        if (!File.Exists(path))
+        {
+            throw new Exception($"File '{path}' does not exist");
+        }
+    }
+
+    private static async Task<Template> LoadTemplateAsync(string path)
+    {
+        var rawTemplate = await File.ReadAllTextAsync(path);
+        var template = Template.Parse(rawTemplate);
+        if (template.HasErrors)
+        {
+            throw new Exception(template.Messages.ToString());
+        }
+
+        return template;
+    }
+
     [GeneratedRegex("^\\s*```\\w*[ \\t]*[\\r\\n]*", RegexOptions.Multiline)]
     private static partial Regex RemoveCodeRegex();
-
-    [GeneratedRegex("^(\\s*)>>>\\s")]
-    private static partial Regex PromptRegex();
 }

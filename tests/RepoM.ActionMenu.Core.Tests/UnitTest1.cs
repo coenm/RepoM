@@ -50,7 +50,7 @@ namespace RepoM.ActionMenu.Core.Tests
                 bx = 'winex';
             """;
 
-        private const string Yaml =
+        private const string YAML =
             """
             context:
             - name: coenm
@@ -168,7 +168,7 @@ namespace RepoM.ActionMenu.Core.Tests
             var fileSystem = new MockFileSystem(
                 new Dictionary<string, MockFileData>()
                 {
-                    { "C:\\RepositoryActionsV2.yaml", new MockFileData(Yaml, Encoding.UTF8) },
+                    { "C:\\RepositoryActionsV2.yaml", new MockFileData(YAML, Encoding.UTF8) },
                     { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
                     { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
                     { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
@@ -187,7 +187,7 @@ namespace RepoM.ActionMenu.Core.Tests
             var fileSystem = new MockFileSystem(
                 new Dictionary<string, MockFileData>()
                 {
-                    { "C:\\RepositoryActionsV2.yaml", new MockFileData(Yaml, Encoding.UTF8) },
+                    { "C:\\RepositoryActionsV2.yaml", new MockFileData(YAML, Encoding.UTF8) },
                     { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
                     { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
                     { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
@@ -222,7 +222,7 @@ some more text"
             };
 
             var deserializer = new ActionMenuDeserializer();
-            var result2 = deserializer.DeserializeRoot(Yaml);
+            var result2 = deserializer.DeserializeRoot(YAML);
             var result = deserializer.Serialize(result2);
 
             await Verifier.Verify(result);

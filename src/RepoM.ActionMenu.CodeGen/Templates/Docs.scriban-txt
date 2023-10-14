@@ -1,0 +1,83 @@
+﻿---
+title: {{module.Title}}
+url: {{module.Url}}
+---
+{{~ if !module.IsBuiltin ~}}
+
+{{ module.Description }}
+
+In order to use the functions provided by this module, you need to import this module:
+
+```kalk
+>>> import {{module.Name}}
+```
+{{~ end ~}}
+{{~ if (module.Title | string.contains 'Intrinsics') ~}}
+
+In order to use the functions provided by this module, you need to import this module:
+
+```kalk
+>>> import HardwareIntrinsics
+```
+{%{~
+{{NOTE do}}
+~}%}
+These intrinsic functions are only available if your CPU supports `{{module.Name}}` features.
+{%{~
+{{end}}
+~}%}
+
+{{~ end ~}}
+{{~ for member in module.Members ~}}
+
+## {{member.Name}}
+
+`{{member.Name}}{{~ if member.Params.size > 0 ~}}({{~ for param in member.Params ~}}{{ param.Name }}{{ param.IsOptional?'?':''}}{{ for.last?'':',' }}{{~ end ~}}){{~ end ~}}`
+
+{{~ if member.Description ~}}
+{{ member.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+{{~ end ~}}
+{{~ if member.Params.size > 0 ~}}
+
+    {{~ for param in member.Params ~}}
+- `{{ param.Name }}`: {{ param.Description}}
+    {{~end ~}}
+{{~ end ~}}
+{{~ if member.Returns ~}}
+
+### Returns
+
+{{ member.Returns | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+{{~ end ~}}
+{{~ if member.Remarks ~}}
+
+### Remarks
+
+{{ member.Remarks | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+{{~ end ~}}
+{{~ if member.Examples.size > 0 ~}}
+
+{{~ for example in member.Examples ~}}
+### Example
+
+{{ example.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+
+{{~ if example.Input ~}}
+{{~ if example.Output ~}}
+#### Input
+{{~ end ~}}
+```scriban
+{{ example.Input | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+```
+
+{{~ end ~}}
+{{~ if example.Output ~}}
+#### Result
+
+```
+{{ example.Output | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+```
+{{~ end ~}}
+{{~ end ~}}
+{{~ end ~}}
+{{~ end ~}}

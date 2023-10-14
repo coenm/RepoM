@@ -1,4 +1,4 @@
-namespace Kalk.Core
+namespace RepoM.ActionMenu.CodeGen
 {
     public class KalkParamDescriptor
     {

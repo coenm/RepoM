@@ -1,17 +1,10 @@
-namespace Kalk.Core;
+namespace RepoM.ActionMenu.CodeGen;
 
 using System.Collections.Generic;
 
 public class KalkDescriptor
 {
-    public KalkDescriptor()
-    {
-        Names = new List<string>();
-        Params = new List<KalkParamDescriptor>();
-        Examples = new List<ExamplesDescriptor>();
-    }
-
-    public List<string> Names { get; }
+    public List<string> Names { get; } = new();
 
     public bool IsCommand { get; set; }
 
@@ -19,7 +12,7 @@ public class KalkDescriptor
 
     public string Description { get; set; }
 
-    public List<KalkParamDescriptor> Params { get; }
+    public List<KalkParamDescriptor> Params { get; } = new();
 
     public string Syntax { get; set; }
 
@@ -27,5 +20,5 @@ public class KalkDescriptor
 
     public string Remarks { get; set; }
 
-    public List<ExamplesDescriptor> Examples { get; } 
+    public List<ExamplesDescriptor> Examples { get; } = new();
 }

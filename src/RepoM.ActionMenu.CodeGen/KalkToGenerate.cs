@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using Kalk.Core;
-
-namespace Kalk.CodeGen
+namespace RepoM.ActionMenu.CodeGen
 {
+    using System.Collections.Generic;
+
     public abstract class KalkDescriptorToGenerate : KalkDescriptor
     {
         protected KalkDescriptorToGenerate()
