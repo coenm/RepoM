@@ -1,8 +1,8 @@
-namespace RepoM.ActionMenu.CodeGen;
+namespace RepoM.ActionMenu.CodeGen.Models;
 
 using System.Collections.Generic;
 
-public class KalkDescriptor
+public abstract class KalkDescriptor
 {
     public List<string> Names { get; } = new();
 

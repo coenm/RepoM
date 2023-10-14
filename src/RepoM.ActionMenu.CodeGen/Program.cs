@@ -13,6 +13,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Broslyn;
 using Microsoft.CodeAnalysis;
+using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.Interface.Attributes;
 using Scriban;
 using Scriban.Runtime;
@@ -56,36 +57,6 @@ public partial class Program
         // _ = compilation.GetTypeByMetadataName("Kalk.Core.KalkEngine");
         var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>();
 
-        void GetOrCreateModule(ITypeSymbol typeSymbol, string className, AttributeData moduleAttribute, out KalkModuleToGenerate moduleToGenerate)
-        {
-            var ns = typeSymbol.ContainingNamespace.ToDisplayString();
-
-            var fullClassName = $"{ns}.{className}";
-            if (!mapNameToModule.TryGetValue(fullClassName, out moduleToGenerate))
-            {
-                moduleToGenerate = new KalkModuleToGenerate()
-                    {
-                        Namespace = typeSymbol.ContainingNamespace.ToDisplayString(),
-                        ClassName = className,
-                    };
-                mapNameToModule.Add(fullClassName, moduleToGenerate);
-
-                if (moduleAttribute != null)
-                {
-                    moduleToGenerate.Name = moduleAttribute.ConstructorArguments[0].Value.ToString();
-                    moduleToGenerate.Names.Add(moduleToGenerate.Name!);
-                    moduleToGenerate.Category = "Modules (e.g `import Files`)";
-                }
-                else
-                {
-                    moduleToGenerate.Name = className.Replace("Module", "");
-                    moduleToGenerate.IsBuiltin = true;
-                }
-
-                ExtractDocumentation(typeSymbol, moduleToGenerate);
-            }
-        }
-
         foreach (ISymbol type in compilation.GetSymbolsWithName(x => true, SymbolFilter.Type))
         {
             if (type is not ITypeSymbol typeSymbol)
@@ -97,7 +68,7 @@ public partial class Program
             KalkModuleToGenerate? moduleToGenerate = null;
             if (moduleAttribute != null)
             {
-                GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate);
+                GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule);
             }
 
             foreach (var member in typeSymbol.GetMembers())
@@ -117,7 +88,7 @@ public partial class Program
                 // In case the module is built-in, we still generate a module for it
                 if (moduleToGenerate == null)
                 {
-                    GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate);
+                    GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule);
                 }
 
                 var method = member as IMethodSymbol;
@@ -216,8 +187,7 @@ public partial class Program
             foreach (var member in module.Members)
             {
                 var hasNoDesc = string.IsNullOrEmpty(member.Description);
-                var hasNoTests = member.Tests.Count == 0;
-                if ((!hasNoDesc && !hasNoTests))
+                if ((!hasNoDesc))
                 {
                     continue;
                 }
@@ -233,20 +203,44 @@ public partial class Program
                     ++functionWithMissingDoc;
                 }
 
-                if (hasNoTests)
-                {
-                    ++functionWithMissingTests;
-                }
-
-                Console.WriteLine($"The member {member.Name} => {module.ClassName}.{member.CSharpName} doesn't have {(hasNoTests ? "any tests" + (hasNoDesc ? " and" : "") : "")} {(hasNoDesc ? "any docs" : "")}");
+                Console.WriteLine($"The member {member.Name} => {module.ClassName}.{member.CSharpName} doesn't have {(hasNoDesc ? "any docs" : "")}");
             }
         }
 
         Console.WriteLine($"{modules.Count} modules generated.");
         Console.WriteLine($"{modules.SelectMany(x => x.Members).Count()} functions generated.");
-        Console.WriteLine($"{modules.SelectMany(x => x.Members).SelectMany(y => y.Tests).Count()} tests generated.");
         Console.WriteLine($"{functionWithMissingDoc} functions with missing doc.");
         Console.WriteLine($"{functionWithMissingTests} functions with missing tests.");
+    }
+
+    private static void GetOrCreateModule(ITypeSymbol typeSymbol, string className, AttributeData moduleAttribute, out KalkModuleToGenerate moduleToGenerate, Dictionary<string, KalkModuleToGenerate>? mapNameToModule)
+    {
+        var ns = typeSymbol.ContainingNamespace.ToDisplayString();
+
+        var fullClassName = $"{ns}.{className}";
+        if (!mapNameToModule.TryGetValue(fullClassName, out moduleToGenerate))
+        {
+            moduleToGenerate = new KalkModuleToGenerate()
+                {
+                    Namespace = typeSymbol.ContainingNamespace.ToDisplayString(),
+                    ClassName = className,
+                };
+            mapNameToModule.Add(fullClassName, moduleToGenerate);
+
+            if (moduleAttribute != null)
+            {
+                moduleToGenerate.Name = moduleAttribute.ConstructorArguments[0].Value.ToString();
+                moduleToGenerate.Names.Add(moduleToGenerate.Name!);
+                moduleToGenerate.Category = "Modules (e.g `import Files`)";
+            }
+            else
+            {
+                moduleToGenerate.Name = className.Replace("Module", "");
+                moduleToGenerate.IsBuiltin = true;
+            }
+
+            ExtractDocumentation(typeSymbol, moduleToGenerate);
+        }
     }
 
     private static void ValidateCompilation(Compilation compilation)

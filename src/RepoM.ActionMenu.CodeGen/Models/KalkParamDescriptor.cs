@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.CodeGen
+namespace RepoM.ActionMenu.CodeGen.Models
 {
     public class KalkParamDescriptor
     {
@@ -17,12 +17,5 @@ namespace RepoM.ActionMenu.CodeGen
         public string Description { get; set; }
 
         public bool IsOptional { get; set; }
-    }
-
-    public class ExamplesDescriptor
-    {
-        public string? Description { get; set; }
-        public string? Input { get; set; }
-        public string? Output { get; set; }
     }
 }
