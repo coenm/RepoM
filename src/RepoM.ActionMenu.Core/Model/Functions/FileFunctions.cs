@@ -17,7 +17,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     {
         RegisterFunctions();
     }
-    
+
     /// <summary>
     /// Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.
     /// </summary>
@@ -25,23 +25,13 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesn't support regular expressions.</param>
     /// <returns>Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.</returns>
     /// <example>
-    /// text without para
+    /// Locate all solution files in the given directory.
     /// <code>
-    /// find_files 'C:\Users\coenm\RepoM\src' '*.sln'
-    /// find_files('C:\Users\coenm\RepoM\src','*.sln')
+    /// find_files 'C:\Users\coenm\RepoM' '*.sln'
+    /// # find_files('C:\Users\coenm\RepoM','*.sln')
     /// </code>
     /// <code>
-    /// 1aa349585ed7ecbd3b9c486a30067e395ca4b356
-    /// </code>
-    /// </example>
-    /// <example>
-    /// text without para2
-    /// <code>
-    /// find_files 'C:\Users\coenm\RepoM\src' '*.txt'
-    /// find_files('C:\Users\coenm\RepoM\src','*.txt')
-    /// </code>
-    /// <code>
-    /// []
+    /// ["C:\Users\coenm\RepoM\src\RepoM.sln"]
     /// </code>
     /// </example>
     [ActionMenuMember("find_files")]
@@ -57,23 +47,13 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesn't support regular expressions.</param>
     /// <returns>Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.</returns>
     /// <example>
-    /// text without para
+    /// Locate all solution files in the given directory.
     /// <code>
-    /// find_files_interface 'C:\Users\coenm\RepoM\src' '*.sln'
-    /// find_files_interface('C:\Users\coenm\RepoM\src','*.sln')
-    /// </code>
-    /// <para>
-    /// The result is an enumerable of strings.
-    /// </para>
-    /// </example>
-    /// <example>
-    /// text without para2
-    /// <code>
-    /// find_files_interface 'C:\Users\coenm\RepoM\src' '*.txt'
-    /// find_files_interface('C:\Users\coenm\RepoM\src','*.txt')
+    /// find_files_interface 'C:\Users\coenm\RepoM' '*.sln'
+    /// # find_files_interface('C:\Users\coenm\RepoM','*.sln')
     /// </code>
     /// <code>
-    /// []
+    /// ["C:\Users\coenm\RepoM\src\RepoM.sln"]
     /// </code>
     /// </example>
     [ActionMenuMember("find_files_interface")]

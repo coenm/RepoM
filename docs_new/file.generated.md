@@ -77,33 +77,18 @@ Returns an enumerable collection of full paths of the files or directories that 
 
 ### Example
 
-text without para
+Locate all solution files in the given directory.
 
 #### Input
-```scriban
-find_files 'C:\Users\coenm\RepoM\src' '*.sln'
-find_files('C:\Users\coenm\RepoM\src','*.sln')
+```yaml
+find_files 'C:\Users\coenm\RepoM' '*.sln'
+# find_files('C:\Users\coenm\RepoM','*.sln')
 ```
 
 #### Result
 
-```
-1aa349585ed7ecbd3b9c486a30067e395ca4b356
-```
-### Example
-
-text without para2
-
-#### Input
-```scriban
-find_files 'C:\Users\coenm\RepoM\src' '*.txt'
-find_files('C:\Users\coenm\RepoM\src','*.txt')
-```
-
-#### Result
-
-```
-[]
+```yaml
+["C:\Users\coenm\RepoM\src\RepoM.sln"]
 ```
 
 ## find_files_interface
@@ -121,25 +106,16 @@ Returns an enumerable collection of full paths of the files or directories that 
 
 ### Example
 
-text without para
-
-```scriban
-find_files_interface 'C:\Users\coenm\RepoM\src' '*.sln'
-find_files_interface('C:\Users\coenm\RepoM\src','*.sln')
-```
-
-### Example
-
-text without para2
+Locate all solution files in the given directory.
 
 #### Input
-```scriban
-find_files_interface 'C:\Users\coenm\RepoM\src' '*.txt'
-find_files_interface('C:\Users\coenm\RepoM\src','*.txt')
+```yaml
+find_files_interface 'C:\Users\coenm\RepoM' '*.sln'
+# find_files_interface('C:\Users\coenm\RepoM','*.sln')
 ```
 
 #### Result
 
-```
-[]
+```yaml
+["C:\Users\coenm\RepoM\src\RepoM.sln"]
 ```
