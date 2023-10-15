@@ -8,7 +8,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
@@ -57,7 +57,7 @@ internal class ActionSonarCloudV1Mapper : IActionToRepositoryActionMapper
         {
             yield return new Api.RepositoryActions.RepositoryAction(name, repository)
                 {
-                    Action = new DelegateAction((_, _) =>
+                    Action = new DelegateRepositoryCommand((_, _) =>
                         {
                             try
                             {

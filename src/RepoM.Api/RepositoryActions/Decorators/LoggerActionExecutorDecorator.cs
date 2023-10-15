@@ -3,7 +3,7 @@ namespace RepoM.Api.RepositoryActions.Decorators;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 
-public class LoggerActionExecutorDecorator<T> : IActionExecutor<T> where T : IAction
+public class LoggerActionExecutorDecorator<T> : IActionExecutor<T> where T : IRepositoryCommand
 {
     private readonly IActionExecutor<T> _decoratee;
 

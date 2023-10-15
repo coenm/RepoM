@@ -14,9 +14,9 @@ public sealed class ActionExecutor
         _container = container ?? throw new ArgumentNullException(nameof(container));
     }
 
-    public void Execute(IRepository repository, IAction action)
+    public void Execute(IRepository repository, IRepositoryCommand repositoryCommand)
     {
-        dynamic executor = _container.GetInstance(typeof(IActionExecutor<>).MakeGenericType(action.GetType()));
-        executor.Execute((dynamic)repository, (dynamic)action);
+        dynamic executor = _container.GetInstance(typeof(IActionExecutor<>).MakeGenericType(repositoryCommand.GetType()));
+        executor.Execute((dynamic)repository, (dynamic)repositoryCommand);
     }
 }

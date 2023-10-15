@@ -10,7 +10,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
 using RepositoryAction = Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
@@ -86,7 +86,7 @@ internal class ActionAzureDevOpsCreatePullRequestsV1Mapper : IActionToRepository
 		{
 			new(action.Title ?? $"Create Pull Request {(action.AutoComplete.Enabled ? "(with auto-complete)" : string.Empty)}", repository)
 			{
-				Action = new DelegateAction((_, _) =>
+				Action = new DelegateRepositoryCommand((_, _) =>
 				{
 					if (action.AutoComplete.Enabled)
 					{

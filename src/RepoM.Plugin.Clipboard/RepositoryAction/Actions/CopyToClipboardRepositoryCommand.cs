@@ -2,9 +2,9 @@ namespace RepoM.Plugin.Clipboard.RepositoryAction.Actions;
 
 using RepoM.Core.Plugin.RepositoryActions;
 
-public sealed class CopyToClipboardAction : IAction
+public sealed class CopyToClipboardRepositoryCommand : IRepositoryCommand
 {
-    internal CopyToClipboardAction(string? text)
+    internal CopyToClipboardRepositoryCommand(string? text)
     {
         Text = text;
     }

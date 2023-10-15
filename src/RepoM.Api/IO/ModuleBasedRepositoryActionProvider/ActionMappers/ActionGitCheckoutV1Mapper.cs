@@ -8,7 +8,7 @@ using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepositoryAction = Data.RepositoryAction;
 
 public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
@@ -60,7 +60,7 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
                               .Take(50)
                               .Select(branch => new RepositoryActions.RepositoryAction(branch, repository)
                                   {
-                                      Action = new DelegateAction((_, _) => _repositoryWriter.Checkout(repository, branch)),
+                                      Action = new DelegateRepositoryCommand((_, _) => _repositoryWriter.Checkout(repository, branch)),
                                       CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
                                   })
                               .Union(new RepositoryActionBase[]
@@ -74,7 +74,7 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
                                                                                                             .ReadAllBranches()
                                                                                                             .Select(branch => new RepositoryActions.RepositoryAction(branch, repository)
                                                                                                                 {
-                                                                                                                    Action = new DelegateAction((_, _) => _repositoryWriter.Checkout(repository, branch)),
+                                                                                                                    Action = new DelegateRepositoryCommand((_, _) => _repositoryWriter.Checkout(repository, branch)),
                                                                                                                     CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
                                                                                                                 })
                                                                                                             .ToArray();

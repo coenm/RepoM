@@ -4,24 +4,24 @@ using JetBrains.Annotations;
 using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 [UsedImplicitly]
-public class StartProcessActionExecutor : IActionExecutor<StartProcessAction>
+public class StartProcessActionExecutor : IActionExecutor<StartProcessRepositoryCommand>
 {
-    public void Execute(IRepository repository, StartProcessAction action)
+    public void Execute(IRepository repository, StartProcessRepositoryCommand repositoryCommand)
     {
         var args = string.Empty;
 
-        if (action.Arguments.Length == 1)
+        if (repositoryCommand.Arguments.Length == 1)
         {
-            args = action.Arguments[0];
+            args = repositoryCommand.Arguments[0];
         }
-        else if (action.Arguments.Length > 1)
+        else if (repositoryCommand.Arguments.Length > 1)
         {
-            args = string.Join(' ', action.Arguments);
+            args = string.Join(' ', repositoryCommand.Arguments);
         }
 
-        ProcessHelper.StartProcess(action.Executable, args);
+        ProcessHelper.StartProcess(repositoryCommand.Executable, args);
     }
 }

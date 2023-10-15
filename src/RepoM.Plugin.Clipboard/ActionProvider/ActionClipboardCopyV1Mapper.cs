@@ -48,7 +48,7 @@ internal class ActionClipboardCopyV1Mapper : IActionToRepositoryActionMapper
 
         yield return new Api.RepositoryActions.RepositoryAction(name, repository)
             {
-                Action = new CopyToClipboardAction(txt),
+                Action = new CopyToClipboardRepositoryCommand(txt),
                 ExecutionCausesSynchronizing = false,
             };
     }

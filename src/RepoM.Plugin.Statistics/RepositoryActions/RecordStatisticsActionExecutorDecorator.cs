@@ -4,10 +4,10 @@ using System;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 [UsedImplicitly]
-public sealed class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor<T> where T : IAction
+public sealed class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor<T> where T : IRepositoryCommand
 {
     private readonly IActionExecutor<T> _decoratee;
     private readonly IStatisticsService _service;
@@ -22,7 +22,7 @@ public sealed class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor
 
     public void Execute(IRepository repository, T action)
     {
-        if (action is not NullAction)
+        if (action is not NullRepositoryCommand)
         {
             Record(repository);
         }

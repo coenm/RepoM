@@ -8,7 +8,7 @@ using RepoM.Plugin.Clipboard.RepositoryAction.Actions;
 using TextCopy;
 
 [UsedImplicitly]
-public class CopyToClipboardActionExecutor : IActionExecutor<CopyToClipboardAction>
+public class CopyToClipboardActionExecutor : IActionExecutor<CopyToClipboardRepositoryCommand>
 {
     private readonly IClipboard _clipboard;
 
@@ -17,9 +17,9 @@ public class CopyToClipboardActionExecutor : IActionExecutor<CopyToClipboardActi
         _clipboard = clipboard ?? throw new ArgumentNullException(nameof(clipboard));
     }
 
-    public void Execute(IRepository repository, CopyToClipboardAction action)
+    public void Execute(IRepository repository, CopyToClipboardRepositoryCommand repositoryCommand)
     {
-        var txt = !string.IsNullOrWhiteSpace(action.Text) ? action.Text : string.Empty;
+        var txt = !string.IsNullOrWhiteSpace(repositoryCommand.Text) ? repositoryCommand.Text : string.Empty;
         _clipboard.SetText(txt);
     }
 }

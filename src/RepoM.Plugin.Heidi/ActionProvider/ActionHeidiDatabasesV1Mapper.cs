@@ -11,7 +11,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
@@ -88,7 +88,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
                             {
                                 new Api.RepositoryActions.RepositoryAction("NO databases found!", repository)
                                     {
-                                        Action = NullAction.Instance,
+                                        Action = NullRepositoryCommand.Instance,
                                         CanExecute = false,
                                     },
                             },
@@ -110,7 +110,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
         {
             yield return new Api.RepositoryActions.RepositoryAction("NO databases found!", repository)
                 {
-                    Action = NullAction.Instance,
+                    Action = NullRepositoryCommand.Instance,
                     CanExecute = false,
                 };
         }
@@ -135,7 +135,7 @@ internal class ActionHeidiDatabasesV1Mapper : IActionToRepositoryActionMapper
     {
         return databases.Select(database => new Api.RepositoryActions.RepositoryAction(database.Name, repository)
             {
-               Action = new StartProcessAction(executable, new[] { "--description" , $"\"{database.DbConfig.Key}\"", }),
+               Action = new StartProcessRepositoryCommand(executable, new[] { "--description" , $"\"{database.DbConfig.Key}\"", }),
                ExecutionCausesSynchronizing = false,
             });
     }

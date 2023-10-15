@@ -7,7 +7,7 @@ using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 [UsedImplicitly]
@@ -76,7 +76,7 @@ public class ActionPinRepositoryV1Mapper : IActionToRepositoryActionMapper
         {
             return new RepositoryActions.RepositoryAction(actionName, repo)
                 {
-                    Action = new DelegateAction((_, _) => _repositoryMonitor.SetPinned(newPinnedValue, repo)),
+                    Action = new DelegateRepositoryCommand((_, _) => _repositoryMonitor.SetPinned(newPinnedValue, repo)),
                 };
         }
     }

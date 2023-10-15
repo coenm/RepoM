@@ -3,7 +3,7 @@
     $type: RepositoryAction,
     Name: A-name,
     Action: {
-      $type: StartProcessAction,
+      $type: StartProcessRepositoryCommand,
       Executable: ES_heidi-test.exe,
       Arguments: [
         --description,
@@ -31,7 +31,7 @@
     $type: RepositoryAction,
     Name: D-name,
     Action: {
-      $type: StartProcessAction,
+      $type: StartProcessRepositoryCommand,
       Executable: ES_heidi-test.exe,
       Arguments: [
         --description,

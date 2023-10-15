@@ -8,7 +8,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepositoryAction = Data.RepositoryAction;
 
 public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
@@ -71,7 +71,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
 
             yield return new RepositoryActions.RepositoryAction(name, repository)
                 {
-                    Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(normalized, arguments)),
+                    Action = new DelegateRepositoryCommand((_, _) => ProcessHelper.StartProcess(normalized, arguments)),
                 };
             found = true;
         }

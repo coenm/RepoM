@@ -3,13 +3,13 @@ namespace RepoM.Api.RepositoryActions.Executors;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 [UsedImplicitly]
-public class DelegateActionExecutor : IActionExecutor<DelegateAction>
+public class DelegateActionExecutor : IActionExecutor<DelegateRepositoryCommand>
 {
-    public void Execute(IRepository repository, DelegateAction action)
+    public void Execute(IRepository repository, DelegateRepositoryCommand repositoryCommand)
     {
-        action.Action.Invoke(null, null);
+        repositoryCommand.Action.Invoke(null, null);
     }
 }

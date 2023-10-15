@@ -6,7 +6,7 @@ using FluentAssertions;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Plugin.Statistics.RepositoryActions;
 using Xunit;
 
@@ -30,8 +30,8 @@ public class RecordStatisticsActionExecutorDecoratorTest
         // arrange
 
         // act
-        var act1 = () => new RecordStatisticsActionExecutorDecorator<DummyAction>(A.Dummy<IActionExecutor<DummyAction>>(), null!);
-        var act2 = () => new RecordStatisticsActionExecutorDecorator<DummyAction>(null!, A.Dummy<IStatisticsService>());
+        var act1 = () => new RecordStatisticsActionExecutorDecorator<DummyRepositoryCommand>(A.Dummy<IActionExecutor<DummyRepositoryCommand>>(), null!);
+        var act2 = () => new RecordStatisticsActionExecutorDecorator<DummyRepositoryCommand>(null!, A.Dummy<IStatisticsService>());
 
         // assert
         act1.Should().Throw<ArgumentNullException>();
@@ -43,12 +43,12 @@ public class RecordStatisticsActionExecutorDecoratorTest
     public void Execute_ShouldCallExecuteOnDecorateeWithSameArguments()
     {
         // arrange
-        IActionExecutor<DummyAction> decoratee = A.Fake<IActionExecutor<DummyAction>>();
+        IActionExecutor<DummyRepositoryCommand> decoratee = A.Fake<IActionExecutor<DummyRepositoryCommand>>();
         var service = new StatisticsService(_clock);
-        var sut = new RecordStatisticsActionExecutorDecorator<DummyAction>(decoratee, service);
+        var sut = new RecordStatisticsActionExecutorDecorator<DummyRepositoryCommand>(decoratee, service);
 
         // act
-        var action = new DummyAction();
+        var action = new DummyRepositoryCommand();
         sut.Execute(_repository, action);
 
         // assert
@@ -59,13 +59,13 @@ public class RecordStatisticsActionExecutorDecoratorTest
     public void Execute_ShouldCallExecuteOnDecorateeWithSameArguments_WhenRecordFailsOnService()
     {
         // arrange
-        IActionExecutor<DummyAction> decoratee = A.Fake<IActionExecutor<DummyAction>>();
+        IActionExecutor<DummyRepositoryCommand> decoratee = A.Fake<IActionExecutor<DummyRepositoryCommand>>();
         IStatisticsService service = A.Fake<IStatisticsService>();
         A.CallTo(() => service.Record(A<IRepository>._)).Throws(new Exception("Thrown by test"));
-        var sut = new RecordStatisticsActionExecutorDecorator<DummyAction>(decoratee, service);
+        var sut = new RecordStatisticsActionExecutorDecorator<DummyRepositoryCommand>(decoratee, service);
 
         // act
-        var action = new DummyAction();
+        var action = new DummyRepositoryCommand();
         sut.Execute(_repository, action);
 
         // assert
@@ -77,12 +77,12 @@ public class RecordStatisticsActionExecutorDecoratorTest
     public void Execute_ShouldRecordWhenTypeIsNotNullType()
     {
         // arrange
-        IActionExecutor<DummyAction> decoratee = A.Fake<IActionExecutor<DummyAction>>();
+        IActionExecutor<DummyRepositoryCommand> decoratee = A.Fake<IActionExecutor<DummyRepositoryCommand>>();
         var service = new StatisticsService(_clock);
-        var sut = new RecordStatisticsActionExecutorDecorator<DummyAction>(decoratee, service);
+        var sut = new RecordStatisticsActionExecutorDecorator<DummyRepositoryCommand>(decoratee, service);
 
         // act
-        var action = new DummyAction();
+        var action = new DummyRepositoryCommand();
         sut.Execute(_repository, action);
 
         // assert
@@ -93,18 +93,18 @@ public class RecordStatisticsActionExecutorDecoratorTest
     public void Execute_ShouldNotRecordWhenTypeIsNullType()
     {
         // arrange
-        IActionExecutor<NullAction> decoratee = A.Fake<IActionExecutor<NullAction>>();
+        IActionExecutor<NullRepositoryCommand> decoratee = A.Fake<IActionExecutor<NullRepositoryCommand>>();
         var service = new StatisticsService(_clock);
-        var sut = new RecordStatisticsActionExecutorDecorator<NullAction>(decoratee, service);
+        var sut = new RecordStatisticsActionExecutorDecorator<NullRepositoryCommand>(decoratee, service);
 
         // act
-        sut.Execute(_repository, NullAction.Instance);
+        sut.Execute(_repository, NullRepositoryCommand.Instance);
 
         // assert
         service.GetRecordings(_repository).Should().BeEmpty();
     }
 }
 
-public class DummyAction : IAction
+public class DummyRepositoryCommand : IRepositoryCommand
 {
 }

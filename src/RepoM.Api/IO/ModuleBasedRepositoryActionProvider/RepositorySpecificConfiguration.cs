@@ -17,7 +17,7 @@ using RepoM.Api.IO.Variables;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
 using Repository = RepoM.Api.Git.Repository;
 using RepositoryAction = RepoM.Api.RepositoryActions.RepositoryAction;
@@ -506,7 +506,7 @@ public class RepositorySpecificConfiguration
         {
             yield return new RepositoryAction(_translationService.Translate("Fix"), repository)
                 {
-                    Action = new DelegateAction((_, _) =>
+                    Action = new DelegateRepositoryCommand((_, _) =>
                         {
                             var directoryName = _fileSystem.Path.GetDirectoryName(filename);
                             if (directoryName != null)

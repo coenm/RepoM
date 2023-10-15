@@ -1,11 +1,11 @@
-namespace RepoM.Core.Plugin.RepositoryActions.Actions;
+namespace RepoM.Core.Plugin.RepositoryActions.Commands;
 
 using System;
 using RepoM.Core.Plugin.RepositoryActions;
 
-public sealed class DelegateAction : IAction
+public sealed class DelegateRepositoryCommand : IRepositoryCommand
 {
-    public DelegateAction(Action<object?, object?> action)
+    public DelegateRepositoryCommand(Action<object?, object?> action)
     {
         Action = action ?? throw new ArgumentNullException(nameof(action));
     }

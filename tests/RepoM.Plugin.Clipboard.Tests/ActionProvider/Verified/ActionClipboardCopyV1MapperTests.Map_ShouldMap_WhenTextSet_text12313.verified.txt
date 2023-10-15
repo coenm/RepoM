@@ -3,7 +3,7 @@
     $type: RepositoryAction,
     Name: ES_name123,
     Action: {
-      $type: CopyToClipboardAction,
+      $type: CopyToClipboardRepositoryCommand,
       Text: ES_text12313
     },
     Repository: {

@@ -23,7 +23,7 @@ using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
 using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using SourceChord.FluentWPF;
 
@@ -411,7 +411,7 @@ public partial class MainWindow
 
         Action<object, object> clickAction = (object clickSender, object clickArgs) =>
             {
-                if (repositoryAction?.Action is null or NullAction)
+                if (repositoryAction?.Action is null or NullRepositoryCommand)
                 {
                     return;
                 }

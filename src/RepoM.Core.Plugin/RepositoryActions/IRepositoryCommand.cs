@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.Interface.Commands;
+namespace RepoM.Core.Plugin.RepositoryActions;
 
 /// <summary>
 /// Command to be executed on click.

@@ -55,7 +55,7 @@ internal class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
 
         yield return new RepositoryAction(name, repository)
             {
-                Action = new BrowseAction(url, profile),
+                Action = new BrowseRepositoryCommand(url, profile),
             };
     }
 }

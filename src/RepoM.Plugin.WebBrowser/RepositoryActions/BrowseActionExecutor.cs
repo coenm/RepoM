@@ -8,7 +8,7 @@ using RepoM.Plugin.WebBrowser.RepositoryActions.Actions;
 using RepoM.Plugin.WebBrowser.Services;
 
 [UsedImplicitly]
-internal class BrowseActionExecutor : IActionExecutor<BrowseAction>
+internal class BrowseActionExecutor : IActionExecutor<BrowseRepositoryCommand>
 {
     private readonly IWebBrowserService _webBrowserService;
 
@@ -17,15 +17,15 @@ internal class BrowseActionExecutor : IActionExecutor<BrowseAction>
         _webBrowserService = webBrowserService ?? throw new ArgumentNullException(nameof(webBrowserService));
     }
 
-    public void Execute(IRepository repository, BrowseAction action)
+    public void Execute(IRepository repository, BrowseRepositoryCommand repositoryCommand)
     {
-        if (action.ProfileName == null)
+        if (repositoryCommand.ProfileName == null)
         {
-            _webBrowserService.OpenUrl(action.Url);
+            _webBrowserService.OpenUrl(repositoryCommand.Url);
         }
         else
         {
-            _webBrowserService.OpenUrl(action.Url, action.ProfileName);
+            _webBrowserService.OpenUrl(repositoryCommand.Url, repositoryCommand.ProfileName);
         }
     }
 }

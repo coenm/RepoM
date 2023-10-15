@@ -7,7 +7,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionJustTextV1Mapper : IActionToRepositoryActionMapper
@@ -45,7 +45,7 @@ public class ActionJustTextV1Mapper : IActionToRepositoryActionMapper
 
         yield return new RepositoryActions.RepositoryAction(name, repository)
             {
-                Action = NullAction.Instance,
+                Action = NullRepositoryCommand.Instance,
                 CanExecute = _expressionEvaluator.EvaluateBooleanExpression(action.Enabled, repository),
             };
     }

@@ -2,9 +2,9 @@ namespace RepoM.Plugin.WebBrowser.RepositoryActions.Actions;
 
 using RepoM.Core.Plugin.RepositoryActions;
 
-public sealed class BrowseAction : IAction
+public sealed class BrowseRepositoryCommand : IRepositoryCommand
 {
-    public BrowseAction(string url, string? profileName)
+    public BrowseRepositoryCommand(string url, string? profileName)
     {
         Url = url;
         ProfileName = profileName;

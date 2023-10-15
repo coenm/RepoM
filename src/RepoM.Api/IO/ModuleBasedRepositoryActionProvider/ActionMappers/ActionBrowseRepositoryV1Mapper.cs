@@ -9,7 +9,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
 {
@@ -84,7 +84,7 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
     {
         return new RepositoryAction(name, repository)
             {
-                Action = new DelegateAction((_, _) => ProcessHelper.StartProcess(process, arguments)),
+                Action = new DelegateRepositoryCommand((_, _) => ProcessHelper.StartProcess(process, arguments)),
             };
     }
 }

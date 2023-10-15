@@ -3,7 +3,7 @@
     $type: RepositoryAction,
     Name: NO databases found!,
     Action: {
-      $type: NullAction
+      $type: NullRepositoryCommand
     },
     Repository: {
       $type: Repository,

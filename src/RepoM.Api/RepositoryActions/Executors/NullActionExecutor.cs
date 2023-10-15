@@ -3,12 +3,12 @@ namespace RepoM.Api.RepositoryActions.Executors;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 [UsedImplicitly]
-public class NullActionExecutor : IActionExecutor<NullAction>
+public class NullActionExecutor : IActionExecutor<NullRepositoryCommand>
 {
-    public void Execute(IRepository repository, NullAction action)
+    public void Execute(IRepository repository, NullRepositoryCommand repositoryCommand)
     {
         // intentionally do nothing.
     }

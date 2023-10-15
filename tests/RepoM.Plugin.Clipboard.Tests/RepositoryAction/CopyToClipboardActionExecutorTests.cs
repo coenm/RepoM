@@ -43,7 +43,7 @@ public class CopyToClipboardActionExecutorTests
         // arrange
         
         // act
-        _sut.Execute(_repository, new CopyToClipboardAction(text));
+        _sut.Execute(_repository, new CopyToClipboardRepositoryCommand(text));
 
         // assert
         A.CallTo(() => _clipboard.SetText(text)).MustHaveHappenedOnceExactly();

@@ -40,7 +40,7 @@ public class BrowseActionExecutorTests
         // arrange
 
         // act
-        _sut.Execute(_repository, new BrowseAction("url", null));
+        _sut.Execute(_repository, new BrowseRepositoryCommand("url", null));
 
         // assert
         A.CallTo(() => _service.OpenUrl("url")).MustHaveHappenedOnceExactly();
@@ -56,7 +56,7 @@ public class BrowseActionExecutorTests
         // arrange
 
         // act
-        _sut.Execute(_repository, new BrowseAction("url", profile));
+        _sut.Execute(_repository, new BrowseRepositoryCommand("url", profile));
 
         // assert
         A.CallTo(() => _service.OpenUrl(A<string>._)).MustNotHaveHappened();
