@@ -6,7 +6,7 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
 
-internal class ActionAssociateFileV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionAssociateFileV1>
+internal class RepositoryActionAssociateFileV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionAssociateFileV1>
 {
     protected override async IAsyncEnumerable<UserInterfaceRepositoryAction> MapAsync(RepositoryActionAssociateFileV1 action, IActionMenuGenerationContext context, IRepository repository)
     {

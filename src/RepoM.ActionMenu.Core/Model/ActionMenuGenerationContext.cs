@@ -15,6 +15,7 @@ using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
 using RepoM.ActionMenu.Core.Yaml.Model.Ctx;
 using RepoM.ActionMenu.Core.Yaml.Model.Ctx.EvaluateVariable;
@@ -52,12 +53,13 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         _repositoryActionMappers = new List<IActionToRepositoryActionMapper>()
             {
-                new ActionAssociateFileV1Mapper(),
+                new RepositoryActionAssociateFileV1Mapper(),
                 new RepositoryActionJustTextV1Mapper(),
                 new RepositoryActionFolderV1Mapper(),
-                new BrowseRepositoryV1Mapper(),
+                new RepositoryActionBrowseRepositoryV1Mapper(),
                 new ActionCommandV1Mapper(),
                 new RepositoryActionForEachV1Mapper(),
+                new RepositoryActionGitCheckoutV1Mapper(),
             };
 
         var rootScriptObject = new RepoMScriptObject();
