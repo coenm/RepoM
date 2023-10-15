@@ -2,7 +2,6 @@ namespace RepoM.ActionMenu.CodeGen;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,7 +10,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
-using Broslyn;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.Interface.Attributes;
@@ -46,18 +44,8 @@ public partial class Program
 
         Template templateModule = await LoadTemplateAsync("Templates/Module.scriban-cs");
         Template templateDocs = await LoadTemplateAsync("Templates/Docs.scriban-txt");
-        
-        CSharpCompilationCaptureResult compilationCaptureResult = CSharpCompilationCapture.Build(pathToSolution);
-        Solution solution = compilationCaptureResult.Workspace.CurrentSolution;
-        Project[] solutionProjects = solution.Projects.ToArray();
-        Project project = Array.Find(solutionProjects, x => x.Name == projectName) ?? throw new Exception($"Project `{projectName}` not found in solution");
 
-        // Make sure that doc will be parsed
-        project = project.WithParseOptions(project.ParseOptions!.WithDocumentationMode(DocumentationMode.Parse));
-
-        // Compile the project
-        Compilation compilation = await project.GetCompilationAsync() ?? throw new Exception("Compilation failed");
-        ValidateCompilation(compilation);
+        Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, projectName);
 
         // _ = compilation.GetTypeByMetadataName("Kalk.Core.KalkEngine");
         var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>();
@@ -250,28 +238,7 @@ public partial class Program
             ExtractDocumentation(typeSymbol, moduleToGenerate);
         }
     }
-
-    private static void ValidateCompilation(Compilation compilation)
-    {
-        ImmutableArray<Diagnostic> diagnostics = compilation.GetDiagnostics();
-        Diagnostic[] errors = diagnostics.Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error).ToArray();
-
-        if (errors.Length <= 0)
-        {
-            return;
-        }
-
-        Console.WriteLine("Compilation errors:");
-        foreach (Diagnostic error in errors)
-        {
-            Console.WriteLine(error);
-        }
-
-        Console.WriteLine("Error, Exiting.");
-        Environment.Exit(1);
-        throw new Exception("Compilation error");
-    }
-
+    
     private static async Task GenerateModuleSiteDocumentation(KalkModuleToGenerate module, string siteFolder, Template templateDocs)
     {
         if (module.Name == "KalkEngine")
