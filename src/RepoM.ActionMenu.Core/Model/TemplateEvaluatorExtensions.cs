@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Core.Model;
+namespace RepoM.ActionMenu.Core.Model;
 
 using System;
 using System.Threading.Tasks;

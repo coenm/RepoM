@@ -46,6 +46,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     {
         RegisterVariable(name, value);
     }
+
     protected void RegisterAction(string name, Action action)
     {
         RegisterCustomFunction(name, DelegateCustomFunction.Create(action));
@@ -95,7 +96,11 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     {
         static DelegateCustomFunction CreateFunc<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, TResult> func)
         {
-            if (func == null) throw new ArgumentNullException(nameof(func));
+            if (func == null)
+            {
+                throw new ArgumentNullException(nameof(func));
+            }
+
             return new InternalDelegateCustomFunctionWithInterfaceContext<T1, T2, T3, T4, TResult>(func);
         }
 

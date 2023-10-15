@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.PublicApi;
+using RepoM.ActionMenu.Core.Yaml.Model;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Core.Plugin.Repository;
@@ -34,10 +35,8 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     {
         var context = new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins);
 
-        // context.Repository.IsStarred = false;
-        
         // load yaml
-        var actions = await context.LoadAsync(_filename).ConfigureAwait(false);
+        Root actions = await context.LoadAsync(_filename).ConfigureAwait(false);
 
         // process context (vars + methods)
         await context.AddRepositoryContextAsync(actions.Context).ConfigureAwait(false);
@@ -47,14 +46,13 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         // process actions
         return await context.AddActionMenusAsync(actions.ActionMenu).ConfigureAwait(false);
     }
-
-
+    
     public async Task<IEnumerable<string>> GetTagsAsync(IRepository repository)
     {
         var context = new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins);
 
         // load yaml
-        var actions = await context.LoadAsync(_filename).ConfigureAwait(false);
+        Root actions = await context.LoadAsync(_filename).ConfigureAwait(false);
 
         if (actions.Tags == null)
         {
