@@ -17,7 +17,7 @@ internal static class YamlDotNetExtensions
         }
 
         return type.IsInterface
-            ? (new Type[] { type })
+            ? (new Type[] { type, })
             .Concat(type.GetInterfaces())
             .SelectMany(i => i.GetProperties(bindingFlags))
             : type.GetProperties(bindingFlags);

@@ -14,10 +14,12 @@ using YamlDotNet.Serialization;
 internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T : class, INodeDeserializer
 {
     private readonly INodeDeserializer _nodeDeserializer;
+    private readonly ITemplateParser _templateParser;
 
     public TemplateUpdatingNodeDeserializer(INodeDeserializer nodeDeserializer)
     {
         _nodeDeserializer = nodeDeserializer;
+        _templateParser = new FixedTemplateParser(); // todo inject
     }
 
     public bool Deserialize(IParser reader, Type expectedType, Func<IParser, Type, object?> nestedObjectDeserializer, out object? value)
@@ -35,13 +37,13 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
         var props = expectedType
             .GetProperties(true)
             .Where(x =>
-                x is { CanWrite: true, CanRead: true } &&
+                x is { CanWrite: true, CanRead: true, } &&
                 typeof(EvaluateObject).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
             )
             .ToArray();
 
         var props2 = value.GetType().GetProperties(true).Where(x =>
-                x is { CanWrite: true, CanRead: true } &&
+                x is { CanWrite: true, CanRead: true, } &&
                 typeof(EvaluateObject).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
             )
             .ToArray();
@@ -108,7 +110,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                             {
                                 var newValue = new RenderString
                                 {
-                                    Value = string.Empty
+                                    Value = string.Empty,
                                 };
                                 y = newValue;
                                 prop.SetMethod!.Invoke(value, new[] { newValue, });
@@ -131,7 +133,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
             if (y is ICreateTemplate createTemplate)
             {
-                createTemplate.CreateTemplate(new FixedTemplateParser());
+                createTemplate.CreateTemplate(_templateParser);
             }
         }
 

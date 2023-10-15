@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 
 using RepoM.ActionMenu.Interface.YamlModel;
 

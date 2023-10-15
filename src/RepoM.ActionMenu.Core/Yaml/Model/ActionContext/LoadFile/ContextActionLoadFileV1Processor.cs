@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.LoadFile;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext.LoadFile;
 
 using System;
 using System.Collections.Generic;

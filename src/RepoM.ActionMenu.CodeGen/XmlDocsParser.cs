@@ -76,6 +76,10 @@ internal static partial class XmlDocsParser
                     // todo?
                     _ = _removeCode.Replace(text, string.Empty);
                 }
+                else if (element.Name == "inheritdoc")
+                {
+                    throw new NotImplementedException("inheritdoc");
+                }
             }
         }
         catch (Exception ex)

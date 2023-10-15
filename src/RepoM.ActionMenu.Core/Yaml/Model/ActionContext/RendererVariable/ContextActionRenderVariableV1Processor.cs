@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.RendererVariable;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
 
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.Model;

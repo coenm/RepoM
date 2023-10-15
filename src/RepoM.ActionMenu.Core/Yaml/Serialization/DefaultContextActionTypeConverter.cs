@@ -1,7 +1,7 @@
 namespace RepoM.ActionMenu.Core.Yaml.Serialization;
 
 using System;
-using RepoM.ActionMenu.Core.Yaml.Model.Ctx.SetVariable;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;

@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Interface.YamlModel.Templating;
+namespace RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 using System;
 
@@ -6,6 +6,14 @@ using System;
 public sealed class EvaluateToObjectAttribute : EvaluateToAttribute
 {
     public EvaluateToObjectAttribute(Type type)
+    {
+    }
+}
+
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class EvaluateToAnyObjectAttribute : EvaluateToAttribute
+{
+    public EvaluateToAnyObjectAttribute()
     {
     }
 }

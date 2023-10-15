@@ -3,10 +3,13 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.Tags;
 using System.ComponentModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
+/// <inheritdoc cref="ITag"/>
 internal class TagObject : ITag
 {
-    public string Tag { get; set; }
+    /// <inheritdoc cref="ITag.Tag"/>
+    public string Tag { get; set; } = string.Empty;
 
+    /// <inheritdoc cref="ITag.When"/>
     [EvaluateToBoolean(true)]
     [DefaultValue(true)] // todo
     public EvaluateBoolean When { get; set; } = new EvaluateBoolean();

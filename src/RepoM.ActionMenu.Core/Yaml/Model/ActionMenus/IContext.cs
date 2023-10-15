@@ -1,6 +1,6 @@
 ﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;
 
-using RepoM.ActionMenu.Core.Yaml.Model.Ctx;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 
 internal interface IContext
 {

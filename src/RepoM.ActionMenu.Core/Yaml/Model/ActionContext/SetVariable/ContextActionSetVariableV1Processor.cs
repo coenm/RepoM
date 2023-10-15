@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.SetVariable;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
 
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;

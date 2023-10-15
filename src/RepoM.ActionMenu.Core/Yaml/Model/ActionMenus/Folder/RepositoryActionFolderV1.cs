@@ -1,6 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
 
-using RepoM.ActionMenu.Core.Yaml.Model.Ctx;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 using RepoM.ActionMenu.Interface.YamlModel;
 
 internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuActions, IContext, IDeferred

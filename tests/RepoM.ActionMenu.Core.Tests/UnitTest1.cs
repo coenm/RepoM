@@ -6,10 +6,10 @@ namespace RepoM.ActionMenu.Core.Tests
     using System.Threading.Tasks;
     using RepoM.ActionMenu.Core.PublicApi;
     using RepoM.ActionMenu.Core.Yaml.Model;
-    using RepoM.ActionMenu.Core.Yaml.Model.Ctx;
-    using RepoM.ActionMenu.Core.Yaml.Model.Ctx.ExecuteScript;
-    using RepoM.ActionMenu.Core.Yaml.Model.Ctx.RendererVariable;
-    using RepoM.ActionMenu.Core.Yaml.Model.Ctx.SetVariable;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
     using RepoM.ActionMenu.Core.Yaml.Serialization;
     using RepoM.ActionMenu.Interface.Scriban;
     using RepoM.Core.Plugin.Repository;
