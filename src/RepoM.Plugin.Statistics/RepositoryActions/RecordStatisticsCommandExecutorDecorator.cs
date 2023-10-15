@@ -7,13 +7,13 @@ using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 [UsedImplicitly]
-public sealed class RecordStatisticsActionExecutorDecorator<T> : IActionExecutor<T> where T : IRepositoryCommand
+public sealed class RecordStatisticsCommandExecutorDecorator<T> : ICommandExecutor<T> where T : IRepositoryCommand
 {
-    private readonly IActionExecutor<T> _decoratee;
+    private readonly ICommandExecutor<T> _decoratee;
     private readonly IStatisticsService _service;
 
-    public RecordStatisticsActionExecutorDecorator(
-        IActionExecutor<T> decoratee,
+    public RecordStatisticsCommandExecutorDecorator(
+        ICommandExecutor<T> decoratee,
         IStatisticsService service)
     {
         _decoratee = decoratee ?? throw new ArgumentNullException(nameof(decoratee));

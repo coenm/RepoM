@@ -69,7 +69,7 @@ public class WebBrowserPackage : IPackage
         container.Collection.Append<IActionToRepositoryActionMapper, ActionBrowserV1Mapper>(Lifestyle.Singleton);
 
         // action executor
-        container.Register(typeof(IActionExecutor<>), new[] { typeof(WebBrowserPackage).Assembly, }, Lifestyle.Singleton);
+        container.Register(typeof(ICommandExecutor<>), new[] { typeof(WebBrowserPackage).Assembly, }, Lifestyle.Singleton);
     }
 
     private static void RegisterInternals(Container container)

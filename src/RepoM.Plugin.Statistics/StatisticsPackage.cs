@@ -72,7 +72,7 @@ public class StatisticsPackage : IPackage
         container.Register<IRepositoryComparerFactory<LastOpenedConfigurationV1>, LastOpenedComparerFactory>(Lifestyle.Singleton);
 
         // action executor
-        container.RegisterDecorator(typeof(IActionExecutor<>), typeof(RecordStatisticsActionExecutorDecorator<>), Lifestyle.Singleton);
+        container.RegisterDecorator(typeof(ICommandExecutor<>), typeof(RecordStatisticsCommandExecutorDecorator<>), Lifestyle.Singleton);
 
         // variable provider
         container.Collection.Append<IVariableProvider, UsageVariableProvider>(Lifestyle.Singleton);

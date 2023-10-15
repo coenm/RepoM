@@ -6,7 +6,7 @@ using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 [UsedImplicitly]
-public class DelegateActionExecutor : IActionExecutor<DelegateRepositoryCommand>
+public class DelegateCommandExecutor : ICommandExecutor<DelegateRepositoryCommand>
 {
     public void Execute(IRepository repository, DelegateRepositoryCommand repositoryCommand)
     {

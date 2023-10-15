@@ -6,7 +6,7 @@ using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 [UsedImplicitly]
-public class NullActionExecutor : IActionExecutor<NullRepositoryCommand>
+public class NullCommandExecutor : ICommandExecutor<NullRepositoryCommand>
 {
     public void Execute(IRepository repository, NullRepositoryCommand repositoryCommand)
     {

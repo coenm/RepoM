@@ -7,7 +7,7 @@ using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 [UsedImplicitly]
-public class StartProcessActionExecutor : IActionExecutor<StartProcessRepositoryCommand>
+public class StartProcessCommandExecutor : ICommandExecutor<StartProcessRepositoryCommand>
 {
     public void Execute(IRepository repository, StartProcessRepositoryCommand repositoryCommand)
     {

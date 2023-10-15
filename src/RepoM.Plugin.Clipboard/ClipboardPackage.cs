@@ -32,7 +32,7 @@ public class ClipboardPackage : IPackage
         // (see Statistics for example)
 
         // action executor
-        container.Register(typeof(IActionExecutor<>), new[] { typeof(ClipboardPackage).Assembly, }, Lifestyle.Singleton);
+        container.Register(typeof(ICommandExecutor<>), new[] { typeof(ClipboardPackage).Assembly, }, Lifestyle.Singleton);
 
         // variable provider
 
