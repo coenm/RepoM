@@ -32,8 +32,10 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
     
     public ActionMenuDeserializer()
     {
+        // todo
         var factoryMethods = new Dictionary<Type, Func<object>>
             {
+                { typeof(EvaluateAnyObject), () => new ScribanEvaluateAnyObject() },
                 { typeof(EvaluateBoolean), () => new ScribanEvaluateBoolean() },
                 { typeof(RenderString), () => new ScribanRenderString() },
                 { typeof(EvaluateInt), () => new ScribanEvaluateInt() },

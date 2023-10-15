@@ -27,7 +27,7 @@ public class ContextActionEvaluateVariableV1 : NamedContextAction, IContextActio
     /// Value of the variable.
     /// </summary>
     [EvaluateToAnyObject]
-    public string? Value { get; init; }
+    public string? Value { get; init; } //EvaluateAnyObject
 
     /// <inheritdoc cref="IEnabled.Enabled"/>
     public string? Enabled { get; init; }

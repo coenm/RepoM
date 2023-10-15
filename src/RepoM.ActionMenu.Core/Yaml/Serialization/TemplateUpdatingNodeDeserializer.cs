@@ -56,6 +56,22 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                 continue;
             }
 
+            if (prop.PropertyType == typeof(EvaluateAnyObject))
+            {
+                var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
+                    a.AttributeType.FullName == typeof(EvaluateToAnyObjectAttribute).FullName);
+
+                if (attribute != null)
+                {
+                    IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
+
+                    if (constructorArguments.Count == 0)
+                    {
+                        (y as EvaluateAnyObject)!.DefaultValue = null; // not needed?~
+                    }
+                }
+            }
+
             if (prop.PropertyType == typeof(EvaluateBoolean))
             {
                 var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
