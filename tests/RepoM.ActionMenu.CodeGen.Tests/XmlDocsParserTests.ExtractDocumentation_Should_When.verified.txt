@@ -1,0 +1,21 @@
+﻿{
+  IsFunc: false,
+  IsAction: false,
+  IsConst: false,
+  IsModule: false,
+  IsBuiltin: false,
+  IsCommand: false,
+  Description: Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.,
+  Returns: Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.,
+  Examples: [
+    {
+      Description:
+Locate all solution files in the given directory.
+,
+      Input:
+find_files 'C:\Users\coenm\RepoM' '*.sln'
+    # find_files('C:\Users\coenm\RepoM','*.sln'),
+      Output: ["C:\Users\coenm\RepoM\src\RepoM.sln"]
+    }
+  ]
+}
