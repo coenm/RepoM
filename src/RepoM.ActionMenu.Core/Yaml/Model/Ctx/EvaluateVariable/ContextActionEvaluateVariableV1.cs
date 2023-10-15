@@ -2,13 +2,13 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.EvaluateVariable;
 
 using RepoM.ActionMenu.Interface.YamlModel;
 
-public class EvaluateVariableContextAction : NamedContextAction, IContextAction, IEnabled
+public class ContextActionEvaluateVariableV1 : NamedContextAction, IContextAction, IEnabled
 {
-    public const string TypeValue = "evaluate-variable@1";
+    public const string TYPE_VALUE = "evaluate-variable@1";
 
     public override string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -24,6 +24,6 @@ public class EvaluateVariableContextAction : NamedContextAction, IContextAction,
             value = value[..10] + "..";
         }
 
-        return $"({TypeValue}) {Name} : {value}";
+        return $"({TYPE_VALUE}) {Name} : {value}";
     }
 }

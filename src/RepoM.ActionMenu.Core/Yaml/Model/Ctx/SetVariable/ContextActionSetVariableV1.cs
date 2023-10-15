@@ -2,13 +2,13 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.SetVariable;
 
 using RepoM.ActionMenu.Interface.YamlModel;
 
-public class SetVariableContextAction : NamedContextAction, IContextAction, IEnabled
+public class ContextActionSetVariableV1 : NamedContextAction, IContextAction, IEnabled
 {
-    public const string TypeValue = "set-variable@1";
+    public const string TYPE_VALUE = "set-variable@1";
 
     public override string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -16,9 +16,9 @@ public class SetVariableContextAction : NamedContextAction, IContextAction, IEna
 
     public string? Enabled { get; init; }
 
-    public static SetVariableContextAction Create(string name, object? value)
+    public static ContextActionSetVariableV1 Create(string name, object? value)
     {
-        return new SetVariableContextAction()
+        return new ContextActionSetVariableV1()
         {
             Name = name,
             Value = value,
@@ -33,6 +33,6 @@ public class SetVariableContextAction : NamedContextAction, IContextAction, IEna
             value = value[..10] + "..";
         }
 
-        return $"({TypeValue}) {Name} : {value}";
+        return $"({TYPE_VALUE}) {Name} : {value}";
     }
 }

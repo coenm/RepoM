@@ -38,7 +38,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     private readonly ITemplateContextRegistration[] _functionsArray;
     private readonly ActionMenuDeserializer _deserializer = new();
     private readonly List<IActionToRepositoryActionMapper> _repositoryActionMappers;
-    private readonly List<IContextActionMapper> _contextActionMappers;
+    private readonly List<IContextActionProcessor> _contextActionMappers;
 
     public ActionMenuGenerationContext(
         IRepository repository, 
@@ -82,13 +82,13 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         PushGlobal(rootScriptObject);
 
-        _contextActionMappers = new List<IContextActionMapper>
+        _contextActionMappers = new List<IContextActionProcessor>
             {
-                new ExecuteScriptContextActionMapper(),
-                new SetVariableActionContextActionMapper(),
-                new EvaluateVariableActionContextActionMapper(),
-                new RenderVariableActionContextActionMapper(),
-                new LoadFileContextActionContextActionMapper(FileSystem, _deserializer),
+                new ContextActionExecuteScriptV1Processor(),
+                new ContextActionSetVariableV1Processor(),
+                new ContextActionEvaluateVariableV1Processor(),
+                new ContextActionRenderVariableV1Processor(),
+                new ContextActionLoadFileV1Processor(FileSystem, _deserializer),
             };
 
         RepositoryActionsScriptContext = new DisposableContextScriptObject(this, Env, _contextActionMappers);

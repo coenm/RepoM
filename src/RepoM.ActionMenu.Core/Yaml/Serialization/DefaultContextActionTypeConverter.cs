@@ -10,7 +10,7 @@ internal class DefaultContextActionTypeConverter : IYamlTypeConverter
 {
     public bool Accepts(Type type)
     {
-        return type == typeof(DefaultContextActionType);
+        return type == typeof(DefaultV1Type);
     }
 
     public object ReadYaml(IParser parser, Type type)
@@ -32,7 +32,7 @@ internal class DefaultContextActionTypeConverter : IYamlTypeConverter
         var value = ((Scalar)parser.Current).Value;
         parser.MoveNext();
 
-        return new SetVariableContextAction()
+        return new ContextActionSetVariableV1()
             {
                 Name = key,
                 Value = value,

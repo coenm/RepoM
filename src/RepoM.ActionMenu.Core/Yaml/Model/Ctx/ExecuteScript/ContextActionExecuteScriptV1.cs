@@ -1,14 +1,14 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.ExecuteScript;
+namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.ExecuteScript;
 
 using RepoM.ActionMenu.Interface.YamlModel;
 
-public sealed class ExecuteScript : IContextAction, IEnabled
+public sealed class ContextActionExecuteScriptV1 : IContextAction, IEnabled
 {
-    public const string TypeValue = "evaluate-script@1";
+    public const string TYPE_VALUE = "evaluate-script@1";
 
     public string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -24,6 +24,6 @@ public sealed class ExecuteScript : IContextAction, IEnabled
             value = value[..10] + "..";
         }
 
-        return $"({TypeValue}) : {value}";
+        return $"({TYPE_VALUE}) : {value}";
     }
 }

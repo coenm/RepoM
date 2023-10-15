@@ -1,26 +1,28 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.LoadFile;
+namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.LoadFile;
 
 using System;
+using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 using DotNetEnv;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
+using RepoM.ActionMenu.Interface.YamlModel;
 
-internal class LoadFileContextActionContextActionMapper : ContextActionMapperBase<LoadFileContextAction>
+internal class ContextActionLoadFileV1Processor : ContextActionProcessorBase<ContextActionLoadFileV1>
 {
     private readonly IFileSystem _fileSystem;
     private readonly IActionMenuDeserializer _deserializer;
 
-    public LoadFileContextActionContextActionMapper(IFileSystem fileSystem, IActionMenuDeserializer deserializer)
+    public ContextActionLoadFileV1Processor(IFileSystem fileSystem, IActionMenuDeserializer deserializer)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
     }
 
-    protected override async Task MapAsync(LoadFileContextAction contextContextAction, IContextMenuActionMenuGenerationContext context, IScope scope)
+    protected override async Task ProcessAsync(ContextActionLoadFileV1 contextV1, IContextMenuActionMenuGenerationContext context, IScope scope)
     {
-        var filename = await context.RenderNullableString(contextContextAction.Filename).ConfigureAwait(false);
+        var filename = await context.RenderNullableString(contextV1.Filename).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(filename))
         {
@@ -36,11 +38,11 @@ internal class LoadFileContextActionContextActionMapper : ContextActionMapperBas
             filename.EndsWith(".yaml", StringComparison.CurrentCultureIgnoreCase))
         {
             var yaml = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-            var contextRoot = _deserializer.DeserializeContextRoot(yaml);
+            ContextRoot contextRoot = _deserializer.DeserializeContextRoot(yaml);
 
             if (contextRoot.Context is not null)
             {
-                foreach (var item in contextRoot.Context)
+                foreach (IContextAction item in contextRoot.Context)
                 {
                     await scope.AddContextActionAsync(item).ConfigureAwait(false);
                 }
@@ -52,7 +54,7 @@ internal class LoadFileContextActionContextActionMapper : ContextActionMapperBas
         if (filename.EndsWith(".env", StringComparison.CurrentCultureIgnoreCase))
         {
             var envContent = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-            var envResult = Env.LoadContents(envContent, new LoadOptions(setEnvVars: false));
+            IEnumerable<KeyValuePair<string, string>>? envResult = Env.LoadContents(envContent, new LoadOptions(setEnvVars: false));
 
             if (envResult == null)
             {

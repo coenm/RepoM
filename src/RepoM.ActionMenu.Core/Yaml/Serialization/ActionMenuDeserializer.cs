@@ -52,15 +52,15 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
             .WithTypeDiscriminatingNodeDeserializer(options =>
                 {
                     options.AddTypeDiscriminator(
-                        new KeyValueTypeDiscriminatorWithDefaultType<IContextAction, DefaultContextActionType>(
+                        new KeyValueTypeDiscriminatorWithDefaultType<IContextAction, DefaultV1Type>(
                             "type",
                             new Dictionary<string, Type>
                                {
-                                    { EvaluateVariableContextAction.TypeValue, typeof(EvaluateVariableContextAction)},
-                                    { RenderVariableContextAction.TypeValue, typeof(RenderVariableContextAction)},
-                                    { ExecuteScript.TypeValue, typeof(ExecuteScript)},
-                                    { SetVariableContextAction.TypeValue, typeof(SetVariableContextAction)},
-                                    { LoadFileContextAction.TypeValue, typeof(LoadFileContextAction)},
+                                    { ContextActionEvaluateVariableV1.TYPE_VALUE, typeof(ContextActionEvaluateVariableV1)},
+                                    { ContextActionRenderVariableV1.TYPE_VALUE, typeof(ContextActionRenderVariableV1)},
+                                    { ContextActionExecuteScriptV1.TYPE_VALUE, typeof(ContextActionExecuteScriptV1)},
+                                    { ContextActionSetVariableV1.TYPE_VALUE, typeof(ContextActionSetVariableV1)},
+                                    { ContextActionLoadFileV1.TYPE_VALUE, typeof(ContextActionLoadFileV1)},
                                 }));
 
                     options.AddKeyValueTypeDiscriminator<IMenuAction>(

@@ -1,14 +1,14 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.LoadFile;
+namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.LoadFile;
 
 using RepoM.ActionMenu.Interface.YamlModel;
 
-public class LoadFileContextAction : NamedContextAction, IContextAction, IEnabled
+public class ContextActionLoadFileV1 : NamedContextAction, IContextAction, IEnabled
 {
-    public const string TypeValue = "load-file@1";
+    public const string TYPE_VALUE = "load-file@1";
 
     public override string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -24,6 +24,6 @@ public class LoadFileContextAction : NamedContextAction, IContextAction, IEnable
             value = value[..10] + "..";
         }
 
-        return $"({TypeValue}) {Name} : {value}";
+        return $"({TYPE_VALUE}) {Name} : {value}";
     }
 }

@@ -207,13 +207,13 @@ namespace RepoM.ActionMenu.Core.Tests
             {
                 Context = new Context
                 {
-                    SetVariableContextAction.Create("name", "coenm"),
-                    new ExecuteScript
+                    ContextActionSetVariableV1.Create("name", "coenm"),
+                    new ContextActionExecuteScriptV1
                     {
                         Content = @"this is text
 some more text"
                     },
-                    new RenderVariableContextAction
+                    new ContextActionRenderVariableV1
                     {
                         Name = "render",
                         Value = "text {{ name }} text2",

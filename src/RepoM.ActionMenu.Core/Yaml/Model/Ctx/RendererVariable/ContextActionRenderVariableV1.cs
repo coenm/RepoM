@@ -1,15 +1,15 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.RendererVariable;
+namespace RepoM.ActionMenu.Core.Yaml.Model.Ctx.RendererVariable;
 
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
-public class RenderVariableContextAction : NamedContextAction, IContextAction, IEnabled
+public class ContextActionRenderVariableV1 : NamedContextAction, IContextAction, IEnabled
 {
-    public const string TypeValue = "render-variable@1";
+    public const string TYPE_VALUE = "render-variable@1";
 
     public override string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
