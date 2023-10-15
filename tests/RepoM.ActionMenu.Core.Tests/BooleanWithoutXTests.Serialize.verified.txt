@@ -16,11 +16,11 @@ action-menu:
 - type: foreach@1
   active: 
   enumerable: file.find_files("c:\\", "*.env")
-  variable: file
+  variable: f
   skip: 
   actions:
   - type: just-text@1
-    text: file name {{ file }}
+    text: file name {{ f }}
     active: 
     enabled: 
     context: 

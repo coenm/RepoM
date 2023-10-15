@@ -25,16 +25,6 @@ internal static partial class XmlDocsParser
             return;
         }
 
-        if (xmlStr.Contains("Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern."))
-        {
-            xmlStr = xmlStr;
-        }
-
-        if (xmlStr.Contains("Checks if the specified file path exists on the disk."))
-        {
-            xmlStr = xmlStr;
-        }
-
         try
         {
             var xmlDoc = XElement.Parse(xmlStr);

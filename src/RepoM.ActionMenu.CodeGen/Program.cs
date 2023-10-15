@@ -166,41 +166,6 @@ public class Program
         {
             await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
         }
-
-        return;
-
-        // Log any errors if a member doesn't have any doc or tests
-        var functionWithMissingDoc = 0;
-        var functionWithMissingTests = 0;
-        foreach (var module in modules)
-        {
-            foreach (var member in module.Members)
-            {
-                var hasNoDesc = string.IsNullOrEmpty(member.Description);
-                if ((!hasNoDesc))
-                {
-                    continue;
-                }
-
-                // We don't log for all the matrix constructors, as they are tested separately.
-                if (module.ClassName == "TypesModule" && member.CSharpName.StartsWith("Create"))
-                {
-                    continue;
-                }
-
-                if (hasNoDesc)
-                {
-                    ++functionWithMissingDoc;
-                }
-
-                Console.WriteLine($"The member {member.Name} => {module.ClassName}.{member.CSharpName} doesn't have {(hasNoDesc ? "any docs" : "")}");
-            }
-        }
-
-        Console.WriteLine($"{modules.Count} modules generated.");
-        Console.WriteLine($"{modules.SelectMany(x => x.Members).Count()} functions generated.");
-        Console.WriteLine($"{functionWithMissingDoc} functions with missing doc.");
-        Console.WriteLine($"{functionWithMissingTests} functions with missing tests.");
     }
 
     private static void GetOrCreateModule(ITypeSymbol typeSymbol, string className, AttributeData moduleAttribute, out KalkModuleToGenerate moduleToGenerate, Dictionary<string, KalkModuleToGenerate>? mapNameToModule)
@@ -269,8 +234,7 @@ public class Program
     {
         return typeSymbol.ToDisplayString();
     }
-
-
+    
     private static void CheckDirectory(string path)
     {
         if (!Directory.Exists(path))
