@@ -1,15 +1,15 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
 
 using RepoM.ActionMenu.Core.Yaml.Model.Ctx;
 using RepoM.ActionMenu.Interface.YamlModel;
 
 internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
 {
-    public const string TypeValue = "just-text@1";
+    public const string TYPE_VALUE = "just-text@1";
 
     public string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -26,6 +26,6 @@ internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
 
     public override string ToString()
     {
-        return $"({TypeValue}) {Text}";
+        return $"({TYPE_VALUE}) {Text}";
     }
 }

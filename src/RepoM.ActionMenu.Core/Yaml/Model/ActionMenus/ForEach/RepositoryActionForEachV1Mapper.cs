@@ -45,7 +45,7 @@ internal class RepositoryActionForEachV1Mapper : ActionToRepositoryActionMapperB
                 continue;
             }
 
-            using var scope = context.CreateGlobalScope();
+            using IScope scope = context.CreateGlobalScope();
             
             // todo evaluate to string or not?
             scope.SetValue(action.Variable, item, true);
@@ -55,14 +55,14 @@ internal class RepositoryActionForEachV1Mapper : ActionToRepositoryActionMapperB
                 continue;
             }
 
-            var items = await context.AddActionMenusAsync(action.Actions).ConfigureAwait(false);
+            IEnumerable<UserInterfaceRepositoryActionBase> items = await context.AddActionMenusAsync(action.Actions).ConfigureAwait(false);
 
             if (items is null)
             {
                 continue;
             }
 
-            foreach (var menuItem in items)
+            foreach (UserInterfaceRepositoryActionBase menuItem in items)
             {
                 yield return menuItem;
             }

@@ -1,14 +1,14 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.AssociateFile;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.AssociateFile;
 
 using RepoM.ActionMenu.Interface.YamlModel;
 
 internal sealed class RepositoryActionAssociateFileV1 : IMenuAction, IName
 {
-    public const string TypeValue = "associate-file@1";
+    public const string TYPE_VALUE = "associate-file@1";
 
     public string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -20,6 +20,6 @@ internal sealed class RepositoryActionAssociateFileV1 : IMenuAction, IName
 
     public override string ToString()
     {
-        return $"({TypeValue}) {Name} : {Extension}";
+        return $"({TYPE_VALUE}) {Name} : {Extension}";
     }
 }

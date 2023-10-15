@@ -1,15 +1,15 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
 
 using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
 
 internal sealed class RepositoryActionCommandV1 : IMenuAction, IName
 {
-    public const string TypeValue = "command@1";
+    public const string TYPE_VALUE = "command@1";
 
     public string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -30,6 +30,6 @@ internal sealed class RepositoryActionCommandV1 : IMenuAction, IName
 
     public override string ToString()
     {
-        return $"({TypeValue}) {Name}";
+        return $"({TYPE_VALUE}) {Name}";
     }
 }

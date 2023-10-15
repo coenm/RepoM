@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
 
 using RepoM.ActionMenu.Core.Yaml.Model.Ctx;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -8,11 +8,11 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
     /// <summary>
     /// RepositoryAction type.
     /// </summary>
-    public const string TypeValue = "folder@1";
+    public const string TYPE_VALUE = "folder@1";
 
     public string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -28,6 +28,6 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
 
     public override string ToString()
     {
-        return $"({TypeValue}) {Name} : #actions: {Actions?.Count ?? 0}";
+        return $"({TYPE_VALUE}) {Name} : #actions: {Actions?.Count ?? 0}";
     }
 }

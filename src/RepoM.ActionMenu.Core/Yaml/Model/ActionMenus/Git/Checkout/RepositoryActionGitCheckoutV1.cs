@@ -1,14 +1,14 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
 
 using RepoM.ActionMenu.Interface.YamlModel;
 
 internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IOptionalName
 {
-    public const string TypeValue = "git-checkout@1";
+    public const string TYPE_VALUE = "git-checkout@1";
 
     public string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -18,6 +18,6 @@ internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IOptionalName
 
     public override string ToString()
     {
-        return $"({TypeValue}) {Name}";
+        return $"({TYPE_VALUE}) {Name}";
     }
 }

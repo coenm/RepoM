@@ -14,6 +14,9 @@ public interface IMenuContext
     IFileSystem FileSystem { get; }
 }
 
+/// <summary>
+/// Context for the generation of the action menus (to be used by mappers)
+/// </summary>
 public interface IActionMenuGenerationContext : ITemplateEvaluator, IMenuContext
 {
     Task<IEnumerable<UserInterfaceRepositoryActionBase>> AddActionMenusAsync(List<IMenuAction>? actionActions);

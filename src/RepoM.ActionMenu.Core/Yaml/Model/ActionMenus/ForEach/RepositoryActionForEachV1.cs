@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,11 +6,11 @@ using RepoM.ActionMenu.Interface.YamlModel;
 
 internal sealed class RepositoryActionForEachV1 : IMenuAction
 {
-    public const string TypeValue = "foreach@1";
+    public const string TYPE_VALUE = "foreach@1";
 
     public string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -42,6 +42,6 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction
     
     public override string ToString()
     {
-        return $"({TypeValue})";
+        return $"({TYPE_VALUE})";
     }
 }

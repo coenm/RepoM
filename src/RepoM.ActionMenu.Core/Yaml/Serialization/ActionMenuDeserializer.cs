@@ -67,12 +67,12 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
                         "type",
                         new Dictionary<string, Type>
                             {
-                                { RepositoryActionAssociateFileV1.TypeValue, typeof(RepositoryActionAssociateFileV1) },
-                                { RepositoryActionJustTextV1.TypeValue, typeof(RepositoryActionJustTextV1) },
-                                { RepositoryActionFolderV1.TypeValue, typeof(RepositoryActionFolderV1) },
-                                { RepositoryActionBrowseRepositoryV1.TypeValue, typeof(RepositoryActionBrowseRepositoryV1) },
-                                { RepositoryActionCommandV1.TypeValue, typeof(RepositoryActionCommandV1) },
-                                { RepositoryActionForEachV1.TypeValue, typeof(RepositoryActionForEachV1) },
+                                { RepositoryActionAssociateFileV1.TYPE_VALUE, typeof(RepositoryActionAssociateFileV1) },
+                                { RepositoryActionJustTextV1.TYPE_VALUE, typeof(RepositoryActionJustTextV1) },
+                                { RepositoryActionFolderV1.TYPE_VALUE, typeof(RepositoryActionFolderV1) },
+                                { RepositoryActionBrowseRepositoryV1.TYPE_VALUE, typeof(RepositoryActionBrowseRepositoryV1) },
+                                { RepositoryActionCommandV1.TYPE_VALUE, typeof(RepositoryActionCommandV1) },
+                                { RepositoryActionForEachV1.TYPE_VALUE, typeof(RepositoryActionForEachV1) },
                             });
                 },
                 maxDepth: -1,

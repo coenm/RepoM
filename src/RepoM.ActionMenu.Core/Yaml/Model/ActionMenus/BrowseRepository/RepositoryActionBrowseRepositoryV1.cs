@@ -1,14 +1,14 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
 
 using RepoM.ActionMenu.Interface.YamlModel;
 
 internal sealed class RepositoryActionBrowseRepositoryV1 : IMenuAction, IName
 {
-    public const string TypeValue = "browse-repository@1";
+    public const string TYPE_VALUE = "browse-repository@1";
 
     public string Type
     {
-        get => TypeValue;
+        get => TYPE_VALUE;
         set => _ = value;
     }
 
@@ -20,6 +20,6 @@ internal sealed class RepositoryActionBrowseRepositoryV1 : IMenuAction, IName
 
     public override string ToString()
     {
-        return $"({TypeValue}) {Name}";
+        return $"({TYPE_VALUE}) {Name}";
     }
 }
