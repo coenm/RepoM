@@ -14,11 +14,6 @@ using Scriban.Runtime;
 
 public class Program
 {
-    private static AttributeData? FindAttribute<T>(ISymbol symbol)
-    {
-        return symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass!.Name == typeof(T).Name);
-    }
-
     static async Task Main(string[] args)
     {
         // not sure why Kalk has this.
@@ -168,7 +163,17 @@ public class Program
         }
     }
 
-    private static void GetOrCreateModule(ITypeSymbol typeSymbol, string className, AttributeData moduleAttribute, out KalkModuleToGenerate moduleToGenerate, Dictionary<string, KalkModuleToGenerate>? mapNameToModule)
+    internal static AttributeData? FindAttribute<T>(ISymbol symbol)
+    {
+        return symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass!.Name == typeof(T).Name);
+    }
+
+    private static void GetOrCreateModule(
+        ITypeSymbol typeSymbol,
+        string className,
+        AttributeData moduleAttribute,
+        out KalkModuleToGenerate moduleToGenerate,
+        IDictionary<string, KalkModuleToGenerate>? mapNameToModule)
     {
         var ns = typeSymbol.ContainingNamespace.ToDisplayString();
 
@@ -198,37 +203,12 @@ public class Program
         }
     }
     
-    private static async Task GenerateModuleSiteDocumentation(KalkModuleToGenerate module, string siteFolder, Template templateDocs)
+    private static async Task GenerateModuleSiteDocumentation(KalkModuleToGenerate module, string siteFolder, Template template)
     {
-        if (module.Name == "KalkEngine")
-        {
-            module.Name = "General";
-        }
-            
-        module.Members.Sort((left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal));
-
-        module.Title = $"{module.Name} {(module.IsBuiltin ? "Functions":"Module")}";
-
+        var result = await DocumentationGenerator.GetDocsContentAsync(module, template);
         var name = module.Name.ToLowerInvariant();
-        module.Url = $"/doc/api/{name}/";
-
-        var apiFolder = siteFolder;
-
-        var context = new TemplateContext
-            {
-                LoopLimit = 0,
-            };
-        var scriptObject = new ScriptObject()
-            {
-                { "module", module },
-            };
-        context.PushGlobal(scriptObject);
-        context.MemberRenamer = x => x.Name;
-        var result = await templateDocs.RenderAsync(context);
-
-        await File.WriteAllTextAsync(Path.Combine(apiFolder, $"{name}.generated.md"), result);
+        await File.WriteAllTextAsync(Path.Combine(siteFolder, $"{name}.generated.md"), result);
     }
-    
     
     static string GetTypeName(ITypeSymbol typeSymbol)
     {
