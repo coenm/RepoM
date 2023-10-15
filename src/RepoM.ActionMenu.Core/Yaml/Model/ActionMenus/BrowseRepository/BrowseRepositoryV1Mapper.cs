@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.UserInterface;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
-using RepoM.ActionMenu.Interface.Commands;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 internal class BrowseRepositoryV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionBrowseRepositoryV1>
 {

@@ -4,7 +4,7 @@ using RepoM.Core.Plugin.RepositoryActions;
 
 public sealed class StartProcessRepositoryCommand : IRepositoryCommand
 {
-    public StartProcessRepositoryCommand(string executable, string[] arguments)
+    public StartProcessRepositoryCommand(string executable, params string[] arguments)
     {
         Executable = executable;
         Arguments = arguments;

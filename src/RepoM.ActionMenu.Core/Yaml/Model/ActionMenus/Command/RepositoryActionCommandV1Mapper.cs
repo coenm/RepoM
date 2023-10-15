@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.UserInterface;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
-using RepoM.ActionMenu.Interface.Commands;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 internal class ActionCommandV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionCommandV1>
 {

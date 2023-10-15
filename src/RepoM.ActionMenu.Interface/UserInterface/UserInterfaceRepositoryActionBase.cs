@@ -2,8 +2,9 @@ namespace RepoM.ActionMenu.Interface.UserInterface;
 
 using System;
 using System.Collections.Generic;
-using RepoM.ActionMenu.Interface.Commands;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Plugin.RepositoryActions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 public abstract class UserInterfaceRepositoryActionBase
 {

@@ -1,4 +1,6 @@
-﻿namespace RepoM.ActionMenu.Interface.Commands;
+namespace RepoM.Core.Plugin.RepositoryActions.Commands;
+
+using RepoM.Core.Plugin.RepositoryActions;
 
 public sealed class BrowseRepositoryCommand : IRepositoryCommand
 {
