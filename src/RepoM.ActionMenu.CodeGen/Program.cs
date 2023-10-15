@@ -67,8 +67,7 @@ public class Program
                     throw new Exception("Name cannot be null or empty.");
                 }
 
-                var containingType = member.ContainingSymbol;
-                var className = containingType.Name;
+                var className = member.ContainingSymbol.Name;
 
                 // In case the module is built-in, we still generate a module for it
                 if (moduleToGenerate == null)
@@ -154,7 +153,6 @@ public class Program
 
         var result = await templateModule.RenderAsync(context);
         await File.WriteAllTextAsync(pathToGeneratedCode, result);
-
         
         // Generate module site documentation
         foreach(KalkModuleToGenerate module in modules)
