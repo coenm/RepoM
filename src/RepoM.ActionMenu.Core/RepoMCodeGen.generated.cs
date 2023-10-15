@@ -37,35 +37,3 @@ namespace RepoM.ActionMenu.Core.Model.Functions
         }
     }
 }
-
-namespace RepoM.ActionMenu.Core.Model.Functions
-{
-    partial class StringModule
-    {
-        protected sealed override void RegisterFunctions()
-        {
-            RegisterFunction("escape", (Func<string, string>)StringEscape);
-            RegisterFunction("capitalize", (Func<string, string>)StringCapitalize);
-            RegisterFunction("capitalize_words", (Func<string, string>)StringCapitalizeWords);
-            RegisterFunction("downcase", (Func<string, string>)StringDowncase);
-            RegisterFunction("upcase", (Func<string, string>)StringUpcase);
-            RegisterFunction("endswith", (Func<string, string, bool>)StringEndsWith);
-            RegisterFunction("handleize", (Func<string, string>)StringHandleize);
-            RegisterFunction("lstrip", (Func<string, string>)StringLeftStrip);
-            RegisterFunction("pluralize", (Func<int, string, string, string>)StringPluralize);
-            RegisterFunction("rstrip", (Func<string, string>)StringRightStrip);
-            RegisterFunction("split", (Func<string, string, System.Collections.IEnumerable>)StringSplit);
-            RegisterFunction("startswith", (Func<string, string, bool>)StringStartsWith);
-            RegisterFunction("strip", (Func<string, string>)StringStrip);
-            RegisterFunction("strip_newlines", (Func<string, string>)StringStripNewlines);
-            RegisterFunction("pad_left", (Func<string, int, string>)StringPadLeft);
-            RegisterFunction("pad_right", (Func<string, int, string>)StringPadRight);
-            RegisterFunction("regex_escape", (Func<string, string>)RegexEscape);
-            RegisterFunction("regex_match", (Func<Scriban.TemplateContext, string, string, string, Scriban.Runtime.ScriptArray>)RegexMatch);
-            RegisterFunction("regex_matches", (Func<Scriban.TemplateContext, string, string, string?, Scriban.Runtime.ScriptArray>)RegexMatches);
-            RegisterFunction("regex_replace", (Func<Scriban.TemplateContext, string, string, string, string, string>)RegexReplace);
-            RegisterFunction("regex_split", (Func<Scriban.TemplateContext, string, string, string, Scriban.Runtime.ScriptArray>)RegexSplit);
-            RegisterFunction("regex_unescape", (Func<string, string>)RegexUnescape);
-        }
-    }
-}
