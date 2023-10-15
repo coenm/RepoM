@@ -118,37 +118,37 @@ internal static partial class XmlDocsParser
             return result;
         }
 
-        string current = "";
+        string current = string.Empty;
 
-        foreach (var item in nodes)
+        foreach (XNode item in nodes)
         {
-            if (item is XText xtext)
+            if (item is XText xText)
             {
-                current += xtext.Value.Trim() + Environment.NewLine;
+                current += $"{xText.Value.Trim()}{Environment.NewLine}";
             }
-            else if (item is XElement xelement)
+            else if (item is XElement xElement)
             {
-                if (xelement.Name == "code")
+                if (xElement.Name == "code")
                 {
                     if (result.Input != null)
                     {
                         // switch next
-                        result.Output = xelement.Value.Trim();
+                        result.Output = xElement.Value.Trim();
                     }
                     else
                     {
                         // switch next
                         result.Description = current;
-                        result.Input = xelement.Value.Trim();
+                        result.Input = xElement.Value.Trim();
                     }
                 }
-                else if (xelement.Name == "para")
+                else if (xElement.Name == "para")
                 {
-                    current += xelement.Value.Trim() + Environment.NewLine;
+                    current += $"{xElement.Value.Trim()}{Environment.NewLine}";
                 }
                 else
                 {
-                    throw new Exception($"'{xelement.Name}' Not expected");
+                    throw new Exception($"'{xElement.Name}' Not expected");
                 }
             }
         }
@@ -197,5 +197,4 @@ internal static partial class XmlDocsParser
 
     [GeneratedRegex("^\\s*```\\w*[ \\t]*[\\r\\n]*", RegexOptions.Multiline)]
     private static partial Regex RemoveCodeRegex();
-
 }
