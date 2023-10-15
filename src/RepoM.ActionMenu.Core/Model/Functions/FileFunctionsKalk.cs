@@ -27,7 +27,7 @@ internal partial class FileFunctions
     /// dsf
     /// </coen>
     [ActionMenuMember("file_exists")]
-    public static bool FileExists(IMenuContext context, string path)
+    public static bool FileExists(ActionMenuGenerationContext context, string path)
     {
         if (path == null)
         {
@@ -59,7 +59,7 @@ internal partial class FileFunctions
     /// ```
     /// </example>
     [ActionMenuMember("dir_exists")]
-    public static bool DirectoryExists(IMenuContext context, string path)
+    public static bool DirectoryExists(ActionMenuGenerationContext context, string path)
     {
         if (path == null)
         {

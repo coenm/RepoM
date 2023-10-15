@@ -35,7 +35,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// </code>
     /// </example>
     [ActionMenuMember("find_files")]
-    public static string[] FindFiles(/*ActionMenuGenerationContext*/ IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
+    public static string[] FindFiles(ActionMenuGenerationContext /*IMenuContext*/ context, SourceSpan span, string rootPath, string searchPattern)
     {
         try
         {

@@ -118,10 +118,10 @@ namespace RepoM.ActionMenu.Core.Tests
               
             - type: foreach@1
               enumerable: 'file.find_files("c:\\", "*.env")'
-              variable: file
+              variable: f
               actions:
               - type: just-text@1
-                text: 'file name {{ file }}'
+                text: 'file name {{ f }}'
                 
             - type: foreach@1
               enumerable: devopsEnvironments
