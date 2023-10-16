@@ -1,5 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
 
+using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
@@ -27,14 +28,14 @@ public class ContextActionRenderVariableV1 : NamedContextAction, IContextAction,
     /// Value of the variable.
     /// </summary>
     [Render]
-    public RenderString Value { get; init; } = new() { Value = string.Empty, };
+    public RenderString Value { get; init; } = new ScribanRenderString { Value = string.Empty, };
 
     //// <inheritdoc cref="IEnabled.Enabled"/>
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean? Enabled { get; init; } = new(); // todo nullable?
+    public EvaluateBoolean? Enabled { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
 
     public override string ToString()
     {

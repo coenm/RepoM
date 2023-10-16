@@ -1,5 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
 
+using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
@@ -14,16 +15,16 @@ internal sealed class RepositoryActionBrowseRepositoryV1 : IMenuAction, IName
     }
 
     [Render]
-    public RenderString Name { get; init; } = new();
+    public RenderString Name { get; init; } = new ScribanRenderString();
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean Active { get; init; } = new(); // todo nullable?
+    public EvaluateBoolean Active { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
 
     [EvaluateToBoolean(false)]
-    public EvaluateBoolean FirstOnly { get; init; } = new(); // todo nullable?
+    public EvaluateBoolean FirstOnly { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
 
     public override string ToString()
     {

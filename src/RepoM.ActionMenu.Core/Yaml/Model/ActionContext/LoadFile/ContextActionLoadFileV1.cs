@@ -1,5 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext.LoadFile;
 
+using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
@@ -26,14 +27,14 @@ public class ContextActionLoadFileV1 : NamedContextAction, IContextAction, IEnab
     /// Full path of the filename to load.
     /// </summary>
     [Render]
-    public RenderString Filename { get; init; } = new RenderString(); // todo nullable?
+    public RenderString Filename { get; init; } = new ScribanRenderString(); // todo nullable?
 
     //// <inheritdoc cref="IEnabled.Enabled"/>
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean? Enabled { get; init; } = new(); // todo nullable?
+    public EvaluateBoolean? Enabled { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
 
     public override string ToString()
     {

@@ -1,6 +1,8 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;
+
+using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 internal interface IOptionalName
 {
-    string Name { get; }
+    RenderString? Name { get; }
 }

@@ -1,5 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext.EvaluateVariable;
 
+using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
@@ -27,14 +28,14 @@ public class ContextActionEvaluateVariableV1 : NamedContextAction, IContextActio
     /// Value of the variable.
     /// </summary>
     [EvaluateToAnyObject]
-    public EvaluateAnyObject Value { get; init; } = new(); // todo nullable?
+    public EvaluateAnyObject Value { get; init; } = new ScribanEvaluateAnyObject(); // todo nullable?
 
     //// <inheritdoc cref="IEnabled.Enabled"/>
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean? Enabled { get; init; } = new(); // todo nullable?
+    public EvaluateBoolean? Enabled { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
 
     public override string ToString()
     {

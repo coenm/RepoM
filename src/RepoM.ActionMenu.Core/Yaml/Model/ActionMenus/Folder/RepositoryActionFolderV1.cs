@@ -1,6 +1,7 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
 
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
+using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
@@ -26,12 +27,12 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
     /// Whether the menu item is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean Active { get; init; } = new(); // todo nullable?
+    public EvaluateBoolean Active { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
 
     public Context? Context { get; init; }
 
     [EvaluateToBoolean(false)]
-    public EvaluateBoolean IsDeferred { get; init; } = new();
+    public EvaluateBoolean IsDeferred { get; init; } = new ScribanEvaluateBoolean();
 
     public override string ToString()
     {

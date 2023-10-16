@@ -154,5 +154,49 @@
         CanExecute: true
       }
     ]
+  },
+  {
+    Name: git,
+    RepositoryCommand: {},
+    Repository: {
+      SafePath: dummy safe path,
+      HasUnpushedChanges: false,
+      Name: dummy name,
+      Path: dummy path,
+      Location: dummy location,
+      CurrentBranch: dummy current branch
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true,
+    SubActions: [
+      {
+        Name: translate says:Checkout,
+        RepositoryCommand: {},
+        Repository: {
+          SafePath: dummy safe path,
+          HasUnpushedChanges: false,
+          Name: dummy name,
+          Path: dummy path,
+          Location: dummy location,
+          CurrentBranch: dummy current branch
+        },
+        ExecutionCausesSynchronizing: false,
+        CanExecute: true
+      },
+      {
+        Name: CheckOut!,
+        RepositoryCommand: {},
+        Repository: {
+          SafePath: dummy safe path,
+          HasUnpushedChanges: false,
+          Name: dummy name,
+          Path: dummy path,
+          Location: dummy location,
+          CurrentBranch: dummy current branch
+        },
+        ExecutionCausesSynchronizing: false,
+        CanExecute: true
+      }
+    ]
   }
 ]

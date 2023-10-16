@@ -75,7 +75,25 @@ action-menu:
     enabled: ''
     name: name
   is-deferred: 1 >= 2 || false
+- type: folder@1
+  actions:
+  - type: git-checkout@1
+    name: ''
+    active: ''
+  - type: git-checkout@1
+    name: CheckOut!
+    active: ''
+  name: git
+  active: ''
+  context: 
+  is-deferred: false
 context:
+- type: evaluate-script@1
+  content: >-
+    func translate(input)
+      ret 'translate says:' + input;
+    end
+  enabled: ''
 - type: set-variable@1
   value: coenm
   enabled: ''

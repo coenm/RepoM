@@ -14,6 +14,7 @@ using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
 using RepoM.ActionMenu.Core.Yaml.Model.Tags;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
@@ -35,7 +36,7 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
         // todo
         var factoryMethods = new Dictionary<Type, Func<object>>
             {
-                { typeof(ScriptContent), () => new ScribanEvaluateScript() },
+                { typeof(ScriptContent), () => new ScribanScriptContent() },
                 { typeof(EvaluateAnyObject), () => new ScribanEvaluateAnyObject() },
                 { typeof(EvaluateBoolean), () => new ScribanEvaluateBoolean() },
                 { typeof(RenderString), () => new ScribanRenderString() },
@@ -76,6 +77,7 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
                                 { RepositoryActionBrowseRepositoryV1.TYPE_VALUE, typeof(RepositoryActionBrowseRepositoryV1) },
                                 { RepositoryActionCommandV1.TYPE_VALUE, typeof(RepositoryActionCommandV1) },
                                 { RepositoryActionForEachV1.TYPE_VALUE, typeof(RepositoryActionForEachV1) },
+                                { RepositoryActionGitCheckoutV1.TYPE_VALUE, typeof(RepositoryActionGitCheckoutV1) },
                             });
                 },
                 maxDepth: -1,

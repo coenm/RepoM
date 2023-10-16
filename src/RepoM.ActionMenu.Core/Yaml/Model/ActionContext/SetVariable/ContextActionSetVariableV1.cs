@@ -1,5 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
 
+using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
@@ -42,7 +43,7 @@ public class ContextActionSetVariableV1 : NamedContextAction, IContextAction, IE
     /// Whether the variable is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean? Enabled { get; init; } = new(); // todo nullable?
+    public EvaluateBoolean? Enabled { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
 
     public override string ToString()
     {

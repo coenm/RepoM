@@ -54,6 +54,12 @@ namespace RepoM.ActionMenu.Core.Tests
         private const string YAML =
             """
             context:
+            - type: evaluate-script@1
+              content: |-
+                func translate(input)
+                  ret 'translate says:' + input;
+                end
+            
             - name: coenm
             - name1: coenm1
               
@@ -162,6 +168,15 @@ namespace RepoM.ActionMenu.Core.Tests
                 - type: set-variable@1
                   name: name2
                   value: namenamename
+                  
+            - type: folder@1
+              name: git
+              is-deferred: false
+              context:
+              actions:
+              - type: git-checkout@1
+              - type: git-checkout@1
+                name: CheckOut!
             """;
 
         [Fact]

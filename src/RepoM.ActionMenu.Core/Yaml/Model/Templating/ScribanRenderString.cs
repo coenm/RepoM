@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.Templating;
+namespace RepoM.ActionMenu.Core.Yaml.Model.Templating;
 
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.Misc;
@@ -12,7 +12,14 @@ internal class ScribanRenderString : RenderString, ICreateTemplate
 
     void ICreateTemplate.CreateTemplate(ITemplateParser templateParser)
     {
-        _template ??= templateParser.ParseMixed(Value);
+        if (string.IsNullOrEmpty(Value) && !string.IsNullOrWhiteSpace(DefaultValue))
+        {
+            _template ??= templateParser.ParseMixed(DefaultValue);
+        }
+        else
+        {
+            _template ??= templateParser.ParseMixed(Value);
+        }
     }
 
     public override async Task<string> RenderAsync(ITemplateEvaluator instance)
