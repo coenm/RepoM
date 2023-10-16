@@ -25,7 +25,9 @@ using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Fetch;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Pull;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Push;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Ignore;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Pin;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Separator;
 using RepoM.ActionMenu.Core.Yaml.Model.Tags;
 using RepoM.ActionMenu.Core.Yaml.Serialization;
@@ -64,6 +66,8 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
                 new ActionCommandV1Mapper(),
                 new RepositoryActionForEachV1Mapper(),
                 new RepositoryActionSeparatorV1Mapper(),
+                new RepositoryActionPinV1Mapper(),
+                new RepositoryActionIgnoreV1Mapper(),
 
                 // git mappers
                 new RepositoryActionGitCheckoutV1Mapper(),

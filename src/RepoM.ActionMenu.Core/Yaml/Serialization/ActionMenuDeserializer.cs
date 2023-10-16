@@ -18,7 +18,9 @@ using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Fetch;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Pull;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Push;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Ignore;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Pin;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Separator;
 using RepoM.ActionMenu.Core.Yaml.Model.Tags;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
@@ -82,6 +84,8 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
                                 { RepositoryActionCommandV1.TYPE_VALUE, typeof(RepositoryActionCommandV1) },
                                 { RepositoryActionForEachV1.TYPE_VALUE, typeof(RepositoryActionForEachV1) },
                                 { RepositoryActionSeparatorV1.TYPE_VALUE, typeof(RepositoryActionSeparatorV1) },
+                                { RepositoryActionPinV1.TYPE_VALUE, typeof(RepositoryActionPinV1) },
+                                { RepositoryActionIgnoreV1.TYPE_VALUE, typeof(RepositoryActionIgnoreV1) },
 
                                 // git actions
                                 { RepositoryActionGitCheckoutV1.TYPE_VALUE, typeof(RepositoryActionGitCheckoutV1) },
