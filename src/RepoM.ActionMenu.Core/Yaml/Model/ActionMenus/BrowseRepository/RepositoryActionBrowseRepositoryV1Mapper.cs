@@ -13,7 +13,7 @@ using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionBrowseRepositoryV1>
 {
-    protected override async IAsyncEnumerable<UserInterfaceRepositoryAction> MapAsync(RepositoryActionBrowseRepositoryV1 action, IActionMenuGenerationContext context, IRepository repository)
+    protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionBrowseRepositoryV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
         if (repository.Remotes.Count == 0)
         {

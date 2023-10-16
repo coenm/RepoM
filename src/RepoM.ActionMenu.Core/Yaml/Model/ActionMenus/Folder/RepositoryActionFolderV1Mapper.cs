@@ -5,12 +5,13 @@ using System.Linq;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.UserInterface;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
+using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
 
 internal class RepositoryActionFolderV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionFolderV1>
 {
-    protected override async IAsyncEnumerable<UserInterfaceRepositoryAction> MapAsync(RepositoryActionFolderV1 action, IActionMenuGenerationContext context, IRepository repository)
+    protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionFolderV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
         var name = await context.RenderStringAsync(action.Name).ConfigureAwait(false);
 

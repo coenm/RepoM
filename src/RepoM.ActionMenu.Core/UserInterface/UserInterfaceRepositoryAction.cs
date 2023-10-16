@@ -13,10 +13,3 @@ public class UserInterfaceRepositoryAction : UserInterfaceRepositoryActionBase
 
     public string Name { get; }
 }
-
-public sealed class UserInterfaceSeparatorRepositoryAction : UserInterfaceRepositoryActionBase
-{
-    public UserInterfaceSeparatorRepositoryAction(IRepository repository) : base(repository)
-    {
-    }
-}

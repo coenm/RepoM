@@ -14,7 +14,7 @@ using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 internal class RepositoryActionGitCheckoutV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionGitCheckoutV1>
 {
-    protected override async IAsyncEnumerable<UserInterfaceRepositoryAction> MapAsync(RepositoryActionGitCheckoutV1 action, IActionMenuGenerationContext context, IRepository repository)
+    protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionGitCheckoutV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
         var name = await action.Name.RenderAsync(context).ConfigureAwait(false);
         var remoteBranchesTranslated = await context.TranslateAsync("Remote branches");
