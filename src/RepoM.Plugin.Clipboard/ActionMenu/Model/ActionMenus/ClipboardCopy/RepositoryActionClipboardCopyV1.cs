@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.Clipboard.ActionMenu.Model.ActionMenus.AssociateFile;
+namespace RepoM.Plugin.Clipboard.ActionMenu.Model.ActionMenus.ClipboardCopy;
 
 using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -25,7 +25,7 @@ internal sealed class RepositoryActionClipboardCopyV1 : IMenuAction, IContext
     [Render]
     public RenderString Text { get; set; }
 
-    public Context? Context { get; }
+    public Context? Context { get; set; }
 
     /// <summary>
     /// Whether the menu item is enabled.

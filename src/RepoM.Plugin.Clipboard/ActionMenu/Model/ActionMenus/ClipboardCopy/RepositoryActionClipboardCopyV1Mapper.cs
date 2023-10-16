@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.Clipboard.ActionMenu.Model.ActionMenus.AssociateFile;
+namespace RepoM.Plugin.Clipboard.ActionMenu.Model.ActionMenus.ClipboardCopy;
 
 using System.Collections.Generic;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
