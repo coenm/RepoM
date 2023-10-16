@@ -77,7 +77,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                 }
             }
 
-            if (prop.PropertyType == typeof(EvaluateBoolean))
+            if (prop.PropertyType == typeof(Predicate))
             {
                 var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
                     a.AttributeType.FullName == typeof(EvaluateToBooleanAttribute).FullName);
@@ -89,7 +89,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                     if (constructorArguments.Count == 1)
                     {
                         var defaultValue = (bool)constructorArguments[0].Value;
-                        (y as EvaluateBoolean)!.DefaultValue = defaultValue;
+                        (y as Predicate)!.DefaultValue = defaultValue;
                     }
                 }
             }

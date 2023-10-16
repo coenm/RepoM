@@ -10,5 +10,5 @@ public interface IMenuAction
     /// Whether the menu item is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean Active { get; }
+    public Predicate Active { get; }
 }

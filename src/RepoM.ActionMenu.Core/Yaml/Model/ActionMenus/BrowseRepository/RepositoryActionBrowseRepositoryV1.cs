@@ -21,10 +21,10 @@ internal sealed class RepositoryActionBrowseRepositoryV1 : IMenuAction, IName
     /// Whether the menu item is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean Active { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
+    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     [EvaluateToBoolean(false)]
-    public EvaluateBoolean FirstOnly { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
+    public Predicate FirstOnly { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()
     {

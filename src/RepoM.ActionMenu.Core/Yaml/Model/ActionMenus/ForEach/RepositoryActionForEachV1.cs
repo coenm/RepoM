@@ -20,7 +20,7 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction
     /// Whether the menu item is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean Active { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
+    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     /// <summary>
     /// The list of items to enumerate on.
@@ -39,7 +39,7 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction
     /// Predicate to skip the current item.
     /// </summary>
     [EvaluateToBoolean(false)]
-    public EvaluateBoolean Skip { get; init; } = new ScribanEvaluateBoolean();
+    public Predicate Skip { get; init; } = new ScribanPredicate();
 
     /// <summary>
     /// List of repeated actions.

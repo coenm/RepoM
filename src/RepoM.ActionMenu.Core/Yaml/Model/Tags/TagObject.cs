@@ -12,5 +12,5 @@ internal class TagObject : ITag
     /// <inheritdoc cref="ITag.When"/>
     [EvaluateToBoolean(true)]
     [DefaultValue(true)] // todo
-    public EvaluateBoolean When { get; set; } = new EvaluateBoolean();
+    public Predicate When { get; set; } = new Predicate();
 }

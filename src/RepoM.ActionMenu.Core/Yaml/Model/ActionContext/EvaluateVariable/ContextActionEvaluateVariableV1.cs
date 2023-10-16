@@ -35,7 +35,7 @@ public class ContextActionEvaluateVariableV1 : NamedContextAction, IContextActio
     /// Whether the variable is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean? Enabled { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
+    public Predicate? Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()
     {

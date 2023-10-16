@@ -20,7 +20,7 @@ internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
     /// Whether the menu item is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean Active { get; init; } = new(); // todo nullable?
+    public Predicate Active { get; init; } = new(); // todo nullable?
 
     /// <summary>
     /// Show the menu as enabled (clickable) or disabled.

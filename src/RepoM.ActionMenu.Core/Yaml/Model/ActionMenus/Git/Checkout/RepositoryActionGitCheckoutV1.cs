@@ -21,7 +21,7 @@ internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IOptionalName
     /// Whether the menu item is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean Active { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
+    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()
     {

@@ -4,5 +4,5 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 internal interface IDeferred
 {
-    EvaluateBoolean IsDeferred { get; }
+    Predicate IsDeferred { get; }
 }

@@ -28,7 +28,7 @@ internal static class TemplateEvaluatorExtensions
         return await instance.RenderStringAsync(text).ConfigureAwait(false);
     }
 
-    public static Task<bool> EvaluateToBooleanAsync(this ITemplateEvaluator instance, EvaluateBoolean evaluateBoolean)
+    public static Task<bool> EvaluateToBooleanAsync(this ITemplateEvaluator instance, Predicate evaluateBoolean)
     {
         return evaluateBoolean.EvaluateAsync(instance);
     }

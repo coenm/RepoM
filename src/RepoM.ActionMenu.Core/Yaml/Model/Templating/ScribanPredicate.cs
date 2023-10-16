@@ -6,7 +6,7 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using Scriban;
 
-internal class ScribanEvaluateBoolean : EvaluateBoolean, ICreateTemplate
+internal class ScribanPredicate : Predicate, ICreateTemplate
 {
     private Template? _template;
 

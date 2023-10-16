@@ -38,7 +38,7 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
             {
                 { typeof(ScriptContent), () => new ScribanScriptContent() },
                 { typeof(EvaluateAnyObject), () => new ScribanEvaluateAnyObject() },
-                { typeof(EvaluateBoolean), () => new ScribanEvaluateBoolean() },
+                { typeof(Predicate), () => new ScribanPredicate() },
                 { typeof(RenderString), () => new ScribanRenderString() },
                 { typeof(EvaluateInt), () => new ScribanEvaluateInt() },
             };

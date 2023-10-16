@@ -4,18 +4,18 @@ using System;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 
-public class EvaluateBoolean : EvaluateObject
+public class Predicate : EvaluateObject
 {
     public bool DefaultValue { get; set; }
 
-    public static implicit operator EvaluateBoolean(string content)
+    public static implicit operator Predicate(string content)
     {
-        return new EvaluateBoolean { Value = content, };
+        return new Predicate { Value = content, };
     }
 
     public override string ToString()
     {
-        return $"EvaluateBoolean {base.ToString()} : {DefaultValue}";
+        return $"Predicate {base.ToString()} : {DefaultValue}";
     }
 
     public virtual async Task<bool> EvaluateAsync(ITemplateEvaluator instance)

@@ -15,5 +15,5 @@ public interface ITag
     /// <summary>
     /// Boolean expression to determine if the tag is enabled.
     /// </summary>
-    EvaluateBoolean When { get; set; }
+    Predicate When { get; set; }
 }

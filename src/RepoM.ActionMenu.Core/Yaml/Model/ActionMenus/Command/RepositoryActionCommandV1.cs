@@ -22,7 +22,7 @@ internal sealed class RepositoryActionCommandV1 : IMenuAction, IName
     /// Whether the menu item is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    public EvaluateBoolean Active { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
+    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     /// <summary>
     /// The command to execute.
