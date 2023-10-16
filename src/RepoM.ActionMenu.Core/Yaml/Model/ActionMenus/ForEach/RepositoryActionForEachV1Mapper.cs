@@ -2,7 +2,6 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
 
 using System.Collections;
 using System.Collections.Generic;
-using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -12,17 +11,12 @@ internal class RepositoryActionForEachV1Mapper : ActionToRepositoryActionMapperB
 {
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionForEachV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
-        if (string.IsNullOrWhiteSpace(action.Enumerable))
-        {
-            yield break;
-        }
-
         if (string.IsNullOrWhiteSpace(action.Variable))
         {
             yield break;
         }
 
-        var enumerable = await context.EvaluateAsync(action.Enumerable).ConfigureAwait(false);
+        var enumerable = await action.Enumerable.EvaluateAsync(context);
         if (enumerable is null)
         {
             yield break;

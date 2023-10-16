@@ -21,12 +21,13 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction
     /// </summary>
     [EvaluateToBoolean(true)]
     public EvaluateBoolean Active { get; init; } = new ScribanEvaluateBoolean(); // todo nullable?
-    
+
     /// <summary>
     /// The list of items to enumerate on.
     /// </summary>
     [Required]
-    public string? Enumerable { get; set; }
+    [EvaluateToAnyObject]
+    public EvaluateAnyObject Enumerable { get; set; } = new ScribanEvaluateAnyObject(); // toto enumerable?
 
     /// <summary>
     /// The name of the variable to access to current enumeration of the <see cref="Enumerable"/> items. For each iteration, the variable `{var.name}` has the value of the current iteration.
