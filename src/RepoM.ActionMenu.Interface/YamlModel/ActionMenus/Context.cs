@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
+namespace RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 
 using System.Collections.Generic;
 using RepoM.ActionMenu.Interface.YamlModel;

@@ -7,12 +7,13 @@ namespace RepoM.ActionMenu.Core.Tests
     using System.Threading.Tasks;
     using RepoM.ActionMenu.Core.PublicApi;
     using RepoM.ActionMenu.Core.Yaml.Model;
-    using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
     using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
     using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
     using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
     using RepoM.ActionMenu.Core.Yaml.Serialization;
     using RepoM.ActionMenu.Interface.Scriban;
+    using RepoM.ActionMenu.Interface.YamlModel;
+    using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
     using RepoM.Core.Plugin.Repository;
     using VerifyXunit;
     using Xunit;
@@ -220,7 +221,7 @@ namespace RepoM.ActionMenu.Core.Tests
         [Fact]
         public async Task Serialize()
         {
-            var root = new Root()
+            var root = new Root
             {
                 Context = new Context
                 {

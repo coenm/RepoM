@@ -1,9 +1,8 @@
-namespace RepoM.ActionMenu.Core.UserInterface;
+namespace RepoM.ActionMenu.Interface.UserInterface;
 
 using System;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
-using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Core.Plugin.Repository;
 
 public sealed class DeferredSubActionsUserInterfaceRepositoryAction : UserInterfaceRepositoryAction

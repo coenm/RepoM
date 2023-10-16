@@ -2,7 +2,6 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Pin;
 
 using System;
 using System.Collections.Generic;
-using RepoM.ActionMenu.Core.UserInterface;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;

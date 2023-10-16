@@ -1,9 +1,8 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
 
-using System.Reflection;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext

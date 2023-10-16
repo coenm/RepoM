@@ -1,9 +1,8 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Ignore;
 
-using System.Net.Mime;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 /// <summary>

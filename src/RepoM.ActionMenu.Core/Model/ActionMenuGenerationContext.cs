@@ -15,7 +15,6 @@ using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.LoadFile;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.AssociateFile;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
@@ -35,6 +34,7 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.Core.Plugin.Repository;
 using Scriban;
 

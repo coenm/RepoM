@@ -1,6 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model;
 
-using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
+using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 
 public class ContextRoot
 {

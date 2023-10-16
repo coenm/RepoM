@@ -1,6 +1,5 @@
-namespace RepoM.ActionMenu.Core.UserInterface;
+namespace RepoM.ActionMenu.Interface.UserInterface;
 
-using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Core.Plugin.Repository;
 
 public sealed class UserInterfaceSeparatorRepositoryAction : UserInterfaceRepositoryActionBase
