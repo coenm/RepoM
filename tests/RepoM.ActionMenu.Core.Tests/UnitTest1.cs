@@ -234,7 +234,7 @@ some more text",
                     {
                         Name = "render",
                         Value = "text {{ name }} text2",
-                    }
+                    },
                 },
             };
 

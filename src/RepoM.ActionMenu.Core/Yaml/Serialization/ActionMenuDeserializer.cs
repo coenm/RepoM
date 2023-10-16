@@ -15,6 +15,9 @@ using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Fetch;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Pull;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Push;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
 using RepoM.ActionMenu.Core.Yaml.Model.Tags;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
@@ -33,7 +36,7 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
     
     public ActionMenuDeserializer()
     {
-        // todo
+        // todo, di
         var factoryMethods = new Dictionary<Type, Func<object>>
             {
                 { typeof(ScriptContent), () => new ScribanScriptContent() },
@@ -77,7 +80,12 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
                                 { RepositoryActionBrowseRepositoryV1.TYPE_VALUE, typeof(RepositoryActionBrowseRepositoryV1) },
                                 { RepositoryActionCommandV1.TYPE_VALUE, typeof(RepositoryActionCommandV1) },
                                 { RepositoryActionForEachV1.TYPE_VALUE, typeof(RepositoryActionForEachV1) },
+
+                                // git actions
                                 { RepositoryActionGitCheckoutV1.TYPE_VALUE, typeof(RepositoryActionGitCheckoutV1) },
+                                { RepositoryActionGitFetchV1.TYPE_VALUE, typeof(RepositoryActionGitFetchV1) },
+                                { RepositoryActionGitPullV1.TYPE_VALUE, typeof(RepositoryActionGitPullV1) },
+                                { RepositoryActionGitPushV1.TYPE_VALUE, typeof(RepositoryActionGitPushV1) },
                             });
                 },
                 maxDepth: -1,

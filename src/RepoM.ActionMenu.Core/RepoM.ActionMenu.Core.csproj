@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RepoM.ActionMenu.Interface\RepoM.ActionMenu.Interface.csproj" />
+    <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
   </ItemGroup>
 
 </Project>

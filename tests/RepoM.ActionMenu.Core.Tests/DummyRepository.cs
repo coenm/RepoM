@@ -16,4 +16,9 @@ public class DummyRepository : IRepository
     public string[] Branches { get; } = Array.Empty<string>();
     public string[] LocalBranches { get; } = Array.Empty<string>();
     public string[] Tags { get; }
+
+    public string[] ReadAllBranches()
+    {
+        return Array.Empty<string>();
+    }
 }

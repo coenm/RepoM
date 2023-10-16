@@ -15,7 +15,7 @@ internal static class TemplateEvaluatorExtensions
     public static Task<string> TranslateAsync(this ITemplateEvaluator instance, string text)
     {
         // todo method
-        return instance.RenderStringAsync("{{ translate('" + text + ")}}");
+        return instance.RenderStringAsync("{{ translate(\"" + text + "\") }}");
     }
 
     public static async Task<string> RenderNullableString(this ITemplateEvaluator instance, string? text)

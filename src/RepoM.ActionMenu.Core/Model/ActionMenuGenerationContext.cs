@@ -22,6 +22,9 @@ using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Fetch;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Pull;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Push;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
 using RepoM.ActionMenu.Core.Yaml.Model.Tags;
 using RepoM.ActionMenu.Core.Yaml.Serialization;
@@ -51,7 +54,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-        _repositoryActionMappers = new List<IActionToRepositoryActionMapper>()
+        _repositoryActionMappers = new List<IActionToRepositoryActionMapper>
             {
                 new RepositoryActionAssociateFileV1Mapper(),
                 new RepositoryActionJustTextV1Mapper(),
@@ -59,7 +62,12 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
                 new RepositoryActionBrowseRepositoryV1Mapper(),
                 new ActionCommandV1Mapper(),
                 new RepositoryActionForEachV1Mapper(),
+
+                // git mappers
                 new RepositoryActionGitCheckoutV1Mapper(),
+                new RepositoryActionGitFetchV1Mapper(),
+                new RepositoryActionGitPushV1Mapper(),
+                new RepositoryActionGitPullV1Mapper(),
             };
 
         var rootScriptObject = new RepoMScriptObject();
@@ -144,7 +152,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         var result = new ActionMenuGenerationContext(Repository, _templateParser, FileSystem, _functionsArray)
         {
             Env = (EnvSetScriptObject)Env.Clone(true),
-            RepositoryActionsScriptContext = (DisposableContextScriptObject)RepositoryActionsScriptContext.Clone(true)
+            RepositoryActionsScriptContext = (DisposableContextScriptObject)RepositoryActionsScriptContext.Clone(true),
         };
         // todo more
         return result;

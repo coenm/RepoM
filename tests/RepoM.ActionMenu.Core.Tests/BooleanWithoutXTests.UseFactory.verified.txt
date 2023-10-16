@@ -170,7 +170,7 @@
     CanExecute: true,
     SubActions: [
       {
-        Name: translate says:Checkout,
+        Name: Checkout,
         RepositoryCommand: {},
         Repository: {
           SafePath: dummy safe path,

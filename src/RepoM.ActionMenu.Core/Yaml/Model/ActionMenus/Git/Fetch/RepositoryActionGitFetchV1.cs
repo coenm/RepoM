@@ -1,12 +1,12 @@
-namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
+namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Fetch;
 
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
-internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IOptionalName
+internal sealed class RepositoryActionGitFetchV1 : IMenuAction, IOptionalName
 {
-    public const string TYPE_VALUE = "git-checkout@1";
+    public const string TYPE_VALUE = "git-fetch@1";
 
     public string Type
     {
@@ -14,7 +14,7 @@ internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IOptionalName
         set => _ = value;
     }
 
-    [Render("Checkout")]
+    [Render("Fetch")]
     public RenderString Name { get; init; } = new ScribanRenderString();
 
     /// <summary>

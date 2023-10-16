@@ -26,4 +26,6 @@ public interface IRepository
     List<Remote> Remotes { get; }
 
     bool HasUnpushedChanges { get; }
+
+    public string[] ReadAllBranches();
 }

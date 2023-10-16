@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Core.PublicApi;
+namespace RepoM.ActionMenu.Core.PublicApi;
 
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Linq;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Services;
 using RepoM.ActionMenu.Interface.Scriban;
+using RepoM.Api.Git;
 
 public class Factory
 {
