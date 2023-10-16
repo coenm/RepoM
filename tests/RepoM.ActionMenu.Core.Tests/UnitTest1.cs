@@ -12,7 +12,6 @@ namespace RepoM.ActionMenu.Core.Tests
     using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
     using RepoM.ActionMenu.Core.Yaml.Serialization;
     using RepoM.ActionMenu.Interface.Scriban;
-    using RepoM.ActionMenu.Interface.YamlModel;
     using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
     using RepoM.Core.Plugin.Repository;
     using VerifyXunit;
