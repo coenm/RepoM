@@ -26,7 +26,7 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
             name = await context.TranslateAsync("Browse remote").ConfigureAwait(false);
         }
 
-        var forceSingle = await context.EvaluateToBooleanAsync(action.FirstOnly, false);
+        var forceSingle = await action.FirstOnly.EvaluateAsync(context).ConfigureAwait(false);
 
         if (repository.Remotes.Count == 1 || forceSingle)
         {
@@ -40,7 +40,7 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
             yield return new DeferredSubActionsUserInterfaceRepositoryAction(name, repository, context, captureScope: false)
             {
                 CanExecute = true,
-                DeferredFunc = async ctx => await EnumerateRemotes(ctx.Repository),
+                DeferredFunc = async ctx => await EnumerateRemotes(ctx.Repository).ConfigureAwait(false),
             };
         }
     }

@@ -149,6 +149,7 @@ namespace RepoM.ActionMenu.Core.Tests
                 filename: 'C:\file2.env'
             - type: folder@1
               name: my-folder
+              is-deferred: 1 >= 2 || false
               context:
               - type: set-variable@1
                 name: name

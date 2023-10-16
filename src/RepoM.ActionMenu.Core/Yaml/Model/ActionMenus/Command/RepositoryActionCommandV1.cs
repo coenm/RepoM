@@ -2,6 +2,7 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
 
 using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 internal sealed class RepositoryActionCommandV1 : IMenuAction, IName
 {
@@ -13,9 +14,14 @@ internal sealed class RepositoryActionCommandV1 : IMenuAction, IName
         set => _ = value;
     }
 
-    public string Name { get; init; } = string.Empty;
+    [Render]
+    public RenderString Name { get; init; } = new();
 
-    public string? Active { get; init; }
+    /// <summary>
+    /// Whether the menu item is enabled.
+    /// </summary>
+    [EvaluateToBoolean(true)]
+    public EvaluateBoolean Active { get; init; } = new(); // todo nullable?
 
     /// <summary>
     /// The command to execute.

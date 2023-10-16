@@ -2,6 +2,7 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
 
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
 {
@@ -14,8 +15,12 @@ internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
     }
 
     public string Text { get; init; }
-    
-    public string? Active { get; init; }
+
+    /// <summary>
+    /// Whether the menu item is enabled.
+    /// </summary>
+    [EvaluateToBoolean(true)]
+    public EvaluateBoolean Active { get; init; } = new(); // todo nullable?
 
     /// <summary>
     /// Show the menu as enabled (clickable) or disabled.

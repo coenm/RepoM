@@ -15,7 +15,9 @@ internal class RepositoryActionAssociateFileV1Mapper : ActionToRepositoryActionM
             yield break;
         }
 
-        var name = await context.RenderStringAsync(action.Name).ConfigureAwait(false);
+        // todo extension handling
+
+        var name = await action.Name.RenderAsync(context).ConfigureAwait(false);
 
         yield return new UserInterfaceRepositoryAction(name, repository);
     }

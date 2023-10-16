@@ -159,7 +159,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         using var variableContext = PushNewContext();
 
-        if (menuAction is IContext { Context: not null } c)
+        if (menuAction is IContext { Context: not null, } c)
         {
             foreach (var ctx in c.Context)
             {
@@ -185,7 +185,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public async Task<string> RenderStringAsync(string text)
     {
-        var template = _templateParser.ParseMixed(text);
+        Template template = _templateParser.ParseMixed(text);
         return await template.RenderAsync(this).ConfigureAwait(false);
     }
 
@@ -201,13 +201,13 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
             return null!;
         }
 
-        var template = _templateParser.ParseScriptOnly(text);
+        Template template = _templateParser.ParseScriptOnly(text);
         return await template.EvaluateAsync(this).ConfigureAwait(false);
     }
     
     private Task<bool> IsMenuItemActiveAsync(IMenuAction menuAction)
     {
-        return this.EvaluateToBooleanAsync(menuAction.Active, true);
+        return menuAction.Active.EvaluateAsync(this);
     }
 
     public IScope CreateGlobalScope()

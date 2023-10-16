@@ -28,6 +28,11 @@ internal static class TemplateEvaluatorExtensions
         return await instance.RenderStringAsync(text).ConfigureAwait(false);
     }
 
+    public static Task<bool> EvaluateToBooleanAsync(this ITemplateEvaluator instance, EvaluateBoolean evaluateBoolean)
+    {
+        return evaluateBoolean.EvaluateAsync(instance);
+    }
+
     public static async Task<bool> EvaluateToBooleanAsync(this ITemplateEvaluator instance, string? text, bool defaultValue)
     {
         if (string.IsNullOrWhiteSpace(text))

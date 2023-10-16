@@ -50,7 +50,7 @@ internal class RepositoryActionForEachV1Mapper : ActionToRepositoryActionMapperB
             // todo evaluate to string or not?
             scope.SetValue(action.Variable, item, true);
 
-            if (await context.EvaluateToBooleanAsync(action.Skip, false).ConfigureAwait(false))
+            if (await action.Skip.EvaluateAsync(context).ConfigureAwait(false))
             {
                 continue;
             }

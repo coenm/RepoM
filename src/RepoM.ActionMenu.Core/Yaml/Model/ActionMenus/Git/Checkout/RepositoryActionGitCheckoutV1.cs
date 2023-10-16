@@ -1,6 +1,7 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
 
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IOptionalName
 {
@@ -13,8 +14,12 @@ internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IOptionalName
     }
 
     public string? Name { get; }
-    
-    public string? Active { get; init; }
+
+    /// <summary>
+    /// Whether the menu item is enabled.
+    /// </summary>
+    [EvaluateToBoolean(true)]
+    public EvaluateBoolean Active { get; init; } = new(); // todo nullable?
 
     public override string ToString()
     {

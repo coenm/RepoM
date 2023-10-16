@@ -3,6 +3,7 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 internal sealed class RepositoryActionForEachV1 : IMenuAction
 {
@@ -14,9 +15,12 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction
         set => _ = value;
     }
 
-    public string? Active { get; init; }
-
-
+    /// <summary>
+    /// Whether the menu item is enabled.
+    /// </summary>
+    [EvaluateToBoolean(true)]
+    public EvaluateBoolean Active { get; init; } = new(); // todo nullable?
+    
     /// <summary>
     /// The list of items to enumerate on.
     /// </summary>
@@ -32,7 +36,8 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction
     /// <summary>
     /// Predicate to skip the current item.
     /// </summary>
-    public string? Skip { get; set; }
+    [EvaluateToBoolean(false)]
+    public EvaluateBoolean Skip { get; init; } = new();
 
     /// <summary>
     /// List of repeated actions.

@@ -8,7 +8,7 @@ using Scriban;
 
 internal class ScribanEvaluateBoolean : EvaluateBoolean, ICreateTemplate
 {
-    private Template? _template = null;
+    private Template? _template;
 
     void ICreateTemplate.CreateTemplate(ITemplateParser templateParser)
     {

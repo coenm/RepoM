@@ -10,29 +10,29 @@
 action-menu:
 - type: just-text@1
   text: repository.pwd2 {{ repository.pwd }}
-  active: 
+  active: ''
   enabled: 
   context: 
 - type: foreach@1
-  active: 
+  active: ''
   enumerable: file.find_files("c:\\", "*.env")
   variable: f
-  skip: 
+  skip: ''
   actions:
   - type: just-text@1
     text: file name {{ f }}
-    active: 
+    active: ''
     enabled: 
     context: 
 - type: foreach@1
-  active: 
+  active: ''
   enumerable: devopsEnvironments
   variable: environment
-  skip: 
+  skip: ''
   actions:
   - type: just-text@1
     text: env name {{ environment.name }} env(DEF):`{{ env.DEF }}`
-    active: 
+    active: ''
     enabled: 
     context: 
 - type: associate-file@1
@@ -68,13 +68,13 @@ action-menu:
       enabled: ''
       name: name2
   name: my-folder
-  active: 
+  active: ''
   context:
   - type: set-variable@1
     value: coenm23
     enabled: ''
     name: name
-  is-deferred: 
+  is-deferred: 1 >= 2 || false
 context:
 - type: set-variable@1
   value: coenm
