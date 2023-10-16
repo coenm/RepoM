@@ -1,5 +1,6 @@
 namespace RepoM.ActionMenu.Core.Tests
 {
+    using System;
     using System.Collections.Generic;
     using System.IO.Abstractions.TestingHelpers;
     using System.Text;
@@ -173,7 +174,7 @@ namespace RepoM.ActionMenu.Core.Tests
                     { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
                     { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
                 });
-            var sut = new Factory(fileSystem, new ITemplateContextRegistration[0]);
+            var sut = new Factory(fileSystem, Array.Empty<ITemplateContextRegistration>());
             var factory = sut.Create("C:\\RepositoryActionsV2.yaml");
 
             var result = await factory.CreateMenuAsync(_repository);
@@ -192,7 +193,7 @@ namespace RepoM.ActionMenu.Core.Tests
                     { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
                     { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
                 });
-            var sut = new Factory(fileSystem, new ITemplateContextRegistration[0]);
+            var sut = new Factory(fileSystem, Array.Empty<ITemplateContextRegistration>());
             var factory = sut.Create("C:\\RepositoryActionsV2.yaml");
 
             var result = await factory.GetTagsAsync(_repository);
@@ -211,7 +212,7 @@ namespace RepoM.ActionMenu.Core.Tests
                     new ContextActionExecuteScriptV1
                     {
                         Content = @"this is text
-some more text"
+some more text",
                     },
                     new ContextActionRenderVariableV1
                     {

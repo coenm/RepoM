@@ -3,13 +3,13 @@ namespace RepoM.ActionMenu.Interface.YamlModel.Templating;
 using System;
 
 [AttributeUsage(AttributeTargets.Property)]
-public sealed class RenderToStringAttribute : EvaluateToAttribute
+public sealed class RenderAttribute : EvaluateToAttribute
 {
-    public RenderToStringAttribute() : this(string.Empty)
+    public RenderAttribute() : this(string.Empty)
     {
     }
 
-    public RenderToStringAttribute(string defaultValue)
+    public RenderAttribute(string defaultValue)
     {
         DefaultValue = defaultValue;
     }

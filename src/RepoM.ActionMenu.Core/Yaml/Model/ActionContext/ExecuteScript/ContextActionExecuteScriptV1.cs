@@ -46,15 +46,19 @@ public sealed class ContextActionExecuteScriptV1 : IContextAction, IEnabled
     /// <summary>
     /// Script content.
     /// </summary>
-    [EvaluateScript]
-    public string? Content { get; init; }
+    [Script]
+    public ScriptContent? Content { get; init; } = new (); // todo nullable ?
 
-    /// <inheritdoc cref="IEnabled.Enabled"/>
-    public string? Enabled { get; init; }
+    //// <inheritdoc cref="IEnabled.Enabled"/>
+    /// <summary>
+    /// Whether the variable is enabled.
+    /// </summary>
+    [EvaluateToBoolean(true)]
+    public EvaluateBoolean? Enabled { get; init; } = new(); // todo nullable?
 
     public override string ToString()
     {
-        var value = Content;
+        var value = Content?.Value;
         if (value?.Length > 10)
         {
             value = value[..10] + "..";

@@ -1,13 +1,12 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.Templating;
 
-using System;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using Scriban;
 
-internal class ScribanEvaluateAnyObject : EvaluateAnyObject, ICreateTemplate
+internal class ScribanEvaluateScript : ScriptContent, ICreateTemplate
 {
     private Template? _template = null;
 

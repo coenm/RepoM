@@ -25,15 +25,19 @@ public class ContextActionLoadFileV1 : NamedContextAction, IContextAction, IEnab
     /// <summary>
     /// Full path of the filename to load.
     /// </summary>
-    [RenderToString]
-    public string? Filename { get; init; }
+    [Render]
+    public RenderString Filename { get; init; } = new RenderString(); // todo nullable?
 
-    /// <inheritdoc cref="IEnabled.Enabled"/>
-    public string? Enabled { get; init; }
+    //// <inheritdoc cref="IEnabled.Enabled"/>
+    /// <summary>
+    /// Whether the variable is enabled.
+    /// </summary>
+    [EvaluateToBoolean(true)]
+    public EvaluateBoolean? Enabled { get; init; } = new(); // todo nullable?
 
     public override string ToString()
     {
-        var value = Filename;
+        var value = Filename?.Value;
         if (value?.Length > 10)
         {
             value = value[..10] + "..";

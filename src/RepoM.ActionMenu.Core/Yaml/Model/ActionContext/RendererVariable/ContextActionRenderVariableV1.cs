@@ -26,11 +26,15 @@ public class ContextActionRenderVariableV1 : NamedContextAction, IContextAction,
     /// <summary>
     /// Value of the variable.
     /// </summary>
-    [RenderToString]
-    public RenderString Value { get; set; } = new() { Value = string.Empty, };
+    [Render]
+    public RenderString Value { get; init; } = new() { Value = string.Empty, };
 
-    /// <inheritdoc cref="IEnabled.Enabled"/>
-    public string? Enabled { get; init; }
+    //// <inheritdoc cref="IEnabled.Enabled"/>
+    /// <summary>
+    /// Whether the variable is enabled.
+    /// </summary>
+    [EvaluateToBoolean(true)]
+    public EvaluateBoolean? Enabled { get; init; } = new(); // todo nullable?
 
     public override string ToString()
     {

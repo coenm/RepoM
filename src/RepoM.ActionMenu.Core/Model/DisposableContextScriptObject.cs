@@ -73,6 +73,7 @@ internal sealed class DisposableContextScriptObject : ScriptObject, IScope
             return true;
         }
 
-        return await _context.EvaluateToBooleanAsync(ea.Enabled, true).ConfigureAwait(false);
+        var result = await ea.Enabled.EvaluateAsync(_context).ConfigureAwait(false);
+        return result;
     }
 }

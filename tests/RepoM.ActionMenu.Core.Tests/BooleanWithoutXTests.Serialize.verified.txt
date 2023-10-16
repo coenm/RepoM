@@ -46,15 +46,15 @@ action-menu:
   context:
   - type: evaluate-variable@1
     value: sonar_url "sf23-2"
-    enabled: 
+    enabled: ''
     name: link
   - type: load-file@1
     filename: C:\SubV2.yaml
-    enabled: 
+    enabled: ''
     name: ''
   - type: load-file@1
     filename: C:\file2.env
-    enabled: 
+    enabled: ''
     name: ''
 - type: folder@1
   actions:
@@ -65,24 +65,24 @@ action-menu:
     context:
     - type: set-variable@1
       value: namenamename
-      enabled: 
+      enabled: ''
       name: name2
   name: my-folder
   active: 
   context:
   - type: set-variable@1
     value: coenm23
-    enabled: 
+    enabled: ''
     name: name
   is-deferred: 
 context:
 - type: set-variable@1
   value: coenm
-  enabled: 
+  enabled: ''
   name: name
 - type: set-variable@1
   value: coenm1
-  enabled: 
+  enabled: ''
   name: name1
 - type: set-variable@1
   value:
@@ -94,7 +94,7 @@ context:
     url: -a.bdo.nl
   - name: Production
     url: .bdo.nl
-  enabled: 
+  enabled: ''
   name: devopsEnvironments
 - type: evaluate-script@1
   content: >-
@@ -127,10 +127,10 @@ context:
 
 
     dummy_calc = sub2(19, 3);
-  enabled: 
+  enabled: ''
 - type: load-file@1
   filename: C:\file1.env
-  enabled: 
+  enabled: ''
   name: ''
 - type: render-variable@1
   value: text `{{ name }}` text2

@@ -22,7 +22,7 @@ internal class ContextActionLoadFileV1Processor : ContextActionProcessorBase<Con
 
     protected override async Task ProcessAsync(ContextActionLoadFileV1 contextV1, IContextMenuActionMenuGenerationContext context, IScope scope)
     {
-        var filename = await context.RenderNullableString(contextV1.Filename).ConfigureAwait(false);
+        var filename = await contextV1.Filename.RenderAsync(context).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(filename))
         {

@@ -7,12 +7,12 @@ internal class ContextActionExecuteScriptV1Processor : ContextActionProcessorBas
 {
     protected override async Task ProcessAsync(ContextActionExecuteScriptV1 contextAction, IContextMenuActionMenuGenerationContext context, IScope scope)
     {
-        if (string.IsNullOrWhiteSpace(contextAction.Content))
+        if (contextAction.Content == null)
         {
             return;
         }
 
-        var result = await context.EvaluateAsync(contextAction.Content).ConfigureAwait(false);
+        object? result = await contextAction.Content.EvaluateAsync(context).ConfigureAwait(false);
         
         if (result is not null)
         {

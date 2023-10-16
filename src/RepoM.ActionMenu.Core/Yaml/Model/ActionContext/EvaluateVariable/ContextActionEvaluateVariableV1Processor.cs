@@ -17,7 +17,7 @@ internal class ContextActionEvaluateVariableV1Processor : ContextActionProcessor
 
         using (_ = context.CreateGlobalScope())
         {
-            result = await context.EvaluateAsync(contextContextAction.Value).ConfigureAwait(false);
+            result = await contextContextAction.Value.EvaluateAsync(context).ConfigureAwait(false);
         }
 
         scope.SetValue(contextContextAction.Name, result, false);

@@ -9,7 +9,7 @@ public class RenderString : EvaluateObject
 
     public static implicit operator RenderString(string content)
     {
-        return new RenderString { Value = content };
+        return new RenderString { Value = content, };
     }
 
     public override string ToString()

@@ -1,6 +1,7 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
 
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 /// <summary>
 /// ContextAction to set a variable as defined.
@@ -36,8 +37,12 @@ public class ContextActionSetVariableV1 : NamedContextAction, IContextAction, IE
     /// </summary>
     public object? Value { get; init; }
 
-    /// <inheritdoc cref="IEnabled.Enabled"/>
-    public string? Enabled { get; init; }
+    //// <inheritdoc cref="IEnabled.Enabled"/>
+    /// <summary>
+    /// Whether the variable is enabled.
+    /// </summary>
+    [EvaluateToBoolean(true)]
+    public EvaluateBoolean? Enabled { get; init; } = new(); // todo nullable?
 
     public override string ToString()
     {

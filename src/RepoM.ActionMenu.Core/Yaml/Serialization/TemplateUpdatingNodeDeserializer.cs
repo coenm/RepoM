@@ -56,6 +56,11 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                 continue;
             }
 
+            if (prop.PropertyType == typeof(ScriptContent))
+            {
+                // no default value.
+            }
+
             if (prop.PropertyType == typeof(EvaluateAnyObject))
             {
                 var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
@@ -92,7 +97,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
             if (prop.PropertyType == typeof(RenderString))
             {
                 var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
-                    a.AttributeType.FullName == typeof(RenderToStringAttribute).FullName);
+                    a.AttributeType.FullName == typeof(RenderAttribute).FullName);
 
                 if (attribute != null)
                 {

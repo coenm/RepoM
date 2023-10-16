@@ -27,15 +27,19 @@ public class ContextActionEvaluateVariableV1 : NamedContextAction, IContextActio
     /// Value of the variable.
     /// </summary>
     [EvaluateToAnyObject]
-    public string? Value { get; init; } //EvaluateAnyObject
+    public EvaluateAnyObject Value { get; init; } = new(); // todo nullable?
 
-    /// <inheritdoc cref="IEnabled.Enabled"/>
-    public string? Enabled { get; init; }
+    //// <inheritdoc cref="IEnabled.Enabled"/>
+    /// <summary>
+    /// Whether the variable is enabled.
+    /// </summary>
+    [EvaluateToBoolean(true)]
+    public EvaluateBoolean? Enabled { get; init; } = new(); // todo nullable?
 
     public override string ToString()
     {
-        var value = Value;
-        if (value?.Length > 10)
+        var value = Value.Value;
+        if (value.Length > 10)
         {
             value = value[..10] + "..";
         }

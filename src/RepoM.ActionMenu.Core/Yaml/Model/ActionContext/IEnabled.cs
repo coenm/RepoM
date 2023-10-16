@@ -8,5 +8,5 @@ public interface IEnabled
     /// Whether the variable is enabled.
     /// </summary>
     [EvaluateToBoolean(true)]
-    string? Enabled { get; }
+    EvaluateBoolean? Enabled { get; } // nullable?
 }

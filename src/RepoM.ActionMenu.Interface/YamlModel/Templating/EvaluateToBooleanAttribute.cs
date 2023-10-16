@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Interface.YamlModel.Templating;
+namespace RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 using System;
 
