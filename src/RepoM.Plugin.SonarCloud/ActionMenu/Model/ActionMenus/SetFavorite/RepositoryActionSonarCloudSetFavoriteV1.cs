@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.WebBrowser.ActionMenu.Model.ActionMenus.Browser;
+namespace RepoM.Plugin.SonarCloud.ActionMenu.Model.ActionMenus.SetFavorite;
 
 using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -6,11 +6,11 @@ using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 /// <summary>
-/// Action opening a webbrowser with the provided url.
+/// Action to mark a repository as favorite within SonarCloud.
 /// </summary>
-internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
+internal sealed class RepositoryActionSonarCloudSetFavoriteV1 : IMenuAction, IContext
 {
-    public const string TYPE_VALUE = "browser@1";
+    public const string TYPE_VALUE = "sonarcloud-set-favorite@1";
 
     public string Type
     {
@@ -22,18 +22,11 @@ internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
     public RenderString Name { get; init; } = new RenderString(); // todo nullable?
 
     /// <summary>
-    /// The url to browse to.
+    /// The SonarCloud project key.
     /// </summary>
     [Required]
     [Render]
-    public RenderString Url { get; init; } = new RenderString(); // todo nullable?
-
-    /// <summary>
-    /// profile name used to select browser and browser profile
-    /// </summary>
-    [Required]
-    [Render]
-    public RenderString Profile { get; set; } = new RenderString(); // todo nullable?
+    public RenderString Project { get; init; } = new RenderString(); // todo nullable?
 
     public Context? Context { get; set; }
 
@@ -45,6 +38,6 @@ internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
 
     public override string ToString()
     {
-        return $"({TYPE_VALUE}) {Name} : {Url}";
+        return $"({TYPE_VALUE}) {Name} : {Project}";
     }
 }
