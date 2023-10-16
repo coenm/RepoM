@@ -27,13 +27,13 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction
     /// </summary>
     [Required]
     [EvaluateToAnyObject]
-    public EvaluateAnyObject Enumerable { get; set; } = new ScribanEvaluateAnyObject(); // toto enumerable?
+    public EvaluateAnyObject Enumerable { get; init; } = new ScribanEvaluateAnyObject(); // toto enumerable?
 
     /// <summary>
     /// The name of the variable to access to current enumeration of the <see cref="Enumerable"/> items. For each iteration, the variable `{var.name}` has the value of the current iteration.
     /// </summary>
     [Required]
-    public string? Variable { get; set; }
+    public string? Variable { get; init; }
 
     /// <summary>
     /// Predicate to skip the current item.
@@ -45,7 +45,7 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction
     /// List of repeated actions.
     /// </summary>
     [Required]
-    public List<IMenuAction> Actions { get; set; } = new List<IMenuAction>();
+    public List<IMenuAction> Actions { get; init; } = new List<IMenuAction>();
     
     public override string ToString()
     {
