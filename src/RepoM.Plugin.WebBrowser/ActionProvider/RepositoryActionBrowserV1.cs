@@ -22,8 +22,7 @@ public sealed class RepositoryActionBrowserV1 : RepositoryAction
     [Required]
     [PropertyType(typeof(string))]
     public string? Url { get; set; }
-
-
+    
     /// <summary>
     /// profile name used to select browser and browser profile
     /// </summary>
