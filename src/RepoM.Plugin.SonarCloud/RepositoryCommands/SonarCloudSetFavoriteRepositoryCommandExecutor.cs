@@ -1,4 +1,4 @@
-﻿namespace RepoM.Plugin.SonarCloud.RepositoryCommands;
+namespace RepoM.Plugin.SonarCloud.RepositoryCommands;
 
 using System;
 using JetBrains.Annotations;
@@ -6,12 +6,12 @@ using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 
 [UsedImplicitly] // todo not sure if this should be public or not.
-public class CopyToClipboardCommandExecutor : ICommandExecutor<SonarCloudSetFavoriteRepositoryCommand>
+public class SonarCloudSetFavoriteRepositoryCommandExecutor : ICommandExecutor<SonarCloudSetFavoriteRepositoryCommand>
 {
     private readonly ISonarCloudFavoriteService _service;
 
     // todo not sure if this should be public or not.
-    internal CopyToClipboardCommandExecutor(ISonarCloudFavoriteService service)
+    internal SonarCloudSetFavoriteRepositoryCommandExecutor(ISonarCloudFavoriteService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
