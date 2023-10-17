@@ -7,7 +7,7 @@ using RepoM.Core.Plugin.Repository;
 
 public interface IUserInterfaceActionMenuFactory
 {
-    Task<IEnumerable<UserInterfaceRepositoryActionBase>> CreateMenuAsync(IRepository repository);
+    Task<IEnumerable<UserInterfaceRepositoryActionBase>> CreateMenuAsync(IRepository repository, string filename);
     
-    Task<IEnumerable<string>> GetTagsAsync(IRepository repository);
+    Task<IEnumerable<string>> GetTagsAsync(IRepository repository, string filename);
 }

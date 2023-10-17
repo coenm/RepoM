@@ -33,6 +33,11 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
 
     private ActionMenuDeserializer(IDictionary<string, Type> menuActionTypes)
     {
+        if (menuActionTypes == null)
+        {
+            throw new ArgumentNullException(nameof(menuActionTypes));
+        }
+
         var factoryMethods = new Dictionary<Type, Func<object>>
             {
                 { typeof(ScriptContent), () => new ScribanScriptContent() },

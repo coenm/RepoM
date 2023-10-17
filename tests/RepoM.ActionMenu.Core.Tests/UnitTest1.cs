@@ -25,6 +25,7 @@ namespace RepoM.ActionMenu.Core.Tests
     using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Separator;
     using RepoM.ActionMenu.Core.Yaml.Serialization;
     using RepoM.ActionMenu.Interface.Scriban;
+    using RepoM.ActionMenu.Interface.UserInterface;
     using RepoM.ActionMenu.Interface.YamlModel;
     using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
     using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -201,7 +202,7 @@ namespace RepoM.ActionMenu.Core.Tests
 
         public BooleanWithoutXTests()
         {
-            _registrations = new List<IKeyTypeRegistration<IMenuAction>>()
+            _registrations = new List<IKeyTypeRegistration<IMenuAction>>
                 {
                     ContainerExtensions.CreateRegistrationObject<RepositoryActionAssociateFileV1>(),
                     ContainerExtensions.CreateRegistrationObject<RepositoryActionBrowseRepositoryV1>(),
@@ -218,7 +219,7 @@ namespace RepoM.ActionMenu.Core.Tests
                     ContainerExtensions.CreateRegistrationObject<RepositoryActionSeparatorV1>(),
                 };
 
-            _mappers = new List<IActionToRepositoryActionMapper>()
+            _mappers = new List<IActionToRepositoryActionMapper>
                 {
                     new RepositoryActionAssociateFileV1Mapper(),
                     new RepositoryActionBrowseRepositoryV1Mapper(),
@@ -236,7 +237,7 @@ namespace RepoM.ActionMenu.Core.Tests
                 };
 
             _fileSystem = new MockFileSystem(
-                new Dictionary<string, MockFileData>()
+                new Dictionary<string, MockFileData>
                     {
                         { "C:\\RepositoryActionsV2.yaml", new MockFileData(YAML, Encoding.UTF8) },
                         { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
@@ -250,9 +251,9 @@ namespace RepoM.ActionMenu.Core.Tests
         [Fact]
         public async Task UseFactory()
         {
-            var factory = _sut.Create("C:\\RepositoryActionsV2.yaml");
+            IUserInterfaceActionMenuFactory factory = _sut.Create();
 
-            var result = await factory.CreateMenuAsync(_repository);
+            IEnumerable<UserInterfaceRepositoryActionBase> result = await factory.CreateMenuAsync(_repository, "C:\\RepositoryActionsV2.yaml");
             
             await Verifier.Verify(result);
         }
@@ -260,10 +261,9 @@ namespace RepoM.ActionMenu.Core.Tests
         [Fact]
         public async Task GetTags()
         {
-            
-            var factory = _sut.Create("C:\\RepositoryActionsV2.yaml");
+            IUserInterfaceActionMenuFactory factory = _sut.Create();
 
-            var result = await factory.GetTagsAsync(_repository);
+            IEnumerable<string> result = await factory.GetTagsAsync(_repository, "C:\\RepositoryActionsV2.yaml");
 
             await Verifier.Verify(result);
         }
