@@ -3,6 +3,8 @@ namespace RepoM.Core.Plugin.RepositoryActions.Commands;
 using System;
 using RepoM.Core.Plugin.RepositoryActions;
 
+// todo remove
+[Obsolete]
 public sealed class DelegateRepositoryCommand : IRepositoryCommand
 {
     public DelegateRepositoryCommand(Action<object?, object?> action)
