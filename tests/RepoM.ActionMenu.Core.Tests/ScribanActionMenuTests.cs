@@ -116,9 +116,12 @@ namespace RepoM.ActionMenu.Core.Tests
 
             - tag: work
             
+            - tag: github-conditional
+              when: repository.safe_path | string.contains "Projects/Github"
+            
             action-menu:
             - type: just-text@1
-              text: 'repository.pwd2 {{ repository.pwd }}'    
+              text: 'repository.pwd2 {{ repository.pwd }}'  
               
             - type: foreach@1
               enumerable: 'file.find_files("c:\\", "*.env")'

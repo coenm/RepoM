@@ -7,6 +7,8 @@
   when: 1 == 2  || true
 - tag: work
   when: ''
+- tag: github-conditional
+  when: repository.safe_path | string.contains "Projects/Github"
 action-menu:
 - type: just-text@1
   text: repository.pwd2 {{ repository.pwd }}

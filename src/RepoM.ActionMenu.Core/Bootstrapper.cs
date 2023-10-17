@@ -32,7 +32,7 @@ public static class Bootstrapper
 
     private static void RegisterPublicTypes(Container container)
     {
-        container.Register<IUserInterfaceActionMenuFactory, UserInterfaceActionMenuFactory>(Lifestyle.Singleton);
+        container.Register<IUserInterfaceActionMenuFactory, UserInterfaceActionMenuFactory>(Lifestyle.Transient); // todo singleton
     }
 
     private static void RegisterPrivateTypes(Container container)

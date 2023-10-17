@@ -1,5 +1,6 @@
 ﻿[
   private,
   github,
-  work
+  work,
+  github-conditional
 ]

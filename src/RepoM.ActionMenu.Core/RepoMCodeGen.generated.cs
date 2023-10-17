@@ -31,9 +31,10 @@ namespace RepoM.ActionMenu.Core.Model.Functions
         {
             RegisterConstant("name", Name);
             RegisterConstant("path", Path);
+            RegisterConstant("safe_path", SafePath);
             RegisterConstant("branch", CurrentBranch);
             RegisterConstant("branches", Branches);
-            RegisterConstant("local-branches", LocalBranches);
+            RegisterConstant("local_branches", LocalBranches);
         }
     }
 }

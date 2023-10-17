@@ -37,7 +37,14 @@ internal partial class RepositoryFunctions : ScribanModuleWithFunctions
     /// <returns>The path of the repository.</returns>
     [ActionMenuMember("path")]
     public string Path => _repository.Path;
-   
+
+    /// <summary>
+    /// Gets the safe path of the repository.
+    /// </summary>
+    /// <returns>The path of the repository.</returns>
+    [ActionMenuMember("safe_path")]
+    public string SafePath => _repository.SafePath;
+
     /// <summary>
     /// Gets the current branch of the repository
     /// </summary>
@@ -56,6 +63,6 @@ internal partial class RepositoryFunctions : ScribanModuleWithFunctions
     /// Gets the local branches
     /// </summary>
     /// <returns>All local branches.</returns>
-    [ActionMenuMember("local-branches")]
+    [ActionMenuMember("local_branches")]
     public IEnumerable LocalBranches => _repository.LocalBranches;
 }

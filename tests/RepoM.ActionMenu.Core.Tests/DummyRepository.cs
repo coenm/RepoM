@@ -6,7 +6,7 @@ using RepoM.Core.Plugin.Repository;
 
 public class DummyRepository : IRepository
 {
-    public string SafePath { get; } = "dummy safe path";
+    public string SafePath { get; } = "C:/Projects/Github/RepoM/RepoM.git";
     public List<Remote> Remotes { get; } = new List<Remote>();
     public bool HasUnpushedChanges { get; } = false;
     public string Name { get; } = "dummy name";

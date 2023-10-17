@@ -49,9 +49,6 @@ using System.Linq;
 using Microsoft.VisualStudio.Services.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using System.Runtime.Caching;
-using RepoM.ActionMenu.Core;
-using RepoM.ActionMenu.Core.PublicApi;
-using RepoM.ActionMenu.Interface.YamlModel;
 
 internal static class Bootstrapper
 {

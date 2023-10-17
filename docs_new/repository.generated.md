@@ -31,9 +31,9 @@ Gets the current branch of the repository
 
 The name of the current branch.
 
-## local-branches
+## local_branches
 
-`local-branches`
+`local_branches`
 
 Gets the local branches
 
@@ -71,6 +71,16 @@ repository.name
 `path`
 
 Gets the path of the repository.
+
+### Returns
+
+The path of the repository.
+
+## safe_path
+
+`safe_path`
+
+Gets the safe path of the repository.
 
 ### Returns
 
