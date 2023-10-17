@@ -8,6 +8,13 @@ public class Predicate : EvaluateObject
 {
     public bool DefaultValue { get; set; }
 
+    public static implicit operator Predicate(bool content)
+    {
+        return content
+            ? new Predicate { Value = "true", }
+            : new Predicate { Value = "false", };
+    }
+
     public static implicit operator Predicate(string content)
     {
         return new Predicate { Value = content, };
