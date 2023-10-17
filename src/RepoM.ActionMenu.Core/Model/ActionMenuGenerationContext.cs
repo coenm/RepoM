@@ -15,21 +15,7 @@ using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.LoadFile;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.AssociateFile;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Fetch;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Pull;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Push;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Ignore;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Pin;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Separator;
 using RepoM.ActionMenu.Core.Yaml.Model.Tags;
-using RepoM.ActionMenu.Core.Yaml.Serialization;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.UserInterface;
@@ -42,39 +28,43 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 {
     private readonly ITemplateParser _templateParser;
     private readonly ITemplateContextRegistration[] _functionsArray;
-    private readonly ActionMenuDeserializer _deserializer = new();
-    private readonly List<IActionToRepositoryActionMapper> _repositoryActionMappers;
+    private readonly IActionMenuDeserializer _deserializer;
+    private readonly IActionToRepositoryActionMapper[] _repositoryActionMappers;
     private readonly List<IContextActionProcessor> _contextActionMappers;
 
     public ActionMenuGenerationContext(
         IRepository repository, 
         ITemplateParser templateParser, 
         IFileSystem fileSystem,
-        ITemplateContextRegistration[] functionsArray)
+        ITemplateContextRegistration[] functionsArray,
+        IActionToRepositoryActionMapper[] repositoryActionMappers,
+        IActionMenuDeserializer deserializer)
     {
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
         _functionsArray = functionsArray ?? throw new ArgumentNullException(nameof(functionsArray));
         FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _repositoryActionMappers = repositoryActionMappers ?? throw new ArgumentNullException(nameof(repositoryActionMappers));
+        _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
 
-        _repositoryActionMappers = new List<IActionToRepositoryActionMapper>
-            {
-                new RepositoryActionAssociateFileV1Mapper(),
-                new RepositoryActionJustTextV1Mapper(),
-                new RepositoryActionFolderV1Mapper(),
-                new RepositoryActionBrowseRepositoryV1Mapper(),
-                new ActionCommandV1Mapper(),
-                new RepositoryActionForEachV1Mapper(),
-                new RepositoryActionSeparatorV1Mapper(),
-                new RepositoryActionPinV1Mapper(),
-                new RepositoryActionIgnoreV1Mapper(),
-
-                // git mappers
-                new RepositoryActionGitCheckoutV1Mapper(),
-                new RepositoryActionGitFetchV1Mapper(),
-                new RepositoryActionGitPushV1Mapper(),
-                new RepositoryActionGitPullV1Mapper(),
-            };
+        // _repositoryActionMappers = new List<IActionToRepositoryActionMapper>
+        //     {
+        //         new RepositoryActionAssociateFileV1Mapper(),
+        //         new RepositoryActionJustTextV1Mapper(),
+        //         new RepositoryActionFolderV1Mapper(),
+        //         new RepositoryActionBrowseRepositoryV1Mapper(),
+        //         new RepositoryActionCommandV1Mapper(),
+        //         new RepositoryActionForEachV1Mapper(),
+        //         new RepositoryActionSeparatorV1Mapper(),
+        //         new RepositoryActionPinV1Mapper(),
+        //         new RepositoryActionIgnoreV1Mapper(),
+        //
+        //         // git mappers
+        //         new RepositoryActionGitCheckoutV1Mapper(),
+        //         new RepositoryActionGitFetchV1Mapper(),
+        //         new RepositoryActionGitPushV1Mapper(),
+        //         new RepositoryActionGitPullV1Mapper(),
+        //     };
 
         var rootScriptObject = new RepoMScriptObject();
         
@@ -155,7 +145,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     public IActionMenuGenerationContext Clone()
     {
         throw new NotImplementedException("Not a full clone.");
-        var result = new ActionMenuGenerationContext(Repository, _templateParser, FileSystem, _functionsArray)
+        var result = new ActionMenuGenerationContext(Repository, _templateParser, FileSystem, _functionsArray, _repositoryActionMappers, _deserializer)
         {
             Env = (EnvSetScriptObject)Env.Clone(true),
             RepositoryActionsScriptContext = (DisposableContextScriptObject)RepositoryActionsScriptContext.Clone(true),
@@ -181,7 +171,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
             }
         }
 
-        var mapper = _repositoryActionMappers.Find(mapper => mapper.CanMap(menuAction));
+        var mapper = Array.Find(_repositoryActionMappers, mapper => mapper.CanMap(menuAction));
         if (mapper == null)
         {
             // throw?

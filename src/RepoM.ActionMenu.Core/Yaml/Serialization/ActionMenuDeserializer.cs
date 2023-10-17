@@ -2,6 +2,7 @@ namespace RepoM.ActionMenu.Core.Yaml.Serialization;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.Yaml.Model;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.EvaluateVariable;
@@ -9,23 +10,11 @@ using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.LoadFile;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.AssociateFile;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Fetch;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Pull;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Push;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Ignore;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Pin;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Separator;
 using RepoM.ActionMenu.Core.Yaml.Model.Tags;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
+using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.BufferedDeserialization;
@@ -36,10 +25,14 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
 {
     private readonly IDeserializer _deserializer;
     private readonly ISerializer _serializer;
-    
-    public ActionMenuDeserializer()
+
+    public ActionMenuDeserializer(IEnumerable<IKeyTypeRegistration<IMenuAction>> keyTypeRegistrations)
+        : this(keyTypeRegistrations.ToDictionary(item => item.Tag, item => item.ConfigurationType))
     {
-        // todo, di
+    }
+
+    private ActionMenuDeserializer(IDictionary<string, Type> menuActionTypes)
+    {
         var factoryMethods = new Dictionary<Type, Func<object>>
             {
                 { typeof(ScriptContent), () => new ScribanScriptContent() },
@@ -66,33 +59,15 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
                             "type",
                             new Dictionary<string, Type>
                                {
+                                    // This is okay as the context types are not extendable at the moment.
+                                    // Otherwise; inject like IMenuAction.`
                                     { ContextActionEvaluateVariableV1.TYPE_VALUE, typeof(ContextActionEvaluateVariableV1)},
                                     { ContextActionRenderVariableV1.TYPE_VALUE, typeof(ContextActionRenderVariableV1)},
                                     { ContextActionExecuteScriptV1.TYPE_VALUE, typeof(ContextActionExecuteScriptV1)},
                                     { ContextActionSetVariableV1.TYPE_VALUE, typeof(ContextActionSetVariableV1)},
                                     { ContextActionLoadFileV1.TYPE_VALUE, typeof(ContextActionLoadFileV1)},
                                 }));
-
-                    options.AddKeyValueTypeDiscriminator<IMenuAction>(
-                        "type",
-                        new Dictionary<string, Type>
-                            {
-                                { RepositoryActionAssociateFileV1.TYPE_VALUE, typeof(RepositoryActionAssociateFileV1) },
-                                { RepositoryActionJustTextV1.TYPE_VALUE, typeof(RepositoryActionJustTextV1) },
-                                { RepositoryActionFolderV1.TYPE_VALUE, typeof(RepositoryActionFolderV1) },
-                                { RepositoryActionBrowseRepositoryV1.TYPE_VALUE, typeof(RepositoryActionBrowseRepositoryV1) },
-                                { RepositoryActionCommandV1.TYPE_VALUE, typeof(RepositoryActionCommandV1) },
-                                { RepositoryActionForEachV1.TYPE_VALUE, typeof(RepositoryActionForEachV1) },
-                                { RepositoryActionSeparatorV1.TYPE_VALUE, typeof(RepositoryActionSeparatorV1) },
-                                { RepositoryActionPinV1.TYPE_VALUE, typeof(RepositoryActionPinV1) },
-                                { RepositoryActionIgnoreV1.TYPE_VALUE, typeof(RepositoryActionIgnoreV1) },
-
-                                // git actions
-                                { RepositoryActionGitCheckoutV1.TYPE_VALUE, typeof(RepositoryActionGitCheckoutV1) },
-                                { RepositoryActionGitFetchV1.TYPE_VALUE, typeof(RepositoryActionGitFetchV1) },
-                                { RepositoryActionGitPullV1.TYPE_VALUE, typeof(RepositoryActionGitPullV1) },
-                                { RepositoryActionGitPushV1.TYPE_VALUE, typeof(RepositoryActionGitPushV1) },
-                            });
+                    options.AddKeyValueTypeDiscriminator<IMenuAction>("type", menuActionTypes);
                 },
                 maxDepth: -1,
                 maxLength: -1)

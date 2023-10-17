@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using FakeItEasy;
 using FluentAssertions;
-using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;

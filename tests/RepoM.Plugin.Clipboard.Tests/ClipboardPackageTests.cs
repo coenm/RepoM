@@ -2,7 +2,6 @@ namespace RepoM.Plugin.Clipboard.Tests;
 
 using System;
 using FakeItEasy;
-using RepoM.Api.Common;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Expressions;
 using SimpleInjector;

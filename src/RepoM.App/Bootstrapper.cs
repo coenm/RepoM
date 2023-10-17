@@ -49,6 +49,8 @@ using System.Linq;
 using Microsoft.VisualStudio.Services.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using System.Runtime.Caching;
+using RepoM.ActionMenu.Core.PublicApi;
+using RepoM.ActionMenu.Interface.YamlModel;
 
 internal static class Bootstrapper
 {
@@ -132,6 +134,7 @@ internal static class Bootstrapper
         Container.Register<ActionDeserializerComposition>(Lifestyle.Singleton);
 
         // Register custom Repository Action deserializers
+        // old style:
         var actionDeserializerTypes = GetExportedTypesFrom(typeof(IActionDeserializer).Assembly)
           .Where(t => typeof(IActionDeserializer).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
           .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, })
@@ -144,6 +147,19 @@ internal static class Bootstrapper
             .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, })
             .Where(t => t != typeof(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction))
             .ForEach(t => Container.RegisterDefaultRepositoryActionDeserializerForType(t));
+
+        // new style: module core assembly:
+        var assembly = typeof(IUserInterfaceActionMenuFactory).Assembly;
+        var types = GetExportedTypesFrom(assembly)
+            .Where(t => typeof(ActionMenu.Interface.YamlModel.IActionToRepositoryActionMapper).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
+            .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, });
+        Container.Collection.Register<ActionMenu.Interface.YamlModel.IActionToRepositoryActionMapper>(types, Lifestyle.Singleton);
+
+        // new style: Register all repository action types
+        GetExportedTypesFrom(assembly)
+            .Where(t => typeof(IMenuAction).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
+            .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, })
+            .ForEach(t => Container.RegisterActionMenuType(t));
 
         static IEnumerable<Type> GetExportedTypesFrom(Assembly assembly)
         {
@@ -160,8 +176,8 @@ internal static class Bootstrapper
         }
         
         Container.Register<ActionMapperComposition>(Lifestyle.Singleton);
-        Container.Collection.Register<IActionToRepositoryActionMapper>(
-            new[] { typeof(IActionToRepositoryActionMapper).Assembly, },
+        Container.Collection.Register<RepoM.Api.IO.ModuleBasedRepositoryActionProvider.IActionToRepositoryActionMapper>(
+            new[] { typeof(RepoM.Api.IO.ModuleBasedRepositoryActionProvider.IActionToRepositoryActionMapper).Assembly, },
             Lifestyle.Singleton);
 
         Container.Register<IRepositoryActionDeserializer, YamlDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);

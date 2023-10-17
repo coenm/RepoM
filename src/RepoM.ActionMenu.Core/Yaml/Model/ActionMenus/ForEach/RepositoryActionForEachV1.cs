@@ -5,7 +5,9 @@ using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
+[RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionForEachV1 : IMenuAction
 {
     public const string TYPE_VALUE = "foreach@1";

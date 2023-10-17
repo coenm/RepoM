@@ -1,6 +1,5 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.Templating;
 
-using System;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;

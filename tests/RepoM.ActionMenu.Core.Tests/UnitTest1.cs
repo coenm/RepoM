@@ -10,10 +10,26 @@ namespace RepoM.ActionMenu.Core.Tests
     using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
     using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
     using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.AssociateFile;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Checkout;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Fetch;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Pull;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Push;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Ignore;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.JustText;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Pin;
+    using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Separator;
     using RepoM.ActionMenu.Core.Yaml.Serialization;
     using RepoM.ActionMenu.Interface.Scriban;
+    using RepoM.ActionMenu.Interface.YamlModel;
     using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
+    using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
     using RepoM.Core.Plugin.Repository;
+    using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
     using VerifyXunit;
     using Xunit;
 
@@ -21,6 +37,10 @@ namespace RepoM.ActionMenu.Core.Tests
     public class BooleanWithoutXTests
     {
         private readonly IRepository _repository = new DummyRepository();
+        private readonly Factory _sut;
+        private readonly MockFileSystem _fileSystem;
+        private List<IKeyTypeRegistration<IMenuAction>> _registrations;
+        private List<IActionToRepositoryActionMapper> _mappers;
 
         private const string FILE1_ENV =
             """
@@ -179,19 +199,58 @@ namespace RepoM.ActionMenu.Core.Tests
                 name: CheckOut!
             """;
 
+        public BooleanWithoutXTests()
+        {
+            _registrations = new List<IKeyTypeRegistration<IMenuAction>>()
+                {
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionAssociateFileV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionBrowseRepositoryV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionCommandV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionFolderV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionForEachV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionGitCheckoutV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionGitFetchV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionGitPullV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionGitPushV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionIgnoreV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionJustTextV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionPinV1>(),
+                    ContainerExtensions.CreateRegistrationObject<RepositoryActionSeparatorV1>(),
+                };
+
+            _mappers = new List<IActionToRepositoryActionMapper>()
+                {
+                    new RepositoryActionAssociateFileV1Mapper(),
+                    new RepositoryActionBrowseRepositoryV1Mapper(),
+                    new RepositoryActionCommandV1Mapper(),
+                    new RepositoryActionFolderV1Mapper(),
+                    new RepositoryActionForEachV1Mapper(),
+                    new RepositoryActionGitCheckoutV1Mapper(),
+                    new RepositoryActionGitFetchV1Mapper(),
+                    new RepositoryActionGitPullV1Mapper(),
+                    new RepositoryActionGitPushV1Mapper(),
+                    new RepositoryActionIgnoreV1Mapper(),
+                    new RepositoryActionJustTextV1Mapper(),
+                    new RepositoryActionPinV1Mapper(),
+                    new RepositoryActionSeparatorV1Mapper(),
+                };
+
+            _fileSystem = new MockFileSystem(
+                new Dictionary<string, MockFileData>()
+                    {
+                        { "C:\\RepositoryActionsV2.yaml", new MockFileData(YAML, Encoding.UTF8) },
+                        { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
+                        { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
+                        { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
+                });
+
+            _sut = new Factory(_fileSystem, Array.Empty<ITemplateContextRegistration>(), _registrations, _mappers);
+        }
+
         [Fact]
         public async Task UseFactory()
         {
-            var fileSystem = new MockFileSystem(
-                new Dictionary<string, MockFileData>()
-                {
-                    { "C:\\RepositoryActionsV2.yaml", new MockFileData(YAML, Encoding.UTF8) },
-                    { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
-                    { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
-                    { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
-                });
-            var sut = new Factory(fileSystem, Array.Empty<ITemplateContextRegistration>());
-            var factory = sut.Create("C:\\RepositoryActionsV2.yaml");
+            var factory = _sut.Create("C:\\RepositoryActionsV2.yaml");
 
             var result = await factory.CreateMenuAsync(_repository);
             
@@ -201,16 +260,8 @@ namespace RepoM.ActionMenu.Core.Tests
         [Fact]
         public async Task GetTags()
         {
-            var fileSystem = new MockFileSystem(
-                new Dictionary<string, MockFileData>()
-                {
-                    { "C:\\RepositoryActionsV2.yaml", new MockFileData(YAML, Encoding.UTF8) },
-                    { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
-                    { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
-                    { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
-                });
-            var sut = new Factory(fileSystem, Array.Empty<ITemplateContextRegistration>());
-            var factory = sut.Create("C:\\RepositoryActionsV2.yaml");
+            
+            var factory = _sut.Create("C:\\RepositoryActionsV2.yaml");
 
             var result = await factory.GetTagsAsync(_repository);
 
@@ -238,7 +289,7 @@ some more text",
                 },
             };
 
-            var deserializer = new ActionMenuDeserializer();
+            var deserializer = new ActionMenuDeserializer(_registrations);
             var result2 = deserializer.DeserializeRoot(YAML);
             var result = deserializer.Serialize(result2);
 

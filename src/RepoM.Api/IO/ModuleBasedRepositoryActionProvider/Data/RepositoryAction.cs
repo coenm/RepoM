@@ -57,6 +57,7 @@ public sealed class EvaluatedPropertyAttribute : Attribute
 {
 }
 
+// todo move to plugin interface
 /// <summary>
 /// Attribute the textual type of the repository action.
 /// </summary>
@@ -126,19 +127,22 @@ public sealed class PropertyDefaultTypedValueAttribute<T> : PropertyDefaultValue
 
 public static class ContainerExtensions
 {
+    // todo move to plugin interface
     public static void RegisterActionMenuMapper<T>(this Container container, Lifestyle lifestyle) where T : class, RepoM.ActionMenu.Interface.YamlModel.IActionToRepositoryActionMapper
     {
         container.Collection.Append<RepoM.ActionMenu.Interface.YamlModel.IActionToRepositoryActionMapper, T>(lifestyle);
     }
 
+    // todo move to plugin interface
     public static void RegisterActionMenuType<T>(this Container container) where T : IMenuAction
     {
-        RegisterDefaultRepositoryActionDeserializerForType1<IMenuAction>(container, typeof(T));
+        RegisterActionMenuType(container, typeof(T));
     }
 
-    public static void RegisterDefaultRepositoryActionDeserializerForType1<T>(this Container container, Type type)
+    // todo move to plugin interface
+    public static void RegisterActionMenuType(this Container container, Type type)
     {
-        container.Collection.AppendInstance<IKeyTypeRegistration<T>>(new FixedTypeRegistration<T>(type, TypeRepositoryActionAttributeReader.GetValue(type)));
+        container.Collection.AppendInstance<IKeyTypeRegistration<IMenuAction>>(new FixedTypeRegistration<IMenuAction>(type, TypeRepositoryActionAttributeReader.GetValue(type)));
     }
 
     public static void RegisterDefaultRepositoryActionDeserializerForType<T>(this Container container) where T : RepositoryAction
@@ -149,6 +153,13 @@ public static class ContainerExtensions
     public static void RegisterDefaultRepositoryActionDeserializerForType(this Container container, Type type)
     {
         container.Collection.AppendInstance<IKeyTypeRegistration<RepositoryAction>>(new FixedTypeRegistration<RepositoryAction>(type, TypeRepositoryActionAttributeReader.GetValue(type)));
+    }
+
+    // stupid, for test purposes. todo
+    public static IKeyTypeRegistration<IMenuAction> CreateRegistrationObject<T>()
+    {
+        var type = typeof(T);
+        return new FixedTypeRegistration<IMenuAction>(type, TypeRepositoryActionAttributeReader.GetValue(type));
     }
 }
 

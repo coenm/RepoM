@@ -3,7 +3,9 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Push;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
+[RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionGitPushV1 : IMenuAction, IOptionalName
 {
     public const string TYPE_VALUE = "git-push@1";

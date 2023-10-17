@@ -8,7 +8,7 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 
-internal class ActionCommandV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionCommandV1>
+internal class RepositoryActionCommandV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionCommandV1>
 {
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionCommandV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
