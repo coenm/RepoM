@@ -33,7 +33,7 @@ public static class Bootstrapper
 
     private static void RegisterPublicTypes(Container container)
     {
-        container.Register<IUserInterfaceActionMenuFactory, UserInterfaceActionMenuFactory>();
+        container.Register<IUserInterfaceActionMenuFactory, UserInterfaceActionMenuFactory>(Lifestyle.Singleton);
     }
 
     private static void RegisterPrivateTypes(Container container)
@@ -58,6 +58,16 @@ public static class Bootstrapper
 
         container.RegisterSingleton<ITemplateParser, FixedTemplateParser>();
         container.RegisterSingleton<IActionMenuDeserializer, ActionMenuDeserializer>();
+    }
+
+    /// <summary>
+    /// The one and only public interface for this module.
+    /// </summary>
+    /// <param name="container">The container</param>
+    /// <returns>Instance of <see cref="IUserInterfaceActionMenuFactory"/>.</returns>
+    public static IUserInterfaceActionMenuFactory GetUserInterfaceActionMenu(Container container)
+    {
+        return container.GetInstance<IUserInterfaceActionMenuFactory>();
     }
 
     private static void RegisterActionMenuType(this Container container, Type type)

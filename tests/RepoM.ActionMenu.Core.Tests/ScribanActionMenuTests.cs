@@ -196,7 +196,7 @@ namespace RepoM.ActionMenu.Core.Tests
         public async Task UseFactory()
         {
             // arrange
-            IUserInterfaceActionMenuFactory sut = _container.GetInstance<IUserInterfaceActionMenuFactory>();
+            IUserInterfaceActionMenuFactory sut = Bootstrapper.GetUserInterfaceActionMenu(_container);
 
             // act
             IEnumerable<UserInterfaceRepositoryActionBase> result = await sut.CreateMenuAsync(_repository, "C:\\RepositoryActionsV2.yaml");
@@ -209,7 +209,7 @@ namespace RepoM.ActionMenu.Core.Tests
         public async Task GetTags()
         {
             // arrange
-            IUserInterfaceActionMenuFactory sut = _container.GetInstance<IUserInterfaceActionMenuFactory>();
+            IUserInterfaceActionMenuFactory sut = Bootstrapper.GetUserInterfaceActionMenu(_container);
 
             // act
             IEnumerable<string> result = await sut.GetTagsAsync(_repository, "C:\\RepositoryActionsV2.yaml");

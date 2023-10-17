@@ -26,7 +26,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         IFileSystem fileSystem, 
         ITemplateParser templateParser,
         ITemplateContextRegistration[] plugins,
-        IEnumerable<RepoM.ActionMenu.Interface.YamlModel.IActionToRepositoryActionMapper> mappers,
+        IEnumerable<IActionToRepositoryActionMapper> mappers,
         IActionMenuDeserializer deserializer)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -45,8 +45,6 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
         // process context (vars + methods)
         await context.AddRepositoryContextAsync(actions.Context).ConfigureAwait(false);
-
-        // process tags
 
         // process actions
         return await context.AddActionMenusAsync(actions.ActionMenu).ConfigureAwait(false);
