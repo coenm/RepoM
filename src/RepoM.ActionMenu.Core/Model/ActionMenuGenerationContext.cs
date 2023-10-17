@@ -55,9 +55,9 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         rootScriptObject.Add("env", Env);
         rootScriptObject.SetReadOnly("env", true);
 
-        foreach (var x in _functionsArray)
+        foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
         {
-            x.RegisterFunctionsAuto(rootScriptObject);
+            contextRegistration.RegisterFunctionsAuto(rootScriptObject);
         }
         
         PushGlobal(rootScriptObject);
@@ -90,7 +90,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
             return;
         }
 
-        foreach (var contextAction in reposContext)
+        foreach (IContextAction contextAction in reposContext)
         {
             await RepositoryActionsScriptContext.AddContextActionAsync(contextAction).ConfigureAwait(false);
         }

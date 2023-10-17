@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
 using SimpleInjector;
 
@@ -49,6 +50,9 @@ public class SonarCloudPackage : IPackage
         container.Collection.Append<IMethod, SonarCloudIsFavoriteMethod>(Lifestyle.Singleton);
         container.Register<ISonarCloudFavoriteService, SonarCloudFavoriteService>(Lifestyle.Singleton);
         container.Collection.Append<IModule, SonarCloudModule>(Lifestyle.Singleton);
+
+        // action executor
+        container.Register(typeof(ICommandExecutor<>), new[] { typeof(SonarCloudPackage).Assembly, }, Lifestyle.Singleton);
     }
 
     /// <remarks>This method is used by reflection to generate documentation file</remarks>>

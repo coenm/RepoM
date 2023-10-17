@@ -6,7 +6,7 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
-using RepoM.Core.Plugin.RepositoryActions.Commands;
+using RepoM.Plugin.SonarCloud.RepositoryCommands;
 
 internal class RepositoryActionSonarCloudSetFavoriteV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionSonarCloudSetFavoriteV1>
 {
@@ -27,18 +27,7 @@ internal class RepositoryActionSonarCloudSetFavoriteV1Mapper : ActionToRepositor
 
             yield return new UserInterfaceRepositoryAction(name, repository)
                 {
-                    RepositoryCommand = new DelegateRepositoryCommand((_, _) =>
-                        {
-                            // todo, use command, for now, it is okay
-                            try
-                            { 
-                                _ = _service.SetFavorite(key);
-                            }
-                            catch (Exception)
-                            {
-                                // ignore
-                            }
-                        }),
+                    RepositoryCommand = new SonarCloudSetFavoriteRepositoryCommand(key),
                     ExecutionCausesSynchronizing = false,
                 };
         }
