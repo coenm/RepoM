@@ -1,13 +1,11 @@
 namespace RepoM.ActionMenu.Core.Tests;
 
-using System;
 using System.IO.Abstractions;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Core.PublicApi;
-using RepoM.ActionMenu.Interface.Scriban;
 using SimpleInjector;
 using VerifyXunit;
 using Xunit;
