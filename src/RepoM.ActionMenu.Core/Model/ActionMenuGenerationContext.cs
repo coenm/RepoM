@@ -49,10 +49,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         var rootScriptObject = new RepoMScriptObject();
         
         rootScriptObject.SetValue("file", new FileFunctions(), true);
-
-
-        rootScriptObject.Add("repository", new RepositoryFunctions(Repository));
-        rootScriptObject.SetReadOnly("repository", true);
+        rootScriptObject.SetValue("repository", new RepositoryFunctions(Repository), true);
 
         Env = new EnvSetScriptObject(EnvScriptObject.Create());
         rootScriptObject.Add("env", Env);
@@ -62,8 +59,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         {
             x.RegisterFunctionsAuto(rootScriptObject);
         }
-
-
+        
         PushGlobal(rootScriptObject);
 
         _contextActionMappers = new List<IContextActionProcessor>

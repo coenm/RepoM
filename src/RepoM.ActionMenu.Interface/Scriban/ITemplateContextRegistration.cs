@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Interface.Scriban;
+namespace RepoM.ActionMenu.Interface.Scriban;
 
 public abstract class TemplateContextRegistrationBase : ITemplateContextRegistration
 {
