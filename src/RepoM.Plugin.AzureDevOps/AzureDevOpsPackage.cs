@@ -11,7 +11,6 @@ using RepoM.Plugin.AzureDevOps.ActionProvider;
 using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
-using RepoM.Plugin.AzureDevOps.RepositoryCommands;
 using RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 using SimpleInjector;
 

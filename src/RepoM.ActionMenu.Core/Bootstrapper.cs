@@ -4,6 +4,8 @@ using System;
 using System.Reflection;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
+using RepoM.ActionMenu.Core.PublicApi;
+using RepoM.ActionMenu.Core.Services;
 using RepoM.ActionMenu.Core.Yaml.Serialization;
 using SimpleInjector;
 
@@ -19,6 +21,12 @@ public sealed class Bootstrapper
         }
 
         RegisterPrivateTypes(container);
+        RegisterPublicTypes(container);
+    }
+
+    private static void RegisterPublicTypes(Container container)
+    {
+        container.Register<IUserInterfaceActionMenuFactory, UserInterfaceActionMenuFactory>();
     }
 
     private static void RegisterPrivateTypes(Container container)

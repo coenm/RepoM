@@ -9,12 +9,10 @@ using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.PublicApi;
 using RepoM.ActionMenu.Core.Yaml.Model;
-using RepoM.ActionMenu.Core.Yaml.Serialization;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
-using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 {

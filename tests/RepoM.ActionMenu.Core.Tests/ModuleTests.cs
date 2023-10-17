@@ -1,8 +1,12 @@
 namespace RepoM.ActionMenu.Core.Tests;
 
+using System.IO.Abstractions;
 using FakeItEasy;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
+using RepoM.ActionMenu.Core.PublicApi;
+using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
@@ -29,14 +33,35 @@ public class ModuleTests
         _container.Verify(VerificationOption.VerifyAndDiagnose);
     }
     
+    [Fact]
+    public void GetInstanceOf_IUserInterfaceActionMenuFactory_ShouldResolve()
+    {
+        // arrange
+        RegisterExternals(_container);
+        Bootstrapper.RegisterServices(_container);
+
+        // act
+        IUserInterfaceActionMenuFactory sut = _container.GetInstance<IUserInterfaceActionMenuFactory>();
+
+        // assert
+        sut.Should().NotBeNull();
+    }
+    
     private static void RegisterExternals(Container container)
     {
-        IKeyTypeRegistration<IMenuAction> item = A.Fake<IKeyTypeRegistration<IMenuAction>>();
-        A.CallTo(() => item.Tag).Returns("abc@1");
-        A.CallTo(() => item.ConfigurationType).Returns(typeof(DummyMenuAction));
-        container.Collection.AppendInstance<IKeyTypeRegistration<IMenuAction>>(item);
+        IKeyTypeRegistration<IMenuAction> keyTypeDeserializationItem = A.Fake<IKeyTypeRegistration<IMenuAction>>();
+        A.CallTo(() => keyTypeDeserializationItem.Tag).Returns("abc@1");
+        A.CallTo(() => keyTypeDeserializationItem.ConfigurationType).Returns(typeof(DummyMenuAction));
+        container.Collection.AppendInstance<IKeyTypeRegistration<IMenuAction>>(keyTypeDeserializationItem);
+
+        ITemplateContextRegistration functionRegistrationItem = A.Fake<ITemplateContextRegistration>();
+        container.Collection.AppendInstance<ITemplateContextRegistration>(functionRegistrationItem);
+
+        IActionToRepositoryActionMapper repositoryActionMapper = A.Fake<IActionToRepositoryActionMapper>();
+        container.Collection.AppendInstance<IActionToRepositoryActionMapper>(repositoryActionMapper);
 
         container.RegisterSingleton(A.Dummy<ILogger>);
+        container.RegisterSingleton(A.Dummy<IFileSystem>);
     }
 }
 
