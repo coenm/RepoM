@@ -4,10 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
 /// Action opening a webbrowser with the provided url.
 /// </summary>
+[RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "browser@1";

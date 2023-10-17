@@ -7,6 +7,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using SimpleInjector;
@@ -125,6 +126,21 @@ public sealed class PropertyDefaultTypedValueAttribute<T> : PropertyDefaultValue
 
 public static class ContainerExtensions
 {
+    public static void RegisterActionMenuMapper<T>(this Container container, Lifestyle lifestyle) where T : class, RepoM.ActionMenu.Interface.YamlModel.IActionToRepositoryActionMapper
+    {
+        container.Collection.Append<RepoM.ActionMenu.Interface.YamlModel.IActionToRepositoryActionMapper, T>(lifestyle);
+    }
+
+    public static void RegisterActionMenuType<T>(this Container container) where T : IMenuAction
+    {
+        RegisterDefaultRepositoryActionDeserializerForType1<IMenuAction>(container, typeof(T));
+    }
+
+    public static void RegisterDefaultRepositoryActionDeserializerForType1<T>(this Container container, Type type)
+    {
+        container.Collection.AppendInstance<IKeyTypeRegistration<T>>(new FixedTypeRegistration<T>(type, TypeRepositoryActionAttributeReader.GetValue(type)));
+    }
+
     public static void RegisterDefaultRepositoryActionDeserializerForType<T>(this Container container) where T : RepositoryAction
     {
         RegisterDefaultRepositoryActionDeserializerForType(container, typeof(T));

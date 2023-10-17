@@ -10,6 +10,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// <summary>
 /// Action menu item to create a pull request in Azure Devops.
 /// </summary>
+[RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "azure-devops-create-pr@1"; // changed

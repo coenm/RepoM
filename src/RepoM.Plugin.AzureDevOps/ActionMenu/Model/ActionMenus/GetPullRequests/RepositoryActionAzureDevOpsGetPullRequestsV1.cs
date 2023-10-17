@@ -8,6 +8,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// <summary>
 /// This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.
 /// </summary>
+[RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionAzureDevOpsGetPullRequestsV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "azure-devops-get-prs@1";

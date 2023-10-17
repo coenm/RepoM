@@ -4,10 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
 /// Action to list heidi databases and show action menus for them.
 /// </summary>
+[RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionHeidiDatabasesV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "heidi-databases@1";

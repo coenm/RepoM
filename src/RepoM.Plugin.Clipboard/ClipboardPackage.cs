@@ -25,6 +25,11 @@ public class ClipboardPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
+        // new style
+        container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.ClipboardCopy.RepositoryActionClipboardCopyV1>();
+        container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.ClipboardCopy.RepositoryActionClipboardCopyV1Mapper>(Lifestyle.Singleton);
+
+        // old style
         container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionClipboardCopyV1>();
         container.Collection.Append<IActionToRepositoryActionMapper, ActionClipboardCopyV1Mapper>(Lifestyle.Singleton);
 

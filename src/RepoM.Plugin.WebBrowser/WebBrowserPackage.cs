@@ -65,6 +65,11 @@ public class WebBrowserPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
+        // new style
+        container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.Browser.RepositoryActionBrowserV1>();
+        container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.Browser.RepositoryActionBrowserV1Mapper>(Lifestyle.Singleton);
+
+        // old style
         container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionBrowserV1>();
         container.Collection.Append<IActionToRepositoryActionMapper, ActionBrowserV1Mapper>(Lifestyle.Singleton);
 

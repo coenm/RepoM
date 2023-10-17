@@ -47,6 +47,11 @@ public class HeidiPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
+        // new style
+        container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.HeidiDatabases.RepositoryActionHeidiDatabasesV1>();
+        container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.HeidiDatabases.RepositoryActionHeidiDatabasesV1Mapper>(Lifestyle.Singleton);
+
+        // old style
         container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionHeidiDatabasesV1>();
         container.Collection.Append<IActionToRepositoryActionMapper, ActionHeidiDatabasesV1Mapper>(Lifestyle.Singleton);
 
