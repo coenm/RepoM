@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model.Env;
 using RepoM.ActionMenu.Core.Model.Functions;
-using RepoM.ActionMenu.Core.Yaml.Model;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.EvaluateVariable;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
@@ -33,7 +32,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     private readonly List<IContextActionProcessor> _contextActionMappers;
 
     public ActionMenuGenerationContext(
-        IRepository repository, 
+        IRepository repository, // runtime data, todo
         ITemplateParser templateParser, 
         IFileSystem fileSystem,
         ITemplateContextRegistration[] functionsArray,
@@ -46,25 +45,6 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _repositoryActionMappers = repositoryActionMappers ?? throw new ArgumentNullException(nameof(repositoryActionMappers));
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
-
-        // _repositoryActionMappers = new List<IActionToRepositoryActionMapper>
-        //     {
-        //         new RepositoryActionAssociateFileV1Mapper(),
-        //         new RepositoryActionJustTextV1Mapper(),
-        //         new RepositoryActionFolderV1Mapper(),
-        //         new RepositoryActionBrowseRepositoryV1Mapper(),
-        //         new RepositoryActionCommandV1Mapper(),
-        //         new RepositoryActionForEachV1Mapper(),
-        //         new RepositoryActionSeparatorV1Mapper(),
-        //         new RepositoryActionPinV1Mapper(),
-        //         new RepositoryActionIgnoreV1Mapper(),
-        //
-        //         // git mappers
-        //         new RepositoryActionGitCheckoutV1Mapper(),
-        //         new RepositoryActionGitFetchV1Mapper(),
-        //         new RepositoryActionGitPushV1Mapper(),
-        //         new RepositoryActionGitPullV1Mapper(),
-        //     };
 
         var rootScriptObject = new RepoMScriptObject();
         
@@ -144,7 +124,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public IActionMenuGenerationContext Clone()
     {
-        throw new NotImplementedException("Not a full clone.");
+        throw new NotImplementedException("Not a full clone."); // todo
         var result = new ActionMenuGenerationContext(Repository, _templateParser, FileSystem, _functionsArray, _repositoryActionMappers, _deserializer)
         {
             Env = (EnvSetScriptObject)Env.Clone(true),
@@ -217,13 +197,6 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     public IScope CreateGlobalScope()
     {
         return PushNewContext();
-    }
-
-    internal async Task<Root> LoadAsync(string filename)
-    {
-        var yaml = await FileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-        var actions = _deserializer.DeserializeRoot(yaml);
-        return actions ?? throw new NotImplementedException("Could not deserialize file");
     }
 
     public async Task<IEnumerable<string>> GetTagsAsync(Tags taqs)

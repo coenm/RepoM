@@ -21,7 +21,6 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     private readonly IFileSystem _fileSystem;
     private readonly ITemplateParser _templateParser;
     private readonly ITemplateContextRegistration[] _plugins;
-    private readonly IKeyTypeRegistration<IMenuAction>[] _registrations;
     private readonly IActionToRepositoryActionMapper[] _mappers;
     private readonly string _filename;
     private readonly IActionMenuDeserializer _deserializer;
@@ -37,10 +36,9 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
         _plugins = plugins ?? throw new ArgumentNullException(nameof(plugins));
-        _registrations = registrations.ToArray() ?? throw new ArgumentNullException(nameof(registrations));
         _mappers = mappers.ToArray() ?? throw new ArgumentNullException(nameof(mappers));
         _filename = filename ?? throw new ArgumentNullException(nameof(filename));
-        _deserializer = new ActionMenuDeserializer(_registrations);
+        _deserializer = new ActionMenuDeserializer(registrations);
     }
 
     public async Task<IEnumerable<UserInterfaceRepositoryActionBase>> CreateMenuAsync(IRepository repository)
@@ -48,7 +46,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         var context = new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins, _mappers, _deserializer);
 
         // load yaml
-        Root actions = await context.LoadAsync(_filename).ConfigureAwait(false);
+        Root actions = await LoadAsync(_filename).ConfigureAwait(false);
 
         // process context (vars + methods)
         await context.AddRepositoryContextAsync(actions.Context).ConfigureAwait(false);
@@ -64,7 +62,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         var context = new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins, _mappers, _deserializer);
 
         // load yaml
-        Root actions = await context.LoadAsync(_filename).ConfigureAwait(false);
+        Root actions = await LoadAsync(_filename).ConfigureAwait(false);
 
         if (actions.Tags == null)
         {
@@ -76,5 +74,12 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
         // process tags
         return await context.GetTagsAsync(actions.Tags).ConfigureAwait(false);
+    }
+
+    private async Task<Root> LoadAsync(string filename)
+    {
+        var yaml = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
+        Root? actions = _deserializer.DeserializeRoot(yaml);
+        return actions ?? throw new NotImplementedException("Could not deserialize file");
     }
 }
