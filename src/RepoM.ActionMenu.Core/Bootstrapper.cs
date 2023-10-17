@@ -11,7 +11,7 @@ public sealed class Bootstrapper
 {
     private static readonly Assembly _thisAssembly = typeof(Bootstrapper).Assembly;
 
-    public static void RegisterThings(Container container)
+    public static void RegisterServices(Container container)
     {
         if (container == null)
         {
