@@ -5,13 +5,12 @@ using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 
-[UsedImplicitly] // todo not sure if this should be public or not.
-public class SonarCloudSetFavoriteRepositoryCommandExecutor : ICommandExecutor<SonarCloudSetFavoriteRepositoryCommand>
+[UsedImplicitly]
+internal class SonarCloudSetFavoriteRepositoryCommandExecutor : ICommandExecutor<SonarCloudSetFavoriteRepositoryCommand>
 {
     private readonly ISonarCloudFavoriteService _service;
 
-    // todo not sure if this should be public or not.
-    internal SonarCloudSetFavoriteRepositoryCommandExecutor(ISonarCloudFavoriteService service)
+    public SonarCloudSetFavoriteRepositoryCommandExecutor(ISonarCloudFavoriteService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }

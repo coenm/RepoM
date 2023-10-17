@@ -9,17 +9,14 @@ using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
-using RepoM.Core.Plugin.RepositoryActions.Commands;
-using RepoM.Plugin.AzureDevOps.Internal;
+using RepoM.Plugin.AzureDevOps.RepositoryCommands;
 
 internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionAzureDevOpsCreatePullRequestV1>
 {
-    private readonly IAzureDevOpsPullRequestService _service;
     private readonly ILogger _logger;
 
-    public RepositoryActionAzureDevOpsCreatePullRequestV1Mapper(IAzureDevOpsPullRequestService service, ILogger logger)
+    public RepositoryActionAzureDevOpsCreatePullRequestV1Mapper(ILogger logger)
     {
-        _service = service ?? throw new ArgumentNullException(nameof(service));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -72,19 +69,14 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
         {
             yield return new UserInterfaceRepositoryAction(name, repository)
                 {
-                    RepositoryCommand = new DelegateRepositoryCommand((_, _) =>
-                        {
-                            _service.CreatePullRequestAsync(
-                                repository,
-                                projectId,
-                                action.ReviewerIds,
-                                toBranch,
-                                pullRequestTitle,
-                                draft,
-                                includeWorkItems,
-                                openInBrowser)
-                            .GetAwaiter().GetResult();
-                        }),
+                    RepositoryCommand = new CreatePullRequestRepositoryCommand(
+                        projectId,
+                        action.ReviewerIds,
+                        toBranch,
+                        pullRequestTitle,
+                        draft,
+                        includeWorkItems,
+                        openInBrowser),
                     ExecutionCausesSynchronizing = false,
                 };
         }
@@ -95,24 +87,31 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
 
             yield return new UserInterfaceRepositoryAction(name, repository)
                 {
-                    RepositoryCommand = new DelegateRepositoryCommand((_, _) =>
-                        {
-                            _service.CreatePullRequestWithAutoCompleteAsync(
-                                repository,
-                                projectId,
-                                action.ReviewerIds,
-                                toBranch,
-                                (int)action.AutoComplete.MergeStrategy,
-                                pullRequestTitle,
-                                draft,
-                                includeWorkItems,
-                                openInBrowser,
-                                deleteSourceBranch,
-                                transitionWorkItems)
-                            .GetAwaiter().GetResult();
-                        }),
+                    RepositoryCommand = new CreatePullRequestRepositoryCommand(
+                        projectId,
+                        action.ReviewerIds,
+                        toBranch,
+                        pullRequestTitle,
+                        draft,
+                        includeWorkItems,
+                        openInBrowser,
+                        ConvertMergeStrategy(action.AutoComplete.MergeStrategy),
+                        deleteSourceBranch,
+                        transitionWorkItems),
                     ExecutionCausesSynchronizing = false,
                 };
         }
+    }
+
+    private static CreatePullRequestRepositoryCommand.MergeStrategy ConvertMergeStrategy(MergeStrategyV1 input)
+    {
+        return input switch
+            {
+                MergeStrategyV1.NoFastForward => CreatePullRequestRepositoryCommand.MergeStrategy.NoFastForward,
+                MergeStrategyV1.Squash => CreatePullRequestRepositoryCommand.MergeStrategy.Squash,
+                MergeStrategyV1.Rebase => CreatePullRequestRepositoryCommand.MergeStrategy.Rebase,
+                MergeStrategyV1.RebaseMerge => CreatePullRequestRepositoryCommand.MergeStrategy.RebaseMerge,
+                _ => throw new ArgumentOutOfRangeException(nameof(input), input, null)
+            };
     }
 }

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
-using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Plugin.AzureDevOps.Internal;
@@ -42,6 +41,7 @@ internal class RepositoryActionAzureDevOpsGetPullRequestsV1Mapper : ActionToRepo
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Could not grab pull requests.");
             errorAction = new UserInterfaceRepositoryAction($"An error occurred grabbing pull requests. {e.Message}", repository)
                 {
                     CanExecute = false,
@@ -61,11 +61,7 @@ internal class RepositoryActionAzureDevOpsGetPullRequestsV1Mapper : ActionToRepo
             {
                 yield return new UserInterfaceRepositoryAction(pr.Name, repository)
                     {
-                        RepositoryCommand = new DelegateRepositoryCommand((_, _) =>
-                            {
-                                _logger.LogInformation("PullRequest {Url}", pr.Url);
-                                ProcessHelper.StartProcess(pr.Url, string.Empty);
-                            }),
+                        RepositoryCommand = new BrowseRepositoryCommand(pr.Url),
                     };
             }
 

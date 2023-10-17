@@ -7,7 +7,7 @@ using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 [UsedImplicitly]
-public sealed class RecordStatisticsCommandExecutorDecorator<T> : ICommandExecutor<T> where T : IRepositoryCommand
+internal sealed class RecordStatisticsCommandExecutorDecorator<T> : ICommandExecutor<T> where T : IRepositoryCommand
 {
     private readonly ICommandExecutor<T> _decoratee;
     private readonly IStatisticsService _service;

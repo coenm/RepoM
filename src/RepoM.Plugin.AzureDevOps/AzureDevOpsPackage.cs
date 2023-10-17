@@ -5,11 +5,13 @@ using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Plugin.AzureDevOps.ActionProvider;
 using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
+using RepoM.Plugin.AzureDevOps.RepositoryCommands;
 using RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 using SimpleInjector;
 
@@ -57,6 +59,11 @@ public class AzureDevOpsPackage : IPackage
 
         container.Collection.Append<IModule, AzureDevOpsModule>(Lifestyle.Singleton);
         container.Collection.Append<IQueryMatcher>(() => new HasPullRequestsMatcher(container.GetInstance<IAzureDevOpsPullRequestService>(), true), Lifestyle.Singleton);
+
+        // action executor
+        container.Register(typeof(ICommandExecutor<>), new[] { typeof(AzureDevOpsPackage).Assembly, }, Lifestyle.Singleton);
+
+
     }
 
     /// <remarks>This method is used by reflection to generate documentation file</remarks>>
