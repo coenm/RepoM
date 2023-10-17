@@ -6,10 +6,6 @@ namespace RepoM.ActionMenu.Core.Tests
     using System.Text;
     using System.Threading.Tasks;
     using RepoM.ActionMenu.Core.PublicApi;
-    using RepoM.ActionMenu.Core.Yaml.Model;
-    using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
-    using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
-    using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
     using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.AssociateFile;
     using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.BrowseRepository;
     using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
@@ -27,7 +23,6 @@ namespace RepoM.ActionMenu.Core.Tests
     using RepoM.ActionMenu.Interface.Scriban;
     using RepoM.ActionMenu.Interface.UserInterface;
     using RepoM.ActionMenu.Interface.YamlModel;
-    using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
     using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
     using RepoM.Core.Plugin.Repository;
     using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
@@ -35,13 +30,11 @@ namespace RepoM.ActionMenu.Core.Tests
     using Xunit;
 
     [UsesVerify]
-    public class BooleanWithoutXTests
+    public class ScribanActionMenuTests
     {
         private readonly IRepository _repository = new DummyRepository();
         private readonly Factory _sut;
-        private readonly MockFileSystem _fileSystem;
-        private List<IKeyTypeRegistration<IMenuAction>> _registrations;
-        private List<IActionToRepositoryActionMapper> _mappers;
+        private readonly List<IKeyTypeRegistration<IMenuAction>> _registrations;
 
         private const string FILE1_ENV =
             """
@@ -200,7 +193,7 @@ namespace RepoM.ActionMenu.Core.Tests
                 name: CheckOut!
             """;
 
-        public BooleanWithoutXTests()
+        public ScribanActionMenuTests()
         {
             _registrations = new List<IKeyTypeRegistration<IMenuAction>>
                 {
@@ -219,7 +212,7 @@ namespace RepoM.ActionMenu.Core.Tests
                     ContainerExtensions.CreateRegistrationObject<RepositoryActionSeparatorV1>(),
                 };
 
-            _mappers = new List<IActionToRepositoryActionMapper>
+            List<IActionToRepositoryActionMapper> mappers = new()
                 {
                     new RepositoryActionAssociateFileV1Mapper(),
                     new RepositoryActionBrowseRepositoryV1Mapper(),
@@ -236,63 +229,54 @@ namespace RepoM.ActionMenu.Core.Tests
                     new RepositoryActionSeparatorV1Mapper(),
                 };
 
-            _fileSystem = new MockFileSystem(
+            var fileSystem = new MockFileSystem(
                 new Dictionary<string, MockFileData>
                     {
                         { "C:\\RepositoryActionsV2.yaml", new MockFileData(YAML, Encoding.UTF8) },
                         { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
                         { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
                         { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
-                });
+                    });
 
-            _sut = new Factory(_fileSystem, Array.Empty<ITemplateContextRegistration>(), _registrations, _mappers);
+            _sut = new Factory(fileSystem, Array.Empty<ITemplateContextRegistration>(), _registrations, mappers);
         }
 
         [Fact]
         public async Task UseFactory()
         {
+            // arrange
             IUserInterfaceActionMenuFactory factory = _sut.Create();
 
+            // act
             IEnumerable<UserInterfaceRepositoryActionBase> result = await factory.CreateMenuAsync(_repository, "C:\\RepositoryActionsV2.yaml");
-            
+
+            // assert
             await Verifier.Verify(result);
         }
 
         [Fact]
         public async Task GetTags()
         {
+            // arrange
             IUserInterfaceActionMenuFactory factory = _sut.Create();
 
+            // act
             IEnumerable<string> result = await factory.GetTagsAsync(_repository, "C:\\RepositoryActionsV2.yaml");
 
+            // assert
             await Verifier.Verify(result);
         }
         
         [Fact]
         public async Task Serialize()
         {
-            var root = new Root
-            {
-                Context = new Context
-                {
-                    ContextActionSetVariableV1.Create("name", "coenm"),
-                    new ContextActionExecuteScriptV1
-                    {
-                        Content = @"this is text
-some more text",
-                    },
-                    new ContextActionRenderVariableV1
-                    {
-                        Name = "render",
-                        Value = "text {{ name }} text2",
-                    },
-                },
-            };
-
+            // arrange
             var deserializer = new ActionMenuDeserializer(_registrations);
-            var result2 = deserializer.DeserializeRoot(YAML);
-            var result = deserializer.Serialize(result2);
 
+            // act
+            var result = deserializer.Serialize(deserializer.DeserializeRoot(YAML));
+
+            // assert
             await Verifier.Verify(result);
         }
     }
