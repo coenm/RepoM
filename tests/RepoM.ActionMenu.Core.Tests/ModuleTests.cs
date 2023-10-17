@@ -1,5 +1,6 @@
 namespace RepoM.ActionMenu.Core.Tests;
 
+using System;
 using System.IO.Abstractions;
 using FakeItEasy;
 using FluentAssertions;
@@ -7,9 +8,6 @@ using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Core.PublicApi;
 using RepoM.ActionMenu.Interface.Scriban;
-using RepoM.ActionMenu.Interface.YamlModel;
-using RepoM.ActionMenu.Interface.YamlModel.Templating;
-using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using SimpleInjector;
 using VerifyXunit;
 using Xunit;
@@ -49,25 +47,7 @@ public class ModuleTests
     
     private static void RegisterExternals(Container container)
     {
-        IKeyTypeRegistration<IMenuAction> keyTypeDeserializationItem = A.Fake<IKeyTypeRegistration<IMenuAction>>();
-        A.CallTo(() => keyTypeDeserializationItem.Tag).Returns("abc@1");
-        A.CallTo(() => keyTypeDeserializationItem.ConfigurationType).Returns(typeof(DummyMenuAction));
-        container.Collection.AppendInstance<IKeyTypeRegistration<IMenuAction>>(keyTypeDeserializationItem);
-
-        ITemplateContextRegistration functionRegistrationItem = A.Fake<ITemplateContextRegistration>();
-        container.Collection.AppendInstance<ITemplateContextRegistration>(functionRegistrationItem);
-
-        IActionToRepositoryActionMapper repositoryActionMapper = A.Fake<IActionToRepositoryActionMapper>();
-        container.Collection.AppendInstance<IActionToRepositoryActionMapper>(repositoryActionMapper);
-
         container.RegisterSingleton(A.Dummy<ILogger>);
         container.RegisterSingleton(A.Dummy<IFileSystem>);
     }
-}
-
-file class DummyMenuAction : IMenuAction
-{
-    public string Type { get; } = "abc@1";
-
-    public Predicate Active { get; } = true;
 }
