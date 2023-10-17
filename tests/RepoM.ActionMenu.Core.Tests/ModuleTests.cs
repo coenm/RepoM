@@ -5,7 +5,6 @@ using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
-using RepoM.ActionMenu.Core.PublicApi;
 using SimpleInjector;
 using VerifyXunit;
 using Xunit;

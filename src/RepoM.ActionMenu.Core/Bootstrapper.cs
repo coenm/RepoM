@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
-using RepoM.ActionMenu.Core.PublicApi;
 using RepoM.ActionMenu.Core.Services;
 using RepoM.ActionMenu.Core.Yaml.Serialization;
 using RepoM.ActionMenu.Interface.Scriban;
@@ -92,7 +91,7 @@ public static class Bootstrapper
 
 
 [DebuggerDisplay($"{{{nameof(Tag)}}}")]
-internal sealed class FixedTypeRegistration<T> : IKeyTypeRegistration<T>
+file sealed class FixedTypeRegistration<T> : IKeyTypeRegistration<T>
 {
     public FixedTypeRegistration(Type configurationType, string tag)
     {

@@ -5,8 +5,8 @@ namespace RepoM.ActionMenu.Core.Tests
     using System.IO.Abstractions.TestingHelpers;
     using System.Text;
     using System.Threading.Tasks;
+    using RepoM.ActionMenu.Core;
     using RepoM.ActionMenu.Core.Model;
-    using RepoM.ActionMenu.Core.PublicApi;
     using RepoM.ActionMenu.Interface.UserInterface;
     using RepoM.Core.Plugin.Repository;
     using SimpleInjector;
