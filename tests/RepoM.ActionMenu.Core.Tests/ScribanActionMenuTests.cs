@@ -193,6 +193,7 @@ namespace RepoM.ActionMenu.Core.Tests
                         { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
                     });
             _container.RegisterInstance<IFileSystem>(fileSystem);
+            _container.Options.EnableAutoVerification = false;
         }
 
         [Fact]

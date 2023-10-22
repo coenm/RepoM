@@ -16,23 +16,14 @@ internal class RepositoryActionForEachV1Mapper : ActionToRepositoryActionMapperB
             yield break;
         }
 
-        var enumerable = await action.Enumerable.EvaluateAsync(context);
-        if (enumerable is null)
+        var result = await action.Enumerable.EvaluateAsync(context);
+
+        if (result is not IEnumerable enumerable)
         {
             yield break;
         }
 
-        if (enumerable is not IList list)
-        {
-            yield break;
-        }
-
-        if (list.Count == 0)
-        {
-            yield break;
-        }
-        
-        foreach (var item in list)
+        foreach (var item in enumerable)
         {
             if (item is null)
             {
