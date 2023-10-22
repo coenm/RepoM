@@ -9,8 +9,4 @@
     <PackageReference Include="SimpleInjector" Version="5.4.1" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="JetBrains.Annotations" Version="2023.2.0" />
-  </ItemGroup>
 </Project>
