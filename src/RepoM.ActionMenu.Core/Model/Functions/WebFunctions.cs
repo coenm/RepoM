@@ -12,7 +12,7 @@ namespace RepoM.ActionMenu.Core.Model.Functions
     using Scriban.Runtime;
 
     /// <summary>
-    /// Module that provides Web functions (e.g `url_encode`, `json`, `wget`...)
+    /// Module that provides Web functions (e.g `url_encode`, `json` ...)
     /// </summary>
     [ActionMenuModule("web")]
     internal sealed partial class WebFunctions : ScribanModuleWithFunctions
