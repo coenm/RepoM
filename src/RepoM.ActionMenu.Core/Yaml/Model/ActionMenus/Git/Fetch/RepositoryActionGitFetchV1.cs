@@ -16,13 +16,13 @@ internal sealed class RepositoryActionGitFetchV1 : IMenuAction, IOptionalName
         set => _ = value;
     }
 
-    [Render("Fetch")]
-    public RenderString Name { get; init; } = new ScribanRenderString();
+    [Text("Fetch")]
+    public Text Name { get; init; } = new ScribanText();
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()

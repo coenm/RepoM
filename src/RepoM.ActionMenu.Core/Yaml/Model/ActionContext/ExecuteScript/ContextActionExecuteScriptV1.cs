@@ -48,14 +48,14 @@ public sealed class ContextActionExecuteScriptV1 : IContextAction, IEnabled
     /// Script content.
     /// </summary>
     [Script]
-    public ScriptContent? Content { get; init; } = new ScribanScriptContent(); // todo nullable ?
+    public Script? Content { get; init; } = new ScribanScript(); // todo nullable ?
 
     //// <inheritdoc cref="IEnabled.Enabled"/>
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
-    public Predicate? Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
+    [Predicate(true)]
+    public Predicate Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()
     {

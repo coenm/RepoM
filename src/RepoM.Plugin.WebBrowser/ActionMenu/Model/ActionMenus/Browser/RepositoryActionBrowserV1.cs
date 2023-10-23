@@ -20,29 +20,29 @@ internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
         set => _ = value;
     }
 
-    [Render]
-    public RenderString Name { get; init; } = new RenderString(); // todo nullable?
+    [Text]
+    public Text Name { get; init; } = new Text(); // todo nullable?
 
     /// <summary>
     /// The url to browse to.
     /// </summary>
     [Required]
-    [Render]
-    public RenderString Url { get; init; } = new RenderString(); // todo nullable?
+    [Text]
+    public Text Url { get; init; } = new Text(); // todo nullable?
 
     /// <summary>
     /// profile name used to select browser and browser profile
     /// </summary>
     [Required]
-    [Render]
-    public RenderString Profile { get; set; } = new RenderString(); // todo nullable?
+    [Text]
+    public Text Profile { get; set; } = new Text(); // todo nullable?
 
     public Context? Context { get; set; }
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new Predicate(); // todo nullable?
 
     public override string ToString()

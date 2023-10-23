@@ -1,7 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Command;
 
 using System.Collections.Generic;
-using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -12,9 +11,9 @@ internal class RepositoryActionCommandV1Mapper : ActionToRepositoryActionMapperB
 {
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionCommandV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
-        var name = await context.RenderStringAsync(action.Name).ConfigureAwait(false);
-        var command = await context.RenderNullableString(action.Command).ConfigureAwait(false);
-        var arguments = await context.RenderNullableString(action.Arguments).ConfigureAwait(false);
+        var name = await action.Name.RenderAsync(context).ConfigureAwait(false);
+        var command = await action.Command.RenderAsync(context).ConfigureAwait(false);
+        var arguments = await action.Arguments.RenderAsync(context).ConfigureAwait(false);
 
         yield return new UserInterfaceRepositoryAction(name, repository)
             {

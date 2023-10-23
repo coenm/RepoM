@@ -44,7 +44,7 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
 
         if (result == null)
         {
-            value = new object();
+            value = null!;
             return false;
         }
 

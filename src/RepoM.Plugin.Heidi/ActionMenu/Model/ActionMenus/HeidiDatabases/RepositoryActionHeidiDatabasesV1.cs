@@ -22,29 +22,29 @@ internal sealed class RepositoryActionHeidiDatabasesV1 : IMenuAction, IContext
 
     /// <summary>
     /// </summary>
-    [Render]
-    public RenderString Name { get; init; } = new RenderString(); // todo nullable?
+    [Text]
+    public Text Name { get; init; } = new Text(); // todo nullable?
 
     /// <summary>
     /// Repository key.
     /// If not provided, the repository `Remote.Origin.Name` is used as selector.
     /// </summary>
-    [Render]
-    public RenderString Key { get; init; } = new RenderString(); // todo nullable?
+    [Text]
+    public Text Key { get; init; } = new Text(); // todo nullable?
 
     /// <summary>
     /// The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used.
     /// </summary>
     [Required]
-    [Render]
-    public RenderString Executable { get; init; } = new RenderString(); // todo nullable?
+    [Text]
+    public Text Executable { get; init; } = new Text(); // todo nullable?
 
     public Context? Context { get; set; }
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new Predicate(); // todo nullable?
 
     public override string ToString()

@@ -16,13 +16,13 @@ internal sealed class RepositoryActionGitPushV1 : IMenuAction, IOptionalName
         set => _ = value;
     }
 
-    [Render("Push")]
-    public RenderString Name { get; init; } = new ScribanRenderString();
+    [Text("Push")]
+    public Text Name { get; init; } = new ScribanText();
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()

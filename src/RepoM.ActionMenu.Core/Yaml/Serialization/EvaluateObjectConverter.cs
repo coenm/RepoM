@@ -19,7 +19,7 @@ internal class EvaluateObjectConverter : IYamlTypeConverter
 
     public bool Accepts(Type type)
     {
-        return typeof(EvaluateObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo());
+        return typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo());
     }
 
     public object ReadYaml(IParser parser, Type type)
@@ -27,14 +27,14 @@ internal class EvaluateObjectConverter : IYamlTypeConverter
         var value = ((Scalar)parser.Current).Value;
         parser.MoveNext();
 
-        EvaluateObject? obj;
+        EvaluateObjectBase? obj;
         if (_factory.TryGetValue(type, out Func<object>? factoryMethod))
         {
-            obj = (EvaluateObject)factoryMethod.Invoke();
+            obj = (EvaluateObjectBase)factoryMethod.Invoke();
         }
         else
         {
-            obj = (EvaluateObject)Activator.CreateInstance(type)!;
+            obj = (EvaluateObjectBase)Activator.CreateInstance(type)!;
         }
 
         obj!.Value = value;
@@ -43,7 +43,7 @@ internal class EvaluateObjectConverter : IYamlTypeConverter
 
     public void WriteYaml(IEmitter emitter, object? value, Type type)
     {
-        var stringValue = (value as EvaluateObject)?.Value;
+        var stringValue = (value as EvaluateObjectBase)?.Value;
         emitter.Emit(string.IsNullOrEmpty(stringValue)
             ? new Scalar(AnchorName.Empty, TagName.Empty, string.Empty)
             : new Scalar(stringValue!));

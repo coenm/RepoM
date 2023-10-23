@@ -72,13 +72,13 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
                     new()
                         {
                             Host = "h1",
-                            DatabaseNames = ["x1", "x2",],
+                            DatabaseNames = new [] {"x1", "x2", },
                             Key = "k1",
                         },
                     new()
                         {
                             Host = "h2",
-                            DatabaseNames = ["x21", "x22",],
+                            DatabaseNames = new [] {"x21", "x22", },
                             Key = "k2",
                         },
                 };

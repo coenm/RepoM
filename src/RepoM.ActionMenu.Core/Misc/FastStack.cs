@@ -12,7 +12,6 @@ internal struct FastStack<T>
 {
     private const int DEFAULT_CAPACITY = 4;
     private T[] _array; // Storage for stack elements.
-    private int _size; // Number of items in the stack.
 
     // Create a stack with a specific initial capacity.  The initial capacity
     // must be a non-negative number.
@@ -24,10 +23,13 @@ internal struct FastStack<T>
         }
 
         _array = new T[capacity];
-        _size = 0;
+        Count = 0;
     }
 
-    public int Count => _size;
+    /// <summary>
+    /// Number of items in the stack
+    /// </summary>
+    public int Count { get; private set; }
 
     public T[] Items => _array;
 
@@ -35,19 +37,19 @@ internal struct FastStack<T>
     public void Clear()
     {
         // Don't need to doc this but we clear the elements so that the gc can reclaim the references.
-        Array.Clear(_array, 0, _size);
-        _size = 0;
+        Array.Clear(_array, 0, Count);
+        Count = 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Peek()
     {
-        if (_size == 0)
+        if (Count == 0)
         {
             ThrowForEmptyStack();
         }
 
-        return _array[_size - 1];
+        return _array[Count - 1];
     }
 
     // Pops an item from the top of the stack. If the stack is empty, Pop
@@ -55,13 +57,13 @@ internal struct FastStack<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Pop()
     {
-        if (_size == 0)
+        if (Count == 0)
         {
             ThrowForEmptyStack();
         }
 
-        T item = _array[--_size];
-        _array[_size] = default(T); // Free memory quicker.
+        T item = _array[--Count];
+        _array[Count] = default(T); // Free memory quicker.
         return item;
     }
 
@@ -69,16 +71,16 @@ internal struct FastStack<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Push(T item)
     {
-        if (_size == _array.Length)
+        if (Count == _array.Length)
         {
             Array.Resize(ref _array, (_array.Length == 0) ? DEFAULT_CAPACITY : 2 * _array.Length);
         }
-        _array[_size++] = item;
+        _array[Count++] = item;
     }
 
     private void ThrowForEmptyStack()
     {
-        Debug.Assert(_size == 0);
+        Debug.Assert(Count == 0);
         throw new InvalidOperationException("Stack is empty");
     }
 }

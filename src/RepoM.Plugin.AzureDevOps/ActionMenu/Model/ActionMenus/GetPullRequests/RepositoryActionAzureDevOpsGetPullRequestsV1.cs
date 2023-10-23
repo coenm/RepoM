@@ -22,21 +22,21 @@ internal sealed class RepositoryActionAzureDevOpsGetPullRequestsV1 : IMenuAction
     /// <summary>
     /// The azure devops project id.
     /// </summary>
-    [Render]
-    public RenderString ProjectId { get; set; } = new RenderString(); // nullable
+    [Text]
+    public Text ProjectId { get; set; } = new Text(); // nullable
 
     /// <summary>
     /// The repository Id. If not provided, the repository id is located using the remote url.
     /// </summary>
     [EvaluatedProperty]
-    [Render]
-    public RenderString RepositoryId { get; set; } = new();
+    [Text]
+    public Text RepositoryId { get; set; } = new();
 
     /// <summary>
     /// When no pull requests are available, this property is used to determine if no or a message item is showed.
     /// </summary>
     [EvaluatedProperty]
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate ShowWhenEmpty { get; set; } = true;
     
     public Context? Context { get; set; }
@@ -44,7 +44,7 @@ internal sealed class RepositoryActionAzureDevOpsGetPullRequestsV1 : IMenuAction
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = true; // todo nullable?
     
     public override string ToString()

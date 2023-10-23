@@ -3,18 +3,18 @@ namespace RepoM.ActionMenu.Interface.YamlModel.Templating;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 
-public class RenderString : EvaluateObject
+public class Text : EvaluateObjectBase
 {
     public string DefaultValue { get; set; } = string.Empty;
 
-    public static implicit operator RenderString(string content)
+    public static implicit operator Text(string content)
     {
-        return new RenderString { Value = content, };
+        return new Text { Value = content, };
     }
 
     public override string ToString()
     {
-        return $"RenderString {base.ToString()} : {DefaultValue}";
+        return $"{nameof(Text)} {base.ToString()} : {DefaultValue}";
     }
 
     public virtual async Task<string> RenderAsync(ITemplateEvaluator instance)

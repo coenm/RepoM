@@ -1,0 +1,83 @@
+﻿tags:
+- tag: github-conditional
+  when: safe_path_contains "Projects/Github"
+action-menu:
+- type: just-text@1
+  text: Non existing env var {{ env.abcdefCOEN }}
+  active: true
+  enabled: 
+  context: 
+- type: just-text@1
+  text: '{{  remotes_contain("github.com") }}  {{  remote_name_origin }}'
+  active: is_github_repository
+  enabled: 
+  context: 
+- type: just-text@1
+  text: '{{ repository.safe_path }} XX {{ safe_path_contains "C:/Projects" }}'
+  active: safe_path_contains "C:/Projects/"
+  enabled: 
+  context: 
+context:
+- type: evaluate-script@1
+  content: >-
+    func remotes_contain_inner(remotes, url_part)
+      urls = remotes | array.map "url";
+      filtered = array.filter(urls, do
+        ret string.contains($0, url_part);
+      end);
+      ret array.size(filtered) > 0;
+    end
+
+
+    func remotes_contain(url_part)
+      ret remotes_contain_inner(repository.remotes, url_part)
+    end
+
+
+    func get_remote_origin()
+      remotes = repository.remotes;
+      filtered = array.filter(remotes, do 
+        remote = $0;
+        ret remote.key == "origin"
+      end)
+      ret array.first(filtered);
+    end
+
+
+    func get_remote_origin_name()
+      remote = get_remote_origin();
+      ret remote.name;
+    end
+
+
+    func safe_path_contains(path)
+      ret repository.safe_path | string.contains path
+    end    
+
+
+    remote_name_origin = get_remote_origin_name();
+
+    is_bdo_nl_repository = remotes_contain("BDO-NL");
+
+    is_github_repository = remotes_contain("github.com");
+  enabled: ''
+- type: set-variable@1
+  value: C:\Projects\Bdo\git\
+  enabled: ''
+  name: BdoRepoRoot
+- type: set-variable@1
+  value: https://dev.azure.com/tfs-bdonl/BDO-NL/
+  enabled: ''
+  name: BdoDevOpsRootUrl
+- type: set-variable@1
+  value: C:\\Projects\\Private\\git\\SimpleTestRunner\\src\\TestRunner.Application\\bin\\Release\\net6.0-windows\\TestRunner.Application.exe
+  enabled: ''
+  name: MonitoringExe
+- type: set-variable@1
+  value: C:\\StandAloneProgramFiles\\HeidiSQL_12.3_64_Portable\\heidisql.exe
+  enabled: ''
+  name: HeidiSqlExe
+- type: set-variable@1
+  value: C:\\Users\\Munckhof CJJ\\OneDrive - BDO\\BDO\\RepoM\\
+  enabled: ''
+  name: RootPathRepoM

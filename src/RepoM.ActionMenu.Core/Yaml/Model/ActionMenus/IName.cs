@@ -4,5 +4,5 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 internal interface IName
 {
-    RenderString Name { get; }
+    Text Name { get; }
 }

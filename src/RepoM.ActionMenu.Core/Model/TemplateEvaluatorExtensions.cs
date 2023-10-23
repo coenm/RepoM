@@ -7,9 +7,9 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 internal static class TemplateEvaluatorExtensions
 {
-    public static Task<string> RenderStringAsync(this ITemplateEvaluator instance, RenderString renderString)
+    public static Task<string> RenderStringAsync(this ITemplateEvaluator instance, Text text)
     {
-        return renderString.RenderAsync(instance);
+        return text.RenderAsync(instance);
     }
 
     public static Task<string> TranslateAsync(this ITemplateEvaluator instance, string text)

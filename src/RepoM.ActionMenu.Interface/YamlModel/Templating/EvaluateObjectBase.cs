@@ -1,8 +1,8 @@
-﻿namespace RepoM.ActionMenu.Interface.YamlModel.Templating;
+namespace RepoM.ActionMenu.Interface.YamlModel.Templating;
 
-public abstract class EvaluateObject
+public abstract class EvaluateObjectBase
 {
-    public string Value { get; set; }
+    public string Value { get; set; } = string.Empty;
 
     public override string ToString()
     {

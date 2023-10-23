@@ -21,13 +21,13 @@ internal class AutoCompleteOptionsV1
     /// Boolean specifying if the source branche should be deleted afer completion.
     /// </summary>
     [Required]
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate DeleteSourceBranch { get; set; } = true;
 
     /// <summary>
     /// Boolean specifying if related workitems should be transitioned to the next state.
     /// </summary>
     [Required]
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate TransitionWorkItems { get; set; } = true;
 }

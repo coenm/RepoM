@@ -3,9 +3,9 @@ namespace RepoM.ActionMenu.Interface.YamlModel.Templating;
 using System;
 
 [AttributeUsage(AttributeTargets.Property)]
-public sealed class EvaluateToBooleanAttribute : EvaluateToAttribute
+public sealed class PredicateAttribute : EvaluateToAttribute
 {
-    public EvaluateToBooleanAttribute(bool defaultValue)
+    public PredicateAttribute(bool defaultValue)
     {
         DefaultValue = defaultValue;
     }

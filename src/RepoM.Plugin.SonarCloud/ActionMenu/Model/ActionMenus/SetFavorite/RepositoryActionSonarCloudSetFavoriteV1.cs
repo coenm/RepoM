@@ -20,22 +20,22 @@ internal sealed class RepositoryActionSonarCloudSetFavoriteV1 : IMenuAction, ICo
         set => _ = value;
     }
 
-    [Render]
-    public RenderString Name { get; init; } = new RenderString(); // todo nullable?
+    [Text]
+    public Text Name { get; init; } = new Text(); // todo nullable?
 
     /// <summary>
     /// The SonarCloud project key.
     /// </summary>
     [Required]
-    [Render]
-    public RenderString Project { get; init; } = new RenderString(); // todo nullable?
+    [Text]
+    public Text Project { get; init; } = new Text(); // todo nullable?
 
     public Context? Context { get; set; }
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new Predicate(); // todo nullable?
 
     public override string ToString()

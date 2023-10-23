@@ -40,4 +40,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ScribanActionMenuTests - Copy.Serialize.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>%(ParentFile).cs</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>

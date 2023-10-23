@@ -1,0 +1,80 @@
+﻿[
+  {
+    Name: Non existing env var ,
+    RepositoryCommand: {},
+    Repository: {
+      SafePath: C:/Projects/Github/RepoM/RepoM.git,
+      Remotes: [
+        {
+          Key: origin,
+          Name: RepoM,
+          Url: https://github.com/coenm/RepoM.git
+        },
+        {
+          Key: dummy,
+          Name: RepoZ,
+          Url: https://github.com/coenm/RepoZ
+        }
+      ],
+      HasUnpushedChanges: false,
+      Name: dummy name,
+      Path: dummy path,
+      Location: dummy location,
+      CurrentBranch: dummy current branch
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: true  RepoM,
+    RepositoryCommand: {},
+    Repository: {
+      SafePath: C:/Projects/Github/RepoM/RepoM.git,
+      Remotes: [
+        {
+          Key: origin,
+          Name: RepoM,
+          Url: https://github.com/coenm/RepoM.git
+        },
+        {
+          Key: dummy,
+          Name: RepoZ,
+          Url: https://github.com/coenm/RepoZ
+        }
+      ],
+      HasUnpushedChanges: false,
+      Name: dummy name,
+      Path: dummy path,
+      Location: dummy location,
+      CurrentBranch: dummy current branch
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: C:/Projects/Github/RepoM/RepoM.git XX true,
+    RepositoryCommand: {},
+    Repository: {
+      SafePath: C:/Projects/Github/RepoM/RepoM.git,
+      Remotes: [
+        {
+          Key: origin,
+          Name: RepoM,
+          Url: https://github.com/coenm/RepoM.git
+        },
+        {
+          Key: dummy,
+          Name: RepoZ,
+          Url: https://github.com/coenm/RepoZ
+        }
+      ],
+      HasUnpushedChanges: false,
+      Name: dummy name,
+      Path: dummy path,
+      Location: dummy location,
+      CurrentBranch: dummy current branch
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

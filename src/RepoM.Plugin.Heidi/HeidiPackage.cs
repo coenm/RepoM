@@ -11,6 +11,8 @@ using SimpleInjector;
 using RepoM.Plugin.Heidi.VariableProviders;
 using RepoM.Plugin.Heidi.ActionProvider;
 using RepoM.Plugin.Heidi.PersistentConfiguration;
+using RepoM.ActionMenu.Interface.Scriban;
+using RepoM.Plugin.Heidi.ActionMenu.Context;
 
 [UsedImplicitly]
 public class HeidiPackage : IPackage
@@ -42,6 +44,8 @@ public class HeidiPackage : IPackage
     {
         RegisterPluginHooks(container);
         RegisterInternals(container);
+
+        container.Collection.Append<ITemplateContextRegistration, HeidiDbVariables>(Lifestyle.Transient);
     }
 
     private static void RegisterPluginHooks(Container container)
@@ -74,6 +78,8 @@ public class HeidiPackage : IPackage
         container.Register<IHeidiPortableConfigReader, HeidiPortableConfigReader>(Lifestyle.Singleton);
         container.RegisterInstance<IHeidiRepositoryExtractor>(ExtractRepositoryFromHeidi.Instance);
         container.RegisterInstance<IHeidiPasswordDecoder>(HeidiPasswordDecoder.Instance);
+
+        container.Register<IDatabaseConfigurationService, DatabaseConfigurationService>(Lifestyle.Singleton);
     }
 
     /// <remarks>This method is used by reflection to generate documentation file</remarks>>

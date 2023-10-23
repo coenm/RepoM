@@ -21,13 +21,13 @@ internal sealed class RepositoryActionPinV1 : IMenuAction, IContext, IOptionalNa
         set => _ = value;
     }
 
-    [Render("Pin/UnPin")]
-    public RenderString Name { get; init; } = new ScribanRenderString();
+    [Text("Pin/UnPin")]
+    public Text Name { get; init; } = new ScribanText();
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public Context? Context { get; init; }

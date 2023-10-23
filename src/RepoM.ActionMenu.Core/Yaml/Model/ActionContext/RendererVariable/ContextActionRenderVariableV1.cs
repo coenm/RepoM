@@ -27,15 +27,15 @@ public class ContextActionRenderVariableV1 : NamedContextAction, IContextAction,
     /// <summary>
     /// Value of the variable.
     /// </summary>
-    [Render]
-    public RenderString Value { get; init; } = new ScribanRenderString { Value = string.Empty, };
+    [Text]
+    public Text Value { get; init; } = new ScribanText { Value = string.Empty, };
 
     //// <inheritdoc cref="IEnabled.Enabled"/>
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
-    public Predicate? Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
+    [Predicate(true)]
+    public Predicate Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()
     {

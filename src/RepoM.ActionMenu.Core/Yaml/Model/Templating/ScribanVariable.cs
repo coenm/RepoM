@@ -6,9 +6,9 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using Scriban;
 
-internal class ScribanEvaluateAnyObject : EvaluateAnyObject, ICreateTemplate
+internal class ScribanVariable : Variable, ICreateTemplate
 {
-    private Template? _template = null;
+    private Template? _template;
 
     void ICreateTemplate.CreateTemplate(ITemplateParser templateParser)
     {

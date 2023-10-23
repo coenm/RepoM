@@ -7,6 +7,6 @@ public interface IEnabled
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
-    Predicate? Enabled { get; } // nullable?
+    [Predicate(true)]
+    Predicate Enabled { get; } // nullable?
 }

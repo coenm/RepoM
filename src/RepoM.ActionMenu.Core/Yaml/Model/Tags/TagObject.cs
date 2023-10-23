@@ -10,7 +10,7 @@ internal class TagObject : ITag
     public string Tag { get; set; } = string.Empty;
 
     /// <inheritdoc cref="ITag.When"/>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     [DefaultValue(true)] // todo
     public Predicate When { get; set; } = new Predicate();
 }

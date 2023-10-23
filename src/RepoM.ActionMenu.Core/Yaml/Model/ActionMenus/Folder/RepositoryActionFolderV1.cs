@@ -22,18 +22,18 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
 
     public ActionMenu? Actions { get; init; }
 
-    [Render]
-    public RenderString Name { get; init; } = new();
+    [Text]
+    public Text Name { get; init; } = new();
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public Context? Context { get; init; }
 
-    [EvaluateToBoolean(false)]
+    [Predicate(false)]
     public Predicate IsDeferred { get; init; } = new ScribanPredicate();
 
     public override string ToString()

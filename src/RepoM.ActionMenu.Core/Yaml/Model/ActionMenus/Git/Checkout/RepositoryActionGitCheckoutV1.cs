@@ -16,13 +16,13 @@ internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IOptionalName
         set => _ = value;
     }
 
-    [Render("Checkout")]
-    public RenderString Name { get; init; } = new ScribanRenderString();
+    [Text("Checkout")]
+    public Text Name { get; init; } = new ScribanText();
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()

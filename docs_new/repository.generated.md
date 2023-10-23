@@ -41,6 +41,16 @@ Gets the local branches
 
 All local branches.
 
+## location
+
+`location`
+
+Gets the Location of the repository.
+
+### Returns
+
+The path of the repository.
+
 ## name
 
 `name`
@@ -75,6 +85,16 @@ Gets the path of the repository.
 ### Returns
 
 The path of the repository.
+
+## remotes
+
+`remotes`
+
+Gets the remotes.
+
+### Returns
+
+Remotes.
 
 ## safe_path
 

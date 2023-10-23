@@ -17,25 +17,27 @@ internal sealed class RepositoryActionCommandV1 : IMenuAction, IName
         set => _ = value;
     }
 
-    [Render]
-    public RenderString Name { get; init; } = new ScribanRenderString();
+    [Text]
+    public Text Name { get; init; } = new ScribanText();
 
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     /// <summary>
     /// The command to execute.
     /// </summary>
     [Required]
-    public string? Command { get; set; }
+    [Text]
+    public Text Command { get; set; } = new ScribanText();
 
     /// <summary>
     /// Arguments for the command.
     /// </summary>
-    public string? Arguments { get; set; }
+    [Text]
+    public Text Arguments { get; set; } = new ScribanText();
 
     public override string ToString()
     {

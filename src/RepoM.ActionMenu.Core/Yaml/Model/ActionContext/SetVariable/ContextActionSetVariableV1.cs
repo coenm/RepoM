@@ -42,8 +42,8 @@ public class ContextActionSetVariableV1 : NamedContextAction, IContextAction, IE
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
-    public Predicate? Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
+    [Predicate(true)]
+    public Predicate Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()
     {

@@ -26,7 +26,7 @@ internal sealed class RepositoryActionSeparatorV1 : IMenuAction, IContext
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public Context? Context { get; init; }

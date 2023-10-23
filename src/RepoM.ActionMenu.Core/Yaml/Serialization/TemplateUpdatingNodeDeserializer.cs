@@ -16,10 +16,10 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
     private readonly INodeDeserializer _nodeDeserializer;
     private readonly ITemplateParser _templateParser;
 
-    public TemplateUpdatingNodeDeserializer(INodeDeserializer nodeDeserializer)
+    public TemplateUpdatingNodeDeserializer(INodeDeserializer nodeDeserializer, ITemplateParser templateParser)
     {
-        _nodeDeserializer = nodeDeserializer;
-        _templateParser = new FixedTemplateParser(); // todo inject
+        _nodeDeserializer = nodeDeserializer ?? throw new ArgumentNullException(nameof(nodeDeserializer));
+        _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
     }
 
     public bool Deserialize(IParser reader, Type expectedType, Func<IParser, Type, object?> nestedObjectDeserializer, out object? value)
@@ -38,13 +38,13 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
             .GetProperties(true)
             .Where(x =>
                 x is { CanWrite: true, CanRead: true, } &&
-                typeof(EvaluateObject).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
+                typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
             )
             .ToArray();
 
         var props2 = value.GetType().GetProperties(true).Where(x =>
                 x is { CanWrite: true, CanRead: true, } &&
-                typeof(EvaluateObject).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
+                typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
             )
             .ToArray();
 
@@ -56,15 +56,15 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                 continue;
             }
 
-            if (prop.PropertyType == typeof(ScriptContent))
+            if (prop.PropertyType == typeof(Script))
             {
                 // no default value.
             }
 
-            if (prop.PropertyType == typeof(EvaluateAnyObject))
+            if (prop.PropertyType == typeof(Variable))
             {
                 var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
-                    a.AttributeType.FullName == typeof(EvaluateToAnyObjectAttribute).FullName);
+                    a.AttributeType.FullName == typeof(VariableAttribute).FullName);
 
                 if (attribute != null)
                 {
@@ -72,7 +72,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
                     if (constructorArguments.Count == 0)
                     {
-                        (y as EvaluateAnyObject)!.DefaultValue = null; // not needed?~
+                        (y as Variable)!.DefaultValue = null; // not needed?~
                     }
                 }
             }
@@ -80,7 +80,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
             if (prop.PropertyType == typeof(Predicate))
             {
                 var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
-                    a.AttributeType.FullName == typeof(EvaluateToBooleanAttribute).FullName);
+                    a.AttributeType.FullName == typeof(PredicateAttribute).FullName);
 
                 if (attribute != null)
                 {
@@ -94,10 +94,10 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                 }
             }
 
-            if (prop.PropertyType == typeof(RenderString))
+            if (prop.PropertyType == typeof(Text))
             {
                 var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
-                    a.AttributeType.FullName == typeof(RenderAttribute).FullName);
+                    a.AttributeType.FullName == typeof(TextAttribute).FullName);
 
                 if (attribute != null)
                 {
@@ -106,13 +106,13 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                     if (constructorArguments.Count == 1)
                     {
                         var defaultValue = (string)constructorArguments[0].Value;
-                        (y as RenderString)!.DefaultValue = defaultValue;
+                        (y as Text)!.DefaultValue = defaultValue;
                     }
                 }
             }
 
             // if (Nullable.GetUnderlyingType(prop.PropertyType) == typeof(RenderString))
-            if (prop.PropertyType == typeof(RenderString))
+            if (prop.PropertyType == typeof(Text))
             {
                 var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
                     a.AttributeType.FullName == typeof(RenderToNullableStringAttribute).FullName);
@@ -129,7 +129,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                         {
                             if (y == null)
                             {
-                                var newValue = new RenderString
+                                var newValue = new Text
                                 {
                                     Value = string.Empty,
                                 };
@@ -140,17 +140,11 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
                         if (y != null)
                         {
-                            (y as RenderString)!.DefaultValue = defaultValue;
+                            (y as Text)!.DefaultValue = defaultValue;
                         }
                     }
                 }
             }
-
-            if (prop.PropertyType == typeof(EvaluateInt))
-            {
-                (y as EvaluateInt)!.DefaultValue = 1;
-            }
-
 
             if (y is ICreateTemplate createTemplate)
             {

@@ -3,6 +3,7 @@ namespace RepoM.ActionMenu.Core.Yaml.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.Yaml.Model;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.EvaluateVariable;
@@ -26,25 +27,29 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
     private readonly IDeserializer _deserializer;
     private readonly ISerializer _serializer;
 
-    public ActionMenuDeserializer(IEnumerable<IKeyTypeRegistration<IMenuAction>> keyTypeRegistrations)
-        : this(keyTypeRegistrations.ToDictionary(item => item.Tag, item => item.ConfigurationType))
+    public ActionMenuDeserializer(IEnumerable<IKeyTypeRegistration<IMenuAction>> keyTypeRegistrations, ITemplateParser templateParser)
+        : this(keyTypeRegistrations.ToDictionary(item => item.Tag, item => item.ConfigurationType), templateParser)
     {
     }
 
-    private ActionMenuDeserializer(IDictionary<string, Type> menuActionTypes)
+    private ActionMenuDeserializer(IDictionary<string, Type> menuActionTypes, ITemplateParser templateParser)
     {
         if (menuActionTypes == null)
         {
             throw new ArgumentNullException(nameof(menuActionTypes));
         }
 
+        if (templateParser == null)
+        {
+            throw new ArgumentNullException(nameof(templateParser));
+        }
+
         var factoryMethods = new Dictionary<Type, Func<object>>
             {
-                { typeof(ScriptContent), () => new ScribanScriptContent() },
-                { typeof(EvaluateAnyObject), () => new ScribanEvaluateAnyObject() },
+                { typeof(Script), () => new ScribanScript() },
+                { typeof(Variable), () => new ScribanVariable() },
                 { typeof(Predicate), () => new ScribanPredicate() },
-                { typeof(RenderString), () => new ScribanRenderString() },
-                { typeof(EvaluateInt), () => new ScribanEvaluateInt() },
+                { typeof(Text), () => new ScribanText() },
             };
 
         _serializer = new SerializerBuilder()
@@ -77,10 +82,10 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
                 maxDepth: -1,
                 maxLength: -1)
             .WithTypeMapping<ITag, TagObject>()
-            .WithNodeDeserializer(inner => new TemplateUpdatingNodeDeserializer<ObjectNodeDeserializer>(inner), s => s.InsteadOf<ObjectNodeDeserializer>())
-            .WithNodeDeserializer(inner => new TemplateUpdatingNodeDeserializer<ScalarNodeDeserializer>(inner), s => s.InsteadOf<ScalarNodeDeserializer>())
-            .WithNodeDeserializer(inner => new TemplateUpdatingNodeDeserializer<TypeDiscriminatingNodeDeserializer>(inner), s => s.InsteadOf<TypeDiscriminatingNodeDeserializer>())
-            .WithNodeDeserializer(inner => new TemplateUpdatingNodeDeserializer<TypeConverterNodeDeserializer>(inner), s => s.InsteadOf<TypeConverterNodeDeserializer>())
+            .WithNodeDeserializer(inner => new TemplateUpdatingNodeDeserializer<ObjectNodeDeserializer>(inner, templateParser), s => s.InsteadOf<ObjectNodeDeserializer>())
+            .WithNodeDeserializer(inner => new TemplateUpdatingNodeDeserializer<ScalarNodeDeserializer>(inner, templateParser), s => s.InsteadOf<ScalarNodeDeserializer>())
+            .WithNodeDeserializer(inner => new TemplateUpdatingNodeDeserializer<TypeDiscriminatingNodeDeserializer>(inner, templateParser), s => s.InsteadOf<TypeDiscriminatingNodeDeserializer>())
+            .WithNodeDeserializer(inner => new TemplateUpdatingNodeDeserializer<TypeConverterNodeDeserializer>(inner, templateParser), s => s.InsteadOf<TypeConverterNodeDeserializer>())
             .Build();
     }
 

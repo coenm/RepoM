@@ -26,15 +26,15 @@ public class ContextActionLoadFileV1 : NamedContextAction, IContextAction, IEnab
     /// <summary>
     /// Full path of the filename to load.
     /// </summary>
-    [Render]
-    public RenderString Filename { get; init; } = new ScribanRenderString(); // todo nullable?
+    [Text]
+    public Text Filename { get; init; } = new ScribanText(); // todo nullable?
 
     //// <inheritdoc cref="IEnabled.Enabled"/>
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
-    public Predicate? Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
+    [Predicate(true)]
+    public Predicate Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
 
     public override string ToString()
     {

@@ -25,27 +25,27 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     /// Menu item title. When not provided, a title will be generated.
     /// This property will be used instead of the Name property.
     /// </summary>
-    [Render("Create Pull Request")]
-    public RenderString Name { get; set; } = new RenderString(); // todo nullable?
+    [Text("Create Pull Request")]
+    public Text Name { get; set; } = new Text(); // todo nullable?
     
     /// <summary>
     /// The azure devops project id.
     /// </summary>
-    [Render]
-    public RenderString ProjectId { get; set; } = new RenderString(); // nullable
+    [Text]
+    public Text ProjectId { get; set; } = new Text(); // nullable
     
     /// <summary>
     /// Pull Request title. When not provided, the title will be defined based on the branch name.
     /// Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch`
     /// </summary>
-    [Render]
-    public RenderString PrTitle { get; set; } = new RenderString(); // nullable
+    [Text]
+    public Text PrTitle { get; set; } = new Text(); // nullable
 
     /// <summary>
     /// Name of the branch the pull request should be merged into. For instance `develop`, or `main`.
     /// </summary>
-    [Render]
-    public RenderString ToBranch { get; set; } = new RenderString(); // nullable
+    [Text]
+    public Text ToBranch { get; set; } = new Text(); // nullable
 
     /// <summary>
     /// List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
@@ -57,21 +57,21 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     /// Boolean specifying if th PR should be marked as draft.
     /// </summary>
     [Required]
-    [EvaluateToBoolean(false)]
+    [Predicate(false)]
     public Predicate DraftPr { get; set; } = false;
 
     /// <summary>
     /// Boolean specifying if workitems should be included in the PR. The workitems will be found by using the commit messages.
     /// </summary>
     [Required]
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate IncludeWorkItems { get; set; } = true;
 
     /// <summary>
     /// Boolean specifying if the Pull request should be opened in the browser after creation.
     /// </summary>
     [Required]
-    [EvaluateToBoolean(default)]
+    [Predicate(default)]
     public Predicate OpenInBrowser { get; set; } = true;
 
     public Context? Context { get; set; }
@@ -79,7 +79,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     /// <summary>
     /// Whether the menu item is enabled.
     /// </summary>
-    [EvaluateToBoolean(true)]
+    [Predicate(true)]
     public Predicate Active { get; init; } = true; // todo nullable?
 
     /// <summary>

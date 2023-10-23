@@ -55,11 +55,9 @@ internal sealed class EnvScriptObject : IScriptObject
             value = s;
             return true;
         }
-        else
-        {
-            value = new object();
-            return false;
-        }
+
+        value = null!;
+        return false;
     }
 
     public bool CanWrite(string member)

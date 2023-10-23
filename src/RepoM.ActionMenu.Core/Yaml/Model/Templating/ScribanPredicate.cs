@@ -17,6 +17,11 @@ internal class ScribanPredicate : Predicate, ICreateTemplate
 
     public override async Task<bool> EvaluateAsync(ITemplateEvaluator instance)
     {
+        if (StaticValue.HasValue)
+        {
+            return StaticValue.Value;
+        }
+
         if (instance is TemplateContext tc && _template != null)
         {
             var result = await _template.EvaluateAsync(tc).ConfigureAwait(false);

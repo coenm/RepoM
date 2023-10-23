@@ -6,7 +6,7 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using Scriban;
 
-internal class ScribanRenderString : RenderString, ICreateTemplate
+internal class ScribanText : Text, ICreateTemplate
 {
     private Template? _template;
 
