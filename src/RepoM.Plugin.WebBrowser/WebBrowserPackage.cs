@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Plugin.WebBrowser.ActionProvider;
 using RepoM.Plugin.WebBrowser.PersistentConfiguration;
+using RepoM.Plugin.WebBrowser.RepositoryActions;
 using RepoM.Plugin.WebBrowser.Services;
 using SimpleInjector;
 
@@ -75,6 +77,7 @@ public class WebBrowserPackage : IPackage
 
         // action executor
         container.Register(typeof(ICommandExecutor<>), new[] { typeof(WebBrowserPackage).Assembly, }, Lifestyle.Singleton);
+        container.RegisterDecorator<ICommandExecutor<Core.Plugin.RepositoryActions.Commands.BrowseRepositoryCommand>, CoreBrowseRepositoryCommandExecutorDecorator>(Lifestyle.Singleton);
     }
 
     private static void RegisterInternals(Container container)

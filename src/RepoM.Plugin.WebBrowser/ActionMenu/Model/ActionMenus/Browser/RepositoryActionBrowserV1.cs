@@ -21,14 +21,14 @@ internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
     }
 
     [Text]
-    public Text Name { get; init; } = new Text(); // todo nullable?
+    public Text Name { get; init; } = new Text();
 
     /// <summary>
     /// The url to browse to.
     /// </summary>
     [Required]
     [Text]
-    public Text Url { get; init; } = new Text(); // todo nullable?
+    public Text Url { get; init; } = new Text();
 
     /// <summary>
     /// profile name used to select browser and browser profile
