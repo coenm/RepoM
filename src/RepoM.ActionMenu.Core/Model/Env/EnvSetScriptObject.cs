@@ -80,7 +80,10 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
         {
             for (int i = 1; i < items.Length; i++)
             {
-                result.Push((EnvScriptObject)items[i].Clone(true));
+                if (items[i] != null)
+                {
+                    result.Push((EnvScriptObject)items[i].Clone(true));
+                }
             }
         }
 
