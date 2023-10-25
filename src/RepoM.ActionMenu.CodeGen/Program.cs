@@ -23,6 +23,10 @@ public class Program
         var srcFolder = Path.Combine(rootFolder, "src");
         var docsFolder = Path.Combine(rootFolder, "docs_new");
         var projectName = "RepoM.ActionMenu.Core";
+        projectName = "RepoM.Plugin.Heidi";
+        projectName = "RepoM.Plugin.Statistics";
+        projectName = "RepoM.Plugin.SonarCloud";
+
         var pathToSolution = Path.Combine(srcFolder, projectName, $"{projectName}.csproj");
         var pathToGeneratedCode = Path.Combine(srcFolder, projectName, "RepoMCodeGen.generated.cs");
 

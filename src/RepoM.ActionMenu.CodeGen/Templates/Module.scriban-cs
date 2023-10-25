@@ -36,12 +36,25 @@ namespace {{ module.Namespace }}
     partial class {{ module.ClassName }}
     {
     {{~ if module.Name != 'All' ~}}
-        {{~ if module.ClassName == 'KalkEngine' ~}}
+        {{~ if string.contains module.Namespace 'Plugin' ~}}
+        public override void RegisterFunctions(RepoM.ActionMenu.Interface.Scriban.IContextRegistration contextRegistration)
+        {{~ else if module.ClassName == 'KalkEngine' ~}}
         protected void RegisterFunctions()
         {{~ else ~}}
         protected sealed override void RegisterFunctions()
         {{~ end ~}}
         {
+        {{~ if string.contains module.Namespace 'Plugin' ~}}
+            {{~ for member in module.Members ~}}
+                {{~ if member.IsConst ~}}
+            contextRegistration.RegisterConstant("{{ member.Name }}", {{ member.CSharpName }});
+                {{~ else if member.IsFunc ~}}
+            contextRegistration.RegisterFunction("{{ member.Name }}", {{member.Cast}}{{ member.CSharpName }});
+                {{~ else if member.IsAction ~}}
+            contextRegistration.RegisterAction("{{ member.Name }}", {{member.Cast}}{{ member.CSharpName }});
+                {{~ end ~}}
+            {{~ end ~}}
+        {{~ else ~}}
             {{~ for member in module.Members ~}}
                 {{~ if member.IsConst ~}}
             RegisterConstant("{{ member.Name }}", {{ member.CSharpName }});
@@ -51,6 +64,7 @@ namespace {{ module.Namespace }}
             RegisterAction("{{ member.Name }}", {{member.Cast}}{{ member.CSharpName }});
                 {{~ end ~}}
             {{~ end ~}}
+        {{~ end ~}}
         }
     {{~ end ~}}
     }
