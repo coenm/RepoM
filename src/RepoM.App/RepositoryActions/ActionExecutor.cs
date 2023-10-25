@@ -17,6 +17,16 @@ public sealed class ActionExecutor
     public void Execute(IRepository repository, IRepositoryCommand repositoryCommand)
     {
         dynamic executor = _container.GetInstance(typeof(ICommandExecutor<>).MakeGenericType(repositoryCommand.GetType()));
-        executor.Execute((dynamic)repository, (dynamic)repositoryCommand);
+
+        try
+        {
+            executor.Execute((dynamic)repository, (dynamic)repositoryCommand);
+        }
+        catch (Exception e)
+        {
+            // TODO
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

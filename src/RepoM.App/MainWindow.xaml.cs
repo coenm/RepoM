@@ -537,7 +537,7 @@ public partial class MainWindow
 
         Action<object, object> clickAction = (object clickSender, object clickArgs) =>
         {
-            if (repositoryAction?.RepositoryCommand is null or NullRepositoryCommand)
+            if (repositoryAction.RepositoryCommand is null or NullRepositoryCommand)
             {
                 return;
             }
@@ -575,7 +575,6 @@ public partial class MainWindow
             {
                 item.SubmenuOpened -= SelfDetachingEventHandler;
                 item.Items.Clear();
-
                 
                 foreach (UserInterfaceRepositoryActionBase subAction in deferredRepositoryAction.GetAsync().GetAwaiter().GetResult())
                 {
