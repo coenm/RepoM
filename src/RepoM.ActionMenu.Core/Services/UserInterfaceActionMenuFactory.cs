@@ -25,13 +25,13 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     public UserInterfaceActionMenuFactory(
         IFileSystem fileSystem, 
         ITemplateParser templateParser,
-        ITemplateContextRegistration[] plugins,
+        IEnumerable<ITemplateContextRegistration> plugins,
         IEnumerable<IActionToRepositoryActionMapper> mappers,
         IActionMenuDeserializer deserializer)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
-        _plugins = plugins ?? throw new ArgumentNullException(nameof(plugins));
+        _plugins = plugins.ToArray() ?? throw new ArgumentNullException(nameof(plugins));
         _mappers = mappers.ToArray() ?? throw new ArgumentNullException(nameof(mappers));
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
     }
