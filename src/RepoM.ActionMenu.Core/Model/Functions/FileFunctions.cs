@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.Attributes;
 using Scriban.Parsing;
 using Scriban.Syntax;
@@ -51,11 +50,9 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     {
         // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
         // .app or .xcodeproj on macOS
-        IDirectoryInfo directory = fileSystem.DirectoryInfo.New(path);
-
-        return directory
-            .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
-            .Select(f => f.FullName)
-            .Where(f => !f.StartsWith('.'));
+        return fileSystem.DirectoryInfo.New(path)
+             .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
+             .Select(f => f.FullName)
+             .Where(f => !f.StartsWith('.'));
     }
 }
