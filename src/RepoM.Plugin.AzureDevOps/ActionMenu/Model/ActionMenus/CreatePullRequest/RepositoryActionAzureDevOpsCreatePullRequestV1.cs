@@ -51,7 +51,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     /// List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
     /// </summary>
     [PropertyType(typeof(List<string>))] 
-    public List<string> ReviewerIds { get; set; } = new(); // todo List<RenderString> ?
+    public List<Text> ReviewerIds { get; set; } = new();
 
     /// <summary>
     /// Boolean specifying if th PR should be marked as draft.

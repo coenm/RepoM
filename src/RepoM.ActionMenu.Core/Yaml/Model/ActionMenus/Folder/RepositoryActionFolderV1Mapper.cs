@@ -21,7 +21,10 @@ internal class RepositoryActionFolderV1Mapper : ActionToRepositoryActionMapperBa
         }
 
         var isDeferred = await action.IsDeferred.EvaluateAsync(context).ConfigureAwait(false);
-        
+
+        // todo
+        isDeferred = false;
+
         if (isDeferred)
         {
             yield return new DeferredSubActionsUserInterfaceRepositoryAction(name, repository, context, action.Actions != null)

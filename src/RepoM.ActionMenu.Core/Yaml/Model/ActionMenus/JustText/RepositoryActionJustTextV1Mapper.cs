@@ -10,7 +10,7 @@ internal class RepositoryActionJustTextV1Mapper : ActionToRepositoryActionMapper
 {
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionJustTextV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
-        var text = await action.Text.RenderAsync(context).ConfigureAwait(false);
+        var text = await action.Name.RenderAsync(context).ConfigureAwait(false);
         yield return new UserInterfaceRepositoryAction(text, repository);
     }
 }

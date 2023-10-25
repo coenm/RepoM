@@ -68,6 +68,11 @@ internal class RepoMScriptObject : ScriptObject, IContextRegistration
         RegisterCustomFunction(name, DelegateCustomFunction.Create(action));
     }
 
+    void IContextRegistration.RegisterAction<T1, T2, T3, T4, T5>(string name, Action<T1, T2, T3, T4, T5> action)
+    {
+        RegisterCustomFunction(name, DelegateCustomFunction.Create(action));
+    }
+
     void IContextRegistration.RegisterFunction<T1>(string name, Func<T1> func)
     {
         RegisterCustomFunction(name, DelegateCustomFunction.CreateFunc(func));

@@ -36,17 +36,17 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
             action-menu:
            
             - type: foreach@1
-              enumerable: dummy.configurations
+              enumerable: dummy.configuration_interface_method 1 "test" true
               variable: item
               actions:
               - type: just-text@1
-                text: 'key {{ item.key }}'
+                name: 'key {{ item.key }}'
               - type: foreach@1
                 enumerable: item.database_names
                 variable: dbname
                 actions:
                 - type: just-text@1
-                  text: 'dbname {{ dbname }}'  
+                  name: 'dbname {{ dbname }}'  
          
             """;
 
@@ -64,7 +64,7 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
 
             IDummyService dummyService = A.Fake<IDummyService>();
             _container.RegisterInstance(dummyService);
-            _container.Collection.Append<ITemplateContextRegistration, DummyVariablesProvider>(Lifestyle.Transient);
+            _container.Collection.Append<ITemplateContextRegistration, DummyVariablesProvider>(Lifestyle.Singleton);
 
 
             var dummyValues = new DummyConfig[]

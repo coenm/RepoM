@@ -20,8 +20,10 @@ using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
-using RepoM.Core.Plugin.Repository;
 using Scriban;
+using Scriban.Runtime;
+using static RepoM.ActionMenu.Core.Model.ScribanModuleWithFunctions;
+using IRepository = RepoM.Core.Plugin.Repository.IRepository;
 
 internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerationContext, IContextMenuActionMenuGenerationContext
 {
@@ -58,7 +60,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
         {
-            contextRegistration.RegisterFunctionsAuto(rootScriptObject);
+            contextRegistration.RegisterFunctions(Decorate<ActionMenuGenerationContext>(rootScriptObject));
         }
         
         PushGlobal(rootScriptObject);
@@ -74,6 +76,11 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         RepositoryActionsScriptContext = new DisposableContextScriptObject(this, Env, _contextActionMappers);
         PushGlobal(RepositoryActionsScriptContext);
+    }
+
+    private IContextRegistration Decorate<T>(IContextRegistration rootScriptObject) where T : TemplateContext
+    {
+        return new ContextRegistrationDecorator<T>(rootScriptObject);
     }
 
     public IFileSystem FileSystem { private set; get; }
@@ -121,13 +128,12 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public IActionMenuGenerationContext Clone()
     {
-        throw new NotImplementedException("Not a full clone."); // todo
         var result = new ActionMenuGenerationContext(Repository, _templateParser, FileSystem, _functionsArray, _repositoryActionMappers, _deserializer)
         {
             Env = (EnvSetScriptObject)Env.Clone(true),
             RepositoryActionsScriptContext = (DisposableContextScriptObject)RepositoryActionsScriptContext.Clone(true),
         };
-        // todo more
+
         return result;
     }
 
@@ -216,5 +222,183 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         }
 
         return items.Distinct();
+    }
+}
+
+internal class ContextRegistrationDecorator<T> : IContextRegistration where T : TemplateContext
+{
+    private readonly IContextRegistration _contextRegistration;
+
+    public ContextRegistrationDecorator(IContextRegistration contextRegistration)
+    {
+        _contextRegistration = contextRegistration ?? throw new ArgumentNullException(nameof(contextRegistration));
+    }
+
+    public IContextRegistration CreateOrGetSubRegistration(string key)
+    {
+        return new ContextRegistrationDecorator<T>(_contextRegistration.CreateOrGetSubRegistration(key));
+    }
+
+    public void SetValue(string member, object value, bool readOnly)
+    {
+        _contextRegistration.SetValue(member, value, readOnly);
+    }
+
+    public void Add(string key, object value)
+    {
+        _contextRegistration.Add(key, value);
+    }
+
+    public bool ContainsKey(string key)
+    {
+        return _contextRegistration.ContainsKey(key);
+    }
+
+    public void RegisterConstant(string name, object value)
+    {
+        _contextRegistration.RegisterConstant(name, value);
+    }
+
+    public void RegisterAction(string name, Action action)
+    {
+        _contextRegistration.RegisterAction(name, action);
+    }
+
+    public void RegisterAction<T1>(string name, Action<T1> action)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomActionWithInterfaceContext<T, T1>(action);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+
+        _contextRegistration.RegisterAction(name, action);
+    }
+
+    public void RegisterAction<T1, T2>(string name, Action<T1, T2> action)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomActionWithInterfaceContext<T, T1, T2>(action);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+
+        _contextRegistration.RegisterAction(name, action);
+    }
+
+    public void RegisterAction<T1, T2, T3>(string name, Action<T1, T2, T3> action)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomActionWithInterfaceContext<T, T1, T2, T3>(action);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+
+        _contextRegistration.RegisterAction(name, action);
+    }
+
+    public void RegisterAction<T1, T2, T3, T4>(string name, Action<T1, T2, T3, T4> action)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomActionWithInterfaceContext<T, T1, T2, T3, T4>(action);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+
+        _contextRegistration.RegisterAction(name, action);
+    }
+
+    public void RegisterAction<T1, T2, T3, T4, T5>(string name, Action<T1, T2, T3, T4, T5> action)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomActionWithInterfaceContext<T, T1, T2, T3, T4, T5>(action);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+
+        _contextRegistration.RegisterAction(name, action);
+    }
+
+    public void RegisterFunction<T1>(string name, Func<T1> func)
+    {
+        _contextRegistration.RegisterFunction(name, func);
+    }
+
+    public void RegisterFunction<T1, T2>(string name, Func<T1, T2> func)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2>(func);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+
+        _contextRegistration.RegisterFunction(name, func);
+    }
+
+    public void RegisterFunction<T1, T2, T3>(string name, Func<T1, T2, T3> func)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, T3>(func);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+
+        _contextRegistration.RegisterFunction(name, func);
+    }
+
+    public void RegisterFunction<T1, T2, T3, T4>(string name, Func<T1, T2, T3, T4> func)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, T3, T4>(func);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+
+        _contextRegistration.RegisterFunction(name, func);
+    }
+
+    public void RegisterFunction<T1, T2, T3, T4, T5>(string name, Func<T1, T2, T3, T4, T5> func)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, T3, T4, T5>(func);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+        
+        _contextRegistration.RegisterFunction(name, func);
+    }
+
+    public void RegisterFunction<T1, T2, T3, T4, T5, T6>(string name, Func<T1, T2, T3, T4, T5, T6> func)
+    {
+        if (Check<T1>())
+        {
+            DelegateCustomFunction value = new InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, T3, T4, T5, T6>(func);
+            _contextRegistration.RegisterVariable(name, value);
+            return;
+        }
+
+        _contextRegistration.RegisterFunction(name, func);
+    }
+
+    public void RegisterVariable(string name, object value)
+    {
+        _contextRegistration.RegisterVariable(name, value);
+    }
+
+    private static bool Check<T1>()
+    {
+        // todo check.
+        var x = typeof(T1).IsInterface;
+        var x1 = typeof(T1).IsAssignableFrom(typeof(T));
+        return x && x1;
     }
 }

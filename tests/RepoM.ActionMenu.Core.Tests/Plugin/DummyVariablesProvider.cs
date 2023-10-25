@@ -3,8 +3,7 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.Scriban;
 
 internal partial class DummyVariablesProvider : TemplateContextRegistrationBase
@@ -16,30 +15,28 @@ internal partial class DummyVariablesProvider : TemplateContextRegistrationBase
         _dummyService = dummyService ?? throw new ArgumentNullException(nameof(dummyService));
     }
 
-    public IEnumerable GetConfigurations()
+    public IEnumerable GetConfigurationsFunc()
     {
-        return X();
+        return GetConfigImpl();
     }
 
-    public IEnumerable Configurations
+
+    public IEnumerable GetConfigInterfaceArg(IActionMenuGenerationContext context, int i, string s, bool b)
     {
-        get
-        {
-            return X();
-        }
+        return GetConfigImpl();
     }
 
-    private IEnumerable X()
+    public IEnumerable ConfigurationsProp => GetConfigImpl();
+
+    private IEnumerable GetConfigImpl()
     {
-        List<DummyConfig> xx = new();
+        List<DummyConfig> result = new();
 
-        var xxx = _dummyService.GetValues();
-
-        foreach (DummyConfig x in _dummyService.GetValues())
+        foreach (DummyConfig item in _dummyService.GetValues())
         {
-            xx.Add(x);
+            result.Add(item);
         }
 
-        return xx;
+        return result;
     }
 }

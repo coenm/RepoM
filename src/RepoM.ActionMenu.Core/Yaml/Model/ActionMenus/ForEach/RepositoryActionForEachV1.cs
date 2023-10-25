@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using Variable = RepoM.ActionMenu.Interface.YamlModel.Templating.Variable;
 
 [RepositoryAction(TYPE_VALUE)]
-internal sealed class RepositoryActionForEachV1 : IMenuAction
+internal sealed class RepositoryActionForEachV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "foreach@1";
 
@@ -24,6 +25,10 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction
     /// </summary>
     [Predicate(true)]
     public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
+
+    public Context? Context { get; init; }
+
+    public Context? IterationContext { get; init; }
 
     /// <summary>
     /// The list of items to enumerate on.

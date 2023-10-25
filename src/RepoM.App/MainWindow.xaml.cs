@@ -1,6 +1,7 @@
 namespace RepoM.App;
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Abstractions;
@@ -12,6 +13,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using RepoM.ActionMenu.Core;
+using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.RepositoryActions;
@@ -43,6 +46,7 @@ public partial class MainWindow
     private readonly ActionExecutor _executor;
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
     private readonly IRepositoryMatcher _repositoryMatcher;
+    private readonly IUserInterfaceActionMenuFactory _newStyleActionMenuFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     public MainWindow(
@@ -59,10 +63,12 @@ public partial class MainWindow
         IThreadDispatcher threadDispatcher,
         IRepositoryFilteringManager repositoryFilteringManager,
         IRepositoryMatcher repositoryMatcher,
-        IModuleManager moduleManager)
+        IModuleManager moduleManager,
+        IUserInterfaceActionMenuFactory newStyleActionMenuFactory)
     {
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
         _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
+        _newStyleActionMenuFactory = newStyleActionMenuFactory ?? throw new ArgumentNullException(nameof(newStyleActionMenuFactory));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _repositoryActionProvider = repositoryActionProvider ?? throw new ArgumentNullException(nameof(repositoryActionProvider));
         _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
@@ -208,21 +214,57 @@ public partial class MainWindow
         ItemCollection items = ctxMenu.Items;
         items.Clear();
 
-        foreach (RepositoryActionBase action in _repositoryActionProvider.GetContextMenuActions(vm.Repository))
+        var newStyleFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, "RepositoryActionsV2.yaml");
+        var fileExists = _fileSystem.File.Exists(newStyleFilename);
+
+        if (!fileExists)
         {
-            if (action is RepositorySeparatorAction)
+            foreach (RepositoryActionBase action in _repositoryActionProvider.GetContextMenuActions(vm.Repository))
             {
-                if (items.Count > 0)
+                if (action is RepositorySeparatorAction)
                 {
-                    items.Add(new Separator());
+                    if (items.Count > 0)
+                    {
+                        items.Add(new Separator());
+                    }
+                }
+                else
+                {
+                    Control? controlItem = CreateMenuItem(sender, action, vm);
+                    if (controlItem != null)
+                    {
+                        items.Add(controlItem);
+                    }
                 }
             }
-            else
+        }
+        else
+        {
+             IEnumerable<UserInterfaceRepositoryActionBase> actions = _newStyleActionMenuFactory.CreateMenuAsync(vm.Repository, newStyleFilename).GetAwaiter().GetResult();
+            foreach (UserInterfaceRepositoryActionBase action in actions)
             {
-                Control? controlItem = CreateMenuItem(sender, action, vm);
-                if (controlItem != null)
+                if (action is UserInterfaceSeparatorRepositoryAction)
                 {
-                    items.Add(controlItem);
+                    if (items.Count > 0)
+                    {
+                        items.Add(new Separator());
+                    }
+                }
+                else if (action is DeferredSubActionsUserInterfaceRepositoryAction deferredAction)
+                {
+                    Control? controlItem = CreateMenuItemNewStyle(sender, action, vm);
+                    if (controlItem != null)
+                    {
+                        items.Add(controlItem);
+                    }
+                }
+                else if (action is UserInterfaceRepositoryAction uiAction)
+                {
+                    Control? controlItem = CreateMenuItemNewStyle(sender, action, vm);
+                    if (controlItem != null)
+                    {
+                        items.Add(controlItem);
+                    }
                 }
             }
         }
@@ -467,6 +509,91 @@ public partial class MainWindow
             foreach (RepositoryActionBase subAction in repositoryAction.SubActions)
             {
                 Control? controlItem = CreateMenuItem(sender, subAction);
+                if (controlItem != null)
+                {
+                    item.Items.Add(controlItem);
+                }
+            }
+        }
+
+        return item;
+    }
+
+    private Control? /*MenuItem*/ CreateMenuItemNewStyle(object sender, UserInterfaceRepositoryActionBase action, RepositoryViewModel? affectedViews = null)
+    {
+        if (action is UserInterfaceSeparatorRepositoryAction)
+        {
+            return new Separator();
+        }
+
+        // UserInterfaceRepositoryAction
+        // DeferredSubActionsUserInterfaceRepositoryAction
+
+        if (action is not UserInterfaceRepositoryAction repositoryAction)
+        {
+            // throw??
+            return null;
+        }
+
+        Action<object, object> clickAction = (object clickSender, object clickArgs) =>
+        {
+            if (repositoryAction?.RepositoryCommand is null or NullRepositoryCommand)
+            {
+                return;
+            }
+
+            // run actions in the UI async to not block it
+            if (repositoryAction.ExecutionCausesSynchronizing)
+            {
+                Task.Run(() => SetVmSynchronizing(affectedViews, true))
+                    .ContinueWith(t => _executor.Execute(action.Repository, action.RepositoryCommand))
+                    .ContinueWith(t => SetVmSynchronizing(affectedViews, false));
+            }
+            else
+            {
+                Task.Run(() => _executor.Execute(action.Repository, action.RepositoryCommand));
+            }
+        };
+
+        var item = new AcrylicMenuItem
+        {
+            Header = repositoryAction.Name,
+            IsEnabled = repositoryAction.CanExecute,
+        };
+        item.Click += new RoutedEventHandler(clickAction);
+
+        // this is a deferred submenu. We want to make sure that the context menu can pop up
+        // fast, while submenus are not evaluated yet. We don't want to make the context menu
+        // itself slow because the creation of the submenu items takes some time.
+        if (repositoryAction is DeferredSubActionsUserInterfaceRepositoryAction deferredRepositoryAction )
+        {
+            // this is a template submenu item to enable submenus under the current
+            // menu item. this item gets removed when the real subitems are created
+            item.Items.Add(string.Empty);
+
+            void SelfDetachingEventHandler(object _, RoutedEventArgs evtArgs)
+            {
+                item.SubmenuOpened -= SelfDetachingEventHandler;
+                item.Items.Clear();
+
+                
+                foreach (UserInterfaceRepositoryActionBase subAction in deferredRepositoryAction.GetAsync().GetAwaiter().GetResult())
+                {
+                    Control? controlItem = CreateMenuItemNewStyle(sender, subAction);
+                    if (controlItem != null)
+                    {
+                        item.Items.Add(controlItem);
+                    }
+                }
+            }
+
+            item.SubmenuOpened += SelfDetachingEventHandler;
+        }
+        else if (repositoryAction.SubActions != null)
+        {
+            foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
+            {
+                Control? controlItem = CreateMenuItemNewStyle(sender, subAction);
                 if (controlItem != null)
                 {
                     item.Items.Add(controlItem);

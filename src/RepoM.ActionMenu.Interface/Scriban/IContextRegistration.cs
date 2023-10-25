@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Interface.Scriban;
+namespace RepoM.ActionMenu.Interface.Scriban;
 
 using System;
 
@@ -23,6 +23,8 @@ public interface IContextRegistration
     void RegisterAction<T1, T2, T3>(string name, Action<T1, T2, T3> action);
 
     void RegisterAction<T1, T2, T3, T4>(string name, Action<T1, T2, T3, T4> action);
+
+    void RegisterAction<T1, T2, T3, T4, T5>(string name, Action<T1, T2, T3, T4, T5> action);
 
     void RegisterFunction<T1>(string name, Func<T1> func);
 

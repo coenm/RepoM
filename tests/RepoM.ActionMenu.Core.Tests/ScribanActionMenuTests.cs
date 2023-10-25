@@ -121,21 +121,21 @@ namespace RepoM.ActionMenu.Core.Tests
             
             action-menu:
             - type: just-text@1
-              text: 'repository.pwd2 {{ repository.pwd }}'  
+              name: 'repository.pwd2 {{ repository.pwd }}'  
               
             - type: foreach@1
               enumerable: 'file.find_files("c:\\", "*.env")'
               variable: f
               actions:
               - type: just-text@1
-                text: 'file name {{ f }}'
+                name: 'file name {{ f }}'
                 
             - type: foreach@1
               enumerable: devopsEnvironments
               variable: environment
               actions:
               - type: just-text@1
-                text: 'env name {{ environment.name }} env(DEF):`{{ env.DEF }}`'
+                name: 'env name {{ environment.name }} env(DEF):`{{ env.DEF }}`'
             
             - type: associate-file@1
               name: Open {{ name }} in {{ 'visual' | string.upcase }} Studio Code {{ sub1(10,3) }}
@@ -143,7 +143,7 @@ namespace RepoM.ActionMenu.Core.Tests
               active: 1 == 1
             
             - type: just-text@1
-              text: Text {{ name }} in {{ 'visual' | string.upcase }} Studio Code {{ sub1(10,3) }} {{ link }} env(DEF) {{ env.DEF }}
+              name: Text {{ name }} in {{ 'visual' | string.upcase }} Studio Code {{ sub1(10,3) }} {{ link }} env(DEF) {{ env.DEF }}
               active: 1 <= 3
               context:
               - type: evaluate-variable@1
@@ -162,7 +162,7 @@ namespace RepoM.ActionMenu.Core.Tests
                 value: coenm23
               actions:
               - type: just-text@1
-                text: Text {{ name }} in {{ 'visual' | string.upcase }} Studio Code {{ sub1(10,3) }} {{repository.is_starred}}
+                name: Text {{ name }} in {{ 'visual' | string.upcase }} Studio Code {{ sub1(10,3) }} {{repository.is_starred}}
                 active: 1 <= 3
                 context:
                 - type: set-variable@1

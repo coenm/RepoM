@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.RepositoryCommands;
@@ -64,6 +65,11 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
         var includeWorkItems = await action.IncludeWorkItems.EvaluateAsync(context).ConfigureAwait(false);
         var openInBrowser = await action.OpenInBrowser.EvaluateAsync(context).ConfigureAwait(false);
 
+        var reviewers = new List<string>(action.ReviewerIds.Count);
+        foreach (Text reviewerId in action.ReviewerIds)
+        {
+            reviewers.Add(await reviewerId.RenderAsync(context).ConfigureAwait(false));
+        }
 
         if (action.AutoComplete == null)
         {
@@ -71,7 +77,7 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
                 {
                     RepositoryCommand = new CreatePullRequestRepositoryCommand(
                         projectId,
-                        action.ReviewerIds,
+                        reviewers,
                         toBranch,
                         pullRequestTitle,
                         draft,
@@ -89,7 +95,7 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
                 {
                     RepositoryCommand = new CreatePullRequestRepositoryCommand(
                         projectId,
-                        action.ReviewerIds,
+                        reviewers,
                         toBranch,
                         pullRequestTitle,
                         draft,

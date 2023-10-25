@@ -32,15 +32,14 @@ public static class Bootstrapper
 
     private static void RegisterPublicTypes(Container container)
     {
-        container.Register<IUserInterfaceActionMenuFactory, UserInterfaceActionMenuFactory>(Lifestyle.Transient); // todo singleton
+        container.Register<IUserInterfaceActionMenuFactory, UserInterfaceActionMenuFactory>(Lifestyle.Singleton);
     }
 
     private static void RegisterPrivateTypes(Container container)
     {
         IEnumerable<Type> assemblyExportableTypes = GetExportedTypesFrom(_thisAssembly).ToArray();
 
-        // tmp
-        container.Collection.Register(Array.Empty<ITemplateContextRegistration>());
+        container.Collection.Register<ITemplateContextRegistration>(Array.Empty<Type>(), Lifestyle.Singleton);
 
         IEnumerable<Type> types = assemblyExportableTypes
           .Where(t => typeof(IActionToRepositoryActionMapper).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))

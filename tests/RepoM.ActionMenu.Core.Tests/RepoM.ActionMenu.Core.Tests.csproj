@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

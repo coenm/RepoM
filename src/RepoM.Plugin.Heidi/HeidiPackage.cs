@@ -44,8 +44,6 @@ public class HeidiPackage : IPackage
     {
         RegisterPluginHooks(container);
         RegisterInternals(container);
-
-        container.Collection.Append<ITemplateContextRegistration, HeidiDbVariables>(Lifestyle.Transient);
     }
 
     private static void RegisterPluginHooks(Container container)
@@ -70,6 +68,8 @@ public class HeidiPackage : IPackage
 
         // module
         container.Collection.Append<IModule, HeidiModule>(Lifestyle.Singleton);
+
+        container.Collection.Append<ITemplateContextRegistration, HeidiDbVariables>(Lifestyle.Singleton);
     }
 
     private static void RegisterInternals(Container container)
@@ -78,8 +78,6 @@ public class HeidiPackage : IPackage
         container.Register<IHeidiPortableConfigReader, HeidiPortableConfigReader>(Lifestyle.Singleton);
         container.RegisterInstance<IHeidiRepositoryExtractor>(ExtractRepositoryFromHeidi.Instance);
         container.RegisterInstance<IHeidiPasswordDecoder>(HeidiPasswordDecoder.Instance);
-
-        container.Register<IDatabaseConfigurationService, DatabaseConfigurationService>(Lifestyle.Singleton);
     }
 
     /// <remarks>This method is used by reflection to generate documentation file</remarks>>

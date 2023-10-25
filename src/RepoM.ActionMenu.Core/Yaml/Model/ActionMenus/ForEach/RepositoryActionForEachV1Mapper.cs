@@ -35,6 +35,14 @@ internal class RepositoryActionForEachV1Mapper : ActionToRepositoryActionMapperB
             // todo evaluate to string or not?
             scope.SetValue(action.Variable, item, true);
 
+            if (action.IterationContext != null)
+            {
+                foreach (IContextAction ctx in action.IterationContext)
+                {
+                    await scope.AddContextActionAsync(ctx).ConfigureAwait(false);
+                }
+            }
+
             if (await action.Skip.EvaluateAsync(context).ConfigureAwait(false))
             {
                 continue;

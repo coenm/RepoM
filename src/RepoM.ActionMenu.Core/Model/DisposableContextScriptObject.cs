@@ -33,7 +33,7 @@ internal sealed class DisposableContextScriptObject : ScriptObject, IScope
             return;
         }
 
-        var mapper = _mappers.Find(mapper => mapper.CanProcess(contextItem));
+        IContextActionProcessor? mapper = _mappers.Find(mapper => mapper.CanProcess(contextItem));
         if (mapper == null)
         {
             throw new Exception("Cannot find mapper");

@@ -21,7 +21,7 @@ internal sealed class RepositoryActionPinV1 : IMenuAction, IContext, IOptionalNa
         set => _ = value;
     }
 
-    [Text("Pin/UnPin")]
+    [Text("(Un)Pin repository")]
     public Text Name { get; init; } = new ScribanText();
 
     /// <summary>

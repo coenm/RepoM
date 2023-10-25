@@ -13,15 +13,14 @@ internal class RepositoryActionPinV1Mapper : ActionToRepositoryActionMapperBase<
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionPinV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
         var name = await action.Name.RenderAsync(context).ConfigureAwait(false);
-        name = "TODO " + name; // todo
 
         yield return new UserInterfaceRepositoryAction(name, repository)
             {
-                RepositoryCommand = GetPinRepositoryCommand(action),
+                RepositoryCommand = CreatePinRepositoryCommand(action),
             };
     }
 
-    private static PinRepositoryCommand GetPinRepositoryCommand(RepositoryActionPinV1 action)
+    private static PinRepositoryCommand CreatePinRepositoryCommand(RepositoryActionPinV1 action)
     {
         return action.Mode switch
             {

@@ -18,7 +18,7 @@ internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
     }
 
     [Text]
-    public Text Text { get; init; } = new ScribanText();
+    public Text Name { get; init; } = new ScribanText();
 
     /// <summary>
     /// Whether the menu item is enabled.
@@ -35,6 +35,6 @@ internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
 
     public override string ToString()
     {
-        return $"({TYPE_VALUE}) {Text}";
+        return $"({TYPE_VALUE}) {Name}";
     }
 }
