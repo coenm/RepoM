@@ -1,14 +1,14 @@
 ---
-title: Web Module
+title: web Module
 url: /doc/api/web/
 ---
 
-Module that provides Web functions (e.g `url_encode`, `json`, `wget`...)
+Module that provides Web functions (e.g `url_encode`, `json` ...)
 
 In order to use the functions provided by this module, you need to import this module:
 
 ```kalk
->>> import Web
+>>> import web
 ```
 
 ## html_decode
