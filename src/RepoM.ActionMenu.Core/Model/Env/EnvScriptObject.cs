@@ -15,7 +15,7 @@ internal sealed class EnvScriptObject : IScriptObject
     {
         var env = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (DictionaryEntry item in Environment.GetEnvironmentVariables())
+        foreach (DictionaryEntry item in Environment.GetEnvironmentVariables()) // difficult to test.
         {
             if (item.Key is not string key || string.IsNullOrEmpty(key))
             {
