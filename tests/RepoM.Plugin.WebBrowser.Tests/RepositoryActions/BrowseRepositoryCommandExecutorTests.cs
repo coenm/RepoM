@@ -9,17 +9,17 @@ using RepoM.Plugin.WebBrowser.RepositoryActions.Actions;
 using RepoM.Plugin.WebBrowser.Services;
 using Xunit;
 
-public class BrowseCommandExecutorTests
+public class BrowseRepositoryCommandExecutorTests
 {
     private readonly IRepository _repository;
     private readonly IWebBrowserService _service;
-    private readonly BrowseCommandExecutor _sut;
+    private readonly BrowseRepositoryCommandExecutor _sut;
 
-    public BrowseCommandExecutorTests()
+    public BrowseRepositoryCommandExecutorTests()
     {
         _repository = A.Fake<IRepository>();
         _service = A.Fake<IWebBrowserService>();
-        _sut = new BrowseCommandExecutor(_service);
+        _sut = new BrowseRepositoryCommandExecutor(_service);
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public class BrowseCommandExecutorTests
         // arrange
 
         // act
-        Func<BrowseCommandExecutor> act1 = () => new BrowseCommandExecutor(null!);
+        Func<BrowseRepositoryCommandExecutor> act1 = () => new BrowseRepositoryCommandExecutor(null!);
 
         // assert
         act1.Should().Throw<ArgumentNullException>();

@@ -80,7 +80,7 @@ public class HeidiPackage : IPackage
         container.RegisterInstance<IHeidiPasswordDecoder>(HeidiPasswordDecoder.Instance);
     }
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<HeidiConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = new HeidiConfigV1();

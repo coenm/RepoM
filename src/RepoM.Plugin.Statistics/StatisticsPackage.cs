@@ -90,7 +90,7 @@ public class StatisticsPackage : IPackage
         container.Register<IStatisticsService, StatisticsService>(Lifestyle.Singleton);
     }
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<StatisticsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = new StatisticsConfigV1

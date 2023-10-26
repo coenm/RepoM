@@ -8,11 +8,11 @@ using RepoM.Plugin.WebBrowser.RepositoryActions.Actions;
 using RepoM.Plugin.WebBrowser.Services;
 
 [UsedImplicitly]
-internal class BrowseCommandExecutor : ICommandExecutor<BrowseRepositoryCommand>
+internal class BrowseRepositoryCommandExecutor : ICommandExecutor<BrowseRepositoryCommand>
 {
     private readonly IWebBrowserService _webBrowserService;
 
-    public BrowseCommandExecutor(IWebBrowserService webBrowserService)
+    public BrowseRepositoryCommandExecutor(IWebBrowserService webBrowserService)
     {
         _webBrowserService = webBrowserService ?? throw new ArgumentNullException(nameof(webBrowserService));
     }

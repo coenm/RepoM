@@ -10,6 +10,7 @@ using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Plugin.SonarCloud.ActionMenu.Context;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
+using RepoM.Plugin.SonarCloud.RepositoryCommands;
 using SimpleInjector;
 
 [UsedImplicitly]
@@ -54,12 +55,12 @@ public class SonarCloudPackage : IPackage
         container.Collection.Append<IModule, SonarCloudModule>(Lifestyle.Singleton);
 
         // action executor
-        container.Register(typeof(ICommandExecutor<>), new[] { typeof(SonarCloudPackage).Assembly, }, Lifestyle.Singleton);
+        container.Register<ICommandExecutor<SonarCloudSetFavoriteRepositoryCommand>, SonarCloudSetFavoriteRepositoryCommandExecutor>(Lifestyle.Singleton);
 
         container.Collection.Append<ITemplateContextRegistration, SonarCloudVariables>(Lifestyle.Singleton);
     }
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<SonarCloudConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = new SonarCloudConfigV1()

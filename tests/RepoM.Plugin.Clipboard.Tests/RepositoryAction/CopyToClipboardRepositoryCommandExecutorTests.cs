@@ -9,16 +9,16 @@ using RepoM.Plugin.Clipboard.RepositoryAction.Actions;
 using TextCopy;
 using Xunit;
 
-public class CopyToClipboardCommandExecutorTests
+public class CopyToClipboardRepositoryCommandExecutorTests
 {
     private readonly IClipboard _clipboard;
-    private readonly CopyToClipboardCommandExecutor _sut;
+    private readonly CopyToClipboardRepositoryCommandExecutor _sut;
     private readonly IRepository _repository;
 
-    public CopyToClipboardCommandExecutorTests()
+    public CopyToClipboardRepositoryCommandExecutorTests()
     {
         _clipboard = A.Fake<IClipboard>();
-        _sut = new CopyToClipboardCommandExecutor(_clipboard);
+        _sut = new CopyToClipboardRepositoryCommandExecutor(_clipboard);
         _repository = A.Fake<IRepository>();
     }
 
@@ -28,7 +28,7 @@ public class CopyToClipboardCommandExecutorTests
         // arrange
 
         // act
-        Action act = () => _= new CopyToClipboardCommandExecutor(null!);
+        Action act = () => _= new CopyToClipboardRepositoryCommandExecutor(null!);
 
         // assert
         act.Should().ThrowExactly<ArgumentNullException>();

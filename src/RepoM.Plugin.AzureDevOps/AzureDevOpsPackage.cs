@@ -11,6 +11,7 @@ using RepoM.Plugin.AzureDevOps.ActionProvider;
 using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
+using RepoM.Plugin.AzureDevOps.RepositoryCommands;
 using RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 using SimpleInjector;
 
@@ -60,12 +61,10 @@ public class AzureDevOpsPackage : IPackage
         container.Collection.Append<IQueryMatcher>(() => new HasPullRequestsMatcher(container.GetInstance<IAzureDevOpsPullRequestService>(), true), Lifestyle.Singleton);
 
         // action executor
-        container.Register(typeof(ICommandExecutor<>), new[] { typeof(AzureDevOpsPackage).Assembly, }, Lifestyle.Singleton);
-
-
+        container.Register<ICommandExecutor<CreatePullRequestRepositoryCommand>, CreatePullRequestRepositoryCommandExecutor>(Lifestyle.Singleton);
     }
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<AzureDevopsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = new AzureDevopsConfigV1();

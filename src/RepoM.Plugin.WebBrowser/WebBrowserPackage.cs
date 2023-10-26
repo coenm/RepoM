@@ -75,7 +75,7 @@ public class WebBrowserPackage : IPackage
         container.Collection.Append<IActionToRepositoryActionMapper, ActionBrowserV1Mapper>(Lifestyle.Singleton);
 
         // action executor
-        container.Register(typeof(ICommandExecutor<>), new[] { typeof(WebBrowserPackage).Assembly, }, Lifestyle.Singleton);
+        container.Register<ICommandExecutor<RepositoryActions.Actions.BrowseRepositoryCommand>, BrowseRepositoryCommandExecutor>(Lifestyle.Singleton);
         container.RegisterDecorator<ICommandExecutor<Core.Plugin.RepositoryActions.Commands.BrowseRepositoryCommand>, CoreBrowseRepositoryCommandExecutorDecorator>(Lifestyle.Singleton);
     }
 
@@ -84,7 +84,7 @@ public class WebBrowserPackage : IPackage
         container.Register<IWebBrowserService, WebBrowserService>(Lifestyle.Singleton);
     }
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<WebBrowserConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = new WebBrowserConfigV1
@@ -98,7 +98,7 @@ public class WebBrowserPackage : IPackage
     }
 
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     [UsedImplicitly]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Reflection")]
     private static async Task<WebBrowserConfigV1> PersistExampleConfigAsync(IPackageConfiguration packageConfiguration)

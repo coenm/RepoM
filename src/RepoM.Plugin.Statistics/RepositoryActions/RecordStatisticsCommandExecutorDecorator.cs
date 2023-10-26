@@ -6,8 +6,9 @@ using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 
+/// <remarks>class + ctor must be public because it is a decorator.</remarks>
 [UsedImplicitly]
-internal sealed class RecordStatisticsCommandExecutorDecorator<T> : ICommandExecutor<T> where T : IRepositoryCommand
+public sealed class RecordStatisticsCommandExecutorDecorator<T> : ICommandExecutor<T> where T : IRepositoryCommand
 {
     private readonly ICommandExecutor<T> _decoratee;
     private readonly IStatisticsService _service;

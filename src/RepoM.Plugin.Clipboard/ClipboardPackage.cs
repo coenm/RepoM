@@ -7,6 +7,8 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Plugin.Clipboard.ActionProvider;
+using RepoM.Plugin.Clipboard.RepositoryAction;
+using RepoM.Plugin.Clipboard.RepositoryAction.Actions;
 using SimpleInjector;
 using TextCopy;
 
@@ -37,7 +39,7 @@ public class ClipboardPackage : IPackage
         // (see Statistics for example)
 
         // action executor
-        container.Register(typeof(ICommandExecutor<>), new[] { typeof(ClipboardPackage).Assembly, }, Lifestyle.Singleton);
+        container.Register<ICommandExecutor<CopyToClipboardRepositoryCommand>, CopyToClipboardRepositoryCommandExecutor>(Lifestyle.Singleton);
 
         // variable provider
 
