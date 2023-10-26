@@ -3,6 +3,7 @@ namespace RepoM.Plugin.AzureDevOps.ActionMenu.Model.ActionMenus.GetPullRequests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
@@ -11,6 +12,7 @@ using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Plugin.AzureDevOps.Internal;
 
+[UsedImplicitly]
 internal class RepositoryActionAzureDevOpsGetPullRequestsV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionAzureDevOpsGetPullRequestsV1>
 {
     private readonly IAzureDevOpsPullRequestService _service;
@@ -31,8 +33,7 @@ internal class RepositoryActionAzureDevOpsGetPullRequestsV1Mapper : ActionToRepo
         }
 
         var repoId = await action.RepositoryId.RenderAsync(context).ConfigureAwait(false);
-
-
+        
         List<PullRequest>? pullRequests = null;
         UserInterfaceRepositoryAction? errorAction = null;
         try
@@ -67,8 +68,7 @@ internal class RepositoryActionAzureDevOpsGetPullRequestsV1Mapper : ActionToRepo
 
             yield break;
         }
-
-
+        
         // no pr's found
         // check if user wants a notification
         var showEmpty = await action.ShowWhenEmpty.EvaluateAsync(context).ConfigureAwait(false);

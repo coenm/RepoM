@@ -3,6 +3,7 @@ namespace RepoM.Plugin.AzureDevOps.ActionMenu.Model.ActionMenus.CreatePullReques
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
@@ -12,6 +13,7 @@ using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.RepositoryCommands;
 
+[UsedImplicitly]
 internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionAzureDevOpsCreatePullRequestV1>
 {
     private readonly ILogger _logger;
@@ -25,7 +27,7 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
     {
         if (repository is not Repository repo)
         {
-            // todo
+            _logger.LogError("Repo is not a Repository as expected");
             yield break;
         }
 
