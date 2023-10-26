@@ -1,7 +1,6 @@
 namespace RepoM.ActionMenu.Core.Misc;
 
 using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 /// <summary>
@@ -44,11 +43,7 @@ internal struct FastStack<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Peek()
     {
-        if (Count == 0)
-        {
-            ThrowForEmptyStack();
-        }
-
+        ThrowForEmptyStack();
         return _array[Count - 1];
     }
 
@@ -57,11 +52,7 @@ internal struct FastStack<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Pop()
     {
-        if (Count == 0)
-        {
-            ThrowForEmptyStack();
-        }
-
+        ThrowForEmptyStack();
         T item = _array[--Count];
         _array[Count] = default(T); // Free memory quicker.
         return item;
@@ -75,12 +66,15 @@ internal struct FastStack<T>
         {
             Array.Resize(ref _array, (_array.Length == 0) ? DEFAULT_CAPACITY : 2 * _array.Length);
         }
+
         _array[Count++] = item;
     }
 
     private void ThrowForEmptyStack()
     {
-        Debug.Assert(Count == 0);
-        throw new InvalidOperationException("Stack is empty");
+        if (Count == 0)
+        {
+            throw new InvalidOperationException("Stack is empty");
+        }
     }
 }

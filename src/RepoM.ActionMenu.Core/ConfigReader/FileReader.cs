@@ -11,45 +11,45 @@ using RepoM.ActionMenu.Core.Yaml.Model;
 internal class FileReader : IFileReader
 {
     private static readonly LoadOptions _loadOptions = new (setEnvVars: false);
-    private readonly IFileSystem _fs;
+    private readonly IFileSystem _fileSystem;
     private readonly IActionMenuDeserializer _deserializer;
 
     public FileReader(IFileSystem fileSystem, IActionMenuDeserializer deserializer)
     {
-        _fs = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
     }
 
     public async Task<Root?> DeserializeRoot(string filename)
     {
-        if (_fs.File.Exists(filename))
+        if (!_fileSystem.File.Exists(filename))
         {
-            var content = await _fs.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-            return _deserializer.DeserializeRoot(content);
+            return null;
         }
 
-        return null;
+        var content = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
+        return _deserializer.DeserializeRoot(content);
     }
 
     public async Task<ContextRoot?> DeserializeContextRoot(string filename)
     {
-        if (_fs.File.Exists(filename))
+        if (!_fileSystem.File.Exists(filename))
         {
-            var content = await _fs.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-            return _deserializer.DeserializeContextRoot(content);
+            return null;
         }
 
-        return null;
+        var content = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
+        return _deserializer.DeserializeContextRoot(content);
     }
 
     public async Task<IDictionary<string, string>?> ReadEnvAsync(string filename)
     {
-        if (_fs.File.Exists(filename))
+        if (!_fileSystem.File.Exists(filename))
         {
-            var content = await _fs.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-            return Env.LoadContents(content, _loadOptions).ToDictionary();
+            return null;
         }
 
-        return null;
+        var content = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
+        return Env.LoadContents(content, _loadOptions).ToDictionary();
     }
 }
