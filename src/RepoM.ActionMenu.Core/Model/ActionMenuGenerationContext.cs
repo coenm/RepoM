@@ -148,17 +148,17 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
             return Array.Empty<UserInterfaceRepositoryActionBase>();
         }
 
-        using var variableContext = PushNewContext();
+        using DisposableContextScriptObject variableContext = PushNewContext();
 
         if (menuAction is IContext { Context: not null, } c)
         {
-            foreach (var ctx in c.Context)
+            foreach (IContextAction ctx in c.Context)
             {
                 await variableContext.AddContextActionAsync(ctx).ConfigureAwait(false);
             }
         }
 
-        var mapper = Array.Find(_repositoryActionMappers, mapper => mapper.CanMap(menuAction));
+        IActionToRepositoryActionMapper? mapper = Array.Find(_repositoryActionMappers, mapper => mapper.CanMap(menuAction));
         if (mapper == null)
         {
             // throw?
@@ -166,7 +166,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         }
 
         var items = new List<UserInterfaceRepositoryActionBase>();
-        await foreach (var item in mapper.MapAsync(menuAction, this, Repository).ConfigureAwait(false))
+        await foreach (UserInterfaceRepositoryActionBase item in mapper.MapAsync(menuAction, this, Repository).ConfigureAwait(false))
         {
             items.Add(item);
         }
