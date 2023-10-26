@@ -49,6 +49,7 @@ using System.Linq;
 using Microsoft.VisualStudio.Services.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using System.Runtime.Caching;
+using RepoM.App.ActionMenuCore;
 
 internal static class Bootstrapper
 {
@@ -80,7 +81,11 @@ internal static class Bootstrapper
         Container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>(Lifestyle.Singleton);
         Container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
         Container.RegisterInstance<IClock>(SystemClock.Instance);
+
         Container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
+        Container.RegisterDecorator<IRepositoryTagsFactory, RepositoryTagsFactoryV2Decorator>(Lifestyle.Singleton);
+
+
         Container.RegisterDecorator<IRepositoryTagsFactory, LoggingRepositoryTagsFactoryDecorator>(Lifestyle.Singleton);
         Container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
         Container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
