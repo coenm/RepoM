@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
+using RepoM.ActionMenu.Core.ConfigReader;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model.Env;
 using RepoM.ActionMenu.Core.Model.Functions;
@@ -30,6 +31,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     private readonly ITemplateParser _templateParser;
     private readonly ITemplateContextRegistration[] _functionsArray;
     private readonly IActionMenuDeserializer _deserializer;
+    private readonly IFileReader _fileReader;
     private readonly IActionToRepositoryActionMapper[] _repositoryActionMappers;
     private readonly List<IContextActionProcessor> _contextActionMappers;
 
@@ -39,7 +41,8 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         IFileSystem fileSystem,
         ITemplateContextRegistration[] functionsArray,
         IActionToRepositoryActionMapper[] repositoryActionMappers,
-        IActionMenuDeserializer deserializer)
+        IActionMenuDeserializer deserializer,
+        IFileReader fileReader)
     {
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
         _functionsArray = functionsArray ?? throw new ArgumentNullException(nameof(functionsArray));
@@ -47,6 +50,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _repositoryActionMappers = repositoryActionMappers ?? throw new ArgumentNullException(nameof(repositoryActionMappers));
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
+        _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
 
         var rootScriptObject = new RepoMScriptObject();
         
@@ -71,7 +75,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
                 new ContextActionSetVariableV1Processor(),
                 new ContextActionEvaluateVariableV1Processor(),
                 new ContextActionRenderVariableV1Processor(),
-                new ContextActionLoadFileV1Processor(FileSystem, _deserializer),
+                new ContextActionLoadFileV1Processor(_fileReader),
             };
 
         RepositoryActionsScriptContext = new DisposableContextScriptObject(this, Env, _contextActionMappers);
@@ -128,7 +132,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public IActionMenuGenerationContext Clone()
     {
-        var result = new ActionMenuGenerationContext(Repository, _templateParser, FileSystem, _functionsArray, _repositoryActionMappers, _deserializer)
+        var result = new ActionMenuGenerationContext(Repository, _templateParser, FileSystem, _functionsArray, _repositoryActionMappers, _deserializer, _fileReader)
         {
             Env = (EnvSetScriptObject)Env.Clone(true),
             RepositoryActionsScriptContext = (DisposableContextScriptObject)RepositoryActionsScriptContext.Clone(true),

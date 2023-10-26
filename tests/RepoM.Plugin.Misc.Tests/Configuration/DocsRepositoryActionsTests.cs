@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NuDoq;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Plugin.Misc.Tests.TestFramework;

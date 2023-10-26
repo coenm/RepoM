@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
@@ -13,6 +14,7 @@ public class RepositoryTagsFactoryV2Decorator : IRepositoryTagsFactory
 {
     private readonly IRepositoryTagsFactory _inner;
     private readonly IUserInterfaceActionMenuFactory _newStyleActionMenuFactory;
+    private readonly ILogger _logger;
     private readonly bool _exists;
     private readonly string _filename;
 
@@ -20,11 +22,13 @@ public class RepositoryTagsFactoryV2Decorator : IRepositoryTagsFactory
         IRepositoryTagsFactory inner,
         IFileSystem fileSystem,
         IUserInterfaceActionMenuFactory newStyleActionMenuFactory,
-        IAppDataPathProvider appDataPathProvider)
+        IAppDataPathProvider appDataPathProvider,
+        ILogger logger)
     {
         _inner = inner ?? throw new ArgumentNullException(nameof(inner));
         _ = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _newStyleActionMenuFactory = newStyleActionMenuFactory ?? throw new ArgumentNullException(nameof(newStyleActionMenuFactory));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _ = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
 
         _filename = fileSystem.Path.Combine(appDataPathProvider.AppDataPath, "RepositoryActionsV2.yaml");
@@ -44,6 +48,7 @@ public class RepositoryTagsFactoryV2Decorator : IRepositoryTagsFactory
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Could not get tags. {message}", e.Message);
                 return _inner.GetTags(repository);
             }
 

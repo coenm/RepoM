@@ -9,7 +9,7 @@ using Scriban.Runtime;
 
 internal sealed class EnvScriptObject : IScriptObject
 {
-    private readonly Dictionary<string, string> _env;
+    private readonly IDictionary<string, string> _env;
 
     public static EnvScriptObject Create()
     {
@@ -33,7 +33,7 @@ internal sealed class EnvScriptObject : IScriptObject
         return new EnvScriptObject(env);
     }
 
-    public EnvScriptObject(Dictionary<string, string> envVars)
+    public EnvScriptObject(IDictionary<string, string> envVars)
     {
         _env = envVars;
     }

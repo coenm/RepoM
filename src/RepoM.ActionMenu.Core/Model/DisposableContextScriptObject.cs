@@ -59,7 +59,7 @@ internal sealed class DisposableContextScriptObject : ScriptObject, IScope
         }
     }
 
-    public void PushEnvironmentVariable(Dictionary<string, string> envVars)
+    public void PushEnvironmentVariable(IDictionary<string, string> envVars)
     {
         _envSetScriptObject.Push(new EnvScriptObject(envVars));
         _envCounter++;

@@ -1,4 +1,4 @@
-﻿namespace RepoM.ActionMenu.Interface.ActionMenuFactory;
+namespace RepoM.ActionMenu.Interface.ActionMenuFactory;
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ public interface IScope : IDisposable
 {
     void SetValue(string member, object? value, bool @readonly);
 
-    void PushEnvironmentVariable(Dictionary<string, string> envVars);
+    void PushEnvironmentVariable(IDictionary<string, string> envVars);
 
     Task AddContextActionAsync(IContextAction contextItem);
 }

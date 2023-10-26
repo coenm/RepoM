@@ -3,6 +3,7 @@ namespace RepoM.Plugin.Misc.Tests.DefaultAppSettingsTests;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Common;

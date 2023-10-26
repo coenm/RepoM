@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using RepoM.ActionMenu.Core;
@@ -190,7 +189,7 @@ public partial class MainWindow
         }
     }
 
-    private void LstRepositories_ContextMenuOpening(object? sender, ContextMenuEventArgs e)
+    private async void LstRepositories_ContextMenuOpening(object? sender, ContextMenuEventArgs e)
     {
         if (sender == null)
         {
@@ -198,13 +197,27 @@ public partial class MainWindow
             return;
         }
 
-        if (!LstRepositoriesContextMenuOpening(sender, ((FrameworkElement)e.Source).ContextMenu))
+        var lstRepositoriesContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(sender, ((FrameworkElement)e.Source).ContextMenu).ConfigureAwait(true);
+        if (!lstRepositoriesContextMenuOpening)
         {
             e.Handled = true;
         }
     }
+    
+    private async Task<bool> LstRepositoriesContextMenuOpeningWrapperAsync(object sender, ContextMenu ctxMenu)
+    {
+        try
+        {
+            return await LstRepositoriesContextMenuOpeningAsync(ctxMenu).ConfigureAwait(true);
+        }
+        catch (Exception e)
+        {
+            // log?
+            return false;
+        }
+    }
 
-    private bool LstRepositoriesContextMenuOpening(object sender, ContextMenu ctxMenu)
+    private async Task<bool> LstRepositoriesContextMenuOpeningAsync(ContextMenu ctxMenu)
     {
         if (lstRepositories.SelectedItem is not RepositoryViewModel vm)
         {
@@ -230,7 +243,7 @@ public partial class MainWindow
                 }
                 else
                 {
-                    Control? controlItem = CreateMenuItem(sender, action, vm);
+                    Control? controlItem = CreateMenuItem(action, vm);
                     if (controlItem != null)
                     {
                         items.Add(controlItem);
@@ -240,7 +253,7 @@ public partial class MainWindow
         }
         else
         {
-             IEnumerable<UserInterfaceRepositoryActionBase> actions = _newStyleActionMenuFactory.CreateMenuAsync(vm.Repository, newStyleFilename).GetAwaiter().GetResult();
+            IEnumerable<UserInterfaceRepositoryActionBase> actions = await _newStyleActionMenuFactory.CreateMenuAsync(vm.Repository, newStyleFilename).ConfigureAwait(true);
             foreach (UserInterfaceRepositoryActionBase action in actions)
             {
                 if (action is UserInterfaceSeparatorRepositoryAction)
@@ -252,7 +265,7 @@ public partial class MainWindow
                 }
                 else if (action is DeferredSubActionsUserInterfaceRepositoryAction deferredAction)
                 {
-                    Control? controlItem = CreateMenuItemNewStyle(sender, action, vm);
+                    Control? controlItem = CreateMenuItemNewStyle(action, vm);
                     if (controlItem != null)
                     {
                         items.Add(controlItem);
@@ -260,7 +273,7 @@ public partial class MainWindow
                 }
                 else if (action is UserInterfaceRepositoryAction uiAction)
                 {
-                    Control? controlItem = CreateMenuItemNewStyle(sender, action, vm);
+                    Control? controlItem = CreateMenuItemNewStyle(action, vm);
                     if (controlItem != null)
                     {
                         items.Add(controlItem);
@@ -271,6 +284,7 @@ public partial class MainWindow
 
         return true;
     }
+    
 
     private void LstRepositories_KeyDown(object? sender, KeyEventArgs e)
     {
@@ -290,12 +304,12 @@ public partial class MainWindow
 
             // try open context menu.
             ContextMenu? ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
-            if (ctxMenu != null && LstRepositoriesContextMenuOpening(sender, ctxMenu))
-            {
-                ctxMenu.Placement = PlacementMode.Left;
-                ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
-                ctxMenu.IsOpen = true;
-            }
+            // if (ctxMenu != null && LstRepositoriesContextMenuOpening(sender, ctxMenu))
+            // {
+            //     ctxMenu.Placement = PlacementMode.Left;
+            //     ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
+            //     ctxMenu.IsOpen = true;
+            // }
         }
     }
 
@@ -438,7 +452,7 @@ public partial class MainWindow
         parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
     }
 
-    private Control? /*MenuItem*/ CreateMenuItem(object sender, RepositoryActionBase action, RepositoryViewModel? affectedViews = null)
+    private Control? /*MenuItem*/ CreateMenuItem(RepositoryActionBase action, RepositoryViewModel? affectedViews = null)
     {
         if (action is RepositorySeparatorAction)
         {
@@ -494,7 +508,7 @@ public partial class MainWindow
 
                 foreach (RepositoryActionBase subAction in deferredRepositoryAction.DeferredSubActionsEnumerator())
                 {
-                    Control? controlItem = CreateMenuItem(sender, subAction);
+                    Control? controlItem = CreateMenuItem(subAction);
                     if (controlItem != null)
                     {
                         item.Items.Add(controlItem);
@@ -508,7 +522,7 @@ public partial class MainWindow
         {
             foreach (RepositoryActionBase subAction in repositoryAction.SubActions)
             {
-                Control? controlItem = CreateMenuItem(sender, subAction);
+                Control? controlItem = CreateMenuItem(subAction);
                 if (controlItem != null)
                 {
                     item.Items.Add(controlItem);
@@ -519,7 +533,7 @@ public partial class MainWindow
         return item;
     }
 
-    private Control? /*MenuItem*/ CreateMenuItemNewStyle(object sender, UserInterfaceRepositoryActionBase action, RepositoryViewModel? affectedViews = null)
+    private Control? /*MenuItem*/ CreateMenuItemNewStyle(UserInterfaceRepositoryActionBase action, RepositoryViewModel? affectedViews = null)
     {
         if (action is UserInterfaceSeparatorRepositoryAction)
         {
@@ -578,7 +592,7 @@ public partial class MainWindow
                 
                 foreach (UserInterfaceRepositoryActionBase subAction in deferredRepositoryAction.GetAsync().GetAwaiter().GetResult())
                 {
-                    Control? controlItem = CreateMenuItemNewStyle(sender, subAction);
+                    Control? controlItem = CreateMenuItemNewStyle(subAction);
                     if (controlItem != null)
                     {
                         item.Items.Add(controlItem);
@@ -592,7 +606,7 @@ public partial class MainWindow
         {
             foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
             {
-                Control? controlItem = CreateMenuItemNewStyle(sender, subAction);
+                Control? controlItem = CreateMenuItemNewStyle(subAction);
                 if (controlItem != null)
                 {
                     item.Items.Add(controlItem);
