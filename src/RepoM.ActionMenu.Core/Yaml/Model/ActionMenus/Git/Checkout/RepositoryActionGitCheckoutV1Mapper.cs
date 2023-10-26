@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
@@ -11,6 +12,7 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 
+[UsedImplicitly]
 internal class RepositoryActionGitCheckoutV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionGitCheckoutV1>
 {
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionGitCheckoutV1 action, IActionMenuGenerationContext context, IRepository repository)

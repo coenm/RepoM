@@ -2,12 +2,14 @@ namespace RepoM.Plugin.SonarCloud.ActionMenu.Model.ActionMenus.SetFavorite;
 
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.SonarCloud.RepositoryCommands;
 
+[UsedImplicitly]
 internal class RepositoryActionSonarCloudSetFavoriteV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionSonarCloudSetFavoriteV1>
 {
     private readonly ISonarCloudFavoriteService _service;

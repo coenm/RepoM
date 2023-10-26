@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
@@ -13,6 +14,7 @@ using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
 
+[UsedImplicitly]
 internal class RepositoryActionHeidiDatabasesV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionHeidiDatabasesV1>
 {
     private readonly IHeidiConfigurationService _service;

@@ -2,11 +2,13 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
 
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
 
+[UsedImplicitly]
 internal class RepositoryActionForEachV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionForEachV1>
 {
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionForEachV1 action, IActionMenuGenerationContext context, IRepository repository)
