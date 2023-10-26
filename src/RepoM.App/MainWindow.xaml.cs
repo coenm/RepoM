@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using RepoM.ActionMenu.Core;
@@ -197,14 +198,14 @@ public partial class MainWindow
             return;
         }
 
-        var lstRepositoriesContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(sender, ((FrameworkElement)e.Source).ContextMenu).ConfigureAwait(true);
+        var lstRepositoriesContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(((FrameworkElement)e.Source).ContextMenu).ConfigureAwait(true);
         if (!lstRepositoriesContextMenuOpening)
         {
             e.Handled = true;
         }
     }
     
-    private async Task<bool> LstRepositoriesContextMenuOpeningWrapperAsync(object sender, ContextMenu ctxMenu)
+    private async Task<bool> LstRepositoriesContextMenuOpeningWrapperAsync(ContextMenu ctxMenu)
     {
         try
         {
@@ -224,7 +225,9 @@ public partial class MainWindow
             return false;
         }
 
-        ItemCollection items = ctxMenu.Items;
+        List<Control> items = new List<Control>();
+       // ItemCollection items = ctxMenu.Items;
+        // ItemCollection items = new ItemCollection();
         items.Clear();
 
         var newStyleFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, "RepositoryActionsV2.yaml");
@@ -282,11 +285,17 @@ public partial class MainWindow
             }
         }
 
+        ctxMenu.Items.Clear();
+        foreach (Control item in items)
+        {
+            ctxMenu.Items.Add(item);
+        }
+
         return true;
     }
     
 
-    private void LstRepositories_KeyDown(object? sender, KeyEventArgs e)
+    private async void LstRepositories_KeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key is Key.Return or Key.Enter)
         {
@@ -304,15 +313,21 @@ public partial class MainWindow
 
             // try open context menu.
             ContextMenu? ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
-            // if (ctxMenu != null && LstRepositoriesContextMenuOpening(sender, ctxMenu))
-            // {
-            //     ctxMenu.Placement = PlacementMode.Left;
-            //     ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
-            //     ctxMenu.IsOpen = true;
-            // }
+            if (ctxMenu == null)
+            {
+                return;
+            }
+
+            var lstRepositoriesContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(ctxMenu).ConfigureAwait(true);
+            if (lstRepositoriesContextMenuOpening)
+            {
+                ctxMenu.Placement = PlacementMode.Left;
+                ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
+                ctxMenu.IsOpen = true;
+            }
         }
     }
-
+    
     private void InvokeActionOnCurrentRepository()
     {
         if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
