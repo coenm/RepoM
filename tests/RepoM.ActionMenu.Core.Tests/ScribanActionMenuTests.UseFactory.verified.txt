@@ -182,32 +182,6 @@
     CanExecute: true
   },
   {
-    Name: Open coenm drinks a lot of beer and wine in VISUAL Studio Code 7,
-    RepositoryCommand: {},
-    Repository: {
-      SafePath: C:/Projects/Github/RepoM/RepoM.git,
-      Remotes: [
-        {
-          Key: origin,
-          Name: RepoM,
-          Url: https://github.com/coenm/RepoM.git
-        },
-        {
-          Key: dummy,
-          Name: RepoZ,
-          Url: https://github.com/coenm/RepoZ
-        }
-      ],
-      HasUnpushedChanges: false,
-      Name: dummy name,
-      Path: dummy path,
-      Location: dummy location,
-      CurrentBranch: dummy current branch
-    },
-    ExecutionCausesSynchronizing: false,
-    CanExecute: true
-  },
-  {
     Name: Text coenm drinks a lot of beer and winesub coen in VISUAL Studio Code 7 https://sonarcloud.io/project/overview?id=sf23-2 env(DEF) my def 12-second!,
     RepositoryCommand: {},
     Repository: {

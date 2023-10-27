@@ -137,11 +137,6 @@ namespace RepoM.ActionMenu.Core.Tests
               - type: just-text@1
                 name: 'env name {{ environment.name }} env(DEF):`{{ env.DEF }}`'
             
-            - type: associate-file@1
-              name: Open {{ name }} in {{ 'visual' | string.upcase }} Studio Code {{ sub1(10,3) }}
-              extension: .cs
-              active: 1 == 1
-            
             - type: just-text@1
               name: Text {{ name }} in {{ 'visual' | string.upcase }} Studio Code {{ sub1(10,3) }} {{ link }} env(DEF) {{ env.DEF }}
               active: 1 <= 3
