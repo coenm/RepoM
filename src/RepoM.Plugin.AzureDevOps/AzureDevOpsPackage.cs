@@ -2,11 +2,13 @@ namespace RepoM.Plugin.AzureDevOps;
 
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryFiltering;
+using RepoM.Plugin.AzureDevOps.ActionMenu.Context;
 using RepoM.Plugin.AzureDevOps.ActionProvider;
 using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
@@ -45,9 +47,7 @@ public class AzureDevOpsPackage : IPackage
     {
         // new style
         container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.CreatePullRequest.RepositoryActionAzureDevOpsCreatePullRequestV1>();
-        container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.GetPullRequests.RepositoryActionAzureDevOpsGetPullRequestsV1>();
         container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.CreatePullRequest.RepositoryActionAzureDevOpsCreatePullRequestV1Mapper>(Lifestyle.Singleton);
-        container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.GetPullRequests.RepositoryActionAzureDevOpsGetPullRequestsV1Mapper>(Lifestyle.Singleton);
         
         // old style
         container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionAzureDevOpsCreatePullRequestsV1>();
@@ -62,6 +62,8 @@ public class AzureDevOpsPackage : IPackage
 
         // action executor
         container.Register<ICommandExecutor<CreatePullRequestRepositoryCommand>, CreatePullRequestRepositoryCommandExecutor>(Lifestyle.Singleton);
+
+        container.Collection.Append<ITemplateContextRegistration, AzureDevopsVariables>(Lifestyle.Singleton);
     }
 
     /// <remarks>This method is used by reflection to generate documentation file</remarks>

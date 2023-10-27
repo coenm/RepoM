@@ -198,6 +198,8 @@ public partial class MainWindow
             return;
         }
 
+        // var currentCursor = ((FrameworkElement)e.Source).Cursor;
+        // ((FrameworkElement)e.Source).Cursor = Cursors.AppStarting;
         var lstRepositoriesContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(((FrameworkElement)e.Source).ContextMenu).ConfigureAwait(true);
         if (!lstRepositoriesContextMenuOpening)
         {
@@ -226,9 +228,24 @@ public partial class MainWindow
         }
 
         List<Control> items = new List<Control>();
-       // ItemCollection items = ctxMenu.Items;
+        // ItemCollection items = ctxMenu.Items;
         // ItemCollection items = new ItemCollection();
-        items.Clear();
+        //items.Clear();
+
+        // foreach (var item in ctxMenu.Items)
+        // {
+        //     if (item is Control c)
+        //     {
+        //         c.IsEnabled = false;
+        //     }
+        // }
+
+        ctxMenu.Items.Clear();
+        ctxMenu.Items.Add(new AcrylicMenuItem
+            {
+                Header = "Loading ..",
+                IsEnabled = true,
+            });
 
         var newStyleFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, "RepositoryActionsV2.yaml");
         var fileExists = _fileSystem.File.Exists(newStyleFilename);

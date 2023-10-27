@@ -36,8 +36,7 @@ internal class WebBrowserService : IWebBrowserService
             OpenUrl(url);
             return;
         }
-
-
+        
         if (string.IsNullOrWhiteSpace(profileConfig.CommandLineArguments))
         {
             StartProcess(browser, url);

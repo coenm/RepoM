@@ -26,6 +26,7 @@ public class Program
         projectName = "RepoM.Plugin.Heidi";
         projectName = "RepoM.Plugin.Statistics";
         projectName = "RepoM.Plugin.SonarCloud";
+        // projectName = "RepoM.Plugin.AzureDevOps";
 
         var pathToSolution = Path.Combine(srcFolder, projectName, $"{projectName}.csproj");
         var pathToGeneratedCode = Path.Combine(srcFolder, projectName, "RepoMCodeGen.generated.cs");
