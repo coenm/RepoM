@@ -3,14 +3,13 @@ namespace RepoM.ActionMenu.Core.TestLib;
 using System;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Core.Plugin;
 using SimpleInjector;
 
-public class TestBootstrapper
+internal class TestBootstrapper
 {
     private readonly IPackageConfiguration _packageConfiguration;
 
@@ -28,7 +27,7 @@ public class TestBootstrapper
 
     public MockFileSystem FileSystem { get; }
 
-    public void AddRootFile(string content, string path = "C:\\RepositoriesV2.yaml")
+    public void AddRootFile(string content, string path)
     {
         FileSystem.AddFile(path, new MockFileData(content));
     }
