@@ -38,7 +38,7 @@ public class IntegrationActionMenuTests : IntegrationActionTestBase<AzureDevOpsP
 
             action-menu:
             - type: just-text@1
-              name: 'pr count: {{ array.size prs }} url: "{{ first_pr.url }}"; name: "{{ first_pr.name  }}" '
+              name: 'pr count: "{{ array.size prs }}"; url: "{{ first_pr.url }}"; name: "{{ first_pr.name  }}";'
 
             """;
         AddRootFile(YAML);

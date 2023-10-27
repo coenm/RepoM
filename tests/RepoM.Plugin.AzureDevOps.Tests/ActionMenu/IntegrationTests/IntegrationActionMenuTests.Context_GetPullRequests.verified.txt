@@ -1,5 +1,5 @@
 ﻿{
-  Name: pr count: 1 url: "https://azure-devops.test/pr/123"; name: "test pr" ,
+  Name: pr count: "1"; url: "https://azure-devops.test/pr/123"; name: "test pr";,
   RepositoryCommand: {
     $type: NullRepositoryCommand
   },
