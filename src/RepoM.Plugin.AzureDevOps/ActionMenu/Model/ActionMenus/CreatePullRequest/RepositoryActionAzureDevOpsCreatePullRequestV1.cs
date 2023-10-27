@@ -74,6 +74,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     [Predicate(default)]
     public Predicate OpenInBrowser { get; set; } = true;
 
+    /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 
     /// <summary>
