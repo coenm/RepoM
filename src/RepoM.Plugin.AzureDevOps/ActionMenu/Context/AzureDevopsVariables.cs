@@ -41,7 +41,6 @@ internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
         {
             _logger.LogError(e, "Could not grab pull requests.");
             yield break;
-
         }
 
         if (pullRequests == null)
