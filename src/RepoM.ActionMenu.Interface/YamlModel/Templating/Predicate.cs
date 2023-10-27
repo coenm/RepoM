@@ -6,7 +6,7 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 
 public class Predicate : EvaluateObjectBase
 {
-    protected bool? StaticValue;
+    protected bool? StaticValue; // todo slaat nergens op?!
 
     public bool DefaultValue { get; set; }
 

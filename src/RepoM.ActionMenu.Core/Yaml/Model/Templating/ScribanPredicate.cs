@@ -8,10 +8,16 @@ using Scriban;
 
 internal class ScribanPredicate : Predicate, ICreateTemplate
 {
+    private bool? _fixedValue = null;
     private Template? _template;
 
     void ICreateTemplate.CreateTemplate(ITemplateParser templateParser)
     {
+        if (string.IsNullOrWhiteSpace(Value))
+        {
+            _fixedValue = DefaultValue;
+        }
+
         _template ??= templateParser.ParseScriptOnly(Value);
     }
 
@@ -20,6 +26,11 @@ internal class ScribanPredicate : Predicate, ICreateTemplate
         if (StaticValue.HasValue)
         {
             return StaticValue.Value;
+        }
+
+        if (_fixedValue.HasValue)
+        {
+            return _fixedValue.Value;
         }
 
         if (instance is TemplateContext tc && _template != null)
