@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
+using FluentAssertions;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Plugin.AzureDevOps.Internal;
-using VerifyXunit;
 using Xunit;
 
 public class IntegrationActionMenuTests : IntegrationActionTestBase<AzureDevOpsPackage>
@@ -38,7 +38,7 @@ public class IntegrationActionMenuTests : IntegrationActionTestBase<AzureDevOpsP
 
             action-menu:
             - type: just-text@1
-              name: 'pr count: "{{ array.size prs }}"; url: "{{ first_pr.url }}"; name: "{{ first_pr.name  }}";'
+              name: 'pr count: [{{ array.size prs }}]; url: [{{ first_pr.url }}]; name: [{{ first_pr.name  }}];'
 
             """;
         AddRootFile(YAML);
@@ -47,6 +47,8 @@ public class IntegrationActionMenuTests : IntegrationActionTestBase<AzureDevOpsP
         IEnumerable<UserInterfaceRepositoryActionBase> result = await CreateMenuAsync();
 
         // assert
-        await Verifier.Verify(result.Single());
+        var singleAction = result.Single() as UserInterfaceRepositoryAction;
+        singleAction.Should().NotBeNull();
+        singleAction!.Name.Should().Be("pr count: [1]; url: [https://azure-devops.test/pr/123]; name: [test pr];");
     }
 }
