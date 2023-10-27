@@ -17,7 +17,7 @@ namespace RepoM.Plugin.AzureDevOps.ActionMenu.Context
         public override void RegisterFunctions(RepoM.ActionMenu.Interface.Scriban.IContextRegistration contextRegistration)
         {
             contextRegistration = contextRegistration.CreateOrGetSubRegistration("azure_devops");
-            contextRegistration.RegisterFunction("prs", (Func<RepoM.ActionMenu.Interface.ActionMenuFactory.IActionMenuGenerationContext, string, System.Collections.IEnumerable>)GetPullRequests);
+            contextRegistration.RegisterFunction("get_pull_requests", (Func<RepoM.ActionMenu.Interface.ActionMenuFactory.IActionMenuGenerationContext, string, System.Collections.IEnumerable>)GetPullRequests);
         }
     }
 }

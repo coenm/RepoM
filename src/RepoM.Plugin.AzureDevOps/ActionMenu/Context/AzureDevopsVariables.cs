@@ -23,7 +23,22 @@ internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    [ActionMenuMember("prs")]
+    /// <summary>
+    /// Get pull requests for the given project. The result is an enumerabtion of <see cref="PullRequest"/>.
+    /// </summary>
+    /// <param name="projectId">The azure devops project id.</param>
+    /// <returns>Returns an enumeration of pull requests or empty when no pull requests are found.</returns>
+    /// <example>
+    /// Locate all solution files in the given directory.
+    /// <code>
+    /// azure_devops.get_pull_requests 'project_id'
+    /// # azure_devops.get_pull_requests('project_id')
+    /// </code>
+    /// <code>
+    /// [ {} {} {}] todo
+    /// </code>
+    /// </example>
+    [ActionMenuMember("get_pull_requests")]
     public IEnumerable GetPullRequests(IActionMenuGenerationContext context, string projectId)
     {
         if (string.IsNullOrWhiteSpace(projectId))
