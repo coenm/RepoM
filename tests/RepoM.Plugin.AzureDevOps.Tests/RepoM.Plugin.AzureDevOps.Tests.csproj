@@ -44,4 +44,16 @@
   <ItemGroup>
     <Folder Include="ActionMenu\Context\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ActionMenu\IntegrationTests\IntegrationActionMenuTests.Context_GetPullRequests.verified.txt">
+      <DependentUpon>IntegrationActionMenuTests.cs</DependentUpon>
+    </None>
+    <None Update="ActionMenu\IntegrationTests\IntegrationActionMenuTests.Abc.verified.txt">
+      <DependentUpon>IntegrationActionMenuTests.cs</DependentUpon>
+    </None>
+    <None Update="ActionMenu\IntegrationTests\IntegrationActionMenuTests.Abc.received.txt">
+      <DependentUpon>IntegrationActionMenuTests.cs</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>

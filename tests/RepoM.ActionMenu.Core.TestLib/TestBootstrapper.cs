@@ -1,35 +1,50 @@
-namespace RepoM.ActionMenu.Core.TestLib
+namespace RepoM.ActionMenu.Core.TestLib;
+
+using System;
+using System.IO.Abstractions;
+using System.IO.Abstractions.TestingHelpers;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using RepoM.Core.Plugin;
+using SimpleInjector;
+
+public class TestBootstrapper
 {
-    using System;
-    using System.IO.Abstractions;
-    using System.Threading.Tasks;
-    using RepoM.Core.Plugin;
-    using SimpleInjector;
+    private readonly IPackageConfiguration _packageConfiguration;
 
-    public class TestBootstrapper
+    public TestBootstrapper(
+        IPackageConfiguration packageConfiguration)
     {
-        private readonly IPackageConfiguration _packageConfiguration;
+        _packageConfiguration = packageConfiguration ?? throw new ArgumentNullException(nameof(packageConfiguration));
+        FileSystem =new MockFileSystem();
+        Container = new Container();
+        Container.RegisterInstance<IFileSystem>(FileSystem);
+        Container.RegisterInstance<ILogger>(NullLogger.Instance);
+    }
 
-        public TestBootstrapper(
-            IPackageConfiguration packageConfiguration,
-            IFileSystem fileSystem)
-        {
-            _packageConfiguration = packageConfiguration ?? throw new ArgumentNullException(nameof(packageConfiguration));
-            _ = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-            Container = new Container();
-            Container.RegisterInstance(fileSystem);
-        }
+    public Container Container { get; }
 
-        public Container Container { get; }
+    public MockFileSystem FileSystem { get; }
 
-        public void RegisterActionMenuLibrary()
-        {
-            Bootstrapper.RegisterServices(Container);
-        }
+    public void AddRootFile(string content, string path = "C:\\RepositoriesV2.yaml")
+    {
+        FileSystem.AddFile(path, new MockFileData(content));
+    }
 
-        public Task RegisterPlugin(IPackage package)
-        {
-            return package.RegisterServicesAsync(Container, _packageConfiguration);
-        }
+    public void RegisterActionMenuLibrary()
+    {
+        Bootstrapper.RegisterServices(Container);
+    }
+
+    public Task RegisterPlugin(IPackage package)
+    {
+        return package.RegisterServicesAsync(Container, _packageConfiguration);
+    }
+
+    public IUserInterfaceActionMenuFactory GetUserInterfaceActionMenu()
+    {
+        return Bootstrapper.GetUserInterfaceActionMenu(Container);
     }
 }
