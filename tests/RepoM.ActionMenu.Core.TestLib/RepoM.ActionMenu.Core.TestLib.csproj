@@ -33,15 +33,19 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Scriban" Version="5.9.0" />
+    <PackageReference Include="YamlDotNet" Version="13.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
-    <ProjectReference Include="..\RepoM.ActionMenu.Core.TestLib\RepoM.ActionMenu.Core.TestLib.csproj" />
-    <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ActionMenu\Context\" />
+    <None Update="ScribanActionMenuTests - Copy.Serialize.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>%(ParentFile).cs</DependentUpon>
+    </None>
   </ItemGroup>
 </Project>
