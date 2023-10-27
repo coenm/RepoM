@@ -1,13 +1,23 @@
 namespace RepoM.ActionMenu.Core.TestLib
 {
+    using System;
+    using System.IO.Abstractions;
+    using System.Threading.Tasks;
     using RepoM.Core.Plugin;
     using SimpleInjector;
 
     public class TestBootstrapper
     {
-        public TestBootstrapper()
+        private readonly IPackageConfiguration _packageConfiguration;
+
+        public TestBootstrapper(
+            IPackageConfiguration packageConfiguration,
+            IFileSystem fileSystem)
         {
+            _packageConfiguration = packageConfiguration ?? throw new ArgumentNullException(nameof(packageConfiguration));
+            _ = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             Container = new Container();
+            Container.RegisterInstance(fileSystem);
         }
 
         public Container Container { get; }
@@ -17,9 +27,9 @@ namespace RepoM.ActionMenu.Core.TestLib
             Bootstrapper.RegisterServices(Container);
         }
 
-        public void RegisterPlugin(IPackage package)
+        public Task RegisterPlugin(IPackage package)
         {
-            package.RegisterServicesAsync(Container, null!);
+            return package.RegisterServicesAsync(Container, _packageConfiguration);
         }
     }
 }
