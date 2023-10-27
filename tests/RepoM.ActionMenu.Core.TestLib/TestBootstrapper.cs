@@ -1,5 +1,6 @@
 namespace RepoM.ActionMenu.Core.TestLib
 {
+    using RepoM.Core.Plugin;
     using SimpleInjector;
 
     public class TestBootstrapper
@@ -14,6 +15,11 @@ namespace RepoM.ActionMenu.Core.TestLib
         public void RegisterActionMenuLibrary()
         {
             Bootstrapper.RegisterServices(Container);
+        }
+
+        public void RegisterPlugin(IPackage package)
+        {
+            package.RegisterServicesAsync(Container, null!);
         }
     }
 }
