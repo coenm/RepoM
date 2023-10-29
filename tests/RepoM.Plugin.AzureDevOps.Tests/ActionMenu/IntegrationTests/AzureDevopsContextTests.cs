@@ -11,9 +11,9 @@ using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Plugin.AzureDevOps.Internal;
 using Xunit;
 
-public class IntegrationActionMenuTests : IntegrationActionTestBase<AzureDevOpsPackage>
+public class AzureDevopsContextTests : IntegrationActionTestBase<AzureDevOpsPackage>
 {
-    public IntegrationActionMenuTests()
+    public AzureDevopsContextTests()
     {
         IAzureDevOpsPullRequestService azureDevOpsPullRequestService = A.Fake<IAzureDevOpsPullRequestService>();
         Container.RegisterInstance(azureDevOpsPullRequestService);

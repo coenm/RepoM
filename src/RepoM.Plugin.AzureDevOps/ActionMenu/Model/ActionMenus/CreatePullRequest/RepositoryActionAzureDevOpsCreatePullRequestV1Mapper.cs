@@ -9,7 +9,6 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
-using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.RepositoryCommands;
 
@@ -25,13 +24,7 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
 
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionAzureDevOpsCreatePullRequestV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
-        if (repository is not Repository repo)
-        {
-            _logger.LogError("Repo is not a Repository as expected");
-            yield break;
-        }
-
-        if (repo.HasLocalChanges)
+        if (repository.HasLocalChanges)
         {
             yield break;
         }

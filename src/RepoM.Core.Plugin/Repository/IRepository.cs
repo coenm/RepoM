@@ -28,4 +28,7 @@ public interface IRepository
     bool HasUnpushedChanges { get; }
 
     public string[] ReadAllBranches();
+
+
+    public bool HasLocalChanges { get; }
 }

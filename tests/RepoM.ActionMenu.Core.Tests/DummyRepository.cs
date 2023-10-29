@@ -33,4 +33,6 @@ public class DummyRepository : IRepository
     {
         return Array.Empty<string>();
     }
+
+    public bool HasLocalChanges { get; } = false;
 }
