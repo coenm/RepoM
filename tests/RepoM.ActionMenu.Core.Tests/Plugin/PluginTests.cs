@@ -98,7 +98,7 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
             IEnumerable<UserInterfaceRepositoryActionBase> result = await sut.CreateMenuAsync(_repository, "C:\\RepositoryActionsV2.yaml");
 
             // assert
-            await Verifier.Verify(result);
+            await Verifier.Verify(result).ScrubMembersWithType<IRepository>();
         }
     }
 }

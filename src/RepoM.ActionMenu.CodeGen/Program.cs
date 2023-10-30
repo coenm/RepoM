@@ -22,66 +22,76 @@ public class Program
         var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
         var srcFolder = Path.Combine(rootFolder, "src");
         var docsFolder = Path.Combine(rootFolder, "docs_new");
-        var projectName = "RepoM.ActionMenu.Core";
-        projectName = "RepoM.Plugin.Heidi";
-        projectName = "RepoM.Plugin.Statistics";
-        projectName = "RepoM.Plugin.SonarCloud";
-        // projectName = "RepoM.Plugin.AzureDevOps";
 
-        var pathToSolution = Path.Combine(srcFolder, projectName, $"{projectName}.csproj");
-        var pathToGeneratedCode = Path.Combine(srcFolder, projectName, "RepoMCodeGen.generated.cs");
-
-        CheckDirectory(Path.Combine(rootFolder, ".git"));
         CheckDirectory(srcFolder);
         CheckDirectory(docsFolder);
-        CheckFile(pathToSolution);
+        CheckDirectory(Path.Combine(rootFolder, ".git"));
+
+        List<string> projects = new List<string>()
+            {
+                "RepoM.ActionMenu.Core",
+                "RepoM.Plugin.Heidi",
+                "RepoM.Plugin.Statistics",
+                "RepoM.Plugin.SonarCloud",
+                // "RepoM.Plugin.AzureDevOps",
+            };
 
         Template templateModule = await LoadTemplateAsync("Templates/Module.scriban-cs");
         Template templateDocs = await LoadTemplateAsync("Templates/Docs.scriban-txt");
 
-        Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, projectName);
 
-        // _ = compilation.GetTypeByMetadataName("Kalk.Core.KalkEngine");
-        var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>();
+        var projectMapping = new Dictionary<string, Dictionary<string, KalkModuleToGenerate>>();
 
-        foreach (ISymbol type in compilation.GetSymbolsWithName(_ => true, SymbolFilter.Type))
+        foreach (var project in projects)
         {
-            if (type is not ITypeSymbol typeSymbol)
-            {
-                continue;
-            }
+            var pathToSolution = Path.Combine(srcFolder, project, $"{project}.csproj");
+           
+            CheckFile(pathToSolution);
+       
+            Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project);
 
-            AttributeData? moduleAttribute = FindAttribute<ActionMenuModuleAttribute>(typeSymbol);
-            KalkModuleToGenerate? moduleToGenerate = null;
-            if (moduleAttribute != null)
-            {
-                GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule);
-            }
+            // _ = compilation.GetTypeByMetadataName("Kalk.Core.KalkEngine");
+            var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>();
+            projectMapping.Add(project, mapNameToModule);
 
-            foreach (ISymbol member in typeSymbol.GetMembers())
+            foreach (ISymbol type in compilation.GetSymbolsWithName(_ => true, SymbolFilter.Type))
             {
-                AttributeData? attr = FindAttribute<ActionMenuMemberAttribute>(member);
-                if (attr == null)
+                if (type is not ITypeSymbol typeSymbol)
                 {
                     continue;
                 }
 
-                var name = attr.ConstructorArguments[0].Value?.ToString();
-                if (string.IsNullOrWhiteSpace(name))
+                AttributeData? moduleAttribute = FindAttribute<ActionMenuModuleAttribute>(typeSymbol);
+                KalkModuleToGenerate? moduleToGenerate = null;
+                if (moduleAttribute != null)
                 {
-                    throw new Exception("Name cannot be null or empty.");
+                    GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule);
                 }
 
-                var className = member.ContainingSymbol.Name;
-
-                // In case the module is built-in, we still generate a module for it
-                if (moduleToGenerate == null)
+                foreach (ISymbol member in typeSymbol.GetMembers())
                 {
-                    GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule);
-                }
+                    AttributeData? attr = FindAttribute<ActionMenuMemberAttribute>(member);
+                    if (attr == null)
+                    {
+                        continue;
+                    }
 
-                var method = member as IMethodSymbol;
-                var desc = new KalkMemberToGenerate()
+                    var name = attr.ConstructorArguments[0].Value?.ToString();
+                    if (string.IsNullOrWhiteSpace(name))
+                    {
+                        throw new Exception("Name cannot be null or empty.");
+                    }
+
+                    var className = member.ContainingSymbol.Name;
+
+                    // In case the module is built-in, we still generate a module for it
+                    if (moduleToGenerate == null)
+                    {
+                        GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule);
+                    }
+
+                    var method = member as IMethodSymbol;
+                    var desc = new KalkMemberToGenerate()
                     {
                         Name = name,
                         XmlId = member.GetDocumentationCommentId() ?? string.Empty,
@@ -89,80 +99,85 @@ public class Program
                         IsCommand = method?.ReturnsVoid ?? false,
                         Module = moduleToGenerate,
                     };
-                desc.Names.Add(name);
-                    
-                if (method != null)
-                {
-                    desc.CSharpName = method.Name;
-                        
-                    var builder = new StringBuilder();
-                    desc.IsAction = method.ReturnsVoid;
-                    desc.IsFunc = !desc.IsAction;
-                    builder.Append(desc.IsAction ? "Action" : "Func");
+                    desc.Names.Add(name);
 
-                    if (method.Parameters.Length > 0 || desc.IsFunc)
+                    if (method != null)
                     {
-                        builder.Append('<');
-                    }
+                        desc.CSharpName = method.Name;
 
-                    for (var i = 0; i < method.Parameters.Length; i++)
-                    {
-                        IParameterSymbol parameter = method.Parameters[i];
-                        if (i > 0)
+                        var builder = new StringBuilder();
+                        desc.IsAction = method.ReturnsVoid;
+                        desc.IsFunc = !desc.IsAction;
+                        builder.Append(desc.IsAction ? "Action" : "Func");
+
+                        if (method.Parameters.Length > 0 || desc.IsFunc)
                         {
-                            builder.Append(", ");
+                            builder.Append('<');
                         }
 
-                        builder.Append(GetTypeName(parameter.Type));
-                    }
-
-                    if (desc.IsFunc)
-                    {
-                        if (method.Parameters.Length > 0)
+                        for (var i = 0; i < method.Parameters.Length; i++)
                         {
-                            builder.Append(", ");
+                            IParameterSymbol parameter = method.Parameters[i];
+                            if (i > 0)
+                            {
+                                builder.Append(", ");
+                            }
+
+                            builder.Append(GetTypeName(parameter.Type));
                         }
-                        builder.Append(GetTypeName(method.ReturnType));
-                    }
 
-                    if (method.Parameters.Length > 0 || desc.IsFunc)
+                        if (desc.IsFunc)
+                        {
+                            if (method.Parameters.Length > 0)
+                            {
+                                builder.Append(", ");
+                            }
+                            builder.Append(GetTypeName(method.ReturnType));
+                        }
+
+                        if (method.Parameters.Length > 0 || desc.IsFunc)
+                        {
+                            builder.Append('>');
+                        }
+
+                        desc.Cast = $"({builder})";
+                    }
+                    else if (member is IPropertySymbol or IFieldSymbol)
                     {
-                        builder.Append('>');
+                        desc.CSharpName = member.Name;
+                        desc.IsConst = true;
                     }
 
-                    desc.Cast = $"({builder})";
+                    moduleToGenerate.Members.Add(desc);
+                    XmlDocsParser.ExtractDocumentation(member, desc);
                 }
-                else if (member is IPropertySymbol or IFieldSymbol)
-                {
-                    desc.CSharpName = member.Name;
-                    desc.IsConst = true;
-                }
-
-                moduleToGenerate.Members.Add(desc);
-                XmlDocsParser.ExtractDocumentation(member, desc);
             }
         }
 
-        var modules = mapNameToModule.Values.OrderBy(x => x.ClassName).ToList();
-
-        var context = new TemplateContext
-            {
-                LoopLimit = 0,
-                MemberRenamer = x => x.Name,
-            };
-        var scriptObject = new ScriptObject()
-            { 
-                { "modules", modules },
-            };
-        context.PushGlobal(scriptObject);
-
-        var result = await templateModule.RenderAsync(context);
-        await File.WriteAllTextAsync(pathToGeneratedCode, result);
-        
-        // Generate module site documentation
-        foreach(KalkModuleToGenerate module in modules)
+        foreach ((var project, Dictionary<string, KalkModuleToGenerate>? mapNameToModule) in projectMapping)
         {
-            await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
+            var modules = mapNameToModule.Values.OrderBy(x => x.ClassName).ToList();
+            var pathToGeneratedCode = Path.Combine(srcFolder, project, "RepoMCodeGen.generated.cs");
+        
+            var context = new TemplateContext
+                {
+                    LoopLimit = 0,
+                    MemberRenamer = x => x.Name,
+                };
+            var scriptObject = new ScriptObject()
+                {
+                    { "modules", modules },
+                };
+            context.PushGlobal(scriptObject);
+        
+            var result = await templateModule.RenderAsync(context);
+            await File.WriteAllTextAsync(pathToGeneratedCode, result);
+        
+            // Generate module site documentation
+            foreach (KalkModuleToGenerate module in modules)
+            {
+                await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
+            }
         }
     }
 

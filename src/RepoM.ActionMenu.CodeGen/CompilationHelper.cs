@@ -13,7 +13,9 @@ internal static class CompilationHelper
     {
         CSharpCompilationCaptureResult compilationCaptureResult = CSharpCompilationCapture.Build(pathToSolution);
         Solution solution = compilationCaptureResult.Workspace.CurrentSolution;
-        Project project = solution.Projects.Single(x => x.Name == projectName);
+
+        var projects = solution.Projects.ToArray();
+        Project project = projects.Single(x => x.Name == projectName);
 
         // Make sure that doc will be parsed
         project = project.WithParseOptions(project.ParseOptions!.WithDocumentationMode(DocumentationMode.Parse));

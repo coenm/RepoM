@@ -2,156 +2,42 @@
   {
     Name: key k1,
     RepositoryCommand: {},
-    Repository: {
-      SafePath: C:/Projects/Github/RepoM/RepoM.git,
-      Remotes: [
-        {
-          Key: origin,
-          Name: RepoM,
-          Url: https://github.com/coenm/RepoM.git
-        },
-        {
-          Key: dummy,
-          Name: RepoZ,
-          Url: https://github.com/coenm/RepoZ
-        }
-      ],
-      HasUnpushedChanges: false,
-      Name: dummy name,
-      Path: dummy path,
-      Location: dummy location,
-      CurrentBranch: dummy current branch
-    },
+    Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true
   },
   {
     Name: dbname x1,
     RepositoryCommand: {},
-    Repository: {
-      SafePath: C:/Projects/Github/RepoM/RepoM.git,
-      Remotes: [
-        {
-          Key: origin,
-          Name: RepoM,
-          Url: https://github.com/coenm/RepoM.git
-        },
-        {
-          Key: dummy,
-          Name: RepoZ,
-          Url: https://github.com/coenm/RepoZ
-        }
-      ],
-      HasUnpushedChanges: false,
-      Name: dummy name,
-      Path: dummy path,
-      Location: dummy location,
-      CurrentBranch: dummy current branch
-    },
+    Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true
   },
   {
     Name: dbname x2,
     RepositoryCommand: {},
-    Repository: {
-      SafePath: C:/Projects/Github/RepoM/RepoM.git,
-      Remotes: [
-        {
-          Key: origin,
-          Name: RepoM,
-          Url: https://github.com/coenm/RepoM.git
-        },
-        {
-          Key: dummy,
-          Name: RepoZ,
-          Url: https://github.com/coenm/RepoZ
-        }
-      ],
-      HasUnpushedChanges: false,
-      Name: dummy name,
-      Path: dummy path,
-      Location: dummy location,
-      CurrentBranch: dummy current branch
-    },
+    Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true
   },
   {
     Name: key k2,
     RepositoryCommand: {},
-    Repository: {
-      SafePath: C:/Projects/Github/RepoM/RepoM.git,
-      Remotes: [
-        {
-          Key: origin,
-          Name: RepoM,
-          Url: https://github.com/coenm/RepoM.git
-        },
-        {
-          Key: dummy,
-          Name: RepoZ,
-          Url: https://github.com/coenm/RepoZ
-        }
-      ],
-      HasUnpushedChanges: false,
-      Name: dummy name,
-      Path: dummy path,
-      Location: dummy location,
-      CurrentBranch: dummy current branch
-    },
+    Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true
   },
   {
     Name: dbname x21,
     RepositoryCommand: {},
-    Repository: {
-      SafePath: C:/Projects/Github/RepoM/RepoM.git,
-      Remotes: [
-        {
-          Key: origin,
-          Name: RepoM,
-          Url: https://github.com/coenm/RepoM.git
-        },
-        {
-          Key: dummy,
-          Name: RepoZ,
-          Url: https://github.com/coenm/RepoZ
-        }
-      ],
-      HasUnpushedChanges: false,
-      Name: dummy name,
-      Path: dummy path,
-      Location: dummy location,
-      CurrentBranch: dummy current branch
-    },
+    Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true
   },
   {
     Name: dbname x22,
     RepositoryCommand: {},
-    Repository: {
-      SafePath: C:/Projects/Github/RepoM/RepoM.git,
-      Remotes: [
-        {
-          Key: origin,
-          Name: RepoM,
-          Url: https://github.com/coenm/RepoM.git
-        },
-        {
-          Key: dummy,
-          Name: RepoZ,
-          Url: https://github.com/coenm/RepoZ
-        }
-      ],
-      HasUnpushedChanges: false,
-      Name: dummy name,
-      Path: dummy path,
-      Location: dummy location,
-      CurrentBranch: dummy current branch
-    },
+    Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true
   }
