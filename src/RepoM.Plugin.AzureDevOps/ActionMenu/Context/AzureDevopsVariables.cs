@@ -24,10 +24,10 @@ internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
     }
 
     /// <summary>
-    /// Get pull requests for the given project. The result is an enumerabtion of <see cref="PullRequest"/>.
+    /// Get pull requests for the given project. The result is an enumeration of <see cref="PullRequest"/>.
     /// </summary>
-    /// <param name="projectId">The azure devops project id.</param>
-    /// <returns>Returns an enumeration of pull requests or empty when no pull requests are found.</returns>
+    /// <param name="projectId">The azure devops project id. Cannot be null or empty.</param>
+    /// <returns>Returns an enumeration of pull requests or an empty enumeration when no pull requests are found.</returns>
     /// <example>
     /// Locate all solution files in the given directory.
     /// <code>

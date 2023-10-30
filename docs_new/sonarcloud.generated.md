@@ -1,7 +1,3 @@
----
-title: sonarcloud Module
-url: /doc/api/sonarcloud/
----
 
 
 

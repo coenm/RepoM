@@ -1,16 +1,18 @@
 namespace RepoM.Plugin.AzureDevOps.ActionMenu.Model.ActionMenus.CreatePullRequest;
 
 using System.ComponentModel.DataAnnotations;
+using JetBrains.Annotations;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
 /// Auto complete options.
 /// </summary>
+[UsedImplicitly]
 internal class AutoCompleteOptionsV1
 {
     /// <summary>
-    /// The merge strategy. Possible values are `NoFastForward`, `Squash` and `Rebase`, and `RebaseMerge`.
+    /// The merge strategy. Possible values are `NoFastForward`, `Squash`, `Rebase`, and `RebaseMerge`.
     /// </summary>
     [Required]
     [PropertyType(typeof(MergeStrategyV1))]

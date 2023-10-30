@@ -1,7 +1,3 @@
----
-title: heidi Module
-url: /doc/api/heidi/
----
 
 
 

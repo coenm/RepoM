@@ -1,7 +1,3 @@
----
-title: Repository Module
-url: /doc/api/repository/
----
 
 
 

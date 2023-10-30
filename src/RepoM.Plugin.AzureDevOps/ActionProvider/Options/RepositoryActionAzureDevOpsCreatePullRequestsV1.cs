@@ -23,12 +23,10 @@ public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : Repository
     [PropertyType(typeof(string))]
     public string? ProjectId { get; set; }
 
-    // in v2, should be name (as others are)
     /// <summary>
     /// Menu item title. When not provided, a title will be generated.
     /// This property will be used instead of the Name property.
     /// </summary>
-    // [EvaluatedProperty]
     [PropertyType(typeof(string))]
     public string? Title { get; set; }
 
@@ -98,7 +96,7 @@ public class RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1
     public bool Enabled { get; set; }
 
     /// <summary>
-    /// The merge strategy. Possible values are `NoFastForward`, `Squash` and `Rebase`, and `RebaseMerge`.
+    /// The merge strategy. Possible values are `NoFastForward`, `Squash`, `Rebase`, and `RebaseMerge`.
     /// </summary>
     [Required]
     [PropertyType(typeof(RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategyV1))]

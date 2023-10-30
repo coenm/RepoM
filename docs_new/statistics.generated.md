@@ -1,7 +1,3 @@
----
-title: statistics Module
-url: /doc/api/statistics/
----
 
 
 

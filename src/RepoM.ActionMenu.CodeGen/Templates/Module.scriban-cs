@@ -45,6 +45,7 @@ namespace {{ module.Namespace }}
         {{~ end ~}}
         {
         {{~ if string.contains module.Namespace 'Plugin' ~}}
+            contextRegistration = contextRegistration.CreateOrGetSubRegistration("{{ module.Name }}");
             {{~ for member in module.Members ~}}
                 {{~ if member.IsConst ~}}
             contextRegistration.RegisterConstant("{{ member.Name }}", {{ member.CSharpName }});

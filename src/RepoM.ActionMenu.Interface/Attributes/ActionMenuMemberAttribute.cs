@@ -11,6 +11,4 @@ public class ActionMenuMemberAttribute : Attribute
     }
 
     public string Alias { get; }
-    
-    public bool Functor { get; set; }
 }

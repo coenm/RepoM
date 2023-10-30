@@ -21,6 +21,7 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.BufferedDeserialization;
 using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization.NodeDeserializers;
+using YamlDotNet.Serialization.TypeResolvers;
 
 internal class ActionMenuDeserializer : IActionMenuDeserializer
 {

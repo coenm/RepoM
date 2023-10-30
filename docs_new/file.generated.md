@@ -1,7 +1,3 @@
----
-title: File Module
-url: /doc/api/file/
----
 
 
 

@@ -1,8 +1,4 @@
-﻿---
-title: {{module.Title}}
-url: {{module.Url}}
----
-{{~ if !module.IsBuiltin ~}}
+﻿{{~ if !module.IsBuiltin ~}}
 
 {{ module.Description }}
 
@@ -11,22 +7,6 @@ In order to use the functions provided by this module, you need to import this m
 ```kalk
 >>> import {{module.Name}}
 ```
-{{~ end ~}}
-{{~ if (module.Title | string.contains 'Intrinsics') ~}}
-
-In order to use the functions provided by this module, you need to import this module:
-
-```kalk
->>> import HardwareIntrinsics
-```
-{%{~
-{{NOTE do}}
-~}%}
-These intrinsic functions are only available if your CPU supports `{{module.Name}}` features.
-{%{~
-{{end}}
-~}%}
-
 {{~ end ~}}
 {{~ for member in module.Members ~}}
 

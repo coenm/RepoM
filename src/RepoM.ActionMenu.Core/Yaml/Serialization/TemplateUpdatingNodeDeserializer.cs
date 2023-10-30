@@ -37,21 +37,58 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
         var props = expectedType
             .GetProperties(true)
             .Where(x =>
-                x is { CanWrite: true, CanRead: true, } &&
+                x is { CanWrite: true, CanRead: true, }
+                &&
                 typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
             )
             .ToArray();
 
         var props2 = value.GetType().GetProperties(true).Where(x =>
-                x is { CanWrite: true, CanRead: true, } &&
+                x is { CanWrite: true, CanRead: true, }
+                &&
                 typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
             )
             .ToArray();
 
         foreach (var prop in props.Concat(props2))
         {
-            var y = prop.GetMethod!.Invoke(value, null);
-            if (y == null)
+            if (prop.Name == "Name")
+            {
+                int i = 0;
+            }
+
+            var currentValue = prop.GetMethod!.Invoke(value, null);
+            if (currentValue == null)
+            {
+                var isNullable = Nullable.GetUnderlyingType(prop.PropertyType) != null;
+                if (!isNullable)
+                {
+                    // create
+                    if (prop.PropertyType == typeof(Predicate))
+                    {
+                        prop.SetMethod!.Invoke(value, new object[] { new ScribanPredicate(), });
+                    }
+
+                    if (prop.PropertyType == typeof(Text))
+                    {
+                        prop.SetMethod!.Invoke(value, new object[] { new ScribanText(), });
+                    }
+
+                    if (prop.PropertyType == typeof(Script))
+                    {
+                        prop.SetMethod!.Invoke(value, new object[] { new ScribanScript(), });
+                    }
+
+                    if (prop.PropertyType == typeof(Variable))
+                    {
+                        prop.SetMethod!.Invoke(value, new object[] { new ScribanText(), });
+                    }
+                }
+            }
+
+            currentValue = prop.GetMethod!.Invoke(value, null);
+
+            if (currentValue == null)
             {
                 continue;
             }
@@ -72,7 +109,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
                     if (constructorArguments.Count == 0)
                     {
-                        (y as Variable)!.DefaultValue = null; // not needed?~
+                        (currentValue as Variable)!.DefaultValue = null; // not needed?~
                     }
                 }
             }
@@ -89,7 +126,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                     if (constructorArguments.Count == 1)
                     {
                         var defaultValue = (bool)constructorArguments[0].Value;
-                        (y as Predicate)!.DefaultValue = defaultValue;
+                        (currentValue as Predicate)!.DefaultValue = defaultValue;
                     }
                 }
             }
@@ -106,12 +143,11 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                     if (constructorArguments.Count == 1)
                     {
                         var defaultValue = (string)constructorArguments[0].Value;
-                        (y as Text)!.DefaultValue = defaultValue;
+                        (currentValue as Text)!.DefaultValue = defaultValue;
                     }
                 }
             }
 
-            // if (Nullable.GetUnderlyingType(prop.PropertyType) == typeof(RenderString))
             if (prop.PropertyType == typeof(Text))
             {
                 var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
@@ -127,26 +163,26 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
                         if (defaultValue is not null)
                         {
-                            if (y == null)
+                            if (currentValue == null)
                             {
                                 var newValue = new Text
                                 {
                                     Value = string.Empty,
                                 };
-                                y = newValue;
+                                currentValue = newValue;
                                 prop.SetMethod!.Invoke(value, new[] { newValue, });
                             }
                         }
 
-                        if (y != null)
+                        if (currentValue != null)
                         {
-                            (y as Text)!.DefaultValue = defaultValue;
+                            (currentValue as Text)!.DefaultValue = defaultValue;
                         }
                     }
                 }
             }
 
-            if (y is ICreateTemplate createTemplate)
+            if (currentValue is ICreateTemplate createTemplate)
             {
                 createTemplate.CreateTemplate(_templateParser);
             }

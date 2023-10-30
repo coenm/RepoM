@@ -181,29 +181,31 @@ public class Program
         var ns = typeSymbol.ContainingNamespace.ToDisplayString();
 
         var fullClassName = $"{ns}.{className}";
-        if (!mapNameToModule.TryGetValue(fullClassName, out moduleToGenerate))
+        if (mapNameToModule.TryGetValue(fullClassName, out moduleToGenerate))
         {
-            moduleToGenerate = new KalkModuleToGenerate()
-                {
-                    Namespace = typeSymbol.ContainingNamespace.ToDisplayString(),
-                    ClassName = className,
-                };
-            mapNameToModule.Add(fullClassName, moduleToGenerate);
-
-            if (moduleAttribute != null)
-            {
-                moduleToGenerate.Name = moduleAttribute.ConstructorArguments[0].Value.ToString();
-                moduleToGenerate.Names.Add(moduleToGenerate.Name!);
-                moduleToGenerate.Category = "Modules (e.g `import Files`)";
-            }
-            else
-            {
-                moduleToGenerate.Name = className.Replace("Module", "");
-                moduleToGenerate.IsBuiltin = true;
-            }
-
-            XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate);
+            return;
         }
+
+        moduleToGenerate = new KalkModuleToGenerate()
+            {
+                Namespace = typeSymbol.ContainingNamespace.ToDisplayString(),
+                ClassName = className,
+            };
+        mapNameToModule.Add(fullClassName, moduleToGenerate);
+
+        if (moduleAttribute != null)
+        {
+            moduleToGenerate.Name = moduleAttribute.ConstructorArguments[0].Value.ToString();
+            moduleToGenerate.Names.Add(moduleToGenerate.Name!);
+            moduleToGenerate.Category = "Modules (e.g `import Files`)";
+        }
+        else
+        {
+            moduleToGenerate.Name = className.Replace("Module", "");
+            moduleToGenerate.IsBuiltin = true;
+        }
+
+        XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate);
     }
     
     private static async Task GenerateModuleSiteDocumentation(KalkModuleToGenerate module, string siteFolder, Template template)

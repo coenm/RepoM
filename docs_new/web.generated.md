@@ -1,7 +1,3 @@
----
-title: web Module
-url: /doc/api/web/
----
 
 Module that provides Web functions (e.g `url_encode`, `json` ...)
 
