@@ -206,18 +206,18 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         return PushNewContext();
     }
 
-    public async Task<IEnumerable<string>> GetTagsAsync(Tags taqs)
+    public async Task<IEnumerable<string>> GetTagsAsync(Tags tags)
     {
-        if (taqs == null)
+        if (tags == null)
         {
             return Array.Empty<string>();
         }
 
         var items = new List<string>(Tags.Count);
 
-        using var disposable = CreateGlobalScope();
+        using IScope disposable = CreateGlobalScope();
 
-        foreach (var tag in taqs)
+        foreach (ITag tag in tags)
         {
             if (await tag.When.EvaluateAsync(this).ConfigureAwait(false))
             {
