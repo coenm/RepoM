@@ -20,21 +20,20 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
         set => _ = value;
     }
 
-    public ActionMenu? Actions { get; init; }
+    public ActionMenu? Actions { get; set; }
 
+    /// <inheritdoc cref="IName.Name"/>
     [Text]
-    public Text Name { get; init; } = new();
+    public Text Name { get; set; } = null!;
 
-    /// <summary>
-    /// Whether the menu item is enabled.
-    /// </summary>
+    /// <inheritdoc cref="IMenuAction.Active"/>
     [Predicate(true)]
-    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
+    public Predicate Active { get; set; } = new ScribanPredicate();
 
-    public Context? Context { get; init; }
+    public Context? Context { get; set; }
 
     [Predicate(false)]
-    public Predicate IsDeferred { get; init; } = new ScribanPredicate();
+    public Predicate IsDeferred { get; set; } = new ScribanPredicate();
 
     public override string ToString()
     {

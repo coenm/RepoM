@@ -21,22 +21,21 @@ internal sealed class RepositoryActionClipboardCopyV1 : IMenuAction, IContext
     }
 
     [Text]
-    public Text Name { get; init; } = new Text(); // todo nullable?
+    public Text Name { get; set; } = null!;
 
     /// <summary>
     /// The text to copy to the clipboard.
     /// </summary>
     [Required]
     [Text]
-    public Text Text { get; set; }
-
+    public Text Text { get; set; } = null!;
+    
+    /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 
-    /// <summary>
-    /// Whether the menu item is enabled.
-    /// </summary>
+    /// <inheritdoc cref="IMenuAction.Active"/>
     [Predicate(true)]
-    public Predicate Active { get; init; } = new Predicate(); // todo nullable?
+    public Predicate Active { get; set; } = true;
 
     public override string ToString()
     {

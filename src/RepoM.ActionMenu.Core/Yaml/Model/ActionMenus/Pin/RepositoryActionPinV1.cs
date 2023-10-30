@@ -11,7 +11,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// Pinning a repository allowed custom filtering, ordering and searching.
 /// </summary>
 [RepositoryAction(TYPE_VALUE)]
-internal sealed class RepositoryActionPinV1 : IMenuAction, IContext, IOptionalName
+internal sealed class RepositoryActionPinV1 : IMenuAction, IContext, IName
 {
     public const string TYPE_VALUE = "pin-repository@1";
 
@@ -21,16 +21,15 @@ internal sealed class RepositoryActionPinV1 : IMenuAction, IContext, IOptionalNa
         set => _ = value;
     }
 
+    /// <inheritdoc cref="IName.Name"/>
     [Text("(Un)Pin repository")]
-    public Text Name { get; init; } = new ScribanText();
+    public Text Name { get; set; } = null!;
 
-    /// <summary>
-    /// Whether the menu item is enabled.
-    /// </summary>
+    /// <inheritdoc cref="IMenuAction.Active"/>
     [Predicate(true)]
-    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
+    public Predicate Active { get; set; } = new ScribanPredicate();
 
-    public Context? Context { get; init; }
+    public Context? Context { get; set; }
 
     /// <summary>
     /// The pin mode `[Toggle, Pin, UnPin]`.

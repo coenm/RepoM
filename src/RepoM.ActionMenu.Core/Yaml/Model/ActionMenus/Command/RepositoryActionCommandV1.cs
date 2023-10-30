@@ -17,14 +17,13 @@ internal sealed class RepositoryActionCommandV1 : IMenuAction, IName
         set => _ = value;
     }
 
+    /// <inheritdoc cref="IName.Name"/>
     [Text]
-    public Text Name { get; init; } = new ScribanText();
+    public Text Name { get; set; } = null!;
 
-    /// <summary>
-    /// Whether the menu item is enabled.
-    /// </summary>
+    /// <inheritdoc cref="IMenuAction.Active"/>
     [Predicate(true)]
-    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
+    public Predicate Active { get; set; } = new ScribanPredicate();
 
     /// <summary>
     /// The command to execute.

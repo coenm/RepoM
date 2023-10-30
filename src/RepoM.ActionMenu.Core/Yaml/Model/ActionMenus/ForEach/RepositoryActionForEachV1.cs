@@ -20,11 +20,9 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction, IContext
         set => _ = value;
     }
 
-    /// <summary>
-    /// Whether the menu item is enabled.
-    /// </summary>
+    /// <inheritdoc cref="IMenuAction.Active"/>
     [Predicate(true)]
-    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
+    public Predicate Active { get; set; } = new ScribanPredicate();
 
     public Context? Context { get; init; }
 

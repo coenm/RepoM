@@ -17,19 +17,21 @@ internal sealed class RepositoryActionUrlV1 : IMenuAction, IName, IContext
         set => _ = value;
     }
 
+    /// <inheritdoc cref="IName.Name"/>
     [Text]
-    public Text Name { get; init; } = new ScribanText();
-
-    [Text]
-    public Text Url { get; init; } = new ScribanText();
+    public Text Name { get; set; } = null!;
 
     /// <summary>
-    /// Whether the menu item is enabled.
+    /// The URL to browse to.
     /// </summary>
-    [Predicate(true)]
-    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
+    [Text]
+    public Text Url { get; set; } = null!;
 
-    public Context? Context { get; init; }
+    /// <inheritdoc cref="IMenuAction.Active"/>
+    [Predicate(true)]
+    public Predicate Active { get; set; } = new ScribanPredicate();
+
+    public Context? Context { get; set; }
 
     public override string ToString()
     {

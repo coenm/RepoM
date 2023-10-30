@@ -21,29 +21,29 @@ internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
     }
 
     [Text]
-    public Text Name { get; init; } = new Text();
+    public Text Name { get; init; } = null!;
 
     /// <summary>
     /// The url to browse to.
     /// </summary>
     [Required]
     [Text]
-    public Text Url { get; init; } = new Text();
+    public Text Url { get; set; } = null!;
 
     /// <summary>
     /// profile name used to select browser and browser profile
     /// </summary>
     [Required]
     [Text]
-    public Text Profile { get; set; } = new Text(); // todo nullable?
+    public Text Profile { get; set; } = null!;
 
+
+    /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 
-    /// <summary>
-    /// Whether the menu item is enabled.
-    /// </summary>
+    /// <inheritdoc cref="IMenuAction.Active"/>
     [Predicate(true)]
-    public Predicate Active { get; init; } = new Predicate(); // todo nullable?
+    public Predicate Active { get; set; } = true;
 
     public override string ToString()
     {

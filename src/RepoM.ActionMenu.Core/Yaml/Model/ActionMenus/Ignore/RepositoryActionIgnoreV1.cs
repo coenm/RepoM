@@ -21,16 +21,15 @@ internal sealed class RepositoryActionIgnoreV1 : IMenuAction, IContext, IName
         set => _ = value;
     }
 
+    /// <inheritdoc cref="IName.Name"/>
     [Text("Ignore")]
-    public Text Name { get; init; } = new ScribanText(); // todo nullable?
+    public Text Name { get; init; } = null!;
 
-    /// <summary>
-    /// Whether the menu item is enabled.
-    /// </summary>
+    /// <inheritdoc cref="IMenuAction.Active"/>
     [Predicate(true)]
-    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
+    public Predicate Active { get; set; } = new ScribanPredicate();
 
-    public Context? Context { get; init; }
+    public Context? Context { get; set; }
 
     public override string ToString()
     {

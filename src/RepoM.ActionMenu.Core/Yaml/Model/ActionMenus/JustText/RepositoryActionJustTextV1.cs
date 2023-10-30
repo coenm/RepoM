@@ -17,21 +17,21 @@ internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
         set => _ = value;
     }
 
+    /// <inheritdoc cref="IName.Name"/>
     [Text]
-    public Text Name { get; init; } = new ScribanText();
+    public Text Name { get; set; } = null!;
 
-    /// <summary>
-    /// Whether the menu item is enabled.
-    /// </summary>
+    /// <inheritdoc cref="IMenuAction.Active"/>
     [Predicate(true)]
-    public Predicate Active { get; init; } = new ScribanPredicate(); // todo nullable?
+    public Predicate Active { get; set; } = new ScribanPredicate();
 
     /// <summary>
     /// Show the menu as enabled (clickable) or disabled.
     /// </summary>
-    public string? Enabled { get; init; }
+    [Predicate(true)]
+    public Predicate Enabled { get; set; } = new ScribanPredicate();
 
-    public Context? Context { get; init; }
+    public Context? Context { get; set; }
 
     public override string ToString()
     {

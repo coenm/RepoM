@@ -87,7 +87,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
 
     /// <inheritdoc cref="IMenuAction.Active"/>
     [Predicate(true)]
-    public Predicate Active { get; init; } = true;
+    public Predicate Active { get; set; } = true;
 
     /// <summary>
     /// Auto complete options. Please take a look at the same for more information
