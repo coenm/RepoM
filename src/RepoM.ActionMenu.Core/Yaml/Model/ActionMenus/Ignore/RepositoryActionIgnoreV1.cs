@@ -29,6 +29,7 @@ internal sealed class RepositoryActionIgnoreV1 : IMenuAction, IContext, IName
     [Predicate(true)]
     public Predicate Active { get; set; } = new ScribanPredicate();
 
+    /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 
     public override string ToString()

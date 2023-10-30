@@ -39,6 +39,7 @@ internal sealed class RepositoryActionExecutableV1 : IMenuAction, IName, IContex
     [Text]
     public Text Arguments { get; set; } = new ScribanText();
 
+    /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; init; }
 
     public override string ToString()

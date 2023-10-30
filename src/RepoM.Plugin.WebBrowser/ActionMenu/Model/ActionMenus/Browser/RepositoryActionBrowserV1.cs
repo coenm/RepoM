@@ -36,8 +36,7 @@ internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
     [Required]
     [Text]
     public Text Profile { get; set; } = null!;
-
-
+    
     /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 

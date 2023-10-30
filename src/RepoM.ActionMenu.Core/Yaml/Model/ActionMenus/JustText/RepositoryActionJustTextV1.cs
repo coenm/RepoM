@@ -31,6 +31,7 @@ internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
     [Predicate(true)]
     public Predicate Enabled { get; set; } = new ScribanPredicate();
 
+    /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 
     public override string ToString()

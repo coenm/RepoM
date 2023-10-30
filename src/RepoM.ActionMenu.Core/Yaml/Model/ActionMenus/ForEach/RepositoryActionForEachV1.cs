@@ -24,6 +24,7 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction, IContext
     [Predicate(true)]
     public Predicate Active { get; set; } = new ScribanPredicate();
 
+    /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; init; }
 
     public Context? IterationContext { get; init; }

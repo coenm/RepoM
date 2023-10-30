@@ -13,7 +13,7 @@ action-menu:
 - type: just-text@1
   name: repository.pwd2 {{ repository.pwd }}
   active: ''
-  enabled: 
+  enabled: ''
   context: 
 - type: foreach@1
   active: ''
@@ -26,7 +26,7 @@ action-menu:
   - type: just-text@1
     name: file name {{ f }}
     active: ''
-    enabled: 
+    enabled: ''
     context: 
 - type: foreach@1
   active: ''
@@ -39,12 +39,12 @@ action-menu:
   - type: just-text@1
     name: env name {{ environment.name }} env(DEF):`{{ env.DEF }}`
     active: ''
-    enabled: 
+    enabled: ''
     context: 
 - type: just-text@1
   name: Text {{ name }} in {{ 'visual' | string.upcase }} Studio Code {{ sub1(10,3) }} {{ link }} env(DEF) {{ env.DEF }}
   active: 1 <= 3
-  enabled: 
+  enabled: ''
   context:
   - type: evaluate-variable@1
     value: sonar_url "sf23-2"
@@ -63,7 +63,7 @@ action-menu:
   - type: just-text@1
     name: Text {{ name }} in {{ 'visual' | string.upcase }} Studio Code {{ sub1(10,3) }} {{repository.is_starred}}
     active: 1 <= 3
-    enabled: 
+    enabled: ''
     context:
     - type: set-variable@1
       value: namenamename

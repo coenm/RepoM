@@ -30,6 +30,7 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
     [Predicate(true)]
     public Predicate Active { get; set; } = new ScribanPredicate();
 
+    /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 
     [Predicate(false)]

@@ -31,6 +31,7 @@ internal sealed class RepositoryActionUrlV1 : IMenuAction, IName, IContext
     [Predicate(true)]
     public Predicate Active { get; set; } = new ScribanPredicate();
 
+    /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 
     public override string ToString()
