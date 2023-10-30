@@ -75,15 +75,17 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
     {
         var items = _stack.Items;
         var result = new EnvSetScriptObject((EnvScriptObject)items[0].Clone(true));
-        
-        if (items.Length > 1)
+
+        if (items.Length <= 1)
         {
-            for (int i = 1; i < items.Length; i++)
+            return result;
+        }
+
+        for (int i = 1; i < items.Length; i++)
+        {
+            if (items[i] != null)
             {
-                if (items[i] != null)
-                {
-                    result.Push((EnvScriptObject)items[i].Clone(true));
-                }
+                result.Push((EnvScriptObject)items[i].Clone(true));
             }
         }
 
@@ -106,7 +108,7 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
     private EnvScriptObject? GetFirstForMember(string member)
     {
         var count = _stack.Count;
-        var items = _stack.Items;
+        EnvScriptObject[] items = _stack.Items;
         for (var i = count - 1; i >= 0; i--)
         {
             if (items[i].Contains(member))

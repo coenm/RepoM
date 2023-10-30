@@ -117,11 +117,11 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         var items = new List<UserInterfaceRepositoryActionBase>();
 
-        using var disposable = CreateGlobalScope();
+        using IScope disposable = CreateGlobalScope();
 
-        foreach (var action in menus)
+        foreach (IMenuAction action in menus)
         {
-            foreach (var item in await AddMenuActionAsync(action).ConfigureAwait(false))
+            foreach (UserInterfaceRepositoryActionBase item in await AddMenuActionAsync(action).ConfigureAwait(false))
             {
                 items.Add(item);
             }
