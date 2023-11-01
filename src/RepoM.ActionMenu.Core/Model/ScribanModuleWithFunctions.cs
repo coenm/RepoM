@@ -466,15 +466,6 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
         }
     }
 
-
-
-
-
-
-
-
-
-
     protected void RegisterFunction<T1, T2, T3, T4, T5, T6>(string name, Func<T1, T2, T3, T4, T5, T6> func)
     {
         RegisterCustomFunction(name, DelegateCustomFunction.CreateFunc(func));

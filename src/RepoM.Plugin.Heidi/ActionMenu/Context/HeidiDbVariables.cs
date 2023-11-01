@@ -61,6 +61,19 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
+    /// <summary>
+    /// Gets all known databases configured in the Heidi configuration related to the selected repository.
+    /// </summary>
+    /// <returns>An enumerable of databases.</returns>
+    /// <example>
+    /// <code>
+    /// heidi.databases
+    /// # heidi.databases()
+    /// </code>
+    /// <code>
+    /// [ TODO ]
+    /// </code>
+    /// </example>
     [ActionMenuMember("databases")]
     public IEnumerable GetDatabases(IActionMenuGenerationContext context)
     {

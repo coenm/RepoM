@@ -92,9 +92,9 @@ No variables and constants defined.
 
     {{~ for example in member.Examples ~}}
 #### Example
-
+{{ if !string.empty example.Description }}
 {{ example.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-
+{{ end }}
       {{~ if example.Input ~}}
         {{~ if example.Output ~}}
 ##### Input

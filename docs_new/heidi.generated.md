@@ -22,3 +22,23 @@ No variables and constants defined.
 
 `heidi.databases`
 
+Gets all known databases configured in the Heidi configuration related to the selected repository.
+
+#### Returns
+
+An enumerable of databases.
+
+#### Example
+
+##### Input
+
+```yaml
+heidi.databases
+# heidi.databases()
+```
+
+##### Result
+
+```yaml
+[ TODO ]
+```

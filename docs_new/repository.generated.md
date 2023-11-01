@@ -84,8 +84,6 @@ The name of the repository.
 
 #### Example
 
-
-
 ##### Input
 
 ```yaml
