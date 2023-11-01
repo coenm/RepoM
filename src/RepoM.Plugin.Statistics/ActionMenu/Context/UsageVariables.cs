@@ -23,7 +23,6 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
 
     /// <summary>
     /// Gets the number of actions performed on the current repository.
-    /// <para>Module settings might affect the result.</para>
     /// </summary>
     /// <returns>Number of actions performed on the current repository.</returns>
     [ActionMenuMember("count")]
@@ -34,9 +33,11 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
 
     /// <summary>
     /// Gets the number of actions performed on all repositories known in RepoM.
-    /// <para>Module settings might affect the result.</para>
     /// </summary>
     /// <returns>Number of actions performed on any known repository.</returns>
     [ActionMenuMember("overall_count")]
-    public int GetOverallCount => _service.GetTotalRecordingCount();
+    public int GetOverallCount()
+    {
+        return _service.GetTotalRecordingCount();
+    }
 }

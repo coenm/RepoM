@@ -6,17 +6,16 @@ Provides statistical information accessible through `statistics`.
 
 The following functions are available in the `statistics` module:
 - [`statistics.count`](#statistics-count)
-
-The following constants and variables are available:
 - [`statistics.overall_count`](#statistics-overall-count)
 
 ## Methods
 
 - [`statistics.count`](#statistics-count)
+- [`statistics.overall_count`](#statistics-overall-count)
 
 ## Constants and Variables
 
-- [`statistics.overall_count`](#statistics-overall-count)
+No variables and constants defined.
 
 ## TODO
 
@@ -26,7 +25,6 @@ The following constants and variables are available:
 `statistics.count`
 
 Gets the number of actions performed on the current repository.
-Module settings might affect the result.
 
 #### Returns
 
@@ -37,7 +35,6 @@ Number of actions performed on the current repository.
 `statistics.overall_count`
 
 Gets the number of actions performed on all repositories known in RepoM.
-Module settings might affect the result.
 
 #### Returns
 

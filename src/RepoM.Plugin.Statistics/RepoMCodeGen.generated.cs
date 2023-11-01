@@ -18,7 +18,7 @@ namespace RepoM.Plugin.Statistics.ActionMenu.Context
         {
             contextRegistration = contextRegistration.CreateOrGetSubRegistration("statistics");
             contextRegistration.RegisterFunction("count", (Func<RepoM.ActionMenu.Interface.ActionMenuFactory.IActionMenuGenerationContext, int>)GetCount);
-            contextRegistration.RegisterConstant("overall_count", GetOverallCount);
+            contextRegistration.RegisterFunction("overall_count", (Func<int>)GetOverallCount);
         }
     }
 }
