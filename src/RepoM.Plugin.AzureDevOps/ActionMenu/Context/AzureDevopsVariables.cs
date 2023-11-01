@@ -10,6 +10,9 @@ using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Plugin.AzureDevOps.Internal;
 
+/// <summary>
+/// Provides Azure Devops functions through `azure_devops`.
+/// </summary>
 [UsedImplicitly]
 [ActionMenuModule("azure_devops")]
 internal partial class AzureDevopsVariables : TemplateContextRegistrationBase

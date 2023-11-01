@@ -256,7 +256,7 @@ public partial class MainWindow
             {
                 if (action is RepositorySeparatorAction)
                 {
-                    if (items.Count > 0)
+                    if (items.Count > 0 && items[^1] is not Separator)
                     {
                         items.Add(new Separator());
                     }
@@ -278,14 +278,14 @@ public partial class MainWindow
             {
                 if (action is UserInterfaceSeparatorRepositoryAction)
                 {
-                    if (items.Count > 0)
+                    if (items.Count > 0 && items[^1] is not Separator)
                     {
                         items.Add(new Separator());
                     }
                 }
                 else if (action is DeferredSubActionsUserInterfaceRepositoryAction deferredAction)
                 {
-                    Control? controlItem = CreateMenuItemNewStyle(action, vm);
+                    Control? controlItem = await CreateMenuItemNewStyleAsync(action, vm).ConfigureAwait(true);
                     if (controlItem != null)
                     {
                         items.Add(controlItem);
@@ -293,7 +293,7 @@ public partial class MainWindow
                 }
                 else if (action is UserInterfaceRepositoryAction uiAction)
                 {
-                    Control? controlItem = CreateMenuItemNewStyle(action, vm);
+                    Control? controlItem = await CreateMenuItemNewStyleAsync(action, vm).ConfigureAwait(true);
                     if (controlItem != null)
                     {
                         items.Add(controlItem);
@@ -565,7 +565,7 @@ public partial class MainWindow
         return item;
     }
 
-    private Control? /*MenuItem*/ CreateMenuItemNewStyle(UserInterfaceRepositoryActionBase action, RepositoryViewModel? affectedViews = null)
+    private async Task<Control?> /*MenuItem*/ CreateMenuItemNewStyleAsync(UserInterfaceRepositoryActionBase action, RepositoryViewModel? affectedViews = null)
     {
         if (action is UserInterfaceSeparatorRepositoryAction)
         {
@@ -617,18 +617,35 @@ public partial class MainWindow
             // menu item. this item gets removed when the real subitems are created
             item.Items.Add(string.Empty);
 
-            void SelfDetachingEventHandler(object _, RoutedEventArgs evtArgs)
+            async void SelfDetachingEventHandler(object _, RoutedEventArgs evtArgs)
             {
                 item.SubmenuOpened -= SelfDetachingEventHandler;
                 item.Items.Clear();
                 
-                foreach (UserInterfaceRepositoryActionBase subAction in deferredRepositoryAction.GetAsync().GetAwaiter().GetResult())
+                foreach (UserInterfaceRepositoryActionBase subAction in await deferredRepositoryAction.GetAsync().ConfigureAwait(true))
                 {
-                    Control? controlItem = CreateMenuItemNewStyle(subAction);
-                    if (controlItem != null)
+                    Control? controlItem = await CreateMenuItemNewStyleAsync(subAction).ConfigureAwait(true);
+                    if (controlItem == null)
+                    {
+                        continue;
+                    }
+
+                    if (controlItem is not Separator)
+                    {
+                        item.Items.Add(controlItem);
+                        continue;
+                    }
+
+                    if (item.Items.Count > 0 && item.Items[^1] is not Separator)
                     {
                         item.Items.Add(controlItem);
                     }
+                }
+
+                var count = item.Items.Count;
+                if (count > 0 && item.Items[^1] is Separator)
+                {
+                    item.Items.RemoveAt(count - 1);
                 }
             }
 
@@ -638,11 +655,28 @@ public partial class MainWindow
         {
             foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
             {
-                Control? controlItem = CreateMenuItemNewStyle(subAction);
-                if (controlItem != null)
+                Control? controlItem = await CreateMenuItemNewStyleAsync(subAction).ConfigureAwait(true);
+                if (controlItem == null)
+                {
+                    continue;
+                }
+
+                if (controlItem is not Separator)
+                {
+                    item.Items.Add(controlItem);
+                    continue;
+                }
+
+                if (item.Items.Count > 0 && item.Items[^1] is not Separator)
                 {
                     item.Items.Add(controlItem);
                 }
+            }
+
+            var count = item.Items.Count;
+            if (count > 0 && item.Items[^1] is Separator)
+            {
+                item.Items.RemoveAt(count - 1);
             }
         }
 

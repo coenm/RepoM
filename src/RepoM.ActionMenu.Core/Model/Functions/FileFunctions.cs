@@ -9,7 +9,10 @@ using RepoM.ActionMenu.Interface.Attributes;
 using Scriban.Parsing;
 using Scriban.Syntax;
 
-[ActionMenuModule("File")]
+/// <summary>
+/// Provides file related action menu functions and variables accessable through `file`.
+/// </summary>
+[ActionMenuModule("file")]
 internal partial class FileFunctions : ScribanModuleWithFunctions
 {
     public FileFunctions()

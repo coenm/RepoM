@@ -11,6 +11,9 @@ using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.Internal;
 
+/// <summary>
+/// Provides variables provided by the Heidi module. The variables are accessable through `heidi`.
+/// </summary>
 [UsedImplicitly]
 [ActionMenuModule("heidi")]
 internal partial class HeidiDbVariables : TemplateContextRegistrationBase

@@ -6,6 +6,9 @@ using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Plugin.SonarCloud;
 
+/// <summary>
+/// Provides a sonar cloud method providing the favorite status of the current repository.
+/// </summary>
 [UsedImplicitly]
 [ActionMenuModule("sonarcloud")]
 internal partial class SonarCloudVariables : TemplateContextRegistrationBase

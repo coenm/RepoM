@@ -7,6 +7,9 @@ using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Plugin.Statistics;
 
+/// <summary>
+/// Provides statistical informaion accessable through `statistics`.
+/// </summary>
 [UsedImplicitly]
 [ActionMenuModule("statistics")]
 internal partial class UsageVariables : TemplateContextRegistrationBase

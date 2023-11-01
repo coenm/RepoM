@@ -1,13 +1,24 @@
+# `heidi`
+
+Provides variables provided by the Heidi module. The variables are accessable through `heidi`.
+
+## Overview
+
+The following functions are available in the `heidi` module:
+- [`heidi.databases`](#heidi-databases)
+
+## Methods
+
+- [`heidi.databases`](#heidi-databases)
+
+## Constants and Variables
+
+No variables and constants defined.
+
+## TODO
 
 
+### databases
 
-In order to use the functions provided by this module, you need to import this module:
-
-```kalk
->>> import heidi
-```
-
-## databases
-
-`databases`
+`heidi.databases`
 

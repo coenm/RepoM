@@ -1,63 +1,117 @@
-﻿{{~ if !module.IsBuiltin ~}}
+﻿{{~
+func is_const(member)
+    ret member.IsConst;
+end
+
+func is_funcs(member)
+    ret !member.IsConst;
+end
+
+func prefix_module(member)
+    ret module.Name | string.append "." | string.append member | string.downcase;
+end
+
+
+consts = array.filter module.Members @is_const;
+funcs = array.filter module.Members @is_funcs;
+module_name = module.Name | string.downcase;
+~}}
+{{~ if !module.IsBuiltin ~}}
+# `{{module.Name}}`
 
 {{ module.Description }}
 
-In order to use the functions provided by this module, you need to import this module:
-
-```kalk
->>> import {{module.Name}}
-```
 {{~ end ~}}
+## Overview
+
+{{~ if array.size(funcs) > 0  ~}}
+The following functions are available in the `{{module_name}}` module:
+  {{~ for member in funcs ~}}
+- [`{{ prefix_module member.Name }}`](#{{ module_name | string.append "." | string.append member.Name | string.downcase | string.handleize }})
+  {{~ end ~}}
+
+{{~ end ~}}
+{{~ if array.size(consts) > 0  ~}}
+The following constants and variables are available:
+  {{~ for member in consts ~}}
+- [`{{ prefix_module member.Name }}`](#{{ module_name | string.append "." | string.append member.Name | string.downcase | string.handleize }})
+  {{~ end ~}}
+
+{{~ end ~}}
+{{~ ~}}
+## Methods
+
+{{~ if array.size(funcs) == 0 ~}}
+No methods defined.
+{{~ else ~}}
+  {{~ for member in funcs ~}}
+- [`{{ prefix_module member.Name }}`](#{{ module_name | string.append "." | string.append member.Name | string.downcase | string.handleize }})
+  {{~ end ~}}
+{{~ end ~}}
+
+## Constants and Variables
+
+{{~ if array.size(consts) == 0 ~}}
+No variables and constants defined.
+{{~ else ~}}
+  {{~ for member in consts ~}}
+- [`{{ prefix_module member.Name }}`](#{{ module.Name | string.append "." | string.append member.Name | string.downcase | string.handleize }})
+  {{~ end ~}}
+{{~ end ~}}
+
+## TODO
+
 {{~ for member in module.Members ~}}
 
-## {{member.Name}}
+### {{ member.Name }}
 
-`{{member.Name}}{{~ if member.Params.size > 0 ~}}({{~ for param in member.Params ~}}{{ param.Name }}{{ param.IsOptional?'?':''}}{{ for.last?'':',' }}{{~ end ~}}){{~ end ~}}`
+`{{ prefix_module member.Name }}{{~ if member.Params.size > 0 ~}}({{~ for param in member.Params ~}}{{ param.Name }}{{ param.IsOptional?'?':''}}{{ for.last?'':',' }}{{~ end ~}}){{~ end ~}}`
 
-{{~ if member.Description ~}}
+  {{~ if member.Description ~}}
 {{ member.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-{{~ end ~}}
-{{~ if member.Params.size > 0 ~}}
+  {{~ end ~}}
+  {{~ if member.Params.size > 0 ~}}
 
     {{~ for param in member.Params ~}}
 - `{{ param.Name }}`: {{ param.Description}}
     {{~end ~}}
-{{~ end ~}}
-{{~ if member.Returns ~}}
+  {{~ end ~}}
+  {{~ if member.Returns ~}}
 
-### Returns
+#### Returns
 
 {{ member.Returns | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-{{~ end ~}}
-{{~ if member.Remarks ~}}
+  {{~ end ~}}
+  {{~ if member.Remarks ~}}
 
-### Remarks
+#### Remarks
 
 {{ member.Remarks | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-{{~ end ~}}
-{{~ if member.Examples.size > 0 ~}}
+  {{~ end ~}}
+  {{~ if member.Examples.size > 0 ~}}
 
-{{~ for example in member.Examples ~}}
-### Example
+    {{~ for example in member.Examples ~}}
+#### Example
 
 {{ example.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
 
-{{~ if example.Input ~}}
-{{~ if example.Output ~}}
-#### Input
-{{~ end ~}}
+      {{~ if example.Input ~}}
+        {{~ if example.Output ~}}
+##### Input
+        {{~ end ~}}
+
 ```yaml
 {{ example.Input | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
 ```
 
-{{~ end ~}}
-{{~ if example.Output ~}}
-#### Result
+      {{~ end ~}}
+      {{~ if example.Output ~}}
+##### Result
 
 ```yaml
 {{ example.Output | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
 ```
-{{~ end ~}}
-{{~ end ~}}
-{{~ end ~}}
+      {{~ end ~}}
+    {{~ end ~}}
+  {{~ end ~}}
 {{~ end ~}}

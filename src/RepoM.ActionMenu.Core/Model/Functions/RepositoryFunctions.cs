@@ -5,6 +5,9 @@ using System.Collections;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.Core.Plugin.Repository;
 
+/// <summary>
+/// Provides action menu functions and variables for the current repository through `repository`.
+/// </summary>
 [ActionMenuModule("Repository")]
 internal partial class RepositoryFunctions : ScribanModuleWithFunctions
 {
@@ -45,7 +48,7 @@ internal partial class RepositoryFunctions : ScribanModuleWithFunctions
     [ActionMenuMember("safe_path")]
     public string SafePath => _repository.SafePath;
 
-    /// <summary>
+    /// <summary>   
     /// Gets the Location of the repository.
     /// </summary>
     /// <returns>The path of the repository.</returns>
