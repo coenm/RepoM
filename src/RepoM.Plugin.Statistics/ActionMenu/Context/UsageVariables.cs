@@ -8,7 +8,7 @@ using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Plugin.Statistics;
 
 /// <summary>
-/// Provides statistical informaion accessable through `statistics`.
+/// Provides statistical information accessible through `statistics`.
 /// </summary>
 [UsedImplicitly]
 [ActionMenuModule("statistics")]
