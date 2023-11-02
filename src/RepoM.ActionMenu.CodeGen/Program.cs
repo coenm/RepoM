@@ -33,7 +33,7 @@ public class Program
                 "RepoM.Plugin.Heidi",
                 "RepoM.Plugin.Statistics",
                 "RepoM.Plugin.SonarCloud",
-                // "RepoM.Plugin.AzureDevOps",
+                "RepoM.Plugin.AzureDevOps",
             };
 
         Template templateModule = await LoadTemplateAsync("Templates/Module.scriban-cs");

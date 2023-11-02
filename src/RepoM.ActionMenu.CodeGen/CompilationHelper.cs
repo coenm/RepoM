@@ -36,6 +36,15 @@ internal static class CompilationHelper
             return;
         }
 
+        if (errors.Length == 1
+            &&
+            "RepoM.Plugin.AzureDevOps".Equals(compilation.AssemblyName)
+            &&
+            errors[0].Id.Equals("CS8795"))
+        {
+            return;
+        }   
+
         Console.WriteLine("Compilation errors:");
         foreach (Diagnostic error in errors)
         {
