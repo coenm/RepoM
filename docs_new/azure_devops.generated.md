@@ -1,16 +1,3 @@
----
-title: azure_devops Module
-url: /doc/api/azure_devops/
----
-
-
-
-In order to use the functions provided by this module, you need to import this module:
-
-```kalk
->>> import azure_devops
-```
-
 ## get_pull_requests
 
 `get_pull_requests(projectId)`

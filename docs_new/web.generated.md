@@ -2,18 +2,7 @@
 
 Module that provides Web functions (e.g `url_encode`, `json` ...)
 
-## Overview
-
-The following functions are available in the `web` module:
-- [`web.html_decode`](#web-html-decode)
-- [`web.html_encode`](#web-html-encode)
-- [`web.html_strip`](#web-html-strip)
-- [`web.json`](#web-json)
-- [`web.url_decode`](#web-url-decode)
-- [`web.url_encode`](#web-url-encode)
-- [`web.url_escape`](#web-url-escape)
-
-## Methods
+This module contains the following methods, variables and/or constants:
 
 - [`web.html_decode`](#web-html-decode)
 - [`web.html_encode`](#web-html-encode)
@@ -23,26 +12,21 @@ The following functions are available in the `web` module:
 - [`web.url_encode`](#web-url-encode)
 - [`web.url_escape`](#web-url-escape)
 
-## Constants and Variables
-
-No variables and constants defined.
-
-## TODO
-
-
-### html_decode
+## html_decode
 
 `web.html_decode(text)`
 
 Decodes a HTML input string (replacing `&amp;` by `&`)
 
+Argument:
+
 - `text`: The input string
 
-#### Returns
+### Returns
 
 The input string removed with any HTML entities.
 
-#### Example
+### Example
 
 ```kalk
 >>> "<p>This is a paragraph</p>" |> html_encode
@@ -54,19 +38,21 @@ out = "<p>This is a paragraph</p>"
 ```
 
 
-### html_encode
+## html_encode
 
 `web.html_encode(text)`
 
 Encodes a HTML input string (replacing `&` by `&amp;`)
 
+Argument:
+
 - `text`: The input string
 
-#### Returns
+### Returns
 
 The input string with HTML entities.
 
-#### Example
+### Example
 
 ```kalk
 >>> "<p>This is a paragraph</p>" |> html_encode
@@ -78,19 +64,21 @@ out = "<p>This is a paragraph</p>"
 ```
 
 
-### html_strip
+## html_strip
 
 `web.html_strip(text)`
 
 Removes any HTML tags from the input string
 
+Argument:
+
 - `text`: The input string
 
-#### Returns
+### Returns
 
 The input string removed with any HTML tags
 
-#### Example
+### Example
 
 ```kalk
 >>> "<p>This is a paragraph</p>" |> html_strip
@@ -99,21 +87,23 @@ out = "This is a paragraph"
 ```
 
 
-### json
+## json
 
 `web.json(value)`
 
 Converts to or from a JSON object depending on the value argument.
 
+Argument:
+
 - `value`: A value argument:
     - If the value is a string, it is expecting this string to be a JSON string and will convert it to the appropriate object.
     - If the value is an array or object, it will convert it to a JSON string representation.
 
-#### Returns
+### Returns
 
 A JSON string or an object/array depending on the argument.
 
-#### Example
+### Example
 
 ```kalk
 >>> json {a: 1, b: 2, c: [4,5], d: "Hello World"}
@@ -125,19 +115,21 @@ out = {a: 1, b: 2, c: [4, 5], d: "Hello World"}
 ```
 
 
-### url_decode
+## url_decode
 
 `web.url_decode(url)`
 
 Converts a URL-encoded string into a decoded string.
 
+Argument:
+
 - `url`: The URL to decode.
 
-#### Returns
+### Returns
 
 The decoded URL
 
-#### Example
+### Example
 
 ```kalk
 >>> url_decode "this%3Cis%3Ean%3Aurl+and+another+part"
@@ -146,7 +138,7 @@ out = "this<is>an:url and another part"
 ```
 
 
-### url_encode
+## url_encode
 
 `web.url_encode(url)`
 
@@ -155,13 +147,15 @@ Converts a specified URL text into a URL-encoded.
  URL encoding converts characters that are not allowed in a URL into character-entity equivalents.
  For example, when the characters < and > are embedded in a block of text to be transmitted in a URL, they are encoded as %3c and %3e.
 
+Argument:
+
 - `url`: The url text to encode as an URL.
 
-#### Returns
+### Returns
 
 An encoded URL.
 
-#### Example
+### Example
 
 ```kalk
  >>> url_encode "this<is>an:url and another part"
@@ -170,19 +164,21 @@ An encoded URL.
  ```
 
 
-### url_escape
+## url_escape
 
 `web.url_escape(url)`
 
 Identifies all characters in a string that are not allowed in URLS, and replaces the characters with their escaped variants.
 
+Argument:
+
 - `url`: The input string.
 
-#### Returns
+### Returns
 
 The input string url escaped
 
-#### Example
+### Example
 
 ```kalk
 >>> "<hello> & <scriban>" |> url_escape

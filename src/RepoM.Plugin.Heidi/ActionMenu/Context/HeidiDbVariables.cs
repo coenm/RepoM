@@ -64,14 +64,21 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
     /// <summary>
     /// Gets all known databases configured in the Heidi configuration related to the selected repository.
     /// </summary>
-    /// <returns>An enumerable of databases.</returns>
+    /// <returns>An enumerable of database configuration objects. Such object contains the following members:
+    /// 
+    /// - `metadata.name`: name of the current configuration.
+    /// - `metadata.order`: integer specifying a given order in Heidi.
+    /// - `metadata.tags`: array of strings containing tags. Can be empty.
+    /// - `database.key`: the configuration key. THis key can be used to start Heidi and open the database for this configuration.
+    /// - `database.host`: the hostname to connect to the database.
+    /// - `database.user`: the username used to connect to the database.
+    /// - `database.password`: the password used to connect to the database.
+    /// </returns>
     /// <example>
     /// <code>
     /// heidi.databases
-    /// # heidi.databases()
     /// </code>
     /// <code>
-    /// [ TODO ]
     /// </code>
     /// </example>
     [ActionMenuMember("databases")]

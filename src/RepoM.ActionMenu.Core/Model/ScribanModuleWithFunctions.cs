@@ -65,21 +65,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     protected void RegisterFunction<T1, T2, T3, T4, T5>(string name, Func<T1, T2, T3, T4, T5> func)
     {
         RegisterCustomFunction(name, DelegateCustomFunction.CreateFunc(func));
-
-        // static DelegateCustomFunction CreateFunc<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, TResult> func)
-        // {
-        //     if (func == null)
-        //     {
-        //         throw new ArgumentNullException(nameof(func));
-        //     }
-        //
-        //     return new InternalDelegateCustomFunctionWithInterfaceContext<T1, T2, T3, T4, TResult>(func);
-        // }
-        //
-        // RegisterCustomFunction(name, CreateFunc(func));
     }
-
-
 
     /// <summary>
     /// A custom function taking 1 argument.
@@ -261,15 +247,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return Func(arg1, arg2, arg3, arg4, arg5);
         }
     }
-
-
-
-
-
-
-
-
-
+    
     /// <summary>
     /// A custom action taking 1 argument.
     /// </summary>
@@ -420,14 +398,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return func;
         }
     }
-
-
-
-
-
-
-
-
+    
     /// <summary>
     /// A custom action taking 5 arguments.
     /// </summary>
