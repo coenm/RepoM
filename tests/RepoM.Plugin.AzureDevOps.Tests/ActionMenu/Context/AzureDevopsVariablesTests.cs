@@ -91,9 +91,9 @@ public class AzureDevopsVariablesTests
         IEnumerable result = _sut.GetPullRequests(_context, "my_project_id");
 
         // assert
-        var documentation = DocumentationGeneration.CreateDocumentationYaml(result);
-        await Verifier.Verify(documentation, settings: DocumentationGeneration.GetVerifySettings(), extension: "yaml")
-                      .UseFileName("azure_devops.get_pull_requests");
+        await DocumentationGeneration
+              .CreateAndVerifyDocumentation(result)
+              .UseFileName("azure_devops.get_pull_requests");
     }
 
     [Fact]
