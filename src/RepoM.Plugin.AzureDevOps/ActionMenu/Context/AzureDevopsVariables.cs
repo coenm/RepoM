@@ -30,15 +30,16 @@ internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
     /// Get pull requests for the given project. The result is an enumeration of <see cref="PullRequest"/>.
     /// </summary>
     /// <param name="projectId">The azure devops project id. Cannot be null or empty.</param>
-    /// <returns>Returns an enumeration of pull requests or an empty enumeration when no pull requests are found.</returns>
+    /// <returns>Returns an enumeration of pull requests for the selected repository (or an empty enumeration when no pull requests are found).</returns>
     /// <example>
-    /// Locate all solution files in the given directory.
+    /// Get all pull requests for the selected repository in a given devops project:
     /// <code>
-    /// azure_devops.get_pull_requests 'project_id'
-    /// # azure_devops.get_pull_requests('project_id')
+    /// devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
+    /// prs = azure_devops.get_pull_requests(devops_project_id);
     /// </code>
+    /// As a result, the variable `prs` could contain two pull requests with the following dummy data:
     /// <code>
-    /// [ {} {} {}] todo
+    /// file:
     /// </code>
     /// </example>
     [ActionMenuMember("get_pull_requests")]
@@ -48,7 +49,7 @@ internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
         {
             yield break;
         }
-
+        
         List<PullRequest>? pullRequests;
 
         try

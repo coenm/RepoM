@@ -39,7 +39,6 @@ public class Program
         Template templateModule = await LoadTemplateAsync("Templates/Module.scriban-cs");
         Template templateDocs = await LoadTemplateAsync("Templates/Docs.scriban-txt");
 
-
         var projectMapping = new Dictionary<string, Dictionary<string, KalkModuleToGenerate>>();
 
         foreach (var project in projects)

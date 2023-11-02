@@ -65,7 +65,7 @@ Argument{{if member.Params.size > 1}}s{{end}}:
 {{ end }}
       {{~ if example.Input ~}}
         {{~ if example.Output ~}}
-#### Input
+#### Usage
         {{~ end ~}}
 
 ```yaml

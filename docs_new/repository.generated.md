@@ -65,7 +65,7 @@ The name of the repository.
 
 ### Example
 
-#### Input
+#### Usage
 
 ```yaml
 repository.name

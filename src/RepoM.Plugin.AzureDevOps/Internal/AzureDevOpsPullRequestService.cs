@@ -218,7 +218,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             return 0;
         }
 
-        return _pullRequestsPerProject.Values.Sum(prs => prs.Count(x => x.RepoId.Equals(repoIdGuid)));
+        return _pullRequestsPerProject.Values.Sum(prs => prs.Count(x => x.RepositoryId.Equals(repoIdGuid)));
     }
 
     public List<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
@@ -414,7 +414,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         if (_pullRequestsPerProject.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Any())
         {
             _logger.LogTrace("Returning pull requests from cache where repo id was given.");
-            return projectPrs.Where(x => x.RepoId.Equals(repoIdGuid)).ToList();
+            return projectPrs.Where(x => x.RepositoryId.Equals(repoIdGuid)).ToList();
         }
 
         _logger.LogTrace("No cache available for PRs");

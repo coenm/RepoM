@@ -82,7 +82,7 @@ Returns an enumerable collection of full paths of the files or directories that 
 
 Locate all solution files in the given directory.
 
-#### Input
+#### Usage
 
 ```yaml
 find_files 'C:\Users\coenm\RepoM' '*.sln'

@@ -4,14 +4,14 @@ using System;
 
 internal class PullRequest
 {
-    public PullRequest(Guid repoId, string name, string url)
+    public PullRequest(Guid repositoryId, string name, string url)
     {
-        RepoId = repoId;
+        RepositoryId = repositoryId;
         Name = name;
         Url = url;
     }
 
-    public Guid RepoId { get; }
+    public Guid RepositoryId { get; }
 
     public string Name { get; }
 

@@ -1,0 +1,6 @@
+﻿- repository-id: b1a0619a-cb69-4bf6-9b97-6c62481d9bff
+  name: some pr1
+  url: https://my-url/pr1
+- repository-id: f99e85ee-2c23-414b-8804-6a6c34f8c349
+  name: other pr - bug
+  url: https://my-url/pr3

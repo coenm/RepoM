@@ -26,7 +26,7 @@ An enumerable of database configuration objects. Such object contains the follow
 
 ### Example
 
-#### Input
+#### Usage
 
 ```yaml
 heidi.databases
