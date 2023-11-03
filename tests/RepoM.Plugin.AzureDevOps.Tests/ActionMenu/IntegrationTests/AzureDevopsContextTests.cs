@@ -8,11 +8,20 @@ using FakeItEasy;
 using FluentAssertions;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.UserInterface;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.Internal;
+using VerifyXunit;
 using Xunit;
+using Xunit.Categories;
 
 public class AzureDevopsContextTests : IntegrationActionTestBase<AzureDevOpsPackage>
 {
+    private readonly List<PullRequest> _prs = new()
+        {
+            new(Guid.Parse("b1a0619a-cb69-4bf6-9b97-6c62481d9bff"), "some pr1", "https://my-url/pr1"),
+            new(Guid.Parse("f99e85ee-2c23-414b-8804-6a6c34f8c349"), "other pr - bug", "https://my-url/pr3"),
+        };
+
     public AzureDevopsContextTests()
     {
         IAzureDevOpsPullRequestService azureDevOpsPullRequestService = A.Fake<IAzureDevOpsPullRequestService>();
@@ -22,6 +31,7 @@ public class AzureDevopsContextTests : IntegrationActionTestBase<AzureDevOpsPack
             {
                 new (Guid.Empty, "test pr", "https://azure-devops.test/pr/123"),
             });
+        A.CallTo(() => azureDevOpsPullRequestService.GetPullRequests(Repository, "805ACF64-0F06-47EC-96BF-E830895E2740", null)).Returns(_prs);
     }
 
     [Fact]
@@ -49,5 +59,23 @@ public class AzureDevopsContextTests : IntegrationActionTestBase<AzureDevOpsPack
         var singleAction = result.Single() as UserInterfaceRepositoryAction;
         singleAction.Should().NotBeNull();
         singleAction!.Name.Should().Be("pr count: [1]; url: [https://azure-devops.test/pr/123]; name: [test pr];");
+    }
+
+    /// <summary>
+    /// Validate file to contain valid action menu yaml.
+    /// </summary>
+    [Fact]
+    [Documentation]
+    public async Task Context_GetPullRequests_Documentation()
+    {
+        // arrange
+        var yaml = await DocumentationGeneration.LoadYamlFileAsync("azure_devops.get_pull_requests.actionmenu.yaml");
+        AddRootFile(yaml);
+
+        // act
+        IEnumerable<UserInterfaceRepositoryActionBase> result = await CreateMenuAsync();
+        
+        // assert
+        await Verifier.Verify(result).ScrubMembersWithType<IRepository>();
     }
 }

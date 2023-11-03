@@ -42,7 +42,7 @@ internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
     /// As a result, the variable `prs` could contain two pull requests with the following dummy data:
     /// <code-file language='yaml' filename='azure_devops.get_pull_requests.verified.yaml' />
     /// <repository-action-sample/>
-    /// <code-file language='yaml' filename='azure_devops.get_pull_requests.testfile.yaml' />
+    /// <code-file language='yaml' filename='azure_devops.get_pull_requests.actionmenu.yaml' />
     /// </example>
     [ActionMenuMember("get_pull_requests")]
     public IEnumerable GetPullRequests(IActionMenuGenerationContext context, string projectId)

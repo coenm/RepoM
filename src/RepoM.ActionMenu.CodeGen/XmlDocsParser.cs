@@ -153,7 +153,7 @@ internal static partial class XmlDocsParser
 
                     if (!files.TryGetValue(filename, out string content))
                     {
-                        throw new Exception("File not found");
+                        throw new Exception($"File '{filename}' not found");
                     }
 
                     var code = new Code { Content = content, };

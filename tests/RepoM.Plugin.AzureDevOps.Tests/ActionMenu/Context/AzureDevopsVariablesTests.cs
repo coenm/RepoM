@@ -15,6 +15,7 @@ using RepoM.Plugin.AzureDevOps.ActionMenu.Context;
 using RepoM.Plugin.AzureDevOps.Internal;
 using VerifyXunit;
 using Xunit;
+using Xunit.Categories;
 
 [UsesVerify]
 public class AzureDevopsVariablesTests
@@ -82,6 +83,7 @@ public class AzureDevopsVariablesTests
     }
     
     [Fact]
+    [Documentation]
     public async Task GetPullRequests_Documentation()
     {
         // arrange
