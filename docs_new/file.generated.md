@@ -22,18 +22,6 @@ Argument:
 
 `true` if the specified directory path exists on the disk, `false` otherwise.
 
-### Example
-      
-```kalk
-    dir_exists "testdir"
-    # dir_exists("testdir")
-    out = true
-     rmdir "testdir"
-     dir_exists "testdir"
-    # dir_exists("testdir")
-    out = false
-    ```
-
 ## file_exists
 
 `file.file_exists(path)`
@@ -47,19 +35,6 @@ Argument:
 ### Returns
 
 `true` if the specified file path exists on the disk, `false` otherwise.
-
-### Example
-      
-```kalk
-     rm "test.txt"
-     file_exists "test.txt"
-    # file_exists("test.txt")
-    out = false
-     save_text("content", "test.txt")
-     file_exists "test.txt"
-    # file_exists("test.txt")
-    out = true
-    ```
 
 ## find_files
 

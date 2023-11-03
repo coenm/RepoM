@@ -17,11 +17,13 @@
         TypeName: Code,
         Content:
 find_files 'C:\Users\coenm\RepoM' '*.sln'
-    # find_files('C:\Users\coenm\RepoM','*.sln')
+    # find_files('C:\Users\coenm\RepoM','*.sln'),
+        UseRaw: false
       },
       {
         TypeName: Code,
-        Content: ["C:\Users\coenm\RepoM\src\RepoM.sln"]
+        Content: ["C:\Users\coenm\RepoM\src\RepoM.sln"],
+        UseRaw: false
       },
       {
         TypeName: Header,
@@ -33,7 +35,8 @@ find_files 'C:\Users\coenm\RepoM' '*.sln'
       },
       {
         TypeName: Code,
-        Content: avc
+        Content: avc,
+        UseRaw: false
       },
       {
         TypeName: Header,
@@ -49,12 +52,14 @@ find_files 'C:\Users\coenm\RepoM' '*.sln'
       },
       {
         TypeName: Code,
-        Content: abc
+        Content: abc,
+        UseRaw: false
       },
       {
         TypeName: Code,
         Language: yaml,
-        Content: DUMMY CONTENT
+        Content: DUMMY CONTENT,
+        UseRaw: true
       },
       {
         TypeName: Text,
