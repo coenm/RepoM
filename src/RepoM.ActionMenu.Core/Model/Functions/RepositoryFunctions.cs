@@ -24,11 +24,9 @@ internal partial class RepositoryFunctions : ScribanModuleWithFunctions
     /// </summary>
     /// <returns>The name of the repository.</returns>
     /// <example>
+    /// <usage/>
     /// <code>
     /// repository.name
-    /// </code>
-    /// <code>
-    /// "RepoM"
     /// </code>
     /// </example>
     [ActionMenuMember("name")]

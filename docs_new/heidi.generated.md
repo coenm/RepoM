@@ -25,15 +25,14 @@ An enumerable of database configuration objects. Such object contains the follow
 - `database.password`: the password used to connect to the database.
 
 ### Example
-
-#### Usage
-
-```yaml
-heidi.databases
-```
-
-#### Result
-
-```yaml
+      
 
 ```
+databases = heidi.databases
+```
+
+
+```
+
+```
+

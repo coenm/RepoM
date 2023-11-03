@@ -64,18 +64,14 @@ Gets the name of the repository.
 The name of the repository.
 
 ### Example
-
+      
 #### Usage
 
-```yaml
+
+```
 repository.name
 ```
 
-#### Result
-
-```yaml
-"RepoM"
-```
 
 ## path
 

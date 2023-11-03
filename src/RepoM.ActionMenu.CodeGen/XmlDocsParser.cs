@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Models;
 using System.Xml.Linq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Text;
@@ -12,13 +13,13 @@ using System.Web;
 
 internal static partial class XmlDocsParser
 {
-    public static void ExtractDocumentation(ISymbol symbol, KalkDescriptorToGenerate desc)
+    public static void ExtractDocumentation(ISymbol symbol, KalkDescriptorToGenerate desc, IDictionary<string, string> files)
     {
         var xmlStr = symbol.GetDocumentationCommentXml();
-        ExtractDocumentation(xmlStr, symbol, desc);
+        ExtractDocumentation(xmlStr, symbol, desc, files);
     }
 
-    internal static void ExtractDocumentation(string? xmlStr, ISymbol symbol, KalkDescriptorToGenerate desc)
+    internal static void ExtractDocumentation(string? xmlStr, ISymbol symbol, KalkDescriptorToGenerate desc, IDictionary<string, string> files)
     {
         if (string.IsNullOrEmpty(xmlStr))
         {
@@ -68,8 +69,8 @@ internal static partial class XmlDocsParser
                 }
                 else if (element.Name == "example")
                 {
-                    ExamplesDescriptor examplesDescriptor = GetExampleData(element);
-                    desc.Examples.Add(examplesDescriptor);
+                    ExamplesDescriptor examplesDescriptor = GetExampleData(element, files);
+                    desc.Examples = examplesDescriptor;
                 }
                 else if (element.Name == "test")
                 {
@@ -88,7 +89,7 @@ internal static partial class XmlDocsParser
         }
     }
 
-    public static ExamplesDescriptor GetExampleData(XNode node)
+    public static ExamplesDescriptor GetExampleData(XNode node, IDictionary<string, string> files)
     {
         var result = new ExamplesDescriptor();
 
@@ -112,44 +113,82 @@ internal static partial class XmlDocsParser
             return result;
         }
 
-        string current = string.Empty;
-
         foreach (XNode item in nodes)
         {
             if (item is XText xText)
             {
-                current += $"{xText.Value.Trim()}{Environment.NewLine}";
+                result.Items.Add(new Text() { Content = xText.Value.Trim(),});
+                
             }
             else if (item is XElement xElement)
             {
-                if (xElement.Name == "code")
+                if (xElement.Name == "para")
                 {
-                    if (result.Input != null)
-                    {
-                        // switch next
-                        result.Output = xElement.Value.Trim();
-                    }
-                    else
-                    {
-                        // switch next
-                        result.Description = current;
-                        result.Input = xElement.Value.Trim();
-                    }
+                    result.Items.Add(new Paragraph { Text = xElement.Value.Trim(), });
                 }
-                else if (xElement.Name == "para")
+                else if (xElement.Name == "usage")
                 {
-                    current += $"{xElement.Value.Trim()}{Environment.NewLine}";
+                    result.Items.Add(new Header { Text = "Usage", });
+                }
+                else if (xElement.Name == "result")
+                {
+                    result.Items.Add(new Header { Text = "Result", });
+                }
+                else if (xElement.Name == "repository-action-sample")
+                {
+                    result.Items.Add(new Header { Text = "RepositoryAction sample", });
+                }
+                else if (xElement.Name == "code")
+                {
+                    result.Items.Add(new Code() { Content = xElement.Value.Trim(), Language = null, });
+                }
+                else if (xElement.Name == "code-file")
+                {
+                    var att = xElement.Attributes().SingleOrDefault(x => x.Name == "filename");
+                    if (att == null)
+                    {
+                        throw new Exception("filename attribute should exist");
+                    }
+                    var filename = att.Value.Trim();
+
+                    if (!files.TryGetValue(filename, out string content))
+                    {
+                        throw new Exception("File not found");
+                    }
+
+                    var code = new Code { Content = content, };
+                    
+                    att = xElement.Attributes().SingleOrDefault(x => x.Name == "language");
+                    if (att != null)
+                    {
+                        if (!string.IsNullOrWhiteSpace(att.Value))
+                        {
+                            code.Language = att.Value.Trim();
+                        }
+                        else
+                        {
+                            throw new Exception("language attribute should not be empty");
+                        }
+                    }
+                    
+                    // check if file exists, load sample
+                    result.Items.Add(code);
+                }
+                else if (xElement.Name == "md-snippet")
+                {
+                    var snippetName = xElement.Value.Trim();
+                    result.Items.Add(new Text() { Content = "snippet: " + snippetName, });
+                }
+                else if (xElement.Name == "md-include")
+                {
+                    var includeName = xElement.Value.Trim();
+                    result.Items.Add(new Text() { Content = "include: " + includeName, });
                 }
                 else
                 {
                     throw new Exception($"'{xElement.Name}' Not expected");
                 }
             }
-        }
-
-        if (string.IsNullOrEmpty(result.Description))
-        {
-            result.Description = current;
         }
 
         return result;

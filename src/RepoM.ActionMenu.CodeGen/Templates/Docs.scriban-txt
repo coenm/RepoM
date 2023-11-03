@@ -56,30 +56,30 @@ Argument{{if member.Params.size > 1}}s{{end}}:
 
 {{ member.Remarks | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
   {{~ end ~}}
-  {{~ if member.Examples.size > 0 ~}}
+  {{~ if member.Examples ~}}
 
-    {{~ for example in member.Examples ~}}
 ### Example
-{{ if !string.empty example.Description }}
-{{ example.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-{{ end }}
-      {{~ if example.Input ~}}
-        {{~ if example.Output ~}}
-#### Usage
+      {{ if !string.empty member.Examples.Description }}
+{{ member.Examples.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+      {{ end }}
+      {{~ for example_item in member.Examples.Items ~}}
+        {{~ if example_item.TypeName == 'Code' ~}}
+
+```{{ example_item.Language | string.downcase }}
+{{ example_item.Content | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+```
+
+        {{~ else if example_item.TypeName == 'Header' ~}}
+#### {{ example_item.Text }}
+
+        {{~ else if example_item.TypeName == 'Text' ~}}
+{{ example_item.Content }}
+        {{~ else if example_item.TypeName == 'Paragraph' ~}}
+
+{{ example_item.Text }}
+        {{~ else ~}}
+NAME NOT FOUND!! {{ example_item.TypeName }}.      
         {{~ end ~}}
-
-```yaml
-{{ example.Input | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-```
-
       {{~ end ~}}
-      {{~ if example.Output ~}}
-#### Result
-
-```yaml
-{{ example.Output | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
-```
-      {{~ end ~}}
-    {{~ end ~}}
-  {{~ end ~}}
+  {{~ end ~}}  
 {{~ end ~}}

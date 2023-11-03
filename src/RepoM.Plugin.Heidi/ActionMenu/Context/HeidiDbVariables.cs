@@ -76,7 +76,7 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
     /// </returns>
     /// <example>
     /// <code>
-    /// heidi.databases
+    /// databases = heidi.databases
     /// </code>
     /// <code>
     /// </code>

@@ -25,6 +25,9 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
     /// Gets the number of actions performed on the current repository.
     /// </summary>
     /// <returns>Number of actions performed on the current repository.</returns>
+    /// <example>
+    /// repo_call_count = statistics.count;
+    /// </example>
     [ActionMenuMember("count")]
     public int GetCount(IActionMenuGenerationContext context)
     {
@@ -35,6 +38,9 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
     /// Gets the number of actions performed on all repositories known in RepoM.
     /// </summary>
     /// <returns>Number of actions performed on any known repository.</returns>
+    /// <example>
+    /// total_count = statistics.overall_count;
+    /// </example>
     [ActionMenuMember("overall_count")]
     public int GetOverallCount()
     {

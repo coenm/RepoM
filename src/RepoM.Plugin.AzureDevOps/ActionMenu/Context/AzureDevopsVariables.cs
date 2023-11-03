@@ -32,15 +32,17 @@ internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
     /// <param name="projectId">The azure devops project id. Cannot be null or empty.</param>
     /// <returns>Returns an enumeration of pull requests for the selected repository (or an empty enumeration when no pull requests are found).</returns>
     /// <example>
+    /// <usage/>
     /// Get all pull requests for the selected repository in a given devops project:
     /// <code>
     /// devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
     /// prs = azure_devops.get_pull_requests(devops_project_id);
     /// </code>
+    /// <result/>
     /// As a result, the variable `prs` could contain two pull requests with the following dummy data:
-    /// <code>
-    /// file:
-    /// </code>
+    /// <code-file language='yaml' filename='azure_devops.get_pull_requests.verified.yaml' />
+    /// <repository-action-sample/>
+    /// <code-file language='yaml' filename='azure_devops.get_pull_requests.testfile.yaml' />
     /// </example>
     [ActionMenuMember("get_pull_requests")]
     public IEnumerable GetPullRequests(IActionMenuGenerationContext context, string projectId)

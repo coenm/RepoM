@@ -27,16 +27,15 @@ Argument:
 The input string removed with any HTML entities.
 
 ### Example
-
+      
 ```kalk
->>> "<p>This is a paragraph</p>" |> html_encode
-# "<p>This is a paragraph</p>" |> html_encode
-out = "&lt;p&gt;This is a paragraph&lt;/p&gt;"
->>> out |> html_decode
-# out |> html_decode
-out = "<p>This is a paragraph</p>"
-```
-
+    >>> "<p>This is a paragraph</p>" |> html_encode
+    # "<p>This is a paragraph</p>" |> html_encode
+    out = "&lt;p&gt;This is a paragraph&lt;/p&gt;"
+    >>> out |> html_decode
+    # out |> html_decode
+    out = "<p>This is a paragraph</p>"
+    ```
 
 ## html_encode
 
@@ -53,16 +52,15 @@ Argument:
 The input string with HTML entities.
 
 ### Example
-
+      
 ```kalk
->>> "<p>This is a paragraph</p>" |> html_encode
-# "<p>This is a paragraph</p>" |> html_encode
-out = "&lt;p&gt;This is a paragraph&lt;/p&gt;"
->>> out |> html_decode
-# out |> html_decode
-out = "<p>This is a paragraph</p>"
-```
-
+    >>> "<p>This is a paragraph</p>" |> html_encode
+    # "<p>This is a paragraph</p>" |> html_encode
+    out = "&lt;p&gt;This is a paragraph&lt;/p&gt;"
+    >>> out |> html_decode
+    # out |> html_decode
+    out = "<p>This is a paragraph</p>"
+    ```
 
 ## html_strip
 
@@ -79,13 +77,12 @@ Argument:
 The input string removed with any HTML tags
 
 ### Example
-
+      
 ```kalk
->>> "<p>This is a paragraph</p>" |> html_strip
-# "<p>This is a paragraph</p>" |> html_strip
-out = "This is a paragraph"
-```
-
+    >>> "<p>This is a paragraph</p>" |> html_strip
+    # "<p>This is a paragraph</p>" |> html_strip
+    out = "This is a paragraph"
+    ```
 
 ## json
 
@@ -104,16 +101,15 @@ Argument:
 A JSON string or an object/array depending on the argument.
 
 ### Example
-
+      
 ```kalk
->>> json {a: 1, b: 2, c: [4,5], d: "Hello World"}
-# json({a: 1, b: 2, c: [4,5], d: "Hello World"})
-out = "{\"a\": 1, \"b\": 2, \"c\": [4, 5], \"d\": \"Hello World\"}"
->>> json out
-# json(out)
-out = {a: 1, b: 2, c: [4, 5], d: "Hello World"}
-```
-
+    >>> json {a: 1, b: 2, c: [4,5], d: "Hello World"}
+    # json({a: 1, b: 2, c: [4,5], d: "Hello World"})
+    out = "{\"a\": 1, \"b\": 2, \"c\": [4, 5], \"d\": \"Hello World\"}"
+    >>> json out
+    # json(out)
+    out = {a: 1, b: 2, c: [4, 5], d: "Hello World"}
+    ```
 
 ## url_decode
 
@@ -130,13 +126,12 @@ Argument:
 The decoded URL
 
 ### Example
-
+      
 ```kalk
->>> url_decode "this%3Cis%3Ean%3Aurl+and+another+part"
-# url_decode("this%3Cis%3Ean%3Aurl+and+another+part")
-out = "this<is>an:url and another part"
-```
-
+    >>> url_decode "this%3Cis%3Ean%3Aurl+and+another+part"
+    # url_decode("this%3Cis%3Ean%3Aurl+and+another+part")
+    out = "this<is>an:url and another part"
+    ```
 
 ## url_encode
 
@@ -156,13 +151,12 @@ Argument:
 An encoded URL.
 
 ### Example
-
+      
 ```kalk
- >>> url_encode "this<is>an:url and another part"
- # url_encode("this<is>an:url and another part")
- out = "this%3Cis%3Ean%3Aurl+and+another+part"
- ```
-
+     >>> url_encode "this<is>an:url and another part"
+     # url_encode("this<is>an:url and another part")
+     out = "this%3Cis%3Ean%3Aurl+and+another+part"
+     ```
 
 ## url_escape
 
@@ -179,10 +173,9 @@ Argument:
 The input string url escaped
 
 ### Example
-
+      
 ```kalk
->>> "<hello> & <scriban>" |> url_escape
-# "<hello> & <scriban>" |> url_escape
-out = "%3Chello%3E%20&%20%3Cscriban%3E"
-```
-
+    >>> "<hello> & <scriban>" |> url_escape
+    # "<hello> & <scriban>" |> url_escape
+    out = "%3Chello%3E%20&%20%3Cscriban%3E"
+    ```

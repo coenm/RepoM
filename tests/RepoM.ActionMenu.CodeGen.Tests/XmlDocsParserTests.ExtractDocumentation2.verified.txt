@@ -22,6 +22,47 @@ find_files 'C:\Users\coenm\RepoM' '*.sln'
       {
         TypeName: Code,
         Content: ["C:\Users\coenm\RepoM\src\RepoM.sln"]
+      },
+      {
+        TypeName: Header,
+        Text: Usage
+      },
+      {
+        TypeName: Text,
+        Content: test / para
+      },
+      {
+        TypeName: Code,
+        Content: avc
+      },
+      {
+        TypeName: Header,
+        Text: Result
+      },
+      {
+        TypeName: Text,
+        Content: test / para
+      },
+      {
+        TypeName: Header,
+        Text: RepositoryAction sample
+      },
+      {
+        TypeName: Code,
+        Content: abc
+      },
+      {
+        TypeName: Code,
+        Language: yaml,
+        Content: DUMMY CONTENT
+      },
+      {
+        TypeName: Text,
+        Content: snippet: name1
+      },
+      {
+        TypeName: Text,
+        Content: include: name2
       }
     ]
   }

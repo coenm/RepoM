@@ -39,6 +39,8 @@ public class Program
         Template templateModule = await LoadTemplateAsync("Templates/Module.scriban-cs");
         Template templateDocs = await LoadTemplateAsync("Templates/Docs.scriban-txt");
 
+        var files = await LoadFiles();
+
         var projectMapping = new Dictionary<string, Dictionary<string, KalkModuleToGenerate>>();
 
         foreach (var project in projects)
@@ -64,7 +66,7 @@ public class Program
                 KalkModuleToGenerate? moduleToGenerate = null;
                 if (moduleAttribute != null)
                 {
-                    GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule);
+                    GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule, files);
                 }
 
                 foreach (ISymbol member in typeSymbol.GetMembers())
@@ -86,7 +88,7 @@ public class Program
                     // In case the module is built-in, we still generate a module for it
                     if (moduleToGenerate == null)
                     {
-                        GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule);
+                        GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule, files);
                     }
 
                     var method = member as IMethodSymbol;
@@ -148,7 +150,7 @@ public class Program
                     }
 
                     moduleToGenerate.Members.Add(desc);
-                    XmlDocsParser.ExtractDocumentation(member, desc);
+                    XmlDocsParser.ExtractDocumentation(member, desc, files);
                 }
             }
         }
@@ -190,7 +192,8 @@ public class Program
         string className,
         AttributeData moduleAttribute,
         out KalkModuleToGenerate moduleToGenerate,
-        IDictionary<string, KalkModuleToGenerate>? mapNameToModule)
+        IDictionary<string, KalkModuleToGenerate>? mapNameToModule,
+        IDictionary<string, string> files)
     {
         var ns = typeSymbol.ContainingNamespace.ToDisplayString();
 
@@ -219,7 +222,7 @@ public class Program
             moduleToGenerate.IsBuiltin = true;
         }
 
-        XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate);
+        XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate, files);
     }
     
     private static async Task GenerateModuleSiteDocumentation(KalkModuleToGenerate module, string siteFolder, Template template)
@@ -260,5 +263,21 @@ public class Program
         }
 
         return template;
+    }
+
+    private static async Task<Dictionary<string, string>> LoadFiles()
+    {
+        string[] files = Directory.GetFiles("C:\\Projects\\Private\\git\\RepoM\\docs\\snippets"); // todo
+
+        var result = new Dictionary<string, string>(files.Length);
+
+        foreach (string file in files)
+        {
+            var f = new FileInfo(file);
+            var fileContent = await File.ReadAllTextAsync(file);
+            result.Add(f.Name, fileContent);
+        }
+
+        return result;
     }
 }

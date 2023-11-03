@@ -20,9 +20,25 @@ internal partial class SonarCloudVariables : TemplateContextRegistrationBase
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
+    /// <summary>
+    /// Get favorite status of repository related to the <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">The sonarcloud id related to the repository.</param>
+    /// <returns>`true` when the repository is set as favorite in SonarCloud, `false`, otherwise.</returns>
+    /// <example>
+    /// <code>
+    /// sonarcloud_repository_id = "RepoM";
+    /// is_favorite = sonarcloud.is_favorite(sonarcloud_repository_id);
+    /// </code>
+    /// </example>
     [ActionMenuMember("is_favorite")]
-    public bool IsFavorite(string key)
+    public bool IsFavorite(string id)
     {
-        return _service.IsFavorite(key ?? string.Empty);
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return false;
+        }
+
+        return _service.IsFavorite(id);
     }
 }

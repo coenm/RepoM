@@ -8,5 +8,23 @@ This module contains the following methods, variables and/or constants:
 
 ## is_favorite
 
-`sonarcloud.is_favorite`
+`sonarcloud.is_favorite(id)`
+
+Get favorite status of repository related to the id.
+
+Argument:
+
+- `id`: The sonarcloud id related to the repository.
+
+### Returns
+
+`true` when the repository is set as favorite in SonarCloud, `false`, otherwise.
+
+### Example
+      
+
+```
+sonarcloud_repository_id = "RepoM";
+is_favorite = sonarcloud.is_favorite(sonarcloud_repository_id);
+```
 

@@ -23,17 +23,16 @@ Argument:
 `true` if the specified directory path exists on the disk, `false` otherwise.
 
 ### Example
-
+      
 ```kalk
-dir_exists "testdir"
-# dir_exists("testdir")
-out = true
- rmdir "testdir"
- dir_exists "testdir"
-# dir_exists("testdir")
-out = false
-```
-
+    dir_exists "testdir"
+    # dir_exists("testdir")
+    out = true
+     rmdir "testdir"
+     dir_exists "testdir"
+    # dir_exists("testdir")
+    out = false
+    ```
 
 ## file_exists
 
@@ -50,18 +49,17 @@ Argument:
 `true` if the specified file path exists on the disk, `false` otherwise.
 
 ### Example
-
+      
 ```kalk
- rm "test.txt"
- file_exists "test.txt"
-# file_exists("test.txt")
-out = false
- save_text("content", "test.txt")
- file_exists "test.txt"
-# file_exists("test.txt")
-out = true
-```
-
+     rm "test.txt"
+     file_exists "test.txt"
+    # file_exists("test.txt")
+    out = false
+     save_text("content", "test.txt")
+     file_exists "test.txt"
+    # file_exists("test.txt")
+    out = true
+    ```
 
 ## find_files
 
@@ -79,18 +77,16 @@ Arguments:
 Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.
 
 ### Example
-
+      
 Locate all solution files in the given directory.
 
-#### Usage
-
-```yaml
+```
 find_files 'C:\Users\coenm\RepoM' '*.sln'
 # find_files('C:\Users\coenm\RepoM','*.sln')
 ```
 
-#### Result
 
-```yaml
+```
 ["C:\Users\coenm\RepoM\src\RepoM.sln"]
 ```
+

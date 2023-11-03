@@ -20,5 +20,5 @@ public abstract class KalkDescriptor
 
     public string Remarks { get; set; }
 
-    public List<ExamplesDescriptor> Examples { get; } = new();
+    public ExamplesDescriptor? Examples { get; set; }
 }
