@@ -140,7 +140,7 @@ internal static partial class XmlDocsParser
                 }
                 else if (xElement.Name == "code")
                 {
-                    result.Items.Add(new Code() { Content = xElement.Value.Trim(), Language = null, });
+                    result.Items.Add(new Code() { Content = xElement.Value.Trim(), Language = null, UseRaw = false, });
                 }
                 else if (xElement.Name == "code-file")
                 {
@@ -151,12 +151,12 @@ internal static partial class XmlDocsParser
                     }
                     var filename = att.Value.Trim();
 
-                    if (!files.TryGetValue(filename, out string content))
+                    if (!files.TryGetValue(filename, out var content))
                     {
                         throw new Exception($"File '{filename}' not found");
                     }
 
-                    var code = new Code { Content = content, };
+                    var code = new Code { Content = content, UseRaw = true, };
                     
                     att = xElement.Attributes().SingleOrDefault(x => x.Name == "language");
                     if (att != null)

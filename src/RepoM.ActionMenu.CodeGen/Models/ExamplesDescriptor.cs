@@ -21,6 +21,8 @@ public sealed class Code : ExampleItemBase
     public string? Language { get; set; } = null;
 
     public string Content { get; set; }
+
+    public bool UseRaw { get; set; }
 }
 
 public sealed class Paragraph : ExampleItemBase

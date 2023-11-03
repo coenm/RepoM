@@ -51,8 +51,8 @@ As a result, the variable `prs` could contain two pull requests with the followi
 context:
 - type: evaluate-script@1
   content: |-
-devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
-prs = azure_devops.get_pull_requests(devops_project_id);
+    devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
+    prs = azure_devops.get_pull_requests(devops_project_id);
 
 action-menu:
 - type: foreach@1
@@ -61,7 +61,7 @@ action-menu:
   variable: pr
   actions:
   - type: url@1
-name: '{{ pr.name }}'
-url: '{{ pr.url }}'
+    name: '{{ pr.name }}'
+    url: '{{ pr.url }}'
 ```
 

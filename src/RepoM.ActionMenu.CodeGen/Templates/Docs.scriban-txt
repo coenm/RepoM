@@ -66,7 +66,11 @@ Argument{{if member.Params.size > 1}}s{{end}}:
         {{~ if example_item.TypeName == 'Code' ~}}
 
 ```{{ example_item.Language | string.downcase }}
+     {{~ if example_item.UseRaw ~}}
+{{ example_item.Content | string.rstrip }}
+    {{~ else ~}}
 {{ example_item.Content | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+    {{~ end ~}}
 ```
 
         {{~ else if example_item.TypeName == 'Header' ~}}
