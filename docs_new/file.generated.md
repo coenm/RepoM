@@ -22,6 +22,41 @@ Argument:
 
 `true` if the specified directory path exists on the disk, `false` otherwise.
 
+### Example
+      
+#### Usage
+
+Check if file exists
+
+```
+solution_files = file.dir_exists('C:\Project\');
+solution_files = file.dir_exists('C:\Project');
+solution_files = file.dir_exists('C:/Project/');
+```
+
+#### RepositoryAction sample
+
+TODO: this content is not correct, change filename
+
+```yaml
+context:
+- type: evaluate-script@1
+  content: |-
+    devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
+    prs = azure_devops.get_pull_requests(devops_project_id);
+
+action-menu:
+- type: foreach@1
+  active: 'array.size(prs) > 1'
+  enumerable: prs
+  variable: pr
+  actions:
+  - type: url@1
+    name: '{{ pr.name }}'
+    url: '{{ pr.url }}'
+```
+
+
 ## file_exists
 
 `file.file_exists(path)`
@@ -35,6 +70,39 @@ Argument:
 ### Returns
 
 `true` if the specified file path exists on the disk, `false` otherwise.
+
+### Example
+      
+#### Usage
+
+Check if file exists
+
+```
+solution_files = file.file_exists('C:\Project\my-solution.sln');
+```
+
+#### RepositoryAction sample
+
+TODO: this content is not correct, change filename
+
+```yaml
+context:
+- type: evaluate-script@1
+  content: |-
+    devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
+    prs = azure_devops.get_pull_requests(devops_project_id);
+
+action-menu:
+- type: foreach@1
+  active: 'array.size(prs) > 1'
+  enumerable: prs
+  variable: pr
+  actions:
+  - type: url@1
+    name: '{{ pr.name }}'
+    url: '{{ pr.url }}'
+```
+
 
 ## find_files
 
