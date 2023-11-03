@@ -19,7 +19,13 @@ Number of actions performed on the current repository.
 
 ### Example
       
+#### Usage
+
+
+```
 repo_call_count = statistics.count;
+```
+
 
 ## overall_count
 
@@ -33,4 +39,10 @@ Number of actions performed on any known repository.
 
 ### Example
       
-total_count = statistics.overall_count;
+#### Usage
+
+
+```
+repo_call_count = statistics.overall_count;
+```
+

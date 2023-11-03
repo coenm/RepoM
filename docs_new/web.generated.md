@@ -53,14 +53,20 @@ The input string with HTML entities.
 
 ### Example
       
-```kalk
-    >>> "<p>This is a paragraph</p>" |> html_encode
-    # "<p>This is a paragraph</p>" |> html_encode
-    out = "&lt;p&gt;This is a paragraph&lt;/p&gt;"
-    >>> out |> html_decode
-    # out |> html_decode
-    out = "<p>This is a paragraph</p>"
-    ```
+#### Usage
+
+
+```
+encoded = web.html_encode("&lt;p&gt;This is a paragraph&lt;/p&gt;");
+```
+
+#### Result
+
+
+```
+"&lt;p&gt;This is a paragraph&lt;/p&gt;"
+```
+
 
 ## html_strip
 
@@ -127,11 +133,20 @@ The decoded URL
 
 ### Example
       
-```kalk
-    >>> url_decode "this%3Cis%3Ean%3Aurl+and+another+part"
-    # url_decode("this%3Cis%3Ean%3Aurl+and+another+part")
-    out = "this<is>an:url and another part"
-    ```
+#### Usage
+
+
+```
+encoded = web.url_decode("this%3Cis%3Ean%3Aurl+and+another+part");
+```
+
+#### Result
+
+
+```
+"this&lt;is&gt;an:url and another part"
+```
+
 
 ## url_encode
 
@@ -152,11 +167,20 @@ An encoded URL.
 
 ### Example
       
-```kalk
-     >>> url_encode "this<is>an:url and another part"
-     # url_encode("this<is>an:url and another part")
-     out = "this%3Cis%3Ean%3Aurl+and+another+part"
-     ```
+#### Usage
+
+
+```
+encoded = web.url_encode("this&lt;is&gt;an:url and another part");
+```
+
+#### Result
+
+
+```
+"this%3Cis%3Ean%3Aurl+and+another+part"
+```
+
 
 ## url_escape
 
@@ -174,8 +198,17 @@ The input string url escaped
 
 ### Example
       
-```kalk
-    >>> "<hello> & <scriban>" |> url_escape
-    # "<hello> & <scriban>" |> url_escape
-    out = "%3Chello%3E%20&%20%3Cscriban%3E"
-    ```
+#### Usage
+
+
+```
+encoded = web.url_escape("&lt;hello&gt; &amp; &lt;scriban&gt;");
+```
+
+#### Result
+
+
+```
+"%3Chello%3E%20&amp;%20%3Cscriban%3E"
+```
+

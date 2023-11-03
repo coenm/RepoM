@@ -26,7 +26,10 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
     /// </summary>
     /// <returns>Number of actions performed on the current repository.</returns>
     /// <example>
+    /// <usage/>
+    /// <code>
     /// repo_call_count = statistics.count;
+    /// </code>
     /// </example>
     [ActionMenuMember("count")]
     public int GetCount(IActionMenuGenerationContext context)
@@ -39,7 +42,10 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
     /// </summary>
     /// <returns>Number of actions performed on any known repository.</returns>
     /// <example>
-    /// total_count = statistics.overall_count;
+    /// <usage/>
+    /// <code>
+    /// repo_call_count = statistics.overall_count;
+    /// </code>
     /// </example>
     [ActionMenuMember("overall_count")]
     public int GetOverallCount()

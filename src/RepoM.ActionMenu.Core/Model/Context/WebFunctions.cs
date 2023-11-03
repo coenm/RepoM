@@ -31,11 +31,14 @@ namespace RepoM.ActionMenu.Core.Model.Context
         /// <param name="url">The url text to encode as an URL.</param>
         /// <returns>An encoded URL.</returns>
         /// <example>
-        /// ```kalk
-        /// >>> url_encode "this&lt;is&gt;an:url and another part"
-        /// # url_encode("this&lt;is&gt;an:url and another part")
-        /// out = "this%3Cis%3Ean%3Aurl+and+another+part"
-        /// ```
+        /// <usage/>
+        /// <code>
+        /// encoded = web.url_encode("this&amp;lt;is&amp;gt;an:url and another part");
+        /// </code>
+        /// <result/>
+        /// <code>
+        /// "this%3Cis%3Ean%3Aurl+and+another+part"
+        /// </code>
         /// </example>
         [ActionMenuMember("url_encode")]
         public string UrlEncode(string url)
@@ -49,12 +52,15 @@ namespace RepoM.ActionMenu.Core.Model.Context
         /// <param name="url">The URL to decode.</param>
         /// <returns>The decoded URL</returns>
         /// <example>
-        /// ```kalk
-        /// >>> url_decode "this%3Cis%3Ean%3Aurl+and+another+part"
-        /// # url_decode("this%3Cis%3Ean%3Aurl+and+another+part")
-        /// out = "this&lt;is&gt;an:url and another part"
-        /// ```
-        /// </example>
+        /// <usage/>
+        /// <code>
+        /// encoded = web.url_decode("this%3Cis%3Ean%3Aurl+and+another+part");
+        /// </code>
+        /// <result/>
+        /// <code>
+        /// "this&amp;lt;is&amp;gt;an:url and another part"
+        /// </code>
+        /// </example> 
         [ActionMenuMember("url_decode")]
         public string UrlDecode(string url)
         {
@@ -67,12 +73,15 @@ namespace RepoM.ActionMenu.Core.Model.Context
         /// <param name="url">The input string.</param>
         /// <returns>The input string url escaped</returns>
         /// <example>
-        /// ```kalk
-        /// >>> "&lt;hello&gt; &amp; &lt;scriban&gt;" |> url_escape
-        /// # "&lt;hello&gt; &amp; &lt;scriban&gt;" |> url_escape
-        /// out = "%3Chello%3E%20&amp;%20%3Cscriban%3E"
-        /// ```
-        /// </example>
+        /// <usage/>
+        /// <code>
+        /// encoded = web.url_escape("&amp;lt;hello&amp;gt; &amp;amp; &amp;lt;scriban&amp;gt;");
+        /// </code>
+        /// <result/>
+        /// <code>
+        /// "%3Chello%3E%20&amp;amp;%20%3Cscriban%3E"
+        /// </code>
+        /// </example> 
         [ActionMenuMember("url_escape")]
         public string UrlEscape(string url)
         {
@@ -85,14 +94,14 @@ namespace RepoM.ActionMenu.Core.Model.Context
         /// <param name="text">The input string</param>
         /// <returns>The input string with HTML entities.</returns>
         /// <example>
-        /// ```kalk
-        /// >>> "&lt;p&gt;This is a paragraph&lt;/p&gt;" |> html_encode
-        /// # "&lt;p&gt;This is a paragraph&lt;/p&gt;" |> html_encode
-        /// out = "&amp;lt;p&amp;gt;This is a paragraph&amp;lt;/p&amp;gt;"
-        /// >>> out |> html_decode
-        /// # out |> html_decode
-        /// out = "&lt;p&gt;This is a paragraph&lt;/p&gt;"
-        /// ```
+        /// <usage/>
+        /// <code>
+        /// encoded = web.html_encode("&amp;lt;p&amp;gt;This is a paragraph&amp;lt;/p&amp;gt;");
+        /// </code>
+        /// <result/>
+        /// <code>
+        /// "&amp;lt;p&amp;gt;This is a paragraph&amp;lt;/p&amp;gt;"
+        /// </code>
         /// </example>
         [ActionMenuMember("html_encode")]
         public string HtmlEncode(string text)
