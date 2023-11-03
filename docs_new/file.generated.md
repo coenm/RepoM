@@ -29,9 +29,9 @@ Argument:
 Check if file exists
 
 ```
-solution_files = file.dir_exists('C:\Project\');
-solution_files = file.dir_exists('C:\Project');
-solution_files = file.dir_exists('C:/Project/');
+exists = file.dir_exists('C:\Project\');
+exists = file.dir_exists('C:\Project');
+exists = file.dir_exists('C:/Project/');
 ```
 
 #### RepositoryAction sample
@@ -78,7 +78,7 @@ Argument:
 Check if file exists
 
 ```
-solution_files = file.file_exists('C:\Project\my-solution.sln');
+exists = file.file_exists('C:\Project\my-solution.sln');
 ```
 
 #### RepositoryAction sample

@@ -15,7 +15,7 @@ internal partial class FileFunctions
     /// <usage/>
     /// Check if file exists
     /// <code>
-    /// solution_files = file.file_exists('C:\Project\my-solution.sln');
+    /// exists = file.file_exists('C:\Project\my-solution.sln');
     /// </code>
     /// <repository-action-sample/>
     /// TODO: this content is not correct, change filename
@@ -51,9 +51,9 @@ internal partial class FileFunctions
     /// <usage/>
     /// Check if file exists
     /// <code>
-    /// solution_files = file.dir_exists('C:\Project\');
-    /// solution_files = file.dir_exists('C:\Project');
-    /// solution_files = file.dir_exists('C:/Project/');
+    /// exists = file.dir_exists('C:\Project\');
+    /// exists = file.dir_exists('C:\Project');
+    /// exists = file.dir_exists('C:/Project/');
     /// </code>
     /// <repository-action-sample/>
     /// TODO: this content is not correct, change filename
