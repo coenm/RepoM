@@ -1,10 +1,11 @@
-namespace RepoM.ActionMenu.Core.Model.Functions;
+namespace RepoM.ActionMenu.Core.Model.Context;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.Attributes;
 using Scriban.Parsing;
 using Scriban.Syntax;
@@ -27,17 +28,24 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesn't support regular expressions.</param>
     /// <returns>Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.</returns>
     /// <example>
+    /// <usage/>
     /// Locate all solution files in the given directory.
     /// <code>
-    /// find_files 'C:\Users\coenm\RepoM' '*.sln'
-    /// # find_files('C:\Users\coenm\RepoM','*.sln')
+    /// solution_files = file.find_files('C:\Users\coenm\RepoM', '*.sln');
     /// </code>
-    /// <code>
-    /// ["C:\Users\coenm\RepoM\src\RepoM.sln"]
-    /// </code>
+    /// <result/>
+    /// As a result, the variable `solution_files` is an enumerable of strings, for example:
+    /// <code-file language='yaml' filename='file.find_files.verified.yaml' />
+    /// <repository-action-sample/>
+    /// <code-file language='yaml' filename='file.find_files.actionmenu.yaml' />
     /// </example>
     [ActionMenuMember("find_files")]
     public static string[] FindFiles(ActionMenuGenerationContext /*IMenuContext*/ context, SourceSpan span, string rootPath, string searchPattern)
+    {
+        return FindFiles(context as IMenuContext, span, rootPath, searchPattern);
+    }
+
+    public static string[] FindFiles(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
     {
         try
         {

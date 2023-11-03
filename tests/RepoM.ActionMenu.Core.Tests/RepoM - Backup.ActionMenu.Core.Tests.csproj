@@ -35,11 +35,22 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Scriban" Version="5.9.0" />
-    <PackageReference Include="YamlDotNet" Version="13.7.1" />
+    <PackageReference Include="YamlDotNet" Version="13.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RepoM.ActionMenu.CodeGen\RepoM.ActionMenu.CodeGen.csproj" />
     <ProjectReference Include="..\..\src\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ScribanActionMenuTests - Copy.Serialize.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>%(ParentFile).cs</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\Context\" />
   </ItemGroup>
 </Project>

@@ -144,12 +144,12 @@ internal static partial class XmlDocsParser
                 }
                 else if (xElement.Name == "code-file")
                 {
-                    var att = xElement.Attributes().SingleOrDefault(x => x.Name == "filename");
-                    if (att == null)
+                    XAttribute? customAttribute = xElement.Attributes().SingleOrDefault(x => x.Name == "filename");
+                    if (customAttribute == null)
                     {
                         throw new Exception("filename attribute should exist");
                     }
-                    var filename = att.Value.Trim();
+                    var filename = customAttribute.Value.Trim();
 
                     if (!files.TryGetValue(filename, out var content))
                     {
@@ -158,12 +158,12 @@ internal static partial class XmlDocsParser
 
                     var code = new Code { Content = content, UseRaw = true, };
                     
-                    att = xElement.Attributes().SingleOrDefault(x => x.Name == "language");
-                    if (att != null)
+                    customAttribute = xElement.Attributes().SingleOrDefault(x => x.Name == "language");
+                    if (customAttribute != null)
                     {
-                        if (!string.IsNullOrWhiteSpace(att.Value))
+                        if (!string.IsNullOrWhiteSpace(customAttribute.Value))
                         {
-                            code.Language = att.Value.Trim();
+                            code.Language = customAttribute.Value.Trim();
                         }
                         else
                         {

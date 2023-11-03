@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.Core.Model.Functions
+namespace RepoM.ActionMenu.Core.Model.Context
 {
     using System;
     using System.Collections;

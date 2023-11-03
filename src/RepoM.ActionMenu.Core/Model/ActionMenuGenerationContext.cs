@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.ConfigReader;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model.Env;
-using RepoM.ActionMenu.Core.Model.Functions;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.EvaluateVariable;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
@@ -24,7 +23,10 @@ using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using Scriban;
 using Scriban.Runtime;
 using static RepoM.ActionMenu.Core.Model.ScribanModuleWithFunctions;
+using FileFunctions = RepoM.ActionMenu.Core.Model.Context.FileFunctions;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
+using RepositoryFunctions = RepoM.ActionMenu.Core.Model.Context.RepositoryFunctions;
+using WebFunctions = RepoM.ActionMenu.Core.Model.Context.WebFunctions;
 
 internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerationContext, IContextMenuActionMenuGenerationContext
 {
@@ -95,7 +97,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public EnvSetScriptObject Env { get; private set; }
     
-    public async Task AddRepositoryContextAsync(Context? reposContext)
+    public async Task AddRepositoryContextAsync(Interface.YamlModel.ActionMenus.Context? reposContext)
     {
         if (reposContext == null)
         {
