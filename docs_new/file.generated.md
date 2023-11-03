@@ -78,15 +78,42 @@ Returns an enumerable collection of full paths of the files or directories that 
 
 ### Example
       
+#### Usage
+
 Locate all solution files in the given directory.
 
 ```
-find_files 'C:\Users\coenm\RepoM' '*.sln'
-# find_files('C:\Users\coenm\RepoM','*.sln')
+solution_files = file.find_files('C:\Project\', '*.sln');
 ```
 
+#### Result
 
+As a result, the variable `solution_files` is an enumerable of strings, for example:
+
+```yaml
+- C:\Project\My Repositories\my-solution.sln
+- C:\Project\My Repositories\src\test solution.sln
 ```
-["C:\Users\coenm\RepoM\src\RepoM.sln"]
+
+#### RepositoryAction sample
+
+TODO: this content is not correct
+
+```yaml
+context:
+- type: evaluate-script@1
+  content: |-
+    devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
+    prs = azure_devops.get_pull_requests(devops_project_id);
+
+action-menu:
+- type: foreach@1
+  active: 'array.size(prs) > 1'
+  enumerable: prs
+  variable: pr
+  actions:
+  - type: url@1
+    name: '{{ pr.name }}'
+    url: '{{ pr.url }}'
 ```
 

@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
+using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
+using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.Core.Plugin.Repository;
 using Scriban.Parsing;
@@ -83,21 +85,32 @@ public class FileFunctionsTests
     }
 
 
-    // [Fact]
-    // [Documentation]
-    // public async Task GetPullRequests_Documentation()
-    // {
-    //     // arrange
-    //     A.CallTo(() => _service.GetPullRequests(_context.Repository, "my_project_id", null)).Returns(_prs);
-    //
-    //     // act
-    //     IEnumerable result = _sut.GetPullRequests(_context, "my_project_id");
-    //
-    //     // assert
-    //     await DocumentationGeneration
-    //           .CreateAndVerifyDocumentation(result)
-    //           .UseFileName("azure_devops.get_pull_requests");
-    // }
+    [Fact]
+    [Documentation]
+    public async Task FindFiles_Documentation()
+    {
+        // arrange
+        var rootPath = Path.Combine("C:", "Project", "My Repositories");
+        var fs = new MockFileSystem();
+        fs.AddDirectory(Path.Combine(rootPath, "src"));
+        fs.AddFile(Path.Combine(rootPath, "my-solution.sln"), new MockFileData("dummy"));
+        fs.AddFile(Path.Combine(rootPath, "src", "test solution.sln"), new MockFileData("dummy"));
+        fs.AddFile(Path.Combine(rootPath, "src", "dummy.txt"), new MockFileData("dummy"));
+        A.CallTo(() => _context.FileSystem).Returns(fs);
 
+        // act
+        IEnumerable result = Sut.FindFiles(_context, _span, @"C:\Project\", "*.sln");
 
+        // assert
+        result.Should().BeEquivalentTo(new List<string>
+            {
+                @"C:\Project\My Repositories\my-solution.sln",
+                @"C:\Project\My Repositories\src\test solution.sln",
+            });
+
+        // assert
+        await DocumentationGeneration
+              .CreateAndVerifyDocumentation(result)
+              .UseFileName("file.find_files");
+    }
 }

@@ -31,12 +31,13 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// <usage/>
     /// Locate all solution files in the given directory.
     /// <code>
-    /// solution_files = file.find_files('C:\Users\coenm\RepoM', '*.sln');
+    /// solution_files = file.find_files('C:\Project\', '*.sln');
     /// </code>
     /// <result/>
     /// As a result, the variable `solution_files` is an enumerable of strings, for example:
     /// <code-file language='yaml' filename='file.find_files.verified.yaml' />
     /// <repository-action-sample/>
+    /// TODO: this content is not correct
     /// <code-file language='yaml' filename='file.find_files.actionmenu.yaml' />
     /// </example>
     [ActionMenuMember("find_files")]
