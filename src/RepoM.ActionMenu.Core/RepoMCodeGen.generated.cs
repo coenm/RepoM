@@ -41,19 +41,3 @@ namespace RepoM.ActionMenu.Core.Model.Context
     }
 }
 
-namespace RepoM.ActionMenu.Core.Model.Context
-{
-    partial class WebFunctions
-    {
-        protected sealed override void RegisterFunctions()
-        {
-            RegisterFunction("url_encode", (Func<string, string>)UrlEncode);
-            RegisterFunction("url_decode", (Func<string, string>)UrlDecode);
-            RegisterFunction("url_escape", (Func<string, string>)UrlEscape);
-            RegisterFunction("html_encode", (Func<string, string>)HtmlEncode);
-            RegisterFunction("html_decode", (Func<string, string>)HtmlDecode);
-            RegisterFunction("json", (Func<Scriban.TemplateContext, object, object>)Json);
-            RegisterFunction("html_strip", (Func<Scriban.TemplateContext, string, string>)HtmlStrip);
-        }
-    }
-}
