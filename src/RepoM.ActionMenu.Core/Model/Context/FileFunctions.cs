@@ -45,7 +45,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
         return FindFiles(context as IMenuContext, span, rootPath, searchPattern);
     }
 
-    public static string[] FindFiles(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
+    internal static string[] FindFiles(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
     {
         try
         {
@@ -100,7 +100,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// <returns>`true` if the specified directory path exists on the disk, `false` otherwise.</returns>
     /// <example>
     /// <usage/>
-    /// Check if file exists
+    /// Check if directory exists
     /// <code>
     /// exists = file.dir_exists('C:\Project\');
     /// exists = file.dir_exists('C:\Project');
@@ -112,6 +112,11 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// </example>
     [ActionMenuMember("dir_exists")]
     public static bool DirectoryExists(ActionMenuGenerationContext context, string path)
+    {
+        return DirectoryExists(context as IMenuContext, path);
+    }
+
+    internal static bool DirectoryExists(IMenuContext context, string path)
     {
         if (path == null)
         {
