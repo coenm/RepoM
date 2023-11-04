@@ -4,7 +4,7 @@ Provides Azure Devops functions through `azure_devops`.
 
 This module contains the following methods, variables and/or constants:
 
-- [`azure_devops.get_pull_requests`](#get-pull-requests)
+- [`azure_devops.get_pull_requests`](#get_pull_requests)
 
 ## get_pull_requests
 

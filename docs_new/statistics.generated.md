@@ -5,7 +5,7 @@ Provides statistical information accessible through `statistics`.
 This module contains the following methods, variables and/or constants:
 
 - [`statistics.count`](#count)
-- [`statistics.overall_count`](#overall-count)
+- [`statistics.overall_count`](#overall_count)
 
 ## count
 

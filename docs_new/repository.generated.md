@@ -6,12 +6,12 @@ This module contains the following methods, variables and/or constants:
 
 - [`repository.branch`](#branch)
 - [`repository.branches`](#branches)
-- [`repository.local_branches`](#local-branches)
+- [`repository.local_branches`](#local_branches)
 - [`repository.location`](#location)
 - [`repository.name`](#name)
 - [`repository.path`](#path)
 - [`repository.remotes`](#remotes)
-- [`repository.safe_path`](#safe-path)
+- [`repository.safe_path`](#safe_path)
 
 ## branch
 

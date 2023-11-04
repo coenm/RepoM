@@ -4,9 +4,9 @@ Provides file related action menu functions and variables accessable through `fi
 
 This module contains the following methods, variables and/or constants:
 
-- [`file.dir_exists`](#dir-exists)
-- [`file.file_exists`](#file-exists)
-- [`file.find_files`](#find-files)
+- [`file.dir_exists`](#dir_exists)
+- [`file.file_exists`](#file_exists)
+- [`file.find_files`](#find_files)
 
 ## dir_exists
 

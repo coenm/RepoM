@@ -23,7 +23,7 @@ module_name = module.Name | string.downcase;
 This module contains the following methods, variables and/or constants:
 
   {{~ for member in module.Members ~}}
-- [`{{ prefix_module member.Name }}`](#{{ member.Name | string.downcase | string.handleize }})
+- [`{{ prefix_module member.Name }}`](#{{ member.Name | string.downcase }})
   {{~ end ~}}
 {{~ end ~}}
 {{~ ~}}
