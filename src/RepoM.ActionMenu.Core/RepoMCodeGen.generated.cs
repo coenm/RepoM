@@ -40,4 +40,3 @@ namespace RepoM.ActionMenu.Core.Model.Context
         }
     }
 }
-

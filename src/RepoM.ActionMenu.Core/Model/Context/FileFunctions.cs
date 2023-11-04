@@ -37,7 +37,6 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// As a result, the variable `solution_files` is an enumerable of strings, for example:
     /// <code-file language='yaml' filename='file.find_files.verified.yaml' />
     /// <repository-action-sample/>
-    /// TODO: this content is not correct
     /// <code-file language='yaml' filename='file.find_files.actionmenu.yaml' />
     /// </example>
     [ActionMenuMember("find_files")]

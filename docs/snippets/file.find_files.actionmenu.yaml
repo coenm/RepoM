@@ -1,15 +1,28 @@
 ﻿context:
 - type: evaluate-script@1
   content: |-
-    devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
-    prs = azure_devops.get_pull_requests(devops_project_id);
+    func get_filename(path)
+      ret path | string.split("\\") | array.last
+    end
+
+    solution_files = file.find_files(repository.safe_path, "*.sln");
 
 action-menu:
-- type: foreach@1
-  active: 'array.size(prs) > 1'
-  enumerable: prs
-  variable: pr
+# Open in visual studio when only one sln file was found in the repo.
+- type: command@1
+  name: Open in Visual Studio
+  command: '{{ array.first(solution_files) }}'
+  active: 'array.size(solution_files) == 1'
+
+# Use folder to choose sln file when multiple sln files found.
+- type: folder@1
+  name: Open in Visual Studio
+  active: 'array.size(solution_files) > 1'
   actions:
-  - type: url@1
-    name: '{{ pr.name }}'
-    url: '{{ pr.url }}'
+  - type: foreach@1
+    enumerable: solution_files
+    variable: sln
+    actions:
+    - type: command@1
+      name: '{{ get_filename(sln) }}'
+      command: '{{ sln }}'
