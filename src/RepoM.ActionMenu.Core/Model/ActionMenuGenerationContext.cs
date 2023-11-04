@@ -57,7 +57,6 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         var rootScriptObject = new RepoMScriptObject();
         
         rootScriptObject.SetValue("file", new FileFunctions(), true);
-        rootScriptObject.SetValue("web", new WebFunctions(), true);
         rootScriptObject.SetValue("repository", new RepositoryFunctions(Repository), true);
 
         Env = new EnvSetScriptObject(EnvScriptObject.Create());
