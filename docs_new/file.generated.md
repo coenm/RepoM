@@ -4,9 +4,9 @@ Provides file related action menu functions and variables accessable through `fi
 
 This module contains the following methods, variables and/or constants:
 
-- [`file.dir_exists`](#file-dir-exists)
-- [`file.file_exists`](#file-file-exists)
-- [`file.find_files`](#file-find-files)
+- [`file.dir_exists`](#dir-exists)
+- [`file.file_exists`](#file-exists)
+- [`file.find_files`](#find-files)
 
 ## dir_exists
 
@@ -26,7 +26,7 @@ Argument:
       
 #### Usage
 
-Check if file exists
+Check if directory exists
 
 ```
 exists = file.dir_exists('C:\Project\');

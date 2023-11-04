@@ -4,7 +4,7 @@ Provides variables provided by the Heidi module. The variables are accessable th
 
 This module contains the following methods, variables and/or constants:
 
-- [`heidi.databases`](#heidi-databases)
+- [`heidi.databases`](#databases)
 
 ## databases
 

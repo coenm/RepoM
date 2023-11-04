@@ -4,14 +4,14 @@ Provides action menu functions and variables for the current repository through 
 
 This module contains the following methods, variables and/or constants:
 
-- [`repository.branch`](#repository-branch)
-- [`repository.branches`](#repository-branches)
-- [`repository.local_branches`](#repository-local-branches)
-- [`repository.location`](#repository-location)
-- [`repository.name`](#repository-name)
-- [`repository.path`](#repository-path)
-- [`repository.remotes`](#repository-remotes)
-- [`repository.safe_path`](#repository-safe-path)
+- [`repository.branch`](#branch)
+- [`repository.branches`](#branches)
+- [`repository.local_branches`](#local-branches)
+- [`repository.location`](#location)
+- [`repository.name`](#name)
+- [`repository.path`](#path)
+- [`repository.remotes`](#remotes)
+- [`repository.safe_path`](#safe-path)
 
 ## branch
 
