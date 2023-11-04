@@ -26,7 +26,6 @@ using static RepoM.ActionMenu.Core.Model.ScribanModuleWithFunctions;
 using FileFunctions = RepoM.ActionMenu.Core.Model.Context.FileFunctions;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
 using RepositoryFunctions = RepoM.ActionMenu.Core.Model.Context.RepositoryFunctions;
-using WebFunctions = RepoM.ActionMenu.Core.Model.Context.WebFunctions;
 
 internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerationContext, IContextMenuActionMenuGenerationContext
 {
