@@ -1,0 +1,35 @@
+﻿[
+  {
+    Name: Open in Visual Studio,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true,
+    SubActions: [
+      {
+        Name: my-solution.sln,
+        RepositoryCommand: {
+          Executable: C:\Repositories\work\RepoX\my-solution.sln,
+          Arguments: [
+            
+          ]
+        },
+        Repository: {Scrubbed},
+        ExecutionCausesSynchronizing: false,
+        CanExecute: true
+      },
+      {
+        Name: test solution.sln,
+        RepositoryCommand: {
+          Executable: C:\Repositories\work\RepoX\src\test solution.sln,
+          Arguments: [
+            
+          ]
+        },
+        Repository: {Scrubbed},
+        ExecutionCausesSynchronizing: false,
+        CanExecute: true
+      }
+    ]
+  }
+]
