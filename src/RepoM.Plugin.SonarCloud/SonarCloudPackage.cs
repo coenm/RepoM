@@ -1,7 +1,6 @@
 namespace RepoM.Plugin.SonarCloud;
 
 using System.Threading.Tasks;
-using ExpressionStringEvaluator.Methods;
 using JetBrains.Annotations;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
@@ -50,7 +49,6 @@ public class SonarCloudPackage : IPackage
         container.Collection.Append<IActionToRepositoryActionMapper, ActionSonarCloudV1Mapper>(Lifestyle.Singleton);
 
         // others
-        container.Collection.Append<IMethod, SonarCloudIsFavoriteMethod>(Lifestyle.Singleton);
         container.Register<ISonarCloudFavoriteService, SonarCloudFavoriteService>(Lifestyle.Singleton);
         container.Collection.Append<IModule, SonarCloudModule>(Lifestyle.Singleton);
 
