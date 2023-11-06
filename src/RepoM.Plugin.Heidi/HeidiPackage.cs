@@ -5,10 +5,8 @@ using JetBrains.Annotations;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
-using RepoM.Core.Plugin.VariableProviders;
 using RepoM.Plugin.Heidi.Internal;
 using SimpleInjector;
-using RepoM.Plugin.Heidi.VariableProviders;
 using RepoM.Plugin.Heidi.ActionProvider;
 using RepoM.Plugin.Heidi.PersistentConfiguration;
 using RepoM.ActionMenu.Interface.Scriban;
@@ -62,9 +60,6 @@ public class HeidiPackage : IPackage
 
         // action executor
         // (see Statistics for example)
-
-        // variable provider
-        container.Collection.Append<IVariableProvider, HeidiDbVariableProvider>(Lifestyle.Singleton);
 
         // module
         container.Collection.Append<IModule, HeidiModule>(Lifestyle.Singleton);

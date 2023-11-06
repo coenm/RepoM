@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
+    <ProjectReference Include="..\RepoM.ActionMenu.Core.TestLib\RepoM.ActionMenu.Core.TestLib.csproj" />
     <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
   </ItemGroup>
 </Project>

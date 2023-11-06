@@ -2,13 +2,11 @@ namespace RepoM.Plugin.Heidi.ActionMenu.Context;
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.Scriban;
-using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.Internal;
 
 /// <summary>
@@ -64,32 +62,22 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
     /// <summary>
     /// Gets all known databases configured in the Heidi configuration related to the selected repository.
     /// </summary>
-    /// <returns>An enumerable of database configuration objects. Such object contains the following members:
-    /// 
-    /// - `metadata.name`: name of the current configuration.
-    /// - `metadata.order`: integer specifying a given order in Heidi.
-    /// - `metadata.tags`: array of strings containing tags. Can be empty.
-    /// - `database.key`: the configuration key. THis key can be used to start Heidi and open the database for this configuration.
-    /// - `database.host`: the hostname to connect to the database.
-    /// - `database.user`: the username used to connect to the database.
-    /// - `database.password`: the password used to connect to the database.
-    /// </returns>
+    /// <returns>An enumerable of database configuration objects as shown in the example below.</returns>
     /// <example>
+    /// Get all database configurations for the current repository:
     /// <code>
-    /// databases = heidi.databases
+    /// databases = heidi.databases;
     /// </code>
-    /// <code>
-    /// </code>
+    /// <result/>
+    /// As a result, the variable `databases` could contain the following dummy database configuration:
+    /// <code-file language='yaml' filename='heidi.databases.verified.yaml' />
+    /// <repository-action-sample/>
+    /// <code-file language='yaml' filename='heidi.databases.actionmenu.yaml' />
     /// </example>
     [ActionMenuMember("databases")]
     public IEnumerable GetDatabases(IActionMenuGenerationContext context)
     {
-        return GetByRepository(context.Repository);
-    }
-    
-    private IEnumerable<DatabaseConfiguration> GetByRepository(IRepository repository)
-    {
-        return _service.GetByRepository(repository)
+        return _service.GetByRepository(context.Repository)
           .Select(item => new DatabaseConfiguration()
             {
                 Database = new Database

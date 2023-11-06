@@ -1,0 +1,21 @@
+﻿- metadata:
+    name: heidi-key
+    order: 1
+    tags:
+    - Test
+    - Dev
+  database:
+    key: MyDomainDb1
+    host: database.my-domain.com
+    user: coenm
+    password: myS3cr3t!
+    port: 2345
+    uses-windows-authentication: false
+    database-type:
+      name: MariaDB/MySQL
+      protocol: named pipe
+    library: MSOLEDBSQL
+    comment: HeidiSQL Comment
+    databases:
+    - database1
+    - database2
