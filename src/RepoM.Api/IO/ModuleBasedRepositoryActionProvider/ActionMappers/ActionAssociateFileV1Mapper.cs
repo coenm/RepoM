@@ -68,7 +68,7 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             return null;
         }
 
-        return new DeferredSubActionsRepositoryAction(actionName, repository, false)
+        return new DeferredSubActionsRepositoryAction(actionName, repository)
             {
                 DeferredSubActionsEnumerator = () =>
                     GetFiles(repository, filePattern)

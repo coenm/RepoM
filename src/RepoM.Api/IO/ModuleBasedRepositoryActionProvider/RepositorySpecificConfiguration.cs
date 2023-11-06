@@ -13,7 +13,6 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Exceptions;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.FileCache;
-using RepoM.Api.IO.Variables;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
@@ -116,7 +115,6 @@ public class RepositoryConfigurationReader
 
         List<EvaluatedVariable> list = EvaluateVariables(rootFile.Variables, repository);
         variables.AddRange(list);
-        using IDisposable rootVariables = RepoMVariableProviderStore.Push(list);
 
         // Load repo specific environment variables
         Dictionary<string, string> envVars = LoadRepoEnvironmentVariables(repository, rootFile);
@@ -125,7 +123,6 @@ public class RepositoryConfigurationReader
         RepositoryActionConfiguration? repoSpecificConfig = LoadRepoSpecificConfig(repository, rootFile);
         List<EvaluatedVariable> repoSpecificVariables = EvaluateVariables(repoSpecificConfig?.Variables, repository);
         variables.AddRange(repoSpecificVariables);
-        using IDisposable repoSpecificVariablesRegistration = RepoMVariableProviderStore.Push(repoSpecificVariables);
 
         actions.Add(rootFile.ActionsCollection);
         if (repoSpecificConfig?.ActionsCollection != null)
@@ -334,12 +331,8 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
             yield break;
         }
 
-        using IDisposable d1 = RepoMVariableProviderStore.Push(variables ?? new List<EvaluatedVariable>(0));
-
         foreach (TagsCollection tagsCollection in ((IEnumerable<TagsCollection>?)tags) ?? Array.Empty<TagsCollection>())
         {
-            using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(tagsCollection.Variables, repository));
-
             foreach (RepositoryActionTag action in tagsCollection.Tags)
             {
                 if (!IsEnabled(action.When, true, repository))
@@ -353,33 +346,6 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
                 }
             }
         }
-    }
-
-    private List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars, IRepository repository)
-    {
-        if (vars == null)
-        {
-            return new List<EvaluatedVariable>(0);
-        }
-
-        return vars
-               .Where(v => IsEnabled(v.Enabled, true, repository))
-               .Select(v => new EvaluatedVariable
-                   {
-                       Name = v.Name,
-                       Value = Evaluate(v.Value, repository),
-                   })
-               .ToList();
-    }
-
-    private object? Evaluate(object? input, IRepository repository)
-    {
-        if (input is string s)
-        {
-            return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
-        }
-
-        return input;
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository repository)
@@ -447,19 +413,13 @@ public class RepositorySpecificConfiguration
             yield break;
         }
 
-        using IDisposable d1 = RepoMVariableProviderStore.Push(variables ?? new List<EvaluatedVariable>(0));
-
         // load variables global
         IEnumerable<ActionsCollection> iterateOverActions = actions != null ? actions : Array.Empty<ActionsCollection>();
 
         foreach (ActionsCollection actionsCollection in iterateOverActions)
         {
-            using IDisposable d3 = RepoMVariableProviderStore.Push(EvaluateVariables(actionsCollection.Variables, repository));
-
             foreach (Data.RepositoryAction action in actionsCollection.Actions)
             {
-                using IDisposable d4 = RepoMVariableProviderStore.Push(EvaluateVariables(action.Variables, repository));
-
                 IEnumerable<RepositoryActionBase> result = _actionMapper.Map(action, repository);
 
                 foreach (RepositoryActionBase singleItem in result)

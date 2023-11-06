@@ -30,7 +30,6 @@ public sealed class Scope : IDisposable
     {
         if (!_isDisposed)
         {
-            RepoMVariableProviderStore.VariableScope.Value = Parent;
             _isDisposed = true;
         }
     }

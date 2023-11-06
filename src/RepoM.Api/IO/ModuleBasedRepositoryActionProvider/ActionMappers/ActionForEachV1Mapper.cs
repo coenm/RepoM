@@ -7,7 +7,6 @@ using System.Linq;
 using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
-using RepoM.Api.IO.Variables;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
@@ -102,21 +101,10 @@ public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
                 continue;
             }
 
-            using IDisposable disposableIterationItem = RepoMVariableProviderStore.Push(new List<EvaluatedVariable>(1)
-                {
-                    new()
-                        {
-                            Name = action.Variable,
-                            Value = Evaluate(item, repository),
-                        },
-                });
-
             if (ShouldSkip(action.Skip))
             {
                 continue;
             }
-
-            using IDisposable disposableDefinedVariables = RepoMVariableProviderStore.Push(EvaluateVariables(action.Variables));
 
             foreach (RepositoryActionBase? repoAction in action.Actions.SelectMany(repositoryAction => actionMapperComposition.Map(repositoryAction, repository)))
             {

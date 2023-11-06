@@ -50,7 +50,7 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
 
         if (deferred)
         {
-            yield return new DeferredSubActionsRepositoryAction(name, repository, true)
+            yield return new DeferredSubActionsRepositoryAction(name, repository)
                 {
                     CanExecute = true,
                     DeferredSubActionsEnumerator = () =>
