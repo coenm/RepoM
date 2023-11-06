@@ -116,8 +116,6 @@ internal static class Bootstrapper
         RegisterExpressionStringVariableProviders();
 
         Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, CustomEnvironmentVariableVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, RepoMVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, RepositoryVariableProvider>(Lifestyle.Singleton);
         Container.Collection.Append<IVariableProvider, VariableProviderAdapter>(Lifestyle.Singleton);
 
         Container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);

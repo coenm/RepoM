@@ -90,8 +90,6 @@ public class RepositorySpecificConfigurationTest
                 new VariableProviderAdapter(new Core.Plugin.VariableProviders.IVariableProvider[]
                     {
                         new CustomEnvironmentVariableVariableProvider(),
-                        new RepoMVariableProvider(),
-                        new RepositoryVariableProvider(),
                     }),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
