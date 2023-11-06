@@ -1,14 +1,12 @@
 namespace RepoM.Api.RepositoryActions;
 
 using System;
-using System.Collections.Generic;
 using RepoM.Api.IO.Variables;
 using RepoM.Core.Plugin.Repository;
 
 public class DeferredSubActionsRepositoryAction : RepositoryAction
 {
     private readonly Func<RepositoryActionBase[]>? _action;
-    private readonly Dictionary<string, string>? _envVars;
     private readonly Scope? _scope;
 
     public DeferredSubActionsRepositoryAction(string name, IRepository repository, bool captureScope)
@@ -16,7 +14,6 @@ public class DeferredSubActionsRepositoryAction : RepositoryAction
     {
         if (captureScope)
         {
-            _envVars = EnvironmentVariableStore.Get(repository);
             _scope = RepoMVariableProviderStore.VariableScope.Value?.Clone();
         }
     }
@@ -32,7 +29,6 @@ public class DeferredSubActionsRepositoryAction : RepositoryAction
 
             return () =>
                 {
-                    using IDisposable _ = _envVars == null ? CreateDummyDisposable() : EnvironmentVariableStore.Set(_envVars);
                     using IDisposable __ = _scope == null ? CreateDummyDisposable() : RepoMVariableProviderStore.Set(_scope);
                     return _action.Invoke();
                 };

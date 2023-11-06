@@ -120,7 +120,6 @@ public class RepositoryConfigurationReader
 
         // Load repo specific environment variables
         Dictionary<string, string> envVars = LoadRepoEnvironmentVariables(repository, rootFile);
-        using IDisposable repoSpecificEnvVariables = EnvironmentVariableStore.Set(envVars);
 
         // Load repo specific config
         RepositoryActionConfiguration? repoSpecificConfig = LoadRepoSpecificConfig(repository, rootFile);
@@ -336,7 +335,6 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         }
 
         using IDisposable d1 = RepoMVariableProviderStore.Push(variables ?? new List<EvaluatedVariable>(0));
-        using IDisposable d2 = EnvironmentVariableStore.Set(repositoryEnvVars);
 
         foreach (TagsCollection tagsCollection in ((IEnumerable<TagsCollection>?)tags) ?? Array.Empty<TagsCollection>())
         {
@@ -450,7 +448,6 @@ public class RepositorySpecificConfiguration
         }
 
         using IDisposable d1 = RepoMVariableProviderStore.Push(variables ?? new List<EvaluatedVariable>(0));
-        using IDisposable d2 = EnvironmentVariableStore.Set(repositoryEnvVars ?? new Dictionary<string, string>());
 
         // load variables global
         IEnumerable<ActionsCollection> iterateOverActions = actions != null ? actions : Array.Empty<ActionsCollection>();
