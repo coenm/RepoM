@@ -12,7 +12,6 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.IO.VariableProviders;
 using RepoM.Api.IO;
 using RepoM.Api.Ordering.Az;
 using RepoM.Api.Ordering.Composition;
@@ -114,9 +113,6 @@ internal static class Bootstrapper
             };
 
         RegisterExpressionStringVariableProviders();
-
-        Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, CustomEnvironmentVariableVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, VariableProviderAdapter>(Lifestyle.Singleton);
 
         Container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);
         Container.RegisterInstance(new DateTimeVariableProviderOptions

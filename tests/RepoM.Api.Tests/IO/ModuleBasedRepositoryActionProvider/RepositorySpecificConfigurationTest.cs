@@ -26,7 +26,6 @@ using RepoM.Api.IO.ExpressionEvaluator;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
-using RepoM.Api.IO.VariableProviders;
 using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
@@ -87,10 +86,6 @@ public class RepositorySpecificConfigurationTest
                 new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
-                new VariableProviderAdapter(new Core.Plugin.VariableProviders.IVariableProvider[]
-                    {
-                        new CustomEnvironmentVariableVariableProvider(),
-                    }),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
             };
