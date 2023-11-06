@@ -2,7 +2,6 @@ namespace RepoM.Plugin.Heidi.Tests.ActionMenu.Context;
 
 using System;
 using System.Collections;
-using System.Collections.Immutable;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
@@ -12,7 +11,6 @@ using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Heidi.ActionMenu.Context;
 using RepoM.Plugin.Heidi.Interface;
 using RepoM.Plugin.Heidi.Internal;
-using RepoM.Plugin.Heidi.Internal.Config;
 using VerifyXunit;
 using Xunit;
 using Xunit.Categories;
@@ -28,8 +26,8 @@ public class HeidiDbVariablesTests
     {
         A.CallTo(() => _context.Repository).Returns(A.Fake<IRepository>());
 
-        A.CallTo(() => _service.GetAllDatabases())
-         .Returns(new[] { new HeidiSingleDatabaseConfiguration("RepoM/Abc"), }.ToImmutableArray());
+        // A.CallTo(() => _service.GetAllDatabases())
+        //  .Returns(new[] { new HeidiSingleDatabaseConfiguration("RepoM/Abc"), }.ToImmutableArray());
 
         A.CallTo(() => _service.GetByRepository(_context.Repository))
          .Returns(new RepositoryHeidiConfiguration[]

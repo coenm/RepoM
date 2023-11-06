@@ -7,7 +7,6 @@ using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryOrdering;
-using RepoM.Core.Plugin.VariableProviders;
 using RepoM.Plugin.Statistics.ActionMenu.Context;
 using RepoM.Plugin.Statistics.Ordering;
 using RepoM.Plugin.Statistics.PersistentConfiguration;

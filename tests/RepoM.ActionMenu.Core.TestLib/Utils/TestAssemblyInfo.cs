@@ -2,7 +2,6 @@ namespace RepoM.ActionMenu.Core.TestLib.Utils;
 
 using System.Reflection;
 using System;
-using VerifyTests;
 
 internal readonly struct TestAssemblyInfo
 {

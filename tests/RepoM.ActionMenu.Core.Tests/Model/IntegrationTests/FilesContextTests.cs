@@ -1,13 +1,9 @@
 namespace RepoM.Plugin.AzureDevOps.Tests.ActionMenu.IntegrationTests;
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
-using System.Linq;
 using System.Threading.Tasks;
-using FakeItEasy;
-using FluentAssertions;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Core.Plugin.Repository;

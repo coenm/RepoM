@@ -1,0 +1,86 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Open cc in HeidiSQL,
+    RepositoryCommand: {
+      $type: StartProcessRepositoryCommand,
+      Executable: C:/Program Files/HeidiSQL/heidisql.exe,
+      Arguments: [
+        --description "Key1"
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Open cc in SQL Server Management Studio,
+    RepositoryCommand: {
+      $type: StartProcessRepositoryCommand,
+      Executable: C:/Program Files (x86)/Microsoft SQL Server Management Studio 18/Common7/IDE/Ssms.exe,
+      Arguments: [
+        -S "Host1" -d "db0" -U "usr1"
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Open bb in HeidiSQL,
+    RepositoryCommand: {
+      $type: StartProcessRepositoryCommand,
+      Executable: C:/Program Files/HeidiSQL/heidisql.exe,
+      Arguments: [
+        --description "Key2"
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Open bb in SQL Server Management Studio,
+    RepositoryCommand: {
+      $type: StartProcessRepositoryCommand,
+      Executable: C:/Program Files (x86)/Microsoft SQL Server Management Studio 18/Common7/IDE/Ssms.exe,
+      Arguments: [
+        -S "Host2" -d "db0" -U "usr2"
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Open aa in HeidiSQL,
+    RepositoryCommand: {
+      $type: StartProcessRepositoryCommand,
+      Executable: C:/Program Files/HeidiSQL/heidisql.exe,
+      Arguments: [
+        --description "Key3"
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Open aa in SQL Server Management Studio,
+    RepositoryCommand: {
+      $type: StartProcessRepositoryCommand,
+      Executable: C:/Program Files (x86)/Microsoft SQL Server Management Studio 18/Common7/IDE/Ssms.exe,
+      Arguments: [
+        -S "Host3" -d "db0" -U "usr3"
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]
