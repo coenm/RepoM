@@ -216,6 +216,23 @@ public partial class MainWindow
         catch (Exception e)
         {
             // log?
+            ctxMenu.Items.Clear();
+            ctxMenu.Items.Add(new AcrylicMenuItem
+                {
+                    Header = "Error",
+                    IsEnabled = false,
+                });
+            ctxMenu.Items.Add(new AcrylicMenuItem
+                {
+                    Header = e.Message,
+                    IsEnabled = false,
+                });
+            ctxMenu.Items.Add(new AcrylicMenuItem
+                {
+                    Header = "TODO Check logging for stacktrace",
+                    IsEnabled = false,
+                });
+
             return false;
         }
     }

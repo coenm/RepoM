@@ -12,7 +12,6 @@ using RepoM.Plugin.Statistics.ActionMenu.Context;
 using RepoM.Plugin.Statistics.Ordering;
 using RepoM.Plugin.Statistics.PersistentConfiguration;
 using RepoM.Plugin.Statistics.RepositoryActions;
-using RepoM.Plugin.Statistics.VariableProviders;
 using SimpleInjector;
 
 [UsedImplicitly]
@@ -75,9 +74,6 @@ public class StatisticsPackage : IPackage
 
         // action executor
         container.RegisterDecorator(typeof(ICommandExecutor<>), typeof(RecordStatisticsCommandExecutorDecorator<>), Lifestyle.Singleton);
-
-        // variable provider
-        container.Collection.Append<IVariableProvider, UsageVariableProvider>(Lifestyle.Singleton);
 
         // module
         container.Collection.Append<IModule, StatisticsModule>(Lifestyle.Singleton);

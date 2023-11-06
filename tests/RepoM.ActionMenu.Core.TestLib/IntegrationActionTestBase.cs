@@ -71,7 +71,7 @@ public abstract class IntegrationActionTestBase
     }
 
     [Fact]
-    public void ContainerVerify()
+    public virtual void ContainerVerify()
     {
         Container.Verify();
     }

@@ -38,6 +38,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.Plugin.Statistics\RepoM.Plugin.Statistics.csproj" />
+    <ProjectReference Include="..\RepoM.ActionMenu.Core.TestLib\RepoM.ActionMenu.Core.TestLib.csproj" />
     <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ActionMenu\IntegrationTests\AzureDevopsContextTests.Context_GetPullRequests_Documentation.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>%(ParentFile).cs</DependentUpon>
+    </None>
   </ItemGroup>
 </Project>

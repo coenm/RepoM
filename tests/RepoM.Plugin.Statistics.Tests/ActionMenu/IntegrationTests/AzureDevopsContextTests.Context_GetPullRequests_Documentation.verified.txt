@@ -1,0 +1,24 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: some pr1,
+    RepositoryCommand: {
+      $type: BrowseRepositoryCommand,
+      Url: https://my-url/pr1
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: other pr - bug,
+    RepositoryCommand: {
+      $type: BrowseRepositoryCommand,
+      Url: https://my-url/pr3
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]
