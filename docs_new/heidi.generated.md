@@ -65,7 +65,7 @@ context:
 
 action-menu:
 - type: foreach@1
-  active: 'array.size(databases) > 1'
+  active: 'array.size(databases) > 0'
   enumerable: databases
   variable: db
   actions:
