@@ -2,6 +2,7 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Interface.YamlModel;
 
 /// <summary>
 /// Action to create a folder (sub menu) in the context menu of the repository allowing you to order actions.

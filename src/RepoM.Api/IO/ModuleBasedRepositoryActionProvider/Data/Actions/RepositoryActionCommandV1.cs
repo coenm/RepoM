@@ -1,6 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Interface.YamlModel;
 
 /// <summary>
 /// Action to excute a command (related the the repository)

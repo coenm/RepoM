@@ -1,6 +1,7 @@
 namespace RepoM.Plugin.SonarCloud;
 
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>

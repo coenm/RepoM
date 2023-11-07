@@ -1,5 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
+using RepoM.ActionMenu.Interface.YamlModel;
+
 /// <summary>
 /// Action to execute a `git fetch` command.
 /// </summary>

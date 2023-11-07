@@ -1,6 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Interface.YamlModel;
 
 /// <summary>
 /// Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.

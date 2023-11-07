@@ -2,6 +2,7 @@ namespace RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Interface.YamlModel;
 
 /// <summary>
 /// This action results in zero or more items in the contextmenu. For each open pullrequest for the given repository, it will show an action to go to the specific PullRequest in your favorite webbrowser.

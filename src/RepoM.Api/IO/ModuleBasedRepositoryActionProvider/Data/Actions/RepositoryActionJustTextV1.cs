@@ -1,5 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
+using RepoM.ActionMenu.Interface.YamlModel;
+
 /// <summary>
 /// Textual action to display some text in the action menu.
 /// </summary>

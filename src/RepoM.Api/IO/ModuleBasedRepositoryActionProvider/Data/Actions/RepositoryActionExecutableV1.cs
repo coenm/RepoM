@@ -2,6 +2,7 @@ namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Interface.YamlModel;
 
 /// <summary>
 /// Action to excute an application with additional arguments. This action is almost identical to the `command@1` action. When no existing executables are provided, the action will not show.

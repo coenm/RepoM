@@ -68,7 +68,9 @@ public class Program
 
         Dictionary<string, string> files = await LoadFiles();
 
+        // project - (class name, module)
         var projectMapping = new Dictionary<string, Dictionary<string, KalkModuleToGenerate>>();
+        var projectMappingActions = new Dictionary<string, Dictionary<string, ActionsToGenerate>>();
 
         foreach (var project in projects)
         {
@@ -84,8 +86,11 @@ public class Program
                 throw new Exception($"Could not create/find NamedSymbol for {nameof(IMenuAction)}.");
             }
 
-            var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>();
+            var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>(); // class name, module
             projectMapping.Add(project, mapNameToModule);
+
+            var mapNameToActionsModule = new Dictionary<string, ActionsToGenerate>(); // class name, actions
+            projectMappingActions.Add(project, mapNameToActionsModule);
 
             foreach (ISymbol type in compilation.GetSymbolsWithName(_ => true, SymbolFilter.Type))
             {
@@ -94,18 +99,25 @@ public class Program
                     continue;
                 }
 
+                if (typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
+                {
+                    var attribute = FindAttribute<RepositoryActionAttribute>(typeSymbol);
+                    if (attribute == null)
+                    {
+                        throw new Exception("A type should have a RepositoryActionAttribute.");
+                    }
+
+                    ProcessRepositoryActionType(typeSymbol, attribute, mapNameToActionsModule, files);
+
+                    continue;
+                }
+
+
                 AttributeData? moduleAttribute = FindAttribute<ActionMenuContextAttribute>(typeSymbol);
                 KalkModuleToGenerate? moduleToGenerate = null;
                 if (moduleAttribute != null)
                 {
                     GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule, files);
-                }
-
-                if (typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
-                {
-                    // found, works
-                    Console.WriteLine(typeSymbol.Name);
-                    continue;
                 }
                 
                 foreach (ISymbol member in typeSymbol.GetMembers())
@@ -221,6 +233,190 @@ public class Program
         }
     }
 
+    private static void ProcessRepositoryActionType(
+        ITypeSymbol typeSymbol,
+        AttributeData attribute,
+        Dictionary<string, ActionsToGenerate> mapNameToActionsModule,
+        Dictionary<string, string> files)
+    {
+        Console.WriteLine(typeSymbol.Name);
+        ActionsToGenerate? moduleToGenerate = null;
+        GetOrCreateActionModule(
+            typeSymbol,
+            typeSymbol.Name,
+            attribute,
+            out moduleToGenerate,
+            mapNameToActionsModule,
+            files);
+
+        if (moduleToGenerate == null)
+        {
+            throw new Exception("Could not create Actions modules");
+        }
+
+        foreach (ISymbol member in typeSymbol.GetMembers())
+        {
+            if (member is not IPropertySymbol ps)
+            {
+                // Console.WriteLine($"WRONG type ({member.GetType().Name}) {member.Name}");
+                continue;
+            }
+
+            if (member.CanBeReferencedByName == false)
+            {
+                // Console.WriteLine($"WRONG (CanBeReferencedByName) {member.Name}");
+                continue;
+            }
+
+            if (member.DeclaredAccessibility == Accessibility.Private)
+            {
+                // Console.WriteLine($"WRONG (DeclaredAccessibility Private) {member.Name}");
+                continue;
+            }
+
+            if (member.IsStatic == true)
+            {
+                // Console.WriteLine($"WRONG (IsStatic) {member.Name}");
+                continue;
+            }
+
+            if (member.Kind == SymbolKind.Method)
+            {
+                // Console.WriteLine($"WRONG (Kind Method) {member.Name}");
+                continue;
+            }
+
+            Console.WriteLine($"-  {member.Name}");
+
+            foreach (var att in member.GetAttributes())
+            {
+                Console.WriteLine($"  -  {att.AttributeClass.Name}");
+            }
+
+            continue;
+
+            AttributeData? attr = FindAttribute<ActionMenuContextMemberAttribute>(member);
+            if (attr == null)
+            {
+                continue;
+            }
+
+            var name = attr.ConstructorArguments[0].Value?.ToString();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new Exception("Name cannot be null or empty.");
+            }
+
+            var className = member.ContainingSymbol.Name;
+
+            // // In case the module is built-in, we still generate a module for it
+            // if (moduleToGenerate == null)
+            // {
+            //     GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule, files);
+            // }
+
+            var method = member as IMethodSymbol;
+            var desc = new KalkMemberToGenerate()
+            {
+                Name = name,
+                XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+                Category = string.Empty,
+                IsCommand = method?.ReturnsVoid ?? false,
+                // Module = moduleToGenerate,
+            };
+            desc.Names.Add(name);
+
+            if (method != null)
+            {
+                desc.CSharpName = method.Name;
+
+                var builder = new StringBuilder();
+                desc.IsAction = method.ReturnsVoid;
+                desc.IsFunc = !desc.IsAction;
+                builder.Append(desc.IsAction ? "Action" : "Func");
+
+                if (method.Parameters.Length > 0 || desc.IsFunc)
+                {
+                    builder.Append('<');
+                }
+
+                for (var i = 0; i < method.Parameters.Length; i++)
+                {
+                    IParameterSymbol parameter = method.Parameters[i];
+                    if (i > 0)
+                    {
+                        builder.Append(", ");
+                    }
+
+                    builder.Append(GetTypeName(parameter.Type));
+                }
+
+                if (desc.IsFunc)
+                {
+                    if (method.Parameters.Length > 0)
+                    {
+                        builder.Append(", ");
+                    }
+                    builder.Append(GetTypeName(method.ReturnType));
+                }
+
+                if (method.Parameters.Length > 0 || desc.IsFunc)
+                {
+                    builder.Append('>');
+                }
+
+                desc.Cast = $"({builder})";
+            }
+            else if (member is IPropertySymbol or IFieldSymbol)
+            {
+                desc.CSharpName = member.Name;
+                desc.IsConst = true;
+            }
+
+            moduleToGenerate.Members.Add(desc);
+            XmlDocsParser.ExtractDocumentation(member, desc, files);
+        }
+    }
+    
+    private static void GetOrCreateActionModule(
+        ITypeSymbol typeSymbol,
+        string className,
+        AttributeData moduleAttribute,
+        out ActionsToGenerate moduleToGenerate,
+        IDictionary<string, ActionsToGenerate> mapNameToModule,
+        IDictionary<string, string> files)
+    {
+        var ns = typeSymbol.ContainingNamespace.ToDisplayString();
+
+        var fullClassName = $"{ns}.{className}";
+        if (mapNameToModule.TryGetValue(fullClassName, out moduleToGenerate))
+        {
+            return;
+        }
+
+        moduleToGenerate = new ActionsToGenerate()
+            {
+                Namespace = typeSymbol.ContainingNamespace.ToDisplayString(),
+                ClassName = className,
+            };
+        mapNameToModule.Add(fullClassName, moduleToGenerate);
+
+        if (moduleAttribute != null)
+        {
+            moduleToGenerate.Name = moduleAttribute.ConstructorArguments[0].Value.ToString();
+            moduleToGenerate.Names.Add(moduleToGenerate.Name!);
+            moduleToGenerate.Category = "Modules (e.g `import Files`)";
+        }
+        else
+        {
+            moduleToGenerate.Name = className.Replace("Module", "");
+            moduleToGenerate.IsBuiltin = true;
+        }
+
+        XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate, files);
+    }
+
+
     internal static AttributeData? FindAttribute<T>(ISymbol symbol)
     {
         return symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass!.Name == typeof(T).Name);
@@ -231,7 +427,7 @@ public class Program
         string className,
         AttributeData moduleAttribute,
         out KalkModuleToGenerate moduleToGenerate,
-        IDictionary<string, KalkModuleToGenerate>? mapNameToModule,
+        IDictionary<string, KalkModuleToGenerate> mapNameToModule,
         IDictionary<string, string> files)
     {
         var ns = typeSymbol.ContainingNamespace.ToDisplayString();

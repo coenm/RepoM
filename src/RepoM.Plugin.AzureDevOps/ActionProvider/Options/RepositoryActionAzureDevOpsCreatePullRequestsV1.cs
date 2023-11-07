@@ -2,6 +2,7 @@ namespace RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>

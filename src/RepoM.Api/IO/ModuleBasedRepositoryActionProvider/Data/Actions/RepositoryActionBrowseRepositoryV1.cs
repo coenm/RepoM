@@ -1,5 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
+using RepoM.ActionMenu.Interface.YamlModel;
+
 /// <summary>
 /// Action to open the default webbrowser and go to the origin remote webinterface. When multple remotes are available a sub menu is created for each remote.
 /// </summary>

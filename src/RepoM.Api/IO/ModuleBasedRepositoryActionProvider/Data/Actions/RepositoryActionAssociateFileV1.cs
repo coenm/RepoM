@@ -1,6 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Interface.YamlModel;
 
 /// <summary>
 /// Action menu for opening files with a given extension. If files within the repository are found matching the extension, a submenu will be created with all matched files.

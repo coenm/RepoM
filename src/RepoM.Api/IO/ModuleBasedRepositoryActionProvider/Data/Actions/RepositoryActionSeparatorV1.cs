@@ -1,5 +1,7 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
+using RepoM.ActionMenu.Interface.YamlModel;
+
 /// <summary>
 /// Creates a visual separator in the action menu.
 /// </summary>

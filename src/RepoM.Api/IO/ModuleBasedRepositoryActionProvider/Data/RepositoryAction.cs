@@ -57,22 +57,6 @@ public sealed class EvaluatedPropertyAttribute : Attribute
 {
 }
 
-// todo move to plugin interface
-/// <summary>
-/// Attribute the textual type of the repository action.
-/// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-[MeansImplicitUse]
-public sealed class RepositoryActionAttribute : Attribute
-{
-    public RepositoryActionAttribute(string type)
-    {
-        Type = type;
-    }
-
-    public string Type { get; }
-}
-
 /// <summary>
 /// Attribute indicating what the property type should be.
 /// </summary>

@@ -4,4 +4,3 @@ public interface IContextAction
 {
     string Type { get; }
 }
-

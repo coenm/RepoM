@@ -1,12 +1,13 @@
 namespace RepoM.Plugin.Clipboard.ActionProvider;
 
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
 /// This action makes it possible to copy text to the clipboard.
 /// </summary>
-[RepositoryAction("clipboard-copy@1")]
+[RepositoryAction(TYPE)]
 public class RepositoryActionClipboardCopyV1 : RepositoryAction
 {
     /// <summary>

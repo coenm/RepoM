@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.Heidi.ActionProvider;
 
+using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
