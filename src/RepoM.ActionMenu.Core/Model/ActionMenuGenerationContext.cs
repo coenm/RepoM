@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
+using RepoM.ActionMenu.Core.ActionMenu.Context;
 using RepoM.ActionMenu.Core.ConfigReader;
 using RepoM.ActionMenu.Core.Misc;
-using RepoM.ActionMenu.Core.Model.Env;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.EvaluateVariable;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
@@ -23,9 +23,9 @@ using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using Scriban;
 using Scriban.Runtime;
 using static RepoM.ActionMenu.Core.Model.ScribanModuleWithFunctions;
-using FileFunctions = RepoM.ActionMenu.Core.Model.Context.FileFunctions;
+using FileFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.FileFunctions;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
-using RepositoryFunctions = RepoM.ActionMenu.Core.Model.Context.RepositoryFunctions;
+using RepositoryFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.RepositoryFunctions;
 
 internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerationContext, IContextMenuActionMenuGenerationContext
 {

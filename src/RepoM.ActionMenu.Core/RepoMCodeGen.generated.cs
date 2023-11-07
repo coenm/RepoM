@@ -10,7 +10,7 @@
 
 using System;
 
-namespace RepoM.ActionMenu.Core.Model.Context
+namespace RepoM.ActionMenu.Core.ActionMenu.Context
 {
     partial class FileFunctions
     {
@@ -23,7 +23,7 @@ namespace RepoM.ActionMenu.Core.Model.Context
     }
 }
 
-namespace RepoM.ActionMenu.Core.Model.Context
+namespace RepoM.ActionMenu.Core.ActionMenu.Context
 {
     partial class RepositoryFunctions
     {

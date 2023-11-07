@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.Core.Tests.Model.Context;
+namespace RepoM.ActionMenu.Core.Tests.ActionMenu.Context;
 
 using System;
 using System.Collections;
@@ -16,7 +16,7 @@ using Scriban.Parsing;
 using VerifyXunit;
 using Xunit;
 using Xunit.Categories;
-using Sut = Core.Model.Context.FileFunctions;
+using Sut = RepoM.ActionMenu.Core.ActionMenu.Context.FileFunctions;
 
 [UsesVerify]
 public class FileFunctionsTests

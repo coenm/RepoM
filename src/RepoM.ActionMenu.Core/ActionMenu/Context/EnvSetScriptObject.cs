@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.Core.Model.Env;
+namespace RepoM.ActionMenu.Core.ActionMenu.Context;
 
 using System;
 using System.Collections.Generic;
@@ -81,7 +81,7 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
             return result;
         }
 
-        for (int i = 1; i < items.Length; i++)
+        for (var i = 1; i < items.Length; i++)
         {
             if (items[i] != null)
             {

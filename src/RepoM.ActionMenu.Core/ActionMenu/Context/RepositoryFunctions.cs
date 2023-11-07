@@ -1,7 +1,8 @@
-namespace RepoM.ActionMenu.Core.Model.Context;
+namespace RepoM.ActionMenu.Core.ActionMenu.Context;
 
 using System;
 using System.Collections;
+using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.Core.Plugin.Repository;
 

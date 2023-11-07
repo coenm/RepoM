@@ -43,11 +43,4 @@
     <ProjectReference Include="..\..\src\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
     <ProjectReference Include="..\RepoM.ActionMenu.Core.TestLib\RepoM.ActionMenu.Core.TestLib.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="ScribanActionMenuTests - Copy.Serialize.verified.txt">
-      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
-      <DependentUpon>%(ParentFile).cs</DependentUpon>
-    </None>
-  </ItemGroup>
 </Project>

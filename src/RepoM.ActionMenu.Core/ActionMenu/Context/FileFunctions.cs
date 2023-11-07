@@ -1,10 +1,11 @@
-namespace RepoM.ActionMenu.Core.Model.Context;
+namespace RepoM.ActionMenu.Core.ActionMenu.Context;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.Attributes;
 using Scriban.Parsing;

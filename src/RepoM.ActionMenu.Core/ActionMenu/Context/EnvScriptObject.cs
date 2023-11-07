@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.Core.Model.Env;
+namespace RepoM.ActionMenu.Core.ActionMenu.Context;
 
 using System;
 using System.Collections;
@@ -50,7 +50,7 @@ internal sealed class EnvScriptObject : IScriptObject
 
     public bool TryGetValue(TemplateContext context, SourceSpan span, string member, out object value)
     {
-        if (_env.TryGetValue(member, out string? s))
+        if (_env.TryGetValue(member, out var s))
         {
             value = s;
             return true;
