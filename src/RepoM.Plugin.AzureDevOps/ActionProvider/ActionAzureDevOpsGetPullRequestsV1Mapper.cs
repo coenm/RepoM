@@ -17,6 +17,7 @@ using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
 using RepositoryAction = Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
+[Obsolete("Old action menu")]
 [UsedImplicitly]
 internal class ActionAzureDevOpsGetPullRequestsV1Mapper : IActionToRepositoryActionMapper
 {

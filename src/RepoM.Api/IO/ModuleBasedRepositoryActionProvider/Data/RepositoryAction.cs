@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -129,11 +128,13 @@ public static class ContainerExtensions
         container.Collection.AppendInstance<IKeyTypeRegistration<IMenuAction>>(new FixedTypeRegistration<IMenuAction>(type, TypeRepositoryActionAttributeReader.GetValue(type)));
     }
 
+    [Obsolete("Old action menu")]
     public static void RegisterDefaultRepositoryActionDeserializerForType<T>(this Container container) where T : RepositoryAction
     {
         RegisterDefaultRepositoryActionDeserializerForType(container, typeof(T));
     }
 
+    [Obsolete("Old action menu")]
     public static void RegisterDefaultRepositoryActionDeserializerForType(this Container container, Type type)
     {
         container.Collection.AppendInstance<IKeyTypeRegistration<RepositoryAction>>(new FixedTypeRegistration<RepositoryAction>(type, TypeRepositoryActionAttributeReader.GetValue(type)));

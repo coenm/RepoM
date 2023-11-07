@@ -3,14 +3,11 @@ namespace RepoM.Plugin.AzureDevOps;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.ActionMenu.Interface.Scriban;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Plugin.AzureDevOps.ActionMenu.Context;
-using RepoM.Plugin.AzureDevOps.ActionProvider;
-using RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 using RepoM.Plugin.AzureDevOps.Internal;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
 using RepoM.Plugin.AzureDevOps.RepositoryCommands;
@@ -45,16 +42,9 @@ public class AzureDevOpsPackage : IPackage
 
     private static void RegisterServices(Container container)
     {
-        // new style
         container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.CreatePullRequest.RepositoryActionAzureDevOpsCreatePullRequestV1>();
         container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.CreatePullRequest.RepositoryActionAzureDevOpsCreatePullRequestV1Mapper>(Lifestyle.Singleton);
         
-        // old style
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionAzureDevOpsCreatePullRequestsV1>();
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionAzureDevOpsGetPullRequestsV1>();
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsCreatePullRequestsV1Mapper>(Lifestyle.Singleton);
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionAzureDevOpsGetPullRequestsV1Mapper>(Lifestyle.Singleton);
-
         container.Register<IAzureDevOpsPullRequestService, AzureDevOpsPullRequestService>(Lifestyle.Singleton);
 
         container.Collection.Append<IModule, AzureDevOpsModule>(Lifestyle.Singleton);

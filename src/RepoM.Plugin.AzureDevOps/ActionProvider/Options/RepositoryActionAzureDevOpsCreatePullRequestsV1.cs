@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.AzureDevOps.ActionProvider.Options;
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -8,6 +9,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// <summary>
 /// Action menu item to create a pull request in Azure Devops.
 /// </summary>
+[Obsolete("Old action menu")]
 [RepositoryAction(TYPE)]
 public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : RepositoryAction
 {
