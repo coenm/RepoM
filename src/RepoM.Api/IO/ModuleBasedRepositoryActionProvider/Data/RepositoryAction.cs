@@ -11,7 +11,6 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using SimpleInjector;
 
-// todo: move to plugin, make abstract
 /// <summary>
 /// Base for each type of Repository Actions.
 /// </summary>
