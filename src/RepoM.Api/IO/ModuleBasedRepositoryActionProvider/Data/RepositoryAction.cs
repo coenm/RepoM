@@ -15,6 +15,7 @@ using SimpleInjector;
 /// <summary>
 /// Base for each type of Repository Actions.
 /// </summary>
+[Obsolete("Old action menu")]
 public /*abstract*/ class RepositoryAction
 {
     /// <summary>
@@ -52,6 +53,7 @@ public /*abstract*/ class RepositoryAction
 /// Attribute indicating that this property will be evaluated. Used for documation.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
+[Obsolete("Old action menu")]
 public sealed class EvaluatedPropertyAttribute : Attribute
 {
 }
