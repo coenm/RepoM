@@ -14,7 +14,7 @@ using Scriban.Syntax;
 /// <summary>
 /// Provides file related action menu functions and variables accessable through `file`.
 /// </summary>
-[ActionMenuModule("file")]
+[ActionMenuContext("file")]
 internal partial class FileFunctions : ScribanModuleWithFunctions
 {
     public FileFunctions()
@@ -40,7 +40,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// <repository-action-sample/>
     /// <code-file language='yaml' filename='file.find_files.actionmenu.yaml' />
     /// </example>
-    [ActionMenuMember("find_files")]
+    [ActionMenuContextMember("find_files")]
     public static string[] FindFiles(ActionMenuGenerationContext /*IMenuContext*/ context, SourceSpan span, string rootPath, string searchPattern)
     {
         return FindFiles(context as IMenuContext, span, rootPath, searchPattern);
@@ -73,7 +73,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// TODO: this content is not correct, change filename
     /// <code-file language='yaml' filename='file.find_files.actionmenu.yaml' />
     /// </example>
-    [ActionMenuMember("file_exists")]
+    [ActionMenuContextMember("file_exists")]
     public static bool FileExists(ActionMenuGenerationContext context, string path)
     {
         return FileExists(context as IMenuContext, path);
@@ -111,7 +111,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// TODO: this content is not correct, change filename
     /// <code-file language='yaml' filename='file.find_files.actionmenu.yaml' />
     /// </example>
-    [ActionMenuMember("dir_exists")]
+    [ActionMenuContextMember("dir_exists")]
     public static bool DirectoryExists(ActionMenuGenerationContext context, string path)
     {
         return DirectoryExists(context as IMenuContext, path);

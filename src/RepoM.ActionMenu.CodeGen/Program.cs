@@ -9,11 +9,32 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.Interface.Attributes;
+using RepoM.ActionMenu.Interface.YamlModel;
 using Scriban;
 using Scriban.Runtime;
 
 public class Program
 {
+    static bool TypeSymbolMatchesType(ITypeSymbol typeSymbol, Type type, Compilation compilation)
+    {
+        return GetTypeSymbolForType(type, compilation).Equals(typeSymbol);
+    }
+
+    static INamedTypeSymbol GetTypeSymbolForType(Type type, Compilation compilation)
+    {
+        if (!type.IsConstructedGenericType)
+        {
+            return compilation.GetTypeByMetadataName(type.FullName!);
+        }
+
+        // get all typeInfo's for the Type arguments 
+        var typeArgumentsTypeInfos = type.GenericTypeArguments.Select(a => GetTypeSymbolForType(a, compilation));
+
+        var openType = type.GetGenericTypeDefinition();
+        var typeSymbol = compilation.GetTypeByMetadataName(openType.FullName!);
+        return typeSymbol.Construct(typeArgumentsTypeInfos.ToArray<ITypeSymbol>());
+    }
+
     static async Task Main(string[] args)
     {
         // not sure why Kalk has this.
@@ -27,19 +48,25 @@ public class Program
         CheckDirectory(docsFolder);
         CheckDirectory(Path.Combine(rootFolder, ".git"));
 
-        List<string> projects = new List<string>()
+        var projects = new List<string>
             {
                 "RepoM.ActionMenu.Core",
-                "RepoM.Plugin.Heidi",
-                "RepoM.Plugin.Statistics",
-                "RepoM.Plugin.SonarCloud",
+                
                 "RepoM.Plugin.AzureDevOps",
+                "RepoM.Plugin.Clipboard",
+                // "RepoM.Plugin.EverythingFileSearch",
+                "RepoM.Plugin.Heidi",
+                "RepoM.Plugin.LuceneQueryParser",
+                "RepoM.Plugin.SonarCloud",
+                "RepoM.Plugin.Statistics",
+                "RepoM.Plugin.WebBrowser",
+                "RepoM.Plugin.WindowsExplorerGitInfo",
             };
 
         Template templateModule = await LoadTemplateAsync("Templates/Module.scriban-cs");
         Template templateDocs = await LoadTemplateAsync("Templates/Docs.scriban-txt");
 
-        var files = await LoadFiles();
+        Dictionary<string, string> files = await LoadFiles();
 
         var projectMapping = new Dictionary<string, Dictionary<string, KalkModuleToGenerate>>();
 
@@ -51,7 +78,12 @@ public class Program
        
             Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project);
 
-            // _ = compilation.GetTypeByMetadataName("Kalk.Core.KalkEngine");
+            INamedTypeSymbol? actionMenuInterface = GetTypeSymbolForType(typeof(IMenuAction), compilation);
+            if (actionMenuInterface == null)
+            {
+                throw new Exception($"Could not create/find NamedSymbol for {nameof(IMenuAction)}.");
+            }
+
             var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>();
             projectMapping.Add(project, mapNameToModule);
 
@@ -62,16 +94,23 @@ public class Program
                     continue;
                 }
 
-                AttributeData? moduleAttribute = FindAttribute<ActionMenuModuleAttribute>(typeSymbol);
+                AttributeData? moduleAttribute = FindAttribute<ActionMenuContextAttribute>(typeSymbol);
                 KalkModuleToGenerate? moduleToGenerate = null;
                 if (moduleAttribute != null)
                 {
                     GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule, files);
                 }
 
+                if (typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
+                {
+                    // found, works
+                    Console.WriteLine(typeSymbol.Name);
+                    continue;
+                }
+                
                 foreach (ISymbol member in typeSymbol.GetMembers())
                 {
-                    AttributeData? attr = FindAttribute<ActionMenuMemberAttribute>(member);
+                    AttributeData? attr = FindAttribute<ActionMenuContextMemberAttribute>(member);
                     if (attr == null)
                     {
                         continue;

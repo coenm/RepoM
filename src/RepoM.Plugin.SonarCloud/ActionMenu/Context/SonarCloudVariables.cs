@@ -10,7 +10,7 @@ using RepoM.Plugin.SonarCloud;
 /// Provides a sonar cloud method providing the favorite status of the current repository.
 /// </summary>
 [UsedImplicitly]
-[ActionMenuModule("sonarcloud")]
+[ActionMenuContext("sonarcloud")]
 internal partial class SonarCloudVariables : TemplateContextRegistrationBase
 {
     private readonly ISonarCloudFavoriteService _service;
@@ -31,7 +31,7 @@ internal partial class SonarCloudVariables : TemplateContextRegistrationBase
     /// is_favorite = sonarcloud.is_favorite(sonarcloud_repository_id);
     /// </code>
     /// </example>
-    [ActionMenuMember("is_favorite")]
+    [ActionMenuContextMember("is_favorite")]
     public bool IsFavorite(string id)
     {
         if (string.IsNullOrWhiteSpace(id))

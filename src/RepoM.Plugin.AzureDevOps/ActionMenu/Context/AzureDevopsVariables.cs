@@ -14,7 +14,7 @@ using RepoM.Plugin.AzureDevOps.Internal;
 /// Provides Azure Devops functions through `azure_devops`.
 /// </summary>
 [UsedImplicitly]
-[ActionMenuModule("azure_devops")]
+[ActionMenuContext("azure_devops")]
 internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
 {
     private readonly IAzureDevOpsPullRequestService _service;
@@ -44,7 +44,7 @@ internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
     /// <repository-action-sample/>
     /// <code-file language='yaml' filename='azure_devops.get_pull_requests.actionmenu.yaml' />
     /// </example>
-    [ActionMenuMember("get_pull_requests")]
+    [ActionMenuContextMember("get_pull_requests")]
     public IEnumerable GetPullRequests(IActionMenuGenerationContext context, string projectId)
     {
         if (string.IsNullOrWhiteSpace(projectId))

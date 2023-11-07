@@ -11,7 +11,7 @@ using RepoM.Plugin.Statistics;
 /// Provides statistical information accessible through `statistics`.
 /// </summary>
 [UsedImplicitly]
-[ActionMenuModule("statistics")]
+[ActionMenuContext("statistics")]
 internal partial class UsageVariables : TemplateContextRegistrationBase
 {
     private readonly IStatisticsService _service;
@@ -31,7 +31,7 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
     /// repo_call_count = statistics.count;
     /// </code>
     /// </example>
-    [ActionMenuMember("count")]
+    [ActionMenuContextMember("count")]
     public int GetCount(IActionMenuGenerationContext context)
     {
         return _service.GetRecordings(context.Repository).Count;
@@ -47,7 +47,7 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
     /// repo_call_count = statistics.overall_count;
     /// </code>
     /// </example>
-    [ActionMenuMember("overall_count")]
+    [ActionMenuContextMember("overall_count")]
     public int GetOverallCount()
     {
         return _service.GetTotalRecordingCount();

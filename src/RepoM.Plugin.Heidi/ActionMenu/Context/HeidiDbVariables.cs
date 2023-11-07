@@ -13,7 +13,7 @@ using RepoM.Plugin.Heidi.Internal;
 /// Provides variables provided by the Heidi module. The variables are accessable through `heidi`.
 /// </summary>
 [UsedImplicitly]
-[ActionMenuModule("heidi")]
+[ActionMenuContext("heidi")]
 internal partial class HeidiDbVariables : TemplateContextRegistrationBase
 {
     private const string NAME_MARIA_DB = "MariaDB/MySQL";
@@ -74,7 +74,7 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
     /// <repository-action-sample/>
     /// <code-file language='yaml' filename='heidi.databases.actionmenu.yaml' />
     /// </example>
-    [ActionMenuMember("databases")]
+    [ActionMenuContextMember("databases")]
     public IEnumerable GetDatabases(IActionMenuGenerationContext context)
     {
         return _service.GetByRepository(context.Repository)

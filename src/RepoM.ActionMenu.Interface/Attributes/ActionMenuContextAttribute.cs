@@ -3,14 +3,14 @@ namespace RepoM.ActionMenu.Interface.Attributes;
 using System;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class ActionMenuModuleAttribute : Attribute
+public class ActionMenuContextAttribute : Attribute
 {
-    public ActionMenuModuleAttribute()
+    public ActionMenuContextAttribute()
     {
         Alias = null!;
     }
 
-    public ActionMenuModuleAttribute(string alias)
+    public ActionMenuContextAttribute(string alias)
     {
         Alias = alias;
     }

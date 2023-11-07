@@ -3,9 +3,9 @@ namespace RepoM.ActionMenu.Interface.Attributes;
 using System;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Property)]
-public class ActionMenuMemberAttribute : Attribute
+public class ActionMenuContextMemberAttribute : Attribute
 {
-    public ActionMenuMemberAttribute(string alias)
+    public ActionMenuContextMemberAttribute(string alias)
     {
         Alias = alias;
     }
