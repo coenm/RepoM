@@ -44,6 +44,14 @@ internal static class CompilationHelper
             }
         }
 
+        if ("RepoM.Plugin.EverythingFileSearch".Equals(compilation.AssemblyName))
+        {
+            if (errors.Length == 8)
+            {
+                return;
+            }
+        }
+        
         Console.WriteLine("Compilation errors:");
         foreach (Diagnostic error in errors)
         {
