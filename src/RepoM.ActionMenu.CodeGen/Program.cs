@@ -19,9 +19,6 @@ public class Program
 {
     static async Task Main(string[] args)
     {
-        // not sure why Kalk has this.
-        _ = typeof(System.Composition.CompositionContext).Name;
-
         var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
         var srcFolder = Path.Combine(rootFolder, "src");
         var docsFolder = Path.Combine(rootFolder, "docs_new");
