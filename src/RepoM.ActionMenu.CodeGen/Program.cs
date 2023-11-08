@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Models;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel;
 using Scriban;
@@ -15,26 +17,6 @@ using Scriban.Runtime;
 
 public class Program
 {
-    static bool TypeSymbolMatchesType(ITypeSymbol typeSymbol, Type type, Compilation compilation)
-    {
-        return GetTypeSymbolForType(type, compilation).Equals(typeSymbol);
-    }
-
-    static INamedTypeSymbol GetTypeSymbolForType(Type type, Compilation compilation)
-    {
-        if (!type.IsConstructedGenericType)
-        {
-            return compilation.GetTypeByMetadataName(type.FullName!);
-        }
-
-        // get all typeInfo's for the Type arguments 
-        var typeArgumentsTypeInfos = type.GenericTypeArguments.Select(a => GetTypeSymbolForType(a, compilation));
-
-        var openType = type.GetGenericTypeDefinition();
-        var typeSymbol = compilation.GetTypeByMetadataName(openType.FullName!);
-        return typeSymbol.Construct(typeArgumentsTypeInfos.ToArray<ITypeSymbol>());
-    }
-
     static async Task Main(string[] args)
     {
         // not sure why Kalk has this.
@@ -80,11 +62,18 @@ public class Program
        
             Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project);
 
-            INamedTypeSymbol? actionMenuInterface = GetTypeSymbolForType(typeof(IMenuAction), compilation);
+            INamedTypeSymbol? actionMenuInterface = TypeMatcher.GetTypeSymbolForType(typeof(IMenuAction), compilation);
             if (actionMenuInterface == null)
             {
                 throw new Exception($"Could not create/find NamedSymbol for {nameof(IMenuAction)}.");
             }
+
+            var typeToNamedTypeMapping = new Dictionary<Type, INamedTypeSymbol?>
+                {
+                    { typeof(IMenuAction), actionMenuInterface },
+                    { typeof(IEnabled), TypeMatcher.GetTypeSymbolForType(typeof(IEnabled), compilation) },
+                    { typeof(IName), TypeMatcher.GetTypeSymbolForType(typeof(IName), compilation) },
+                };
 
             var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>(); // class name, module
             projectMapping.Add(project, mapNameToModule);
@@ -107,7 +96,7 @@ public class Program
                         throw new Exception("A type should have a RepositoryActionAttribute.");
                     }
 
-                    ProcessRepositoryActionType(typeSymbol, attribute, mapNameToActionsModule, files);
+                    ProcessRepositoryActionType(typeSymbol, attribute, mapNameToActionsModule, files, typeToNamedTypeMapping);
 
                     continue;
                 }
@@ -237,7 +226,8 @@ public class Program
         ITypeSymbol typeSymbol,
         AttributeData attribute,
         Dictionary<string, ActionsToGenerate> mapNameToActionsModule,
-        Dictionary<string, string> files)
+        Dictionary<string, string> files,
+        Dictionary<Type, INamedTypeSymbol?> typeToNamedTypeMapping)
     {
         Console.WriteLine(typeSymbol.Name);
         ActionsToGenerate? moduleToGenerate = null;
@@ -253,6 +243,8 @@ public class Program
         {
             throw new Exception("Could not create Actions modules");
         }
+
+        List<ISymbol> interestingMembers = new();
 
         foreach (ISymbol member in typeSymbol.GetMembers())
         {
@@ -287,6 +279,7 @@ public class Program
             }
 
             Console.WriteLine($"-  {member.Name}");
+            interestingMembers.Add(member);
 
             foreach (var att in member.GetAttributes())
             {
@@ -300,7 +293,7 @@ public class Program
             {
                 continue;
             }
-
+            
             var name = attr.ConstructorArguments[0].Value?.ToString();
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -316,7 +309,7 @@ public class Program
             // }
 
             var method = member as IMethodSymbol;
-            var desc = new KalkMemberToGenerate()
+            var desc = new ActionPropertyToGenerate()
             {
                 Name = name,
                 XmlId = member.GetDocumentationCommentId() ?? string.Empty,
@@ -375,6 +368,53 @@ public class Program
 
             moduleToGenerate.Members.Add(desc);
             XmlDocsParser.ExtractDocumentation(member, desc, files);
+        }
+
+
+        ActionPropertyToGenerate Cr(ISymbol member)
+        {
+            // var className = member.ContainingSymbol.Name;
+
+            var name = member.Name;
+
+            var desc = new ActionPropertyToGenerate()
+                {
+                    Name = name,
+                    XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+                    Category = string.Empty,
+                    IsCommand = false,
+                    // Module = moduleToGenerate,
+                };
+
+            if (member is IPropertySymbol or IFieldSymbol)
+            {
+                desc.CSharpName = member.Name;
+                desc.IsConst = true;
+            }
+
+            desc.Names.Add(name);
+
+            moduleToGenerate.Members.Add(desc);
+            XmlDocsParser.ExtractDocumentation(member, desc, files);
+
+            return desc;
+        }
+
+        
+        // todo type?
+
+        // first the name
+        var m = interestingMembers.Find(item => item.Name == nameof(IName.Name));
+        if (m != null)
+        {
+            interestingMembers.Remove(m);
+            Cr(m);
+        }
+
+
+        foreach (ISymbol member in interestingMembers)
+        {
+            ;
         }
     }
     

@@ -79,7 +79,8 @@ internal static partial class XmlDocsParser
                 }
                 else if (element.Name == "inheritdoc")
                 {
-                    throw new NotImplementedException("inheritdoc");
+                    Console.WriteLine("InheritDoc fix TODO");
+                    // throw new NotImplementedException("inheritdoc");
                 }
             }
         }
@@ -117,8 +118,8 @@ internal static partial class XmlDocsParser
         {
             if (item is XText xText)
             {
-                result.Items.Add(new Text() { Content = xText.Value.Trim(),});
-                
+                result.Items.Add(new Text() { Content = xText.Value.Trim(), });
+
             }
             else if (item is XElement xElement)
             {
@@ -157,7 +158,7 @@ internal static partial class XmlDocsParser
                     }
 
                     var code = new Code { Content = content, UseRaw = true, };
-                    
+
                     customAttribute = xElement.Attributes().SingleOrDefault(x => x.Name == "language");
                     if (customAttribute != null)
                     {
@@ -170,7 +171,7 @@ internal static partial class XmlDocsParser
                             throw new Exception("language attribute should not be empty");
                         }
                     }
-                    
+
                     // check if file exists, load sample
                     result.Items.Add(code);
                 }
