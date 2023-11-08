@@ -149,6 +149,7 @@ public static class ContainerExtensions
     }
 }
 
+[Obsolete("Old action menu")]
 public sealed class DefaultActionDeserializer<T> : IActionDeserializer where T : RepositoryAction
 {
     private Type ConfigurationType { get; } = typeof(T);    

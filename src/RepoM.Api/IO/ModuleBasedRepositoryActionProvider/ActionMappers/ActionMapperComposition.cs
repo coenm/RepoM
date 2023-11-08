@@ -8,6 +8,7 @@ using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Expressions;
 using RepositoryAction = RepositoryActions.RepositoryAction;
 
+[Obsolete("Old action menu")]
 public class ActionMapperComposition
 {
     private readonly IActionToRepositoryActionMapper[] _deserializers;
