@@ -27,7 +27,7 @@ public class ActionsToGenerate : KalkDescriptorToGenerate
 {
     public ActionsToGenerate()
     {
-        Members = new List<ActionPropertyToGenerate>();
+        Properties = new List<ActionPropertyToGenerate>();
         IsModule = true;
     }
 
@@ -41,5 +41,5 @@ public class ActionsToGenerate : KalkDescriptorToGenerate
 
     public string ClassName { get; set; }
 
-    public List<ActionPropertyToGenerate> Members { get; }
+    public List<ActionPropertyToGenerate> Properties { get; }
 }

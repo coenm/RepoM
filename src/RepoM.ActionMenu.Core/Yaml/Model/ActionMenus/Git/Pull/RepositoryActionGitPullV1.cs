@@ -3,7 +3,6 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Git.Pull;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionGitPullV1 : IMenuAction, IName

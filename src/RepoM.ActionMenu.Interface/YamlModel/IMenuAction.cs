@@ -4,6 +4,9 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 public interface IMenuAction
 {
+    /// <summary>
+    /// RepositoryAction type.
+    /// </summary>
     string Type { get; }
 
     /// <summary>
