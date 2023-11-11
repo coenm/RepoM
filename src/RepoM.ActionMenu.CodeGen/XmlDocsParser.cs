@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 using System.Web;
 
 
-
 internal static partial class XmlDocsParser
 {
     public static void ExtractDocumentation(ISymbol symbol, KalkDescriptorToGenerate desc, IDictionary<string, string> files)
