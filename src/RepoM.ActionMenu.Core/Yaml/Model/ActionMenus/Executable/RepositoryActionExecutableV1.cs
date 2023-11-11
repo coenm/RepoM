@@ -6,11 +6,15 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
+/// <summary>
+/// Action to excute an application with additional arguments. This action is almost identical to the `command@1` action. When no existing executables are provided, the action will not show.
+/// </summary>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionExecutableV1 : IMenuAction, IName, IContext
 {
     public const string TYPE_VALUE = "executable@1";
 
+    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

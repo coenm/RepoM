@@ -5,11 +5,15 @@ using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
+/// <summary>
+/// Action to excute a command (related the the repository)
+/// </summary>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionCommandV1 : IMenuAction, IName
 {
     public const string TYPE_VALUE = "command@1";
 
+    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

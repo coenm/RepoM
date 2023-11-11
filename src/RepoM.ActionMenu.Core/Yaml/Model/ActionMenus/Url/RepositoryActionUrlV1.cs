@@ -10,6 +10,7 @@ internal sealed class RepositoryActionUrlV1 : IMenuAction, IName, IContext
 {
     public const string TYPE_VALUE = "url@1";
 
+    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

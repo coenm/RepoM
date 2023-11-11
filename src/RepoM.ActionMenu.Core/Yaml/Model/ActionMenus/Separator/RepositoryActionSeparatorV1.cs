@@ -11,11 +11,9 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionSeparatorV1 : IMenuAction, IContext
 {
-    /// <summary>
-    /// RepositoryAction type.
-    /// </summary>
     public const string TYPE_VALUE = "separator@1";
 
+    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;
