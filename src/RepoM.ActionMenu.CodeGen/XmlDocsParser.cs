@@ -14,7 +14,7 @@ using System.Web;
 
 internal static partial class XmlDocsParser
 {
-    public static void ExtractDocumentation(ISymbol symbol, KalkDescriptorToGenerate desc, IDictionary<string, string> files)
+    public static void ExtractDocumentation(ISymbol symbol, IXmlDocsExtended desc, IDictionary<string, string> files)
     {
         var xmlStr = symbol.GetDocumentationCommentXml();
         ExtractDocumentation(xmlStr, symbol, desc, files);
