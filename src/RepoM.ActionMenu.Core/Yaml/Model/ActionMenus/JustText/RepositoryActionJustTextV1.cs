@@ -5,6 +5,9 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
+/// <summary>
+/// Textual action to display some text in the action menu.
+/// </summary>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
 {

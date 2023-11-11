@@ -4,6 +4,9 @@ using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
+/// <summary>
+/// This action will create a menu and sub menus with all local and remote branches for an easy checkout.
+/// </summary>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IName
 {

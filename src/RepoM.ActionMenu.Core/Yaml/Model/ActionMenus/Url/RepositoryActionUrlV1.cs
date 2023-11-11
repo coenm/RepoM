@@ -5,6 +5,9 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
+/// <summary>
+/// Action to open the url in the default browser.
+/// </summary>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionUrlV1 : IMenuAction, IName, IContext
 {

@@ -4,6 +4,9 @@ using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
+/// <summary>
+/// Action to execute a `git pull` command.
+/// </summary>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionGitPullV1 : IMenuAction, IName
 {
