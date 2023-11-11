@@ -11,7 +11,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
-
 internal static partial class XmlDocsParser
 {
     public static void ExtractDocumentation(ISymbol symbol, IXmlDocsExtended desc, IDictionary<string, string> files)
