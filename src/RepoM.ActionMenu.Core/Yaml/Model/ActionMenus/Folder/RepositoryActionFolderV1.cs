@@ -11,9 +11,6 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuActions, IContext, IDeferred
 {
-    /// <summary>
-    /// RepositoryAction type.
-    /// </summary>
     public const string TYPE_VALUE = "folder@1";
 
     /// <inheritdoc cref="IMenuAction.Type"/>
