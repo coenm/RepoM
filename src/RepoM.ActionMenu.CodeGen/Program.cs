@@ -141,9 +141,22 @@ public class Program
                 throw new Exception("A type should have a RepositoryActionAttribute.");
             }
 
+            if (attribute.ConstructorArguments.Length != 1)
+            {
+                throw new Exception($"Unexpected number of arguments for {nameof(RepositoryActionAttribute)}");
+            }
+
+            string? s = attribute.ConstructorArguments[0].Value as string;
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                throw new Exception("Argument is not a valid string.");
+            }
+
+            var repositoryActionAttribute = new RepositoryActionAttribute(s);
+            
             // at this point, we know the type is an action.
             // create object for documenation and process all relevant properties
-            ProcessRepositoryActionType(typeSymbol, attribute, mapNameToActionsModule, files, typeToNamedTypeMapping);
+            ProcessRepositoryActionType(typeSymbol, repositoryActionAttribute, mapNameToActionsModule, files, typeToNamedTypeMapping);
         }
     }
     
@@ -246,7 +259,7 @@ public class Program
 
     private static void ProcessRepositoryActionType(
         ITypeSymbol typeSymbol,
-        AttributeData attribute,
+        RepositoryActionAttribute repositoryActionAttribute,
         Dictionary<string, ActionsToGenerate> mapNameToActionsModule,
         Dictionary<string, string> files,
         Dictionary<Type, INamedTypeSymbol?> typeToNamedTypeMapping)
@@ -256,7 +269,7 @@ public class Program
         GetOrCreateActionModule(
             typeSymbol,
             typeSymbol.Name,
-            attribute,
+            repositoryActionAttribute,
             out moduleToGenerate,
             mapNameToActionsModule,
             files);
@@ -267,6 +280,8 @@ public class Program
         }
 
         List<ISymbol> interestingMembers = new();
+
+        Console.WriteLine($"{repositoryActionAttribute.Type}");
 
         foreach (ISymbol member in typeSymbol.GetMembers())
         {
@@ -359,7 +374,7 @@ public class Program
     private static void GetOrCreateActionModule(
         ITypeSymbol typeSymbol,
         string className,
-        AttributeData moduleAttribute,
+        RepositoryActionAttribute moduleAttribute,
         out ActionsToGenerate moduleToGenerate,
         IDictionary<string, ActionsToGenerate> mapNameToModule,
         IDictionary<string, string> files)
@@ -379,17 +394,17 @@ public class Program
             };
         mapNameToModule.Add(fullClassName, moduleToGenerate);
 
-        if (moduleAttribute != null)
-        {
-            moduleToGenerate.Name = moduleAttribute.ConstructorArguments[0].Value.ToString();
+        // if (moduleAttribute != null)
+        // {
+            moduleToGenerate.Name = moduleAttribute.Type;
             moduleToGenerate.Names.Add(moduleToGenerate.Name!);
             moduleToGenerate.Category = "Modules (e.g `import Files`)";
-        }
-        else
-        {
-            moduleToGenerate.Name = className.Replace("Module", "");
-            moduleToGenerate.IsBuiltin = true;
-        }
+        // }
+        // else
+        // {
+        //     moduleToGenerate.Name = className.Replace("Module", "");
+        //     moduleToGenerate.IsBuiltin = true;
+        // }
 
         XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate, files);
     }
