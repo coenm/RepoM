@@ -1,12 +1,8 @@
 namespace RepoM.ActionMenu.CodeGen.Models
 {
-    public class KalkParamDescriptor
+    public class ParamDescriptor
     {
-        public KalkParamDescriptor()
-        {
-        }
-
-        public KalkParamDescriptor(string name, string description)
+        public ParamDescriptor(string name, string description)
         {
             Name = name;
             Description = description;

@@ -11,6 +11,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
+
+
 internal static partial class XmlDocsParser
 {
     public static void ExtractDocumentation(ISymbol symbol, KalkDescriptorToGenerate desc, IDictionary<string, string> files)
@@ -19,7 +21,7 @@ internal static partial class XmlDocsParser
         ExtractDocumentation(xmlStr, symbol, desc, files);
     }
 
-    internal static void ExtractDocumentation(string? xmlStr, ISymbol symbol, KalkDescriptorToGenerate desc, IDictionary<string, string> files)
+    internal static void ExtractDocumentation(string? xmlStr, ISymbol symbol, IXmlDocsExtended desc, IDictionary<string, string> files)
     {
         if (string.IsNullOrEmpty(xmlStr))
         {
@@ -57,7 +59,7 @@ internal static partial class XmlDocsParser
                         isOptional = parameterSymbol.IsOptional;
                     }
 
-                    desc.Params.Add(new KalkParamDescriptor(argName, text) { IsOptional = isOptional, });
+                    desc.Params.Add(new ParamDescriptor(argName, text) { IsOptional = isOptional, });
                 }
                 else if (element.Name == "returns")
                 {
