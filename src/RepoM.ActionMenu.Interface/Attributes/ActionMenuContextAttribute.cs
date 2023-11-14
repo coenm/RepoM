@@ -5,15 +5,10 @@ using System;
 [AttributeUsage(AttributeTargets.Class)]
 public class ActionMenuContextAttribute : Attribute
 {
-    public ActionMenuContextAttribute()
+    public ActionMenuContextAttribute(string name)
     {
-        Alias = null!;
+        Name = name;
     }
 
-    public ActionMenuContextAttribute(string alias)
-    {
-        Alias = alias;
-    }
-
-    public string? Alias { get; }
+    public string? Name { get; }
 }

@@ -8,10 +8,108 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Models;
+using RepoM.ActionMenu.CodeGen.Models.New;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.Core.Plugin.AssemblyInformation;
 using Scriban;
 using Scriban.Runtime;
+
+
+public interface IClassDescriptorVisitor
+{
+    void Visit(ActionMenuContextClassDescriptor descriptor);
+
+    void Visit(ActionMenuClassDescriptor descriptor);
+
+    void Visit(ClassDescriptor descriptor);
+}
+
+
+public class ProcessMembersVisitor : IClassDescriptorVisitor
+{
+    private readonly ITypeSymbol _typeSymbol;
+
+    public ProcessMembersVisitor(ITypeSymbol typeSymbol)
+    {
+        _typeSymbol = typeSymbol;
+    }
+
+    public void Visit(ActionMenuContextClassDescriptor descriptor)
+    {
+        foreach (ISymbol member in _typeSymbol.GetMembers())
+        {
+            AttributeData? attr = Program.FindAttribute<ActionMenuContextMemberAttribute>(member);
+            if (attr == null)
+            {
+                // normal member.
+            }
+            else
+            {
+                // action menu context member.
+            }
+        }
+    }
+
+    public void Visit(ActionMenuClassDescriptor descriptor)
+    {
+        foreach (ISymbol member in _typeSymbol.GetMembers())
+        {
+            AttributeData? attribute = Program.FindAttribute<RepositoryActionAttribute>(member);
+
+            if (attribute == null)
+            {
+                // normal member.
+            }
+            else
+            {
+                // action menu context member.
+
+                // if (!typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
+                // {
+                //     continue;
+                // }
+
+            }
+        }
+    }
+
+    public void Visit(ClassDescriptor descriptor)
+    {
+        foreach (ISymbol member in _typeSymbol.GetMembers())
+        {
+            // only normal members.
+        }
+    }
+}
+
+public class DocsClassVisitor : IClassDescriptorVisitor
+{
+    private readonly ITypeSymbol _typeSymbol;
+    private readonly IDictionary<string, string> _files;
+
+    public DocsClassVisitor(ITypeSymbol typeSymbol, IDictionary<string, string> files)
+    {
+        _typeSymbol = typeSymbol;
+        _files = files;
+    }
+
+    public void Visit(ActionMenuContextClassDescriptor descriptor)
+    {
+        XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
+    }
+
+    public void Visit(ActionMenuClassDescriptor descriptor)
+    {
+        XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
+    }
+
+    public void Visit(ClassDescriptor descriptor)
+    {
+        XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
+    }
+}
+
 
 public class Program
 {
@@ -45,6 +143,9 @@ public class Program
 
         Dictionary<string, string> files = await LoadFiles();
 
+
+        var processedProjects = new Dictionary<string, ProjectDescriptor>();
+
         // project - (class name, module)
         var projectMapping = new Dictionary<string, Dictionary<string, KalkModuleToGenerate>>();
         var projectMappingActions = new Dictionary<string, Dictionary<string, ActionsToGenerate>>();
@@ -56,10 +157,35 @@ public class Program
        
             Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project);
             
+            ProjectDescriptor projectDescriptor;
+            AttributeData? assemblyAttribute = compilation.Assembly.GetAttributes().SingleOrDefault(x => x.AttributeClass?.Name == nameof(PackageAttribute));
+            if (assemblyAttribute != null)
+            {
+                var s0 = assemblyAttribute.ConstructorArguments[0].Value as string;
+                var s1 = assemblyAttribute.ConstructorArguments[1].Value as string;
+                projectDescriptor = new PluginProjectDescriptor
+                    {
+                        PackageAttribute = new PackageAttribute(s0!, s1!),
+                    };
+            }
+            else
+            {
+                projectDescriptor = new ProjectDescriptor();
+            }
+
+            projectDescriptor.AssemblyName = compilation.AssemblyName ?? throw new Exception("Could not determine AssemblyName");
+            projectDescriptor.ProjectName = project;
+            
+            processedProjects.Add(project, projectDescriptor);
+
+            ProcessProject(compilation, projectDescriptor, files);
+            // continue;
+            //---
+            
             var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>(); // class name, module
             projectMapping.Add(project, mapNameToModule);
             ProcessPossibleActionContextType(files, compilation, mapNameToModule);
-
+            
             var mapNameToActionsModule = new Dictionary<string, ActionsToGenerate>(); // class name, actions
             projectMappingActions.Add(project, mapNameToActionsModule);
             ProcessPossibleActionsType(files, compilation, mapNameToActionsModule);
@@ -111,6 +237,136 @@ public class Program
         }
     }
 
+    private static void ProcessProject(Compilation compilation, ProjectDescriptor projectDescriptor, IDictionary<string, string> files)
+    {
+        foreach (ITypeSymbol typeSymbol in compilation.GetTypes())
+        {
+            ProcessMembersVisitor memberVisitor = new(typeSymbol);
+            DocsClassVisitor docsClassVisitor = new(typeSymbol, files);
+
+            ClassDescriptor classDescriptor;
+
+            AttributeData? actionMenuContextAttribute = FindAttribute<ActionMenuContextAttribute>(typeSymbol);
+            
+            if (actionMenuContextAttribute != null)
+            {
+                var actionMenuContextClassDescriptor = new ActionMenuContextClassDescriptor
+                    {
+                        ContextMenuName = new ActionMenuContextAttribute((string) actionMenuContextAttribute.ConstructorArguments[0].Value!),
+                    };
+                projectDescriptor.ActionContextMenus.Add(actionMenuContextClassDescriptor);
+                docsClassVisitor.Visit(actionMenuContextClassDescriptor);
+                memberVisitor.Visit(actionMenuContextClassDescriptor);
+
+                classDescriptor = actionMenuContextClassDescriptor;
+            }
+            else 
+            {
+                classDescriptor = new ClassDescriptor();
+                projectDescriptor.Types.Add(classDescriptor);
+                docsClassVisitor.Visit(classDescriptor);
+                memberVisitor.Visit(classDescriptor);
+            }
+
+            classDescriptor.ClassName = typeSymbol.Name;
+            classDescriptor.Namespace = typeSymbol.ContainingNamespace.ToDisplayString();
+
+            
+
+            //
+            // AttributeData? moduleAttribute = FindAttribute<ActionMenuContextAttribute>(typeSymbol);
+            // KalkModuleToGenerate? moduleToGenerate = null;
+            // if (moduleAttribute != null)
+            // {
+            //     GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule, files);
+            // }
+            //
+            // foreach (ISymbol member in typeSymbol.GetMembers())
+            // {
+            //     AttributeData? attr = FindAttribute<ActionMenuContextMemberAttribute>(member);
+            //     if (attr == null)
+            //     {
+            //         continue;
+            //     }
+            //
+            //     var name = attr.ConstructorArguments[0].Value?.ToString();
+            //     if (string.IsNullOrWhiteSpace(name))
+            //     {
+            //         throw new Exception("Name cannot be null or empty.");
+            //     }
+            //
+            //     var className = member.ContainingSymbol.Name;
+            //
+            //     // In case the module is built-in, we still generate a module for it
+            //     if (moduleToGenerate == null)
+            //     {
+            //         GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule, files);
+            //     }
+            //
+            //     var method = member as IMethodSymbol;
+            //     var desc = new KalkMemberToGenerate()
+            //     {
+            //         Name = name,
+            //         XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+            //         Category = string.Empty,
+            //         IsCommand = method?.ReturnsVoid ?? false,
+            //         Module = moduleToGenerate,
+            //     };
+            //     desc.Names.Add(name);
+            //
+            //     if (method != null)
+            //     {
+            //         desc.CSharpName = method.Name;
+            //
+            //         var builder = new StringBuilder();
+            //         desc.IsAction = method.ReturnsVoid;
+            //         desc.IsFunc = !desc.IsAction;
+            //         builder.Append(desc.IsAction ? "Action" : "Func");
+            //
+            //         if (method.Parameters.Length > 0 || desc.IsFunc)
+            //         {
+            //             builder.Append('<');
+            //         }
+            //
+            //         for (var i = 0; i < method.Parameters.Length; i++)
+            //         {
+            //             IParameterSymbol parameter = method.Parameters[i];
+            //             if (i > 0)
+            //             {
+            //                 builder.Append(", ");
+            //             }
+            //
+            //             builder.Append(GetTypeName(parameter.Type));
+            //         }
+            //
+            //         if (desc.IsFunc)
+            //         {
+            //             if (method.Parameters.Length > 0)
+            //             {
+            //                 builder.Append(", ");
+            //             }
+            //             builder.Append(GetTypeName(method.ReturnType));
+            //         }
+            //
+            //         if (method.Parameters.Length > 0 || desc.IsFunc)
+            //         {
+            //             builder.Append('>');
+            //         }
+            //
+            //         desc.Cast = $"({builder})";
+            //     }
+            //     else if (member is IPropertySymbol or IFieldSymbol)
+            //     {
+            //         desc.CSharpName = member.Name;
+            //         desc.IsConst = true;
+            //     }
+            //
+            //     moduleToGenerate.Members.Add(desc);
+            //     XmlDocsParser.ExtractDocumentation(member, desc, files);
+            // }
+        }
+    }
+
     private static void ProcessPossibleActionsType(Dictionary<string, string> files, Compilation compilation, Dictionary<string, ActionsToGenerate> mapNameToActionsModule)
     {
         INamedTypeSymbol? actionMenuInterface = TypeMatcher.GetTypeSymbolForType(typeof(IMenuAction), compilation);
@@ -126,8 +382,7 @@ public class Program
                 // { typeof(IEnabled), TypeMatcher.GetTypeSymbolForType(typeof(IEnabled), compilation) },
                 // { typeof(IName), TypeMatcher.GetTypeSymbolForType(typeof(IName), compilation) },
             };
-
-
+        
         foreach (ITypeSymbol typeSymbol in compilation.GetTypes())
         {
             if (!typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
@@ -409,7 +664,7 @@ public class Program
         XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate, files);
     }
     
-    internal static AttributeData? FindAttribute<T>(ISymbol symbol)
+    public static AttributeData? FindAttribute<T>(ISymbol symbol)
     {
         return symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass!.Name == typeof(T).Name);
     }
