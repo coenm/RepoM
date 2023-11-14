@@ -1,12 +1,21 @@
 namespace RepoM.ActionMenu.CodeGen.Models.New;
 
+using System.Collections.Generic;
 using System.Diagnostics;
+using RepoM.ActionMenu.Interface.YamlModel;
 
 [DebuggerDisplay($"{{{nameof(ClassName)},nq}}")]
 public class ActionMenuClassDescriptor : ClassDescriptor
 {
-    public override void Accept(IClassDescriptorVisitor classDescriptorVisitor)
+    /// <summary>
+    /// Properties
+    /// </summary>
+    public List<ActionMenuMemberDescriptor> ActionMenuProperties { get; set; } = new List<ActionMenuMemberDescriptor>();
+
+    public RepositoryActionAttribute RepositoryActionName { get; set; }
+
+    public override void Accept(IClassDescriptorVisitor visitor)
     {
-        classDescriptorVisitor.Visit(this);
+        visitor.Visit(this);
     }
 }

@@ -14,6 +14,7 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.AssemblyInformation;
 using Scriban;
 using Scriban.Runtime;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 public interface IClassDescriptorVisitor
@@ -55,22 +56,73 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
     {
         foreach (ISymbol member in _typeSymbol.GetMembers())
         {
-            AttributeData? attribute = Program.FindAttribute<RepositoryActionAttribute>(member);
-
-            if (attribute == null)
+            if (member is not IPropertySymbol propertyMember)
             {
-                // normal member.
+                continue;
             }
-            else
+
+            if (propertyMember.SetMethod == null)
             {
-                // action menu context member.
-
-                // if (!typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
-                // {
-                //     continue;
-                // }
-
+                // property is readonly
+                continue;
             }
+
+            if (propertyMember.GetMethod == null)
+            {
+                // property is writeonly
+                continue;
+            }
+
+            // coen
+
+            // Name = name,
+            // XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+            // Category = string.Empty,
+            // IsCommand = method?.ReturnsVoid ?? false,
+            // Module = moduleToGenerate,
+
+            SymbolDisplayFormat symbolDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining).WithMiscellaneousOptions(SymbolDisplayMiscellaneousOptions.None);
+
+             void Coen(ITypeSymbol symbol)
+            {
+                var Name = symbol.ToDisplayString(symbolDisplayFormat);
+                var IsEnumerable = symbol.AllInterfaces.Any(x => x.ToString() == "System.Collections.IEnumerable");
+                var IsVoid = symbol.SpecialType == SpecialType.System_Void;
+                if (IsEnumerable && (symbol is INamedTypeSymbol namedSymbol))
+                {
+                    var FirstTypeArgumentName = namedSymbol.TypeArguments.FirstOrDefault()?.ToDisplayString(symbolDisplayFormat);
+                }
+            }
+            
+            var memberDescriptor = new ActionMenuMemberDescriptor
+                {
+                    CSharpName = propertyMember.Name,
+                    ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;
+                    XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+                };
+
+
+            //
+            // AttributeData? attribute = Program.FindAttribute<RepositoryActionAttribute>(propertyMember);
+            //
+            // if (attribute == null)
+            // {
+            //     // normal member.
+            //     continue;
+            // }
+
+            // if (!typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
+            // {
+            //     continue;
+            // }
+
+
+
+            descriptor.ActionMenuProperties.Add(memberDescriptor);
+
+            // action menu context member.
+
+ 
         }
     }
 
@@ -161,11 +213,11 @@ public class Program
             AttributeData? assemblyAttribute = compilation.Assembly.GetAttributes().SingleOrDefault(x => x.AttributeClass?.Name == nameof(PackageAttribute));
             if (assemblyAttribute != null)
             {
-                var s0 = assemblyAttribute.ConstructorArguments[0].Value as string;
-                var s1 = assemblyAttribute.ConstructorArguments[1].Value as string;
                 projectDescriptor = new PluginProjectDescriptor
                     {
-                        PackageAttribute = new PackageAttribute(s0!, s1!),
+                        PackageAttribute = new PackageAttribute(
+                            (assemblyAttribute.ConstructorArguments[0].Value as string)!,
+                            (assemblyAttribute.ConstructorArguments[1].Value as string)!),
                     };
             }
             else
@@ -247,6 +299,7 @@ public class Program
             ClassDescriptor classDescriptor;
 
             AttributeData? actionMenuContextAttribute = FindAttribute<ActionMenuContextAttribute>(typeSymbol);
+            AttributeData? repositoryActionAttribute = FindAttribute<RepositoryActionAttribute>(typeSymbol);
             
             if (actionMenuContextAttribute != null)
             {
@@ -255,22 +308,30 @@ public class Program
                         ContextMenuName = new ActionMenuContextAttribute((string) actionMenuContextAttribute.ConstructorArguments[0].Value!),
                     };
                 projectDescriptor.ActionContextMenus.Add(actionMenuContextClassDescriptor);
-                docsClassVisitor.Visit(actionMenuContextClassDescriptor);
-                memberVisitor.Visit(actionMenuContextClassDescriptor);
 
                 classDescriptor = actionMenuContextClassDescriptor;
+            }
+            else if (repositoryActionAttribute != null)
+            {
+                var actionMenuClassDescriptor = new ActionMenuClassDescriptor
+                    {
+                        RepositoryActionName = new RepositoryActionAttribute((string)repositoryActionAttribute.ConstructorArguments[0].Value!),
+                    };
+                projectDescriptor.ActionMenus.Add(actionMenuClassDescriptor);
+
+                classDescriptor = actionMenuClassDescriptor;
             }
             else 
             {
                 classDescriptor = new ClassDescriptor();
                 projectDescriptor.Types.Add(classDescriptor);
-                docsClassVisitor.Visit(classDescriptor);
-                memberVisitor.Visit(classDescriptor);
             }
 
             classDescriptor.ClassName = typeSymbol.Name;
             classDescriptor.Namespace = typeSymbol.ContainingNamespace.ToDisplayString();
 
+            classDescriptor.Accept(docsClassVisitor);
+            classDescriptor.Accept(memberVisitor);
             
 
             //
@@ -619,11 +680,6 @@ public class Program
         //     Cr(m);
         // }
 
-
-        foreach (ISymbol member in interestingMembers)
-        {
-            ;
-        }
     }
     
     private static void GetOrCreateActionModule(
