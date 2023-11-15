@@ -1,19 +1,27 @@
 namespace RepoM.ActionMenu.CodeGen.Models.New;
 
 using System;
+using System.Collections.Generic;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel;
 
 /// <summary>
 /// Property, Function, field etc. etc.
 /// </summary>
-public class MemberDescriptor
+public class MemberDescriptor : IXmlDocsExtended
 {
     public string CSharpName { get; set; }
 
     public string ReturnType { get; set; }
 
     public string XmlId { get; set; }
+
+
+    public string Description { get; set; }
+    public string Returns { get; set; }
+    public string Remarks { get; set; }
+    public ExamplesDescriptor? Examples { get; set; }
+    public List<ParamDescriptor> Params { get; } = new List<ParamDescriptor>();
 }
 
 public class ActionMenuMemberDescriptor : MemberDescriptor

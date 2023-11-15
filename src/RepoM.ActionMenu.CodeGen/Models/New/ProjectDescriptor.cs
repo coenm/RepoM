@@ -8,8 +8,6 @@ public class ProjectDescriptor
 
     public string ProjectName { get; set; } = null!;
 
-    public string GlobalNamespace { get; set; } = null!;
-
     public List<ActionMenuClassDescriptor> ActionMenus { get; } = new List<ActionMenuClassDescriptor>();
 
     public List<ActionMenuContextClassDescriptor> ActionContextMenus { get; } = new List<ActionMenuContextClassDescriptor>();

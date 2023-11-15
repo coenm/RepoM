@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Newtonsoft.Json;
 using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.CodeGen.Models.New;
 using RepoM.ActionMenu.Interface.Attributes;
@@ -15,7 +15,6 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.AssemblyInformation;
 using Scriban;
 using Scriban.Runtime;
-
 
 public interface IClassDescriptorVisitor
 {
@@ -26,14 +25,15 @@ public interface IClassDescriptorVisitor
     void Visit(ClassDescriptor descriptor);
 }
 
-
 public class ProcessMembersVisitor : IClassDescriptorVisitor
 {
     private readonly ITypeSymbol _typeSymbol;
+    private readonly IDictionary<string, string> _files;
 
-    public ProcessMembersVisitor(ITypeSymbol typeSymbol)
+    public ProcessMembersVisitor(ITypeSymbol typeSymbol, IDictionary<string, string> files)
     {
         _typeSymbol = typeSymbol;
+        _files = files;
     }
 
     public void Visit(ActionMenuContextClassDescriptor descriptor)
@@ -51,17 +51,6 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 // action menu context member.
 
                 var className = member.ContainingSymbol.Name;
-
-                //     var method = member as IMethodSymbol;
-                //     var desc = new KalkMemberToGenerate()
-                //     {
-                //         Name = name,
-                //         XmlId = member.GetDocumentationCommentId() ?? string.Empty,
-                //         Category = string.Empty,
-                //         IsCommand = method?.ReturnsVoid ?? false,
-                //         Module = moduleToGenerate,
-                //     };
-
                 
                 var memberDescriptor = new ActionMenuContextMemberDescriptor
                     {
@@ -124,6 +113,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                     memberDescriptor.IsConst = true;
                 }
 
+                XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
             }
         }
     }
@@ -319,6 +309,9 @@ public class Program
             ProcessPossibleActionsType(files, compilation, mapNameToActionsModule);
         }
 
+        var json = JsonConvert.SerializeObject(processedProjects, Formatting.Indented);
+        await File.WriteAllTextAsync("C:\\tmp\\repom.export.json", json);
+
         foreach ((var project, Dictionary<string, KalkModuleToGenerate>? mapNameToModule) in projectMapping)
         {
             var modules = mapNameToModule.Values.OrderBy(x => x.ClassName).ToList();
@@ -369,7 +362,7 @@ public class Program
     {
         foreach (ITypeSymbol typeSymbol in compilation.GetTypes())
         {
-            ProcessMembersVisitor memberVisitor = new(typeSymbol);
+            ProcessMembersVisitor memberVisitor = new(typeSymbol, files);
             DocsClassVisitor docsClassVisitor = new(typeSymbol, files);
 
             ClassDescriptor classDescriptor;
@@ -408,98 +401,6 @@ public class Program
 
             classDescriptor.Accept(docsClassVisitor);
             classDescriptor.Accept(memberVisitor);
-            
-
-            // AttributeData? moduleAttribute = FindAttribute<ActionMenuContextAttribute>(typeSymbol);
-            // KalkModuleToGenerate? moduleToGenerate = null;
-            // if (moduleAttribute != null)
-            // {
-            //     GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule, files);
-            // }
-            //
-            // foreach (ISymbol member in typeSymbol.GetMembers())
-            // {
-            //     AttributeData? attr = FindAttribute<ActionMenuContextMemberAttribute>(member);
-            //     if (attr == null)
-            //     {
-            //         continue;
-            //     }
-            //
-            //     var name = attr.ConstructorArguments[0].Value?.ToString();
-            //     if (string.IsNullOrWhiteSpace(name))
-            //     {
-            //         throw new Exception("Name cannot be null or empty.");
-            //     }
-            //
-            //     var className = member.ContainingSymbol.Name;
-            //
-            //     // In case the module is built-in, we still generate a module for it
-            //     if (moduleToGenerate == null)
-            //     {
-            //         GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule, files);
-            //     }
-            //
-            //     var method = member as IMethodSymbol;
-            //     var desc = new KalkMemberToGenerate()
-            //     {
-            //         Name = name,
-            //         XmlId = member.GetDocumentationCommentId() ?? string.Empty,
-            //         Category = string.Empty,
-            //         IsCommand = method?.ReturnsVoid ?? false,
-            //         Module = moduleToGenerate,
-            //     };
-            //     desc.Names.Add(name);
-            //
-            //     if (method != null)
-            //     {
-            //         desc.CSharpName = method.Name;
-            //
-            //         var builder = new StringBuilder();
-            //         desc.IsAction = method.ReturnsVoid;
-            //         desc.IsFunc = !desc.IsAction;
-            //         builder.Append(desc.IsAction ? "Action" : "Func");
-            //
-            //         if (method.Parameters.Length > 0 || desc.IsFunc)
-            //         {
-            //             builder.Append('<');
-            //         }
-            //
-            //         for (var i = 0; i < method.Parameters.Length; i++)
-            //         {
-            //             IParameterSymbol parameter = method.Parameters[i];
-            //             if (i > 0)
-            //             {
-            //                 builder.Append(", ");
-            //             }
-            //
-            //             builder.Append(GetTypeName(parameter.Type));
-            //         }
-            //
-            //         if (desc.IsFunc)
-            //         {
-            //             if (method.Parameters.Length > 0)
-            //             {
-            //                 builder.Append(", ");
-            //             }
-            //             builder.Append(GetTypeName(method.ReturnType));
-            //         }
-            //
-            //         if (method.Parameters.Length > 0 || desc.IsFunc)
-            //         {
-            //             builder.Append('>');
-            //         }
-            //
-            //         desc.Cast = $"({builder})";
-            //     }
-            //     else if (member is IPropertySymbol or IFieldSymbol)
-            //     {
-            //         desc.CSharpName = member.Name;
-            //         desc.IsConst = true;
-            //     }
-            //
-            //     moduleToGenerate.Members.Add(desc);
-            //     XmlDocsParser.ExtractDocumentation(member, desc, files);
-            // }
         }
     }
 
