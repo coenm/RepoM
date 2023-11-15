@@ -14,7 +14,6 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.AssemblyInformation;
 using Scriban;
 using Scriban.Runtime;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 public interface IClassDescriptorVisitor
@@ -47,7 +46,42 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
             }
             else
             {
+                var actionMenuContextMemberAttribute = new ActionMenuContextMemberAttribute((attr.ConstructorArguments[0].Value as string)!);
                 // action menu context member.
+
+                var className = member.ContainingSymbol.Name;
+
+                //     var method = member as IMethodSymbol;
+                //     var desc = new KalkMemberToGenerate()
+                //     {
+                //         Name = name,
+                //         XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+                //         Category = string.Empty,
+                //         IsCommand = method?.ReturnsVoid ?? false,
+                //         Module = moduleToGenerate,
+                //     };
+
+                
+                var memberDescriptor = new ActionMenuContextMemberDescriptor
+                    {
+                        ActionMenuContextMemberAttribute = actionMenuContextMemberAttribute,
+                        CSharpName = member.Name,
+                        //ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;
+                        IsCommand = false,
+                        XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+                    };
+
+                if (member is IMethodSymbol method)
+                {
+                    memberDescriptor.ReturnType = method.ReturnType.ToDisplayString();
+                    memberDescriptor.IsCommand = method.ReturnsVoid;
+                }
+
+                if (member is IPropertySymbol property)
+                {
+                    memberDescriptor.ReturnType = property.Type.ToDisplayString();
+                }
+
             }
         }
     }
