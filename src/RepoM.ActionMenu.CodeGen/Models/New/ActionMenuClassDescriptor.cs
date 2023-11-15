@@ -12,7 +12,7 @@ public class ActionMenuClassDescriptor : ClassDescriptor
     /// </summary>
     public List<ActionMenuMemberDescriptor> ActionMenuProperties { get; set; } = new List<ActionMenuMemberDescriptor>();
 
-    public RepositoryActionAttribute RepositoryActionName { get; set; }
+    public string RepositoryActionName { get; set; }
 
     public override void Accept(IClassDescriptorVisitor visitor)
     {

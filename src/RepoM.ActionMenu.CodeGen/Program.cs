@@ -16,15 +16,6 @@ using RepoM.Core.Plugin.AssemblyInformation;
 using Scriban;
 using Scriban.Runtime;
 
-public interface IClassDescriptorVisitor
-{
-    void Visit(ActionMenuContextClassDescriptor descriptor);
-
-    void Visit(ActionMenuClassDescriptor descriptor);
-
-    void Visit(ClassDescriptor descriptor);
-}
-
 public class ProcessMembersVisitor : IClassDescriptorVisitor
 {
     private readonly ITypeSymbol _typeSymbol;
@@ -186,9 +177,6 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             descriptor.ActionMenuProperties.Add(memberDescriptor);
 
-            // action menu context member.
-
- 
         }
     }
 
@@ -279,11 +267,14 @@ public class Program
             AttributeData? assemblyAttribute = compilation.Assembly.GetAttributes().SingleOrDefault(x => x.AttributeClass?.Name == nameof(PackageAttribute));
             if (assemblyAttribute != null)
             {
+                var pa = new PackageAttribute(
+                    (assemblyAttribute.ConstructorArguments[0].Value as string)!,
+                    (assemblyAttribute.ConstructorArguments[1].Value as string)!);
+
                 projectDescriptor = new PluginProjectDescriptor
                     {
-                        PackageAttribute = new PackageAttribute(
-                            (assemblyAttribute.ConstructorArguments[0].Value as string)!,
-                            (assemblyAttribute.ConstructorArguments[1].Value as string)!),
+                        PluginName = pa.Name,
+                        PluginDescription = pa.Description,
                     };
             }
             else
@@ -309,6 +300,7 @@ public class Program
             ProcessPossibleActionsType(files, compilation, mapNameToActionsModule);
         }
 
+        // tmp
         var json = JsonConvert.SerializeObject(processedProjects, Formatting.Indented);
         await File.WriteAllTextAsync("C:\\tmp\\repom.export.json", json);
 
@@ -374,8 +366,9 @@ public class Program
             {
                 var actionMenuContextClassDescriptor = new ActionMenuContextClassDescriptor
                     {
-                        ContextMenuName = new ActionMenuContextAttribute((string) actionMenuContextAttribute.ConstructorArguments[0].Value!),
+                        ActionMenuContextObjectName = new ActionMenuContextAttribute((string)actionMenuContextAttribute.ConstructorArguments[0].Value!).Name!,
                     };
+
                 projectDescriptor.ActionContextMenus.Add(actionMenuContextClassDescriptor);
 
                 classDescriptor = actionMenuContextClassDescriptor;
@@ -384,7 +377,7 @@ public class Program
             {
                 var actionMenuClassDescriptor = new ActionMenuClassDescriptor
                     {
-                        RepositoryActionName = new RepositoryActionAttribute((string)repositoryActionAttribute.ConstructorArguments[0].Value!),
+                        RepositoryActionName = new RepositoryActionAttribute((string)repositoryActionAttribute.ConstructorArguments[0].Value!).Type,
                     };
                 projectDescriptor.ActionMenus.Add(actionMenuClassDescriptor);
 

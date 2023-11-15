@@ -1,12 +1,11 @@
 namespace RepoM.ActionMenu.CodeGen.Models.New;
 
 using System.Diagnostics;
-using RepoM.ActionMenu.Interface.Attributes;
 
-[DebuggerDisplay($"{{{nameof(ContextMenuName)},nq}}")]
+[DebuggerDisplay($"{{{nameof(ActionMenuContextObjectName)},nq}}")]
 public class ActionMenuContextClassDescriptor : ClassDescriptor
 {
-    public ActionMenuContextAttribute ContextMenuName { get; set; } = null!;
+    public string ActionMenuContextObjectName { get; set; } = null!;
 
     public override void Accept(IClassDescriptorVisitor visitor)
     {

@@ -9,7 +9,7 @@ using RepoM.Core.Plugin.Repository;
 /// <summary>
 /// Provides action menu functions and variables for the current repository through `repository`.
 /// </summary>
-[ActionMenuContext("Repository")]
+[ActionMenuContext("repository")]
 internal partial class RepositoryFunctions : ScribanModuleWithFunctions
 {
     private readonly IRepository _repository;

@@ -1,8 +1,8 @@
 namespace RepoM.ActionMenu.CodeGen.Models.New;
 
-using RepoM.Core.Plugin.AssemblyInformation;
-
 public class PluginProjectDescriptor : ProjectDescriptor
 {
-    public PackageAttribute PackageAttribute { get; init; }
+    public string PluginName { get; set; }
+
+    public string PluginDescription { get; set; }
 }
