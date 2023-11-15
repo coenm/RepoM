@@ -334,7 +334,6 @@ public class Program
             classDescriptor.Accept(memberVisitor);
             
 
-            //
             // AttributeData? moduleAttribute = FindAttribute<ActionMenuContextAttribute>(typeSymbol);
             // KalkModuleToGenerate? moduleToGenerate = null;
             // if (moduleAttribute != null)
