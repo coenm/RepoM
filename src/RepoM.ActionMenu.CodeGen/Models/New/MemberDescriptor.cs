@@ -28,4 +28,12 @@ public class ActionMenuContextMemberDescriptor : MemberDescriptor
 
 
     public bool IsCommand { get; set; }
+
+    public bool IsAction { get; set; }
+
+    public bool IsFunc { get; set; }
+
+    public bool IsConst { get; set; }
+    public string Cast { get; set; }
+
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -75,12 +76,54 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 {
                     memberDescriptor.ReturnType = method.ReturnType.ToDisplayString();
                     memberDescriptor.IsCommand = method.ReturnsVoid;
+
+                    memberDescriptor.CSharpName = method.Name;
+
+                    memberDescriptor.IsAction = method.ReturnsVoid;
+                    memberDescriptor.IsFunc = !memberDescriptor.IsAction;
+
+                    var builder = new StringBuilder();
+                    builder.Append(memberDescriptor.IsAction ? "Action" : "Func");
+
+                    if (method.Parameters.Length > 0 || memberDescriptor.IsFunc)
+                    {
+                        builder.Append('<');
+                    }
+
+                    for (var i = 0; i < method.Parameters.Length; i++)
+                    {
+                        IParameterSymbol parameter = method.Parameters[i];
+                        if (i > 0)
+                        {
+                            builder.Append(", ");
+                        }
+
+                        builder.Append(parameter.Type.ToDisplayString());
+                    }
+
+                    if (memberDescriptor.IsFunc)
+                    {
+                        if (method.Parameters.Length > 0)
+                        {
+                            builder.Append(", ");
+                        }
+                        builder.Append(method.ReturnType.ToDisplayString());
+                    }
+
+                    if (method.Parameters.Length > 0 || memberDescriptor.IsFunc)
+                    {
+                        builder.Append('>');
+                    }
+
+                    memberDescriptor.Cast = $"({builder})";
                 }
 
-                if (member is IPropertySymbol property)
+                if (member is IPropertySymbol property) // or field IFieldSymbol
                 {
                     memberDescriptor.ReturnType = property.Type.ToDisplayString();
+                    memberDescriptor.IsConst = true;
                 }
+
             }
         }
     }
