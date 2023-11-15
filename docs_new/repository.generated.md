@@ -1,4 +1,4 @@
-# `Repository`
+# `repository`
 
 Provides action menu functions and variables for the current repository through `repository`.
 
