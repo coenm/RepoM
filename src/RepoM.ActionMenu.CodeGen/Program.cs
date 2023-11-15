@@ -2,6 +2,7 @@ namespace RepoM.ActionMenu.CodeGen;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -45,7 +46,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 
                 var memberDescriptor = new ActionMenuContextMemberDescriptor
                     {
-                        ActionMenuContextMemberAttribute = actionMenuContextMemberAttribute,
+                        ActionMenuContextMemberName = actionMenuContextMemberAttribute.Alias,
                         CSharpName = member.Name,
                         //ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;
                         IsCommand = false,
@@ -173,10 +174,12 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
             //     continue;
             // }
 
+            // todo lots of possible attributes to process
 
-
+            
             descriptor.ActionMenuProperties.Add(memberDescriptor);
 
+            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 
@@ -185,6 +188,69 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
         foreach (ISymbol member in _typeSymbol.GetMembers())
         {
             // only normal members.
+            var className = member.ContainingSymbol.Name;
+
+            var memberDescriptor = new Models.New.MemberDescriptor
+            {
+                    CSharpName = member.Name,
+                    //ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;
+                    IsCommand = false,
+                    XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+                };
+
+            if (member is IMethodSymbol method)
+            {
+                memberDescriptor.ReturnType = method.ReturnType.ToDisplayString();
+                memberDescriptor.IsCommand = method.ReturnsVoid;
+
+                memberDescriptor.CSharpName = method.Name;
+
+                memberDescriptor.IsAction = method.ReturnsVoid;
+                memberDescriptor.IsFunc = !memberDescriptor.IsAction;
+
+                var builder = new StringBuilder();
+                builder.Append(memberDescriptor.IsAction ? "Action" : "Func");
+
+                if (method.Parameters.Length > 0 || memberDescriptor.IsFunc)
+                {
+                    builder.Append('<');
+                }
+
+                for (var i = 0; i < method.Parameters.Length; i++)
+                {
+                    IParameterSymbol parameter = method.Parameters[i];
+                    if (i > 0)
+                    {
+                        builder.Append(", ");
+                    }
+
+                    builder.Append(parameter.Type.ToDisplayString());
+                }
+
+                if (memberDescriptor.IsFunc)
+                {
+                    if (method.Parameters.Length > 0)
+                    {
+                        builder.Append(", ");
+                    }
+                    builder.Append(method.ReturnType.ToDisplayString());
+                }
+
+                if (method.Parameters.Length > 0 || memberDescriptor.IsFunc)
+                {
+                    builder.Append('>');
+                }
+
+                memberDescriptor.Cast = $"({builder})";
+            }
+
+            if (member is IPropertySymbol property) // or field IFieldSymbol
+            {
+                memberDescriptor.ReturnType = property.Type.ToDisplayString();
+                memberDescriptor.IsConst = true;
+            }
+
+            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 }
