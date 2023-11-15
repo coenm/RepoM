@@ -69,7 +69,7 @@ repository-actions:
 
 ## browse-repository@1
 
-Action to open the default webbrowser and go to the origin remote webinterface. When multple remotes are available a sub menu is created for each remote.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionBrowseRepositoryV1.verified.md -->
+Action to open the default webbrowser and go to the origin remote webinterface. When multiple remotes are available a sub menu is created for each remote.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionBrowseRepositoryV1.verified.md -->
 
 Action specific properties:
 
