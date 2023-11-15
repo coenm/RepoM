@@ -16,7 +16,7 @@ public class KalkMemberToGenerate : KalkDescriptorToGenerate
 
     public string Cast { get; set; }
 
-    public KalkModuleToGenerate Module { get; set; }
+    //public KalkModuleToGenerate Module { get; set; }
 }
 
 public class ActionPropertyToGenerate : KalkDescriptorToGenerate /* todo other inheritance?! */

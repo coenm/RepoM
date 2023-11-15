@@ -81,7 +81,6 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 {
                     memberDescriptor.ReturnType = property.Type.ToDisplayString();
                 }
-
             }
         }
     }
@@ -549,7 +548,7 @@ public class Program
                     XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                     Category = string.Empty,
                     IsCommand = method?.ReturnsVoid ?? false,
-                    Module = moduleToGenerate,
+                    //Module = moduleToGenerate,
                 };
                 desc.Names.Add(name);
 
@@ -557,9 +556,9 @@ public class Program
                 {
                     desc.CSharpName = method.Name;
 
-                    var builder = new StringBuilder();
                     desc.IsAction = method.ReturnsVoid;
                     desc.IsFunc = !desc.IsAction;
+                    var builder = new StringBuilder();
                     builder.Append(desc.IsAction ? "Action" : "Func");
 
                     if (method.Parameters.Length > 0 || desc.IsFunc)
