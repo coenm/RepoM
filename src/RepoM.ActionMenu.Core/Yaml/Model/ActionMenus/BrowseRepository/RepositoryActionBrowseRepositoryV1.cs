@@ -5,7 +5,7 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 /// <summary>
-/// Action to open the default webbrowser and go to the origin remote webinterface. When multple remotes are available a sub menu is created for each remote.
+/// Action to open the default webbrowser and go to the origin remote webinterface. When multiple remotes are available a sub menu is created for each remote.
 /// </summary>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionBrowseRepositoryV1 : IMenuAction, IName
