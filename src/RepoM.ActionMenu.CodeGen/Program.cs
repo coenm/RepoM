@@ -307,7 +307,7 @@ public class Program
                 "RepoM.Plugin.WindowsExplorerGitInfo",
             };
 
-        Template templateModule = await LoadTemplateAsync("Templates/Module.scriban-cs");
+        Template templateModule = await LoadTemplateAsync("Templates/ScribanModuleRegistration.scriban-cs");
         Template templateDocs = await LoadTemplateAsync("Templates/Docs.scriban-txt");
 
         Dictionary<string, string> files = await LoadFiles();
@@ -430,7 +430,7 @@ public class Program
             {
                 var actionMenuContextClassDescriptor = new ActionMenuContextClassDescriptor
                     {
-                        ActionMenuContextObjectName = new ActionMenuContextAttribute((string)actionMenuContextAttribute.ConstructorArguments[0].Value!).Name!,
+                        Name = new ActionMenuContextAttribute((string)actionMenuContextAttribute.ConstructorArguments[0].Value!).Name!,
                     };
 
                 projectDescriptor.ActionContextMenus.Add(actionMenuContextClassDescriptor);

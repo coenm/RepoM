@@ -5,7 +5,9 @@ using System.Diagnostics;
 [DebuggerDisplay($"{{{nameof(ActionMenuContextObjectName)},nq}}")]
 public class ActionMenuContextClassDescriptor : ClassDescriptor
 {
-    public string ActionMenuContextObjectName { get; set; } = null!;
+    public string ActionMenuContextObjectName => Name;
+
+    public string Name { get; set; } = null!;
 
     public override void Accept(IClassDescriptorVisitor visitor)
     {
