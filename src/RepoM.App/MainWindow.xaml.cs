@@ -244,7 +244,7 @@ public partial class MainWindow
             return false;
         }
 
-        List<Control> items = new List<Control>();
+        var items = new List<Control>();
         // ItemCollection items = ctxMenu.Items;
         // ItemCollection items = new ItemCollection();
         //items.Clear();
@@ -269,6 +269,7 @@ public partial class MainWindow
 
         if (!fileExists)
         {
+            // old style
             foreach (RepositoryActionBase action in _repositoryActionProvider.GetContextMenuActions(vm.Repository))
             {
                 if (action is RepositorySeparatorAction)
@@ -290,6 +291,7 @@ public partial class MainWindow
         }
         else
         {
+            // new style
             IEnumerable<UserInterfaceRepositoryActionBase> actions = await _newStyleActionMenuFactory.CreateMenuAsync(vm.Repository, newStyleFilename).ConfigureAwait(true);
             foreach (UserInterfaceRepositoryActionBase action in actions)
             {

@@ -2,7 +2,6 @@ namespace RepoM.ActionMenu.CodeGen;
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -124,7 +123,6 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 // property is readonly
                 continue;
             }
-
             if (propertyMember.GetMethod == null)
             {
                 // property is writeonly
@@ -158,7 +156,6 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                     ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;
                     XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                 };
-
 
             //
             // AttributeData? attribute = Program.FindAttribute<RepositoryActionAttribute>(propertyMember);
@@ -316,7 +313,7 @@ public class Program
         Dictionary<string, string> files = await LoadFiles();
 
 
-        var processedProjects = new Dictionary<string, ProjectDescriptor>();
+        var processedProjects = new Dictionary<string, ProjectDescriptor>(); // project name -> project descriptor object
 
         // project - (class name, module)
         var projectMapping = new Dictionary<string, Dictionary<string, KalkModuleToGenerate>>();
@@ -328,29 +325,22 @@ public class Program
             CheckFile(pathToSolution);
        
             Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project);
-            
-            ProjectDescriptor projectDescriptor;
+
+            var projectDescriptor = new ProjectDescriptor
+                {
+                    AssemblyName = compilation.AssemblyName ?? throw new Exception("Could not determine AssemblyName"),
+                    ProjectName = project,
+                };
+
             AttributeData? assemblyAttribute = compilation.Assembly.GetAttributes().SingleOrDefault(x => x.AttributeClass?.Name == nameof(PackageAttribute));
             if (assemblyAttribute != null)
             {
                 var pa = new PackageAttribute(
                     (assemblyAttribute.ConstructorArguments[0].Value as string)!,
                     (assemblyAttribute.ConstructorArguments[1].Value as string)!);
-
-                projectDescriptor = new PluginProjectDescriptor
-                    {
-                        PluginName = pa.Name,
-                        PluginDescription = pa.Description,
-                    };
-            }
-            else
-            {
-                projectDescriptor = new ProjectDescriptor();
+                projectDescriptor.SetPackageInformation(pa);
             }
 
-            projectDescriptor.AssemblyName = compilation.AssemblyName ?? throw new Exception("Could not determine AssemblyName");
-            projectDescriptor.ProjectName = project;
-            
             processedProjects.Add(project, projectDescriptor);
 
             ProcessProject(compilation, projectDescriptor, files);

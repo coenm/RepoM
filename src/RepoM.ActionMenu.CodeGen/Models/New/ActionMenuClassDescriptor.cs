@@ -2,7 +2,6 @@ namespace RepoM.ActionMenu.CodeGen.Models.New;
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using RepoM.ActionMenu.Interface.YamlModel;
 
 [DebuggerDisplay($"{{{nameof(ClassName)},nq}}")]
 public class ActionMenuClassDescriptor : ClassDescriptor
