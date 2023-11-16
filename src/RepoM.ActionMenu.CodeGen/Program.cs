@@ -383,15 +383,23 @@ public class Program
 
                 continue;
             }
-            
+
+            if (!processedProjects.TryGetValue(project, out ProjectDescriptor? projectNew))
+            {
+                throw new Exception("No project found");
+            }
+            var modules2 = projectNew.ActionContextMenus.OrderBy(x => x.ClassName).ToList();
+
             var context = new TemplateContext
                 {
                     LoopLimit = 0,
                     MemberRenamer = x => x.Name,
                 };
+
             var scriptObject = new ScriptObject()
                 {
                     { "modules", modules },
+                    { "modules2", modules2 },
                 };
             context.PushGlobal(scriptObject);
         
