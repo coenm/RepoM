@@ -45,7 +45,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 
                 var memberDescriptor = new ActionMenuContextMemberDescriptor
                     {
-                        ActionMenuContextMemberName = actionMenuContextMemberAttribute.Alias,
+                        Name = actionMenuContextMemberAttribute.Alias,
                         CSharpName = member.Name,
                         //ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;
                         IsCommand = false,
@@ -103,6 +103,8 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                     memberDescriptor.ReturnType = property.Type.ToDisplayString();
                     memberDescriptor.IsConst = true;
                 }
+
+                descriptor.Members.Add(memberDescriptor);
 
                 XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
             }
@@ -308,11 +310,10 @@ public class Program
             };
 
         Template templateModule = await LoadTemplateAsync("Templates/ScribanModuleRegistration.scriban-cs");
-        Template templateDocs = await LoadTemplateAsync("Templates/Docs.scriban-txt");
+        Template templateDocs = await LoadTemplateAsync("Templates/DocsScriptVariables.scriban-txt");
 
         Dictionary<string, string> files = await LoadFiles();
-
-
+        
         var processedProjects = new Dictionary<string, ProjectDescriptor>(); // project name -> project descriptor object
 
         // project - (class name, module)
@@ -394,12 +395,12 @@ public class Program
                 {
                     LoopLimit = 0,
                     MemberRenamer = x => x.Name,
+                    EnableRelaxedMemberAccess = false,
                 };
 
             var scriptObject = new ScriptObject()
                 {
-                    { "modules", modules },
-                    { "modules2", modules2 },
+                    { "modules", modules2 },
                 };
             context.PushGlobal(scriptObject);
         
@@ -411,6 +412,11 @@ public class Program
             {
                 await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
             }
+
+            // foreach (var module in modules2)
+            // {
+            //     await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
+            // }
         }
     }
 
@@ -441,7 +447,7 @@ public class Program
             {
                 var actionMenuClassDescriptor = new ActionMenuClassDescriptor
                     {
-                        RepositoryActionName = new RepositoryActionAttribute((string)repositoryActionAttribute.ConstructorArguments[0].Value!).Type,
+                        Name = new RepositoryActionAttribute((string)repositoryActionAttribute.ConstructorArguments[0].Value!).Type,
                     };
                 projectDescriptor.ActionMenus.Add(actionMenuClassDescriptor);
 
@@ -800,7 +806,7 @@ public class Program
     {
         var result = await DocumentationGenerator.GetDocsContentAsync(module, template);
         var name = module.Name.ToLowerInvariant();
-        await File.WriteAllTextAsync(Path.Combine(siteFolder, $"{name}.generated.md"), result);
+        await File.WriteAllTextAsync(Path.Combine(siteFolder, $"script_variables_{name}.generated.md"), result);
     }
     
     static string GetTypeName(ITypeSymbol typeSymbol)

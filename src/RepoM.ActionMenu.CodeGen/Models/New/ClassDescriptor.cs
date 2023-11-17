@@ -12,6 +12,11 @@ public class ClassDescriptor : IXmlDocsExtended
     /// </summary>
     public List<MemberDescriptor> Members { get; set; } = new List<MemberDescriptor>();
 
+    /// <summary>
+    /// Friendly name
+    /// </summary>
+    public string Name { get; set; } = null!;
+
     public string ClassName { get; set; } = null!;
     
     public string Namespace { get; set; } = null!;

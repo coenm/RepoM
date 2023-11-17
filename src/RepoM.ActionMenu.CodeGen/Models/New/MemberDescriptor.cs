@@ -8,6 +8,11 @@ using RepoM.ActionMenu.Interface.Attributes;
 /// </summary>
 public class MemberDescriptor : IXmlDocsExtended
 {
+    /// <summary>
+    /// Friendly Name
+    /// </summary>
+    public string Name { get; set; }
+
     public string CSharpName { get; set; }
 
     public string ReturnType { get; set; }
@@ -43,5 +48,5 @@ public class ActionMenuMemberDescriptor : MemberDescriptor
 
 public class ActionMenuContextMemberDescriptor : MemberDescriptor
 {
-    public string ActionMenuContextMemberName { get; set; }
+    public string ActionMenuContextMemberName => Name;
 }
