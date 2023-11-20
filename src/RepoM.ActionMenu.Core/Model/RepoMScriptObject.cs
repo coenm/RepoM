@@ -6,6 +6,19 @@ using Scriban.Runtime;
 
 internal class RepoMScriptObject : ScriptObject, IContextRegistration
 {
+    public override IScriptObject Clone(bool deep)
+    {
+        // todo not sure if this clone is okay.
+        var result = base.Clone(deep);
+
+        if (result is RepoMScriptObject r)
+        {
+            return r;
+        }
+
+        throw new NotImplementedException("Could not clone");
+    }
+
     IContextRegistration IContextRegistration.CreateOrGetSubRegistration(string key)
     {
         if (this.TryGetValue(key, out object value))

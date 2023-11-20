@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
@@ -287,68 +288,6 @@ public class RepositoryConfigurationReader
     }
 
     private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository? repository)
-    {
-        return string.IsNullOrWhiteSpace(booleanExpression)
-            ? defaultWhenNullOrEmpty
-            : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
-    }
-}
-
-public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory 
-{
-    private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
-    private readonly RepositoryConfigurationReader _repoConfigReader;
-    private readonly ILogger _logger;
-
-    public RepositoryTagsConfigurationFactory(
-        IRepositoryExpressionEvaluator repoExpressionEvaluator,
-        RepositoryConfigurationReader repoConfigReader,
-        ILogger logger)
-    {
-        _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
-        _repoConfigReader = repoConfigReader ?? throw new ArgumentNullException(nameof(repoConfigReader));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    public IEnumerable<string> GetTags(Repository repository)
-    {
-        return GetTagsInner(repository).Distinct();
-    }
-
-    private IEnumerable<string> GetTagsInner(IRepository repository)
-    {
-        Dictionary<string, string>? repositoryEnvVars;
-        List<EvaluatedVariable>? variables;
-        List<TagsCollection>? tags;
-
-        try
-        {
-            (repositoryEnvVars,  variables, _,  tags) = _repoConfigReader.Get(repository);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Could not get the configuration for repository {repository} {message}.", repository.Name, e.Message);
-            yield break;
-        }
-
-        foreach (TagsCollection tagsCollection in ((IEnumerable<TagsCollection>?)tags) ?? Array.Empty<TagsCollection>())
-        {
-            foreach (RepositoryActionTag action in tagsCollection.Tags)
-            {
-                if (!IsEnabled(action.When, true, repository))
-                {
-                    continue;
-                }
-
-                if (!string.IsNullOrWhiteSpace(action.Tag))
-                {
-                    yield return action.Tag!;
-                }
-            }
-        }
-    }
-
-    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository repository)
     {
         return string.IsNullOrWhiteSpace(booleanExpression)
             ? defaultWhenNullOrEmpty

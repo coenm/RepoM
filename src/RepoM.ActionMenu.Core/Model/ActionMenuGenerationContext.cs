@@ -35,6 +35,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     private readonly IFileReader _fileReader;
     private readonly IActionToRepositoryActionMapper[] _repositoryActionMappers;
     private readonly List<IContextActionProcessor> _contextActionMappers;
+    private readonly RepoMScriptObject _rootScriptObject; // used for cloning.
 
     public ActionMenuGenerationContext(
         IRepository repository, // runtime data, todo
@@ -53,21 +54,54 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
         _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
 
-        var rootScriptObject = new RepoMScriptObject();
+        _contextActionMappers = new List<IContextActionProcessor>
+            {
+                new ContextActionExecuteScriptV1Processor(),
+                new ContextActionSetVariableV1Processor(),
+                new ContextActionEvaluateVariableV1Processor(),
+                new ContextActionRenderVariableV1Processor(),
+                new ContextActionLoadFileV1Processor(_fileReader),
+            };
+
+
+        _rootScriptObject = new RepoMScriptObject();
         
-        rootScriptObject.SetValue("file", new FileFunctions(), true);
-        rootScriptObject.SetValue("repository", new RepositoryFunctions(Repository), true);
+        _rootScriptObject.SetValue("file", new FileFunctions(), true);
+        _rootScriptObject.SetValue("repository", new RepositoryFunctions(Repository), true);
 
         Env = new EnvSetScriptObject(EnvScriptObject.Create());
-        rootScriptObject.Add("env", Env);
-        rootScriptObject.SetReadOnly("env", true);
-
+        _rootScriptObject.Add("env", Env);
+        _rootScriptObject.SetReadOnly("env", false); // this is not what we want, but it's the only way to make it work
+        
         foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
         {
-            contextRegistration.RegisterFunctions(Decorate<ActionMenuGenerationContext>(rootScriptObject));
+            contextRegistration.RegisterFunctions(Decorate<ActionMenuGenerationContext>(_rootScriptObject));
         }
         
-        PushGlobal(rootScriptObject);
+        PushGlobal(_rootScriptObject);
+        
+        RepositoryActionsScriptContext = new DisposableContextScriptObject(this, Env, _contextActionMappers);
+        PushGlobal(RepositoryActionsScriptContext);
+    }
+
+    private ActionMenuGenerationContext(
+        IRepository repository, // runtime data, todo
+        ITemplateParser templateParser,
+        IFileSystem fileSystem,
+        ITemplateContextRegistration[] functionsArray,
+        IActionToRepositoryActionMapper[] repositoryActionMappers,
+        IActionMenuDeserializer deserializer,
+        IFileReader fileReader,
+        RepoMScriptObject rootScriptObject, // is it required to be an RepoM... object?
+        EnvSetScriptObject env)
+    {
+        _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
+        _functionsArray = functionsArray ?? throw new ArgumentNullException(nameof(functionsArray));
+        FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _repositoryActionMappers = repositoryActionMappers ?? throw new ArgumentNullException(nameof(repositoryActionMappers));
+        _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
+        _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
 
         _contextActionMappers = new List<IContextActionProcessor>
             {
@@ -78,6 +112,12 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
                 new ContextActionLoadFileV1Processor(_fileReader),
             };
 
+        _rootScriptObject = rootScriptObject ?? throw new ArgumentNullException(nameof(rootScriptObject));
+
+        Env = env;
+        _rootScriptObject.SetValue("env", Env, false); // todo check if readonly is required.
+
+        PushGlobal(_rootScriptObject);
         RepositoryActionsScriptContext = new DisposableContextScriptObject(this, Env, _contextActionMappers);
         PushGlobal(RepositoryActionsScriptContext);
     }
@@ -95,7 +135,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public EnvSetScriptObject Env { get; private set; }
     
-    public async Task AddRepositoryContextAsync(Interface.YamlModel.ActionMenus.Context? reposContext)
+    public async Task AddRepositoryContextAsync(Context? reposContext)
     {
         if (reposContext == null)
         {
@@ -132,11 +172,17 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public IActionMenuGenerationContext Clone()
     {
-        var result = new ActionMenuGenerationContext(Repository, _templateParser, FileSystem, _functionsArray, _repositoryActionMappers, _deserializer, _fileReader)
-        {
-            Env = (EnvSetScriptObject)Env.Clone(true),
-            RepositoryActionsScriptContext = (DisposableContextScriptObject)RepositoryActionsScriptContext.Clone(true),
-        };
+        var result = new ActionMenuGenerationContext(
+            Repository,
+            _templateParser,
+            FileSystem,
+            _functionsArray,
+            _repositoryActionMappers,
+            _deserializer,
+            _fileReader,
+
+            (RepoMScriptObject)_rootScriptObject.Clone(true),
+            (EnvSetScriptObject)Env.Clone(true));
 
         return result;
     }

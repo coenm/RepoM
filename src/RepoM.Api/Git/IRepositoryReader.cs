@@ -1,6 +1,8 @@
 namespace RepoM.Api.Git;
 
+using System.Threading.Tasks;
+
 public interface IRepositoryReader
 {
-    Repository? ReadRepository(string path);
+    Task<Repository?> ReadRepositoryAsync(string path);
 }

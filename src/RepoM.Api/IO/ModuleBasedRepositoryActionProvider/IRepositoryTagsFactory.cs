@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.Api.Git;
 
 public interface IRepositoryTagsFactory
 {
-    IEnumerable<string> GetTags(Repository repository);
+    Task<IEnumerable<string>> GetTagsAsync(Repository repository);
 }
 
 [UsedImplicitly]
@@ -35,9 +35,9 @@ public sealed class LoggingRepositoryTagsFactoryDecorator : IRepositoryTagsFacto
         }
     }
 
-    public IEnumerable<string> GetTags(Repository repository)
+    public Task<IEnumerable<string>> GetTagsAsync(Repository repository)
     {
-        return _provider.GetTags(repository);
+        return _provider.GetTagsAsync(repository);
     }
    
     private sealed class LoggingDecorator : IRepositoryTagsFactory
@@ -51,10 +51,10 @@ public sealed class LoggingRepositoryTagsFactoryDecorator : IRepositoryTagsFacto
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public IEnumerable<string> GetTags(Repository repository)
+        public async Task<IEnumerable<string>> GetTagsAsync(Repository repository)
         {
             using IDisposable _ = Measure(repository);
-            return _provider.GetTags(repository).ToArray();
+            return await _provider.GetTagsAsync(repository).ConfigureAwait(false);
         }
         
         private IDisposable Measure(Repository repository)

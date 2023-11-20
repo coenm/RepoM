@@ -3,6 +3,7 @@ namespace RepoM.Api.Git;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using LibGit2Sharp;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
@@ -18,7 +19,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public Repository? ReadRepository(string path)
+    public async Task<Repository?> ReadRepositoryAsync(string path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -35,7 +36,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         Repository? result = ReadRepositoryWithRetries(repoPath, 3);
         if (result != null)
         {
-            result.Tags = _resolver.GetTags(result).ToArray();
+            result.Tags = (await _resolver.GetTagsAsync(result).ConfigureAwait(false)).ToArray();
         }
         else
         {

@@ -12,7 +12,6 @@ using RepoM.ActionMenu.Core.Services;
 using RepoM.ActionMenu.Core.Yaml.Serialization;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.YamlModel;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using SimpleInjector;
 

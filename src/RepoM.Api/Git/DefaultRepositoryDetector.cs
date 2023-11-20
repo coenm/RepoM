@@ -74,14 +74,21 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         NotifyHeadDeletion(e.OldFullPath);
     }
 
-    private void WatcherChanged(object sender, FileSystemEventArgs e)
+    private async void WatcherChanged(object sender, FileSystemEventArgs e)
     {
         if (!IsHead(e.FullPath))
         {
             return;
         }
 
-        EatRepo(e.FullPath);
+        try
+        {
+            await EatRepo(e.FullPath).ConfigureAwait(false);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Something went down when eating repo");
+        }
     }
 
     private void WatcherCreated(object sender, FileSystemEventArgs e)
@@ -91,8 +98,9 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
             return;
         }
 
+        // todo
         Task.Run(() => Task.Delay(DetectionToAlertDelayMilliseconds))
-            .ContinueWith(t => EatRepo(e.FullPath));
+            .ContinueWith(async t => await EatRepo(e.FullPath).ConfigureAwait(false));
     }
 
     private static bool IsHead(string path)
@@ -119,10 +127,10 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         return path.IndexOf(HEAD_LOG_FILE, StringComparison.OrdinalIgnoreCase);
     }
 
-    private void EatRepo(string path)
+    private async Task EatRepo(string path)
     {
         _logger.LogDebug("{method} - repo {head}", nameof(EatRepo), path);
-        Repository? repo = _repositoryReader.ReadRepository(path);
+        Repository? repo = await _repositoryReader.ReadRepositoryAsync(path).ConfigureAwait(false);
 
         if (repo?.WasFound ?? false)
         {

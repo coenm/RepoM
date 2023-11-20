@@ -108,22 +108,32 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _repositoryStore.Set(heads);
     }
 
-    private void OnFoundNewRepository(string file)
+    private async void OnFoundNewRepository(string file)
     {
         _logger.LogDebug("{method} - repo {file}", nameof(OnFoundNewRepository), file);
 
-        Repository? repo = _repositoryReader.ReadRepository(file);
+        Repository? repo = null;
+        try
+        {
+            repo = await _repositoryReader.ReadRepositoryAsync(file);
+
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning(e, "Something went wrong while reading repo.");
+        }
+
         if (repo?.WasFound ?? false)
         {
             OnRepositoryChangeDetected(repo);
         }
     }
 
-    private void OnCheckKnownRepository(string file, KnownRepositoryNotifications notification)
+    private async Task OnCheckKnownRepository(string file, KnownRepositoryNotifications notification)
     {
         _logger.LogDebug("{method} - start {head}", nameof(OnCheckKnownRepository), file);
 
-        Repository? repo = _repositoryReader.ReadRepository(file);
+        Repository? repo = await _repositoryReader.ReadRepositoryAsync(file);
         if (repo?.WasFound ?? false)
         {
             if (notification.HasFlag(KnownRepositoryNotifications.WhenFound))
