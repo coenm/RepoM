@@ -269,31 +269,16 @@ public partial class MainWindow
 
         if (!fileExists)
         {
-            // old style
-            foreach (RepositoryActionBase action in _repositoryActionProvider.GetContextMenuActions(vm.Repository))
-            {
-                if (action is RepositorySeparatorAction)
+            items.Add(new AcrylicMenuItem
                 {
-                    if (items.Count > 0 && items[^1] is not Separator)
-                    {
-                        items.Add(new Separator());
-                    }
-                }
-                else
-                {
-                    Control? controlItem = CreateMenuItem(action, vm);
-                    if (controlItem != null)
-                    {
-                        items.Add(controlItem);
-                    }
-                }
-            }
+                    Header = "File " + newStyleFilename + "  not found.",
+                    IsEnabled = true,
+                });
         }
         else
         {
             // new style
-            IEnumerable<UserInterfaceRepositoryActionBase> actions = await _newStyleActionMenuFactory.CreateMenuAsync(vm.Repository, newStyleFilename).ConfigureAwait(true);
-            foreach (UserInterfaceRepositoryActionBase action in actions)
+            await foreach(UserInterfaceRepositoryActionBase action in _newStyleActionMenuFactory.CreateMenuAsync(vm.Repository, newStyleFilename).ConfigureAwait(true))
             {
                 if (action is UserInterfaceSeparatorRepositoryAction)
                 {

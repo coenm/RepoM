@@ -148,14 +148,12 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         }
     }
 
-    public async Task<IEnumerable<UserInterfaceRepositoryActionBase>> AddActionMenusAsync(List<IMenuAction>? menus)
+    public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> AddActionMenusAsync(List<IMenuAction>? menus)
     {
         if (menus == null)
         {
-            return Array.Empty<UserInterfaceRepositoryActionBase>();
+            yield break;
         }
-
-        var items = new List<UserInterfaceRepositoryActionBase>();
 
         using IScope disposable = CreateGlobalScope();
 
@@ -163,11 +161,9 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         {
             foreach (UserInterfaceRepositoryActionBase item in await AddMenuActionAsync(action).ConfigureAwait(false))
             {
-                items.Add(item);
+                yield return item;
             }
         }
-
-        return items;
     }
 
     public IActionMenuGenerationContext Clone()

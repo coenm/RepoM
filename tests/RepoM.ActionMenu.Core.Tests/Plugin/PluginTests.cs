@@ -95,7 +95,7 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
             IUserInterfaceActionMenuFactory sut = Bootstrapper.GetUserInterfaceActionMenu(_container);
 
             // act
-            IEnumerable<UserInterfaceRepositoryActionBase> result = await sut.CreateMenuAsync(_repository, "C:\\RepositoryActionsV2.yaml");
+            IEnumerable<UserInterfaceRepositoryActionBase> result = await sut.CreateMenuListAsync(_repository, "C:\\RepositoryActionsV2.yaml");
 
             // assert
             await Verifier.Verify(result).ScrubMembersWithType<IRepository>();

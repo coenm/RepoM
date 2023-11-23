@@ -84,7 +84,7 @@ public abstract class IntegrationActionTestBase
     protected async Task<IEnumerable<UserInterfaceRepositoryActionBase>> CreateMenuAsync()
     {
         IUserInterfaceActionMenuFactory factory = GetIUserInterfaceActionMenuFactory();
-        return await factory.CreateMenuAsync(Repository, DEFAULT_PATH);
+        return await factory.CreateMenuListAsync(Repository, DEFAULT_PATH);
     }
 }
 

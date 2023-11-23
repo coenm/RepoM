@@ -40,7 +40,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
     }
 
-    public async Task<IEnumerable<UserInterfaceRepositoryActionBase>> CreateMenuAsync(IRepository repository, string filename)
+    public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository, string filename)
     {
         var context = new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins, _mappers, _deserializer, _fileReader);
 
@@ -51,7 +51,10 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         await context.AddRepositoryContextAsync(actions.Context).ConfigureAwait(false);
 
         // process actions
-        return await context.AddActionMenusAsync(actions.ActionMenu).ConfigureAwait(false);
+        await foreach (UserInterfaceRepositoryActionBase item in context.AddActionMenusAsync(actions.ActionMenu).ConfigureAwait(false))
+        {
+            yield return item;
+        }
     }
     
     public async Task<IEnumerable<string>> GetTagsAsync(IRepository repository, string filename)

@@ -2,6 +2,7 @@ namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ForEach;
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
@@ -50,14 +51,7 @@ internal class RepositoryActionForEachV1Mapper : ActionToRepositoryActionMapperB
                 continue;
             }
 
-            IEnumerable<UserInterfaceRepositoryActionBase> items = await context.AddActionMenusAsync(action.Actions).ConfigureAwait(false);
-
-            if (items is null)
-            {
-                continue;
-            }
-
-            foreach (UserInterfaceRepositoryActionBase menuItem in items)
+            await foreach (UserInterfaceRepositoryActionBase menuItem in context.AddActionMenusAsync(action.Actions).ConfigureAwait(false))
             {
                 yield return menuItem;
             }

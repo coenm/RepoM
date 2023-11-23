@@ -1,7 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.Folder;
 
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
@@ -32,7 +31,7 @@ internal class RepositoryActionFolderV1Mapper : ActionToRepositoryActionMapperBa
             yield return new DeferredSubActionsUserInterfaceRepositoryAction(name, repository, context, action.Actions != null)
             {
                 CanExecute = true,
-                DeferredFunc = async ctx => (await ctx.AddActionMenusAsync(action.Actions).ConfigureAwait(false)).ToArray(),
+                DeferredFunc = async ctx => await ctx.AddActionMenusAsyncArray(action.Actions).ConfigureAwait(false),
             };
         }
         else
@@ -40,7 +39,7 @@ internal class RepositoryActionFolderV1Mapper : ActionToRepositoryActionMapperBa
             yield return new UserInterfaceRepositoryAction(name, repository)
             {
                 CanExecute = true,
-                SubActions = await context.AddActionMenusAsync(action.Actions),
+                SubActions = await context.AddActionMenusAsyncArray(action.Actions),
             };
         }
     }

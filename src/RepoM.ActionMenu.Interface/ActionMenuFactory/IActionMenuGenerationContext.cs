@@ -10,9 +10,24 @@ using RepoM.ActionMenu.Interface.YamlModel;
 /// </summary>
 public interface IActionMenuGenerationContext : ITemplateEvaluator, IMenuContext
 {
-    Task<IEnumerable<UserInterfaceRepositoryActionBase>> AddActionMenusAsync(List<IMenuAction>? actionActions);
+    IAsyncEnumerable<UserInterfaceRepositoryActionBase> AddActionMenusAsync(List<IMenuAction>? menus);
 
     IScope CreateGlobalScope();
 
     IActionMenuGenerationContext Clone();
+}
+
+public static class ActionMenuGenerationContextExtensions
+{
+    public static async Task<UserInterfaceRepositoryActionBase[]> AddActionMenusAsyncArray(this IActionMenuGenerationContext instance, List<IMenuAction>? menus)
+    {
+        var list = new List<UserInterfaceRepositoryActionBase>();
+
+        await foreach (UserInterfaceRepositoryActionBase item in instance.AddActionMenusAsync(menus).ConfigureAwait(false))
+        {
+            list.Add(item);
+        }
+
+        return list.ToArray();
+    }
 }
