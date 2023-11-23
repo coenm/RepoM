@@ -295,6 +295,7 @@ public class RepositoryConfigurationReader
     }
 }
 
+[Obsolete("Old style menu")]
 public class RepositorySpecificConfiguration
 {
     private readonly IFileSystem _fileSystem;

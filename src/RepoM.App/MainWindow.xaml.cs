@@ -36,7 +36,6 @@ using SourceChord.FluentWPF;
 public partial class MainWindow
 {
     private volatile bool _refreshDelayed;
-    private readonly IRepositoryActionProvider _repositoryActionProvider;
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly DefaultRepositoryMonitor? _monitor;
     private readonly ITranslationService _translationService;
@@ -52,7 +51,6 @@ public partial class MainWindow
     public MainWindow(
         IRepositoryInformationAggregator aggregator,
         IRepositoryMonitor repositoryMonitor,
-        IRepositoryActionProvider repositoryActionProvider,
         IRepositoryIgnoreStore repositoryIgnoreStore,
         IAppSettingsService appSettingsService,
         ITranslationService translationService,
@@ -70,7 +68,6 @@ public partial class MainWindow
         _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
         _newStyleActionMenuFactory = newStyleActionMenuFactory ?? throw new ArgumentNullException(nameof(newStyleActionMenuFactory));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _repositoryActionProvider = repositoryActionProvider ?? throw new ArgumentNullException(nameof(repositoryActionProvider));
         _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -364,36 +361,7 @@ public partial class MainWindow
             }
         }
     }
-    //
-    // private void InvokeActionOnCurrentRepository()
-    // {
-    //     if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
-    //     {
-    //         return;
-    //     }
-    //
-    //     if (!selectedView.WasFound)
-    //     {
-    //         return;
-    //     }
-    //
-    //     RepositoryActionBase? action;
-    //
-    //     if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftCtrl))
-    //     {
-    //         action = _repositoryActionProvider.GetSecondaryAction(selectedView.Repository);
-    //     }
-    //     else
-    //     {
-    //         action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
-    //     }
-    //
-    //     if (action != null)
-    //     {
-    //         _executor.Execute(action.Repository, action.Action);
-    //     }
-    // }
-    
+   
     private async Task InvokeActionOnCurrentRepositoryAsync()
     {
         if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
