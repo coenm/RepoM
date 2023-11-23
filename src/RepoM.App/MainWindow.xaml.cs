@@ -181,12 +181,21 @@ public partial class MainWindow
         Dispatcher.Invoke(() => ShowScanningState(isScanning));
     }
 
-    private void LstRepositories_MouseDoubleClick(object? sender, MouseButtonEventArgs e)
+    private async void LstRepositories_MouseDoubleClick(object? sender, MouseButtonEventArgs e)
     {
         // prevent doubleclicks from scrollbars and other non-data areas
-        if (e.OriginalSource is Grid or TextBlock)
+        if (e.OriginalSource is not (Grid or TextBlock))
         {
-            InvokeActionOnCurrentRepository();
+            return;
+        }
+
+        try
+        {
+            await InvokeActionOnCurrentRepositoryAsync().ConfigureAwait(false);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
         }
     }
 
@@ -277,7 +286,6 @@ public partial class MainWindow
         }
         else
         {
-            // new style
             await foreach(UserInterfaceRepositoryActionBase action in _newStyleActionMenuFactory.CreateMenuAsync(vm.Repository, newStyleFilename).ConfigureAwait(true))
             {
                 if (action is UserInterfaceSeparatorRepositoryAction)
@@ -320,7 +328,15 @@ public partial class MainWindow
     {
         if (e.Key is Key.Return or Key.Enter)
         {
-            InvokeActionOnCurrentRepository();
+            try
+            {
+                await InvokeActionOnCurrentRepositoryAsync().ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+            
             return;
         }
 
@@ -348,8 +364,37 @@ public partial class MainWindow
             }
         }
     }
+    //
+    // private void InvokeActionOnCurrentRepository()
+    // {
+    //     if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
+    //     {
+    //         return;
+    //     }
+    //
+    //     if (!selectedView.WasFound)
+    //     {
+    //         return;
+    //     }
+    //
+    //     RepositoryActionBase? action;
+    //
+    //     if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftCtrl))
+    //     {
+    //         action = _repositoryActionProvider.GetSecondaryAction(selectedView.Repository);
+    //     }
+    //     else
+    //     {
+    //         action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
+    //     }
+    //
+    //     if (action != null)
+    //     {
+    //         _executor.Execute(action.Repository, action.Action);
+    //     }
+    // }
     
-    private void InvokeActionOnCurrentRepository()
+    private async Task InvokeActionOnCurrentRepositoryAsync()
     {
         if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
         {
@@ -361,21 +406,31 @@ public partial class MainWindow
             return;
         }
 
-        RepositoryActionBase? action;
-
+        var skip = 0;
         if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftCtrl))
         {
-            action = _repositoryActionProvider.GetSecondaryAction(selectedView.Repository);
+            skip = 1;
         }
-        else
+        
+        var newStyleFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, "RepositoryActionsV2.yaml");
+
+        UserInterfaceRepositoryActionBase uiRepositoryAction = await _newStyleActionMenuFactory
+            .CreateMenuAsync(selectedView.Repository, newStyleFilename)
+            .Skip(skip)
+            .FirstAsync()
+            .ConfigureAwait(false);
+
+        if (uiRepositoryAction is not UserInterfaceRepositoryAction action)
         {
-            action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
+            return;
         }
 
-        if (action != null)
+        if (action.RepositoryCommand is NullRepositoryCommand)
         {
-            _executor.Execute(action.Repository, action.Action);
+            return;
         }
+
+        _executor.Execute(action.Repository, action.RepositoryCommand);
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
