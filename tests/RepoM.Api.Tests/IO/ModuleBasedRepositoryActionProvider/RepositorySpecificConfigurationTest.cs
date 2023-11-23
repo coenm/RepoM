@@ -165,7 +165,6 @@ public class RepositorySpecificConfigurationTest
     {
         return new RepositorySpecificConfiguration(
             _fileSystem,
-            _repositoryExpressionEvaluator,
             _actionMapperComposition,
             _translationService,
             new RepositoryConfigurationReader(

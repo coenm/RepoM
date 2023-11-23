@@ -291,20 +291,17 @@ public class RepositoryConfigurationReader
 public class RepositorySpecificConfiguration
 {
     private readonly IFileSystem _fileSystem;
-    private readonly IRepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ActionMapperComposition _actionMapper;
     private readonly ITranslationService _translationService;
     private readonly RepositoryConfigurationReader _repoConfigReader;
 
     public RepositorySpecificConfiguration(
         IFileSystem fileSystem,
-        IRepositoryExpressionEvaluator repoExpressionEvaluator,
         ActionMapperComposition actionMapper,
         ITranslationService translationService,
         RepositoryConfigurationReader repoConfigReader)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _actionMapper = actionMapper ?? throw new ArgumentNullException(nameof(actionMapper));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _repoConfigReader = repoConfigReader ?? throw new ArgumentNullException(nameof(repoConfigReader));
@@ -316,6 +313,7 @@ public class RepositorySpecificConfiguration
         List<EvaluatedVariable>? variables = null;
         List<ActionsCollection>? actions = null;
         Exception? ex = null;
+
         try
         {
             (repositoryEnvVars,  variables, actions) = _repoConfigReader.Get(repository);
