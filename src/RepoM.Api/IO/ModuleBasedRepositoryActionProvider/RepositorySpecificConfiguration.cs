@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Runtime.Caching;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
@@ -78,16 +77,15 @@ public class RepositoryConfigurationReader
         throw new ConfigurationFileNotFoundException(filename);
     }
 
-    public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions, List<TagsCollection>? tags) Get(IRepository repository)
+    public (Dictionary<string, string>? envVars, List<EvaluatedVariable>? Variables, List<ActionsCollection>? actions) Get(IRepository repository)
     {
         if (repository == null)
         {
-            return (null, null, null, null);
+            return (null, null, null);
         }
 
         var variables = new List<EvaluatedVariable>();
         var actions = new List<ActionsCollection>();
-        var tags = new List<TagsCollection>();
 
         // load default file
         RepositoryActionConfiguration? rootFile;
@@ -131,13 +129,7 @@ public class RepositoryConfigurationReader
             actions.Add(repoSpecificConfig.ActionsCollection);
         }
 
-        tags.Add(rootFile.TagsCollection);
-        if (repoSpecificConfig?.TagsCollection != null)
-        {
-            tags.Add(repoSpecificConfig.TagsCollection);
-        }
-
-        return (envVars, variables, actions, tags);
+        return (envVars, variables, actions);
     }
 
     private RepositoryActionConfiguration? LoadRepoSpecificConfig(IRepository repository, RepositoryActionConfiguration rootFile)
@@ -326,7 +318,7 @@ public class RepositorySpecificConfiguration
         Exception? ex = null;
         try
         {
-            (repositoryEnvVars,  variables, actions, _) = _repoConfigReader.Get(repository);
+            (repositoryEnvVars,  variables, actions) = _repoConfigReader.Get(repository);
         }
         catch (Exception e)
         {
@@ -370,23 +362,6 @@ public class RepositorySpecificConfiguration
         }
     }
 
-    private List<EvaluatedVariable> EvaluateVariables(IEnumerable<Variable>? vars, IRepository? repository)
-    {
-        if (vars == null || repository == null)
-        {
-            return new List<EvaluatedVariable>(0);
-        }
-
-        return vars
-               .Where(v => IsEnabled(v.Enabled, true, repository))
-               .Select(v => new EvaluatedVariable
-                   {
-                       Name = v.Name,
-                       Value = Evaluate(v.Value, repository),
-                   })
-               .ToList();
-    }
-
     private IEnumerable<RepositoryAction> CreateFailing(Exception ex, string? filename, IRepository repository)
     {
         yield return new RepositoryAction(_translationService.Translate("Could not read repository actions"), repository)
@@ -413,22 +388,5 @@ public class RepositorySpecificConfiguration
                         }),
                 };
         }
-    }
-
-    private object? Evaluate(object? input, IRepository repository)
-    {
-        if (input is string s)
-        {
-            return _repoExpressionEvaluator.EvaluateValueExpression(s, repository);
-        }
-
-        return input;
-    }
-
-    private bool IsEnabled(string? booleanExpression, bool defaultWhenNullOrEmpty, IRepository repository)
-    {
-        return string.IsNullOrWhiteSpace(booleanExpression)
-            ? defaultWhenNullOrEmpty
-            : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
     }
 }
