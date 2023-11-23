@@ -19,17 +19,6 @@ public class DefaultRepositoryActionProvider : IRepositoryActionProvider
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public RepositoryActionBase? GetPrimaryAction(Repository repository)
-    {
-        return GetContextMenuActions(repository).FirstOrDefault();
-    }
-
-    public RepositoryActionBase? GetSecondaryAction(Repository repository)
-    {
-        RepositoryActionBase[] actions = GetContextMenuActions(repository).Take(2).ToArray();
-        return actions.Length > 1 ? actions[1] : null;
-    }
-
     public IEnumerable<RepositoryActionBase> GetContextMenuActions(Repository repository)
     {
         return GetContextMenuActionsInternal(repository);

@@ -9,10 +9,6 @@ using RepoM.Api.RepositoryActions;
 
 public interface IRepositoryActionProvider
 {
-    RepositoryActionBase? GetPrimaryAction(Repository repository);
-
-    RepositoryActionBase? GetSecondaryAction(Repository repository);
-
     IEnumerable<RepositoryActionBase> GetContextMenuActions(Repository repository);
 }
 
@@ -37,16 +33,6 @@ public sealed class LoggingRepositoryActionProviderDecorator : IRepositoryAction
         }
     }
 
-    public RepositoryActionBase? GetPrimaryAction(Repository repository)
-    {
-        return _provider.GetPrimaryAction(repository);
-    }
-
-    public RepositoryActionBase? GetSecondaryAction(Repository repository)
-    {
-        return _provider.GetSecondaryAction(repository);
-    }
-
     public IEnumerable<RepositoryActionBase> GetContextMenuActions(Repository repository)
     {
         return _provider.GetContextMenuActions(repository);
@@ -61,16 +47,6 @@ public sealed class LoggingRepositoryActionProviderDecorator : IRepositoryAction
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
-
-        public RepositoryActionBase? GetPrimaryAction(Repository repository)
-        {
-            return _provider.GetPrimaryAction(repository);
-        }
-
-        public RepositoryActionBase? GetSecondaryAction(Repository repository)
-        {
-            return _provider.GetSecondaryAction(repository);
         }
 
         public IEnumerable<RepositoryActionBase> GetContextMenuActions(Repository repository)
