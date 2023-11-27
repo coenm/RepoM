@@ -33,11 +33,11 @@ internal static class ActionMapperCompositionFactory
                 new ActionJustTextV1Mapper(expressionEvaluator),
             };
 
-        return new ActionMapperComposition(mappers, expressionEvaluator);
+        return new ActionMapperComposition(mappers);
     }
 
     public static ActionMapperComposition CreateSmall(IRepositoryExpressionEvaluator expressionEvaluator, IActionToRepositoryActionMapper actionToRepositoryActionMapper)
     {
-        return new ActionMapperComposition(new[] { actionToRepositoryActionMapper, }, expressionEvaluator);
+        return new ActionMapperComposition(new[] { actionToRepositoryActionMapper, });
     }
 }

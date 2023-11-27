@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using RepoM.Api.Git;
 using RepoM.Api.RepositoryActions;
-using RepoM.Core.Plugin.Expressions;
 using RepositoryAction = RepositoryActions.RepositoryAction;
 
 [Obsolete("Old action menu")]
@@ -13,7 +12,7 @@ public class ActionMapperComposition
 {
     private readonly IActionToRepositoryActionMapper[] _deserializers;
 
-    public ActionMapperComposition(IEnumerable<IActionToRepositoryActionMapper> deserializers, IRepositoryExpressionEvaluator repoExpressionEvaluator)
+    public ActionMapperComposition(IEnumerable<IActionToRepositoryActionMapper> deserializers)
     {
         _deserializers = deserializers.ToArray();
     }

@@ -34,7 +34,7 @@ public class ActionAzureDevOpsGetPullRequestsV1MapperTests
 
         _action = new RepositoryActionAzureDevOpsGetPullRequestsV1();
         _repository = new Repository("");
-        _composition = new ActionMapperComposition(Array.Empty<IActionToRepositoryActionMapper>(), _evaluator);
+        _composition = new ActionMapperComposition(Array.Empty<IActionToRepositoryActionMapper>());
 
         // default test behavior.
         _action.Active = "dummy-Active-property";

@@ -38,7 +38,7 @@ public class ActionHeidiDatabasesV1MapperTests
         _verifySettings = new VerifySettings();
         _verifySettings.UseDirectory("Verified");
 
-        _actionMapperComposition = new ActionMapperComposition(new List<IActionToRepositoryActionMapper>(), A.Dummy<IRepositoryExpressionEvaluator>());
+        _actionMapperComposition = new ActionMapperComposition(new List<IActionToRepositoryActionMapper>());
         _repository = new Repository("dummy");
         _service = A.Fake<IHeidiConfigurationService>();
         _expressionEvaluator = A.Fake<IRepositoryExpressionEvaluator>();

@@ -1,7 +1,9 @@
 namespace RepoM.Core.Plugin.Expressions;
 
+using System;
 using RepoM.Core.Plugin.Repository;
 
+[Obsolete("Old menu")]
 public interface IRepositoryExpressionEvaluator
 {
     string EvaluateStringExpression(string value, IRepository? repository);
