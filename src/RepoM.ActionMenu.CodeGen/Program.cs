@@ -34,80 +34,79 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
             AttributeData? attr = Program.FindAttribute<ActionMenuContextMemberAttribute>(member);
             if (attr == null)
             {
-                // normal member.
+                // normal member -> skip and continue.
+                continue;
             }
-            else
-            {
-                var actionMenuContextMemberAttribute = new ActionMenuContextMemberAttribute((attr.ConstructorArguments[0].Value as string)!);
-                // action menu context member.
 
-                var className = member.ContainingSymbol.Name;
+            var actionMenuContextMemberAttribute = new ActionMenuContextMemberAttribute((attr.ConstructorArguments[0].Value as string)!);
+            // action menu context member.
+
+            var className = member.ContainingSymbol.Name;
                 
-                var memberDescriptor = new ActionMenuContextMemberDescriptor
-                    {
-                        Name = actionMenuContextMemberAttribute.Alias,
-                        CSharpName = member.Name,
-                        //ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;
-                        IsCommand = false,
-                        XmlId = member.GetDocumentationCommentId() ?? string.Empty,
-                    };
-
-                if (member is IMethodSymbol method)
+            var memberDescriptor = new ActionMenuContextMemberDescriptor
                 {
-                    memberDescriptor.ReturnType = method.ReturnType.ToDisplayString();
-                    memberDescriptor.IsCommand = method.ReturnsVoid;
+                    Name = actionMenuContextMemberAttribute.Alias,
+                    CSharpName = member.Name,
+                    //ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;
+                    IsCommand = false,
+                    XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+                };
 
-                    memberDescriptor.CSharpName = method.Name;
+            if (member is IMethodSymbol method)
+            {
+                memberDescriptor.ReturnType = method.ReturnType.ToDisplayString();
+                memberDescriptor.IsCommand = method.ReturnsVoid;
 
-                    memberDescriptor.IsAction = method.ReturnsVoid;
-                    memberDescriptor.IsFunc = !memberDescriptor.IsAction;
+                memberDescriptor.CSharpName = method.Name;
 
-                    var builder = new StringBuilder();
-                    builder.Append(memberDescriptor.IsAction ? "Action" : "Func");
+                memberDescriptor.IsAction = method.ReturnsVoid;
+                memberDescriptor.IsFunc = !memberDescriptor.IsAction;
 
-                    if (method.Parameters.Length > 0 || memberDescriptor.IsFunc)
-                    {
-                        builder.Append('<');
-                    }
+                var builder = new StringBuilder();
+                builder.Append(memberDescriptor.IsAction ? "Action" : "Func");
 
-                    for (var i = 0; i < method.Parameters.Length; i++)
-                    {
-                        IParameterSymbol parameter = method.Parameters[i];
-                        if (i > 0)
-                        {
-                            builder.Append(", ");
-                        }
-
-                        builder.Append(parameter.Type.ToDisplayString());
-                    }
-
-                    if (memberDescriptor.IsFunc)
-                    {
-                        if (method.Parameters.Length > 0)
-                        {
-                            builder.Append(", ");
-                        }
-                        builder.Append(method.ReturnType.ToDisplayString());
-                    }
-
-                    if (method.Parameters.Length > 0 || memberDescriptor.IsFunc)
-                    {
-                        builder.Append('>');
-                    }
-
-                    memberDescriptor.Cast = $"({builder})";
+                if (method.Parameters.Length > 0 || memberDescriptor.IsFunc)
+                {
+                    builder.Append('<');
                 }
 
-                if (member is IPropertySymbol property) // or field IFieldSymbol
+                for (var i = 0; i < method.Parameters.Length; i++)
                 {
-                    memberDescriptor.ReturnType = property.Type.ToDisplayString();
-                    memberDescriptor.IsConst = true;
+                    IParameterSymbol parameter = method.Parameters[i];
+                    if (i > 0)
+                    {
+                        builder.Append(", ");
+                    }
+
+                    builder.Append(parameter.Type.ToDisplayString());
                 }
 
-                descriptor.Members.Add(memberDescriptor);
+                if (memberDescriptor.IsFunc)
+                {
+                    if (method.Parameters.Length > 0)
+                    {
+                        builder.Append(", ");
+                    }
+                    builder.Append(method.ReturnType.ToDisplayString());
+                }
 
-                XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+                if (method.Parameters.Length > 0 || memberDescriptor.IsFunc)
+                {
+                    builder.Append('>');
+                }
+
+                memberDescriptor.Cast = $"({builder})";
             }
+
+            if (member is IPropertySymbol property) // or field IFieldSymbol
+            {
+                memberDescriptor.ReturnType = property.Type.ToDisplayString();
+                memberDescriptor.IsConst = true;
+            }
+
+            descriptor.Members.Add(memberDescriptor);
+
+            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 
@@ -141,7 +140,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             SymbolDisplayFormat symbolDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining).WithMiscellaneousOptions(SymbolDisplayMiscellaneousOptions.None);
 
-             void Coen(ITypeSymbol symbol)
+            void Coen(ITypeSymbol symbol)
             {
                 var Name = symbol.ToDisplayString(symbolDisplayFormat);
                 var IsEnumerable = symbol.AllInterfaces.Any(x => x.ToString() == "System.Collections.IEnumerable");
@@ -253,34 +252,6 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
         }
     }
 }
-
-public class DocsClassVisitor : IClassDescriptorVisitor
-{
-    private readonly ITypeSymbol _typeSymbol;
-    private readonly IDictionary<string, string> _files;
-
-    public DocsClassVisitor(ITypeSymbol typeSymbol, IDictionary<string, string> files)
-    {
-        _typeSymbol = typeSymbol;
-        _files = files;
-    }
-
-    public void Visit(ActionMenuContextClassDescriptor descriptor)
-    {
-        XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
-    }
-
-    public void Visit(ActionMenuClassDescriptor descriptor)
-    {
-        XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
-    }
-
-    public void Visit(ClassDescriptor descriptor)
-    {
-        XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
-    }
-}
-
 
 public class Program
 {
