@@ -41,5 +41,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.ActionMenu.CodeGen\RepoM.ActionMenu.CodeGen.csproj" />
     <ProjectReference Include="..\..\src\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
+    <ProjectReference Include="..\RepoM.ActionMenu.CodeGenDummyLibrary\RepoM.ActionMenu.CodeGenDummyLibrary.csproj" />
   </ItemGroup>
 </Project>
