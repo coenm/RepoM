@@ -1,7 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\RepoM.ActionMenu.Interface\RepoM.ActionMenu.Interface.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.Api\RepoM.Api.csproj" />
+  </ItemGroup>
 
 </Project>
