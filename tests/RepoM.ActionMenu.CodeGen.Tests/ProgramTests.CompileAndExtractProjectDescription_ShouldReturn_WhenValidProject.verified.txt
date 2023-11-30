@@ -1,0 +1,165 @@
+﻿{
+  AssemblyName: RepoM.ActionMenu.CodeGenDummyLibrary,
+  ProjectName: RepoM.ActionMenu.CodeGenDummyLibrary,
+  ActionMenus: [
+    {
+      ActionMenuProperties: [
+        {
+          CSharpName: Type,
+          ReturnType: string,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Type,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false
+        },
+        {
+          CSharpName: Name,
+          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Name,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false,
+          Description:
+Menu item title. When not provided, a title will be generated.
+    This property will be used instead of the Name property.
+        },
+        {
+          CSharpName: ProjectId,
+          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ProjectId,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false,
+          Description: The azure devops project id.
+        },
+        {
+          CSharpName: PrTitle,
+          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.PrTitle,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false,
+          Description:
+Pull Request title. When not provided, the title will be defined based on the branch name.
+    Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch`,
+          Examples: {
+            Items: [
+              {
+                TypeName: Text,
+                Content: `{{ repository.branch | string.replace "feature/" "" | string.truncate 16 "..." }}`
+              }
+            ]
+          }
+        },
+        {
+          CSharpName: ToBranch,
+          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ToBranch,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false,
+          Description: Name of the branch the pull request should be merged into. For instance `develop`, or `main`.
+        },
+        {
+          CSharpName: ReviewerIds,
+          ReturnType: System.Collections.Generic.List<RepoM.ActionMenu.Interface.YamlModel.Templating.Text>,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ReviewerIds,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false,
+          Description: List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
+        },
+        {
+          CSharpName: DraftPr,
+          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.DraftPr,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false,
+          Description: Boolean specifying if th PR should be marked as draft.
+        },
+        {
+          CSharpName: IncludeWorkItems,
+          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.IncludeWorkItems,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false,
+          Description: Boolean specifying if workitems should be included in the PR. RepoM will try to resolve the workitems by looping through the commit messages.
+        },
+        {
+          CSharpName: OpenInBrowser,
+          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.OpenInBrowser,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false,
+          Description: Boolean specifying if the Pull request should be opened in the browser after creation.
+        },
+        {
+          CSharpName: Context,
+          ReturnType: RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context?,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Context,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false
+        },
+        {
+          CSharpName: Active,
+          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Active,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false
+        },
+        {
+          CSharpName: AutoComplete,
+          ReturnType: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1?,
+          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.AutoComplete,
+          IsCommand: false,
+          IsAction: false,
+          IsFunc: false,
+          IsConst: false,
+          Description: Auto complete options. Please take a look at the same for more information
+        }
+      ],
+      RepositoryActionName: dummy-abc@1,
+      Name: dummy-abc@1,
+      ClassName: RepositoryActionDummyAbcV1,
+      Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
+      Description: Action menu item to create a pull request in Azure Devops.
+    }
+  ],
+  Types: [
+    {
+      ClassName: AutoCompleteOptionsV1,
+      Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
+      Description: Auto complete options.
+    },
+    {
+      ClassName: MergeStrategyV1,
+      Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus
+    },
+    {
+      ClassName: Class1,
+      Namespace: RepoM.ActionMenu.CodeGenDummyLibrary
+    },
+    {
+      ClassName: ThisAssembly,
+      Namespace: <global namespace>
+    }
+  ],
+  IsPlugin: false,
+  DebuggerDisplay: RepoM.ActionMenu.CodeGenDummyLibrary - 0
+}
