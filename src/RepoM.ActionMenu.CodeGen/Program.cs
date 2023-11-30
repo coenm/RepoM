@@ -56,7 +56,6 @@ public static class Program
 
         foreach (var project in projects)
         {
-
             var pathToSolution = Path.Combine(srcFolder, project, $"{project}.csproj");
             CheckFile(pathToSolution);
 
