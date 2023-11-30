@@ -642,7 +642,7 @@ public partial class MainWindow
         {
             // this is a template submenu item to enable submenus under the current
             // menu item. this item gets removed when the real subitems are created
-            item.Items.Add(string.Empty);
+            item.Items.Add("Loading..");
 
             async void SelfDetachingEventHandler(object _, RoutedEventArgs evtArgs)
             {
@@ -680,31 +680,43 @@ public partial class MainWindow
         }
         else if (repositoryAction.SubActions != null)
         {
-            foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
+            // this is a template submenu item to enable submenus under the current
+            // menu item. this item gets removed when the real subitems are created
+            item.Items.Add("Loading..");
+            
+            async void SelfDetachingEventHandler1(object _, RoutedEventArgs evtArgs)
             {
-                Control? controlItem = await CreateMenuItemNewStyleAsync(subAction).ConfigureAwait(true);
-                if (controlItem == null)
+                item.SubmenuOpened -= SelfDetachingEventHandler1;
+                item.Items.Clear();
+
+                foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
                 {
-                    continue;
+                    Control? controlItem = await CreateMenuItemNewStyleAsync(subAction).ConfigureAwait(true);
+                    if (controlItem == null)
+                    {
+                        continue;
+                    }
+
+                    if (controlItem is not Separator)
+                    {
+                        item.Items.Add(controlItem);
+                        continue;
+                    }
+
+                    if (item.Items.Count > 0 && item.Items[^1] is not Separator)
+                    {
+                        item.Items.Add(controlItem);
+                    }
                 }
 
-                if (controlItem is not Separator)
+                var count = item.Items.Count;
+                if (count > 0 && item.Items[^1] is Separator)
                 {
-                    item.Items.Add(controlItem);
-                    continue;
-                }
-
-                if (item.Items.Count > 0 && item.Items[^1] is not Separator)
-                {
-                    item.Items.Add(controlItem);
+                    item.Items.RemoveAt(count - 1);
                 }
             }
 
-            var count = item.Items.Count;
-            if (count > 0 && item.Items[^1] is Separator)
-            {
-                item.Items.RemoveAt(count - 1);
-            }
+            item.SubmenuOpened += SelfDetachingEventHandler1;
         }
 
         return item;
