@@ -140,7 +140,7 @@ public static class Program
 
     public static async Task<(Compilation compilation, ProjectDescriptor projectDescriptor)> CompileAndExtractProjectDescription(string pathToSolution, string project, IDictionary<string, string> files)
     {
-        Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project);
+        Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project).ConfigureAwait(false);
 
         var projectDescriptor = new ProjectDescriptor
             {
