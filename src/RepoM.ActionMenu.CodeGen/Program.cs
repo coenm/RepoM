@@ -56,29 +56,14 @@ public static class Program
 
         foreach (var project in projects)
         {
+
             var pathToSolution = Path.Combine(srcFolder, project, $"{project}.csproj");
             CheckFile(pathToSolution);
-       
-            Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project);
 
-            var projectDescriptor = new ProjectDescriptor
-                {
-                    AssemblyName = compilation.AssemblyName ?? throw new Exception("Could not determine AssemblyName"),
-                    ProjectName = project,
-                };
-
-            AttributeData? assemblyAttribute = compilation.Assembly.GetAttributes().SingleOrDefault(x => x.AttributeClass?.Name == nameof(PackageAttribute));
-            if (assemblyAttribute != null)
-            {
-                var pa = new PackageAttribute(
-                    (assemblyAttribute.ConstructorArguments[0].Value as string)!,
-                    (assemblyAttribute.ConstructorArguments[1].Value as string)!);
-                projectDescriptor.SetPackageInformation(pa);
-            }
-
+            (Compilation compilation, ProjectDescriptor projectDescriptor) = await CompileAndExtractProjectDescription(pathToSolution, project, files);
+            
             processedProjects.Add(project, projectDescriptor);
 
-            ProcessProject(compilation, projectDescriptor, files);
             // continue;
             //---
             
@@ -152,6 +137,30 @@ public static class Program
             //     await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
             // }
         }
+    }
+
+    public static async Task<(Compilation compilation, ProjectDescriptor projectDescriptor)> CompileAndExtractProjectDescription(string pathToSolution, string project, IDictionary<string, string> files)
+    {
+        Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project);
+
+        var projectDescriptor = new ProjectDescriptor
+            {
+                AssemblyName = compilation.AssemblyName ?? throw new Exception("Could not determine AssemblyName"),
+                ProjectName = project,
+            };
+
+        AttributeData? assemblyAttribute = compilation.Assembly.GetAttributes().SingleOrDefault(x => x.AttributeClass?.Name == nameof(PackageAttribute));
+        if (assemblyAttribute != null)
+        {
+            var pa = new PackageAttribute(
+                (assemblyAttribute.ConstructorArguments[0].Value as string)!,
+                (assemblyAttribute.ConstructorArguments[1].Value as string)!);
+            projectDescriptor.SetPackageInformation(pa);
+        }
+
+        ProcessProject(compilation, projectDescriptor, files);
+
+        return (compilation, projectDescriptor);
     }
 
     private static void ProcessProject(Compilation compilation, ProjectDescriptor projectDescriptor, IDictionary<string, string> files)

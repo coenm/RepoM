@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Broslyn;
 using Microsoft.CodeAnalysis;
 
-internal static class CompilationHelper
+public static class CompilationHelper
 {
     public static IEnumerable<ITypeSymbol> GetTypes(this Compilation compilation)
     {
