@@ -46,6 +46,8 @@ public class ActionMenuMemberDescriptor : MemberDescriptor
     public bool IsTemplate { get; set; } = false;
 
     public bool IsPredicate { get; set; } = false;
+
+    public object DefaultValue { get; set; } = null;
 }
 
 public class ActionMenuContextMemberDescriptor : MemberDescriptor

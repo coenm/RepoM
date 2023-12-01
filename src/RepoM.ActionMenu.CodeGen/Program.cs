@@ -171,8 +171,8 @@ public static class Program
 
             ClassDescriptor classDescriptor;
 
-            AttributeData? actionMenuContextAttribute = FindAttribute<ActionMenuContextAttribute>(typeSymbol);
-            AttributeData? repositoryActionAttribute = FindAttribute<RepositoryActionAttribute>(typeSymbol);
+            AttributeData? actionMenuContextAttribute = typeSymbol.FindAttribute<ActionMenuContextAttribute>();
+            AttributeData? repositoryActionAttribute = typeSymbol.FindAttribute<RepositoryActionAttribute>();
             
             if (actionMenuContextAttribute != null)
             {
@@ -232,7 +232,7 @@ public static class Program
                 continue;
             }
 
-            var attribute = FindAttribute<RepositoryActionAttribute>(typeSymbol);
+            var attribute = typeSymbol.FindAttribute<RepositoryActionAttribute>();
             if (attribute == null)
             {
                 throw new Exception("A type should have a RepositoryActionAttribute.");
@@ -261,7 +261,7 @@ public static class Program
     {
         foreach (ITypeSymbol typeSymbol in compilation.GetTypes())
         {
-            AttributeData? moduleAttribute = FindAttribute<ActionMenuContextAttribute>(typeSymbol);
+            AttributeData? moduleAttribute = typeSymbol.FindAttribute<ActionMenuContextAttribute>();
             KalkModuleToGenerate? moduleToGenerate = null;
             if (moduleAttribute != null)
             {
@@ -270,7 +270,7 @@ public static class Program
 
             foreach (ISymbol member in typeSymbol.GetMembers())
             {
-                AttributeData? attr = FindAttribute<ActionMenuContextMemberAttribute>(member);
+                AttributeData? attr = member.FindAttribute<ActionMenuContextMemberAttribute>();
                 if (attr == null)
                 {
                     continue;
@@ -415,7 +415,7 @@ public static class Program
 
             continue;
 
-            AttributeData? attr = FindAttribute<ActionMenuContextMemberAttribute>(propertyMember);
+            AttributeData? attr = propertyMember.FindAttribute<ActionMenuContextMemberAttribute>();
             if (attr == null)
             {
                 continue;
@@ -501,10 +501,7 @@ public static class Program
         XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate, files);
     }
     
-    public static AttributeData? FindAttribute<T>(ISymbol symbol)
-    {
-        return symbol.GetAttributes().FirstOrDefault(x => x.AttributeClass!.Name == typeof(T).Name);
-    }
+
 
     private static void GetOrCreateModule(
         ITypeSymbol typeSymbol,

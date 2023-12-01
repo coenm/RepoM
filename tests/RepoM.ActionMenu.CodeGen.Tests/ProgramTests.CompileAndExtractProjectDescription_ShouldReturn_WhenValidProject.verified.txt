@@ -18,6 +18,7 @@
         {
           IsTemplate: true,
           IsPredicate: false,
+          DefaultValue: Create Pull Request,
           CSharpName: Name,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Name,
@@ -90,6 +91,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
         {
           IsTemplate: false,
           IsPredicate: true,
+          DefaultValue: false,
           CSharpName: DraftPr,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.DraftPr,
@@ -102,6 +104,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
         {
           IsTemplate: false,
           IsPredicate: true,
+          DefaultValue: true,
           CSharpName: IncludeWorkItems,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.IncludeWorkItems,
@@ -114,6 +117,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
         {
           IsTemplate: false,
           IsPredicate: true,
+          DefaultValue: false,
           CSharpName: OpenInBrowser,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.OpenInBrowser,
@@ -137,6 +141,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
         {
           IsTemplate: false,
           IsPredicate: true,
+          DefaultValue: true,
           CSharpName: Active,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Active,

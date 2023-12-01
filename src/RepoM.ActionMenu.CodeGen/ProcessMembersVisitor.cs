@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Models.New;
 using RepoM.ActionMenu.Interface.Attributes;
+using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 public class ProcessMembersVisitor : IClassDescriptorVisitor
 {
@@ -22,7 +23,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
     {
         foreach (ISymbol member in _typeSymbol.GetMembers())
         {
-            AttributeData? attr = Program.FindAttribute<ActionMenuContextMemberAttribute>(member);
+            AttributeData? attr = member.FindAttribute<ActionMenuContextMemberAttribute>();
             if (attr == null)
             {
                 // normal member -> skip and continue.
@@ -149,23 +150,28 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                     XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                 };
 
-            if (propertyMember.Type.ToDisplayString().Equals(typeof(Interface.YamlModel.Templating.Text).FullName))
+            if (propertyMember.Type.ToDisplayString().Equals(typeof(Text).FullName))
             {
                 memberDescriptor.IsTemplate = true;
-            }
 
-            if (propertyMember.Type.ToDisplayString().Equals(typeof(Interface.YamlModel.Templating.Predicate).FullName))
+                AttributeData? attr = propertyMember.FindAttribute<TextAttribute>();
+                if (attr?.ConstructorArguments.Length == 1)
+                {
+                    var textAttribute = new TextAttribute((attr.ConstructorArguments[0].Value as string)!);
+                    memberDescriptor.DefaultValue = textAttribute.DefaultValue;
+                }
+            }
+            else if (propertyMember.Type.ToDisplayString().Equals(typeof(Predicate).FullName))
             {
                 memberDescriptor.IsPredicate = true;
-            }
 
-            // AttributeData? attribute = Program.FindAttribute<RepositoryActionAttribute>(propertyMember);
-            //
-            // if (attribute == null)
-            // {
-            //     // normal member.
-            //     continue;
-            // }
+                AttributeData? attr = propertyMember.FindAttribute<PredicateAttribute>();
+                if (attr != null)
+                {
+                    var predicateAttribute = new PredicateAttribute((bool)attr.ConstructorArguments[0].Value!);
+                    memberDescriptor.DefaultValue = predicateAttribute.DefaultValue;
+                }
+            }
 
             // if (!typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
             // {
