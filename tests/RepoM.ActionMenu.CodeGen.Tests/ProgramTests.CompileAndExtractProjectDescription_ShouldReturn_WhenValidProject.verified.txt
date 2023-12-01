@@ -152,10 +152,6 @@ Pull Request title. When not provided, the title will be defined based on the br
       Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus
     },
     {
-      ClassName: Class1,
-      Namespace: RepoM.ActionMenu.CodeGenDummyLibrary
-    },
-    {
       ClassName: ThisAssembly,
       Namespace: <global namespace>
     }
