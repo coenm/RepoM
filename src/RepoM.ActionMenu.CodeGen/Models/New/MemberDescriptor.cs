@@ -18,8 +18,7 @@ public class MemberDescriptor : IXmlDocsExtended
     public string ReturnType { get; set; }
 
     public string XmlId { get; set; }
-
-
+    
     public bool IsCommand { get; set; }
 
     public bool IsAction { get; set; }
@@ -43,7 +42,10 @@ public class MemberDescriptor : IXmlDocsExtended
 public class ActionMenuMemberDescriptor : MemberDescriptor
 {
     // public RepositoryActionAttribute RepositoryActionAttribute { get; init; }
-    
+
+    public bool IsTemplate { get; set; } = false;
+
+    public bool IsPredicate { get; set; } = false;
 }
 
 public class ActionMenuContextMemberDescriptor : MemberDescriptor

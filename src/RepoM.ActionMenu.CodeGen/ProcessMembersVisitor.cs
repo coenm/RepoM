@@ -149,7 +149,16 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                     XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                 };
 
-            //
+            if (propertyMember.Type.ToDisplayString().Equals(typeof(Interface.YamlModel.Templating.Text).FullName))
+            {
+                memberDescriptor.IsTemplate = true;
+            }
+
+            if (propertyMember.Type.ToDisplayString().Equals(typeof(Interface.YamlModel.Templating.Predicate).FullName))
+            {
+                memberDescriptor.IsPredicate = true;
+            }
+
             // AttributeData? attribute = Program.FindAttribute<RepositoryActionAttribute>(propertyMember);
             //
             // if (attribute == null)
@@ -165,7 +174,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             // todo lots of possible attributes to process
 
-            
+
             descriptor.ActionMenuProperties.Add(memberDescriptor);
 
             XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);

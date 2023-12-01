@@ -5,6 +5,8 @@
     {
       ActionMenuProperties: [
         {
+          IsTemplate: false,
+          IsPredicate: false,
           CSharpName: Type,
           ReturnType: string,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Type,
@@ -14,6 +16,8 @@
           IsConst: false
         },
         {
+          IsTemplate: true,
+          IsPredicate: false,
           CSharpName: Name,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Name,
@@ -26,6 +30,8 @@ Menu item title. When not provided, a title will be generated.
     This property will be used instead of the Name property.
         },
         {
+          IsTemplate: true,
+          IsPredicate: false,
           CSharpName: ProjectId,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ProjectId,
@@ -36,6 +42,8 @@ Menu item title. When not provided, a title will be generated.
           Description: The azure devops project id.
         },
         {
+          IsTemplate: true,
+          IsPredicate: false,
           CSharpName: PrTitle,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.PrTitle,
@@ -56,6 +64,8 @@ Pull Request title. When not provided, the title will be defined based on the br
           }
         },
         {
+          IsTemplate: true,
+          IsPredicate: false,
           CSharpName: ToBranch,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ToBranch,
@@ -66,6 +76,8 @@ Pull Request title. When not provided, the title will be defined based on the br
           Description: Name of the branch the pull request should be merged into. For instance `develop`, or `main`.
         },
         {
+          IsTemplate: false,
+          IsPredicate: false,
           CSharpName: ReviewerIds,
           ReturnType: System.Collections.Generic.List<RepoM.ActionMenu.Interface.YamlModel.Templating.Text>,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ReviewerIds,
@@ -76,6 +88,8 @@ Pull Request title. When not provided, the title will be defined based on the br
           Description: List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
         },
         {
+          IsTemplate: false,
+          IsPredicate: true,
           CSharpName: DraftPr,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.DraftPr,
@@ -86,6 +100,8 @@ Pull Request title. When not provided, the title will be defined based on the br
           Description: Boolean specifying if th PR should be marked as draft.
         },
         {
+          IsTemplate: false,
+          IsPredicate: true,
           CSharpName: IncludeWorkItems,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.IncludeWorkItems,
@@ -96,6 +112,8 @@ Pull Request title. When not provided, the title will be defined based on the br
           Description: Boolean specifying if workitems should be included in the PR. RepoM will try to resolve the workitems by looping through the commit messages.
         },
         {
+          IsTemplate: false,
+          IsPredicate: true,
           CSharpName: OpenInBrowser,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.OpenInBrowser,
@@ -106,6 +124,8 @@ Pull Request title. When not provided, the title will be defined based on the br
           Description: Boolean specifying if the Pull request should be opened in the browser after creation.
         },
         {
+          IsTemplate: false,
+          IsPredicate: false,
           CSharpName: Context,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context?,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Context,
@@ -115,6 +135,8 @@ Pull Request title. When not provided, the title will be defined based on the br
           IsConst: false
         },
         {
+          IsTemplate: false,
+          IsPredicate: true,
           CSharpName: Active,
           ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Active,
@@ -124,6 +146,8 @@ Pull Request title. When not provided, the title will be defined based on the br
           IsConst: false
         },
         {
+          IsTemplate: false,
+          IsPredicate: false,
           CSharpName: AutoComplete,
           ReturnType: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1?,
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.AutoComplete,
