@@ -36,7 +36,7 @@ internal static partial class XmlDocsParser
                 var text = GetCleanedString(element).Trim();
                 if (element.Name == "summary")
                 {
-                    desc.Description = text;
+                    desc.Description = SanitizeMultilineText(text);
                 }
                 else if (element.Name == "param")
                 {
@@ -88,6 +88,11 @@ internal static partial class XmlDocsParser
         {
             throw new InvalidOperationException($"Error while processing `{symbol}` with XML doc `{xmlStr}", ex);
         }
+    }
+
+    private static string SanitizeMultilineText(string text)
+    {
+        return text.Replace("\n    ", "\n");
     }
 
     public static ExamplesDescriptor GetExampleData(XNode node, IDictionary<string, string> files)
@@ -199,7 +204,9 @@ internal static partial class XmlDocsParser
     {
         if (node.NodeType == XmlNodeType.Text)
         {
-            return node.ToString();
+            // return node.ToString();
+            var s = node.ToString();
+            return HttpUtility.HtmlDecode(s);
         }
 
         var element = (XElement)node;
