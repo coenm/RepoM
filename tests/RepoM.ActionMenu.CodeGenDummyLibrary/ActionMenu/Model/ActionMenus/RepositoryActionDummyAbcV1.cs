@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
 /// Action menu item to create a pull request in Azure Devops.
@@ -58,7 +57,6 @@ internal sealed class RepositoryActionDummyAbcV1 : IMenuAction, IContext
     /// <summary>
     /// List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
     /// </summary>
-    [PropertyType(typeof(List<string>))] 
     public List<Text> ReviewerIds { get; set; } = new();
 
     /// <summary>

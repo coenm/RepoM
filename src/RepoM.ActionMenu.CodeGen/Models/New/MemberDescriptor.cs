@@ -1,6 +1,7 @@
 namespace RepoM.ActionMenu.CodeGen.Models.New;
 
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.Interface.Attributes;
 
 /// <summary>
@@ -47,7 +48,13 @@ public class ActionMenuMemberDescriptor : MemberDescriptor
 
     public bool IsPredicate { get; set; } = false;
 
+    public bool IsContext { get; set; } = false;
+
     public object DefaultValue { get; set; } = null;
+
+    public bool IsReturnEnumerable { get; set; } = false;
+
+    public string? RefType { get; set; } = null;
 }
 
 public class ActionMenuContextMemberDescriptor : MemberDescriptor

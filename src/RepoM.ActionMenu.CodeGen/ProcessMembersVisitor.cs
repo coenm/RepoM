@@ -1,11 +1,14 @@
 namespace RepoM.ActionMenu.CodeGen;
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Models.New;
 using RepoM.ActionMenu.Interface.Attributes;
+using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 public class ProcessMembersVisitor : IClassDescriptorVisitor
@@ -104,6 +107,12 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
     public void Visit(ActionMenuClassDescriptor descriptor)
     {
+        if (descriptor.Name == "AutoCompleteOptionsV1")
+        {
+            var x = descriptor.Name;
+        }
+
+
         foreach (ISymbol member in _typeSymbol.GetMembers())
         {
             if (member is not IPropertySymbol propertyMember)
@@ -142,15 +151,62 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                     var FirstTypeArgumentName = namedSymbol.TypeArguments.FirstOrDefault()?.ToDisplayString(symbolDisplayFormat);
                 }
             }
+
+            static bool IsSystemType(IPropertySymbol symbol)
+            {
+                var typeFullName = symbol.Type.ToString();
+                return typeFullName?.StartsWith("System.") ?? false;
+            }
+
+            // single type in collection (array, list, ..) (no tuple or whatsoever)
+            static bool IsCollection(IPropertySymbol symbol, [NotNullWhen(true)] out ITypeSymbol? genericType)
+            {
+                if (symbol.Type is IArrayTypeSymbol ats)
+                {
+                    genericType = ats.ElementType;
+                    return true;
+                }
+
+                var originalDefinitionDisplayName = symbol.Type.OriginalDefinition.ToDisplayString();
+
+                var displayString = symbol.Type.ToDisplayString();
+
+                // todo extend.
+                string[] collectionTypes =
+                    {
+                        "System.Collections.Generic.List<T>",
+                        "System.Collections.Generic.IList<T>",
+                        "System.Collections.Generic.IEnumerable<T>",
+                    };
+
+                if (collectionTypes.Contains(originalDefinitionDisplayName))
+                {
+                    // must be singe due to <T>
+                    genericType = ((INamedTypeSymbol)symbol.Type).TypeArguments.Single();
+                    return true;
+                }
+                
+                genericType = null;
+                return false;
+            }
+            
+
+            var propertyDisplayName = propertyMember.Type.ToDisplayString();
+
+            bool IsTypeOrNullableType<T>()
+            {
+                var typeFullName = typeof(T).FullName ?? string.Empty;
+                return propertyDisplayName.Equals(typeFullName) || propertyDisplayName.Equals(typeFullName + "?");
+            }
             
             var memberDescriptor = new ActionMenuMemberDescriptor
                 {
                     CSharpName = propertyMember.Name,
-                    ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;
+                    ReturnType = propertyDisplayName, // (member as IPropertySymbol)?.Type;
                     XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                 };
 
-            if (propertyMember.Type.ToDisplayString().Equals(typeof(Text).FullName))
+            if (IsTypeOrNullableType<Text>())
             {
                 memberDescriptor.IsTemplate = true;
 
@@ -161,7 +217,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                     memberDescriptor.DefaultValue = textAttribute.DefaultValue;
                 }
             }
-            else if (propertyMember.Type.ToDisplayString().Equals(typeof(Predicate).FullName))
+            else if (IsTypeOrNullableType<Predicate>())
             {
                 memberDescriptor.IsPredicate = true;
 
@@ -172,14 +228,32 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                     memberDescriptor.DefaultValue = predicateAttribute.DefaultValue;
                 }
             }
+            else if (IsTypeOrNullableType<Context>())
+            {
+                memberDescriptor.IsContext = true;
+            }
+            else if (IsCollection(propertyMember, out ITypeSymbol? genericType))
+            {
+                // todo
+                // is is a collection of x. process x
+                memberDescriptor.IsReturnEnumerable = true;
+            }
+            else if (IsSystemType(propertyMember))
+            {
+                // ie string, int, bool, ..
+                Console.WriteLine("d");
+            }
+            else if (propertyDisplayName.Contains("RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1"))
+            {
+                // aditional checks?
+                // todo, name
+                memberDescriptor.RefType = $"{propertyMember.ContainingModule.Name}; {propertyDisplayName}";
+            }
 
             // if (!typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
             // {
             //     continue;
             // }
-
-            // todo lots of possible attributes to process
-
 
             descriptor.ActionMenuProperties.Add(memberDescriptor);
 
@@ -189,6 +263,24 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
     public void Visit(ClassDescriptor descriptor)
     {
+        if (descriptor.ClassName == "MergeStrategyV1")
+        {
+            if (_typeSymbol is INamedTypeSymbol { TypeKind: TypeKind.Enum, } symbol)
+            {
+
+                var memberNames = _typeSymbol
+                                  .GetMembers()
+                                  .Where(static member => member.Kind is SymbolKind.Field)
+                                  .Select(static symbol => symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
+                                  .ToArray();
+
+                INamedTypeSymbol? underlyingType = symbol.EnumUnderlyingType;
+                var x = memberNames.ToList();
+                // symbol is not IErrorTypeSymbol;
+                // _type.SpecialType != SpecialType.System_Enum;
+            }
+        }
+
         foreach (ISymbol member in _typeSymbol.GetMembers())
         {
             // only normal members.
@@ -253,6 +345,8 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 memberDescriptor.ReturnType = property.Type.ToDisplayString();
                 memberDescriptor.IsConst = true;
             }
+
+            descriptor.Members.Add(memberDescriptor);
 
             XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
