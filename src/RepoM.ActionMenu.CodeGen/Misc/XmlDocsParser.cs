@@ -1,15 +1,15 @@
-namespace RepoM.ActionMenu.CodeGen;
+namespace RepoM.ActionMenu.CodeGen.Misc;
 
-using Microsoft.CodeAnalysis;
-using RepoM.ActionMenu.CodeGen.Models;
-using System.Xml.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Xml;
+using System.Xml.Linq;
+using Microsoft.CodeAnalysis;
+using RepoM.ActionMenu.CodeGen.Models;
 
 internal static partial class XmlDocsParser
 {

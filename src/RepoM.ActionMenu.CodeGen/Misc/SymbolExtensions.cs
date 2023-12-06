@@ -1,9 +1,9 @@
-namespace RepoM.ActionMenu.CodeGen;
+namespace RepoM.ActionMenu.CodeGen.Misc;
 
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-public static class AttributeHelper
+public static class SymbolExtensions
 {
     public static AttributeData? FindAttribute<T>(this ISymbol symbol)
     {

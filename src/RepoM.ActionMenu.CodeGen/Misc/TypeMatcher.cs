@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.CodeGen;
+namespace RepoM.ActionMenu.CodeGen.Misc;
 
 using System;
 using System.Collections.Generic;

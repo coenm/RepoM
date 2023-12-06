@@ -17,16 +17,16 @@ public class DocsClassVisitor : IClassDescriptorVisitor
 
     public void Visit(ActionMenuContextClassDescriptor descriptor)
     {
-        XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
+        Misc.XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
     }
 
     public void Visit(ActionMenuClassDescriptor descriptor)
     {
-        XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
+        Misc.XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
     }
 
     public void Visit(ClassDescriptor descriptor)
     {
-        XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
+        Misc.XmlDocsParser.ExtractDocumentation(_typeSymbol, descriptor, _files);
     }
 }

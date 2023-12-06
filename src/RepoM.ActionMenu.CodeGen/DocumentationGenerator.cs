@@ -8,7 +8,7 @@ using Scriban.Runtime;
 
 internal static class DocumentationGenerator
 {
-    public static async Task<string> GetDocsContentAsyncNew(ActionMenuContextClassDescriptor module, Template template)
+    public static async Task<string> GetDocsContentAsync(ActionMenuContextClassDescriptor module, Template template)
     {
         module.Members.Sort((left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal));
 

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using RepoM.ActionMenu.CodeGen.Misc;
 using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -185,7 +186,7 @@ public static class Program
     
     public static async Task<(string fileName, string content)> GenerateModuleSiteDocumentationFromProjectDescription(ActionMenuContextClassDescriptor actionMenuContextClassDescriptor, Template template)
     {
-        var result = await DocumentationGenerator.GetDocsContentAsyncNew(actionMenuContextClassDescriptor, template);
+        var result = await DocumentationGenerator.GetDocsContentAsync(actionMenuContextClassDescriptor, template);
         var name = actionMenuContextClassDescriptor.Name.ToLowerInvariant();
         return ($"script_variables_{name}.generated.md", result);
     }

@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using RepoM.ActionMenu.CodeGen.Misc;
 using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
@@ -110,7 +111,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             descriptor.Members.Add(memberDescriptor);
 
-            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+            Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 
@@ -252,7 +253,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             descriptor.ActionMenuProperties.Add(memberDescriptor);
 
-            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+            Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 
@@ -279,7 +280,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                         XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                     };
 
-                XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+                Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
                 descriptor.Members.Add(memberDescriptor);
             }
 
@@ -375,7 +376,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             descriptor.Members.Add(memberDescriptor);
 
-            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+            Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 }

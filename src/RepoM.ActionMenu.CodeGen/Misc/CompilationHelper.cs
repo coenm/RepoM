@@ -1,7 +1,6 @@
-namespace RepoM.ActionMenu.CodeGen;
+namespace RepoM.ActionMenu.CodeGen.Misc;
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,17 +9,6 @@ using Microsoft.CodeAnalysis;
 
 public static class CompilationHelper
 {
-    public static IEnumerable<ITypeSymbol> GetTypes(this Compilation compilation)
-    {
-        foreach (ISymbol type in compilation.GetSymbolsWithName(_ => true, SymbolFilter.Type))
-        {
-            if (type is ITypeSymbol typeSymbol)
-            {
-                yield return typeSymbol;
-            }
-        }
-    }
-
     public static async Task<Compilation> CompileAsync(string pathToSolution, string projectName)
     {
         CSharpCompilationCaptureResult compilationCaptureResult = CSharpCompilationCapture.Build(pathToSolution);
@@ -63,7 +51,7 @@ public static class CompilationHelper
                 return;
             }
         }
-        
+
         Console.WriteLine("Compilation errors:");
         foreach (Diagnostic error in errors)
         {
