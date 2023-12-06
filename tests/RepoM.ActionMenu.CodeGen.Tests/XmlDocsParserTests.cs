@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.CodeAnalysis;
-using RepoM.ActionMenu.CodeGen.Models;
+using RepoM.ActionMenu.CodeGen.Models.New;
 using VerifyXunit;
 using Xunit;
 
@@ -16,7 +16,7 @@ public class XmlDocsParserTests
     {
         // arrange
         var files = new Dictionary<string, string>();
-        var result = new KalkMemberToGenerate();
+        var result = new MemberDescriptor();
         var xml = """
                   <member name="M:RepoM.ActionMenu.Core.Model.Functions.FileFunctions.FindFiles(RepoM.ActionMenu.Interface.ActionMenuFactory.IMenuContext,Scriban.Parsing.SourceSpan,System.String,System.String)">
                       <summary>
@@ -53,7 +53,7 @@ public class XmlDocsParserTests
             {
                 { "filename.yaml", "DUMMY CONTENT" },
             };
-        var result = new KalkMemberToGenerate();
+        var result = new MemberDescriptor();
         var xml = """
                   <member name="M:RepoM.ActionMenu.Core.Model.Functions.FileFunctions.FindFiles(RepoM.ActionMenu.Interface.ActionMenuFactory.IMenuContext,Scriban.Parsing.SourceSpan,System.String,System.String)">
                       <summary>

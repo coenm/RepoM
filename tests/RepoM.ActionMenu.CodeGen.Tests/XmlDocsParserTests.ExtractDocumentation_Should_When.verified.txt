@@ -1,10 +1,8 @@
 ﻿{
-  IsFunc: false,
-  IsAction: false,
-  IsConst: false,
-  IsModule: false,
-  IsBuiltin: false,
   IsCommand: false,
+  IsAction: false,
+  IsFunc: false,
+  IsConst: false,
   Description: Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.,
   Returns: Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.,
   Examples: {
