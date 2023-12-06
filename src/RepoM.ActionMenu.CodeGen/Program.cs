@@ -52,8 +52,7 @@ public static class Program
 
         // project - (class name, module)
         var projectMapping = new Dictionary<string, Dictionary<string, KalkModuleToGenerate>>();
-        var projectMappingActions = new Dictionary<string, Dictionary<string, ActionsToGenerate>>();
-
+        
         foreach (var project in projects)
         {
             var pathToSolution = Path.Combine(srcFolder, project, $"{project}.csproj");
@@ -65,14 +64,9 @@ public static class Program
 
             // continue;
             //---
-            
             var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>(); // class name, module
             projectMapping.Add(project, mapNameToModule);
             ProcessPossibleActionContextType(files, compilation, mapNameToModule);
-            
-            var mapNameToActionsModule = new Dictionary<string, ActionsToGenerate>(); // class name, actions
-            projectMappingActions.Add(project, mapNameToActionsModule);
-            ProcessPossibleActionsType(files, compilation, mapNameToActionsModule);
         }
 
         // new style
@@ -214,54 +208,6 @@ public static class Program
             classDescriptor.Accept(memberVisitor);
         }
     }
-
-    private static void ProcessPossibleActionsType(Dictionary<string, string> files, Compilation compilation, Dictionary<string, ActionsToGenerate> mapNameToActionsModule)
-    {
-        INamedTypeSymbol? actionMenuInterface = TypeMatcher.GetTypeSymbolForType(typeof(IMenuAction), compilation);
-        if (actionMenuInterface == null)
-        {
-            Console.WriteLine($"Could not create/find NamedSymbol for {nameof(IMenuAction)}.");
-            return;
-        }
-        
-        var typeToNamedTypeMapping = new Dictionary<Type, INamedTypeSymbol?>
-            {
-                { typeof(IMenuAction), actionMenuInterface },
-                // { typeof(IEnabled), TypeMatcher.GetTypeSymbolForType(typeof(IEnabled), compilation) },
-                // { typeof(IName), TypeMatcher.GetTypeSymbolForType(typeof(IName), compilation) },
-            };
-        
-        foreach (ITypeSymbol typeSymbol in compilation.GetTypes())
-        {
-            if (!typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
-            {
-                continue;
-            }
-
-            var attribute = typeSymbol.FindAttribute<RepositoryActionAttribute>();
-            if (attribute == null)
-            {
-                throw new Exception("A type should have a RepositoryActionAttribute.");
-            }
-
-            if (attribute.ConstructorArguments.Length != 1)
-            {
-                throw new Exception($"Unexpected number of arguments for {nameof(RepositoryActionAttribute)}");
-            }
-
-            string? s = attribute.ConstructorArguments[0].Value as string;
-            if (string.IsNullOrWhiteSpace(s))
-            {
-                throw new Exception("Argument is not a valid string.");
-            }
-
-            var repositoryActionAttribute = new RepositoryActionAttribute(s);
-            
-            // at this point, we know the type is an action.
-            // create object for documenation and process all relevant properties
-            ProcessRepositoryActionType(typeSymbol, repositoryActionAttribute, mapNameToActionsModule, files, typeToNamedTypeMapping);
-        }
-    }
     
     private static void ProcessPossibleActionContextType(Dictionary<string, string> files, Compilation compilation, Dictionary<string, KalkModuleToGenerate> mapNameToModule)
     {
@@ -358,115 +304,6 @@ public static class Program
                 XmlDocsParser.ExtractDocumentation(member, desc, files);
             }
         }
-    }
-
-    private static void ProcessRepositoryActionType(
-        ITypeSymbol typeSymbol,
-        RepositoryActionAttribute repositoryActionAttribute,
-        Dictionary<string, ActionsToGenerate> mapNameToActionsModule,
-        Dictionary<string, string> files,
-        Dictionary<Type, INamedTypeSymbol?> typeToNamedTypeMapping)
-    {
-        Console.WriteLine(typeSymbol.Name);
-        ActionsToGenerate? moduleToGenerate;
-        GetOrCreateActionModule(
-            typeSymbol,
-            typeSymbol.Name,
-            repositoryActionAttribute,
-            out moduleToGenerate,
-            mapNameToActionsModule,
-            files);
-
-        if (moduleToGenerate == null)
-        {
-            throw new Exception("Could not create Actions modules");
-        }
-
-        List<ISymbol> interestingMembers = new();
-
-        Console.WriteLine($"{repositoryActionAttribute.Type}");
-
-        foreach (ISymbol member in typeSymbol.GetMembers())
-        {
-            if (member is not IPropertySymbol propertyMember)
-            {
-                continue;
-            }
-
-            if (!member.CanBeReferencedByName)
-            {
-                continue;
-            }
-
-            if (member.DeclaredAccessibility == Accessibility.Private)
-            {
-                continue;
-            }
-
-            if (member.IsStatic)
-            {
-                continue;
-            }
-
-            // todo skip Type property?!
-
-
-            Console.WriteLine($"-  {propertyMember.Name}");
-            interestingMembers.Add(propertyMember);
-
-            foreach (var att in propertyMember.GetAttributes())
-            {
-                Console.WriteLine($"  -  {att.AttributeClass.Name}");
-            }
-
-            continue;
-
-            AttributeData? attr = propertyMember.FindAttribute<ActionMenuContextMemberAttribute>();
-            if (attr == null)
-            {
-                continue;
-            }
-            
-            var name = attr.ConstructorArguments[0].Value?.ToString();
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new Exception("Name cannot be null or empty.");
-            }
-
-            var className = propertyMember.ContainingSymbol.Name;
-
-            // // In case the module is built-in, we still generate a module for it
-            // if (moduleToGenerate == null)
-            // {
-            //     GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule, files);
-            // }
-
-            var propertyDescription = new ActionPropertyToGenerate()
-                {
-                    Name = name,
-                    XmlId = propertyMember.GetDocumentationCommentId() ?? string.Empty,
-                    Category = string.Empty, // todo? 
-                    IsCommand = false, // todo remove?
-                    IsBuiltin = !member.ContainingNamespace.Name.Contains("Plugin"), //todo
-                    // Module = moduleToGenerate,
-                };
-            propertyDescription.Names.Add(name);
-
-            propertyDescription.CSharpName = propertyMember.Name;
-            propertyDescription.IsConst = true;
-
-            moduleToGenerate.Properties.Add(propertyDescription);
-            XmlDocsParser.ExtractDocumentation(propertyMember, propertyDescription, files);
-        }
-
-        // first the name
-        // var m = interestingMembers.Find(item => item.Name == nameof(IName.Name));
-        // if (m != null)
-        // {
-        //     interestingMembers.Remove(m);
-        //     Cr(m);
-        // }
-
     }
     
     private static void GetOrCreateActionModule(
