@@ -1,6 +1,7 @@
 namespace RepoM.ActionMenu.CodeGen.Models;
 
 using System.Collections.Generic;
+using RepoM.ActionMenu.CodeGen.Models.New;
 
 public interface IXmlDocsExtended
 {

@@ -10,6 +10,7 @@ using System.Xml;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using RepoM.ActionMenu.CodeGen.Models.New;
 
 internal static partial class XmlDocsParser
 {

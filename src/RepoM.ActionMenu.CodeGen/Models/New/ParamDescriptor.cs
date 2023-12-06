@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.CodeGen.Models
+namespace RepoM.ActionMenu.CodeGen.Models.New
 {
     public class ParamDescriptor
     {
