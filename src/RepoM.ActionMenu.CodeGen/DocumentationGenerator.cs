@@ -3,16 +3,17 @@ namespace RepoM.ActionMenu.CodeGen;
 using System;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.CodeGen.Models;
+using RepoM.ActionMenu.CodeGen.Models.New;
 using Scriban;
 using Scriban.Runtime;
 
 internal static class DocumentationGenerator
 {
-    public static async Task<string> GetDocsContentAsync(KalkModuleToGenerate module, Template template)
+    public static async Task<string> GetDocsContentAsyncNew(ActionMenuContextClassDescriptor module, Template template)
     {
         module.Members.Sort((left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal));
 
-        module.Title = $"{module.Name} {(module.IsBuiltin ? "Functions" : "Module")}";
+        //module.Title = $"{module.Name} {(module.IsBuiltin ? "Functions" : "Module")}";
 
         var context = new TemplateContext
             {

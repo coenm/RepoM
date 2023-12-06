@@ -18,7 +18,7 @@ using Scriban.Runtime;
 
 public static class Program
 {
-    public static async Task Main(string[] args)
+    public static async Task Main()
     {
         var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
         var srcFolder = Path.Combine(rootFolder, "src");
@@ -75,6 +75,18 @@ public static class Program
             ProcessPossibleActionsType(files, compilation, mapNameToActionsModule);
         }
 
+        // new style
+        // Generate module site documentation
+        foreach ((var projectName, ProjectDescriptor? project) in processedProjects)
+        {
+            foreach (ActionMenuContextClassDescriptor actionContextMenu in project.ActionContextMenus)
+            {
+                (string fileName, string content) = await GenerateModuleSiteDocumentationFromProjectDescription(actionContextMenu, templateDocs).ConfigureAwait(false);
+                await File.WriteAllTextAsync(Path.Combine(docsFolder, fileName), content).ConfigureAwait(false);
+            }
+        }
+        // end of new style
+        
         // tmp
         var json = JsonConvert.SerializeObject(processedProjects, Formatting.Indented);
         await File.WriteAllTextAsync("C:\\tmp\\repom.export.json", json);
@@ -125,12 +137,6 @@ public static class Program
             var result = await templateModule.RenderAsync(context);
             await File.WriteAllTextAsync(pathToGeneratedCode, result);
         
-            // Generate module site documentation
-            foreach (KalkModuleToGenerate module in modules)
-            {
-                await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
-            }
-
             // foreach (var module in modules2)
             // {
             //     await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
@@ -540,14 +546,20 @@ public static class Program
 
         XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate, files);
     }
-    
-    private static async Task GenerateModuleSiteDocumentation(KalkModuleToGenerate module, string siteFolder, Template template)
+
+    private static async Task GenerateModuleSiteDocumentation2(ActionMenuContextClassDescriptor module, string siteFolder, Template template)
     {
-        var result = await DocumentationGenerator.GetDocsContentAsync(module, template);
-        var name = module.Name.ToLowerInvariant();
-        await File.WriteAllTextAsync(Path.Combine(siteFolder, $"script_variables_{name}.generated.md"), result);
+        (string fileName, string content) = await GenerateModuleSiteDocumentationFromProjectDescription(module, template);
+        await File.WriteAllTextAsync(Path.Combine(siteFolder, fileName), content);
     }
-    
+
+    public static async Task<(string fileName, string content)> GenerateModuleSiteDocumentationFromProjectDescription(ActionMenuContextClassDescriptor actionMenuContextClassDescriptor, Template template)
+    {
+        var result = await DocumentationGenerator.GetDocsContentAsyncNew(actionMenuContextClassDescriptor, template);
+        var name = actionMenuContextClassDescriptor.Name.ToLowerInvariant();
+        return ($"script_variables_{name}.generated.md", result);
+    }
+
     static string GetTypeName(ITypeSymbol typeSymbol)
     {
         return typeSymbol.ToDisplayString();
@@ -569,7 +581,7 @@ public static class Program
         }
     }
 
-    private static async Task<Template> LoadTemplateAsync(string path)
+    public static async Task<Template> LoadTemplateAsync(string path)
     {
         var rawTemplate = await File.ReadAllTextAsync(path);
         var template = Template.Parse(rawTemplate);

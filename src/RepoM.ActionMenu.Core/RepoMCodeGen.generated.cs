@@ -16,9 +16,9 @@ namespace RepoM.ActionMenu.Core.ActionMenu.Context
     {
         protected sealed override void RegisterFunctions()
         {
-            RegisterFunction("find_files", (Func<RepoM.ActionMenu.Core.Model.ActionMenuGenerationContext, Scriban.Parsing.SourceSpan, string, string, string[]>)FindFiles);
-            RegisterFunction("file_exists", (Func<RepoM.ActionMenu.Core.Model.ActionMenuGenerationContext, string, bool>)FileExists);
             RegisterFunction("dir_exists", (Func<RepoM.ActionMenu.Core.Model.ActionMenuGenerationContext, string, bool>)DirectoryExists);
+            RegisterFunction("file_exists", (Func<RepoM.ActionMenu.Core.Model.ActionMenuGenerationContext, string, bool>)FileExists);
+            RegisterFunction("find_files", (Func<RepoM.ActionMenu.Core.Model.ActionMenuGenerationContext, Scriban.Parsing.SourceSpan, string, string, string[]>)FindFiles);
         }
     }
 }
@@ -29,14 +29,14 @@ namespace RepoM.ActionMenu.Core.ActionMenu.Context
     {
         protected sealed override void RegisterFunctions()
         {
-            RegisterConstant("name", Name);
-            RegisterConstant("path", Path);
-            RegisterConstant("safe_path", SafePath);
-            RegisterConstant("location", Location);
             RegisterConstant("branch", CurrentBranch);
             RegisterConstant("branches", Branches);
             RegisterConstant("local_branches", LocalBranches);
+            RegisterConstant("location", Location);
+            RegisterConstant("name", Name);
+            RegisterConstant("path", Path);
             RegisterConstant("remotes", Remotes);
+            RegisterConstant("safe_path", SafePath);
         }
     }
 }

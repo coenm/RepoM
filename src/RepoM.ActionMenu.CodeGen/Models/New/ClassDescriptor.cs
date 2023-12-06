@@ -4,9 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+public enum SymbolType
+{
+    Class,
+
+    Enum,
+}
+
 [DebuggerDisplay($"{{{nameof(ClassName)},nq}}")]
 public class ClassDescriptor : IXmlDocsExtended
 {
+    private SymbolType _symbolType = SymbolType.Class;
+
     /// <summary>
     /// Properties, Functions, fields etc. etc.
     /// </summary>
@@ -20,6 +29,15 @@ public class ClassDescriptor : IXmlDocsExtended
     public string ClassName { get; set; } = null!;
     
     public string Namespace { get; set; } = null!;
+
+    public bool IsEnum => _symbolType == SymbolType.Enum;
+
+    public bool IsClass => _symbolType == SymbolType.Class;
+
+    public void SetType(SymbolType type)
+    {
+        _symbolType = type;
+    }
 
     // interface:
 

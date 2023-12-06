@@ -5,7 +5,7 @@ using System.Diagnostics;
 using RepoM.Core.Plugin.AssemblyInformation;
 using Scriban.Runtime;
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerDisplay("{ProjectName,nq}")]
 public sealed class ProjectDescriptor
 {
     /// <summary>
@@ -55,7 +55,4 @@ public sealed class ProjectDescriptor
         PluginDescription = attribute.Description;
         IsPlugin = true;
     }
-
-    [ScriptMemberIgnore]
-    public string DebuggerDisplay => ProjectName + " - " + ActionContextMenus.Count;
 }

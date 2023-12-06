@@ -28,15 +28,20 @@ public class MemberDescriptor : IXmlDocsExtended
 
     public bool IsConst { get; set; }
 
-    public string Cast { get; set; }
+    /// <remarks>
+    /// Used for C# code generation
+    /// </remarks>
+    public string? Cast { get; set; }
 
-
-
-
+    
     public string Description { get; set; }
+
     public string Returns { get; set; }
+
     public string Remarks { get; set; }
+
     public ExamplesDescriptor? Examples { get; set; }
+
     public List<ParamDescriptor> Params { get; } = new List<ParamDescriptor>();
 }
 

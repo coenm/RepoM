@@ -1,493 +1,416 @@
 ﻿{
-  AssemblyName: RepoM.ActionMenu.CodeGenDummyLibrary,
-  ProjectName: RepoM.ActionMenu.CodeGenDummyLibrary,
-  ActionMenus: [
-    {
-      ActionMenuProperties: [
-        {
-          IsTemplate: false,
-          IsPredicate: false,
-          IsContext: false,
-          IsReturnEnumerable: false,
-          CSharpName: Type,
-          ReturnType: string,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Type,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          IsTemplate: true,
-          IsPredicate: false,
-          IsContext: false,
-          DefaultValue: Create Pull Request,
-          IsReturnEnumerable: false,
-          CSharpName: Name,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Name,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description:
+  Project: {
+    AssemblyName: RepoM.ActionMenu.CodeGenDummyLibrary,
+    ProjectName: RepoM.ActionMenu.CodeGenDummyLibrary,
+    ActionMenus: [
+      {
+        ActionMenuProperties: [
+          {
+            IsTemplate: false,
+            IsPredicate: false,
+            IsContext: false,
+            IsReturnEnumerable: false,
+            CSharpName: Type,
+            ReturnType: string,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Type,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false
+          },
+          {
+            IsTemplate: true,
+            IsPredicate: false,
+            IsContext: false,
+            DefaultValue: Create Pull Request,
+            IsReturnEnumerable: false,
+            CSharpName: Name,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Name,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description:
 Menu item title. When not provided, a title will be generated.
 This property will be used instead of the Name property.
-        },
-        {
-          IsTemplate: true,
-          IsPredicate: false,
-          IsContext: false,
-          IsReturnEnumerable: false,
-          CSharpName: ProjectId,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ProjectId,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description: The azure devops project id.
-        },
-        {
-          IsTemplate: true,
-          IsPredicate: false,
-          IsContext: false,
-          IsReturnEnumerable: false,
-          CSharpName: PrTitle,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.PrTitle,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description:
+          },
+          {
+            IsTemplate: true,
+            IsPredicate: false,
+            IsContext: false,
+            IsReturnEnumerable: false,
+            CSharpName: ProjectId,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ProjectId,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description: The azure devops project id.
+          },
+          {
+            IsTemplate: true,
+            IsPredicate: false,
+            IsContext: false,
+            IsReturnEnumerable: false,
+            CSharpName: PrTitle,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.PrTitle,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description:
 Pull Request title. When not provided, the title will be defined based on the branch name.
 Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch`,
-          Examples: {
-            Items: [
-              {
-                TypeName: Text,
-                Content: `{{ repository.branch | string.replace "feature/" "" | string.truncate 16 "..." }}`
-              }
-            ]
+            Examples: {
+              Items: [
+                {
+                  TypeName: Text,
+                  Content: `{{ repository.branch | string.replace "feature/" "" | string.truncate 16 "..." }}`
+                }
+              ]
+            }
+          },
+          {
+            IsTemplate: true,
+            IsPredicate: false,
+            IsContext: false,
+            IsReturnEnumerable: false,
+            CSharpName: ToBranch,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ToBranch,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description: Name of the branch the pull request should be merged into. For instance `develop`, or `main`.
+          },
+          {
+            IsTemplate: false,
+            IsPredicate: false,
+            IsContext: false,
+            IsReturnEnumerable: true,
+            CSharpName: ReviewerIds,
+            ReturnType: System.Collections.Generic.List<RepoM.ActionMenu.Interface.YamlModel.Templating.Text>,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ReviewerIds,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description: List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
+          },
+          {
+            IsTemplate: false,
+            IsPredicate: true,
+            IsContext: false,
+            DefaultValue: false,
+            IsReturnEnumerable: false,
+            CSharpName: DraftPr,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.DraftPr,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description: Boolean specifying if th PR should be marked as draft.
+          },
+          {
+            IsTemplate: false,
+            IsPredicate: true,
+            IsContext: false,
+            DefaultValue: true,
+            IsReturnEnumerable: false,
+            CSharpName: IncludeWorkItems,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.IncludeWorkItems,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description: Boolean specifying if workitems should be included in the PR. RepoM will try to resolve the workitems by looping through the commit messages.
+          },
+          {
+            IsTemplate: false,
+            IsPredicate: true,
+            IsContext: false,
+            DefaultValue: false,
+            IsReturnEnumerable: false,
+            CSharpName: OpenInBrowser,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.OpenInBrowser,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description: Boolean specifying if the Pull request should be opened in the browser after creation.
+          },
+          {
+            IsTemplate: false,
+            IsPredicate: false,
+            IsContext: true,
+            IsReturnEnumerable: false,
+            CSharpName: Context,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context?,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Context,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false
+          },
+          {
+            IsTemplate: false,
+            IsPredicate: true,
+            IsContext: false,
+            DefaultValue: true,
+            IsReturnEnumerable: false,
+            CSharpName: Active,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Active,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false
+          },
+          {
+            IsTemplate: false,
+            IsPredicate: false,
+            IsContext: false,
+            IsReturnEnumerable: false,
+            RefType: RepoM.ActionMenu.CodeGenDummyLibrary.dll; RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1?,
+            CSharpName: AutoComplete,
+            ReturnType: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1?,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.AutoComplete,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description: Auto complete options. Please take a look at the same for more information
           }
-        },
-        {
-          IsTemplate: true,
-          IsPredicate: false,
-          IsContext: false,
-          IsReturnEnumerable: false,
-          CSharpName: ToBranch,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ToBranch,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description: Name of the branch the pull request should be merged into. For instance `develop`, or `main`.
-        },
-        {
-          IsTemplate: false,
-          IsPredicate: false,
-          IsContext: false,
-          IsReturnEnumerable: true,
-          CSharpName: ReviewerIds,
-          ReturnType: System.Collections.Generic.List<RepoM.ActionMenu.Interface.YamlModel.Templating.Text>,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ReviewerIds,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description: List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
-        },
-        {
-          IsTemplate: false,
-          IsPredicate: true,
-          IsContext: false,
-          DefaultValue: false,
-          IsReturnEnumerable: false,
-          CSharpName: DraftPr,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.DraftPr,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description: Boolean specifying if th PR should be marked as draft.
-        },
-        {
-          IsTemplate: false,
-          IsPredicate: true,
-          IsContext: false,
-          DefaultValue: true,
-          IsReturnEnumerable: false,
-          CSharpName: IncludeWorkItems,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.IncludeWorkItems,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description: Boolean specifying if workitems should be included in the PR. RepoM will try to resolve the workitems by looping through the commit messages.
-        },
-        {
-          IsTemplate: false,
-          IsPredicate: true,
-          IsContext: false,
-          DefaultValue: false,
-          IsReturnEnumerable: false,
-          CSharpName: OpenInBrowser,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.OpenInBrowser,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description: Boolean specifying if the Pull request should be opened in the browser after creation.
-        },
-        {
-          IsTemplate: false,
-          IsPredicate: false,
-          IsContext: true,
-          IsReturnEnumerable: false,
-          CSharpName: Context,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context?,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Context,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          IsTemplate: false,
-          IsPredicate: true,
-          IsContext: false,
-          DefaultValue: true,
-          IsReturnEnumerable: false,
-          CSharpName: Active,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Active,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          IsTemplate: false,
-          IsPredicate: false,
-          IsContext: false,
-          IsReturnEnumerable: false,
-          RefType: RepoM.ActionMenu.CodeGenDummyLibrary.dll; RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1?,
-          CSharpName: AutoComplete,
-          ReturnType: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1?,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.AutoComplete,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description: Auto complete options. Please take a look at the same for more information
-        }
-      ],
-      RepositoryActionName: dummy-abc@1,
-      Name: dummy-abc@1,
-      ClassName: RepositoryActionDummyAbcV1,
-      Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
-      Description: Action menu item to create a pull request in Azure Devops.
-    }
-  ],
-  Types: [
-    {
-      Members: [
-        {
-          CSharpName: <MergeStrategy>k__BackingField,
-          XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.<MergeStrategy>k__BackingField,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: MergeStrategy,
-          ReturnType: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.MergeStrategy,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: true,
-          Description: The merge strategy. Possible values are `NoFastForward`, `Squash`, `Rebase`, and `RebaseMerge`.
-        },
-        {
-          CSharpName: get_MergeStrategy,
-          ReturnType: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1,
-          XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.get_MergeStrategy,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: true,
-          IsConst: false,
-          Cast: (Func<RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1>)
-        },
-        {
-          CSharpName: set_MergeStrategy,
-          ReturnType: void,
-          XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.set_MergeStrategy(RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1),
-          IsCommand: true,
-          IsAction: true,
-          IsFunc: false,
-          IsConst: false,
-          Cast: (Action<RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1>)
-        },
-        {
-          CSharpName: <DeleteSourceBranch>k__BackingField,
-          XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.<DeleteSourceBranch>k__BackingField,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: DeleteSourceBranch,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.DeleteSourceBranch,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: true,
-          Description: Boolean specifying if the source branche should be deleted afer completion.
-        },
-        {
-          CSharpName: get_DeleteSourceBranch,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
-          XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.get_DeleteSourceBranch,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: true,
-          IsConst: false,
-          Cast: (Func<RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate>)
-        },
-        {
-          CSharpName: set_DeleteSourceBranch,
-          ReturnType: void,
-          XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.set_DeleteSourceBranch(RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate),
-          IsCommand: true,
-          IsAction: true,
-          IsFunc: false,
-          IsConst: false,
-          Cast: (Action<RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate>)
-        },
-        {
-          CSharpName: <TransitionWorkItems>k__BackingField,
-          XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.<TransitionWorkItems>k__BackingField,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: TransitionWorkItems,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
-          XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.TransitionWorkItems,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: true,
-          Description: Boolean specifying if related workitems should be transitioned to the next state.
-        },
-        {
-          CSharpName: get_TransitionWorkItems,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
-          XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.get_TransitionWorkItems,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: true,
-          IsConst: false,
-          Cast: (Func<RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate>)
-        },
-        {
-          CSharpName: set_TransitionWorkItems,
-          ReturnType: void,
-          XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.set_TransitionWorkItems(RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate),
-          IsCommand: true,
-          IsAction: true,
-          IsFunc: false,
-          IsConst: false,
-          Cast: (Action<RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate>)
-        },
-        {
-          CSharpName: .ctor,
-          ReturnType: void,
-          XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.#ctor,
-          IsCommand: true,
-          IsAction: true,
-          IsFunc: false,
-          IsConst: false,
-          Cast: (Action)
-        }
-      ],
-      ClassName: AutoCompleteOptionsV1,
-      Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
-      Description: Auto complete options.
-    },
-    {
-      Members: [
-        {
-          CSharpName: NoFastForward,
-          XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1.NoFastForward,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description: A two-parent, no-fast-forward merge. The source branch is unchanged. This is the default behavior.
-        },
-        {
-          CSharpName: Squash,
-          XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1.Squash,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description: Put all changes from the pull request into a single-parent commit.
-        },
-        {
-          CSharpName: Rebase,
-          XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1.Rebase,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description:
+        ],
+        RepositoryActionName: dummy-abc@1,
+        Name: dummy-abc@1,
+        ClassName: RepositoryActionDummyAbcV1,
+        Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
+        IsEnum: false,
+        IsClass: true,
+        Description: Action menu item to create a pull request in Azure Devops.
+      }
+    ],
+    ActionContextMenus: [
+      {
+        ActionMenuContextObjectName: statistics,
+        Members: [
+          {
+            ActionMenuContextMemberName: count,
+            Name: count,
+            CSharpName: GetCount,
+            ReturnType: int,
+            XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Context.UsageVariables.GetCount(RepoM.ActionMenu.Interface.ActionMenuFactory.IActionMenuGenerationContext),
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: true,
+            IsConst: false,
+            Cast: (Func<RepoM.ActionMenu.Interface.ActionMenuFactory.IActionMenuGenerationContext, int>),
+            Description: Gets the number of actions performed on the current repository.,
+            Returns: Number of actions performed on the current repository.,
+            Examples: {
+              Items: [
+                {
+                  TypeName: Header,
+                  Text: Usage
+                },
+                {
+                  TypeName: Code,
+                  Content: repo_call_count = statistics.count;,
+                  UseRaw: false
+                }
+              ]
+            }
+          },
+          {
+            ActionMenuContextMemberName: overall_count,
+            Name: overall_count,
+            CSharpName: GetOverallCount,
+            ReturnType: int,
+            XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Context.UsageVariables.GetOverallCount,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: true,
+            IsConst: false,
+            Cast: (Func<int>),
+            Description: Gets the number of actions performed on all repositories known in RepoM.,
+            Returns: Number of actions performed on any known repository.,
+            Examples: {
+              Items: [
+                {
+                  TypeName: Header,
+                  Text: Usage
+                },
+                {
+                  TypeName: Code,
+                  Content: repo_call_count = statistics.overall_count;,
+                  UseRaw: false
+                }
+              ]
+            }
+          }
+        ],
+        Name: statistics,
+        ClassName: UsageVariables,
+        Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Context,
+        IsEnum: false,
+        IsClass: true,
+        Description: Provides statistical information accessible through `statistics`.
+      }
+    ],
+    Types: [
+      {
+        Members: [
+          {
+            CSharpName: MergeStrategy,
+            ReturnType: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.MergeStrategy,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: true,
+            Description: The merge strategy. Possible values are `NoFastForward`, `Squash`, `Rebase`, and `RebaseMerge`.
+          },
+          {
+            CSharpName: DeleteSourceBranch,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.DeleteSourceBranch,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: true,
+            Description: Boolean specifying if the source branche should be deleted afer completion.
+          },
+          {
+            CSharpName: TransitionWorkItems,
+            ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.TransitionWorkItems,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: true,
+            Description: Boolean specifying if related workitems should be transitioned to the next state.
+          }
+        ],
+        ClassName: AutoCompleteOptionsV1,
+        Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
+        IsEnum: false,
+        IsClass: true,
+        Description: Auto complete options.
+      },
+      {
+        Members: [
+          {
+            CSharpName: NoFastForward,
+            XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1.NoFastForward,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description: A two-parent, no-fast-forward merge. The source branch is unchanged. This is the default behavior.
+          },
+          {
+            CSharpName: Squash,
+            XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1.Squash,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description: Put all changes from the pull request into a single-parent commit.
+          },
+          {
+            CSharpName: Rebase,
+            XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1.Rebase,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description:
 Rebase the source branch on top of the target branch HEAD commit, and fast-forward the target branch.
 The source branch is updated during the rebase operation.
-        },
-        {
-          CSharpName: RebaseMerge,
-          XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1.RebaseMerge,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false,
-          Description:
+          },
+          {
+            CSharpName: RebaseMerge,
+            XmlId: F:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1.RebaseMerge,
+            IsCommand: false,
+            IsAction: false,
+            IsFunc: false,
+            IsConst: false,
+            Description:
 Rebase the source branch on top of the target branch HEAD commit, and create a two-parent,
 no-fast-forward merge. The source branch is updated during the rebase operation.
-        },
-        {
-          CSharpName: .ctor,
-          ReturnType: void,
-          XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1.#ctor,
-          IsCommand: true,
-          IsAction: true,
-          IsFunc: false,
-          IsConst: false,
-          Cast: (Action)
-        }
-      ],
-      ClassName: MergeStrategyV1,
-      Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus
-    },
-    {
-      Members: [
-        {
-          CSharpName: AssemblyConfiguration,
-          XmlId: F:ThisAssembly.AssemblyConfiguration,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: AssemblyFileVersion,
-          XmlId: F:ThisAssembly.AssemblyFileVersion,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: AssemblyInformationalVersion,
-          XmlId: F:ThisAssembly.AssemblyInformationalVersion,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: AssemblyName,
-          XmlId: F:ThisAssembly.AssemblyName,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: AssemblyTitle,
-          XmlId: F:ThisAssembly.AssemblyTitle,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: AssemblyVersion,
-          XmlId: F:ThisAssembly.AssemblyVersion,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: GitCommitDate,
-          XmlId: F:ThisAssembly.GitCommitDate,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: GitCommitId,
-          XmlId: F:ThisAssembly.GitCommitId,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: IsPrerelease,
-          XmlId: F:ThisAssembly.IsPrerelease,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: IsPublicRelease,
-          XmlId: F:ThisAssembly.IsPublicRelease,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: RootNamespace,
-          XmlId: F:ThisAssembly.RootNamespace,
-          IsCommand: false,
-          IsAction: false,
-          IsFunc: false,
-          IsConst: false
-        },
-        {
-          CSharpName: .cctor,
-          ReturnType: void,
-          XmlId: M:ThisAssembly.#cctor,
-          IsCommand: true,
-          IsAction: true,
-          IsFunc: false,
-          IsConst: false,
-          Cast: (Action)
-        }
-      ],
-      ClassName: ThisAssembly,
-      Namespace: <global namespace>
-    }
-  ],
-  IsPlugin: false,
-  DebuggerDisplay: RepoM.ActionMenu.CodeGenDummyLibrary - 0
+          }
+        ],
+        ClassName: MergeStrategyV1,
+        Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
+        IsEnum: true,
+        IsClass: false
+      },
+      {
+        ClassName: ThisAssembly,
+        Namespace: <global namespace>,
+        IsEnum: false,
+        IsClass: true
+      }
+    ],
+    IsPlugin: false
+  },
+  Filename: script_variables_statistics.generated.md,
+  Content:
+# `statistics`
+
+Provides statistical information accessible through `statistics`.
+
+This module contains the following methods, variables and/or constants:
+
+- [`statistics.count`](#count)
+- [`statistics.overall_count`](#overall_count)
+
+## count
+
+`statistics.count`
+
+Gets the number of actions performed on the current repository.
+
+### Returns
+
+Number of actions performed on the current repository.
+
+### Example
+      
+#### Usage
+
+
+```
+repo_call_count = statistics.count;
+```
+
+
+## overall_count
+
+`statistics.overall_count`
+
+Gets the number of actions performed on all repositories known in RepoM.
+
+### Returns
+
+Number of actions performed on any known repository.
+
+### Example
+      
+#### Usage
+
+
+```
+repo_call_count = statistics.overall_count;
+```
+
+
 }

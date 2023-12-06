@@ -115,12 +115,6 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
     public void Visit(ActionMenuClassDescriptor descriptor)
     {
-        if (descriptor.Name == "AutoCompleteOptionsV1")
-        {
-            var x = descriptor.Name;
-        }
-
-
         foreach (ISymbol member in _typeSymbol.GetMembers())
         {
             if (member is not IPropertySymbol propertyMember)
@@ -190,7 +184,6 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 genericType = null;
                 return false;
             }
-            
 
             var propertyDisplayName = propertyMember.Type.ToDisplayString();
 
@@ -264,26 +257,58 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
     public void Visit(ClassDescriptor descriptor)
     {
-        if (descriptor.ClassName == "MergeStrategyV1")
+        if (_typeSymbol is INamedTypeSymbol { TypeKind: TypeKind.Enum, } symbol)
         {
-            if (_typeSymbol is INamedTypeSymbol { TypeKind: TypeKind.Enum, } symbol)
+            descriptor.SetType(SymbolType.Enum);
+
+            // INamedTypeSymbol? underlyingType = symbol.EnumUnderlyingType;
+
+            var memberNames = _typeSymbol
+                              .GetMembers()
+                              .Where(static member => member.Kind is SymbolKind.Field)
+                              // .Select(static symbol => symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
+                              ;
+
+            foreach (ISymbol member in memberNames)
             {
+                var memberDescriptor = new Models.New.MemberDescriptor
+                    {
+                        CSharpName = member.Name,
+                        IsCommand = false,
+                        XmlId = member.GetDocumentationCommentId() ?? string.Empty,
+                    };
 
-                var memberNames = _typeSymbol
-                                  .GetMembers()
-                                  .Where(static member => member.Kind is SymbolKind.Field)
-                                  .Select(static symbol => symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat))
-                                  .ToArray();
-
-                INamedTypeSymbol? underlyingType = symbol.EnumUnderlyingType;
-                var x = memberNames.ToList();
-                // symbol is not IErrorTypeSymbol;
-                // _type.SpecialType != SpecialType.System_Enum;
+                XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+                descriptor.Members.Add(memberDescriptor);
             }
+
+            return;
         }
 
         foreach (ISymbol member in _typeSymbol.GetMembers())
         {
+            if (member is not IPropertySymbol propertyMember)
+            {
+                // only interested in properties.
+                continue;
+            }
+
+            if (!member.CanBeReferencedByName)
+            {
+                continue;
+            }
+
+            if (member.DeclaredAccessibility == Accessibility.Private)
+            {
+                continue;
+            }
+
+            if (member.IsStatic)
+            {
+                continue;
+            }
+
+
             // only normal members.
             var className = member.ContainingSymbol.Name;
 
