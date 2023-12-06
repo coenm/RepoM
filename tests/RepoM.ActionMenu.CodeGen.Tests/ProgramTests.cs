@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using RepoM.ActionMenu.CodeGen.Models.New;
+using RepoM.ActionMenu.CodeGen.Models;
 using Scriban;
 using VerifyXunit;
 using Xunit;

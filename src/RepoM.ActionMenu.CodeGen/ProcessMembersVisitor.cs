@@ -6,10 +6,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
-using RepoM.ActionMenu.CodeGen.Models.New;
+using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
+using Text = RepoM.ActionMenu.Interface.YamlModel.Templating.Text;
 
 public class ProcessMembersVisitor : IClassDescriptorVisitor
 {
@@ -271,7 +272,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             foreach (ISymbol member in memberNames)
             {
-                var memberDescriptor = new Models.New.MemberDescriptor
+                var memberDescriptor = new MemberDescriptor
                     {
                         CSharpName = member.Name,
                         IsCommand = false,
@@ -312,7 +313,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
             // only normal members.
             var className = member.ContainingSymbol.Name;
 
-            var memberDescriptor = new Models.New.MemberDescriptor
+            var memberDescriptor = new MemberDescriptor
                 {
                     CSharpName = member.Name,
                     //ReturnType = propertyMember.Type.ToDisplayString(), // (member as IPropertySymbol)?.Type;

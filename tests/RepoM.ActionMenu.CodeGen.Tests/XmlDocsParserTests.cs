@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.CodeAnalysis;
-using RepoM.ActionMenu.CodeGen.Models.New;
+using RepoM.ActionMenu.CodeGen.Models;
 using VerifyXunit;
 using Xunit;
 

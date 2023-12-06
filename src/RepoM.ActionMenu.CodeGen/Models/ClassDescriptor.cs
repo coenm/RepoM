@@ -1,8 +1,9 @@
-namespace RepoM.ActionMenu.CodeGen.Models.New;
+namespace RepoM.ActionMenu.CodeGen.Models;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using RepoM.ActionMenu.CodeGen;
 
 public enum SymbolType
 {
@@ -27,7 +28,7 @@ public class ClassDescriptor : IXmlDocsExtended
     public string Name { get; set; } = null!;
 
     public string ClassName { get; set; } = null!;
-    
+
     public string Namespace { get; set; } = null!;
 
     public bool IsEnum => _symbolType == SymbolType.Enum;

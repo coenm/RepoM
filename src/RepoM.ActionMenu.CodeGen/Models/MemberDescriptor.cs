@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.CodeGen.Models.New;
+namespace RepoM.ActionMenu.CodeGen.Models;
 
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
@@ -19,7 +19,7 @@ public class MemberDescriptor : IXmlDocsExtended
     public string ReturnType { get; set; }
 
     public string XmlId { get; set; }
-    
+
     public bool IsCommand { get; set; }
 
     public bool IsAction { get; set; }
@@ -33,7 +33,7 @@ public class MemberDescriptor : IXmlDocsExtended
     /// </remarks>
     public string? Cast { get; set; }
 
-    
+
     public string Description { get; set; }
 
     public string Returns { get; set; }

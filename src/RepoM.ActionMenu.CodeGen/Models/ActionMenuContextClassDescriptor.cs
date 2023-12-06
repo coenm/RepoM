@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.CodeGen.Models.New;
+namespace RepoM.ActionMenu.CodeGen.Models;
 
 using System.Diagnostics;
 

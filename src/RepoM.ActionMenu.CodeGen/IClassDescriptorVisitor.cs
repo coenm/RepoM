@@ -1,6 +1,6 @@
 namespace RepoM.ActionMenu.CodeGen;
 
-using RepoM.ActionMenu.CodeGen.Models.New;
+using RepoM.ActionMenu.CodeGen.Models;
 
 public interface IClassDescriptorVisitor
 {

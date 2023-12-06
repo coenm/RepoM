@@ -3,7 +3,6 @@ namespace RepoM.ActionMenu.CodeGen;
 using System;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.CodeGen.Models;
-using RepoM.ActionMenu.CodeGen.Models.New;
 using Scriban;
 using Scriban.Runtime;
 

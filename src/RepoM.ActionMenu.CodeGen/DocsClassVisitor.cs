@@ -2,7 +2,7 @@ namespace RepoM.ActionMenu.CodeGen;
 
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
-using RepoM.ActionMenu.CodeGen.Models.New;
+using RepoM.ActionMenu.CodeGen.Models;
 
 public class DocsClassVisitor : IClassDescriptorVisitor
 {
