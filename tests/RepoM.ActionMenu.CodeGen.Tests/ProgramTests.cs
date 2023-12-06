@@ -23,13 +23,12 @@ public class ProgramTests
         var pathToSolution = Path.Combine(srcFolder, PROJECT_NAME, $"{PROJECT_NAME}.csproj");
         Template templateDocs = await Program.LoadTemplateAsync("Templates/DocsScriptVariables.scriban-txt");
         string content = string.Empty;
-        string fileName = string.Empty;
 
         // act
         (_, ProjectDescriptor projectDescriptor) = await Program.CompileAndExtractProjectDescription(pathToSolution, PROJECT_NAME, new Dictionary<string, string>());
         if (projectDescriptor.ActionContextMenus.Count > 0)
         {
-            (fileName, content) = await Program.GenerateModuleSiteDocumentationFromProjectDescription(projectDescriptor.ActionContextMenus[0]!, templateDocs);
+            content = await DocumentationGenerator.GetDocsContentAsync(projectDescriptor.ActionContextMenus[0]!, templateDocs);
         }
 
         // assert
@@ -38,7 +37,6 @@ public class ProgramTests
             await Verifier.Verify(new
                 {
                     Project = projectDescriptor,
-                    Filename = fileName,
                     Content = content,
                 });
         }

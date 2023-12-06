@@ -12,7 +12,6 @@ using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.AssemblyInformation;
 using Scriban;
-using Scriban.Runtime;
 
 public static class Program
 {
@@ -25,9 +24,9 @@ public static class Program
         var srcFolder = Path.Combine(rootFolder, "src");
         var docsFolder = Path.Combine(rootFolder, "docs_new");
 
-        CheckDirectory(srcFolder);
-        CheckDirectory(docsFolder);
-        CheckDirectory(Path.Combine(rootFolder, ".git"));
+        FileSystemHelper.CheckDirectory(srcFolder);
+        FileSystemHelper.CheckDirectory(docsFolder);
+        FileSystemHelper.CheckDirectory(Path.Combine(rootFolder, ".git"));
 
         var projects = new List<string>
             {
@@ -54,7 +53,7 @@ public static class Program
         foreach (var project in projects)
         {
             var pathToSolution = Path.Combine(srcFolder, project, $"{project}.csproj");
-            CheckFile(pathToSolution);
+            FileSystemHelper.CheckFile(pathToSolution);
 
             (Compilation _, ProjectDescriptor projectDescriptor) = await CompileAndExtractProjectDescription(pathToSolution, project, files);
             
@@ -66,50 +65,26 @@ public static class Program
         {
             foreach (ActionMenuContextClassDescriptor actionContextMenu in project.ActionContextMenus)
             {
-                (string fileName, string content) = await GenerateModuleSiteDocumentationFromProjectDescription(actionContextMenu, templateDocs).ConfigureAwait(false);
-                await File.WriteAllTextAsync(Path.Combine(docsFolder, fileName), content).ConfigureAwait(false);
+                var name = actionContextMenu.Name.ToLowerInvariant();
+                var fileName = Path.Combine(docsFolder, $"script_variables_{name}.generated.md");
+                var content = await DocumentationGenerator.GetDocsContentAsync(actionContextMenu, templateDocs).ConfigureAwait(false);
+                await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
             }
         }
 
+        // Generate module registration code in c#.
         foreach ((var projectName, ProjectDescriptor? project) in processedProjects)
         {
-            var modules = project.ActionContextMenus.OrderBy(x => x.ClassName).ToList();
-            var pathToGeneratedCode = Path.Combine(srcFolder, projectName, "RepoMCodeGen.generated.cs");
+            var fileName = Path.Combine(srcFolder, projectName, "RepoMCodeGen.generated.cs");
 
-            if (modules.Count == 0)
+            if (project.ActionContextMenus.Count == 0)
             {
-                // delete if exist:
-                if (File.Exists(pathToGeneratedCode))
-                {
-                    try
-                    {
-                        File.Delete(pathToGeneratedCode);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Could not delete generated file '{pathToGeneratedCode}'.");
-                        throw;
-                    }
-                }
-
+                FileSystemHelper.DeleteFileIsExist(fileName);
                 continue;
             }
-            
-            var context = new TemplateContext
-                {
-                    LoopLimit = 0,
-                    MemberRenamer = x => x.Name,
-                    EnableRelaxedMemberAccess = false,
-                };
 
-            var scriptObject = new ScriptObject()
-                {
-                    { "modules", modules },
-                };
-            context.PushGlobal(scriptObject);
-
-            var result = await templateModule.RenderAsync(context).ConfigureAwait(false);
-            await File.WriteAllTextAsync(pathToGeneratedCode, result).ConfigureAwait(false);
+            var content = await DocumentationGenerator.GetScribanInitializersCSharpCodeAsync(project.ActionContextMenus, templateModule).ConfigureAwait(false);
+            await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
         }
     }
 
@@ -184,34 +159,6 @@ public static class Program
         }
     }
     
-    public static async Task<(string fileName, string content)> GenerateModuleSiteDocumentationFromProjectDescription(ActionMenuContextClassDescriptor actionMenuContextClassDescriptor, Template template)
-    {
-        var result = await DocumentationGenerator.GetDocsContentAsync(actionMenuContextClassDescriptor, template);
-        var name = actionMenuContextClassDescriptor.Name.ToLowerInvariant();
-        return ($"script_variables_{name}.generated.md", result);
-    }
-
-    static string GetTypeName(ITypeSymbol typeSymbol)
-    {
-        return typeSymbol.ToDisplayString();
-    }
-    
-    private static void CheckDirectory(string path)
-    {
-        if (!Directory.Exists(path))
-        {
-            throw new Exception($"Folder '{path}' does not exist");
-        }
-    }
-
-    private static void CheckFile(string path)
-    {
-        if (!File.Exists(path))
-        {
-            throw new Exception($"File '{path}' does not exist");
-        }
-    }
-
     public static async Task<Template> LoadTemplateAsync(string path)
     {
         var rawTemplate = await File.ReadAllTextAsync(path);
