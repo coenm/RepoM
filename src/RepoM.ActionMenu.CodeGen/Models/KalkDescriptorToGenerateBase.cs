@@ -1,6 +1,6 @@
 namespace RepoM.ActionMenu.CodeGen.Models
 {
-    public abstract class KalkDescriptorToGenerate : KalkDescriptor
+    public abstract class KalkDescriptorToGenerateBase : KalkDescriptorBase
     {
         public bool IsModule { get; set; }
 
