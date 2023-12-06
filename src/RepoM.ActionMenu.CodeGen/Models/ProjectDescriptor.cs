@@ -21,17 +21,17 @@ public sealed class ProjectDescriptor
     /// <summary>
     /// List of class descriptors for repository actions.
     /// </summary>
-    public List<ActionMenuClassDescriptor> ActionMenus { get; } = new List<ActionMenuClassDescriptor>();
+    public List<ActionMenuClassDescriptor> ActionMenus { get; } = new();
 
     /// <summary>
     /// List of class descriptors for context (ie scriban methods, properties)
     /// </summary>
-    public List<ActionMenuContextClassDescriptor> ActionContextMenus { get; } = new List<ActionMenuContextClassDescriptor>();
+    public List<ActionMenuContextClassDescriptor> ActionContextMenus { get; } = new();
 
     /// <summary>
     /// Regular types (to be used when action type has sub type property)
     /// </summary>
-    public List<ClassDescriptor> Types { get; } = new List<ClassDescriptor>();
+    public List<ClassDescriptor> Types { get; } = new();
 
     /// <summary>
     /// when project is plugin, the pluginname.

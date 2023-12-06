@@ -44,6 +44,8 @@ public class ClassDescriptor : IXmlDocsExtended
 
     public string Description { get; set; }
 
+    public string? InheritDocs { get; set; }
+
     string IXmlDocsExtended.Returns
     {
         get => throw new NotSupportedException("no returns for class.");

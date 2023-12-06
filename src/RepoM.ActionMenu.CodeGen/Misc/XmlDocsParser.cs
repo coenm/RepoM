@@ -79,8 +79,26 @@ internal static partial class XmlDocsParser
                 }
                 else if (element.Name == "inheritdoc")
                 {
-                    Console.WriteLine("InheritDoc fix TODO");
-                    // throw new NotImplementedException("inheritdoc");
+                    // expect text to be empty
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
+                        throw new Exception("Text should be empty in inheritdoc");
+                    }
+
+                    // we need cref
+                    var cref = element.Attribute("cref")?.Value;
+
+                    if (string.IsNullOrWhiteSpace(cref))
+                    {
+                        throw new Exception("Cref should not be empty in inheritdoc");
+                    }
+
+                    if (!cref.StartsWith("P:") && !cref.StartsWith("T:"))
+                    {
+                        throw new Exception("Cref should start with P: or T:");
+                    }
+
+                    desc.InheritDocs = cref[2..];
                 }
             }
         }

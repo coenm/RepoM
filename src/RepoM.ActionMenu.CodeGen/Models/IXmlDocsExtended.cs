@@ -6,6 +6,8 @@ public interface IXmlDocsExtended
 {
     string Description { get; set; }
 
+    string? InheritDocs { get; set; }
+
     string Returns { get; set; }
 
     string Remarks { get; set; }

@@ -20,6 +20,7 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
         set => _ = value;
     }
 
+    /// <inheritdoc cref="IMenuActions.Actions"/>
     public ActionMenu? Actions { get; set; }
 
     /// <inheritdoc cref="IName.Name"/>

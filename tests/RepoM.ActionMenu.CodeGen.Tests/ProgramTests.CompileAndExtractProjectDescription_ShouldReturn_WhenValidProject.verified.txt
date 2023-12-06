@@ -6,19 +6,6 @@
       {
         ActionMenuProperties: [
           {
-            IsTemplate: false,
-            IsPredicate: false,
-            IsContext: false,
-            IsReturnEnumerable: false,
-            CSharpName: Type,
-            ReturnType: string,
-            XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Type,
-            IsCommand: false,
-            IsAction: false,
-            IsFunc: false,
-            IsConst: false
-          },
-          {
             IsTemplate: true,
             IsPredicate: false,
             IsContext: false,
@@ -157,7 +144,8 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
             IsCommand: false,
             IsAction: false,
             IsFunc: false,
-            IsConst: false
+            IsConst: false,
+            InheritDocs: RepoM.ActionMenu.Interface.YamlModel.ActionMenus.IContext.Context
           },
           {
             IsTemplate: false,
@@ -171,7 +159,8 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
             IsCommand: false,
             IsAction: false,
             IsFunc: false,
-            IsConst: false
+            IsConst: false,
+            InheritDocs: RepoM.ActionMenu.Interface.YamlModel.IMenuAction.Active
           },
           {
             IsTemplate: false,

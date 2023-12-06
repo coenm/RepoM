@@ -27,6 +27,9 @@ internal sealed class RepositoryActionBrowseRepositoryV1 : IMenuAction, IName
     [Predicate(true)]
     public Predicate Active { get; set; } = new ScribanPredicate();
 
+    /// <summary>
+    /// Single menu for the first remote.
+    /// </summary>
     [Predicate(false)]
     public Predicate FirstOnly { get; set; } = new ScribanPredicate();
 

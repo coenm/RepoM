@@ -136,8 +136,6 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 continue;
             }
 
-            // coen
-
             // Name = name,
             // XmlId = member.GetDocumentationCommentId() ?? string.Empty,
             // Category = string.Empty,
@@ -250,10 +248,16 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
             // {
             //     continue;
             // }
+            
+            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+
+            if (string.IsNullOrWhiteSpace(memberDescriptor.Description) && string.IsNullOrWhiteSpace(memberDescriptor.InheritDocs))
+            {
+                Console.WriteLine($"Skip property '{_typeSymbol.Name}.{memberDescriptor.CSharpName}' due to missing description");
+                continue;
+            }
 
             descriptor.ActionMenuProperties.Add(memberDescriptor);
-
-            Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 

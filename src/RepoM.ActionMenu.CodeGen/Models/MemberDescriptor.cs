@@ -32,9 +32,10 @@ public class MemberDescriptor : IXmlDocsExtended
     /// Used for C# code generation
     /// </remarks>
     public string? Cast { get; set; }
-
-
+    
     public string Description { get; set; }
+
+    public string? InheritDocs { get; set; }
 
     public string Returns { get; set; }
 

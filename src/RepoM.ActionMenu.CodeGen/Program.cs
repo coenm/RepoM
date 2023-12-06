@@ -48,7 +48,7 @@ public static class Program
 
         Dictionary<string, string> files = await LoadFiles();
         
-        var processedProjects = new Dictionary<string, ProjectDescriptor>(); // project name -> project descriptor object
+        var processedProjects = new Dictionary<string, ProjectDescriptor>();
 
         foreach (var project in projects)
         {
@@ -56,7 +56,6 @@ public static class Program
             FileSystemHelper.CheckFile(pathToSolution);
 
             ProjectDescriptor projectDescriptor = await CompileAndExtractProjectDescription(pathToSolution, project, files);
-            
             processedProjects.Add(project, projectDescriptor);
         }
 
