@@ -16,6 +16,14 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
     private readonly ITypeSymbol _typeSymbol;
     private readonly IDictionary<string, string> _files;
 
+    // todo extend.
+    private static readonly string[] _collectionTypes =
+        {
+            "System.Collections.Generic.List<T>",
+            "System.Collections.Generic.IList<T>",
+            "System.Collections.Generic.IEnumerable<T>",
+        };
+
     public ProcessMembersVisitor(ITypeSymbol typeSymbol, IDictionary<string, string> files)
     {
         _typeSymbol = typeSymbol;
@@ -125,6 +133,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 // property is readonly
                 continue;
             }
+
             if (propertyMember.GetMethod == null)
             {
                 // property is writeonly
@@ -171,15 +180,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
                 var displayString = symbol.Type.ToDisplayString();
 
-                // todo extend.
-                string[] collectionTypes =
-                    {
-                        "System.Collections.Generic.List<T>",
-                        "System.Collections.Generic.IList<T>",
-                        "System.Collections.Generic.IEnumerable<T>",
-                    };
-
-                if (collectionTypes.Contains(originalDefinitionDisplayName))
+                if (_collectionTypes.Contains(originalDefinitionDisplayName))
                 {
                     // must be singe due to <T>
                     genericType = ((INamedTypeSymbol)symbol.Type).TypeArguments.Single();
