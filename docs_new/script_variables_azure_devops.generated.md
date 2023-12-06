@@ -10,7 +10,7 @@ This module contains the following methods, variables and/or constants:
 
 `azure_devops.get_pull_requests(projectId)`
 
-Get pull requests for the given project. The result is an enumeration of .
+Get pull requests for the given project. The result is an enumeration of PullRequest.
 
 Argument:
 
