@@ -55,7 +55,7 @@ public static class Program
             var pathToSolution = Path.Combine(srcFolder, project, $"{project}.csproj");
             FileSystemHelper.CheckFile(pathToSolution);
 
-            (Compilation _, ProjectDescriptor projectDescriptor) = await CompileAndExtractProjectDescription(pathToSolution, project, files);
+            ProjectDescriptor projectDescriptor = await CompileAndExtractProjectDescription(pathToSolution, project, files);
             
             processedProjects.Add(project, projectDescriptor);
         }
@@ -88,7 +88,7 @@ public static class Program
         }
     }
 
-    public static async Task<(Compilation compilation, ProjectDescriptor projectDescriptor)> CompileAndExtractProjectDescription(string pathToSolution, string project, IDictionary<string, string> files)
+    public static async Task<ProjectDescriptor> CompileAndExtractProjectDescription(string pathToSolution, string project, IDictionary<string, string> files)
     {
         Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project).ConfigureAwait(false);
 
@@ -109,7 +109,7 @@ public static class Program
 
         ProcessProject(compilation, projectDescriptor, files);
 
-        return (compilation, projectDescriptor);
+        return projectDescriptor;
     }
 
     private static void ProcessProject(Compilation compilation, ProjectDescriptor projectDescriptor, IDictionary<string, string> files)

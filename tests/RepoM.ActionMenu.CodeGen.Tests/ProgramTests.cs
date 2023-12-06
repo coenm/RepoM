@@ -25,7 +25,7 @@ public class ProgramTests
         string content = string.Empty;
 
         // act
-        (_, ProjectDescriptor projectDescriptor) = await Program.CompileAndExtractProjectDescription(pathToSolution, PROJECT_NAME, new Dictionary<string, string>());
+        ProjectDescriptor projectDescriptor = await Program.CompileAndExtractProjectDescription(pathToSolution, PROJECT_NAME, new Dictionary<string, string>());
         if (projectDescriptor.ActionContextMenus.Count > 0)
         {
             content = await DocumentationGenerator.GetDocsContentAsync(projectDescriptor.ActionContextMenus[0]!, templateDocs);
