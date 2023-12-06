@@ -4,11 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Newtonsoft.Json;
-using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.CodeGen.Models.New;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -20,6 +17,9 @@ public static class Program
 {
     public static async Task Main()
     {
+        // var ns = typeSymbol.ContainingNamespace.ToDisplayString();
+        // var fullClassName = $"{ns}.{className}";
+        
         var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
         var srcFolder = Path.Combine(rootFolder, "src");
         var docsFolder = Path.Combine(rootFolder, "docs_new");
@@ -50,26 +50,16 @@ public static class Program
         
         var processedProjects = new Dictionary<string, ProjectDescriptor>(); // project name -> project descriptor object
 
-        // project - (class name, module)
-        var projectMapping = new Dictionary<string, Dictionary<string, KalkModuleToGenerate>>();
-        
         foreach (var project in projects)
         {
             var pathToSolution = Path.Combine(srcFolder, project, $"{project}.csproj");
             CheckFile(pathToSolution);
 
-            (Compilation compilation, ProjectDescriptor projectDescriptor) = await CompileAndExtractProjectDescription(pathToSolution, project, files);
+            (Compilation _, ProjectDescriptor projectDescriptor) = await CompileAndExtractProjectDescription(pathToSolution, project, files);
             
             processedProjects.Add(project, projectDescriptor);
-
-            // continue;
-            //---
-            var mapNameToModule = new Dictionary<string, KalkModuleToGenerate>(); // class name, module
-            projectMapping.Add(project, mapNameToModule);
-            ProcessPossibleActionContextType(files, compilation, mapNameToModule);
         }
 
-        // new style
         // Generate module site documentation
         foreach ((var projectName, ProjectDescriptor? project) in processedProjects)
         {
@@ -79,16 +69,11 @@ public static class Program
                 await File.WriteAllTextAsync(Path.Combine(docsFolder, fileName), content).ConfigureAwait(false);
             }
         }
-        // end of new style
-        
-        // tmp
-        var json = JsonConvert.SerializeObject(processedProjects, Formatting.Indented);
-        await File.WriteAllTextAsync("C:\\tmp\\repom.export.json", json);
 
-        foreach ((var project, Dictionary<string, KalkModuleToGenerate>? mapNameToModule) in projectMapping)
+        foreach ((var projectName, ProjectDescriptor? project) in processedProjects)
         {
-            var modules = mapNameToModule.Values.OrderBy(x => x.ClassName).ToList();
-            var pathToGeneratedCode = Path.Combine(srcFolder, project, "RepoMCodeGen.generated.cs");
+            var modules = project.ActionContextMenus.OrderBy(x => x.ClassName).ToList();
+            var pathToGeneratedCode = Path.Combine(srcFolder, projectName, "RepoMCodeGen.generated.cs");
 
             if (modules.Count == 0)
             {
@@ -108,13 +93,7 @@ public static class Program
 
                 continue;
             }
-
-            if (!processedProjects.TryGetValue(project, out ProjectDescriptor? projectNew))
-            {
-                throw new Exception("No project found");
-            }
-            var modules2 = projectNew.ActionContextMenus.OrderBy(x => x.ClassName).ToList();
-
+            
             var context = new TemplateContext
                 {
                     LoopLimit = 0,
@@ -124,17 +103,12 @@ public static class Program
 
             var scriptObject = new ScriptObject()
                 {
-                    { "modules", modules2 },
+                    { "modules", modules },
                 };
             context.PushGlobal(scriptObject);
-        
-            var result = await templateModule.RenderAsync(context);
-            await File.WriteAllTextAsync(pathToGeneratedCode, result);
-        
-            // foreach (var module in modules2)
-            // {
-            //     await GenerateModuleSiteDocumentation(module, docsFolder, templateDocs);
-            // }
+
+            var result = await templateModule.RenderAsync(context).ConfigureAwait(false);
+            await File.WriteAllTextAsync(pathToGeneratedCode, result).ConfigureAwait(false);
         }
     }
 
@@ -209,187 +183,6 @@ public static class Program
         }
     }
     
-    private static void ProcessPossibleActionContextType(Dictionary<string, string> files, Compilation compilation, Dictionary<string, KalkModuleToGenerate> mapNameToModule)
-    {
-        foreach (ITypeSymbol typeSymbol in compilation.GetTypes())
-        {
-            AttributeData? moduleAttribute = typeSymbol.FindAttribute<ActionMenuContextAttribute>();
-            KalkModuleToGenerate? moduleToGenerate = null;
-            if (moduleAttribute != null)
-            {
-                GetOrCreateModule(typeSymbol, typeSymbol.Name, moduleAttribute, out moduleToGenerate, mapNameToModule, files);
-            }
-
-            foreach (ISymbol member in typeSymbol.GetMembers())
-            {
-                AttributeData? attr = member.FindAttribute<ActionMenuContextMemberAttribute>();
-                if (attr == null)
-                {
-                    continue;
-                }
-
-                var name = attr.ConstructorArguments[0].Value?.ToString();
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    throw new Exception("Name cannot be null or empty.");
-                }
-
-                var className = member.ContainingSymbol.Name;
-
-                // In case the module is built-in, we still generate a module for it
-                if (moduleToGenerate == null)
-                {
-                    GetOrCreateModule(typeSymbol, className, moduleAttribute!, out moduleToGenerate, mapNameToModule, files);
-                }
-
-                var method = member as IMethodSymbol;
-                var desc = new KalkMemberToGenerate()
-                {
-                    Name = name,
-                    XmlId = member.GetDocumentationCommentId() ?? string.Empty,
-                    Category = string.Empty,
-                    IsCommand = method?.ReturnsVoid ?? false,
-                    //Module = moduleToGenerate,
-                };
-                desc.Names.Add(name);
-
-                if (method != null)
-                {
-                    desc.CSharpName = method.Name;
-
-                    desc.IsAction = method.ReturnsVoid;
-                    desc.IsFunc = !desc.IsAction;
-                    var builder = new StringBuilder();
-                    builder.Append(desc.IsAction ? "Action" : "Func");
-
-                    if (method.Parameters.Length > 0 || desc.IsFunc)
-                    {
-                        builder.Append('<');
-                    }
-
-                    for (var i = 0; i < method.Parameters.Length; i++)
-                    {
-                        IParameterSymbol parameter = method.Parameters[i];
-                        if (i > 0)
-                        {
-                            builder.Append(", ");
-                        }
-
-                        builder.Append(GetTypeName(parameter.Type));
-                    }
-
-                    if (desc.IsFunc)
-                    {
-                        if (method.Parameters.Length > 0)
-                        {
-                            builder.Append(", ");
-                        }
-                        builder.Append(GetTypeName(method.ReturnType));
-                    }
-
-                    if (method.Parameters.Length > 0 || desc.IsFunc)
-                    {
-                        builder.Append('>');
-                    }
-
-                    desc.Cast = $"({builder})";
-                }
-                else if (member is IPropertySymbol or IFieldSymbol)
-                {
-                    desc.CSharpName = member.Name;
-                    desc.IsConst = true;
-                }
-
-                moduleToGenerate.Members.Add(desc);
-                XmlDocsParser.ExtractDocumentation(member, desc, files);
-            }
-        }
-    }
-    
-    private static void GetOrCreateActionModule(
-        ITypeSymbol typeSymbol,
-        string className,
-        RepositoryActionAttribute moduleAttribute,
-        out ActionsToGenerate moduleToGenerate,
-        IDictionary<string, ActionsToGenerate> mapNameToModule,
-        IDictionary<string, string> files)
-    {
-        var ns = typeSymbol.ContainingNamespace.ToDisplayString();
-
-        var fullClassName = $"{ns}.{className}";
-        if (mapNameToModule.TryGetValue(fullClassName, out moduleToGenerate))
-        {
-            return;
-        }
-
-        moduleToGenerate = new ActionsToGenerate()
-            {
-                Namespace = typeSymbol.ContainingNamespace.ToDisplayString(),
-                ClassName = className,
-            };
-        mapNameToModule.Add(fullClassName, moduleToGenerate);
-
-        // if (moduleAttribute != null)
-        // {
-            moduleToGenerate.Name = moduleAttribute.Type;
-            moduleToGenerate.Names.Add(moduleToGenerate.Name!);
-            moduleToGenerate.Category = "Modules (e.g `import Files`)";
-        // }
-        // else
-        // {
-        //     moduleToGenerate.Name = className.Replace("Module", "");
-        //     moduleToGenerate.IsBuiltin = true;
-        // }
-
-        XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate, files);
-    }
-    
-
-
-    private static void GetOrCreateModule(
-        ITypeSymbol typeSymbol,
-        string className,
-        AttributeData moduleAttribute,
-        out KalkModuleToGenerate moduleToGenerate,
-        IDictionary<string, KalkModuleToGenerate> mapNameToModule,
-        IDictionary<string, string> files)
-    {
-        var ns = typeSymbol.ContainingNamespace.ToDisplayString();
-
-        var fullClassName = $"{ns}.{className}";
-        if (mapNameToModule.TryGetValue(fullClassName, out moduleToGenerate))
-        {
-            return;
-        }
-
-        moduleToGenerate = new KalkModuleToGenerate()
-            {
-                Namespace = typeSymbol.ContainingNamespace.ToDisplayString(),
-                ClassName = className,
-            };
-        mapNameToModule.Add(fullClassName, moduleToGenerate);
-
-        if (moduleAttribute != null)
-        {
-            moduleToGenerate.Name = moduleAttribute.ConstructorArguments[0].Value.ToString();
-            moduleToGenerate.Names.Add(moduleToGenerate.Name!);
-            moduleToGenerate.Category = "Modules (e.g `import Files`)";
-        }
-        else
-        {
-            moduleToGenerate.Name = className.Replace("Module", "");
-            moduleToGenerate.IsBuiltin = true;
-        }
-
-        XmlDocsParser.ExtractDocumentation(typeSymbol, moduleToGenerate, files);
-    }
-
-    private static async Task GenerateModuleSiteDocumentation2(ActionMenuContextClassDescriptor module, string siteFolder, Template template)
-    {
-        (string fileName, string content) = await GenerateModuleSiteDocumentationFromProjectDescription(module, template);
-        await File.WriteAllTextAsync(Path.Combine(siteFolder, fileName), content);
-    }
-
     public static async Task<(string fileName, string content)> GenerateModuleSiteDocumentationFromProjectDescription(ActionMenuContextClassDescriptor actionMenuContextClassDescriptor, Template template)
     {
         var result = await DocumentationGenerator.GetDocsContentAsyncNew(actionMenuContextClassDescriptor, template);
