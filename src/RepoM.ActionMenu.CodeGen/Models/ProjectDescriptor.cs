@@ -44,6 +44,11 @@ public sealed class ProjectDescriptor
     public string? PluginDescription { get; private set; }
 
     /// <summary>
+    /// when project is plugin, the plugin markdown description.
+    /// </summary>
+    public string? PluginMarkdownDescription { get; private set; }
+
+    /// <summary>
     /// is plugin or not.
     /// </summary>
     public bool IsPlugin { get; private set; } = false;
@@ -52,7 +57,8 @@ public sealed class ProjectDescriptor
     public void SetPackageInformation(PackageAttribute attribute)
     {
         PluginName = attribute.Name;
-        PluginDescription = attribute.Description;
+        PluginDescription = attribute.ToolTip;
+        PluginMarkdownDescription = attribute.Description;
         IsPlugin = true;
     }
 }

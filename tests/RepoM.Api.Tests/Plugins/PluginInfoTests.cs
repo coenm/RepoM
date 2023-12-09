@@ -13,11 +13,12 @@ public class PluginInfoTests
         // arrange
 
         // act
-        var sut = new PluginInfo("C:\\path\\abc.dll", new PackageAttribute("my test package", "description of test package"), new byte[] { 0x12, });
+        var sut = new PluginInfo("C:\\path\\abc.dll", new PackageAttribute("my test package", "tooltip of test package", "desc"), new byte[] { 0x12, });
 
         // assert
         sut.Name.Should().Be("my test package");
-        sut.Description.Should().Be("description of test package");
+        sut.ToolTip.Should().Be("tooltip of test package");
+        sut.Description.Should().Be("desc");
         sut.Hash.Should().BeEquivalentTo(new byte[] { 0x12, });
         sut.AssemblyPath.Should().Be("C:\\path\\abc.dll");
     }

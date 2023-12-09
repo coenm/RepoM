@@ -9,13 +9,16 @@ using System;
 [AttributeUsage(AttributeTargets.Assembly)]
 public sealed class PackageAttribute : Attribute
 {
-    public PackageAttribute(string name, string description)
+    public PackageAttribute(string name, string toolTip, string description)
     {
         Name = name;
+        ToolTip = toolTip;
         Description = description;
     }
 
     public string Name { get; set; }
 
-    public string Description { get; set; }
+    public string ToolTip { get; set; }
+
+    public string Description { get; }
 }

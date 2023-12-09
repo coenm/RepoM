@@ -10,6 +10,24 @@ using Scriban.Runtime;
 
 internal static class DocumentationGenerator
 {
+    public static async Task<string> GetPluginDocsContentAsync(ProjectDescriptor plugin, Template template)
+    {
+        var context = new TemplateContext
+            {
+                LoopLimit = 0,
+                MemberRenamer = x => x.Name,
+            };
+
+        var scriptObject = new ScriptObject()
+            {
+                { "plugin", plugin },
+            };
+
+        context.PushGlobal(scriptObject);
+
+        return await template.RenderAsync(context);
+    }
+
     public static async Task<string> GetDocsContentAsync(ActionMenuContextClassDescriptor module, Template template)
     {
         module.Members.Sort((left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal));

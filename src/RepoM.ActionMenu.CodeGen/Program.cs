@@ -45,6 +45,7 @@ public static class Program
 
         Template templateModule = await LoadTemplateAsync("Templates/ScribanModuleRegistration.scriban-cs");
         Template templateDocs = await LoadTemplateAsync("Templates/DocsScriptVariables.scriban-txt");
+        Template templatePluginDocs = await LoadTemplateAsync("Templates/DocsPlugin.scriban-txt");
 
         Dictionary<string, string> files = await LoadFiles();
         
@@ -57,6 +58,20 @@ public static class Program
 
             ProjectDescriptor projectDescriptor = await CompileAndExtractProjectDescription(pathToSolution, project, files);
             processedProjects.Add(project, projectDescriptor);
+        }
+
+        // Generate plugin documentation
+        foreach ((var projectName, ProjectDescriptor? project) in processedProjects)
+        {
+            if (!project.IsPlugin)
+            {
+                continue;
+            }
+
+            var name = project.ProjectName.ToLowerInvariant();
+            var fileName = Path.Combine(docsFolder, $"plugin_{name}.generated.md");
+            var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
+            await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
         }
 
         // Generate module site documentation
@@ -102,7 +117,8 @@ public static class Program
         {
             var pa = new PackageAttribute(
                 (assemblyAttribute.ConstructorArguments[0].Value as string)!,
-                (assemblyAttribute.ConstructorArguments[1].Value as string)!);
+                (assemblyAttribute.ConstructorArguments[1].Value as string)!,
+                (assemblyAttribute.ConstructorArguments[2].Value as string)!);
             projectDescriptor.SetPackageInformation(pa);
         }
 

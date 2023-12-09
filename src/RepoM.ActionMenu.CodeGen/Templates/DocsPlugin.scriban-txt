@@ -1,0 +1,18 @@
+{{~
+
+~}}
+# {{plugin.PluginName}}
+
+{{~ if !string.empty plugin.PluginMarkdownDescription ~}}
+{{ plugin.PluginMarkdownDescription }}
+{{~ else if !string.empty plugin.PluginDescription ~}}
+{{ plugin.PluginDescription }}
+{{~ end ~}}
+
+{{~ ##  include: _plugin_enable  ## ~}}
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.
+
+ProjectName: {{ plugin.ProjectName }}
+PluginName: {{ plugin.PluginName }}
+PluginDescription: {{ plugin.PluginDescription }}
+PluginMarkdownDescription: {{ plugin.PluginMarkdownDescription }}

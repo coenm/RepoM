@@ -28,9 +28,10 @@ public static class PackageAttributeReader
                 return null;
             }
 
-            var key = constructorArguments[0].Value.ToString();
-            var value = constructorArguments[1].Value.ToString();
-            return new PackageAttribute(key!, value!);
+            var arg0 = constructorArguments[0].Value.ToString();
+            var arg1 = constructorArguments[1].Value.ToString();
+            var arg2 = constructorArguments[2].Value.ToString();
+            return new PackageAttribute(arg0!, arg1!, arg2!);
         }
         catch (Exception)
         {
