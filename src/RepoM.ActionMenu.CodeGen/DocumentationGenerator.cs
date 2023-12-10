@@ -12,6 +12,8 @@ internal static class DocumentationGenerator
 {
     public static async Task<string> GetPluginDocsContentAsync(ProjectDescriptor plugin, Template template)
     {
+        plugin.ActionMenus.Sort((left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal));
+
         var context = new TemplateContext
             {
                 LoopLimit = 0,
@@ -22,6 +24,7 @@ internal static class DocumentationGenerator
             {
                 { "plugin", plugin },
             };
+        scriptObject.Import(typeof(MyStringFunctions));
 
         context.PushGlobal(scriptObject);
 
@@ -44,6 +47,7 @@ internal static class DocumentationGenerator
             {
                 { "module", module },
             };
+        scriptObject.Import(typeof(MyStringFunctions));
 
         context.PushGlobal(scriptObject);
 
@@ -65,9 +69,18 @@ internal static class DocumentationGenerator
             {
                 { "modules", modules },
             };
+        scriptObject.Import(typeof(MyStringFunctions));
 
         context.PushGlobal(scriptObject);
 
         return await templateModule.RenderAsync(context).ConfigureAwait(false);
+    }
+}
+
+public static class MyStringFunctions
+{
+    public static string Hyphenated(string input)
+    {
+        return string.Concat(input.Select((x, i) => i > 0 && char.IsUpper(x) ? "-" + x : x.ToString())).ToLowerInvariant();
     }
 }

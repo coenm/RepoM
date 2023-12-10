@@ -8,3 +8,4 @@ ProjectName: RepoM.Plugin.LuceneQueryParser
 PluginName: LuceneQueryParser
 PluginDescription: Contains a custom query parser based on Lucene syntax for repository filtering.
 PluginMarkdownDescription: 
+

@@ -16,3 +16,18 @@ ProjectName: {{ plugin.ProjectName }}
 PluginName: {{ plugin.PluginName }}
 PluginDescription: {{ plugin.PluginDescription }}
 PluginMarkdownDescription: {{ plugin.PluginMarkdownDescription }}
+
+{{~ if array.size(plugin.ActionMenus) > 0  ~}}
+This module contains the following methods, variables and/or constants:
+
+  {{~ for member in plugin.ActionMenus ~}}
+[## `{{ member.Name }}`](#{{ member.Name | string.downcase }})
+
+{{ member.Description }}
+
+Action specific properties:
+    {{~ for p in member.ActionMenuProperties ~}}
+- `{{ hyphenated p.CSharpName }}` ({{ p.ReturnType }}): {{ p.Description }}
+    {{~ end ~}}
+  {{~ end ~}}
+{{~ end ~}}
