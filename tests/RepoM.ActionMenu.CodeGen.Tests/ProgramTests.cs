@@ -1,48 +1,45 @@
 namespace RepoM.ActionMenu.CodeGen.Tests;
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using RepoM.ActionMenu.CodeGen.Models;
 using Scriban;
 using VerifyXunit;
 using Xunit;
 
 [UsesVerify]
-public class ProgramTests
+public class ProgramTests : IClassFixture<CompiledProjectFixture>
 {
+    private readonly CompiledProjectFixture _fixture;
+
+    private readonly string _pathToSolution;
     private const string PROJECT_NAME = "RepoM.ActionMenu.CodeGenDummyLibrary";
-    
+
+
+    public ProgramTests(CompiledProjectFixture fixture)
+    {
+        _fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
+    }
+
     [Fact]
     public async Task CompileAndExtractProjectDescription_ShouldReturn_WhenValidProject()
     {
+        await Verifier.Verify(_fixture.Project);
+    }
+
+    [Fact]
+    public async Task GetDocsContentAsync_ShouldReturnAsExpected()
+    {
         // arrange
-        var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
-        var srcFolder = Path.Combine(rootFolder, "tests");
-        var pathToSolution = Path.Combine(srcFolder, PROJECT_NAME, $"{PROJECT_NAME}.csproj");
         Template templateDocs = await Program.LoadTemplateAsync("Templates/DocsScriptVariables.scriban-txt");
-        string content = string.Empty;
+        var content = string.Empty;
 
         // act
-        ProjectDescriptor projectDescriptor = await Program.CompileAndExtractProjectDescription(pathToSolution, PROJECT_NAME, new Dictionary<string, string>());
-        if (projectDescriptor.ActionContextMenus.Count > 0)
+        if (_fixture.Project.ActionContextMenus.Count > 0)
         {
-            content = await DocumentationGenerator.GetDocsContentAsync(projectDescriptor.ActionContextMenus[0]!, templateDocs);
+            content = await DocumentationGenerator.GetDocsContentAsync(_fixture.Project.ActionContextMenus[0]!, templateDocs);
         }
 
         // assert
-        if (projectDescriptor.ActionContextMenus.Count > 0)
-        {
-            await Verifier.Verify(new
-                {
-                    Project = projectDescriptor,
-                    Content = content,
-                });
-        }
-        else
-        {
-            await Verifier.Verify(projectDescriptor);
-        }
+        await Verifier.Verify(content);
     }
 }
