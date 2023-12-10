@@ -11,10 +11,6 @@ public class ProgramTests : IClassFixture<CompiledProjectFixture>
 {
     private readonly CompiledProjectFixture _fixture;
 
-    private readonly string _pathToSolution;
-    private const string PROJECT_NAME = "RepoM.ActionMenu.CodeGenDummyLibrary";
-
-
     public ProgramTests(CompiledProjectFixture fixture)
     {
         _fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
