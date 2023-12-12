@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
 /// This action makes it possible to copy text to the clipboard.
@@ -20,6 +19,10 @@ internal sealed class RepositoryActionClipboardCopyV1 : IMenuAction, IContext
         set => _ = value;
     }
 
+    /// <summary>
+    /// Name of the menu item.
+    /// </summary>
+    [Required]
     [Text]
     public Text Name { get; set; } = null!;
 

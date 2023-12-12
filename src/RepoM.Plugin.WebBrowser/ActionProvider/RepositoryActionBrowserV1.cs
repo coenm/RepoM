@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.WebBrowser.ActionProvider;
 
+using System;
 using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -8,7 +9,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// Action opening a webbrowser with the provided url.
 /// </summary>
 [RepositoryAction(TYPE)]
-
+[Obsolete("Old action menu")]
 public sealed class RepositoryActionBrowserV1 : RepositoryAction
 {
     /// <summary>

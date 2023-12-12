@@ -16,12 +16,8 @@ This module contains the following methods, variables and/or constants:
 This action makes it possible to copy text to the clipboard.
 
 Action specific properties:
-- `text` (RepoM.ActionMenu.Interface.YamlModel.Templating.Text): The text to copy to the clipboard.
-- `context` (RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context?): 
-- `active` (RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate): 
-[## `clipboard-copy@1`](#clipboard-copy@1)
 
-This action makes it possible to copy text to the clipboard.
-
-Action specific properties:
-- `text` (string?): The text to copy to the clipboard.
+- `name`: Name of the menu item. (Text)
+- `text`: The text to copy to the clipboard. (Text)
+- `context`:  (Context?)
+- `active`:  (Predicate)

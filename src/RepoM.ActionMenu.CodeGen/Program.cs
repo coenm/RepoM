@@ -136,10 +136,11 @@ public static class Program
 
             ClassDescriptor classDescriptor;
 
+            AttributeData? obsoleteAttribute = typeSymbol.FindAttribute<ObsoleteAttribute>();
             AttributeData? actionMenuContextAttribute = typeSymbol.FindAttribute<ActionMenuContextAttribute>();
             AttributeData? repositoryActionAttribute = typeSymbol.FindAttribute<RepositoryActionAttribute>();
             
-            if (actionMenuContextAttribute != null)
+            if (actionMenuContextAttribute != null && obsoleteAttribute == null)
             {
                 var actionMenuContextClassDescriptor = new ActionMenuContextClassDescriptor
                     {
@@ -150,7 +151,7 @@ public static class Program
 
                 classDescriptor = actionMenuContextClassDescriptor;
             }
-            else if (repositoryActionAttribute != null)
+            else if (repositoryActionAttribute != null && obsoleteAttribute == null)
             {
                 var actionMenuClassDescriptor = new ActionMenuClassDescriptor
                     {

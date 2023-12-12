@@ -26,8 +26,9 @@ This module contains the following methods, variables and/or constants:
 {{ member.Description }}
 
 Action specific properties:
+
     {{~ for p in member.ActionMenuProperties ~}}
-- `{{ hyphenated p.CSharpName }}` ({{ p.ReturnType }}): {{ p.Description }}
+- `{{ hyphenated p.CSharpName }}`: {{ p.Description }} ({{ p.ReturnType.Name }})
     {{~ end ~}}
   {{~ end ~}}
 {{~ end ~}}

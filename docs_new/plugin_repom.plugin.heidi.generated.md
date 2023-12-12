@@ -16,16 +16,9 @@ This module contains the following methods, variables and/or constants:
 Action to list heidi databases and show action menus for them.
 
 Action specific properties:
-- `key` (RepoM.ActionMenu.Interface.YamlModel.Templating.Text): Repository key.
-If not provided, the repository `Remote.Origin.Name` is used as selector.
-- `executable` (RepoM.ActionMenu.Interface.YamlModel.Templating.Text): The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used.
-- `context` (RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context?): 
-- `active` (RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate): 
-[## `heidi-databases@1`](#heidi-databases@1)
 
-Action to list heidi databases and show action menus for them.
-
-Action specific properties:
-- `key` (string?): Repository key.
-If not provided, the repository `Remote.Origin.Name` is used as selector.
-- `executable` (string?): The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used.
+- `key`: Repository key.
+If not provided, the repository `Remote.Origin.Name` is used as selector. (Text)
+- `executable`: The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used. (Text)
+- `context`:  (Context?)
+- `active`:  (Predicate)

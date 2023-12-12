@@ -59,7 +59,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             if (member is IMethodSymbol method)
             {
-                memberDescriptor.ReturnType = method.ReturnType.ToDisplayString();
+                memberDescriptor.ReturnType = new TypeInfoDescriptor(method.ReturnType);
                 memberDescriptor.IsCommand = method.ReturnsVoid;
 
                 memberDescriptor.CSharpName = method.Name;
@@ -105,7 +105,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             if (member is IPropertySymbol property) // or field IFieldSymbol
             {
-                memberDescriptor.ReturnType = property.Type.ToDisplayString();
+                memberDescriptor.ReturnType = new TypeInfoDescriptor(property.Type);
                 memberDescriptor.IsConst = true;
             }
 
@@ -185,18 +185,18 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 return false;
             }
 
-            var propertyDisplayName = propertyMember.Type.ToDisplayString();
+            var propertyReturnType = propertyMember.Type.ToDisplayString();
 
             bool IsTypeOrNullableType<T>()
             {
                 var typeFullName = typeof(T).FullName ?? string.Empty;
-                return propertyDisplayName.Equals(typeFullName) || propertyDisplayName.Equals(typeFullName + "?");
+                return propertyReturnType.Equals(typeFullName) || propertyReturnType.Equals(typeFullName + "?");
             }
             
             var memberDescriptor = new ActionMenuMemberDescriptor
                 {
                     CSharpName = propertyMember.Name,
-                    ReturnType = propertyDisplayName, // (member as IPropertySymbol)?.Type;
+                    ReturnType = new (propertyMember.Type), // (member as IPropertySymbol)?.Type;
                     XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                 };
 
@@ -237,11 +237,11 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                 // ie string, int, bool, ..
                 Console.WriteLine("d");
             }
-            else if (propertyDisplayName.Contains("RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1"))
+            else if (propertyReturnType.Contains("RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1"))
             {
                 // aditional checks?
                 // todo, name
-                memberDescriptor.RefType = $"{propertyMember.ContainingModule.Name}; {propertyDisplayName}";
+                memberDescriptor.RefType = $"{propertyMember.ContainingModule.Name}; {propertyReturnType}";
             }
 
             // if (!typeSymbol.Interfaces.Any(namedTypeSymbol => namedTypeSymbol.Equals(actionMenuInterface, SymbolEqualityComparer.Default)))
@@ -328,7 +328,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             if (member is IMethodSymbol method)
             {
-                memberDescriptor.ReturnType = method.ReturnType.ToDisplayString();
+                memberDescriptor.ReturnType = new TypeInfoDescriptor(method.ReturnType);
                 memberDescriptor.IsCommand = method.ReturnsVoid;
 
                 memberDescriptor.CSharpName = method.Name;
@@ -374,7 +374,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             if (member is IPropertySymbol property) // or field IFieldSymbol
             {
-                memberDescriptor.ReturnType = property.Type.ToDisplayString();
+                memberDescriptor.ReturnType = new (property.Type);
                 memberDescriptor.IsConst = true;
             }
 

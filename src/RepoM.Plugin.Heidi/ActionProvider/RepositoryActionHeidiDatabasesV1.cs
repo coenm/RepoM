@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.Heidi.ActionProvider;
 
+using System;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
@@ -7,6 +8,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// Action to list heidi databases and show action menus for them.
 /// </summary>
 [RepositoryAction(TYPE)]
+[Obsolete("Old action menu")]
 public sealed class RepositoryActionHeidiDatabasesV1 : RepositoryAction
 {
     /// <summary>

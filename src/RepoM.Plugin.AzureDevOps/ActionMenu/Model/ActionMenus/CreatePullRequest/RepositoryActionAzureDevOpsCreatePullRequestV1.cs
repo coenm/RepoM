@@ -32,10 +32,11 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     /// </summary>
     [Text("Create Pull Request")]
     public Text Name { get; set; } = null!;
-    
+
     /// <summary>
     /// The azure devops project id.
     /// </summary>
+    [Required]
     [Text]
     public Text ProjectId { get; set; } = null!;
 
@@ -47,6 +48,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     /// `{{ repository.branch | string.replace "feature/" "" | string.truncate 16 "..." }}`
     /// </example>
     [Text]
+    [Required]
     public Text PrTitle { get; set; } = null!;
 
     /// <summary>
@@ -64,22 +66,19 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     /// <summary>
     /// Boolean specifying if th PR should be marked as draft.
     /// </summary>
-    [Required]
     [Predicate(false)]
     public Predicate DraftPr { get; set; } = false;
 
     /// <summary>
     /// Boolean specifying if workitems should be included in the PR. RepoM will try to resolve the workitems by looping through the commit messages.
     /// </summary>
-    [Required]
     [Predicate(true)]
     public Predicate IncludeWorkItems { get; set; } = true;
 
     /// <summary>
     /// Boolean specifying if the Pull request should be opened in the browser after creation.
     /// </summary>
-    [Required]
-    [Predicate(default)]
+    [Predicate(false)]
     public Predicate OpenInBrowser { get; set; } = true;
 
     /// <inheritdoc cref="IContext.Context"/>

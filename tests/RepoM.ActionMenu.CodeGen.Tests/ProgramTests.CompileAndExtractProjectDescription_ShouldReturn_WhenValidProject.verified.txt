@@ -11,7 +11,10 @@
           DefaultValue: Create Pull Request,
           IsReturnEnumerable: false,
           CSharpName: Name,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+            Name: Text
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Name,
           IsCommand: false,
           IsAction: false,
@@ -27,7 +30,10 @@ This property will be used instead of the Name property.
           IsContext: false,
           IsReturnEnumerable: false,
           CSharpName: ProjectId,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+            Name: Text
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ProjectId,
           IsCommand: false,
           IsAction: false,
@@ -41,7 +47,10 @@ This property will be used instead of the Name property.
           IsContext: false,
           IsReturnEnumerable: false,
           CSharpName: PrTitle,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+            Name: Text
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.PrTitle,
           IsCommand: false,
           IsAction: false,
@@ -65,7 +74,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           IsContext: false,
           IsReturnEnumerable: false,
           CSharpName: ToBranch,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
+            Name: Text
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ToBranch,
           IsCommand: false,
           IsAction: false,
@@ -79,7 +91,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           IsContext: false,
           IsReturnEnumerable: true,
           CSharpName: ReviewerIds,
-          ReturnType: System.Collections.Generic.List<RepoM.ActionMenu.Interface.YamlModel.Templating.Text>,
+          ReturnType: {
+            CSharpTypeName: System.Collections.Generic.List<RepoM.ActionMenu.Interface.YamlModel.Templating.Text>,
+            Name: List<Text>
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ReviewerIds,
           IsCommand: false,
           IsAction: false,
@@ -94,7 +109,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           DefaultValue: false,
           IsReturnEnumerable: false,
           CSharpName: DraftPr,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            Name: Predicate
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.DraftPr,
           IsCommand: false,
           IsAction: false,
@@ -109,7 +127,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           DefaultValue: true,
           IsReturnEnumerable: false,
           CSharpName: IncludeWorkItems,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            Name: Predicate
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.IncludeWorkItems,
           IsCommand: false,
           IsAction: false,
@@ -124,7 +145,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           DefaultValue: false,
           IsReturnEnumerable: false,
           CSharpName: OpenInBrowser,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            Name: Predicate
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.OpenInBrowser,
           IsCommand: false,
           IsAction: false,
@@ -138,7 +162,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           IsContext: true,
           IsReturnEnumerable: false,
           CSharpName: Context,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context?,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context?,
+            Name: Context?
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Context,
           IsCommand: false,
           IsAction: false,
@@ -153,7 +180,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           DefaultValue: true,
           IsReturnEnumerable: false,
           CSharpName: Active,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            Name: Predicate
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Active,
           IsCommand: false,
           IsAction: false,
@@ -168,7 +198,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           IsReturnEnumerable: false,
           RefType: RepoM.ActionMenu.CodeGenDummyLibrary.dll; RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1?,
           CSharpName: AutoComplete,
-          ReturnType: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1?,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1?,
+            Name: AutoCompleteOptionsV1?
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.AutoComplete,
           IsCommand: false,
           IsAction: false,
@@ -194,7 +227,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           ActionMenuContextMemberName: count,
           Name: count,
           CSharpName: GetCount,
-          ReturnType: int,
+          ReturnType: {
+            CSharpTypeName: int,
+            Name: int
+          },
           XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Context.UsageVariables.GetCount(RepoM.ActionMenu.Interface.ActionMenuFactory.IActionMenuGenerationContext),
           IsCommand: false,
           IsAction: false,
@@ -221,7 +257,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           ActionMenuContextMemberName: overall_count,
           Name: overall_count,
           CSharpName: GetOverallCount,
-          ReturnType: int,
+          ReturnType: {
+            CSharpTypeName: int,
+            Name: int
+          },
           XmlId: M:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Context.UsageVariables.GetOverallCount,
           IsCommand: false,
           IsAction: false,
@@ -258,7 +297,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
       Members: [
         {
           CSharpName: MergeStrategy,
-          ReturnType: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1,
+            Name: MergeStrategyV1
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.MergeStrategy,
           IsCommand: false,
           IsAction: false,
@@ -268,7 +310,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
         },
         {
           CSharpName: DeleteSourceBranch,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            Name: Predicate
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.DeleteSourceBranch,
           IsCommand: false,
           IsAction: false,
@@ -278,7 +323,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
         },
         {
           CSharpName: TransitionWorkItems,
-          ReturnType: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+          ReturnType: {
+            CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
+            Name: Predicate
+          },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.TransitionWorkItems,
           IsCommand: false,
           IsAction: false,

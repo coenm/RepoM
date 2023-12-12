@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.SonarCloud;
 
+using System;
 using System.ComponentModel.DataAnnotations;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -8,6 +9,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// Action to mark a repository as favorite within SonarCloud.
 /// </summary>
 [RepositoryAction(TYPE)]
+[Obsolete("Old action menu")]
 public sealed class RepositoryActionSonarCloudSetFavoriteV1 : RepositoryAction
 {
     /// <summary>
