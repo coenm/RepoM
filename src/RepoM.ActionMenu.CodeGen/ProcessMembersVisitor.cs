@@ -59,7 +59,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             if (member is IMethodSymbol method)
             {
-                memberDescriptor.ReturnType = new TypeInfoDescriptor(method.ReturnType);
+                memberDescriptor.ReturnType = TypeInfoDescriptorFactory.Create(method.ReturnType);
                 memberDescriptor.IsCommand = method.ReturnsVoid;
 
                 memberDescriptor.CSharpName = method.Name;
@@ -105,7 +105,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             if (member is IPropertySymbol property) // or field IFieldSymbol
             {
-                memberDescriptor.ReturnType = new TypeInfoDescriptor(property.Type);
+                memberDescriptor.ReturnType = TypeInfoDescriptorFactory.Create(property.Type);
                 memberDescriptor.IsConst = true;
             }
 
@@ -196,7 +196,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
             var memberDescriptor = new ActionMenuMemberDescriptor
                 {
                     CSharpName = propertyMember.Name,
-                    ReturnType = new (propertyMember.Type), // (member as IPropertySymbol)?.Type;
+                    ReturnType = TypeInfoDescriptorFactory.Create(propertyMember.Type), // (member as IPropertySymbol)?.Type;
                     XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                 };
 
@@ -328,7 +328,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             if (member is IMethodSymbol method)
             {
-                memberDescriptor.ReturnType = new TypeInfoDescriptor(method.ReturnType);
+                memberDescriptor.ReturnType = TypeInfoDescriptorFactory.Create(method.ReturnType);
                 memberDescriptor.IsCommand = method.ReturnsVoid;
 
                 memberDescriptor.CSharpName = method.Name;
@@ -374,7 +374,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             if (member is IPropertySymbol property) // or field IFieldSymbol
             {
-                memberDescriptor.ReturnType = new (property.Type);
+                memberDescriptor.ReturnType = TypeInfoDescriptorFactory.Create(property.Type);
                 memberDescriptor.IsConst = true;
             }
 

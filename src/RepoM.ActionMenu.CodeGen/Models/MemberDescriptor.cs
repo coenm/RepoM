@@ -4,28 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
+
+public static class TypeInfoDescriptorFactory
+{
+    public static TypeInfoDescriptor Create(ITypeSymbol typeSymbol)
+    {
+        if (Program._typeInfos.TryGetValue(typeSymbol.ToDisplayString(), out var typeInfoDescriptor))
+        {
+            return typeInfoDescriptor;
+        }
+
+        var result = new TypeInfoDescriptor(typeSymbol);
+        Program._typeInfos.Add(typeSymbol.ToDisplayString(), result);
+        return result;
+    }
+}
+
 public class TypeInfoDescriptor
 {
     public TypeInfoDescriptor(ITypeSymbol typeSymbol)
         : this (typeSymbol.Name, typeSymbol.ToDisplayString())
     {
-        var x = typeSymbol.ToDisplayParts();
-        var x1 = typeSymbol.ToDisplayString();
-        var x2 = typeSymbol.Name;
-
-        if (x1 is "string" or "bool" or "int" or "string[]")
-        {
-            return;
-        }
-
-        // RepoM.ActionMenu.Interface.YamlModel.Templating.Variable
-
-        if (x1 == "RepoM.ActionMenu.Interface.YamlModel.Templating.Text")
-        {
-            int xxxx = 123;
-        }
-
-        
     }
 
     public TypeInfoDescriptor(string name, string csharpTypeName)

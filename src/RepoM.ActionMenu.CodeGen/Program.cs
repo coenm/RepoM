@@ -1,6 +1,7 @@
 namespace RepoM.ActionMenu.CodeGen;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,17 @@ using Scriban;
 
 public static class Program
 {
+    public static Dictionary<string, TypeInfoDescriptor> _typeInfos = new()
+        {
+            {
+                typeof(Interface.YamlModel.Templating.Text).FullName!,
+                new TypeInfoDescriptor(nameof(Text), typeof(Interface.YamlModel.Templating.Text).FullName!)
+                    {
+                        Link = "https://google.com",
+                    }
+            },
+        };
+
     public static async Task Main()
     {
         // var ns = typeSymbol.ContainingNamespace.ToDisplayString();
