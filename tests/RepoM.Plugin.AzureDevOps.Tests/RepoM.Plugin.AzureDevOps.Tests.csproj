@@ -25,6 +25,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
     <PackageReference Include="System.IO.Abstractions" Version="20.0.4" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="20.0.4" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="Verify.ClipboardAccept" Version="22.7.1" />
     <PackageReference Include="Verify.Xunit" Version="22.7.1" />
     <PackageReference Include="xunit" Version="2.6.2" />

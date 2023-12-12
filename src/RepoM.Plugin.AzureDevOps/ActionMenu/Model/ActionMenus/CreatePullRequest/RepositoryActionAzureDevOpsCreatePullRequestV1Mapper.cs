@@ -112,7 +112,7 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
                 MergeStrategyV1.Squash => CreatePullRequestRepositoryCommand.MergeStrategy.Squash,
                 MergeStrategyV1.Rebase => CreatePullRequestRepositoryCommand.MergeStrategy.Rebase,
                 MergeStrategyV1.RebaseMerge => CreatePullRequestRepositoryCommand.MergeStrategy.RebaseMerge,
-                _ => throw new ArgumentOutOfRangeException(nameof(input), input, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
             };
     }
 }
