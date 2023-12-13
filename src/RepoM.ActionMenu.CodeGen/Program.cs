@@ -44,7 +44,9 @@ public static class Program
     {
         // var ns = typeSymbol.ContainingNamespace.ToDisplayString();
         // var fullClassName = $"{ns}.{className}";
-        
+
+        var compile = new CompileRepoM();
+
         var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
         var srcFolder = Path.Combine(rootFolder, "src");
         var docsFolder = Path.Combine(rootFolder, "docs_new");
@@ -81,7 +83,7 @@ public static class Program
             var pathToSolution = Path.Combine(srcFolder, project, $"{project}.csproj");
             FileSystemHelper.CheckFile(pathToSolution);
 
-            ProjectDescriptor projectDescriptor = await CompileAndExtractProjectDescription(pathToSolution, project, files);
+            ProjectDescriptor projectDescriptor = await CompileAndExtractProjectDescription(compile, pathToSolution, project, files);
             processedProjects.Add(project, projectDescriptor);
         }
 
@@ -127,9 +129,9 @@ public static class Program
         }
     }
 
-    public static async Task<ProjectDescriptor> CompileAndExtractProjectDescription(string pathToSolution, string project, IDictionary<string, string> files)
+    public static async Task<ProjectDescriptor> CompileAndExtractProjectDescription(CompileRepoM compile, string pathToSolution, string project, IDictionary<string, string> files)
     {
-        Compilation compilation = await CompilationHelper.CompileAsync(pathToSolution, project).ConfigureAwait(false);
+        Compilation compilation = await compile.CompileAsync(pathToSolution, project).ConfigureAwait(false);
 
         var projectDescriptor = new ProjectDescriptor
             {

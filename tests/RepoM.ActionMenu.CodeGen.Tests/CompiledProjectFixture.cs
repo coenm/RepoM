@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using RepoM.ActionMenu.CodeGen.Misc;
 using RepoM.ActionMenu.CodeGen.Models;
 using Xunit;
 
@@ -13,7 +14,9 @@ public class CompiledProjectFixture : IAsyncLifetime
 {
     private ProjectDescriptor? _project;
     private readonly string _pathToSolution;
+    private readonly CompileRepoM _compile = new();
     private const string PROJECT_NAME = "RepoM.ActionMenu.CodeGenDummyLibrary";
+
     public CompiledProjectFixture()
     {
         var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
@@ -26,6 +29,7 @@ public class CompiledProjectFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         _project = await Program.CompileAndExtractProjectDescription(
+            _compile,
             _pathToSolution,
             PROJECT_NAME,
             new Dictionary<string, string>());

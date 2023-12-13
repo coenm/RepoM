@@ -1,29 +1,49 @@
 namespace RepoM.ActionMenu.CodeGen.Misc;
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Broslyn;
 using Microsoft.CodeAnalysis;
 
-public static class CompilationHelper
+public class CompileRepoM
 {
-    public static async Task<Compilation> CompileAsync(string pathToSolution, string projectName)
+    private readonly ConcurrentDictionary<string, Tuple<Project, Compilation>> _compilations = new();
+
+    public Dictionary<string, Tuple<Project, Compilation>> Store => _compilations.ToDictionary(x => x.Key, x => x.Value);
+
+    public async Task<Compilation> CompileAsync(string pathToSolution, string projectName)
     {
         CSharpCompilationCaptureResult compilationCaptureResult = CSharpCompilationCapture.Build(pathToSolution);
         Solution solution = compilationCaptureResult.Workspace.CurrentSolution;
 
         var projects = solution.Projects.ToArray();
-        Project project = projects.Single(x => x.Name == projectName);
 
-        // Make sure that doc will be parsed
-        project = project.WithParseOptions(project.ParseOptions!.WithDocumentationMode(DocumentationMode.Parse));
+        foreach (var p in projects)
+        {
+            if (_compilations.ContainsKey(p.Name))
+            {
+                continue;
+            }
 
-        // Compile the project
-        Compilation compilation = await project.GetCompilationAsync() ?? throw new Exception("Compilation failed");
-        ValidateCompilation(compilation);
-        return compilation;
+            var project = p.WithParseOptions(p.ParseOptions!.WithDocumentationMode(DocumentationMode.Parse));
+
+            // Compile the project
+            Compilation compilation = await project.GetCompilationAsync() ?? throw new Exception("Compilation failed");
+            ValidateCompilation(compilation);
+
+            _compilations.AddOrUpdate(p.Name, _ => new Tuple<Project, Compilation>(project, compilation), (_, __) => new Tuple<Project, Compilation>(project, compilation));
+        }
+
+        if (_compilations.TryGetValue(projectName, out Tuple<Project, Compilation>? tupple))
+        {
+            return tupple.Item2;
+        }
+
+        throw new Exception("Not found");
     }
 
     private static void ValidateCompilation(Compilation compilation)
@@ -34,6 +54,14 @@ public static class CompilationHelper
         if (errors.Length <= 0)
         {
             return;
+        }
+
+        if ("RepoM.Api".Equals(compilation.AssemblyName))
+        {
+            if (errors is [{ Id: "CS8795", },])
+            {
+                return;
+            }
         }
 
         if ("RepoM.Plugin.AzureDevOps".Equals(compilation.AssemblyName))
