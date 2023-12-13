@@ -1,7 +1,6 @@
 namespace RepoM.ActionMenu.CodeGen;
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,7 +21,21 @@ public static class Program
                 typeof(Interface.YamlModel.Templating.Text).FullName!,
                 new TypeInfoDescriptor(nameof(Text), typeof(Interface.YamlModel.Templating.Text).FullName!)
                     {
-                        Link = "https://google.com",
+                        Link = "https://this-is.com/Text",
+                    }
+            },
+            {
+                typeof(Interface.YamlModel.Templating.Predicate).FullName!,
+                new TypeInfoDescriptor(nameof(Interface.YamlModel.Templating.Predicate), typeof(Interface.YamlModel.Templating.Predicate).FullName!)
+                    {
+                        Link = "https://this-is.com/Predicate",
+                    }
+            },
+            {
+                typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName!,
+                new TypeInfoDescriptor(nameof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context), typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName!)
+                    {
+                        Link = "https://this-is.com/Context",
                     }
             },
         };

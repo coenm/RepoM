@@ -1,4 +1,25 @@
 {{~
+func write_type_with_link(t)
+  result = t.Name;
+
+  if !string.empty t.Link
+    result = "[" + t.Name + "](" + t.Link + ")"
+  end
+
+  if (t.Nullable)
+    result = result + ", optional";
+  end
+
+  ret result;
+end
+
+func write_default_when_null(s, default_value = "\\<empty\\>")
+  if string.empty s
+    ret default_value
+  else
+    ret s
+  end
+end
 
 ~}}
 # {{plugin.PluginName}}
@@ -12,10 +33,10 @@
 {{~ ##  include: _plugin_enable  ## ~}}
 To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.
 
-ProjectName: {{ plugin.ProjectName }}
-PluginName: {{ plugin.PluginName }}
-PluginDescription: {{ plugin.PluginDescription }}
-PluginMarkdownDescription: {{ plugin.PluginMarkdownDescription }}
+- ProjectName: {{ write_default_when_null plugin.ProjectName }}
+- PluginName: {{ write_default_when_null plugin.PluginName }}
+- PluginDescription: {{ write_default_when_null plugin.PluginDescription }}
+- PluginMarkdownDescription: {{ write_default_when_null plugin.PluginMarkdownDescription }}
 
 {{~ if array.size(plugin.ActionMenus) > 0  ~}}
 This module contains the following methods, variables and/or constants:
@@ -28,7 +49,7 @@ This module contains the following methods, variables and/or constants:
 Action specific properties:
 
     {{~ for p in member.ActionMenuProperties ~}}
-- `{{ hyphenated p.CSharpName }}`: {{ p.Description }} ({{ p.ReturnType.Name }})
+- `{{ hyphenated p.CSharpName }}`: {{ p.Description }} ({{ write_type_with_link(p.ReturnType) }})
     {{~ end ~}}
   {{~ end ~}}
 {{~ end ~}}

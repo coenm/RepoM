@@ -1,15 +1,13 @@
 namespace RepoM.ActionMenu.CodeGen.Models;
 
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-
 
 public static class TypeInfoDescriptorFactory
 {
     public static TypeInfoDescriptor Create(ITypeSymbol typeSymbol)
     {
-        if (Program._typeInfos.TryGetValue(typeSymbol.ToDisplayString(), out var typeInfoDescriptor))
+        if (Program._typeInfos.TryGetValue(typeSymbol.ToDisplayString(), out TypeInfoDescriptor? typeInfoDescriptor))
         {
             return typeInfoDescriptor;
         }
@@ -25,6 +23,17 @@ public class TypeInfoDescriptor
     public TypeInfoDescriptor(ITypeSymbol typeSymbol)
         : this (typeSymbol.Name, typeSymbol.ToDisplayString())
     {
+        Nullable = IsNullableType(typeSymbol);
+
+        if (Name.Contains("AutoCompleteOptionsV1"))
+        {
+            int i = 0;
+        }
+    }
+
+    private static bool IsNullableType(ITypeSymbol typeSymbol)
+    {
+        return typeSymbol is INamedTypeSymbol { NullableAnnotation: NullableAnnotation.Annotated, };
     }
 
     public TypeInfoDescriptor(string name, string csharpTypeName)
@@ -34,10 +43,11 @@ public class TypeInfoDescriptor
 
         if (CSharpTypeName.Contains("RepoM"))
         {
-            Name = CSharpTypeName.Split('.').Last();
+            // Name = CSharpTypeName.Split('.').Last();
+            Name = name;
         }
 
-        if (!csharpTypeName.Contains("."))
+        if (!csharpTypeName.Contains('.'))
         {
             // primitive?
             Name = CSharpTypeName;
@@ -49,11 +59,13 @@ public class TypeInfoDescriptor
         }
     }
 
-    public string CSharpTypeName { get; set; }
+    public string CSharpTypeName { get; }
 
-    public string Name { get; set; }
+    public string Name { get; }
 
-    public string? Link { get; set; }
+    public string? Link { get; init; }
+
+    public bool Nullable { get; set; } = false;
 }
 
 /// <summary>
