@@ -11,7 +11,7 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 
 This module contains the following methods, variables and/or constants:
 
-[## `browser@1`](#browser@1)
+## browser@1
 
 Action opening a webbrowser with the provided url.
 

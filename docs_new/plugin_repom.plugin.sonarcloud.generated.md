@@ -11,7 +11,7 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 
 This module contains the following methods, variables and/or constants:
 
-[## `sonarcloud-set-favorite@1`](#sonarcloud-set-favorite@1)
+## sonarcloud-set-favorite@1
 
 Action to mark a repository as favorite within SonarCloud.
 

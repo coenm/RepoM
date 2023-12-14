@@ -40,9 +40,9 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 
 {{~ if array.size(plugin.ActionMenus) > 0  ~}}
 This module contains the following methods, variables and/or constants:
-
   {{~ for member in plugin.ActionMenus ~}}
-[## `{{ member.Name }}`](#{{ member.Name | string.downcase }})
+
+## {{ member.Name }}
 
 {{ member.Description }}
 

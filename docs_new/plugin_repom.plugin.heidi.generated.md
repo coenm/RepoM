@@ -11,7 +11,7 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 
 This module contains the following methods, variables and/or constants:
 
-[## `heidi-databases@1`](#heidi-databases@1)
+## heidi-databases@1
 
 Action to list heidi databases and show action menus for them.
 

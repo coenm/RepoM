@@ -11,7 +11,7 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 
 This module contains the following methods, variables and/or constants:
 
-[## `azure-devops-create-pr@1`](#azure-devops-create-pr@1)
+## azure-devops-create-pr@1
 
 Action menu item to create a pull request in Azure Devops.
 
