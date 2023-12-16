@@ -15,9 +15,9 @@ This module contains the following methods, variables and/or constants:
 
 This action makes it possible to copy text to the clipboard.
 
-Action specific properties:
+Properties:
 
 - `name`: Name of the menu item. ([Text](https://this-is.com/Text))
 - `text`: The text to copy to the clipboard. ([Text](https://this-is.com/Text))
-- `context`:  (Context, optional)
+- `context`:  ([Context](https://this-is.com/Context))
 - `active`:  ([Predicate](https://this-is.com/Predicate))

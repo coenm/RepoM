@@ -22,7 +22,8 @@ func write_default_when_null(s, default_value = "\\<empty\\>")
 end
 
 ~}}
-# {{plugin.PluginName}}
+{{~ if plugin.IsPlugin ~}}
+# {{ plugin.IsPlugin ? plugin.PluginName : "RepoM Core Repository Actions" }}
 
 {{~ if !string.empty plugin.PluginMarkdownDescription ~}}
 {{ plugin.PluginMarkdownDescription }}
@@ -37,6 +38,9 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 - PluginName: {{ write_default_when_null plugin.PluginName }}
 - PluginDescription: {{ write_default_when_null plugin.PluginDescription }}
 - PluginMarkdownDescription: {{ write_default_when_null plugin.PluginMarkdownDescription }}
+{{~ else ~}}
+# {{ plugin.IsPlugin ? plugin.PluginName : "RepoM Core Repository Actions" }}
+{{~ end ~}}
 
 {{~ if array.size(plugin.ActionMenus) > 0  ~}}
 This module contains the following methods, variables and/or constants:
@@ -46,10 +50,10 @@ This module contains the following methods, variables and/or constants:
 
 {{ member.Description }}
 
-Action specific properties:
+Properties:
 
     {{~ for p in member.ActionMenuProperties ~}}
-- `{{ hyphenated p.CSharpName }}`: {{ p.Description }} ({{ write_type_with_link(p.ReturnType) }})
+- `{{ hyphenated p.CSharpName }}`: {{ p.Description }} ({{ write_type_with_link p.ReturnType }})
     {{~ end ~}}
   {{~ end ~}}
 {{~ end ~}}

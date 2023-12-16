@@ -38,6 +38,13 @@ public static class Program
                         Link = "https://this-is.com/Context",
                     }
             },
+            {
+                typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName! + "?",
+                new TypeInfoDescriptor(nameof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context), typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName! + "?")
+                    {
+                        Link = "https://this-is.com/Context",
+                    }
+            },
         };
 
     public static async Task Main()
@@ -90,15 +97,20 @@ public static class Program
         // Generate plugin documentation
         foreach ((var projectName, ProjectDescriptor? project) in processedProjects)
         {
-            if (!project.IsPlugin)
+            if (project.IsPlugin)
             {
-                continue;
+                var name = project.ProjectName.ToLowerInvariant();
+                var fileName = Path.Combine(docsFolder, $"plugin_{name}.generated.md");
+                var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
+                await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
             }
-
-            var name = project.ProjectName.ToLowerInvariant();
-            var fileName = Path.Combine(docsFolder, $"plugin_{name}.generated.md");
-            var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
-            await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
+            else
+            {
+                // core
+                var fileName = Path.Combine(docsFolder, "repom.generated.md");
+                var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
+                await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
+            }
         }
 
         // Generate module site documentation

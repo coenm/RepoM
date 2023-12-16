@@ -16,7 +16,6 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "foreach@1";
 
-    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

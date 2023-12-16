@@ -13,7 +13,6 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
 {
     public const string TYPE_VALUE = "folder@1";
 
-    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

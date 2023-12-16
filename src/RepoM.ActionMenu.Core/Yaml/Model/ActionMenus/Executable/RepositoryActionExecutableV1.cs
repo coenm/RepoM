@@ -14,7 +14,6 @@ internal sealed class RepositoryActionExecutableV1 : IMenuAction, IName, IContex
 {
     public const string TYPE_VALUE = "executable@1";
 
-    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

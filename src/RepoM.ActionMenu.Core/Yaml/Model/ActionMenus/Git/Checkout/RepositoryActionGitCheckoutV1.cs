@@ -12,7 +12,6 @@ internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IName
 {
     public const string TYPE_VALUE = "git-checkout@1";
 
-    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

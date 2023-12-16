@@ -15,10 +15,10 @@ This module contains the following methods, variables and/or constants:
 
 Action to list heidi databases and show action menus for them.
 
-Action specific properties:
+Properties:
 
 - `key`: Repository key.
 If not provided, the repository `Remote.Origin.Name` is used as selector. ([Text](https://this-is.com/Text))
 - `executable`: The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used. ([Text](https://this-is.com/Text))
-- `context`:  (Context, optional)
+- `context`:  ([Context](https://this-is.com/Context))
 - `active`:  ([Predicate](https://this-is.com/Predicate))

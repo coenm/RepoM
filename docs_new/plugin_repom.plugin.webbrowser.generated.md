@@ -15,9 +15,9 @@ This module contains the following methods, variables and/or constants:
 
 Action opening a webbrowser with the provided url.
 
-Action specific properties:
+Properties:
 
 - `url`: The url to browse to. ([Text](https://this-is.com/Text))
 - `profile`: profile name used to select browser and browser profile ([Text](https://this-is.com/Text))
-- `context`:  (Context, optional)
+- `context`:  ([Context](https://this-is.com/Context))
 - `active`:  ([Predicate](https://this-is.com/Predicate))

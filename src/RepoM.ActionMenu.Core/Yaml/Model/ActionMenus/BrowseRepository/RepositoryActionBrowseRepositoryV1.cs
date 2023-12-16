@@ -12,7 +12,6 @@ internal sealed class RepositoryActionBrowseRepositoryV1 : IMenuAction, IName
 {
     public const string TYPE_VALUE = "browse-repository@1";
 
-    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

@@ -7,13 +7,14 @@ public static class TypeInfoDescriptorFactory
 {
     public static TypeInfoDescriptor Create(ITypeSymbol typeSymbol)
     {
-        if (Program._typeInfos.TryGetValue(typeSymbol.ToDisplayString(), out TypeInfoDescriptor? typeInfoDescriptor))
+        var displayString = typeSymbol.ToDisplayString();
+        if (Program._typeInfos.TryGetValue(displayString, out TypeInfoDescriptor? typeInfoDescriptor))
         {
             return typeInfoDescriptor;
         }
 
         var result = new TypeInfoDescriptor(typeSymbol);
-        Program._typeInfos.Add(typeSymbol.ToDisplayString(), result);
+        Program._typeInfos.Add(displayString, result);
         return result;
     }
 }

@@ -13,7 +13,6 @@ internal sealed class RepositoryActionSeparatorV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "separator@1";
 
-    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

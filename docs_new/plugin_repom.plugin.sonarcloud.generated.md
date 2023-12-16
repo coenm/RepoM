@@ -15,8 +15,8 @@ This module contains the following methods, variables and/or constants:
 
 Action to mark a repository as favorite within SonarCloud.
 
-Action specific properties:
+Properties:
 
 - `project`: The SonarCloud project key. ([Text](https://this-is.com/Text))
-- `context`:  (Context, optional)
+- `context`:  ([Context](https://this-is.com/Context))
 - `active`:  ([Predicate](https://this-is.com/Predicate))

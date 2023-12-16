@@ -253,7 +253,11 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             if (string.IsNullOrWhiteSpace(memberDescriptor.Description) && string.IsNullOrWhiteSpace(memberDescriptor.InheritDocs))
             {
-                Console.WriteLine($"Skip property '{_typeSymbol.Name}.{memberDescriptor.CSharpName}' due to missing description");
+                if (!memberDescriptor.CSharpName.Equals("Type"))
+                {
+                    Console.WriteLine($"Skip property '{_typeSymbol.Name}.{memberDescriptor.CSharpName}' due to missing description");
+                }
+                
                 continue;
             }
 

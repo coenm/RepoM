@@ -13,7 +13,6 @@ internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "just-text@1";
 
-    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;

@@ -12,7 +12,6 @@ internal sealed class RepositoryActionGitPushV1 : IMenuAction, IName
 {
     public const string TYPE_VALUE = "git-push@1";
 
-    /// <inheritdoc cref="IMenuAction.Type"/>
     public string Type
     {
         get => TYPE_VALUE;
