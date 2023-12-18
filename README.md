@@ -14,16 +14,9 @@ It's populating itself as you work with git. It does not get in the way and only
 
 RepoM will not compete with your favourite git clients, so keep them. It's not about working within a repository: It's a new way to use all of your repositories to make your daily work easier.
 
-📦  [Check the Releases page](https://github.com/coenm/RepoM/releases) to **download** the latest version and see **what's new**!
-
-## Credits
-
-RepoM is a fork of [RepoZ](https://github.com/awaescher/RepoZ), which was created by [Andreas Wäscher](https://github.com/awaescher).
-RepoZ contains functionality that has been stripped in RepoM like supporting MacOS, releasing versions using chocolatey, the commandline sidekick (`grr``), and performing actions at multiple repostitories at once.
-
 ## The Hub
 
-The hub provides a quick overview of your repositories including their current branch and a short status information. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer, opening a command line tool in a given repository and checking out git branches.
+The hub provides a quick overview of your repositories including their current branch, a short status information, and optionally some provided tags. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer, opening a command line tool in a given repository, checking out git branches and lots of other predefined or customizable actions.
 
 ![Screenshot](https://raw.githubusercontent.com/awaescher/RepoZ/master/_doc/RepoZ-ReadMe-UI-Both.png)
 
@@ -77,3 +70,7 @@ RepoM uses plugins to extend functionality. At this moment, when a plugin is ava
   - [WebBrowser](docs/RepoM.Plugin.WebBrowser.md)
   - [WindowsExplorerGitInfo](docs/RepoM.Plugin.WindowsExplorerGitInfo.md)
   
+## Credits
+
+RepoM is a fork of [RepoZ](https://github.com/awaescher/RepoZ), which was created by [Andreas Wäscher](https://github.com/awaescher).
+RepoZ contains functionality that has been stripped in RepoM like supporting MacOS, releasing versions using chocolatey, the commandline sidekick (`grr``), and performing actions at multiple repostitories at once.
