@@ -185,7 +185,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     private async Task<IEnumerable<UserInterfaceRepositoryActionBase>> AddMenuActionAsync(IMenuAction menuAction)
     {
-        if (!await IsMenuItemActiveAsync(menuAction))
+        if (!await IsMenuItemActiveAsync(menuAction).ConfigureAwait(false))
         {
             return Array.Empty<UserInterfaceRepositoryActionBase>();
         }

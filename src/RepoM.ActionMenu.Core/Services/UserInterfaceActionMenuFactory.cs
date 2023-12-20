@@ -46,18 +46,19 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
     public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository, string filename)
     {
-        _logger.LogTrace("CreateMenuAsync start");
-        var context = new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins, _mappers, _deserializer, _fileReader);
+        _logger.LogTrace("CreateMenuAsync CreateActionMenuGenerationContext");
+        ActionMenuGenerationContext context = await CreateActionMenuGenerationContext(repository, filename).ConfigureAwait(false);
 
         // load yaml
+        _logger.LogTrace("CreateActionMenuGenerationContext LoadAsync");
         Root actions = await LoadAsync(filename).ConfigureAwait(false);
 
-        _logger.LogTrace("CreateMenuAsync AddRepositoryContextAsync");
-
         // process context (vars + methods)
+        _logger.LogTrace("CreateActionMenuGenerationContext AddRepositoryContextAsync");
         await context.AddRepositoryContextAsync(actions.Context).ConfigureAwait(false);
 
         // process actions
+        _logger.LogTrace("CreateActionMenuGenerationContext foreach AddActionMenusAsync");
         await foreach (UserInterfaceRepositoryActionBase item in context.AddActionMenusAsync(actions.ActionMenu).ConfigureAwait(false))
         {
             yield return item;
@@ -65,7 +66,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
         _logger.LogTrace("CreateMenuAsync Done");
     }
-    
+
     public async Task<IEnumerable<string>> GetTagsAsync(IRepository repository, string filename)
     {
         var context = new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins, _mappers, _deserializer, _fileReader);
@@ -83,6 +84,15 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
         // process tags
         return await context.GetTagsAsync(actions.Tags).ConfigureAwait(false);
+    }
+
+    private async Task<ActionMenuGenerationContext> CreateActionMenuGenerationContext(IRepository repository, string filename)
+    {
+        // force offloading to background thread (or use Task.Run(), or TaskFactory.....
+        await Task.Yield();
+        
+        _logger.LogTrace("CreateActionMenuGenerationContext ActionMenuGenerationContext ctor");
+        return new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins, _mappers, _deserializer, _fileReader);
     }
 
     private async Task<Root> LoadAsync(string filename)
