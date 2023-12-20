@@ -61,6 +61,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         _logger.LogTrace("CreateActionMenuGenerationContext foreach AddActionMenusAsync");
         await foreach (UserInterfaceRepositoryActionBase item in context.AddActionMenusAsync(actions.ActionMenu).ConfigureAwait(false))
         {
+            _logger.LogTrace  ("CreateActionMenuGenerationContext foreach inner");
             yield return item;
         }
 
