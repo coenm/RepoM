@@ -33,7 +33,7 @@ public class DefaultRepositoryReader : IRepositoryReader
             return null;
         }
 
-        Repository? result = ReadRepositoryWithRetries(repoPath, 3);
+        Repository? result = await ReadRepositoryWithRetries(repoPath, 3).ConfigureAwait(false);
         if (result != null)
         {
             result.Tags = (await _resolver.GetTagsAsync(result).ConfigureAwait(false)).ToArray();
@@ -46,7 +46,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         return result;
     }
 
-    private Repository? ReadRepositoryWithRetries(string repoPath, int maxRetries)
+    private async Task<Repository?> ReadRepositoryWithRetries(string repoPath, int maxRetries)
     {
         Repository? repository = null;
         var currentTry = 1;
@@ -66,7 +66,12 @@ public class DefaultRepositoryReader : IRepositoryReader
                     throw;
                 }
 
-                System.Threading.Thread.Sleep(500);
+                await Task.Delay(500).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unexpected exception hwn reading repo {path}. {msg}", repoPath, e.Message);
+                throw;
             }
 
             currentTry++;

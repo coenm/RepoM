@@ -31,9 +31,17 @@ For Windows, use the hotkeys <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> to show
 <!--
 To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you selected a repository. To open a command prompt instead, hold <kbd>Ctrl</kbd> on Windows while pressing <kbd>Return</kbd>. These modifier keys will also work with mouse navigation.
 -->
+
+## Configuration
+
+
+
+
 ## Context Menu
 
 The main functionality of RepoM are the quick actions to execute per repository. For instance, you can quickly naviate to the repository by directly opening the windows explorer or by opening a command prompt. This context menu is user and repostirory specific and can be defined using yaml. This way, you can add an context menu item (action) for opening the repository in Visual Studio (for a C# project) and for an other repository you can add the action to open a repository in Eclipse.
+
+To read more about the context menu, click here.
 
 These actions are defined in the `RepositoryActions.yaml` located in your `%APPDATA%\RepoM\` folder. More information can be found [here](docs/RepositoryActions.md).
 

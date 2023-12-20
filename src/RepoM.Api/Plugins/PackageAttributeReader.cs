@@ -23,15 +23,15 @@ public static class PackageAttributeReader
 
             IList<CustomAttributeArgument> constructorArguments = attribute.ConstructorArguments;
 
-            if (constructorArguments.Count != 2)
+            if (constructorArguments.Count != 3)
             {
                 return null;
             }
 
-            var arg0 = constructorArguments[0].Value.ToString();
-            var arg1 = constructorArguments[1].Value.ToString();
-            var arg2 = constructorArguments[2].Value.ToString();
-            return new PackageAttribute(arg0!, arg1!, arg2!);
+            return new PackageAttribute(
+                constructorArguments[0].Value.ToString()!,
+                constructorArguments[1].Value.ToString()!,
+                constructorArguments[2].Value.ToString()!);
         }
         catch (Exception)
         {

@@ -125,7 +125,9 @@ public class DocsModuleSettingsTests
 #if DEBUG
             await Verifier.Verify(persistedConfig, settings: _verifySettings, extension: "json");
 #else
-            true.Should().BeTrue(); // this test should only be run in Debug mode.
+#pragma warning disable FluentAssertions0700 // Simplify Assertion
+            Assert.True(true); // this test should only be run in Debug mode.
+#pragma warning restore FluentAssertions0700 // Simplify Assertion
 #endif
         }
     }

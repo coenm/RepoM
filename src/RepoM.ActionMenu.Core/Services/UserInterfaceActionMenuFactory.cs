@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Core.ConfigReader;
 using RepoM.ActionMenu.Core.Misc;
@@ -23,6 +24,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     private readonly IActionToRepositoryActionMapper[] _mappers;
     private readonly IActionMenuDeserializer _deserializer;
     private readonly IFileReader _fileReader;
+    private readonly ILogger _logger;
 
     public UserInterfaceActionMenuFactory(
         IFileSystem fileSystem, 
@@ -30,7 +32,8 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         IEnumerable<ITemplateContextRegistration> plugins,
         IEnumerable<IActionToRepositoryActionMapper> mappers,
         IActionMenuDeserializer deserializer,
-        IFileReader fileReader)
+        IFileReader fileReader,
+        ILogger logger)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
@@ -38,14 +41,18 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         _mappers = mappers.ToArray() ?? throw new ArgumentNullException(nameof(mappers));
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
         _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository, string filename)
     {
+        _logger.LogTrace("CreateMenuAsync start");
         var context = new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins, _mappers, _deserializer, _fileReader);
 
         // load yaml
         Root actions = await LoadAsync(filename).ConfigureAwait(false);
+
+        _logger.LogTrace("CreateMenuAsync AddRepositoryContextAsync");
 
         // process context (vars + methods)
         await context.AddRepositoryContextAsync(actions.Context).ConfigureAwait(false);
@@ -55,6 +62,8 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         {
             yield return item;
         }
+
+        _logger.LogTrace("CreateMenuAsync Done");
     }
     
     public async Task<IEnumerable<string>> GetTagsAsync(IRepository repository, string filename)

@@ -638,7 +638,7 @@ public partial class MainWindow
         // this is a deferred submenu. We want to make sure that the context menu can pop up
         // fast, while submenus are not evaluated yet. We don't want to make the context menu
         // itself slow because the creation of the submenu items takes some time.
-        if (repositoryAction is DeferredSubActionsUserInterfaceRepositoryAction deferredRepositoryAction )
+        if (repositoryAction is DeferredSubActionsUserInterfaceRepositoryAction deferredRepositoryAction)
         {
             // this is a template submenu item to enable submenus under the current
             // menu item. this item gets removed when the real subitems are created

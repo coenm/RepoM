@@ -116,7 +116,6 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         try
         {
             repo = await _repositoryReader.ReadRepositoryAsync(file);
-
         }
         catch (Exception e)
         {
