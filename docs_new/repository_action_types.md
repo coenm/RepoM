@@ -16,10 +16,9 @@ For this example, the current repository branch name is `feature/abcdefghi`
 |---|---|
 | `static text` | static text |
 | `static {{ 1 + 2 }} text` | static 3 text |
-| `{{ 42 < 11 \|\| true }}` | true |
-| `{{ 42 < 11 && true }}` | false |
-| `{{ 42 < 11 && true }}` | false |
-| `Create PR ({{ repository.branch \| string.replace "feature/" "" \| string.strip \| string.truncate 4 ".." }})` |  Create PR abcd..  |
+| `{{ 42 < 11 \|\| true }} and 1+2 = {{ 1+2 }}` | true and 1+2 = 3 |
+| `this is {{ 42 < 11 && true }}!` | this is false! |
+| `Create PR ({{ repository.branch \| string.replace "feature/" "" \| string.truncate 4 ".." }})` |  Create PR abcd..  |
 
 ### Internals
 
