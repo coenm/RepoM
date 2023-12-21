@@ -10,13 +10,13 @@ Text is a scriban template for rendering textual content. These scriban template
 
 ### Examples
 
-For this example, the current repository branch name is `feature/abcdefghi`
+For this example, the current repository branch name is `feature/abcdefghi` and the date is the 21st of december in 2023.
 
 | Input | Output (string) |
 |---|---|
 | `static text` | static text |
 | `static {{ 1 + 2 }} text` | static 3 text |
-| `{{ 42 < 11 \|\| true }} and 1+2 = {{ 1+2 }}` | true and 1+2 = 3 |
+| `today is {{ date.now \| date.to_string "%Y-%m-%d" }}` | today is 2023-12-21 |
 | `this is {{ 42 < 11 && true }}!` | this is false! |
 | `Create PR ({{ repository.branch \| string.replace "feature/" "" \| string.truncate 4 ".." }})` |  Create PR abcd..  |
 
