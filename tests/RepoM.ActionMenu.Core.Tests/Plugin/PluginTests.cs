@@ -6,6 +6,7 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
     using System.IO.Abstractions.TestingHelpers;
     using System.Text;
     using System.Threading.Tasks;
+    using Castle.Core.Logging;
     using FakeItEasy;
     using RepoM.ActionMenu.Interface.UserInterface;
     using RepoM.Core.Plugin.Repository;
@@ -14,6 +15,8 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
     using VerifyXunit;
     using Xunit;
     using RepoM.ActionMenu.Interface.Scriban;
+    using ILogger = Microsoft.Extensions.Logging.ILogger;
+    using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
     [UsesVerify]
     public class PluginTests
@@ -55,6 +58,8 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
             _container = new Container();
             Bootstrapper.RegisterServices(_container);
 
+            _container.RegisterInstance<ILogger>(NullLogger.Instance);
+
             var fileSystem = new MockFileSystem(
                 new Dictionary<string, MockFileData>
                     {
@@ -65,7 +70,6 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
             IDummyService dummyService = A.Fake<IDummyService>();
             _container.RegisterInstance(dummyService);
             _container.Collection.Append<ITemplateContextRegistration, DummyVariablesProvider>(Lifestyle.Singleton);
-
 
             var dummyValues = new DummyConfig[]
                 {

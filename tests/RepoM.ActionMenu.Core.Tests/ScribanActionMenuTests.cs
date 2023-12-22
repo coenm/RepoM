@@ -5,6 +5,8 @@ namespace RepoM.ActionMenu.Core.Tests
     using System.IO.Abstractions.TestingHelpers;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using RepoM.ActionMenu.Core;
     using RepoM.ActionMenu.Core.Model;
     using RepoM.ActionMenu.Interface.UserInterface;
@@ -188,6 +190,7 @@ namespace RepoM.ActionMenu.Core.Tests
                         { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
                     });
             _container.RegisterInstance<IFileSystem>(fileSystem);
+            _container.RegisterInstance<ILogger>(NullLogger.Instance);
             _container.Options.EnableAutoVerification = false;
         }
 
