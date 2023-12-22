@@ -27,8 +27,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     }
 
     /// <summary>
-    /// Menu item title. When not provided, a title will be generated.
-    /// This property will be used instead of the Name property.
+    /// Menu item title.
     /// </summary>
     [Text("Create Pull Request")]
     public Text Name { get; set; } = null!;

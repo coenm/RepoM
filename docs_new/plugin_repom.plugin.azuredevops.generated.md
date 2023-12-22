@@ -17,8 +17,7 @@ Action menu item to create a pull request in Azure Devops.
 
 Properties:
 
-- `name`: Menu item title. When not provided, a title will be generated.
-This property will be used instead of the Name property. ([Text](https://this-is.com/Text))
+- `name`: Menu item title. ([Text](https://this-is.com/Text))
 - `project-id`: The azure devops project id. ([Text](https://this-is.com/Text))
 - `pr-title`: Pull Request title. When not provided, the title will be defined based on the branch name.
 Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch` ([Text](https://this-is.com/Text))
