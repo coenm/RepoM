@@ -24,7 +24,7 @@ public class ZTextBox : TextBox
         }
     }
 
-    private List<Key> FinisherKeys { get; } = new List<Key>()
+    private static List<Key> FinisherKeys { get; } = new(3)
         {
             Key.Down,
             Key.Return,

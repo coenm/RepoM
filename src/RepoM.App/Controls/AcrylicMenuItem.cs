@@ -8,6 +8,8 @@ using RepoM.App.Services;
 
 public class AcrylicMenuItem : MenuItem
 {
+    private static readonly Brush _solidColorBrush = new SolidColorBrush(Color.FromArgb(80, 0, 0, 0));
+
     protected override void OnSubmenuOpened(RoutedEventArgs e)
     {
         base.OnSubmenuOpened(e);
@@ -37,14 +39,9 @@ public class AcrylicMenuItem : MenuItem
             if (parent is Border b)
             {
                 // only put color on the first border (transparent colors will add up otherwise)
-                if (borderIndex == 0)
-                {
-                    b.Background = new SolidColorBrush(Color.FromArgb(80, 0, 0, 0));
-                }
-                else
-                {
-                    b.Background = Brushes.Transparent;
-                }
+                b.Background = borderIndex == 0
+                    ? _solidColorBrush
+                    : Brushes.Transparent;
 
                 borderIndex++;
             }
