@@ -2,7 +2,14 @@
 
 ## Context
 
-sdf
+The context type enables you to create or load variables and add some custom scriban methods in order to render [Text](#text) or calculate [Predicats](#predicate).
+Currenlty, RepoM supports the following types of context actions which can be added as item to the context.
+
+- `evaluate-variable@1` A scriban template which, when evaluated, returns a value to be stored as variable.
+- `evaluate-script@1` A scriban template which, when evaluated adds 'content' like variables or methods, to the current scriban context.
+- `load-file@1` Loads a file (only `.env` or `.yaml`) and processes the content. An environment file is read and all environment variables are stored and accessable.
+- `render-variable@1` Renders a scriban template and stores the outcomming text as variable.
+- `set-variable@1` Sets a variable with static content.
 
 ## Text
 
