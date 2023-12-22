@@ -7,12 +7,7 @@ using RepoM.Api.Common;
 
 public class UtcToHumanizedLocalDateTimeConverter : IValueConverter
 {
-    private readonly IHumanizer _humanizer;
-
-    public UtcToHumanizedLocalDateTimeConverter()
-    {
-        _humanizer = new HardcodededMiniHumanizer(SystemClock.Instance);
-    }
+    private static readonly IHumanizer _humanizer = new HardcodededMiniHumanizer(SystemClock.Instance);
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
