@@ -32,9 +32,40 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 
 ### Example
       
-include: azure-devops-create-pr@1-scenario01
+- type: azure-devops-create-pr@1<!-- include: azure-devops-create-pr@1-scenario01. path: /tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml -->
+  project-id: "{{ project_id }}"
+  name: Create feature to develop ({{ repository.branch | string.replace "feature/" "" | string.strip | string.truncate 20 ".." }})
+  pr-title: 'Release {{ now }}'
+  to-branch: develop
+  reviewer-ids:
+  - "{{ devops_guid_reviewer_1 }}"
+  - "33333333-F973-4BE7-B39A-A9F85B18C75E"
+  draft-pr: false
+  include-work-items: true
+  open-in-browser: true
+  auto-complete:
+    merge-strategy: Squash
+    delete-source-branch: true
+    transition-work-items: true
+  active: 'repository.branch | string.starts_with "feature/"'<!-- endInclude -->
     
-include: azure-devops-create-pr@1-scenario02
+- type: azure-devops-create-pr@1<!-- include: azure-devops-create-pr@1-scenario02. path: /tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml -->
+  project-id: "{{ project_id }}"
+  name: Complete feature
+  pr-title: 'Feature {{ repository.branch | string.replace "feature/" "" }}'
+  to-branch: develop
+  reviewer-ids:
+  - "{{ devops_guid_reviewer_1 }}"
+  draft-pr: repository.banch == "develop"
+  active: true<!-- endInclude -->
     
-snippet: azure-devops-create-pr@1-scenario03
+<!-- snippet: azure-devops-create-pr@1-scenario03 -->
+<a id='snippet-azure-devops-create-pr@1-scenario03'></a>
+```yaml
+- type: azure-devops-create-pr@1
+  project-id: "{{ project_id }}"
+  to-branch: develop
+```
+<sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml#L45-L51' title='Snippet source file'>snippet source</a> | <a href='#snippet-azure-devops-create-pr@1-scenario03' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
     
