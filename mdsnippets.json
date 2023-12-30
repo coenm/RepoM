@@ -3,7 +3,7 @@
   "LinkFormat": "GitHub",
   "TocLevel": 3,
   "ExcludeDirectories":  [ "_ReSharper.Caches", "packages", "build"],
-  "MaxWidth": 140,
+  "MaxWidth": 160,
   "TreatMissingAsWarning": true,
   "WriteHeader": false,
   "ReadOnly": false,
