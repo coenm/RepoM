@@ -151,6 +151,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private void ObserveRepositoryChanges()
     {
+        _logger.LogTrace("ObserveRepositoryChanges start");
+
         _detectors = new List<IRepositoryDetector>();
 
         foreach (var path in _pathProvider.GetPaths())
@@ -167,20 +169,29 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             detector.OnDelete = OnRepositoryDeletionDetected;
             detector.Setup(path, DelayGitRepositoryStatusAfterCreationMilliseconds);
         }
+
+        _logger.LogTrace("ObserveRepositoryChanges finished");
     }
 
     public void Observe()
     {
+        _logger.LogTrace("Monitor.Observe starting");
         if (_detectors == null)
         {
+            _logger.LogTrace("Monitor.Observe ScanRepositoriesFromStoreAsync");
             ScanRepositoriesFromStoreAsync();
 
+            _logger.LogTrace("Monitor.Observe ObserveRepositoryChanges");
             ObserveRepositoryChanges();
         }
 
+        _logger.LogTrace("Monitor.Observe starting detectors");
         _detectors?.ForEach(w => w.Start());
+        _logger.LogTrace("Monitor.Observe starting detectors finished");
 
         _autoFetchHandler.Active = true;
+
+        _logger.LogTrace("Monitor.Observe finished");
     }
 
     public void Reset()
