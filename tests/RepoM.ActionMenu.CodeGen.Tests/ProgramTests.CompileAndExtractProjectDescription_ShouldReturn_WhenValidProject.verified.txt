@@ -265,18 +265,18 @@ devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
           {
             TypeName: Snippet,
             Language: yaml,
-            Text: azure-devops-create-pr@1-scenario01
+            Name: azure-devops-create-pr@1-scenario01
           },
           {
             TypeName: Snippet,
             Language: yaml,
-            Text: azure-devops-create-pr@1-scenario02
+            Name: azure-devops-create-pr@1-scenario02
           },
           {
             TypeName: Snippet,
             Mode: Snippet,
             Language: yaml,
-            Text: azure-devops-create-pr@1-scenario03
+            Name: azure-devops-create-pr@1-scenario03
           }
         ]
       }
