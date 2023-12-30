@@ -166,6 +166,51 @@ internal static partial class XmlDocsParser
                 {
                     result.Items.Add(new Code() { Content = xElement.Value.Trim(), Language = null, UseRaw = false, });
                 }
+                else if (xElement.Name == "snippet")
+                {
+                    // markdown snippet
+                    XAttribute? customAttribute = xElement.Attributes().SingleOrDefault(x => x.Name == "name");
+                    if (customAttribute == null)
+                    {
+                        throw new Exception("name attribute should exist");
+                    }
+                    var name = customAttribute.Value.Trim();
+
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        throw new Exception("Name should not be null");
+                    }
+
+                    var snippet = new Snippet { Name = name, };
+
+                    customAttribute = xElement.Attributes().SingleOrDefault(x => x.Name == "mode");
+                    if (customAttribute != null)
+                    {
+                        if (Enum.TryParse(customAttribute.Value.Trim().AsSpan(), true, out SnippetMode mode))
+                        {
+                            snippet.Mode = mode;
+                        }
+                        else
+                        {
+                            throw new Exception("mode attribute should not be empty");
+                        }
+                    }
+
+                    customAttribute = xElement.Attributes().SingleOrDefault(x => x.Name == "language");
+                    if (customAttribute != null)
+                    {
+                        if (!string.IsNullOrWhiteSpace(customAttribute.Value))
+                        {
+                            snippet.Language = customAttribute.Value.Trim();
+                        }
+                        else
+                        {
+                            throw new Exception("language attribute should not be empty");
+                        }
+                    }
+
+                    result.Items.Add(snippet);
+                }
                 else if (xElement.Name == "code-file")
                 {
                     XAttribute? customAttribute = xElement.Attributes().SingleOrDefault(x => x.Name == "filename");

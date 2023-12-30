@@ -73,6 +73,9 @@ Argument{{if member.Params.size > 1}}s{{end}}:
     {{~ end ~}}
 ```
 
+{{~ else if example_item.TypeName == 'Snippet' ~}}
+{{ example_item.Mode | string.downcase }}: {{ example_item.Name }}
+
         {{~ else if example_item.TypeName == 'Header' ~}}
 #### {{ example_item.Text }}
 

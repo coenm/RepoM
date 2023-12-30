@@ -9,11 +9,19 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Action menu item to create a pull request in Azure Devops.
 /// </summary>
-/// <test>
-/// - azure-devops-create-pr@1-scenario01
-/// - azure-devops-create-pr@1-scenario02
-/// - azure-devops-create-pr@1-scenario03
-/// </test>
+/// <example>
+/// <usage/>
+/// Get all pull requests for the selected repository in a given devops project:
+/// <code>
+/// devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
+/// prs = azure_devops.get_pull_requests(devops_project_id);
+/// </code>
+/// <result/>
+/// As a result, the variable `prs` could contain two pull requests with the following dummy data:
+/// <snippet language='yaml' name='azure-devops-create-pr@1-scenario01' mode='include' />
+/// <snippet language='yaml' name='azure-devops-create-pr@1-scenario02' mode='include' />
+/// <snippet language='yaml' name='azure-devops-create-pr@1-scenario03' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionDummyAbcV1 : IMenuAction, IContext
 {

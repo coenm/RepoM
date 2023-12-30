@@ -55,5 +55,38 @@ Properties:
     {{~ for p in member.ActionMenuProperties ~}}
 - `{{ hyphenated p.CSharpName }}`: {{ p.Description }} ({{ write_type_with_link p.ReturnType }})
     {{~ end ~}}
+    {{~ if member.Examples ~}}
+
+### Example
+      {{ if !string.empty member.Examples.Description }}
+{{ member.Examples.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+      {{ end }}
+      {{~ for example_item in member.Examples.Items ~}}
+        {{~ if example_item.TypeName == 'Code' ~}}
+    
+```{{ example_item.Language | string.downcase }}
+         {{~ if example_item.UseRaw ~}}
+{{ example_item.Content | string.rstrip }}
+         {{~ else ~}}
+{{ example_item.Content | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+         {{~ end ~}}
+```
+    
+        {{~ else if example_item.TypeName == 'Snippet' ~}}
+{{ example_item.Mode | string.downcase }}: {{ example_item.Name }}
+    
+        {{~ else if example_item.TypeName == 'Header' ~}}
+#### {{ example_item.Text }}
+    
+        {{~ else if example_item.TypeName == 'Text' ~}}
+{{ example_item.Content }}
+        {{~ else if example_item.TypeName == 'Paragraph' ~}}
+    
+{{ example_item.Text }}
+        {{~ else ~}}
+    NAME NOT FOUND!! {{ example_item.TypeName }}.      
+        {{~ end ~}}
+      {{~ end ~}}
+    {{~ end ~}}  
   {{~ end ~}}
 {{~ end ~}}

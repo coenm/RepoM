@@ -29,3 +29,12 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 - `context`:  ([Context](https://this-is.com/Context))
 - `active`:  ([Predicate](https://this-is.com/Predicate))
 - `auto-complete`: Auto complete options. Please take a look at the same for more information (AutoCompleteOptionsV1, optional)
+
+### Example
+      
+include: azure-devops-create-pr@1-scenario01
+    
+include: azure-devops-create-pr@1-scenario02
+    
+snippet: azure-devops-create-pr@1-scenario03
+    

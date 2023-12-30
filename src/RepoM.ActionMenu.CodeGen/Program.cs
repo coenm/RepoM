@@ -100,14 +100,19 @@ public static class Program
             if (project.IsPlugin)
             {
                 var name = project.ProjectName.ToLowerInvariant();
-                var fileName = Path.Combine(docsFolder, $"plugin_{name}.generated.md");
+                var fileName = Path.Combine(docsFolder, $"plugin_{name}.generated.source.md");
                 var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
                 await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
             }
             else
             {
                 // core
-                var fileName = Path.Combine(docsFolder, "repom.generated.md");
+                var fileName = Path.Combine(docsFolder, "repom.generated.source.md");
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
                 var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
                 await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
             }
@@ -120,6 +125,12 @@ public static class Program
             {
                 var name = actionContextMenu.Name.ToLowerInvariant();
                 var fileName = Path.Combine(docsFolder, $"script_variables_{name}.generated.md");
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                fileName = Path.Combine(docsFolder, $"script_variables_{name}.generated.source.md");
                 var content = await DocumentationGenerator.GetDocsContentAsync(actionContextMenu, templateDocs).ConfigureAwait(false);
                 await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
             }

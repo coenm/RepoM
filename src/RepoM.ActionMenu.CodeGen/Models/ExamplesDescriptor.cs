@@ -45,3 +45,21 @@ public sealed class Header : ExampleItemBase
 
     public string Text { get; set; }
 }
+
+public sealed class Snippet : ExampleItemBase
+{
+    public override string TypeName { get; } = nameof(Snippet);
+
+    public SnippetMode Mode { get; set; } = SnippetMode.Include;
+
+    public string? Language { get; set; } = null;
+
+    public string Name { get; set; }
+}
+
+public enum SnippetMode
+{
+    Include,
+
+    Snippet,
+}

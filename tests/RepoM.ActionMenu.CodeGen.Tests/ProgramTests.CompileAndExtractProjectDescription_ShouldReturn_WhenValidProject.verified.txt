@@ -236,7 +236,50 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
       Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
       IsEnum: false,
       IsClass: true,
-      Description: Action menu item to create a pull request in Azure Devops.
+      Description: Action menu item to create a pull request in Azure Devops.,
+      Examples: {
+        Items: [
+          {
+            TypeName: Header,
+            Text: Usage
+          },
+          {
+            TypeName: Text,
+            Content: Get all pull requests for the selected repository in a given devops project:
+          },
+          {
+            TypeName: Code,
+            Content:
+devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
+    prs = azure_devops.get_pull_requests(devops_project_id);,
+            UseRaw: false
+          },
+          {
+            TypeName: Header,
+            Text: Result
+          },
+          {
+            TypeName: Text,
+            Content: As a result, the variable `prs` could contain two pull requests with the following dummy data:
+          },
+          {
+            TypeName: Snippet,
+            Language: yaml,
+            Text: azure-devops-create-pr@1-scenario01
+          },
+          {
+            TypeName: Snippet,
+            Language: yaml,
+            Text: azure-devops-create-pr@1-scenario02
+          },
+          {
+            TypeName: Snippet,
+            Mode: Snippet,
+            Language: yaml,
+            Text: azure-devops-create-pr@1-scenario03
+          }
+        ]
+      }
     }
   ],
   ActionContextMenus: [
