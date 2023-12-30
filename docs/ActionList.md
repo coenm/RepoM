@@ -509,48 +509,9 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 Example:
 
 <!-- snippet: RepositoryActionsAzureDevopsCreatePrs01 -->
-<a id='snippet-repositoryactionsazuredevopscreateprs01'></a>
-```yaml
-repository-actions:
-  actions:
-  # Create PR
-  - type: azure-devops-create-prs@1
-    project-id: ''
-    to-branch: develop
-    reviewer-ids: 
-    - "GUID"
-
-  # Create PR with auto-complete enabled
-  - type: azure-devops-create-prs@1
-    project-id: ''
-    to-branch: develop
-    reviewer-ids:
-    - "GUID"
-    auto-complete:
-      enabled: true
-      merge-strategy: "Squash"
-
-  # Create PR with all settings
-  - type: azure-devops-create-prs@1
-    project-id: ''
-    title: 'Create PR'
-    # When no pr-title provided it will be generated based on convention.
-    # Title will be the last part of the branchname split on '/'. 
-    # For example: feature/testBranch will result in a PR title of 'testBranch'.
-    pr-title: 'PR title' 
-    to-branch: develop
-    reviewer-ids:
-    - "GUID"
-    draft-pr: true
-    include-work-items: true
-    open-in-browser: false
-    auto-complete:
-      enabled: true
-      merge-strategy: "NoFastForward" # You can choose from: "NoFastForward", "Squash", "Rebase" and "RebaseMerge"
-      deleteSource-branch: true
-      transition-work-items: true
 ```
-<sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/DocumentationFiles/AzureDevopsCreatePrs.testfile.yaml#L3-L44' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsazuredevopscreateprs01' title='Start of snippet'>anchor</a></sup>
+** Could not find snippet 'RepositoryActionsAzureDevopsCreatePrs01' **
+```
 <!-- endSnippet -->
 
 ## azure-devops-get-prs@1
@@ -566,21 +527,9 @@ Action specific properties:
 Example:
 
 <!-- snippet: RepositoryActionsAzureDevopsGetPrs01 -->
-<a id='snippet-repositoryactionsazuredevopsgetprs01'></a>
-```yaml
-repository-actions:
-  actions:
-  - type: azure-devops-get-prs@1
-    active: true
-    variables: []
-    show-when-empty: true
-    repository-id: ''
-    project-id: ''
-
-  - type: azure-devops-get-prs@1
-    repository-id: ''
 ```
-<sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/DocumentationFiles/AzureDevopsGetPrs.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsazuredevopsgetprs01' title='Start of snippet'>anchor</a></sup>
+** Could not find snippet 'RepositoryActionsAzureDevopsGetPrs01' **
+```
 <!-- endSnippet -->
 <!-- endInclude -->
 
