@@ -11,8 +11,8 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// Action menu item to create a pull request in Azure Devops.
 /// </summary>
 /// <example>
-/// <snippet name='azure-devops-create-pr@1-scenario01' mode='include' />
-/// <snippet name='azure-devops-create-pr@1-scenario02' mode='include' />
+/// <snippet name='azure-devops-create-pr@1-scenario01' mode='snippet' />
+/// <snippet name='azure-devops-create-pr@1-scenario02' mode='snippet' />
 /// <snippet name='azure-devops-create-pr@1-scenario03' mode='snippet' />
 /// </example>
 [RepositoryAction(TYPE_VALUE)]
