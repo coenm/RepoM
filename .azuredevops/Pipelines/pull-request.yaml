@@ -58,7 +58,7 @@ stages:
             checkLatest: true
 
         - pwsh: |
-            dotnet tool install --global MarkdownSnippets.Tool
+            dotnet tool install --global --version 25.1.0 MarkdownSnippets.Tool
             mdsnippets 
             
             $changedLines = git status --porcelain=v1
