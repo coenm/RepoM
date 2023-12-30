@@ -6,7 +6,6 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
 using RepoM.Api.Git;
@@ -30,7 +29,6 @@ using Serilog.Enrichers;
 public partial class App : Application
 {
     private static IRepositoryMonitor? _repositoryMonitor;
-    private Timer? _updateTimer;
     private TaskbarIcon? _notifyIcon;
     private ModuleService? _moduleService;
     private HotKeyService? _hotKeyService;
@@ -78,8 +76,6 @@ public partial class App : Application
 #endif
 
         UseRepositoryMonitor(Bootstrapper.Container);
-
-        _updateTimer = new Timer(async _ => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
 
         _ = Bootstrapper.Container.GetInstance<MainWindow>(); // not sure if this is required.
 
@@ -162,12 +158,5 @@ public partial class App : Application
         _repositoryMonitor.Observe();
     }
 
-    private async Task CheckForUpdatesAsync()
-    {
-        await Task.Yield();
-        AvailableUpdate = null;
-        _updateTimer?.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
-    }
-
-    public static string? AvailableUpdate { get; private set; }
+    public static string? AvailableUpdate { get; private set; } = null;
 }
