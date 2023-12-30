@@ -56,6 +56,7 @@ public static class Program
 
         var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
         var srcFolder = Path.Combine(rootFolder, "src");
+        var docsFolderSource = Path.Combine(rootFolder, "docs_new", "mdsource");
         var docsFolder = Path.Combine(rootFolder, "docs_new");
 
         FileSystemHelper.CheckDirectory(srcFolder);
@@ -100,21 +101,28 @@ public static class Program
             if (project.IsPlugin)
             {
                 var name = project.ProjectName.ToLowerInvariant();
-                var fileName = Path.Combine(docsFolder, $"plugin_{name}.generated.source.md");
+                var fileName = Path.Combine(docsFolderSource, $"plugin_{name}.generated.source.md");
                 var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
                 await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
+
+                fileName = Path.Combine(docsFolder, $"plugin_{name}.generated.md");
+                if (!File.Exists(fileName))
+                {
+                    await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
+                }
             }
             else
             {
                 // core
-                var fileName = Path.Combine(docsFolder, "repom.generated.source.md");
-                if (File.Exists(fileName))
-                {
-                    File.Delete(fileName);
-                }
-
+                var fileName = Path.Combine(docsFolderSource, "repom.generated.source.md");
                 var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
                 await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
+
+                fileName = Path.Combine(docsFolder, "repom.generated.md");
+                if (!File.Exists(fileName))
+                {
+                    await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
+                }
             }
         }
 
@@ -124,15 +132,15 @@ public static class Program
             foreach (ActionMenuContextClassDescriptor actionContextMenu in project.ActionContextMenus)
             {
                 var name = actionContextMenu.Name.ToLowerInvariant();
-                var fileName = Path.Combine(docsFolder, $"script_variables_{name}.generated.md");
-                if (File.Exists(fileName))
-                {
-                    File.Delete(fileName);
-                }
-
-                fileName = Path.Combine(docsFolder, $"script_variables_{name}.generated.source.md");
+                var fileName = Path.Combine(docsFolderSource, $"script_variables_{name}.generated.source.md");
                 var content = await DocumentationGenerator.GetDocsContentAsync(actionContextMenu, templateDocs).ConfigureAwait(false);
                 await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
+
+                fileName = Path.Combine(docsFolder, $"script_variables_{name}.generated.md");
+                if (!File.Exists(fileName))
+                {
+                    await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
+                }
             }
         }
 
