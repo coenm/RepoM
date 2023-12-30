@@ -32,7 +32,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 
 ### Example
       
-- type: azure-devops-create-pr@1<!-- include: azure-devops-create-pr@1-scenario01. path: /tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml -->
+<!-- snippet: azure-devops-create-pr@1-scenario01 -->
+<a id='snippet-azure-devops-create-pr@1-scenario01'></a>
+```yaml
+- type: azure-devops-create-pr@1
   project-id: "{{ project_id }}"
   name: Create feature to develop ({{ repository.branch | string.replace "feature/" "" | string.strip | string.truncate 20 ".." }})
   pr-title: 'Release {{ now }}'
@@ -47,9 +50,15 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
     merge-strategy: Squash
     delete-source-branch: true
     transition-work-items: true
-  active: 'repository.branch | string.starts_with "feature/"'<!-- endInclude -->
+  active: 'repository.branch | string.starts_with "feature/"'
+```
+<sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml#L10-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-azure-devops-create-pr@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
     
-- type: azure-devops-create-pr@1<!-- include: azure-devops-create-pr@1-scenario02. path: /tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml -->
+<!-- snippet: azure-devops-create-pr@1-scenario02 -->
+<a id='snippet-azure-devops-create-pr@1-scenario02'></a>
+```yaml
+- type: azure-devops-create-pr@1
   project-id: "{{ project_id }}"
   name: Complete feature
   pr-title: 'Feature {{ repository.branch | string.replace "feature/" "" }}'
@@ -57,7 +66,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
   reviewer-ids:
   - "{{ devops_guid_reviewer_1 }}"
   draft-pr: repository.banch == "develop"
-  active: true<!-- endInclude -->
+  active: true
+```
+<sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml#L31-L43' title='Snippet source file'>snippet source</a> | <a href='#snippet-azure-devops-create-pr@1-scenario02' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
     
 <!-- snippet: azure-devops-create-pr@1-scenario03 -->
 <a id='snippet-azure-devops-create-pr@1-scenario03'></a>
