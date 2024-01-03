@@ -71,7 +71,4 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="JetBrains.Annotations" Version="2023.2.0" />
-  </ItemGroup>
 </Project>
