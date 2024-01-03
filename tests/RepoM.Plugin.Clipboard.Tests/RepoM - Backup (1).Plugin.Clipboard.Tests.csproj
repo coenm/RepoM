@@ -42,4 +42,26 @@
     <ProjectReference Include="..\RepoM.ActionMenu.Core.TestLib\RepoM.ActionMenu.Core.TestLib.csproj" />
     <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="ActionMenu\IntegrationTests\AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ActionMenu\IntegrationTests\AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <FileEx>$([System.String]::Copy('%(FullPath)').Replace('%(FileName)%(Extension)', '%(ParentCsFile)'))</FileEx>
+      <ParentCsFile>%(ParentFile).cs</ParentCsFile>
+      <DependentUpon>%(ParentCsFile)</DependentUpon>
+    </None>
+    <None Update="ActionMenu\IntegrationTests\RepositoryActionClipboardCopyV1Tests.CreatePullRequestScenario01.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>RepositoryActionClipboardCopyV1Tests.cs</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ActionProvider\Verified\" />
+  </ItemGroup>
+
 </Project>

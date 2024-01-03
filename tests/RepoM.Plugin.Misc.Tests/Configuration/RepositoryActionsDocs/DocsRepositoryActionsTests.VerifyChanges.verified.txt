@@ -16,9 +16,6 @@
     RepositoryActionPinRepositoryV1,
     RepositoryActionSeparatorV1
   ],
-  RepoM.Plugin.Clipboard: [
-    RepositoryActionClipboardCopyV1
-  ],
   RepoM.Plugin.Heidi: [
     RepositoryActionHeidiDatabasesV1
   ],

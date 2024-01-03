@@ -21,3 +21,10 @@ Properties:
 - `text`: The text to copy to the clipboard. ([Text](https://this-is.com/Text))
 - `context`:  ([Context](https://this-is.com/Context))
 - `active`:  ([Predicate](https://this-is.com/Predicate))
+
+### Example
+      
+snippet: clipboard-copy@1-scenario01
+    
+snippet: clipboard-copy@1-scenario02
+    

@@ -2,11 +2,9 @@ namespace RepoM.Plugin.Clipboard;
 
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Plugin.Clipboard.ActionProvider;
 using RepoM.Plugin.Clipboard.RepositoryAction;
 using RepoM.Plugin.Clipboard.RepositoryAction.Actions;
 using SimpleInjector;
@@ -30,10 +28,6 @@ public class ClipboardPackage : IPackage
         // new style
         container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.ClipboardCopy.RepositoryActionClipboardCopyV1>();
         container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.ClipboardCopy.RepositoryActionClipboardCopyV1Mapper>(Lifestyle.Singleton);
-
-        // old style
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionClipboardCopyV1>();
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionClipboardCopyV1Mapper>(Lifestyle.Singleton);
 
         // ordering
         // (see Statistics for example)

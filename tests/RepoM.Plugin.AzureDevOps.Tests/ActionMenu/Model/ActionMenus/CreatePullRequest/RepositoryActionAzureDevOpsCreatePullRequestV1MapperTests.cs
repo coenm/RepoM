@@ -29,6 +29,7 @@ public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
         _action = new RepositoryActionAzureDevOpsCreatePullRequestV1();
         _context = A.Fake<IActionMenuGenerationContext>();
         _repository = A.Fake<IRepository>();
+        A.CallTo(() => _context.RenderStringAsync(A<string>._)).ReturnsLazily(call => Task.FromResult(call.Arguments[0] + "(evaluated)"));
     }
 
     [Fact]
@@ -44,7 +45,7 @@ public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
     }
 
     [Fact]
-    public void Map_ShouldReturnEmptySet_WhenWrongActionType()
+    public void Map_ShouldThrow_WhenWrongActionType()
     {
         // arrange
 

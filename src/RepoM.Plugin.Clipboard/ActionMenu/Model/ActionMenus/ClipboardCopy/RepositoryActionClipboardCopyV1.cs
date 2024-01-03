@@ -8,6 +8,10 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// This action makes it possible to copy text to the clipboard.
 /// </summary>
+/// <example>
+/// <snippet name='clipboard-copy@1-scenario01' mode='snippet' />
+/// <snippet name='clipboard-copy@1-scenario02' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionClipboardCopyV1 : IMenuAction, IContext
 {

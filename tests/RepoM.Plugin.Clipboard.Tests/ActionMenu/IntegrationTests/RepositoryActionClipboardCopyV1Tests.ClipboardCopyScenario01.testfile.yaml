@@ -1,0 +1,18 @@
+action-menu:
+
+# begin-snippet: clipboard-copy@1-scenario01
+
+- type: clipboard-copy@1
+  name: Copy static text when feature branch
+  text: 'static text'
+  active: 'repository.branch | string.starts_with "feature/"'
+
+# end-snippet
+
+# begin-snippet: clipboard-copy@1-scenario02
+
+- type: clipboard-copy@1
+  name: Copy git checkout command to clipboard
+  text: 'git checkout -b branch {{ repository.branch }}'
+
+# end-snippet
