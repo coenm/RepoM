@@ -5,10 +5,6 @@
     <GenerateDocumentationFile Condition="'$(Configuration)' == 'DEBUG'">true</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" PrivateAssets="all"/>
-  </ItemGroup>
-
   <!-- Each production project automatically makes internals visible to testproject with same name (suffixed with ".Tests"). -->
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
