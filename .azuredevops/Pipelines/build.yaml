@@ -46,9 +46,9 @@ stages:
           displayName: Update git submodules
 
         - task: UseDotNet@2
-          displayName: "Use dotnet sdk 7.0.x"
+          displayName: "Use dotnet sdk 8.0.x"
           inputs:
-            version: 7.0.x
+            version: 8.0.x
             includePreviewVersions: false
 
         - script: dotnet --info
