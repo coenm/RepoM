@@ -1,6 +1,5 @@
 namespace RepoM.Plugin.Heidi.Tests.ActionMenu.IntegrationTests;
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -15,9 +14,9 @@ using VerifyXunit;
 using Xunit;
 using Xunit.Categories;
 
-public class AzureDevopsContextTests : IntegrationActionTestBase<HeidiPackage>
+public class HeidiContextTests : IntegrationActionTestBase<HeidiPackage>
 {
-    public AzureDevopsContextTests()
+    public HeidiContextTests()
     {
         IHeidiConfigurationService service = A.Fake<IHeidiConfigurationService>();
         Container.RegisterInstance(service);
@@ -25,9 +24,9 @@ public class AzureDevopsContextTests : IntegrationActionTestBase<HeidiPackage>
         A.CallTo(() => service.GetByRepository(Repository))
          .Returns(new RepositoryHeidiConfiguration[]
              {
-                 new ("cc", 5, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
-                 new ("bb", 1, new [] { "Test", "Dev" }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)),
-                 new ("aa", 5, new [] { "Dev", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)),
+                 new ("cc", 5, [], "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
+                 new ("bb", 1, [ "Test", "Dev", ], "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)),
+                 new ("aa", 5, [ "Dev", ], "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)),
              });
     }
 

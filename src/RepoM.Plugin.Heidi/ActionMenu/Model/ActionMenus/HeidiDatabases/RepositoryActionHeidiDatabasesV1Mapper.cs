@@ -40,7 +40,12 @@ internal class RepositoryActionHeidiDatabasesV1Mapper : ActionToRepositoryAction
             yield break;
         }
 
-        var key = await action.Key.RenderAsync(context).ConfigureAwait(false);
+        string? key = null;
+        if (action.Key != null)
+        {
+            key =  await action.Key.RenderAsync(context).ConfigureAwait(false);
+        }
+        
         RepositoryHeidiConfiguration[] databases = GetHeidiDatabases(repository, key);
 
         var name = await action.Name.RenderAsync(context).ConfigureAwait(false);

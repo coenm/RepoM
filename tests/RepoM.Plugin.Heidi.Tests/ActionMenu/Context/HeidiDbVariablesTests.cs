@@ -26,15 +26,12 @@ public class HeidiDbVariablesTests
     {
         A.CallTo(() => _context.Repository).Returns(A.Fake<IRepository>());
 
-        // A.CallTo(() => _service.GetAllDatabases())
-        //  .Returns(new[] { new HeidiSingleDatabaseConfiguration("RepoM/Abc"), }.ToImmutableArray());
-
         A.CallTo(() => _service.GetByRepository(_context.Repository))
          .Returns(new RepositoryHeidiConfiguration[]
              {
-                 new ("cc", 5, Array.Empty<string>(), "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
-                 new ("bb", 1, new [] { "Test", "Dev" }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)),
-                 new ("aa", 5, new [] { "Dev", }, "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)),
+                 new ("cc", 5, [], "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(1)),
+                 new ("bb", 1, [ "Test", "Dev", ], "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(2)),
+                 new ("aa", 5, [ "Dev", ], "file1.txt", HeidiDbConfigFactory.CreateHeidiDbConfig(3)),
              });
 
         _sut = new HeidiDbVariables(_service);
@@ -87,12 +84,12 @@ public class HeidiDbVariablesTests
                  new (
                      "heidi-key",
                      1,
-                     new [] { "Test", "Dev", },
+                     [ "Test", "Dev", ],
                      "file1.txt",
                      new HeidiDbConfig
                          {
                              Comment = "HeidiSQL Comment",
-                             Databases = new [] { "database1", "database2", },
+                             Databases = [ "database1", "database2", ],
                              Host = "database.my-domain.com",
                              Key = "MyDomainDb1",
                              WindowsAuth = false,

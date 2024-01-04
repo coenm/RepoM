@@ -30,7 +30,7 @@ internal sealed class RepositoryActionHeidiDatabasesV1 : IMenuAction, IContext
     /// If not provided, the repository `Remote.Origin.Name` is used as selector.
     /// </summary>
     [Text]
-    public Text Key { get; set; } = null!;
+    public Text? Key { get; set; }
 
     /// <summary>
     /// The absolute path of the Heidi executable. If not provided, the default value from the plugin settings is used.

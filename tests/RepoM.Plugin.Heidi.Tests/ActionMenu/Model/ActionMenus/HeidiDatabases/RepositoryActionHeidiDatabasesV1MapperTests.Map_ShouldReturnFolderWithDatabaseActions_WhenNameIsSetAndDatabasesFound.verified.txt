@@ -1,0 +1,42 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Databases(evaluated),
+    RepositoryCommand: {
+      $type: NullRepositoryCommand
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true,
+    SubActions: {
+      $type: IEnumerable<UserInterfaceRepositoryAction>,
+      $values: [
+        {
+          Name: A-name,
+          RepositoryCommand: {
+            $type: StartProcessRepositoryCommand,
+            Executable: dummy.exe(evaluated),
+            Arguments: [
+              --description,
+              "B-description"
+            ]
+          },
+          ExecutionCausesSynchronizing: false,
+          CanExecute: true
+        },
+        {
+          Name: D-name,
+          RepositoryCommand: {
+            $type: StartProcessRepositoryCommand,
+            Executable: dummy.exe(evaluated),
+            Arguments: [
+              --description,
+              "E-description"
+            ]
+          },
+          ExecutionCausesSynchronizing: false,
+          CanExecute: true
+        }
+      ]
+    }
+  }
+]
