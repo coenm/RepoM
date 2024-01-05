@@ -19,8 +19,8 @@ Properties:
 
 - `name`: Name of the menu item. ([Text](https://this-is.com/Text))
 - `text`: The text to copy to the clipboard. ([Text](https://this-is.com/Text))
-- `context`:  ([Context](https://this-is.com/Context))
-- `active`:  ([Predicate](https://this-is.com/Predicate))
+- `context`: The context in which the action is available. ([Context](https://this-is.com/Context))
+- `active`: Whether the menu item is enabled. ([Predicate](https://this-is.com/Predicate))
 
 ### Example
       
