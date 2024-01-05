@@ -65,6 +65,7 @@ public static class Program
 
         var projects = new List<string>
             {
+                "RepoM.ActionMenu.Interface",
                 "RepoM.ActionMenu.Core",
                 
                 "RepoM.Plugin.AzureDevOps",
@@ -94,6 +95,90 @@ public static class Program
             ProjectDescriptor projectDescriptor = await CompileAndExtractProjectDescription(compile, pathToSolution, project, files);
             processedProjects.Add(project, projectDescriptor);
         }
+
+        Dictionary<string, List<MemberDescriptor>> _allTypes2 = new();
+        
+        foreach ((var projectName, ProjectDescriptor project) in processedProjects)
+        {
+            foreach (var classDescriptor in project.ActionMenus)
+            {
+                if (!_allTypes2.ContainsKey(classDescriptor.Namespace + "." + classDescriptor.ClassName))
+                {
+                    _allTypes2.Add(classDescriptor.Namespace + "." + classDescriptor.ClassName, new List<MemberDescriptor>());
+                }
+
+                foreach (var memberDescriptor in classDescriptor.ActionMenuProperties)
+                {
+                    _allTypes2[classDescriptor.Namespace + "." + classDescriptor.ClassName].Add(memberDescriptor);
+                }
+                foreach (var memberDescriptor in classDescriptor.Members)
+                {
+                    _allTypes2[classDescriptor.Namespace + "." + classDescriptor.ClassName].Add(memberDescriptor);
+                }
+            }
+
+            foreach (var classDescriptor in project.ActionContextMenus)
+            {
+                if (!_allTypes2.ContainsKey(classDescriptor.Namespace + "." + classDescriptor.ClassName))
+                {
+                    _allTypes2.Add(classDescriptor.Namespace + "." + classDescriptor.ClassName, new List<MemberDescriptor>());
+                }
+                foreach (var memberDescriptor in classDescriptor.Members)
+                {
+                    _allTypes2[classDescriptor.Namespace + "." + classDescriptor.ClassName].Add(memberDescriptor);
+                }
+            }
+
+            foreach (var classDescriptor in project.Types)
+            {
+                if (!_allTypes2.ContainsKey(classDescriptor.Namespace + "." + classDescriptor.ClassName))
+                {
+                    _allTypes2.Add(classDescriptor.Namespace + "." + classDescriptor.ClassName, new List<MemberDescriptor>());
+                }
+                foreach (var memberDescriptor in classDescriptor.Members)
+                {
+                    _allTypes2[classDescriptor.Namespace + "." + classDescriptor.ClassName].Add(memberDescriptor);
+                }
+            }
+        }
+
+        processedProjects.Remove("RepoM.ActionMenu.Interface");
+
+        // Copy descriptions from if (string.IsNullOrWhiteSpace(memberDescriptor.Description) && string.IsNullOrWhiteSpace(memberDescriptor.InheritDocs))
+        foreach ((var projectName, ProjectDescriptor project) in processedProjects)
+        {
+            foreach (ActionMenuClassDescriptor classDescriptor in project.ActionMenus)
+            {
+                foreach (var memberDescriptor in classDescriptor.ActionMenuProperties)
+                {
+                    if (string.IsNullOrWhiteSpace(memberDescriptor.Description) && !string.IsNullOrWhiteSpace(memberDescriptor.InheritDocs))
+                    {
+                        // find and copy.
+                        var index = memberDescriptor.InheritDocs.LastIndexOf('.');
+                        var className = memberDescriptor.InheritDocs[..index];
+                        var t = memberDescriptor.InheritDocs[(index + 1)..];
+
+                        if (_allTypes2.TryGetValue(className, out List<MemberDescriptor>? xxx))
+                        {
+                            var xq = xxx.SingleOrDefault(x => x.CSharpName == t);
+                            if (xq != null)
+                            {
+                                memberDescriptor.Description = xq.Description;
+                            }
+                            else
+                            {
+                                memberDescriptor.Description = memberDescriptor.InheritDocs + " not found";
+                            }
+                        }
+                        else
+                        {
+                            memberDescriptor.Description = memberDescriptor.InheritDocs + " not found 2";
+                        }
+                    }
+                }
+            }
+        }
+
 
         // Generate plugin documentation
         foreach ((var projectName, ProjectDescriptor? project) in processedProjects)
