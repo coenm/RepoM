@@ -26,8 +26,8 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 - `draft-pr`: Boolean specifying if th PR should be marked as draft. ([Predicate](https://this-is.com/Predicate))
 - `include-work-items`: Boolean specifying if workitems should be included in the PR. RepoM will try to resolve the workitems by looping through the commit messages. ([Predicate](https://this-is.com/Predicate))
 - `open-in-browser`: Boolean specifying if the Pull request should be opened in the browser after creation. ([Predicate](https://this-is.com/Predicate))
-- `context`:  ([Context](https://this-is.com/Context))
-- `active`:  ([Predicate](https://this-is.com/Predicate))
+- `context`: The context in which the action is available. ([Context](https://this-is.com/Context))
+- `active`: Whether the menu item is enabled. ([Predicate](https://this-is.com/Predicate))
 - `auto-complete`: Auto complete options. Please take a look at the same for more information (AutoCompleteOptionsV1, optional)
 
 ### Example
