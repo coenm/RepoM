@@ -59,23 +59,8 @@ If not provided, the repository `Remote.Origin.Name` is used as selector. (optio
 Example:
 
 <!-- snippet: RepositoryActionsHeidiDatabases01 -->
-<a id='snippet-repositoryactionsheididatabases01'></a>
-```yaml
-repository-actions:
-  actions:
-  - type: heidi-databases@1
-    active: true
-    variables: []
-    name: Databases
-    executable: ''
-
-  - type: heidi-databases@1
-    name: Databases
-    executable: ''
-
-  - type: heidi-databases@1
-    name: Databases
 ```
-<sup><a href='/tests/RepoM.Plugin.Heidi.Tests/DocumentationFiles/HeidiDatabases.testfile.yaml#L3-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsheididatabases01' title='Start of snippet'>anchor</a></sup>
+** Could not find snippet 'RepositoryActionsHeidiDatabases01' **
+```
 <!-- endSnippet -->
 <!-- endInclude -->
