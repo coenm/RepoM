@@ -2,12 +2,9 @@ namespace RepoM.Plugin.Heidi;
 
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.Heidi.Internal;
 using SimpleInjector;
-using RepoM.Plugin.Heidi.ActionProvider;
 using RepoM.Plugin.Heidi.PersistentConfiguration;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Plugin.Heidi.ActionMenu.Context;
@@ -47,13 +44,6 @@ public class HeidiPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
-        // new style
-        container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.HeidiDatabases.RepositoryActionHeidiDatabasesV1>();
-        container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.HeidiDatabases.RepositoryActionHeidiDatabasesV1Mapper>(Lifestyle.Singleton);
-
-        // old style
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionHeidiDatabasesV1>();
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionHeidiDatabasesV1Mapper>(Lifestyle.Singleton);
 
         // ordering
         // (see Statistics for example)
