@@ -65,7 +65,7 @@ public static class Program
 
         var projects = new List<string>
             {
-                "RepoM.ActionMenu.Interface",
+                "RepoM.ActionMenu.Interface", // this is for the description of the interface types and its members.
                 "RepoM.ActionMenu.Core",
                 
                 "RepoM.Plugin.AzureDevOps",
@@ -149,31 +149,32 @@ public static class Program
         {
             foreach (ActionMenuClassDescriptor classDescriptor in project.ActionMenus)
             {
-                foreach (var memberDescriptor in classDescriptor.ActionMenuProperties)
+                foreach (ActionMenuMemberDescriptor memberDescriptor in classDescriptor.ActionMenuProperties)
                 {
-                    if (string.IsNullOrWhiteSpace(memberDescriptor.Description) && !string.IsNullOrWhiteSpace(memberDescriptor.InheritDocs))
+                    if (!string.IsNullOrWhiteSpace(memberDescriptor.Description) || string.IsNullOrWhiteSpace(memberDescriptor.InheritDocs))
                     {
-                        // find and copy.
-                        var index = memberDescriptor.InheritDocs.LastIndexOf('.');
-                        var className = memberDescriptor.InheritDocs[..index];
-                        var t = memberDescriptor.InheritDocs[(index + 1)..];
+                        continue;
+                    }
 
-                        if (_allTypes2.TryGetValue(className, out List<MemberDescriptor>? xxx))
+                    var index = memberDescriptor.InheritDocs.LastIndexOf('.');
+                    var className = memberDescriptor.InheritDocs[..index];
+                    var typeName = memberDescriptor.InheritDocs[(index + 1)..];
+
+                    if (_allTypes2.TryGetValue(className, out List<MemberDescriptor>? xxx))
+                    {
+                        MemberDescriptor? matchMemberDescriptor = xxx.SingleOrDefault(x => x.CSharpName == typeName);
+                        if (matchMemberDescriptor != null)
                         {
-                            var xq = xxx.SingleOrDefault(x => x.CSharpName == t);
-                            if (xq != null)
-                            {
-                                memberDescriptor.Description = xq.Description;
-                            }
-                            else
-                            {
-                                memberDescriptor.Description = memberDescriptor.InheritDocs + " not found";
-                            }
+                            memberDescriptor.Description = matchMemberDescriptor.Description;
                         }
                         else
                         {
-                            memberDescriptor.Description = memberDescriptor.InheritDocs + " not found 2";
+                            Console.WriteLine("InheritDocs not found");
                         }
+                    }
+                    else
+                    {
+                        Console.WriteLine("InheritDocs not found");
                     }
                 }
             }
