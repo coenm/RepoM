@@ -1,4 +1,6 @@
-﻿context:
+# begin-snippet: heidi.databases@actionmenu02
+
+context:
 - type: evaluate-script@1
   content: |-
     databases = heidi.databases;
@@ -20,4 +22,6 @@ action-menu:
   - type: executable@1
     name: Open {{ db.metadata.name }} in SQL Server Management Studio
     executable: '{{ exe_ssms }}'
-    arguments: -S "{{ db.database.host }}" -d "{{ array.first db.database.databases }}" -U "{{ db.database.user }}"    
+    arguments: -S "{{ db.database.host }}" -d "{{ array.first db.database.databases }}" -U "{{ db.database.user }}"
+
+# end-snippet

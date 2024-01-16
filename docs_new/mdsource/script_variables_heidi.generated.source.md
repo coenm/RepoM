@@ -33,32 +33,5 @@ snippet: heidi.databases@actionmenu01
 
 #### RepositoryAction sample
 
-
-```yaml
-context:
-- type: evaluate-script@1
-  content: |-
-    databases = heidi.databases;
-    exe_heidi_sql = "C:/Program Files/HeidiSQL/heidisql.exe";    
-    exe_ssms ="C:/Program Files (x86)/Microsoft SQL Server Management Studio 18/Common7/IDE/Ssms.exe";
-
-action-menu:
-- type: foreach@1
-  active: 'array.size(databases) > 0'
-  enumerable: databases
-  variable: db
-  actions:
-  # open in Heidi Sql
-  - type: executable@1
-    name: Open {{ db.metadata.name }} in HeidiSQL
-    executable: '{{ exe_heidi_sql }}'
-    arguments: --description "{{ db.database.key }}"
-  # open in SQL Server Management Studio
-  - type: executable@1
-    name: Open {{ db.metadata.name }} in SQL Server Management Studio
-    executable: '{{ exe_ssms }}'
-    arguments: -S "{{ db.database.host }}" -d "{{ array.first db.database.databases }}" -U "{{ db.database.user }}"
-```
-
-// todo coenm
+snippet: heidi.databases@actionmenu02
 
