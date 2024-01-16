@@ -26,6 +26,7 @@ Returns an enumeration of pull requests for the selected repository (or an empty
 
 Get all pull requests for the selected repository in a given devops project:
 
+
 ```
 devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
 prs = azure_devops.get_pull_requests(devops_project_id);
@@ -35,6 +36,8 @@ prs = azure_devops.get_pull_requests(devops_project_id);
 
 As a result, the variable `prs` could contain two pull requests with the following dummy data:
 
+<!-- snippet: azure_devops.get_pull_requests -->
+<a id='snippet-azure_devops.get_pull_requests'></a>
 ```yaml
 - repository-id: b1a0619a-cb69-4bf6-9b97-6c62481d9bff
   name: some pr1
@@ -43,10 +46,13 @@ As a result, the variable `prs` could contain two pull requests with the followi
   name: other pr - bug
   url: https://my-url/pr3
 ```
+<sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/Context/AzureDevopsVariablesTests.GetPullRequests_Documentation.verified.yaml#L1-L11' title='Snippet source file'>snippet source</a> | <a href='#snippet-azure_devops.get_pull_requests' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 #### RepositoryAction sample
 
-
+<!-- snippet: azure-devops-get-pull-requests@actionmenu01 -->
+<a id='snippet-azure-devops-get-pull-requests@actionmenu01'></a>
 ```yaml
 context:
 - type: evaluate-script@1
@@ -64,4 +70,6 @@ action-menu:
     name: '{{ pr.name }}'
     url: '{{ pr.url }}'
 ```
+<sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsContextTests.Context_GetPullRequests_Documentation.testfile.yaml#L1-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-azure-devops-get-pull-requests@actionmenu01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
