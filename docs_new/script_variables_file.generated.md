@@ -28,6 +28,7 @@ Argument:
 
 Check if directory exists
 
+
 ```
 exists = file.dir_exists('C:\Project\');
 exists = file.dir_exists('C:\Project');
@@ -37,6 +38,7 @@ exists = file.dir_exists('C:/Project/');
 #### RepositoryAction sample
 
 TODO: this content is not correct, change filename
+
 
 ```yaml
 context:
@@ -90,6 +92,7 @@ Argument:
 
 Check if file exists
 
+
 ```
 exists = file.file_exists('C:\Project\my-solution.sln');
 ```
@@ -97,6 +100,7 @@ exists = file.file_exists('C:\Project\my-solution.sln');
 #### RepositoryAction sample
 
 TODO: this content is not correct, change filename
+
 
 ```yaml
 context:
@@ -151,6 +155,7 @@ Returns an enumerable collection of full paths of the files or directories that 
 
 Locate all solution files in the given directory.
 
+
 ```
 solution_files = file.find_files('C:\Project\', '*.sln');
 ```
@@ -158,6 +163,7 @@ solution_files = file.find_files('C:\Project\', '*.sln');
 #### Result
 
 As a result, the variable `solution_files` is an enumerable of strings, for example:
+
 
 ```yaml
 - C:\Project\My Repositories\my-solution.sln

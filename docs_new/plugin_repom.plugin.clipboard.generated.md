@@ -23,7 +23,7 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](https://this-is.com/Predicate))
 
 ### Example
-      
+
 <!-- snippet: clipboard-copy@1-scenario01 -->
 <a id='snippet-clipboard-copy@1-scenario01'></a>
 ```yaml
@@ -34,7 +34,7 @@ Properties:
 ```
 <sup><a href='/tests/RepoM.Plugin.Clipboard.Tests/ActionMenu/IntegrationTests/RepositoryActionClipboardCopyV1Tests.ClipboardCopyScenario01.testfile.yaml#L3-L10' title='Snippet source file'>snippet source</a> | <a href='#snippet-clipboard-copy@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
-    
+
 <!-- snippet: clipboard-copy@1-scenario02 -->
 <a id='snippet-clipboard-copy@1-scenario02'></a>
 ```yaml
@@ -44,4 +44,4 @@ Properties:
 ```
 <sup><a href='/tests/RepoM.Plugin.Clipboard.Tests/ActionMenu/IntegrationTests/RepositoryActionClipboardCopyV1Tests.ClipboardCopyScenario01.testfile.yaml#L12-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-clipboard-copy@1-scenario02' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
-    
+

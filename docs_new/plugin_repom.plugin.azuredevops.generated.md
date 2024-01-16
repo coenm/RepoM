@@ -31,7 +31,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 - `auto-complete`: Auto complete options. Please take a look at the same for more information (AutoCompleteOptionsV1, optional)
 
 ### Example
-      
+
 <!-- snippet: azure-devops-create-pr@1-scenario01 -->
 <a id='snippet-azure-devops-create-pr@1-scenario01'></a>
 ```yaml
@@ -54,7 +54,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 ```
 <sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml#L10-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-azure-devops-create-pr@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
-    
+
 <!-- snippet: azure-devops-create-pr@1-scenario02 -->
 <a id='snippet-azure-devops-create-pr@1-scenario02'></a>
 ```yaml
@@ -70,7 +70,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 ```
 <sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml#L31-L43' title='Snippet source file'>snippet source</a> | <a href='#snippet-azure-devops-create-pr@1-scenario02' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
-    
+
 <!-- snippet: azure-devops-create-pr@1-scenario03 -->
 <a id='snippet-azure-devops-create-pr@1-scenario03'></a>
 ```yaml
@@ -80,4 +80,4 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 ```
 <sup><a href='/tests/RepoM.Plugin.AzureDevOps.Tests/ActionMenu/IntegrationTests/AzureDevopsCreatePrV1Tests.CreatePullRequestScenario01.testfile.yaml#L45-L51' title='Snippet source file'>snippet source</a> | <a href='#snippet-azure-devops-create-pr@1-scenario03' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
-    
+

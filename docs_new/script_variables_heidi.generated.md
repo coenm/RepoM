@@ -20,6 +20,7 @@ An enumerable of database configuration objects as shown in the example below.
       
 Get all database configurations for the current repository:
 
+
 ```
 databases = heidi.databases;
 ```
@@ -27,6 +28,7 @@ databases = heidi.databases;
 #### Result
 
 As a result, the variable `databases` could contain the following dummy database configuration:
+
 
 ```yaml
 - metadata:
