@@ -59,7 +59,8 @@ As a result, the variable `databases` could contain the following dummy database
 
 #### RepositoryAction sample
 
-
+<!-- snippet: heidi.databases@actionmenu02 -->
+<a id='snippet-heidi.databases@actionmenu02'></a>
 ```yaml
 context:
 - type: evaluate-script@1
@@ -85,6 +86,6 @@ action-menu:
     executable: '{{ exe_ssms }}'
     arguments: -S "{{ db.database.host }}" -d "{{ array.first db.database.databases }}" -U "{{ db.database.user }}"
 ```
-
-// todo coenm
+<sup><a href='/tests/RepoM.Plugin.Heidi.Tests/ActionMenu/IntegrationTests/HeidiContextTests.Context_GetDatabases_Documentation.testfile.yaml#L1-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-heidi.databases@actionmenu02' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
