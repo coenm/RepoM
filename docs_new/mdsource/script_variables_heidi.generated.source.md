@@ -29,30 +29,7 @@ databases = heidi.databases;
 
 As a result, the variable `databases` could contain the following dummy database configuration:
 
-
-```yaml
-- metadata:
-    name: heidi-key
-    order: 1
-    tags:
-    - Test
-    - Dev
-  database:
-    key: MyDomainDb1
-    host: database.my-domain.com
-    user: coenm
-    password: myS3cr3t!
-    port: 2345
-    uses-windows-authentication: false
-    database-type:
-      name: MariaDB/MySQL
-      protocol: named pipe
-    library: MSOLEDBSQL
-    comment: HeidiSQL Comment
-    databases:
-    - database1
-    - database2
-```
+snippet: heidi.databases@actionmenu01
 
 #### RepositoryAction sample
 
@@ -82,4 +59,6 @@ action-menu:
     executable: '{{ exe_ssms }}'
     arguments: -S "{{ db.database.host }}" -d "{{ array.first db.database.databases }}" -U "{{ db.database.user }}"
 ```
+
+// todo coenm
 

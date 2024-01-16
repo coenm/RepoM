@@ -70,9 +70,9 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
     /// </code>
     /// <result/>
     /// As a result, the variable `databases` could contain the following dummy database configuration:
-    /// <code-file language='yaml' filename='heidi.databases.verified.yaml' />
+    /// <snippet name='heidi.databases@actionmenu01' mode='snippet' />
     /// <repository-action-sample/>
-    /// <code-file language='yaml' filename='heidi.databases.actionmenu.yaml' />
+    /// <code-file language='yaml' filename='heidi.databases.actionmenu.yaml' /> // todo coenm
     /// </example>
     [ActionMenuContextMember("databases")]
     public IEnumerable GetDatabases(IActionMenuGenerationContext context)

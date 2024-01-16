@@ -105,8 +105,6 @@ public class HeidiDbVariablesTests
         IEnumerable result = _sut.GetDatabases(_context);
 
         // assert
-        await DocumentationGeneration
-              .CreateAndVerifyDocumentation(result)
-              .UseFileName("heidi.databases");
+        await DocumentationGeneration.CreateAndVerifyYamlSnippet(result, "heidi.databases@actionmenu01");
     }
 }

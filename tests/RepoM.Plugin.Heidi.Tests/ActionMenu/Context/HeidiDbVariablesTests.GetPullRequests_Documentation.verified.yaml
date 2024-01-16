@@ -1,4 +1,6 @@
-﻿- metadata:
+﻿# begin-snippet: heidi.databases@actionmenu01
+
+- metadata:
     name: heidi-key
     order: 1
     tags:
@@ -19,3 +21,6 @@
     databases:
     - database1
     - database2
+
+
+# end-snippet
