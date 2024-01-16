@@ -1,4 +1,6 @@
-﻿context:
+# begin-snippet: azure-devops-get-pull-requests@actionmenu01
+
+context:
 - type: evaluate-script@1
   content: |-
     devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
@@ -13,3 +15,5 @@ action-menu:
   - type: url@1
     name: '{{ pr.name }}'
     url: '{{ pr.url }}'
+
+# end-snippet

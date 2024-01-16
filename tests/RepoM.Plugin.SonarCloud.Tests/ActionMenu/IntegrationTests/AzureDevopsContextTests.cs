@@ -26,7 +26,7 @@ public class SonarCloudContextTests : IntegrationActionTestBase<SonarCloudPackag
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task Context_GetPullRequests(bool favorite)
+    public async Task Context_IsFavorite(bool favorite)
     {
         // arrange
         A.CallTo(() => _sonarCloudService.IsFavorite("dummy_project_id")).Returns(favorite);

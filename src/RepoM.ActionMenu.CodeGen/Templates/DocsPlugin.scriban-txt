@@ -58,7 +58,7 @@ Properties:
     {{~ if member.Examples ~}}
 
 ### Example
-      {{ if !string.empty member.Examples.Description }}
+      {{~ if !string.empty member.Examples.Description ~}}
 {{ member.Examples.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
       {{ end }}
       {{~ for example_item in member.Examples.Items ~}}
@@ -71,13 +71,13 @@ Properties:
 {{ example_item.Content | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
          {{~ end ~}}
 ```
-    
+
         {{~ else if example_item.TypeName == 'Snippet' ~}}
 {{ example_item.Mode | string.downcase }}: {{ example_item.Name }}
-    
+
         {{~ else if example_item.TypeName == 'Header' ~}}
 #### {{ example_item.Text }}
-    
+
         {{~ else if example_item.TypeName == 'Text' ~}}
 {{ example_item.Content }}
         {{~ else if example_item.TypeName == 'Paragraph' ~}}

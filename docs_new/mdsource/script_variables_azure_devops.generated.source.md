@@ -26,6 +26,7 @@ Returns an enumeration of pull requests for the selected repository (or an empty
 
 Get all pull requests for the selected repository in a given devops project:
 
+
 ```
 devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
 prs = azure_devops.get_pull_requests(devops_project_id);
@@ -35,33 +36,9 @@ prs = azure_devops.get_pull_requests(devops_project_id);
 
 As a result, the variable `prs` could contain two pull requests with the following dummy data:
 
-```yaml
-- repository-id: b1a0619a-cb69-4bf6-9b97-6c62481d9bff
-  name: some pr1
-  url: https://my-url/pr1
-- repository-id: f99e85ee-2c23-414b-8804-6a6c34f8c349
-  name: other pr - bug
-  url: https://my-url/pr3
-```
+snippet: azure_devops.get_pull_requests
 
 #### RepositoryAction sample
 
-
-```yaml
-context:
-- type: evaluate-script@1
-  content: |-
-    devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
-    prs = azure_devops.get_pull_requests(devops_project_id);
-
-action-menu:
-- type: foreach@1
-  active: 'array.size(prs) > 1'
-  enumerable: prs
-  variable: pr
-  actions:
-  - type: url@1
-    name: '{{ pr.name }}'
-    url: '{{ pr.url }}'
-```
+snippet: azure-devops-get-pull-requests@actionmenu01
 

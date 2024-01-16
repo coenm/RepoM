@@ -81,9 +81,11 @@ Argument{{if member.Params.size > 1}}s{{end}}:
 
         {{~ else if example_item.TypeName == 'Text' ~}}
 {{ example_item.Content }}
+
         {{~ else if example_item.TypeName == 'Paragraph' ~}}
 
 {{ example_item.Text }}
+
         {{~ else ~}}
 NAME NOT FOUND!! {{ example_item.TypeName }}.      
         {{~ end ~}}

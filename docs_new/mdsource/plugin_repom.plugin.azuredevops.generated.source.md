@@ -31,10 +31,10 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 - `auto-complete`: Auto complete options. Please take a look at the same for more information (AutoCompleteOptionsV1, optional)
 
 ### Example
-      
+
 snippet: azure-devops-create-pr@1-scenario01
-    
+
 snippet: azure-devops-create-pr@1-scenario02
-    
+
 snippet: azure-devops-create-pr@1-scenario03
-    
+

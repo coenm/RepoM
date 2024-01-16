@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EasyTestFile;
+using EasyTestFileXunit;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.ActionMenu.Core.TestLib;
@@ -14,13 +16,17 @@ using VerifyXunit;
 using Xunit;
 using Xunit.Categories;
 
+[UsesEasyTestFile]
 public class AzureDevopsContextTests : IntegrationActionTestBase<AzureDevOpsPackage>
 {
+    private readonly EasyTestFileSettings _testFileSettings;
     private readonly List<PullRequest> _prs = new()
         {
             new(Guid.Parse("b1a0619a-cb69-4bf6-9b97-6c62481d9bff"), "some pr1", "https://my-url/pr1"),
             new(Guid.Parse("f99e85ee-2c23-414b-8804-6a6c34f8c349"), "other pr - bug", "https://my-url/pr3"),
         };
+
+    
 
     public AzureDevopsContextTests()
     {
@@ -32,6 +38,9 @@ public class AzureDevopsContextTests : IntegrationActionTestBase<AzureDevOpsPack
                 new (Guid.Empty, "test pr", "https://azure-devops.test/pr/123"),
             });
         A.CallTo(() => azureDevOpsPullRequestService.GetPullRequests(Repository, "805ACF64-0F06-47EC-96BF-E830895E2740", null)).Returns(_prs);
+
+        _testFileSettings = new EasyTestFileSettings();
+        _testFileSettings.UseExtension("yaml");
     }
 
     [Fact]
@@ -69,7 +78,7 @@ public class AzureDevopsContextTests : IntegrationActionTestBase<AzureDevOpsPack
     public async Task Context_GetPullRequests_Documentation()
     {
         // arrange
-        var yaml = await DocumentationGeneration.LoadYamlFileAsync("azure_devops.get_pull_requests.actionmenu.yaml");
+        var yaml = await EasyTestFile.LoadAsText(_testFileSettings);
         AddRootFile(yaml);
 
         // act

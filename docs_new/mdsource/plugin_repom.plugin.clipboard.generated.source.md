@@ -23,8 +23,8 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](https://this-is.com/Predicate))
 
 ### Example
-      
+
 snippet: clipboard-copy@1-scenario01
-    
+
 snippet: clipboard-copy@1-scenario02
-    
+

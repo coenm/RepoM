@@ -245,11 +245,13 @@ internal static partial class XmlDocsParser
                 }
                 else if (xElement.Name == "md-snippet")
                 {
+                    Console.WriteLine("WARNING md-snippet");
                     var snippetName = xElement.Value.Trim();
                     result.Items.Add(new Text() { Content = "snippet: " + snippetName, });
                 }
                 else if (xElement.Name == "md-include")
                 {
+                    Console.WriteLine("WARNING md-include");
                     var includeName = xElement.Value.Trim();
                     result.Items.Add(new Text() { Content = "include: " + includeName, });
                 }
