@@ -4,9 +4,12 @@ using System;
 
 internal class AzureDevopsConfiguration : IAzureDevopsConfiguration
 {
-    public AzureDevopsConfiguration(string? url, string? pat)
+    public AzureDevopsConfiguration(string? url, string? pat, string? defaultProjectId, TimeSpan intervalUpdateProjects, TimeSpan intervalUpdatePullRequests)
     {
         AzureDevOpsPersonalAccessToken = pat;
+        DefaultProjectId = defaultProjectId;
+        IntervalUpdateProjects = intervalUpdateProjects;
+        IntervalUpdatePullRequests = intervalUpdatePullRequests;
 
         try
         {
@@ -21,4 +24,11 @@ internal class AzureDevopsConfiguration : IAzureDevopsConfiguration
     public string? AzureDevOpsPersonalAccessToken { get; }
 
     public Uri? AzureDevOpsBaseUrl { get; }
+
+    public string? DefaultProjectId { get; }
+
+    public TimeSpan IntervalUpdateProjects { get; }
+
+    public TimeSpan IntervalUpdatePullRequests { get; }
+
 }

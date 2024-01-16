@@ -8,99 +8,92 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// Action menu item to create a pull request in Azure Devops.
 /// </summary>
 [RepositoryAction(TYPE)]
-public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV1 : RepositoryAction
+public sealed class RepositoryActionAzureDevOpsCreatePullRequestsV2 : RepositoryAction
 {
     /// <summary>
     /// RepositoryAction type.
     /// </summary>
-    public const string TYPE = "azure-devops-create-prs@1";
+    public const string TYPE = "azure-devops-create-prs@2";
 
     /// <summary>
-    /// The azure devops project id.
+    /// The azure devops project id. If none given, the default project id, set in the plugin configuration, will be used. At least one is required.
     /// </summary>
     [EvaluatedProperty]
-    [Required]
     [PropertyType(typeof(string))]
     public string? ProjectId { get; set; }
-
-    // in v2, should be name (as others are)
-    /// <summary>
-    /// Menu item title. When not provided, a title will be generated.
-    /// This property will be used instead of the Name property.
-    /// </summary>
-    // [EvaluatedProperty]
-    [PropertyType(typeof(string))]
-    public string? Title { get; set; }
 
     /// <summary>
     /// Pull Request title. When not provided, the title will be defined based on the branch name.
     /// Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch`
     /// </summary>
+    [EvaluatedProperty]
     [PropertyType(typeof(string))]
-    public string? PrTitle { get; set; }
+    public string? Title { get; set; }
 
     /// <summary>
     /// Name of the branch the pull request should be merged into. For instance `develop`, or `main`.
     /// </summary>
     [Required]
+    [EvaluatedProperty]
     [PropertyType(typeof(string))]
-    public string ToBranch { get; set; } = string.Empty;
+    public string? ToBranch { get; set; } = string.Empty;
 
     /// <summary>
-    /// List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
+    /// Required reviewers. An id should be a valid Azure DevOps user id (ie. GUID), or email address known in Azure Devops.
     /// </summary>
+    [EvaluatedProperty]
+    [PropertyType(typeof(string))]
+    public string? Reviewer { get; set; }
+
+    /// <summary>
+    /// List of required reviewers. An id should be a valid Azure DevOps user id (ie. GUID), or email address known in Azure Devops.
+    /// </summary>
+    [EvaluatedProperty]
     [PropertyType(typeof(List<string>))]
-    public List<string> ReviewerIds { get; set; } = new();
+    public List<string> Reviewers { get; set; } = new();
 
     /// <summary>
     /// Boolean specifying if th PR should be marked as draft.
     /// </summary>
     [Required]
+    [EvaluatedProperty]
     [PropertyType(typeof(bool))]
-    [PropertyDefaultBoolValue(default)]
-    public bool DraftPr { get; set; }
+    [PropertyDefaultBoolValue(false)]
+    public string? IsDraft { get; set; } = "false";
 
     /// <summary>
     /// Boolean specifying if workitems should be included in the PR. The workitems will be found by using the commit messages.
     /// </summary>
     [Required]
+    [EvaluatedProperty]
     [PropertyType(typeof(bool))]
     [PropertyDefaultBoolValue(true)]
-    public bool IncludeWorkItems { get; set; } = true;
+    public string? IncludeWorkItems { get; set; } = "true";
 
     /// <summary>
     /// Boolean specifying if the Pull request should be opened in the browser after creation.
     /// </summary>
     [Required]
+    [EvaluatedProperty]
     [PropertyType(typeof(bool))]
     [PropertyDefaultBoolValue(default)]
-    public bool OpenInBrowser { get; set; }
+    public string? OpenInBrowser { get; set; }
 
     /// <summary>
-    /// Auto complete options. Please take a look at the same for more information
+    /// Auto complete options for the pull request. If not set, autocomplete will be `off`.
     /// </summary>
-    [Required]
-    [PropertyType(typeof(RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1))]
-    public RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1 AutoComplete { get; set; } = new();
+    [PropertyType(typeof(RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV2))]
+    public RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV2? AutoComplete { get; set; }
 }
 
 /// <summary>
 /// Auto complete options.
 /// </summary>
-public class RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1
+public class RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV2
 {
-    /// <summary>
-    /// Boolean specifying if the Pull Request should have set the `auto-complete` flag.
-    /// </summary>
-    [Required]
-    [PropertyType(typeof(bool))]
-    [PropertyDefaultBoolValue(default)]
-    public bool Enabled { get; set; }
-
     /// <summary>
     /// The merge strategy. Possible values are `NoFastForward`, `Squash` and `Rebase`, and `RebaseMerge`.
     /// </summary>
-    [Required]
     [PropertyType(typeof(RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategy))]
     [PropertyDefaultTypedValueAttribute<RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategy>(RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategy.NoFastForward)]
     public RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategy MergeStrategy { get; set; } = RepositoryActionAzureDevOpsCreatePullRequestsMergeStrategy.NoFastForward;
@@ -108,16 +101,16 @@ public class RepositoryActionAzureDevOpsCreatePullRequestsAutoCompleteOptionsV1
     /// <summary>
     /// Boolean specifying if the source branche should be deleted afer completion.
     /// </summary>
-    [Required]
+    [EvaluatedProperty]
     [PropertyType(typeof(bool))]
     [PropertyDefaultBoolValue(true)]
-    public bool DeleteSourceBranch { get; set; } = true;
+    public string? DeleteSourceBranch { get; set; } = "true";
 
     /// <summary>
     /// Boolean specifying if related workitems should be transitioned to the next state.
     /// </summary>
-    [Required]
+    [EvaluatedProperty]
     [PropertyType(typeof(bool))]
     [PropertyDefaultBoolValue(true)]
-    public bool TransitionWorkItems { get; set; } = true;
+    public string? TransitionWorkItems { get; set; } = "true";
 }

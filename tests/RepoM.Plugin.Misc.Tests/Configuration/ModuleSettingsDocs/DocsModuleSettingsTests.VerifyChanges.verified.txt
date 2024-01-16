@@ -1,6 +1,8 @@
 ﻿{
   AzureDevOpsPackage: {
-    $type: AzureDevopsConfigV1
+    $type: AzureDevopsConfigV2,
+    IntervalUpdatePullRequests: 00:04:00,
+    IntervalUpdateProjects: 00:10:00
   },
   ClipboardPackage: null,
   EverythingPackage: null,

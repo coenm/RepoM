@@ -12,7 +12,7 @@ internal static partial class WorkItemExtractor
     {
         List<string> results = new();
 
-        foreach (string commitMessage in commitMessages)
+        foreach (var commitMessage in commitMessages)
         {
             MatchCollection matches = _workItemRegex.Matches(commitMessage);
             if (matches.Any(m => m.Success))
