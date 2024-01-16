@@ -29,7 +29,8 @@ databases = heidi.databases;
 
 As a result, the variable `databases` could contain the following dummy database configuration:
 
-
+<!-- snippet: heidi.databases@actionmenu01 -->
+<a id='snippet-heidi.databases@actionmenu01'></a>
 ```yaml
 - metadata:
     name: heidi-key
@@ -53,6 +54,8 @@ As a result, the variable `databases` could contain the following dummy database
     - database1
     - database2
 ```
+<sup><a href='/tests/RepoM.Plugin.Heidi.Tests/ActionMenu/Context/HeidiDbVariablesTests.GetPullRequests_Documentation.verified.yaml#L1-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-heidi.databases@actionmenu01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 #### RepositoryAction sample
 
@@ -82,4 +85,6 @@ action-menu:
     executable: '{{ exe_ssms }}'
     arguments: -S "{{ db.database.host }}" -d "{{ array.first db.database.databases }}" -U "{{ db.database.user }}"
 ```
+
+// todo coenm
 
