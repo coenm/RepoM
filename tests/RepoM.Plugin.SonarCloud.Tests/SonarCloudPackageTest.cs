@@ -7,6 +7,7 @@ using RepoM.Core.Plugin.Expressions;
 using SimpleInjector;
 using Xunit;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
 using VerifyXunit;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
@@ -87,5 +88,6 @@ public class SonarCloudPackageTest
     {
         container.RegisterInstance(_appSettingsService);
         container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
+        container.RegisterSingleton(A.Dummy<ILogger>);
     }
 }

@@ -3,6 +3,7 @@ namespace RepoM.Plugin.SonarCloud.ActionMenu.Model.ActionMenus.SetFavorite;
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -13,10 +14,12 @@ using RepoM.Plugin.SonarCloud.RepositoryCommands;
 internal class RepositoryActionSonarCloudSetFavoriteV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionSonarCloudSetFavoriteV1>
 {
     private readonly ISonarCloudFavoriteService _service;
+    private readonly ILogger _logger;
 
-    public RepositoryActionSonarCloudSetFavoriteV1Mapper(ISonarCloudFavoriteService service)
+    public RepositoryActionSonarCloudSetFavoriteV1Mapper(ISonarCloudFavoriteService service, ILogger logger)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionSonarCloudSetFavoriteV1 action, IActionMenuGenerationContext context, IRepository repository)
@@ -35,10 +38,7 @@ internal class RepositoryActionSonarCloudSetFavoriteV1Mapper : ActionToRepositor
         }
         else
         {
-            yield return new UserInterfaceRepositoryAction(name, repository)
-                {
-                    CanExecute = false,
-                };
+            _logger.LogDebug("SonarCloud service is not initialized. Therefor, no menu item");
         }
     }
 }
