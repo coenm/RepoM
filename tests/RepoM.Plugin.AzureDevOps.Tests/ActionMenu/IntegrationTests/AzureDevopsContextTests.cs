@@ -26,7 +26,7 @@ public class AzureDevopsContextTests : IntegrationActionTestBase<AzureDevOpsPack
             new(Guid.Parse("f99e85ee-2c23-414b-8804-6a6c34f8c349"), "other pr - bug", "https://my-url/pr3"),
         };
 
-        public AzureDevopsContextTests()
+    public AzureDevopsContextTests()
     {
         IAzureDevOpsPullRequestService azureDevOpsPullRequestService = A.Fake<IAzureDevOpsPullRequestService>();
         Container.RegisterInstance(azureDevOpsPullRequestService);

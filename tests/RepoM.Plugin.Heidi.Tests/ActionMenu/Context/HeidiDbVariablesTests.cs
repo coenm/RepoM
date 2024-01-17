@@ -75,7 +75,7 @@ public class HeidiDbVariablesTests
     
     [Fact]
     [Documentation]
-    public async Task GetPullRequests_Documentation()
+    public async Task GetDatabases_Documentation()
     {
         // arrange
         A.CallTo(() => _service.GetByRepository(_context.Repository))
