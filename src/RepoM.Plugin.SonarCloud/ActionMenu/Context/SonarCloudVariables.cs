@@ -26,10 +26,16 @@ internal partial class SonarCloudVariables : TemplateContextRegistrationBase
     /// <param name="id">The sonarcloud id related to the repository.</param>
     /// <returns>`true` when the repository is set as favorite in SonarCloud, `false`, otherwise.</returns>
     /// <example>
+    /// <usage/>
+    /// Gets SonarClouds favorite status of the repository:
     /// <code>
     /// sonarcloud_repository_id = "RepoM";
     /// is_favorite = sonarcloud.is_favorite(sonarcloud_repository_id);
     /// </code>
+    /// <result/>
+    /// As a result, the boolean variable `is_favorite` is set.
+    /// <repository-action-sample/>
+    /// <snippet name='sonarcloud-is_favorite@actionmenu01' mode='snippet' />
     /// </example>
     [ActionMenuContextMember("is_favorite")]
     public bool IsFavorite(string id)

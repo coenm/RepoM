@@ -22,9 +22,21 @@ Argument:
 
 ### Example
       
+#### Usage
+
+Gets SonarClouds favorite status of the repository:
+
 
 ```
 sonarcloud_repository_id = "RepoM";
 is_favorite = sonarcloud.is_favorite(sonarcloud_repository_id);
 ```
+
+#### Result
+
+As a result, the boolean variable `is_favorite` is set.
+
+#### RepositoryAction sample
+
+snippet: sonarcloud-is_favorite@actionmenu01
 

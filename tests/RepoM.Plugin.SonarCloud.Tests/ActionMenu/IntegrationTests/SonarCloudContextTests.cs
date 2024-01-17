@@ -3,6 +3,8 @@ namespace RepoM.Plugin.SonarCloud.Tests.ActionMenu.IntegrationTests;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EasyTestFile;
+using EasyTestFileXunit;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.ActionMenu.Core.TestLib;
@@ -13,14 +15,19 @@ using VerifyXunit;
 using Xunit;
 using Xunit.Categories;
 
+[UsesEasyTestFile]
 public class SonarCloudContextTests : IntegrationActionTestBase<SonarCloudPackage>
 {
+    private readonly EasyTestFileSettings _testFileSettings;
     private readonly ISonarCloudFavoriteService _sonarCloudService;
 
     public SonarCloudContextTests()
     {
         _sonarCloudService = A.Fake<ISonarCloudFavoriteService>();
         Container.RegisterInstance(_sonarCloudService);
+
+        _testFileSettings = new EasyTestFileSettings();
+        _testFileSettings.UseExtension("yaml");
     }
 
     [Theory]
@@ -53,21 +60,22 @@ public class SonarCloudContextTests : IntegrationActionTestBase<SonarCloudPackag
         singleAction!.Name.Should().Be($"is_sonar_favorite: [{favorite.ToString().ToLower()}];");
     }
 
-    // /// <summary>
-    // /// Validate file to contain valid action menu yaml.
-    // /// </summary>
-    // [Fact]
-    // [Documentation]
-    // public async Task Context_GetPullRequests_Documentation()
-    // {
-    //     // arrange
-    //     var yaml = await DocumentationGeneration.LoadYamlFileAsync("azure_devops.get_pull_requests.actionmenu.yaml");
-    //     AddRootFile(yaml);
-    //
-    //     // act
-    //     IEnumerable<UserInterfaceRepositoryActionBase> result = await CreateMenuAsync();
-    //     
-    //     // assert
-    //     await Verifier.Verify(result).ScrubMembersWithType<IRepository>();
-    // }
+    /// <summary>
+    /// Validate file to contain valid action menu yaml.
+    /// </summary>
+    [Fact]
+    [Documentation]
+    public async Task Context_IsFavorite_Documentation()
+    {
+        // arrange
+        A.CallTo(() => _sonarCloudService.IsFavorite(A<string>._)).Returns(true);
+        var yaml = await EasyTestFile.LoadAsText(_testFileSettings);
+        AddRootFile(yaml);
+
+        // act
+        IEnumerable<UserInterfaceRepositoryActionBase> result = await CreateMenuAsync();
+        
+        // assert
+        await Verifier.Verify(result).ScrubMembersWithType<IRepository>();
+    }
 }

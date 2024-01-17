@@ -1,0 +1,15 @@
+# begin-snippet: sonarcloud-is_favorite@actionmenu01
+
+context:
+- type: evaluate-script@1
+  content: |-
+    sonarcloud_repository_id = "RepoM";
+    is_favorite = sonarcloud.is_favorite(sonarcloud_repository_id);
+
+action-menu:
+- type: url@1
+  name: 'Open SonarClouds favorite in browser'
+  url: 'https://sonarcloud.io/project/overview?id={{ sonarcloud_repository_id }}'
+  active: is_favorite
+
+# end-snippet
