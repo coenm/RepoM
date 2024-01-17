@@ -54,7 +54,7 @@ As a result, the variable `databases` could contain the following dummy database
     - database1
     - database2
 ```
-<sup><a href='/tests/RepoM.Plugin.Heidi.Tests/ActionMenu/Context/HeidiDbVariablesTests.GetPullRequests_Documentation.verified.yaml#L1-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-heidi.databases@actionmenu01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.Plugin.Heidi.Tests/ActionMenu/Context/HeidiDbVariablesTests.GetDatabases_Documentation.verified.yaml#L1-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-heidi.databases@actionmenu01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 #### RepositoryAction sample
