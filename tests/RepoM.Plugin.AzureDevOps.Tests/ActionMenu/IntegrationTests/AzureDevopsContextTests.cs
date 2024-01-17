@@ -83,6 +83,6 @@ public class AzureDevopsContextTests : IntegrationActionTestBase<AzureDevOpsPack
         IEnumerable<UserInterfaceRepositoryActionBase> result = await CreateMenuAsync();
         
         // assert
-        await Verifier.Verify(result).ScrubMembersWithType<IRepository>();
+        await Verifier.Verify(result, VerifySettings);
     }
 }
