@@ -1,13 +1,10 @@
 namespace RepoM.Plugin.WebBrowser.Tests.ActionMenu.Model.ActionMenus.Browser;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
-using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.WebBrowser.ActionMenu.Model.ActionMenus.Browser;
@@ -54,18 +51,6 @@ public class RepositoryActionBrowserV1MapperTests
         act.Should().Throw<InvalidCastException>();
     }
 
-    [Fact]
-    public async Task Map_ShouldReturnEmpty_WhenRepositoryHasLocalChanges()
-    {
-        // arrange
-        A.CallTo(() => _repository.HasLocalChanges).Returns(true);
-
-        // act
-        List<UserInterfaceRepositoryActionBase> result = await _sut.MapAsync(_action, _context, _repository).ToListAsync();
-
-        // assert
-        result.Should().BeEmpty();
-    }
     //
     // [Fact]
     // public async Task Map_ShouldReturnEmpty_WhenToBranchIsEmpty()

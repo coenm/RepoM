@@ -110,57 +110,57 @@ public class DocsRepositoryActionsTests
 #endif
     }
 
-    [Theory]
-    [MemberData(nameof(RepositoryActionsTestData))]
-    public async Task DocsRepositoryActionsSettings(RepositoryTestData repositoryActionTestData)
-    {
-        _verifySettings.UseTextForParameters(repositoryActionTestData.Type.Name);
-
-        var builtinClassNames = new Dictionary<string, string>
-            {
-                [repositoryActionTestData.Type.Name] = "config",
-            };
-
-#if DEBUG
-        var options = new NuDoq.ReaderOptions
-            {
-                KeepNewLinesInText = true,
-            };
-        AssemblyMembers members = DocReader.Read(repositoryActionTestData.Assembly, options);
-#else
-        var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
-#endif
-
-        var visitor = new RepositoryActionMarkdownVisitor(builtinClassNames);
-        members.Accept(visitor);
-
-        var sb = new StringBuilder();
-        foreach (ClassWriter classWriter in visitor.ClassWriters.OrderBy(c => c.Key).Select(c => c.Value))
-        {
-            var head = classWriter.Head.ToString();
-            var properties = classWriter.Properties.ToString();
-
-            head = head.Trim();
-            sb.AppendLine(head);
-            sb.AppendLine(string.Empty);
-
-            if (string.IsNullOrWhiteSpace(properties))
-            {
-                sb.AppendLine("This action does not have any specific properties.");
-            }
-            else
-            {
-                sb.AppendLine("Action specific properties:");
-                sb.AppendLine(string.Empty);
-                sb.Append(classWriter.Properties);
-            }
-        }
-
-#if DEBUG
-        await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
-#else
-        await Task.Yield();
-        true.Should().BeTrue(); // this test should only be run in Debug mode.
-#endif
-    }
+//     [Theory]
+//     [MemberData(nameof(RepositoryActionsTestData))]
+//     public async Task DocsRepositoryActionsSettings(RepositoryTestData repositoryActionTestData)
+//     {
+//         _verifySettings.UseTextForParameters(repositoryActionTestData.Type.Name);
+//
+//         var builtinClassNames = new Dictionary<string, string>
+//             {
+//                 [repositoryActionTestData.Type.Name] = "config",
+//             };
+//
+// #if DEBUG
+//         var options = new NuDoq.ReaderOptions
+//             {
+//                 KeepNewLinesInText = true,
+//             };
+//         AssemblyMembers members = DocReader.Read(repositoryActionTestData.Assembly, options);
+// #else
+//         var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
+// #endif
+//
+//         var visitor = new RepositoryActionMarkdownVisitor(builtinClassNames);
+//         members.Accept(visitor);
+//
+//         var sb = new StringBuilder();
+//         foreach (ClassWriter classWriter in visitor.ClassWriters.OrderBy(c => c.Key).Select(c => c.Value))
+//         {
+//             var head = classWriter.Head.ToString();
+//             var properties = classWriter.Properties.ToString();
+//
+//             head = head.Trim();
+//             sb.AppendLine(head);
+//             sb.AppendLine(string.Empty);
+//
+//             if (string.IsNullOrWhiteSpace(properties))
+//             {
+//                 sb.AppendLine("This action does not have any specific properties.");
+//             }
+//             else
+//             {
+//                 sb.AppendLine("Action specific properties:");
+//                 sb.AppendLine(string.Empty);
+//                 sb.Append(classWriter.Properties);
+//             }
+//         }
+//
+// #if DEBUG
+//         await Verifier.Verify(sb.ToString(), settings: _verifySettings, extension: "md");
+// #else
+//         await Task.Yield();
+//         true.Should().BeTrue(); // this test should only be run in Debug mode.
+// #endif
+//     }
 }

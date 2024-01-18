@@ -1,12 +1,9 @@
 namespace RepoM.Plugin.WebBrowser.Tests;
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FakeItEasy;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin;
-using RepoM.Core.Plugin.Expressions;
 using RepoM.Plugin.WebBrowser;
 using RepoM.Plugin.WebBrowser.PersistentConfiguration;
 using SimpleInjector;
@@ -45,7 +42,6 @@ public class WebBrowserPackageTest
     public async Task RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
     {
         // arrange
-        RegisterExternals(_container);
         var sut = new WebBrowserPackage();
 
         // act
@@ -64,7 +60,6 @@ public class WebBrowserPackageTest
     {
         // arrange
         A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
-        RegisterExternals(_container);
         var sut = new WebBrowserPackage();
 
         // act
@@ -75,24 +70,5 @@ public class WebBrowserPackageTest
 
         // implicit, Verify throws when container is not valid.
         _container.Verify(VerificationOption.VerifyAndDiagnose);
-    }
-
-    [Fact]
-    public async Task RegisterServices_ShouldFail_WhenExternalDependenciesAreNotRegistered()
-    {
-        // arrange
-        var sut = new WebBrowserPackage();
-
-        // act
-        await sut.RegisterServicesAsync(_container, _packageConfiguration);
-
-        // assert
-        Assert.Throws<InvalidOperationException>(() => _container.Verify(VerificationOption.VerifyAndDiagnose));
-    }
-
-    private static void RegisterExternals(Container container)
-    {
-        container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
-        container.RegisterSingleton(A.Dummy<IActionToRepositoryActionMapper>);
     }
 }

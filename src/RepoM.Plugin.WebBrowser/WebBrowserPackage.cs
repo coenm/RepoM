@@ -4,11 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Plugin.WebBrowser.ActionProvider;
 using RepoM.Plugin.WebBrowser.PersistentConfiguration;
 using RepoM.Plugin.WebBrowser.RepositoryActions;
 using RepoM.Plugin.WebBrowser.Services;
@@ -66,13 +64,8 @@ public class WebBrowserPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
-        // new style
         container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.Browser.RepositoryActionBrowserV1>();
         container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.Browser.RepositoryActionBrowserV1Mapper>(Lifestyle.Singleton);
-
-        // old style
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionBrowserV1>();
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionBrowserV1Mapper>(Lifestyle.Singleton);
 
         // action executor
         container.Register<ICommandExecutor<RepositoryActions.Actions.BrowseRepositoryCommand>, BrowseRepositoryCommandExecutor>(Lifestyle.Singleton);
