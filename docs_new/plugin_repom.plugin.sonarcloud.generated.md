@@ -20,3 +20,17 @@ Properties:
 - `project`: The SonarCloud project key. ([Text](https://this-is.com/Text))
 - `context`: The context in which the action is available. ([Context](https://this-is.com/Context))
 - `active`: Whether the menu item is enabled. ([Predicate](https://this-is.com/Predicate))
+
+### Example
+
+<!-- snippet: sonarcloud-set-favorite@1-scenario01 -->
+<a id='snippet-sonarcloud-set-favorite@1-scenario01'></a>
+```yaml
+- type: sonarcloud-set-favorite@1
+  name: Star repository on SonarCloud
+  project: "{{ my_sonarcloud_repository_id }}"
+  #active: "!sonarcloud.is_favorite(my_sonarcloud_repository_id)"
+```
+<sup><a href='/tests/RepoM.Plugin.SonarCloud.Tests/ActionMenu/IntegrationTests/SonarCloudSetFavoriteV1Tests.SetFavoriteScenario01.testfile.yaml#L8-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-sonarcloud-set-favorite@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
