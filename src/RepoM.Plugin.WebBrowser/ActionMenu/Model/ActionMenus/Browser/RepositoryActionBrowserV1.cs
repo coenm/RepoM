@@ -8,6 +8,9 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Action opening a webbrowser with the provided url.
 /// </summary>
+/// <example>
+/// <snippet name='webbrowser-browser@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
 {

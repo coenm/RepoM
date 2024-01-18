@@ -1,0 +1,16 @@
+context:
+- type: evaluate-script@1
+  content: |-
+    my_profile = "work-profile";
+
+action-menu:
+
+# begin-snippet: webbrowser-browser@1-scenario01
+
+- type: browser@1
+  name: My Github
+  url: https://github.com/coenm
+  profile: '{{ my_profile }}'
+  active: true
+
+# end-snippet
