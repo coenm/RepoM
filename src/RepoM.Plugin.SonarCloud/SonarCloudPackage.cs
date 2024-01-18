@@ -39,6 +39,7 @@ public class SonarCloudPackage : IPackage
 
     private static void RegisterServices(Container container)
     {
+        // repository actions
         container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.SetFavorite.RepositoryActionSonarCloudSetFavoriteV1>();
         container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.SetFavorite.RepositoryActionSonarCloudSetFavoriteV1Mapper>(Lifestyle.Singleton);
 
