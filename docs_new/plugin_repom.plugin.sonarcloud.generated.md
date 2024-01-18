@@ -29,7 +29,7 @@ Properties:
 - type: sonarcloud-set-favorite@1
   name: Star repository on SonarCloud
   project: "{{ my_sonarcloud_repository_id }}"
-  #active: "!sonarcloud.is_favorite(my_sonarcloud_repository_id)"
+  active: "!sonarcloud.is_favorite(my_sonarcloud_repository_id)"
 ```
 <sup><a href='/tests/RepoM.Plugin.SonarCloud.Tests/ActionMenu/IntegrationTests/SonarCloudSetFavoriteV1Tests.SetFavoriteScenario01.testfile.yaml#L8-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-sonarcloud-set-favorite@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
