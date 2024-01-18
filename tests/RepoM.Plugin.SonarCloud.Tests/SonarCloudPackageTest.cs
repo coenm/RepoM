@@ -87,7 +87,6 @@ public class SonarCloudPackageTest
     private void RegisterExternals(Container container)
     {
         container.RegisterInstance(_appSettingsService);
-        container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
         container.RegisterSingleton(A.Dummy<ILogger>);
     }
 }

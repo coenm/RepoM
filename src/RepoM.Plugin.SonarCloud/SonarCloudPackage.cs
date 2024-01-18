@@ -3,7 +3,6 @@ namespace RepoM.Plugin.SonarCloud;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.ActionMenu.Interface.Scriban;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
@@ -40,13 +39,8 @@ public class SonarCloudPackage : IPackage
 
     private static void RegisterServices(Container container)
     {
-        // new style
         container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.SetFavorite.RepositoryActionSonarCloudSetFavoriteV1>();
         container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.SetFavorite.RepositoryActionSonarCloudSetFavoriteV1Mapper>(Lifestyle.Singleton);
-
-        // old style
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionSonarCloudSetFavoriteV1>();
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionSonarCloudV1Mapper>(Lifestyle.Singleton);
 
         // others
         container.Register<ISonarCloudFavoriteService, SonarCloudFavoriteService>(Lifestyle.Singleton);
