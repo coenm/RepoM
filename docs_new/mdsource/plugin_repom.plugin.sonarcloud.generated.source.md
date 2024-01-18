@@ -20,3 +20,8 @@ Properties:
 - `project`: The SonarCloud project key. ([Text](https://this-is.com/Text))
 - `context`: The context in which the action is available. ([Context](https://this-is.com/Context))
 - `active`: Whether the menu item is enabled. ([Predicate](https://this-is.com/Predicate))
+
+### Example
+
+snippet: sonarcloud-set-favorite@1-scenario01
+

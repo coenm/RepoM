@@ -9,7 +9,6 @@ using FakeItEasy;
 using FluentAssertions;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.UserInterface;
-using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.SonarCloud;
 using VerifyXunit;
 using Xunit;

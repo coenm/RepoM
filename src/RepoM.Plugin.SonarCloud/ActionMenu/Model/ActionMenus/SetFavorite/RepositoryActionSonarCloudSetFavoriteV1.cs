@@ -8,6 +8,9 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Action to mark a repository as favorite within SonarCloud.
 /// </summary>
+/// <example>
+/// <snippet name='sonarcloud-set-favorite@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionSonarCloudSetFavoriteV1 : IMenuAction, IContext
 {

@@ -24,10 +24,9 @@ internal class RepositoryActionSonarCloudSetFavoriteV1Mapper : ActionToRepositor
 
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionSonarCloudSetFavoriteV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
-        var name = await action.Name.RenderAsync(context).ConfigureAwait(false);
-
         if (_service.IsInitialized)
         {
+            var name = await action.Name.RenderAsync(context).ConfigureAwait(false);
             var key = await action.Project.RenderAsync(context).ConfigureAwait(false);
 
             yield return new UserInterfaceRepositoryAction(name, repository)
