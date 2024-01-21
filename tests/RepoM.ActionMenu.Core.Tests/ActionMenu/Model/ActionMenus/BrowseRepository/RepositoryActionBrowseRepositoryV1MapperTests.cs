@@ -22,10 +22,10 @@ public class RepositoryActionBrowseRepositoryV1MapperTests
     private readonly IActionMenuGenerationContext _context;
     private readonly IRepository _repository;
 
-    private List<Remote> _remotes = new()
-        {
-            new ("origin", "https://github.com/coenm/repom"),
-        };
+    private readonly List<Remote> _remotes = new()
+      {
+        new ("origin", "https://github.com/coenm/repom"),
+      };
 
     public RepositoryActionBrowseRepositoryV1MapperTests()
     {
