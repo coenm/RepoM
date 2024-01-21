@@ -70,7 +70,7 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
                             new Dictionary<string, Type>
                                {
                                     // This is okay as the context types are not extendable at the moment.
-                                    // Otherwise; inject like IMenuAction.`
+                                    // Otherwise, inject like IMenuAction.`
                                     { ContextActionEvaluateVariableV1.TYPE_VALUE, typeof(ContextActionEvaluateVariableV1)},
                                     { ContextActionRenderVariableV1.TYPE_VALUE, typeof(ContextActionRenderVariableV1)},
                                     { ContextActionExecuteScriptV1.TYPE_VALUE, typeof(ContextActionExecuteScriptV1)},
