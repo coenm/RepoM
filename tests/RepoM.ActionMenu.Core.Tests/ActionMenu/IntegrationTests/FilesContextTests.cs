@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.AzureDevOps.Tests.ActionMenu.IntegrationTests;
+namespace RepoM.ActionMenu.Core.Tests.ActionMenu.IntegrationTests;
 
 using System.Collections.Generic;
 using System.IO;

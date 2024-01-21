@@ -17,4 +17,8 @@
     <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ActionMenu\Model\ActionMenus\" />
+  </ItemGroup>
+
 </Project>
