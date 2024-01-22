@@ -44,4 +44,11 @@
     <ProjectReference Include="..\..\src\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
     <ProjectReference Include="..\RepoM.ActionMenu.Core.TestLib\RepoM.ActionMenu.Core.TestLib.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ActionMenu\Model\ActionMenus\Ignore\RepositoryActionIgnoreV1MapperTests.Map_ShouldReturnItem_WhenSuccess.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>RepositoryActionIgnoreV1MapperTests.cs</DependentUpon>
+    </None>
+  </ItemGroup>  
 </Project>

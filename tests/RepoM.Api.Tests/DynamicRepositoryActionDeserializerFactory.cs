@@ -36,7 +36,6 @@ internal static class DynamicRepositoryActionDeserializerFactory
                     new DefaultActionDeserializer<RepositoryActionGitPullV1>(),
                     new DefaultActionDeserializer<RepositoryActionBrowseRepositoryV1>(),
                     new DefaultActionDeserializer<RepositoryActionIgnoreRepositoryV1>(),
-                    new DefaultActionDeserializer<RepositoryActionAssociateFileV1>(),
                     new DefaultActionDeserializer<RepositoryActionPinRepositoryV1>(),
                     new ActionForEachV1Deserializer(),
                     new DefaultActionDeserializer<RepositoryActionJustTextV1>(),

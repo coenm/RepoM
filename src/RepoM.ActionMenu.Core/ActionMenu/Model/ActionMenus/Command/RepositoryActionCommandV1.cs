@@ -7,7 +7,7 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 /// <summary>
-/// Action to excute a command (related the the repository)
+/// Action to excute a command (related to the repository)
 /// </summary>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionCommandV1 : IMenuAction, IName

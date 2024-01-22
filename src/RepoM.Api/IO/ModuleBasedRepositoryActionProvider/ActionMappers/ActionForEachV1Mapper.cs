@@ -12,6 +12,7 @@ using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using RepositoryAction = RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
+[Obsolete("Old action menu")]
 public class ActionForEachV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;

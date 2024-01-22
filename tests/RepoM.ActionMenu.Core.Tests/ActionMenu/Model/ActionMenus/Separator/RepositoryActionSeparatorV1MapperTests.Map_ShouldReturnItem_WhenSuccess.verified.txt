@@ -1,0 +1,7 @@
+﻿[
+  {
+    RepositoryCommand: {},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

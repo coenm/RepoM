@@ -8,6 +8,7 @@ using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 
+[Obsolete("Old menu")]
 public class RepositoryExpressionEvaluator : IRepositoryExpressionEvaluator
 {
     private readonly ExpressionExecutor _expressionExecutor;

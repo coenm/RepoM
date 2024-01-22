@@ -13,6 +13,7 @@ public interface IRepositoryExpressionEvaluator
     bool EvaluateBooleanExpression(string? value, IRepository? repository);
 }
 
+[Obsolete("Old menu")]
 public static class RepositoryExpressionEvaluatorExtensions
 {
     public static string EvaluateNullStringExpression(this IRepositoryExpressionEvaluator evaluator, string? value, IRepository? repository)

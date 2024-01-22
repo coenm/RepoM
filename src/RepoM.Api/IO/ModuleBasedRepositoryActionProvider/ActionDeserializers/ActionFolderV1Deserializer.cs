@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
+[Obsolete("Old action menu")]
 public class ActionFolderV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)

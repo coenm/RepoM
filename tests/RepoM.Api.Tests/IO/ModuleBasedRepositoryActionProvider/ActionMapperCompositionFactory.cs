@@ -29,8 +29,6 @@ internal static class ActionMapperCompositionFactory
                 new ActionGitPushV1Mapper(expressionEvaluator, translationService, repositoryWriter),
                 new ActionIgnoreRepositoriesV1Mapper(expressionEvaluator, translationService, repositoryMonitor),
                 new ActionSeparatorV1Mapper(expressionEvaluator),
-                new ActionAssociateFileV1Mapper(expressionEvaluator),
-                new ActionJustTextV1Mapper(expressionEvaluator),
             };
 
         return new ActionMapperComposition(mappers);

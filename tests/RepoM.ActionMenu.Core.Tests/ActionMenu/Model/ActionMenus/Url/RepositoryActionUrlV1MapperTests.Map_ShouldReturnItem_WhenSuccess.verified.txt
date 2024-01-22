@@ -1,0 +1,10 @@
+﻿[
+  {
+    Name: dummy-name(evaluated),
+    RepositoryCommand: {
+      Url: https://github.com(evaluated)
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

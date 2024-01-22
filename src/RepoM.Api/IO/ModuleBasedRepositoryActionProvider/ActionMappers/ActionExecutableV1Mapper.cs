@@ -11,6 +11,7 @@ using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepositoryAction = Data.RepositoryAction;
 
+[Obsolete("Old action menu")]
 public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly IRepositoryExpressionEvaluator _expressionEvaluator;
