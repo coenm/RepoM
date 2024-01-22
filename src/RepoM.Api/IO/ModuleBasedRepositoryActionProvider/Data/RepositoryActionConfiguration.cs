@@ -1,7 +1,9 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
+using System;
 using System.Collections.Generic;
 
+[Obsolete("Old action menu")]
 public class RepositoryActionConfiguration
 {
     public Redirect? Redirect { get; set; }

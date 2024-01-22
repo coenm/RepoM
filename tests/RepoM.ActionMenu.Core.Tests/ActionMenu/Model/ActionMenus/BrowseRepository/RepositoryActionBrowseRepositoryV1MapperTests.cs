@@ -11,6 +11,7 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
+using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
@@ -21,6 +22,7 @@ public class RepositoryActionBrowseRepositoryV1MapperTests
     private readonly RepositoryActionBrowseRepositoryV1 _action;
     private readonly IActionMenuGenerationContext _context;
     private readonly IRepository _repository;
+    private readonly VerifySettings _verifySettings = new();
 
     private readonly List<Remote> _remotes = new()
       {
@@ -38,6 +40,8 @@ public class RepositoryActionBrowseRepositoryV1MapperTests
         _repository = A.Fake<IRepository>();
         A.CallTo(() => _repository.Remotes).Returns(_remotes);
         A.CallTo(() => _context.RenderStringAsync(A<string>._)).ReturnsLazily(call => Task.FromResult(call.Arguments[0] + "(evaluated)"));
+
+        _verifySettings.DisableRequireUniquePrefix();
     }
 
     [Fact]
@@ -86,7 +90,7 @@ public class RepositoryActionBrowseRepositoryV1MapperTests
         List<UserInterfaceRepositoryActionBase> result = await _sut.MapAsync(_action, _context, _repository).ToListAsync();
 
         // assert
-        await Verifier.Verify(result).IgnoreMembersWithType<IRepository>();
+        await Verifier.Verify(result, _verifySettings).IgnoreMembersWithType<IRepository>();
     }
 
     [Theory]
@@ -101,7 +105,7 @@ public class RepositoryActionBrowseRepositoryV1MapperTests
         List<UserInterfaceRepositoryActionBase> result = await _sut.MapAsync(_action, _context, _repository).ToListAsync();
 
         // assert
-        await Verifier.Verify(result).IgnoreMembersWithType<IRepository>().UseMethodName(nameof(SingleRemote));
+        await Verifier.Verify(result, _verifySettings).IgnoreMembersWithType<IRepository>().UseMethodName(nameof(SingleRemote));
     }
 
     [Fact]
@@ -115,7 +119,7 @@ public class RepositoryActionBrowseRepositoryV1MapperTests
         List<UserInterfaceRepositoryActionBase> result = await _sut.MapAsync(_action, _context, _repository).ToListAsync();
 
         // assert
-        await Verifier.Verify(result).IgnoreMembersWithType<IRepository>().UseMethodName(nameof(SingleRemote));
+        await Verifier.Verify(result, _verifySettings).IgnoreMembersWithType<IRepository>().UseMethodName(nameof(SingleRemote));
     }
 
     [Fact]

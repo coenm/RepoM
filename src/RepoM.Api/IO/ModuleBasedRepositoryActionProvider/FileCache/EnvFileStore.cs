@@ -1,9 +1,11 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.FileCache;
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.Caching;
 using DotNetEnv;
 
+[Obsolete("??? not sure")]
 internal class EnvFileStore : FileStore<Dictionary<string, string>>
 {
     public EnvFileStore(ObjectCache cache) : base(cache)
