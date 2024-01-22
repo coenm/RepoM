@@ -14,7 +14,7 @@ Properties:
 
 ## command@1
 
-Action to excute a command (related the the repository)
+Action to excute a command (related to the repository)
 
 Properties:
 
