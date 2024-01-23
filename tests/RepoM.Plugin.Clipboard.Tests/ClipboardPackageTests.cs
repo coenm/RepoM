@@ -2,7 +2,6 @@ namespace RepoM.Plugin.Clipboard.Tests;
 
 using FakeItEasy;
 using RepoM.Core.Plugin;
-using RepoM.Core.Plugin.Expressions;
 using SimpleInjector;
 using Xunit;
 
@@ -41,7 +40,7 @@ public class ClipboardPackageTests
 
     private static void RegisterExternals(Container container)
     {
-        container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
+        // intentionally left blank.
     }
 }
 

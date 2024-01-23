@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin;
-using RepoM.Core.Plugin.Expressions;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
 using SimpleInjector;
 using Xunit;
@@ -103,8 +101,6 @@ public class AzureDevOpsPackageTests
 
     private void RegisterExternals(Container container)
     {
-        container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
-        container.RegisterSingleton(A.Dummy<IActionToRepositoryActionMapper>);
         container.RegisterInstance(_appSettingsService);
         container.RegisterSingleton(A.Dummy<ILogger>);
     }

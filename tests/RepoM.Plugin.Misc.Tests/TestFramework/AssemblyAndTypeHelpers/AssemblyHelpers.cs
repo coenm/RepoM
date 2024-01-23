@@ -8,10 +8,10 @@ using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 internal static class AssemblyHelpers
 {
-    public static Type[] GetRepositoryActionsFromAssembly(this Assembly assembly)
-    {
-        return assembly.GetTypFromAssembly<Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction>();
-    }
+    // public static Type[] GetRepositoryActionsFromAssembly(this Assembly assembly)
+    // {
+    //     return assembly.GetTypFromAssembly<Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction>();
+    // }
 
     public static Type[] GetRepositoriesComparerConfigurationFromAssembly(this Assembly assembly)
     {

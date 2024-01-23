@@ -10,13 +10,10 @@ using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin;
-using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.Repository;
 using SimpleInjector;
 using VerifyTests;
-using VerifyXunit;
 using Xunit;
 
 [UsesEasyTestFile]
@@ -39,8 +36,6 @@ public abstract class IntegrationActionTestBase
         Bootstrapper = new TestBootstrapper(PackageConfiguration);
         Bootstrapper.RegisterActionMenuLibrary();
 
-        Bootstrapper.Container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>); // default
-        Bootstrapper.Container.RegisterSingleton(A.Dummy<IActionToRepositoryActionMapper>); // default
         Bootstrapper.Container.RegisterInstance(AppSettingsService);
 
         Bootstrapper.Container.Options.AllowOverridingRegistrations = true;

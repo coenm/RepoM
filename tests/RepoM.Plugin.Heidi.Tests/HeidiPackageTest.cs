@@ -5,9 +5,7 @@ using System.IO.Abstractions;
 using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin;
-using RepoM.Core.Plugin.Expressions;
 using RepoM.Plugin.Heidi.PersistentConfiguration;
 using SimpleInjector;
 using Xunit;
@@ -102,9 +100,7 @@ public class HeidiPackageTest
 
     private static void RegisterExternals(Container container)
     {
-        container.RegisterSingleton(A.Dummy<IActionToRepositoryActionMapper>);
         container.RegisterSingleton(A.Dummy<ILogger>);
         container.RegisterSingleton(A.Dummy<IFileSystem>);
-        container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
     }
 }

@@ -1,61 +1,10 @@
 namespace RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RepoM.ActionMenu.Interface.YamlModel;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using SimpleInjector;
-
-/// <summary>
-/// Base for each type of Repository Actions.
-/// </summary>
-[Obsolete("Old action menu")]
-public /*abstract*/ class RepositoryAction
-{
-    /// <summary>
-    /// RepositoryAction type. Should be a fixed value used to determine the action type.
-    /// </summary>
-    [Required]
-    [PropertyType(typeof(string))]
-    public string? Type { get; set; }
-
-    /// <summary>
-    /// Name of the action. This is shown in the UI of RepoM.
-    /// </summary>
-    [EvaluatedProperty]
-    [Required]
-    [PropertyType(typeof(string))]
-    public string? Name { get; set; }
-
-    /// <summary>
-    /// Is the action active (ie. visible) or not.
-    /// </summary>
-    [EvaluatedProperty]
-    [PropertyType(typeof(bool))]
-    [PropertyDefaultBoolValue(true)]
-    public string? Active { get; set; }
-
-    /// <summary>
-    /// A set of variables to be availabe within this action.
-    /// </summary>
-    // [EvaluatedProperty]
-    [PropertyType(typeof(List<Variable>))]
-    public List<Variable> Variables { get; set; } = new List<Variable>();
-}
-
-/// <summary>
-/// Attribute indicating that this property will be evaluated. Used for documation.
-/// </summary>
-[AttributeUsage(AttributeTargets.Property)]
-[Obsolete("Old action menu")]
-public sealed class EvaluatedPropertyAttribute : Attribute
-{
-}
 
 /// <summary>
 /// Attribute indicating what the property type should be.
@@ -85,17 +34,6 @@ public sealed class PropertyDefaultBoolValueAttribute : PropertyDefaultValueAttr
     }
 
     public bool DefaultValue { get; }
-}
-
-[AttributeUsage(AttributeTargets.Property)]
-public sealed class PropertyDefaultStringValueAttribute : PropertyDefaultValueAttribute
-{
-    public PropertyDefaultStringValueAttribute(string defaultValue)
-    {
-        DefaultValue = defaultValue;
-    }
-
-    public string DefaultValue { get; }
 }
 
 [AttributeUsage(AttributeTargets.Property)]
@@ -129,42 +67,11 @@ public static class ContainerExtensions
         container.Collection.AppendInstance<IKeyTypeRegistration<IMenuAction>>(new FixedTypeRegistration<IMenuAction>(type, TypeRepositoryActionAttributeReader.GetValue(type)));
     }
 
-    [Obsolete("Old action menu")]
-    public static void RegisterDefaultRepositoryActionDeserializerForType<T>(this Container container) where T : RepositoryAction
-    {
-        RegisterDefaultRepositoryActionDeserializerForType(container, typeof(T));
-    }
-
-    [Obsolete("Old action menu")]
-    public static void RegisterDefaultRepositoryActionDeserializerForType(this Container container, Type type)
-    {
-        container.Collection.AppendInstance<IKeyTypeRegistration<RepositoryAction>>(new FixedTypeRegistration<RepositoryAction>(type, TypeRepositoryActionAttributeReader.GetValue(type)));
-    }
-
     // stupid, for test purposes. todo
     public static IKeyTypeRegistration<IMenuAction> CreateRegistrationObject<T>()
     {
         var type = typeof(T);
         return new FixedTypeRegistration<IMenuAction>(type, TypeRepositoryActionAttributeReader.GetValue(type));
-    }
-}
-
-[Obsolete("Old action menu")]
-public sealed class DefaultActionDeserializer<T> : IActionDeserializer where T : RepositoryAction
-{
-    private Type ConfigurationType { get; } = typeof(T);    
-
-    private string Tag { get; } = TypeRepositoryActionAttributeReader.GetValue(typeof(T));
-
-
-    public bool CanDeserialize(string type)
-    {
-        return Tag.Equals(type, StringComparison.CurrentCultureIgnoreCase);
-    }
-
-    public RepositoryAction? Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer, JsonSerializer jsonSerializer)
-    {
-        return jToken.ToObject(ConfigurationType, jsonSerializer) as RepositoryAction;
     }
 }
 
