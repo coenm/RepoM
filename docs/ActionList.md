@@ -50,21 +50,9 @@ For example `*.sln`. (required, string)<!-- endInclude -->
 Example:
 
 <!-- snippet: RepositoryActionsAssociateFile01 -->
-<a id='snippet-repositoryactionsassociatefile01'></a>
-```yaml
-repository-actions:
-  actions:
-  - type: associate-file@1
-    active: true 
-    variables: []
-    name: 'Open in Visual Studio'
-    extension: '*.sln'
-    
-  - type: associate-file@1
-    name: 'Open in Visual Studio'
-    extension: '*.sln'
 ```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/AssociateFile01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsassociatefile01' title='Start of snippet'>anchor</a></sup>
+** Could not find snippet 'RepositoryActionsAssociateFile01' **
+```
 <!-- endSnippet -->
 
 ## browse-repository@1
