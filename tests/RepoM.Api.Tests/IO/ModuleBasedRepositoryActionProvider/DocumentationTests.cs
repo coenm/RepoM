@@ -30,18 +30,6 @@ public class DocumentationTests
 
     [Theory]
     [InlineData("RepositoryActions01Base")]
-    [InlineData("JustText01")]
-    [InlineData("GitCheckout01")]
-    [InlineData("GitFetch01")]
-    [InlineData("GitPull01")]
-    [InlineData("GitPush01")]
-    [InlineData("Separator01")]
-    [InlineData("Folder01")]
-    [InlineData("Command01")]
-    [InlineData("Executable01")]
-    [InlineData("Foreach01")]
-    [InlineData("IgnoreRepository01")]
-    [InlineData("PinRepository01")]
     public async Task Deserialize_Documentation(string filename)
     {
         // arrange

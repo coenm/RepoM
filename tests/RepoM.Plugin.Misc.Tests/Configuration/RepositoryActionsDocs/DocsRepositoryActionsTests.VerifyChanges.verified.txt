@@ -1,17 +1,5 @@
 ﻿{
   RepoM.Api: [
-    RepositoryAction,
-    RepositoryActionCommandV1,
-    RepositoryActionExecutableV1,
-    RepositoryActionFolderV1,
-    RepositoryActionForEachV1,
-    RepositoryActionGitCheckoutV1,
-    RepositoryActionGitFetchV1,
-    RepositoryActionGitPullV1,
-    RepositoryActionGitPushV1,
-    RepositoryActionIgnoreRepositoryV1,
-    RepositoryActionJustTextV1,
-    RepositoryActionPinRepositoryV1,
-    RepositoryActionSeparatorV1
+    RepositoryAction
   ]
 }

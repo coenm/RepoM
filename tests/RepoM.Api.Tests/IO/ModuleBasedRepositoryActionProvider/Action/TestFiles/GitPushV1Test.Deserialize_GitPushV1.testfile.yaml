@@ -1,3 +1,0 @@
-repository-actions:
-  actions:
-  - type: git-push@1

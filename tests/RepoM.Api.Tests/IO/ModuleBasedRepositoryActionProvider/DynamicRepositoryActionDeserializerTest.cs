@@ -173,49 +173,6 @@ public class DynamicRepositoryActionDeserializerTest
     }
 
     [Fact]
-    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions1()
-    {
-        // arrange
-        _testFileSettings.UseFileName("RepositoryActions1");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-
-        // act
-        RepositoryActionConfiguration result = _sut.Deserialize(content);
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
-    [Fact]
-    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions2()
-    {
-        // arrange
-        _testFileSettings.UseFileName("RepositoryActions2");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-
-        // act
-        RepositoryActionConfiguration result = _sut.Deserialize(content);
-
-        // assert
-        await Verifier.Verify(result, _verifySettings)
-                      .UseMethodName(nameof(Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions1));
-    }
-
-    [Fact]
-    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions3()
-    {
-        // arrange
-        _testFileSettings.UseFileName("RepositoryActions3");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-
-        // act
-        RepositoryActionConfiguration result = _sut.Deserialize(content);
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
-    [Fact]
     public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect1()
     {
         // arrange
@@ -301,34 +258,6 @@ public class DynamicRepositoryActionDeserializerTest
     }
 
     [Fact]
-    public async Task Deserialize_Sample2()
-    {
-        // arrange
-        _testFileSettings.UseFileName("Sample2");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-
-        // act
-        RepositoryActionConfiguration result = _sut.Deserialize(content);
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
-    [Fact]
-    public async Task Deserialize_Sample3()
-    {
-        // arrange
-        _testFileSettings.UseFileName("Sample3");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-
-        // act
-        RepositoryActionConfiguration result = _sut.Deserialize(content);
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
-    [Fact]
     public async Task Deserialize_VariableObject1()
     {
         // arrange
@@ -347,48 +276,6 @@ public class DynamicRepositoryActionDeserializerTest
     {
         // arrange
         _testFileSettings.UseFileName("VariableObject2");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-
-        // act
-        RepositoryActionConfiguration result = _sut.Deserialize(content);
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
-    [Fact]
-    public async Task Deserialize_ForEach1()
-    {
-        // arrange
-        _testFileSettings.UseFileName("ForEach1");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-
-        // act
-        RepositoryActionConfiguration result = _sut.Deserialize(content);
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
-    [Fact]
-    public async Task Deserialize_ForEach2()
-    {
-        // arrange
-        _testFileSettings.UseFileName("ForEach2");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-
-        // act
-        RepositoryActionConfiguration result = _sut.Deserialize(content);
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
-    [Fact]
-    public async Task Deserialize_ForEach3()
-    {
-        // arrange
-        _testFileSettings.UseFileName("ForEach3");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
