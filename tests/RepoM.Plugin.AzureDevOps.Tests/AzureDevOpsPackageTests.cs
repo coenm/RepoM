@@ -10,10 +10,8 @@ using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Expressions;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
 using SimpleInjector;
-using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class AzureDevOpsPackageTests
 {
     private readonly Container _container;

@@ -12,7 +12,6 @@ using RepoM.App.Plugins;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class ModuleManagerTests
 {
     private readonly IAppSettingsService _appSettingsService;

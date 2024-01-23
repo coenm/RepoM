@@ -13,7 +13,6 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class RepositoryActionExecutableV1MapperTests
 {
     private readonly RepositoryActionExecutableV1Mapper _sut = new ();

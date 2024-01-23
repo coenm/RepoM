@@ -12,7 +12,6 @@ using VerifyXunit;
 using Xunit;
 
 // https://lucene.apache.org/core/2_9_4/queryparsersyntax.html
-[UsesVerify]
 public class LuceneQueryParserTests
 {
     private readonly LuceneQueryParser _sut;

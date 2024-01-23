@@ -9,7 +9,6 @@ using RepoM.Plugin.Statistics.Interface;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class RepositoryStatisticsTest
 {
     [Fact]

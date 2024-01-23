@@ -18,7 +18,6 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
     using ILogger = Microsoft.Extensions.Logging.ILogger;
     using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
-    [UsesVerify]
     public class PluginTests
     {
         private readonly IRepository _repository = new DummyRepository();

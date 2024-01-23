@@ -15,7 +15,6 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class RepositoryActionFolderV1MapperTests
 {
     private readonly RepositoryActionFolderV1Mapper _sut = new ();

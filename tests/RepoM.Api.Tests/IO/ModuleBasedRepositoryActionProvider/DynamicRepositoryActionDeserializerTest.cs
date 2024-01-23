@@ -13,7 +13,6 @@ using VerifyXunit;
 using Xunit;
 
 [UsesEasyTestFile]
-[UsesVerify]
 public class DynamicRepositoryActionDeserializerTest
 {
     private readonly EasyTestFileSettings _testFileSettings;

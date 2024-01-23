@@ -6,7 +6,6 @@ using Scriban;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class ProgramTests : IClassFixture<CompiledProjectFixture>
 {
     private readonly CompiledProjectFixture _fixture;

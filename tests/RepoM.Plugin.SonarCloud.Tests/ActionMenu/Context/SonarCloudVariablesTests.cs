@@ -4,10 +4,8 @@ using System;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.Plugin.SonarCloud.ActionMenu.Context;
-using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class SonarCloudVariablesTests
 {
     private readonly ISonarCloudFavoriteService _service;

@@ -12,8 +12,6 @@ using RepoM.Core.Plugin.Repository;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
-
-[UsesVerify]
 public class RepositoryActionJustTextV1MapperTests
 {
     private readonly RepositoryActionJustTextV1Mapper _sut = new ();

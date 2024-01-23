@@ -13,11 +13,9 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.ActionMenu.Context;
 using RepoM.Plugin.AzureDevOps.Internal;
-using VerifyXunit;
 using Xunit;
 using Xunit.Categories;
 
-[UsesVerify]
 public class AzureDevopsVariablesTests
 {
     private readonly ILogger _logger = NullLogger.Instance;

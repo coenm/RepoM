@@ -6,9 +6,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using FakeItEasy;
 using FluentAssertions;
 using NuDoq;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Plugin.Misc.Tests.TestFramework;
 using RepoM.Plugin.Misc.Tests.TestFramework.AssemblyAndTypeHelpers;
 using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
@@ -16,7 +18,6 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class DocsRepositoryActionsTests
 {
     private const string VERIFY_DIRECTORY = "RepositoryActionsDocs";
@@ -25,6 +26,7 @@ public class DocsRepositoryActionsTests
     public DocsRepositoryActionsTests()
     {
         _verifySettings.UseDirectory(VERIFY_DIRECTORY);
+        _verifySettings.IncludeObsoletes();
     }
 
     public static IEnumerable<object[]> AssemblyTestData => PluginStore.Assemblies.Select(assembly => new object[] { assembly, }).ToArray();
@@ -69,7 +71,7 @@ public class DocsRepositoryActionsTests
             assembly => assembly.GetRepositoryActionsFromAssembly());
 
         // assert
-        await Verifier.Verify(results, _verifySettings);
+        await Verifier.Verify(results, _verifySettings).IncludeObsoletes();
     }
 
     [Fact]

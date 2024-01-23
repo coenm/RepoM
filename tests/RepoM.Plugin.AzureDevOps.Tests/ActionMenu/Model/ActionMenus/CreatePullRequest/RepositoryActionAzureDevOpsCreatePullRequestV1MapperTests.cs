@@ -16,7 +16,6 @@ using RepoM.Plugin.AzureDevOps.ActionMenu.Model.ActionMenus.CreatePullRequest;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
 {
     private readonly RepositoryActionAzureDevOpsCreatePullRequestV1Mapper _sut = new (NullLogger.Instance);

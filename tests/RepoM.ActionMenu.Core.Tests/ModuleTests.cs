@@ -6,10 +6,8 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
 using SimpleInjector;
-using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class ModuleTests
 {
     private readonly Container _container = new();

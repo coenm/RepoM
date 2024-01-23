@@ -15,7 +15,6 @@ namespace RepoM.ActionMenu.Core.Tests
     using VerifyXunit;
     using Xunit;
 
-    [UsesVerify]
     public class ScribanActionMenuTests
     {
         private readonly IRepository _repository = new DummyRepository();

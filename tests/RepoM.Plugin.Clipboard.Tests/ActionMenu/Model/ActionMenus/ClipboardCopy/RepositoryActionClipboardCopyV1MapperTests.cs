@@ -13,7 +13,6 @@ using RepoM.Plugin.Clipboard.ActionMenu.Model.ActionMenus.ClipboardCopy;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class RepositoryActionClipboardCopyV1MapperTests
 {
     private readonly RepositoryActionClipboardCopyV1Mapper _sut = new();

@@ -15,7 +15,6 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class RepositoriesScorerConfigurationTests
 {
     private const string VERIFY_DIRECTORY = "RepositoriesScorerConfigurationDocs";

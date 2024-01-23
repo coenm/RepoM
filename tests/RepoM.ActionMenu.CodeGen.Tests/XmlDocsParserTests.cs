@@ -9,7 +9,6 @@ using RepoM.ActionMenu.CodeGen.Models;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class XmlDocsParserTests
 {
     [Fact]

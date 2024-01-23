@@ -12,7 +12,6 @@ using VerifyXunit;
 using Xunit;
 
 [UsesEasyTestFile]
-[UsesVerify]
 public class BrowseRepositoryV1Test
 {
     private readonly YamlDynamicRepositoryActionDeserializer _sut;

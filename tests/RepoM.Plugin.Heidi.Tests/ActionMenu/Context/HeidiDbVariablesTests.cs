@@ -15,7 +15,6 @@ using VerifyXunit;
 using Xunit;
 using Xunit.Categories;
 
-[UsesVerify]
 public class HeidiDbVariablesTests
 {
     private readonly IHeidiConfigurationService _service = A.Fake<IHeidiConfigurationService>();

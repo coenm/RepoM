@@ -19,7 +19,6 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 [UsesEasyTestFile]
 public abstract class IntegrationActionTestBase
 {

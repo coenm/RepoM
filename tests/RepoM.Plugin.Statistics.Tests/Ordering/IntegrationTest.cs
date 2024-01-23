@@ -20,7 +20,6 @@ using RepoM.Core.Plugin;
 using RepoM.Plugin.Statistics.PersistentConfiguration;
 
 [UsesEasyTestFile]
-[UsesVerify]
 public class IntegrationTest
 {
     private readonly IAppDataPathProvider _appDataPathProvider;

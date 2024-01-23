@@ -8,10 +8,8 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Statistics;
 using RepoM.Plugin.Statistics.ActionMenu.Context;
-using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class UsageVariablesTests
 {
     private readonly IActionMenuGenerationContext _context = A.Fake<IActionMenuGenerationContext>();

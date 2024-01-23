@@ -30,11 +30,9 @@ using RepoM.Api.RepositoryActions;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Expressions;
 using VerifyTests;
-using VerifyXunit;
 using Xunit;
 
 [UsesEasyTestFile]
-[UsesVerify]
 public class RepositorySpecificConfigurationTest
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
@@ -144,23 +142,7 @@ public class RepositorySpecificConfigurationTest
         // assert
         result.Should().BeEmpty();
     }
-
-    [Fact]
-    public async Task Create_ShouldProcessSeparator1()
-    {
-        // arrange
-        _testFileSettings.UseFileName("RepositoryActionsWithSeparator1");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
-        RepositorySpecificConfiguration sut = CreateSut();
-
-        // act
-        IEnumerable<RepositoryActionBase> result = sut.CreateActions(new Repository("path1"));
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
-
+    
     private RepositorySpecificConfiguration CreateSut()
     {
         return new RepositorySpecificConfiguration(

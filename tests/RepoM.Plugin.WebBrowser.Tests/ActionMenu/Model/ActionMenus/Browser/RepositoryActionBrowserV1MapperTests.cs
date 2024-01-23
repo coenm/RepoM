@@ -8,10 +8,8 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.WebBrowser.ActionMenu.Model.ActionMenus.Browser;
-using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class RepositoryActionBrowserV1MapperTests
 {
     private readonly RepositoryActionBrowserV1Mapper _sut = new ();

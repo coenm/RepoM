@@ -1,9 +1,0 @@
-repository-actions:
-- type: just-text@1
-  name: 'Open in Windows File Explorer'
-  active: true
-
-- type: separator@1
-
-- type: just-text@1
-  name: 'Open in Windows File Explorer 2'

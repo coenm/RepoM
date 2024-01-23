@@ -10,7 +10,6 @@ using VerifyXunit;
 using Xunit;
 
 [UsesEasyTestFile]
-[UsesVerify]
 public class DocumentationTests
 {
     private readonly EasyTestFileSettings _testFileSettings;
@@ -39,7 +38,6 @@ public class DocumentationTests
     [InlineData("BrowseRepository01")]
     [InlineData("Separator01")]
     [InlineData("Folder01")]
-    [InlineData("AssociateFile01")]
     [InlineData("Command01")]
     [InlineData("Executable01")]
     [InlineData("Foreach01")]

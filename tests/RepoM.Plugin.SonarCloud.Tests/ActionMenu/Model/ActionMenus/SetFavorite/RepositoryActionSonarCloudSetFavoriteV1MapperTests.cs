@@ -17,7 +17,6 @@ using VerifyXunit;
 using Xunit;
 using RepositoryActionSonarCloudSetFavoriteV1 = RepoM.Plugin.SonarCloud.ActionMenu.Model.ActionMenus.SetFavorite.RepositoryActionSonarCloudSetFavoriteV1;
 
-[UsesVerify]
 public class RepositoryActionSonarCloudSetFavoriteV1MapperTests
 {
     private readonly RepositoryActionSonarCloudSetFavoriteV1Mapper _sut;

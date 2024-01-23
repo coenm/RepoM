@@ -18,7 +18,6 @@ using Xunit;
 using Xunit.Categories;
 using Sut = RepoM.ActionMenu.Core.ActionMenu.Context.FileFunctions;
 
-[UsesVerify]
 public class FileFunctionsTests
 {
     private readonly IMenuContext _context;

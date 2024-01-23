@@ -12,7 +12,6 @@ using RepoM.Core.Plugin;
 using VerifyXunit;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
 
-[UsesVerify]
 public class SonarCloudPackageTest
 {
     private readonly Container _container;

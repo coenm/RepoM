@@ -4,10 +4,8 @@ using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using RepoM.Plugin.WebBrowser.Services;
-using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class WebBrowserServiceTest
 {
     [Fact]
