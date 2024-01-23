@@ -24,11 +24,13 @@ public abstract class IntegrationActionTestBase
     protected readonly EasyTestFileSettings TestFileSettings;
     protected readonly VerifySettings VerifySettings;
 
-    public IntegrationActionTestBase()
+    protected IntegrationActionTestBase()
     {
-        Repository = new Repository(@"C:\Repositories\work\RepoX");
-        Repository.CurrentBranch = "feature/123-my-new-ui-with-multiple-new-screens-so-this-has-a-long-branch-name";
-        Repository.Branches = new string[1] { "develop", };
+        Repository = new Repository(@"C:\Repositories\work\RepoX")
+            {
+                CurrentBranch = "feature/123-my-new-ui-with-multiple-new-screens-so-this-has-a-long-branch-name",
+                Branches = new string[1] { "develop", },
+            };
 
         PackageConfiguration = A.Fake<IPackageConfiguration>();
         AppSettingsService = A.Fake<IAppSettingsService>();
@@ -85,7 +87,7 @@ public abstract class IntegrationActionTestBase
 
 public abstract class IntegrationActionTestBase<T> : IntegrationActionTestBase where T : IPackage, new()
 {
-    public IntegrationActionTestBase()
+    protected IntegrationActionTestBase()
     {
         Bootstrapper.RegisterPlugin(new T());
     }
