@@ -35,7 +35,6 @@ public class DocumentationTests
     [InlineData("GitFetch01")]
     [InlineData("GitPull01")]
     [InlineData("GitPush01")]
-    [InlineData("BrowseRepository01")]
     [InlineData("Separator01")]
     [InlineData("Folder01")]
     [InlineData("Command01")]

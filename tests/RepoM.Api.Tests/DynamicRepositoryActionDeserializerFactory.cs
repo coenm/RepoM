@@ -8,6 +8,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
+[Obsolete("old menu")]
 internal static class DynamicRepositoryActionDeserializerFactory
 {
     public static YamlDynamicRepositoryActionDeserializer Create()
@@ -34,7 +35,6 @@ internal static class DynamicRepositoryActionDeserializerFactory
                     new DefaultActionDeserializer<RepositoryActionGitFetchV1>(),
                     new DefaultActionDeserializer<RepositoryActionGitPushV1>(),
                     new DefaultActionDeserializer<RepositoryActionGitPullV1>(),
-                    new DefaultActionDeserializer<RepositoryActionBrowseRepositoryV1>(),
                     new DefaultActionDeserializer<RepositoryActionIgnoreRepositoryV1>(),
                     new DefaultActionDeserializer<RepositoryActionPinRepositoryV1>(),
                     new ActionForEachV1Deserializer(),

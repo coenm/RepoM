@@ -18,7 +18,6 @@ internal static class ActionMapperCompositionFactory
     {
         var mappers = new IActionToRepositoryActionMapper[]
             {
-                new ActionBrowseRepositoryV1Mapper(expressionEvaluator, translationService),
                 new ActionCommandV1Mapper(expressionEvaluator),
                 new ActionExecutableV1Mapper(expressionEvaluator, fileSystem),
                 new ActionFolderV1Mapper(expressionEvaluator),

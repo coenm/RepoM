@@ -1,7 +1,6 @@
 ﻿{
   RepoM.Api: [
     RepositoryAction,
-    RepositoryActionBrowseRepositoryV1,
     RepositoryActionCommandV1,
     RepositoryActionExecutableV1,
     RepositoryActionFolderV1,
