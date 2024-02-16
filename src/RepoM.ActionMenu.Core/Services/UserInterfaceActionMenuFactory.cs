@@ -47,7 +47,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository, string filename)
     {
         _logger.LogTrace("CreateMenuAsync CreateActionMenuGenerationContext");
-        ActionMenuGenerationContext context = await CreateActionMenuGenerationContext(repository, filename).ConfigureAwait(false);
+        ActionMenuGenerationContext context = await CreateActionMenuGenerationContext(repository).ConfigureAwait(false);
 
         // load yaml
         _logger.LogTrace("CreateActionMenuGenerationContext LoadAsync");
@@ -87,7 +87,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         return await context.GetTagsAsync(actions.Tags).ConfigureAwait(false);
     }
 
-    private async Task<ActionMenuGenerationContext> CreateActionMenuGenerationContext(IRepository repository, string filename)
+    private async Task<ActionMenuGenerationContext> CreateActionMenuGenerationContext(IRepository repository)
     {
         // force offloading to background thread (or use Task.Run(), or TaskFactory.....
         await Task.Yield();
