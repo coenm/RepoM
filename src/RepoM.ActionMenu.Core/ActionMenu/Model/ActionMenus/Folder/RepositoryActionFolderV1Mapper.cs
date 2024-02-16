@@ -21,8 +21,9 @@ internal class RepositoryActionFolderV1Mapper : ActionToRepositoryActionMapperBa
             yield break;
         }
 
-        var isDeferred = await action.IsDeferred.EvaluateAsync(context).ConfigureAwait(false); //todo
-        isDeferred = false;
+        // Deferred with cloning the context doesn't work yet (https://github.com/coenm/RepoM/issues/85) therefore, set to false.
+        // var isDeferred = await action.IsDeferred.EvaluateAsync(context).ConfigureAwait(false);
+        var isDeferred = false;
 
         if (isDeferred)
         {

@@ -22,10 +22,10 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using Scriban;
 using Scriban.Runtime;
-using static RepoM.ActionMenu.Core.Model.ScribanModuleWithFunctions;
 using FileFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.FileFunctions;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
 using RepositoryFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.RepositoryFunctions;
+using static RepoM.ActionMenu.Core.Model.ScribanModuleWithFunctions;
 
 internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerationContext, IContextMenuActionMenuGenerationContext
 {
@@ -63,25 +63,30 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
                 new ContextActionLoadFileV1Processor(_fileReader),
             };
 
+        _rootScriptObject = CreateAndInit(Repository);
 
-        _rootScriptObject = new RepoMScriptObject();
-        
-        _rootScriptObject.SetValue("file", new FileFunctions(), true);
-        _rootScriptObject.SetValue("repository", new RepositoryFunctions(Repository), true);
-
-        Env = new EnvSetScriptObject(EnvScriptObject.Create());
-        _rootScriptObject.Add("env", Env);
-        _rootScriptObject.SetReadOnly("env", false); // this is not what we want, but it's the only way to make it work
-        
+       
         foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
         {
             contextRegistration.RegisterFunctions(Decorate<ActionMenuGenerationContext>(_rootScriptObject));
         }
         
         PushGlobal(_rootScriptObject);
-        
         RepositoryActionsScriptContext = new DisposableContextScriptObject(this, Env, _contextActionMappers);
         PushGlobal(RepositoryActionsScriptContext);
+    }
+
+    private static RepoMScriptObject CreateAndInit(IRepository repository)
+    {
+        var scriptObj = new RepoMScriptObject();
+
+        scriptObj.SetValue("file", new FileFunctions(), true);
+        scriptObj.SetValue("repository", new RepositoryFunctions(repository), true);
+
+        scriptObj.Add("env", new EnvSetScriptObject(EnvScriptObject.Create()));
+        scriptObj.SetReadOnly("env", false); // this is not what we want, but it's the only way to make it work
+
+        return scriptObj;
     }
 
     private ActionMenuGenerationContext(
@@ -92,8 +97,9 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         IActionToRepositoryActionMapper[] repositoryActionMappers,
         IActionMenuDeserializer deserializer,
         IFileReader fileReader,
-        RepoMScriptObject rootScriptObject, // is it required to be an RepoM... object?
-        EnvSetScriptObject env)
+
+        RepoMScriptObject rootScriptObject // is it required to be an RepoM... object?
+    )
     {
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
         _functionsArray = functionsArray ?? throw new ArgumentNullException(nameof(functionsArray));
@@ -114,27 +120,31 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         _rootScriptObject = rootScriptObject ?? throw new ArgumentNullException(nameof(rootScriptObject));
 
-        Env = env;
-        _rootScriptObject.SetValue("env", Env, false); // todo check if readonly is required.
+        // foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
+        // {
+        // contextRegistration.RegisterFunctions(Decorate<ActionMenuGenerationContext>(_rootScriptObject));
+        // }
 
         PushGlobal(_rootScriptObject);
         RepositoryActionsScriptContext = new DisposableContextScriptObject(this, Env, _contextActionMappers);
         PushGlobal(RepositoryActionsScriptContext);
     }
 
-    private IContextRegistration Decorate<T>(IContextRegistration rootScriptObject) where T : TemplateContext
+    private static IContextRegistration Decorate<T>(IContextRegistration rootScriptObject) where T : TemplateContext
     {
         return new ContextRegistrationDecorator<T>(rootScriptObject);
     }
 
-    public IFileSystem FileSystem { private set; get; }
+    public IFileSystem FileSystem { get; }
 
-    public DisposableContextScriptObject RepositoryActionsScriptContext { get; private set; }
+    public DisposableContextScriptObject RepositoryActionsScriptContext { get; }
 
     public IRepository Repository { get; }
 
-    public EnvSetScriptObject Env { get; private set; }
-    
+    private EnvSetScriptObject? _env;
+
+    public EnvSetScriptObject Env => _env ??= (EnvSetScriptObject)_rootScriptObject["env"];
+
     public async Task AddRepositoryContextAsync(Context? reposContext)
     {
         if (reposContext == null)
@@ -168,6 +178,14 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public IActionMenuGenerationContext Clone()
     {
+        // this method doesn't work yet. Cloning the full Template context is not possible.
+        // to be implemented (https://github.com/coenm/RepoM/issues/85)
+
+        var repoMScriptObject = (RepoMScriptObject)_rootScriptObject.Clone(true);
+
+        var e = ((EnvSetScriptObject)_rootScriptObject["env"]).Clone(true);
+        repoMScriptObject.SetValue("env", e, false);
+
         var result = new ActionMenuGenerationContext(
             Repository,
             _templateParser,
@@ -177,8 +195,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
             _deserializer,
             _fileReader,
 
-            (RepoMScriptObject)_rootScriptObject.Clone(true),
-            (EnvSetScriptObject)Env.Clone(true));
+            repoMScriptObject);
 
         return result;
     }

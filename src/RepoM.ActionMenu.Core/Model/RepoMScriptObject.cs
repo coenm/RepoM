@@ -9,11 +9,11 @@ internal class RepoMScriptObject : ScriptObject, IContextRegistration
     public override IScriptObject Clone(bool deep)
     {
         // todo not sure if this clone is okay.
-        var result = base.Clone(deep);
+        IScriptObject result = base.Clone(deep);
 
-        if (result is RepoMScriptObject r)
+        if (result is RepoMScriptObject repoMScriptObject)
         {
-            return r;
+            return repoMScriptObject;
         }
 
         throw new NotImplementedException("Could not clone");

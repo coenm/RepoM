@@ -34,6 +34,7 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
     /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 
+    // Not documented as it is not implemented yet. Deferred with cloning the context doesn't work yet (https://github.com/coenm/RepoM/issues/85)
     [Predicate(false)]
     public Predicate IsDeferred { get; set; } = new ScribanPredicate();
 
