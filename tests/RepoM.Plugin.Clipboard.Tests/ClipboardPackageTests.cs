@@ -1,6 +1,5 @@
 namespace RepoM.Plugin.Clipboard.Tests;
 
-using FakeItEasy;
 using RepoM.Core.Plugin;
 using SimpleInjector;
 using Xunit;

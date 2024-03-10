@@ -14,7 +14,7 @@
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
             Name: Text,
-            Link: https://this-is.com/Text,
+            Link: repository_action_types.md#text,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Name,
@@ -35,7 +35,7 @@ This property will be used instead of the Name property.
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
             Name: Text,
-            Link: https://this-is.com/Text,
+            Link: repository_action_types.md#text,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ProjectId,
@@ -54,7 +54,7 @@ This property will be used instead of the Name property.
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
             Name: Text,
-            Link: https://this-is.com/Text,
+            Link: repository_action_types.md#text,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.PrTitle,
@@ -83,7 +83,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Text,
             Name: Text,
-            Link: https://this-is.com/Text,
+            Link: repository_action_types.md#text,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.ToBranch,
@@ -121,7 +121,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
             Name: Predicate,
-            Link: https://this-is.com/Predicate,
+            Link: repository_action_types.md#predicate,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.DraftPr,
@@ -141,7 +141,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
             Name: Predicate,
-            Link: https://this-is.com/Predicate,
+            Link: repository_action_types.md#predicate,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.IncludeWorkItems,
@@ -161,7 +161,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
             Name: Predicate,
-            Link: https://this-is.com/Predicate,
+            Link: repository_action_types.md#predicate,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.OpenInBrowser,
@@ -180,7 +180,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context?,
             Name: Context,
-            Link: https://this-is.com/Context,
+            Link: repository_action_types.md#context,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Context,
@@ -200,7 +200,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
             Name: Predicate,
-            Link: https://this-is.com/Predicate,
+            Link: repository_action_types.md#predicate,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1.Active,
@@ -379,7 +379,7 @@ devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
             Name: Predicate,
-            Link: https://this-is.com/Predicate,
+            Link: repository_action_types.md#predicate,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.DeleteSourceBranch,
@@ -394,7 +394,7 @@ devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
           ReturnType: {
             CSharpTypeName: RepoM.ActionMenu.Interface.YamlModel.Templating.Predicate,
             Name: Predicate,
-            Link: https://this-is.com/Predicate,
+            Link: repository_action_types.md#predicate,
             Nullable: false
           },
           XmlId: P:RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1.TransitionWorkItems,

@@ -12,7 +12,7 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <snippet name='sonarcloud-set-favorite@1-scenario01' mode='snippet' />
 /// </example>
 [RepositoryAction(TYPE_VALUE)]
-internal sealed class RepositoryActionSonarCloudSetFavoriteV1 : IMenuAction, IContext
+internal sealed class RepositoryActionSonarCloudSetFavoriteV1 : IMenuAction, IContext, IName
 {
     public const string TYPE_VALUE = "sonarcloud-set-favorite@1";
 
@@ -22,6 +22,7 @@ internal sealed class RepositoryActionSonarCloudSetFavoriteV1 : IMenuAction, ICo
         set => _ = value;
     }
 
+    /// <inheritdoc cref="IName.Name"/>
     [Text]
     public Text Name { get; set; } = null!;
 

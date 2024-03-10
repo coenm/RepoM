@@ -1,9 +1,9 @@
 namespace RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.Command;
 
 using System.ComponentModel.DataAnnotations;
-using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 /// <summary>

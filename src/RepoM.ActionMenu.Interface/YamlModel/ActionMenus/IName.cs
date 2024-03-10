@@ -1,4 +1,4 @@
-namespace RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;
+namespace RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 

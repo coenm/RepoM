@@ -3,7 +3,6 @@ namespace RepoM.ActionMenu.Core.Misc;
 using System;
 using RepoM.ActionMenu.Core.Model;
 using Scriban;
-using Scriban.Parsing;
 
 internal class FixedTemplateParser : ITemplateParser
 {

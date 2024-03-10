@@ -12,7 +12,7 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <snippet name='webbrowser-browser@1-scenario01' mode='snippet' />
 /// </example>
 [RepositoryAction(TYPE_VALUE)]
-internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
+internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext, IName
 {
     public const string TYPE_VALUE = "browser@1";
 
@@ -22,6 +22,7 @@ internal sealed class RepositoryActionBrowserV1 : IMenuAction, IContext
         set => _ = value;
     }
 
+    /// <inheritdoc cref="IName.Name"/>
     [Text]
     public Text Name { get; init; } = null!;
 

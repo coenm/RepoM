@@ -6,7 +6,6 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
     using System.IO.Abstractions.TestingHelpers;
     using System.Text;
     using System.Threading.Tasks;
-    using Castle.Core.Logging;
     using FakeItEasy;
     using RepoM.ActionMenu.Interface.UserInterface;
     using RepoM.Core.Plugin.Repository;
