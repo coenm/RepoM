@@ -29,6 +29,9 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction, IContext
     /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; init; }
 
+    /// <summary>
+    /// Additional context added for each iteration.
+    /// </summary>
     public Context? IterationContext { get; init; }
 
     /// <summary>
