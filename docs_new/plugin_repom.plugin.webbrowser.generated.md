@@ -17,6 +17,7 @@ Action opening a webbrowser with the provided url.
 
 Properties:
 
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `url`: The url to browse to. ([Text](repository_action_types.md#text))
 - `profile`: profile name used to select browser and browser profile ([Text](repository_action_types.md#text))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
