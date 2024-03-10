@@ -17,9 +17,9 @@ Action to mark a repository as favorite within SonarCloud.
 
 Properties:
 
-- `project`: The SonarCloud project key. ([Text](docs_new/repository_action_types.md#text))
-- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
+- `project`: The SonarCloud project key. ([Text](repository_action_types.md#text))
+- `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
 ### Example
 
