@@ -17,10 +17,10 @@ Action opening a webbrowser with the provided url.
 
 Properties:
 
-- `url`: The url to browse to. ([Text](https://this-is.com/Text))
-- `profile`: profile name used to select browser and browser profile ([Text](https://this-is.com/Text))
-- `context`: The context in which the action is available. ([Context](https://this-is.com/Context))
-- `active`: Whether the menu item is enabled. ([Predicate](https://this-is.com/Predicate))
+- `url`: The url to browse to. ([Text](docs_new/repository_action_types.md#text))
+- `profile`: profile name used to select browser and browser profile ([Text](docs_new/repository_action_types.md#text))
+- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
 
 ### Example
 
