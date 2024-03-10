@@ -8,9 +8,9 @@ Action to open the default webbrowser and go to the origin remote webinterface. 
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `first-only`: Single menu for the first remote. ([Predicate](docs_new/repository_action_types.md#predicate))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `first-only`: Single menu for the first remote. ([Predicate](repository_action_types.md#predicate))
 
 ## command@1
 
@@ -18,10 +18,10 @@ Action to excute a command (related to the repository)
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `command`: The command to execute. ([Text](docs_new/repository_action_types.md#text))
-- `arguments`: Arguments for the command. ([Text](docs_new/repository_action_types.md#text))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `command`: The command to execute. ([Text](repository_action_types.md#text))
+- `arguments`: Arguments for the command. ([Text](repository_action_types.md#text))
 
 ## executable@1
 
@@ -29,11 +29,11 @@ Action to excute an application with additional arguments. This action is almost
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `executable`: The executable. ([Text](docs_new/repository_action_types.md#text))
-- `arguments`: Arguments for the executable. ([Text](docs_new/repository_action_types.md#text))
-- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `executable`: The executable. ([Text](repository_action_types.md#text))
+- `arguments`: Arguments for the executable. ([Text](repository_action_types.md#text))
+- `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
 ## folder@1
 
@@ -42,9 +42,9 @@ Action to create a folder (sub menu) in the context menu of the repository allow
 Properties:
 
 - `actions`: List of actions. (ActionMenu, optional)
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
 ## foreach@1
 
@@ -52,11 +52,12 @@ Action to create repeated actions based on a variable.
 
 Properties:
 
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+- `iteration-context`: Additional context added for each iteration. ([Context](repository_action_types.md#context))
 - `enumerable`: The list of items to enumerate on. (Variable)
 - `variable`: The name of the variable to access to current enumeration of the  items. For each iteration, the variable `{var.name}` has the value of the current iteration. (string?, optional)
-- `skip`: Predicate to skip the current item. ([Predicate](docs_new/repository_action_types.md#predicate))
+- `skip`: Predicate to skip the current item. ([Predicate](repository_action_types.md#predicate))
 - `actions`: List of repeated actions. (List)
 
 ## git-checkout@1
@@ -65,8 +66,8 @@ This action will create a menu and sub menus with all local and remote branches 
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
 ## git-fetch@1
 
@@ -74,8 +75,8 @@ Action to execute a `git fetch` command.
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
 ## git-pull@1
 
@@ -83,8 +84,8 @@ Action to execute a `git pull` command.
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
 ## git-push@1
 
@@ -92,8 +93,8 @@ Action to execute a `git push` command.
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
 ## ignore-repository@1
 
@@ -102,9 +103,9 @@ To undo this action, clear all ignored repositories or manually edit the ignored
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
 ## just-text@1
 
@@ -112,10 +113,10 @@ Textual action to display some text in the action menu.
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `enabled`: Show the menu as enabled (clickable) or disabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `enabled`: Show the menu as enabled (clickable) or disabled. ([Predicate](repository_action_types.md#predicate))
+- `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
 ## pin-repository@1
 
@@ -124,9 +125,9 @@ Pinning a repository allowed custom filtering, ordering and searching.
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 - `mode`: The pin mode `[Toggle, Pin, UnPin]`. (Nullable, optional)
 
 ## separator@1
@@ -135,8 +136,8 @@ Creates a visual separator in the action menu.
 
 Properties:
 
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
 ## url@1
 
@@ -144,7 +145,7 @@ Action to open the url in the default browser.
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
-- `url`: The URL to browse to. ([Text](docs_new/repository_action_types.md#text))
-- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
-- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `name`: Name of the menu item. ([Text](repository_action_types.md#text))
+- `url`: The URL to browse to. ([Text](repository_action_types.md#text))
+- `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+- `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
