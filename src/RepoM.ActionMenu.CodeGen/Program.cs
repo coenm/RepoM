@@ -21,28 +21,28 @@ public static class Program
                 typeof(Interface.YamlModel.Templating.Text).FullName!,
                 new TypeInfoDescriptor(nameof(Text), typeof(Interface.YamlModel.Templating.Text).FullName!)
                     {
-                        Link = "https://this-is.com/Text",
+                        Link = "docs_new/repository_action_types.md#text",
                     }
             },
             {
                 typeof(Interface.YamlModel.Templating.Predicate).FullName!,
                 new TypeInfoDescriptor(nameof(Interface.YamlModel.Templating.Predicate), typeof(Interface.YamlModel.Templating.Predicate).FullName!)
                     {
-                        Link = "https://this-is.com/Predicate",
+                        Link = "docs_new/repository_action_types.md#predicate",
                     }
             },
             {
                 typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName!,
                 new TypeInfoDescriptor(nameof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context), typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName!)
                     {
-                        Link = "https://this-is.com/Context",
+                        Link = "docs_new/repository_action_types.md#context",
                     }
             },
             {
                 typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName! + "?",
                 new TypeInfoDescriptor(nameof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context), typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName! + "?")
                     {
-                        Link = "https://this-is.com/Context",
+                        Link = "docs_new/repository_action_types.md#context",
                     }
             },
         };

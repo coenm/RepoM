@@ -17,10 +17,10 @@ This action makes it possible to copy text to the clipboard.
 
 Properties:
 
-- `name`: Name of the menu item. ([Text](https://this-is.com/Text))
-- `text`: The text to copy to the clipboard. ([Text](https://this-is.com/Text))
-- `context`: The context in which the action is available. ([Context](https://this-is.com/Context))
-- `active`: Whether the menu item is enabled. ([Predicate](https://this-is.com/Predicate))
+- `name`: Name of the menu item. ([Text](docs_new/repository_action_types.md#text))
+- `text`: The text to copy to the clipboard. ([Text](docs_new/repository_action_types.md#text))
+- `context`: The context in which the action is available. ([Context](docs_new/repository_action_types.md#context))
+- `active`: Whether the menu item is enabled. ([Predicate](docs_new/repository_action_types.md#predicate))
 
 ### Example
 
