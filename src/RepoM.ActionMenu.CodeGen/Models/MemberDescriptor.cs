@@ -28,7 +28,7 @@ public class TypeInfoDescriptor
 
         if (Name.Contains("AutoCompleteOptionsV1"))
         {
-            int i = 0;
+            // do nothing intentionally, just for debugging coenm
         }
     }
 
@@ -77,13 +77,13 @@ public class MemberDescriptor : IXmlDocsExtended
     /// <summary>
     /// Friendly Name
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; init; } = null!;
 
-    public string CSharpName { get; set; }
+    public string CSharpName { get; set; } = null!;
 
     public TypeInfoDescriptor ReturnType { get; set; }
 
-    public string XmlId { get; set; }
+    public string XmlId { get; set; } = null!;
 
     public bool IsCommand { get; set; }
 
@@ -98,17 +98,17 @@ public class MemberDescriptor : IXmlDocsExtended
     /// </remarks>
     public string? Cast { get; set; }
     
-    public string Description { get; set; }
+    public string Description { get; set; } = null!;
 
     public string? InheritDocs { get; set; }
 
-    public string Returns { get; set; }
+    public string Returns { get; set; } = null!;
 
-    public string Remarks { get; set; }
+    public string Remarks { get; set; } = null!;
 
     public ExamplesDescriptor? Examples { get; set; }
 
-    public List<ParamDescriptor> Params { get; } = new List<ParamDescriptor>();
+    public List<ParamDescriptor> Params { get; } = [];
 }
 
 public class ActionMenuMemberDescriptor : MemberDescriptor
@@ -121,7 +121,7 @@ public class ActionMenuMemberDescriptor : MemberDescriptor
 
     public bool IsContext { get; set; } = false;
 
-    public object DefaultValue { get; set; } = null;
+    public object DefaultValue { get; set; } = null!;
 
     public bool IsReturnEnumerable { get; set; } = false;
 

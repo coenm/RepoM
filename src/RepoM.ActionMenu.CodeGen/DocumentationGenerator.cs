@@ -35,8 +35,6 @@ internal static class DocumentationGenerator
     {
         module.Members.Sort((left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal));
 
-        //module.Title = $"{module.Name} {(module.IsBuiltin ? "Functions" : "Module")}";
-
         var context = new TemplateContext
             {
                 LoopLimit = 0,
