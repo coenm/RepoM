@@ -15,7 +15,7 @@ using Scriban;
 
 public static class Program
 {
-    public static readonly Dictionary<string, TypeInfoDescriptor> TypeInfos = new()
+    internal static readonly Dictionary<string, TypeInfoDescriptor> TypeInfos = new()
         {
             {
                 typeof(Interface.YamlModel.Templating.Text).FullName!,
