@@ -36,14 +36,14 @@ public sealed class Text : ExampleItemBase
 {
     public override string TypeName { get; } = nameof(Text);
 
-    public string Content { get; init; }
+    public string Content { get; init; } = null!;
 }
 
 public sealed class Header : ExampleItemBase
 {
     public override string TypeName { get; } = nameof(Header);
 
-    public string Text { get; init; }
+    public required string Text { get; init; }
 }
 
 public sealed class Snippet : ExampleItemBase
@@ -52,9 +52,9 @@ public sealed class Snippet : ExampleItemBase
 
     public SnippetMode Mode { get; set; } = SnippetMode.Include;
 
-    public string? Language { get; set; } = null;
+    public string? Language { get; set; }
 
-    public string Name { get; init; }
+    public required string Name { get; init; }
 }
 
 public enum SnippetMode
