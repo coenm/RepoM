@@ -36,8 +36,20 @@ Action specific properties:
 Example:
 
 <!-- snippet: RepositoryActionsSonarCloudSetFavorite01 -->
+<a id='snippet-repositoryactionssonarcloudsetfavorite01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: sonarcloud-set-favorite@1
+    active: true 
+    variables: []
+    name: Star repository on SonarCloud
+    project: ''
+    
+  - type: sonarcloud-set-favorite@1
+    name: Star repository on SonarCloud
+    project: ''
 ```
-** Could not find snippet 'RepositoryActionsSonarCloudSetFavorite01' **
-```
+<sup><a href='/tests/RepoM.Plugin.SonarCloud.Tests/DocumentationFiles/SonarCloudSetFavorite01.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionssonarcloudsetfavorite01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 <!-- endInclude -->

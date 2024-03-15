@@ -19,8 +19,20 @@ Action specific properties:
 Example:
 
 <!-- snippet: RepositoryActionsClipboardCopy01 -->
+<a id='snippet-repositoryactionsclipboardcopy01'></a>
+```yaml
+repository-actions:
+  actions:
+  - type: clipboard-copy@1
+    active: true
+    variables: []
+    name: Copy to clipboard
+    text: ''
+
+  - type: clipboard-copy@1
+    name: Copy to clipboard
+    text: ''
 ```
-** Could not find snippet 'RepositoryActionsClipboardCopy01' **
-```
+<sup><a href='/tests/RepoM.Plugin.Clipboard.Tests/DocumentationFiles/Clipboard01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsclipboardcopy01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 <!-- endInclude -->
