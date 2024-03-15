@@ -18,7 +18,7 @@ public static class FileSystemHelper
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Could not delete generated file '{pathToGeneratedCode}'.");
+            Console.WriteLine($"Could not delete generated file '{pathToGeneratedCode}'. {e.Message}");
             throw;
         }
     }

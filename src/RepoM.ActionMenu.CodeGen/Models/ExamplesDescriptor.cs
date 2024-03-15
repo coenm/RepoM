@@ -20,7 +20,7 @@ public sealed class Code : ExampleItemBase
 
     public string? Language { get; set; } = null;
 
-    public string Content { get; init; }
+    public required string Content { get; init; }
 
     public bool UseRaw { get; set; }
 }
@@ -29,7 +29,7 @@ public sealed class Paragraph : ExampleItemBase
 {
     public override string TypeName { get; } = nameof(Paragraph);
 
-    public string Text { get; init; }
+    public required string Text { get; init; }
 }
 
 public sealed class Text : ExampleItemBase
