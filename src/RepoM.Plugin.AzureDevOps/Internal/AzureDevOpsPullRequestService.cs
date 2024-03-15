@@ -439,7 +439,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         }
         catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
         {
-            _logger.LogWarning(e, "Project does not exist (repository: {repository.Name} projectId {projectId})", repository.Name, projectId);
+            _logger.LogWarning(e, "Project does not exist (repository: {repositoryName} projectId {projectId})", repository.Name, projectId);
         }
         catch (Exception e)
         {
