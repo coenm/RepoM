@@ -42,7 +42,7 @@ public class ClassDescriptor : IXmlDocsExtended
 
     // interface:
 
-    public string Description { get; set; }
+    public string Description { get; set; } = null!;
 
     public string? InheritDocs { get; set; }
 
@@ -52,7 +52,7 @@ public class ClassDescriptor : IXmlDocsExtended
         set => throw new NotSupportedException("no returns for class.");
     }
 
-    public string Remarks { get; set; }
+    public string Remarks { get; set; } = null!;
 
     public ExamplesDescriptor? Examples { get; set; }
 
