@@ -333,7 +333,7 @@ public static class Program
 
     private static async Task<Dictionary<string, string>> LoadFiles()
     {
-        string[] files = Directory.GetFiles("C:\\Projects\\Private\\git\\RepoM\\docs\\snippets"); // todo
+        string[] files = Directory.GetFiles("C:\\Projects\\Private\\git\\RepoM\\docs\\snippets"); // todo coenm
 
         var result = new Dictionary<string, string>(files.Length);
 

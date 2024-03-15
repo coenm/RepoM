@@ -20,12 +20,12 @@ public class ClassDescriptor : IXmlDocsExtended
     /// <summary>
     /// Properties, Functions, fields etc. etc.
     /// </summary>
-    public List<MemberDescriptor> Members { get; set; } = new List<MemberDescriptor>();
+    public List<MemberDescriptor> Members { get; set; } = [];
 
     /// <summary>
     /// Friendly name
     /// </summary>
-    public string Name { get; set; } = null!;
+    public string Name { get; init; } = null!;
 
     public string ClassName { get; set; } = null!;
 
