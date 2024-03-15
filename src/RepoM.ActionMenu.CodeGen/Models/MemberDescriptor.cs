@@ -8,13 +8,13 @@ public static class TypeInfoDescriptorFactory
     public static TypeInfoDescriptor Create(ITypeSymbol typeSymbol)
     {
         var displayString = typeSymbol.ToDisplayString();
-        if (Program._typeInfos.TryGetValue(displayString, out TypeInfoDescriptor? typeInfoDescriptor))
+        if (Program.TypeInfos.TryGetValue(displayString, out TypeInfoDescriptor? typeInfoDescriptor))
         {
             return typeInfoDescriptor;
         }
 
         var result = new TypeInfoDescriptor(typeSymbol);
-        Program._typeInfos.Add(displayString, result);
+        Program.TypeInfos.Add(displayString, result);
         return result;
     }
 }
