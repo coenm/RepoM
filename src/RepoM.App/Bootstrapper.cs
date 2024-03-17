@@ -13,7 +13,6 @@ using RepoM.Api.Ordering.Label;
 using RepoM.Api.Ordering.Score;
 using RepoM.Api.Ordering.Sum;
 using RepoM.Api.RepositoryActions.Decorators;
-using RepoM.Api.RepositoryActions.Executors;
 using RepoM.App.i18n;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryFiltering.QueryMatchers;
@@ -102,7 +101,7 @@ internal static class Bootstrapper
         Container.Register<IRepositoryComparerFactory<SumComparerConfigurationV1>, SumRepositoryComparerFactory>(Lifestyle.Singleton);
 
         Container.RegisterSingleton<ActionExecutor>();
-        Container.Register(typeof(ICommandExecutor<>), new[] { typeof(DelegateCommandExecutor).Assembly, }, Lifestyle.Singleton);
+        Container.Register(typeof(ICommandExecutor<>), new[] { typeof(CoreBootstrapper).Assembly, }, Lifestyle.Singleton);
         Container.RegisterDecorator(
             typeof(ICommandExecutor<>),
             typeof(LoggerCommandExecutorDecorator<>),
