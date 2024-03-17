@@ -34,26 +34,29 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
             return true;
         }
 
-        var props = expectedType
+        PropertyInfo[] props = expectedType
+           .GetProperties(true)
+           .Where(x =>
+               x is { CanWrite: true, CanRead: true, }
+               &&
+               typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
+           )
+           .ToArray();
+
+        PropertyInfo[] props2 = value.GetType()
             .GetProperties(true)
             .Where(x =>
-                x is { CanWrite: true, CanRead: true, }
-                &&
-                typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
-            )
-            .ToArray();
+                 x is { CanWrite: true, CanRead: true, }
+                 &&
+                 typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
+             )
+             .ToArray();
 
-        var props2 = value.GetType().GetProperties(true).Where(x =>
-                x is { CanWrite: true, CanRead: true, }
-                &&
-                typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
-            )
-            .ToArray();
-
-        foreach (var prop in props.Concat(props2))
+        foreach (PropertyInfo prop in props.Concat(props2))
         {
             if (prop.Name == "Name")
             {
+                // todo coenm remove, debug
                 int i = 0;
             }
 
@@ -66,22 +69,22 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                     // create
                     if (prop.PropertyType == typeof(Predicate))
                     {
-                        prop.SetMethod!.Invoke(value, new object[] { new ScribanPredicate(), });
+                        prop.SetMethod!.Invoke(value, [new ScribanPredicate(),]);
                     }
 
                     if (prop.PropertyType == typeof(Text))
                     {
-                        prop.SetMethod!.Invoke(value, new object[] { new ScribanText(), });
+                        prop.SetMethod!.Invoke(value, [new ScribanText(),]);
                     }
 
                     if (prop.PropertyType == typeof(Script))
                     {
-                        prop.SetMethod!.Invoke(value, new object[] { new ScribanScript(), });
+                        prop.SetMethod!.Invoke(value, [new ScribanScript(),]);
                     }
 
                     if (prop.PropertyType == typeof(Variable))
                     {
-                        prop.SetMethod!.Invoke(value, new object[] { new ScribanText(), });
+                        prop.SetMethod!.Invoke(value, [new ScribanText(),]);
                     }
                 }
             }
@@ -100,8 +103,8 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
             if (prop.PropertyType == typeof(Variable))
             {
-                var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
-                    a.AttributeType.FullName == typeof(VariableAttribute).FullName);
+                CustomAttributeData? attribute = prop.GetCustomAttributesData()
+                    .SingleOrDefault(a => a.AttributeType.FullName == typeof(VariableAttribute).FullName);
 
                 if (attribute != null)
                 {
@@ -116,8 +119,8 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
             if (prop.PropertyType == typeof(Predicate))
             {
-                var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
-                    a.AttributeType.FullName == typeof(PredicateAttribute).FullName);
+                CustomAttributeData? attribute = prop.GetCustomAttributesData()
+                    .SingleOrDefault(a => a.AttributeType.FullName == typeof(PredicateAttribute).FullName);
 
                 if (attribute != null)
                 {
@@ -133,12 +136,12 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
             if (prop.PropertyType == typeof(Text))
             {
-                var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
-                    a.AttributeType.FullName == typeof(TextAttribute).FullName);
+                CustomAttributeData? attribute = prop.GetCustomAttributesData()
+                    .SingleOrDefault(a => a.AttributeType.FullName == typeof(TextAttribute).FullName);
 
                 if (attribute != null)
                 {
-                    var constructorArguments = attribute.ConstructorArguments;
+                    IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
 
                     if (constructorArguments.Count == 1)
                     {
@@ -150,12 +153,12 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
             if (prop.PropertyType == typeof(Text))
             {
-                var attribute = prop.GetCustomAttributesData().SingleOrDefault(a =>
-                    a.AttributeType.FullName == typeof(RenderToNullableStringAttribute).FullName);
+                CustomAttributeData? attribute = prop.GetCustomAttributesData()
+                    .SingleOrDefault(a => a.AttributeType.FullName == typeof(RenderToNullableStringAttribute).FullName);
 
                 if (attribute != null)
                 {
-                    var constructorArguments = attribute.ConstructorArguments;
+                    IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
 
                     if (constructorArguments.Count == 1)
                     {
@@ -170,7 +173,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                                     Value = string.Empty,
                                 };
                                 currentValue = newValue;
-                                prop.SetMethod!.Invoke(value, new[] { newValue, });
+                                prop.SetMethod!.Invoke(value, [newValue,]);
                             }
                         }
 

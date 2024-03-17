@@ -57,7 +57,7 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction, IContext
     /// List of repeated actions.
     /// </summary>
     [Required]
-    public List<IMenuAction> Actions { get; init; } = new List<IMenuAction>();
+    public List<IMenuAction> Actions { get; init; } = new();
     
     public override string ToString()
     {

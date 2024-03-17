@@ -186,7 +186,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
         if (result == null)
         {
-            _logger.LogWarning($"Could not Deserialize as {nameof(GetPullRequests)}.");
+            _logger.LogWarning("Could not Deserialize as {Type}.", nameof(GetPullRequests));
         }
 
         return result;
@@ -333,7 +333,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         {
             try
             {
-                _logger.LogInformation("Grabbing PRs for project {projectId}.", projectId);
+                _logger.LogInformation("Grabbing PRs for project {ProjectId}.", projectId);
 
                 List<GitPullRequest> result = await gitClient.GetPullRequestsByProjectAsync(
                     projectId,
@@ -345,7 +345,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
                 if (!result.Any())
                 {
-                    _logger.LogInformation("No PRs found for project {projectId}.", projectId);
+                    _logger.LogInformation("No PRs found for project {ProjectId}.", projectId);
                     _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
                     continue;
                 }
@@ -363,7 +363,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not fetch pull requests for project {project}. {message}", projectId, e.Message);
+                _logger.LogError(e, "Could not fetch pull requests for project {Project}. {Message}", projectId, e.Message);
                 _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
             }
         }
@@ -439,11 +439,11 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         }
         catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
         {
-            _logger.LogWarning(e, "Project does not exist (repository: {repositoryName} projectId {projectId})", repository.Name, projectId);
+            _logger.LogWarning(e, "Project does not exist (repository: {RepositoryName} projectId {ProjectId})", repository.Name, projectId);
         }
         catch (Exception e)
         {
-            _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
+            _logger.LogWarning(e, "Unable to Get repositories from client ({ProjectId}).", projectId);
         }
 
         return FindRepositoryGuid(repository);
@@ -464,13 +464,13 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
         if (selectedRepos.Length == 0)
         {
-            _logger.LogWarning("No repository found for url {searchRepoUrl}", searchRepoUrl);
+            _logger.LogWarning("No repository found for url {SearchRepoUrl}", searchRepoUrl);
             return Guid.Empty;
         }
 
         if (selectedRepos.Length > 1)
         {
-            _logger.LogWarning("Multiple repositories found for url {searchRepoUrl}", searchRepoUrl);
+            _logger.LogWarning("Multiple repositories found for url {SearchRepoUrl}", searchRepoUrl);
             return Guid.Empty;
         }
 

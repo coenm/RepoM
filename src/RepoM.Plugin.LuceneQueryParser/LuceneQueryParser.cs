@@ -25,7 +25,7 @@ public class LuceneQueryParser : INamedQueryParser
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         var analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
 
-        _queryParser = new CustomMultiFieldQueryParser(LuceneVersion.LUCENE_48, new[] { KEY_FREE_TEXT, }, analyzer)
+        _queryParser = new CustomMultiFieldQueryParser(LuceneVersion.LUCENE_48, [KEY_FREE_TEXT,], analyzer)
             {
                 DefaultOperator = Operator.AND,
                 AllowLeadingWildcard = true,
@@ -45,13 +45,13 @@ public class LuceneQueryParser : INamedQueryParser
         }
         catch (ParseException e)
         {
-            _logger.LogDebug(e, "Parse exception '{text}' could not be parsed", text);
+            _logger.LogDebug(e, "Parse exception '{Text}' could not be parsed", text);
             throw;
         }
         catch (Exception e)
         {
             // Should not happen. Log just in case.
-            _logger.LogError(e, "Unexpected Parse exception '{text}' could not be parsed {message}", text, e.Message);
+            _logger.LogError(e, "Unexpected Parse exception '{Text}' could not be parsed {Message}", text, e.Message);
             throw;
         }
     }
@@ -151,12 +151,12 @@ public class LuceneQueryParser : INamedQueryParser
         return new SimpleTerm(fq.Term.Field, fq.Term.Text);
     }
 
-    private static IQuery ConvertWildcardQuery(WildcardQuery wq)
+    private static WildCardTerm ConvertWildcardQuery(WildcardQuery wq)
     {
         return new WildCardTerm(wq.Term.Field, wq.Term.Text);
     }
 
-    private static IQuery ConvertTermRangeQuery(TermRangeQuery trq)
+    private static TermRange ConvertTermRangeQuery(TermRangeQuery trq)
     {
         return new TermRange(
             trq.Field,

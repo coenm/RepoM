@@ -89,7 +89,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         }
         else if (!SetQueryParser(_appSettingsService.QueryParserKey))
         {
-            _logger.LogInformation("Could not set query parser '{key}'. Falling back to first query parser.", _appSettingsService.QueryParserKey);
+            _logger.LogInformation("Could not set query parser '{Key}'. Falling back to first query parser.", _appSettingsService.QueryParserKey);
             SetQueryParser(_repositoryComparerKeys[0]);
         }
 
@@ -127,7 +127,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
     {  
         if (!_queryParser.SetComparer(key))
         {
-            _logger.LogWarning("Could not update/set the comparer key {key}.", key);
+            _logger.LogWarning("Could not update/set the comparer key {Key}.", key);
             return false;
         }
 
