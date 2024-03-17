@@ -20,16 +20,16 @@ public class CompileRepoM
         CSharpCompilationCaptureResult compilationCaptureResult = CSharpCompilationCapture.Build(pathToSolution);
         Solution solution = compilationCaptureResult.Workspace.CurrentSolution;
 
-        var projects = solution.Projects.ToArray();
+        Project[] projects = solution.Projects.ToArray();
 
-        foreach (var p in projects)
+        foreach (Project p in projects)
         {
             if (_compilations.ContainsKey(p.Name))
             {
                 continue;
             }
 
-            var project = p.WithParseOptions(p.ParseOptions!.WithDocumentationMode(DocumentationMode.Parse));
+            Project project = p.WithParseOptions(p.ParseOptions!.WithDocumentationMode(DocumentationMode.Parse));
 
             // Compile the project
             Compilation compilation = await project.GetCompilationAsync() ?? throw new Exception("Compilation failed");
@@ -38,9 +38,9 @@ public class CompileRepoM
             _compilations.AddOrUpdate(p.Name, _ => new Tuple<Project, Compilation>(project, compilation), (_, __) => new Tuple<Project, Compilation>(project, compilation));
         }
 
-        if (_compilations.TryGetValue(projectName, out Tuple<Project, Compilation>? tupple))
+        if (_compilations.TryGetValue(projectName, out Tuple<Project, Compilation>? tuple))
         {
-            return tupple.Item2;
+            return tuple.Item2;
         }
 
         throw new Exception("Not found");
