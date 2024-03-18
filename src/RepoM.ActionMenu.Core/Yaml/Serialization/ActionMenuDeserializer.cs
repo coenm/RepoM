@@ -27,6 +27,14 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
     private readonly IDeserializer _deserializer;
     private readonly ISerializer _serializer;
 
+    private static readonly Dictionary<Type, Func<object>> _factoryMethods = new()
+        {
+            { typeof(Script), () => new ScribanScript() },
+            { typeof(Variable), () => new ScribanVariable() },
+            { typeof(Predicate), () => new ScribanPredicate() },
+            { typeof(Text), () => new ScribanText() },
+        };
+
     public ActionMenuDeserializer(IEnumerable<IKeyTypeRegistration<IMenuAction>> keyTypeRegistrations, ITemplateParser templateParser)
         : this(keyTypeRegistrations.ToDictionary(item => item.Tag, item => item.ConfigurationType), templateParser)
     {
@@ -36,24 +44,16 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
     {
         ArgumentNullException.ThrowIfNull(menuActionTypes);
         ArgumentNullException.ThrowIfNull(templateParser);
-
-        var factoryMethods = new Dictionary<Type, Func<object>>
-            {
-                { typeof(Script), () => new ScribanScript() },
-                { typeof(Variable), () => new ScribanVariable() },
-                { typeof(Predicate), () => new ScribanPredicate() },
-                { typeof(Text), () => new ScribanText() },
-            };
-
+        
         _serializer = new SerializerBuilder()
             .WithNamingConvention(HyphenatedNamingConvention.Instance) // CamelCaseNamingConvention.Instance
             .WithDefaultScalarStyle(ScalarStyle.Any)
-            .WithTypeConverter(new EvaluateObjectConverter(factoryMethods))
+            .WithTypeConverter(new EvaluateObjectConverter(_factoryMethods))
             .Build();
 
         _deserializer = new DeserializerBuilder()
             .WithNamingConvention(HyphenatedNamingConvention.Instance)
-            .WithTypeConverter(new EvaluateObjectConverter(factoryMethods))
+            .WithTypeConverter(new EvaluateObjectConverter(_factoryMethods))
             .WithTypeConverter(new DefaultContextActionTypeConverter())
             .WithTypeDiscriminatingNodeDeserializer(options =>
                 {
