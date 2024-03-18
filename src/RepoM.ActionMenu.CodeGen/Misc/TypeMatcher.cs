@@ -9,7 +9,7 @@ public static class TypeMatcher
 {
     public static bool TypeSymbolMatchesType(ITypeSymbol typeSymbol, Type type, Compilation compilation)
     {
-        return GetTypeSymbolForType(type, compilation).Equals(typeSymbol);
+        return SymbolEqualityComparer.IncludeNullability.Equals(GetTypeSymbolForType(type, compilation), typeSymbol);
     }
 
     public static INamedTypeSymbol GetTypeSymbolForType(Type type, Compilation compilation)

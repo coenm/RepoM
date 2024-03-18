@@ -128,18 +128,10 @@ internal class RepoMScriptObject : ScriptObject, IContextRegistration
 
     private void RegisterVariableInner(string name, object value)
     {
-        if (name == null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
-
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(value);
 
         var names = name.Split(',');
-
 
         foreach (var subName in names)
         {

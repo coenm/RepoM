@@ -81,7 +81,7 @@ public class MemberDescriptor : IXmlDocsExtended
 
     public string CSharpName { get; set; } = null!;
 
-    public TypeInfoDescriptor ReturnType { get; set; }
+    public TypeInfoDescriptor? ReturnType { get; set; }
 
     public string XmlId { get; set; } = null!;
 
@@ -115,17 +115,17 @@ public class ActionMenuMemberDescriptor : MemberDescriptor
 {
     // public RepositoryActionAttribute RepositoryActionAttribute { get; init; }
 
-    public bool IsTemplate { get; set; } = false;
+    public bool IsTemplate { get; set; }
 
-    public bool IsPredicate { get; set; } = false;
+    public bool IsPredicate { get; set; }
 
-    public bool IsContext { get; set; } = false;
+    public bool IsContext { get; set; }
 
     public object DefaultValue { get; set; } = null!;
 
-    public bool IsReturnEnumerable { get; set; } = false;
+    public bool IsReturnEnumerable { get; set; }
 
-    public string? RefType { get; set; } = null;
+    public string? RefType { get; set; }
 }
 
 public class ActionMenuContextMemberDescriptor : MemberDescriptor
