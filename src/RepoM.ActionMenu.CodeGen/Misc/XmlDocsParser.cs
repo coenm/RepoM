@@ -45,7 +45,6 @@ internal static partial class XmlDocsParser
                     {
                         continue;
                     }
-
                     IParameterSymbol? parameterSymbol = method.Parameters.FirstOrDefault(x => x.Name == argName);
                     var isOptional = false;
                     if (parameterSymbol == null)
@@ -55,6 +54,42 @@ internal static partial class XmlDocsParser
                     else
                     {
                         isOptional = parameterSymbol.IsOptional;
+
+                        var displayString = parameterSymbol.Type.ToDisplayString();
+                        if (displayString.Equals("RepoM.ActionMenu.Core.Model.ActionMenuGenerationContext"))
+                        {
+                            // also check index? should be 0 or 1?!
+                            if (parameterSymbol.Name.Equals("context"))
+                            {
+                                continue;
+                            }
+
+                            Console.WriteLine($"ActionMenuGenerationContext with wrong name {parameterSymbol.Name}");
+                        }
+                        else if (displayString.Equals("RepoM.ActionMenu.Interface.ActionMenuFactory.IActionMenuGenerationContext"))
+                        {
+                            // also check index? should be 0 or 1?!
+                            if (parameterSymbol.Name.Equals("context"))
+                            {
+                                continue;
+                            }
+
+                            Console.WriteLine($"IActionMenuGenerationContext with wrong name {parameterSymbol.Name}");
+                        }
+                        else if (displayString.EndsWith("ActionMenuGenerationContext"))
+                        {
+                            Console.WriteLine(">> ActionMenuGenerationContext with invalid namespace found.");
+                        }
+                        else if (displayString.Equals("Scriban.Parsing.SourceSpan"))
+                        {
+                            // also check index? should be 0 or 1?!
+                            if (parameterSymbol.Name.Equals("span"))
+                            {
+                                continue;
+                            }
+
+                            Console.WriteLine($"SourceSpan with wrong name {parameterSymbol.Name}");
+                        }
                     }
 
                     desc.Params.Add(new ParamDescriptor(argName, text) { IsOptional = isOptional, });

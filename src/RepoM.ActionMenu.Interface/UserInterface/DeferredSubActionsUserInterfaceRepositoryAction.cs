@@ -7,29 +7,26 @@ using RepoM.Core.Plugin.Repository;
 
 public sealed class DeferredSubActionsUserInterfaceRepositoryAction : UserInterfaceRepositoryAction
 {
-    private readonly Func<IActionMenuGenerationContext, Task<UserInterfaceRepositoryActionBase[]>>? _action;
+    private readonly Func<IActionMenuGenerationContext, Task<UserInterfaceRepositoryActionBase[]>> _getFunction;
     private readonly IActionMenuGenerationContext _context;
 
-    public DeferredSubActionsUserInterfaceRepositoryAction(string name, IRepository repository, IActionMenuGenerationContext actionMenuGenerationContext, bool captureScope)
+    public DeferredSubActionsUserInterfaceRepositoryAction(
+        string name,
+        IRepository repository,
+        IActionMenuGenerationContext actionMenuGenerationContext,
+        bool captureScope,
+        Func<IActionMenuGenerationContext, Task<UserInterfaceRepositoryActionBase[]>> resolveFunction)
         : base(name, repository)
     {
         _context = captureScope
             ? actionMenuGenerationContext.Clone()
             : actionMenuGenerationContext;
-    }
 
-    public Func<IActionMenuGenerationContext, Task<UserInterfaceRepositoryActionBase[]>> DeferredFunc
-    {
-        init => _action = value;
+        _getFunction = resolveFunction;
     }
 
     public async Task<UserInterfaceRepositoryActionBase[]> GetAsync()
     {
-        if (_action == null)
-        {
-            return Array.Empty<UserInterfaceRepositoryActionBase>();
-        }
-
-        return await _action(_context).ConfigureAwait(false);
+        return await _getFunction(_context).ConfigureAwait(false);
     }
 }

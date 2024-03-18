@@ -24,6 +24,7 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
     /// <summary>
     /// Gets the number of actions performed on the current repository.
     /// </summary>
+    /// <param name="context">The scriban context.</param>
     /// <returns>Number of actions performed on the current repository.</returns>
     /// <example>
     /// <usage/>

@@ -38,10 +38,14 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
         }
         else
         {
-            yield return new DeferredSubActionsUserInterfaceRepositoryAction(name, repository, context, captureScope: false)
+            yield return new DeferredSubActionsUserInterfaceRepositoryAction(
+                name,
+                repository,
+                context,
+                captureScope: false,
+                async ctx => await EnumerateRemotes(ctx.Repository).ConfigureAwait(false))
             {
                 CanExecute = true,
-                DeferredFunc = async ctx => await EnumerateRemotes(ctx.Repository).ConfigureAwait(false),
             };
         }
     }

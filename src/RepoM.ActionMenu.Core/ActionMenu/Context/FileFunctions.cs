@@ -25,6 +25,8 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// <summary>
     /// Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.
     /// </summary>
+    /// <param name="context">The scriban context.</param>
+    /// <param name="span">The scriban source span.</param>
     /// <param name="rootPath">The root folder.</param>
     /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesn't support regular expressions.</param>
     /// <returns>Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.</returns>
@@ -61,6 +63,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// <summary>
     /// Checks if the specified file path exists on the disk.
     /// </summary>
+    /// <param name="context">The scriban context.</param>
     /// <param name="path">Absolute path to a file.</param>
     /// <returns>`true` if the specified file path exists on the disk, `false` otherwise.</returns>
     /// <example>
@@ -88,6 +91,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// <summary>
     /// Checks if the specified directory path exists on the disk.
     /// </summary>
+    /// <param name="context">The scriban context.</param>
     /// <param name="path">Absolute path to a directory.</param>
     /// <returns>`true` if the specified directory path exists on the disk, `false` otherwise.</returns>
     /// <example>

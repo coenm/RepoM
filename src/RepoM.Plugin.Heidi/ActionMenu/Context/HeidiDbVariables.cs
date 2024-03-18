@@ -62,6 +62,7 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
     /// <summary>
     /// Gets all known databases configured in the Heidi configuration related to the selected repository.
     /// </summary>
+    /// <param name="context">The scriban context.</param>
     /// <returns>An enumerable of database configuration objects as shown in the example below.</returns>
     /// <example>
     /// Get all database configurations for the current repository:
@@ -78,12 +79,12 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
     public IEnumerable GetDatabases(IActionMenuGenerationContext context)
     {
         return _service.GetByRepository(context.Repository)
-          .Select(item => new DatabaseConfiguration()
+          .Select(item => new DatabaseConfiguration
             {
                 Database = new Database
                     {
                         Key = item.DbConfig.Key,
-                        Databases = item.DbConfig.Databases.ToArray(),
+                        Databases = [.. item.DbConfig.Databases, ],
                         Comment = item.DbConfig.Comment,
                         Host = item.DbConfig.Host,
                         Library = item.DbConfig.Library,
@@ -97,7 +98,7 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
                     {
                         Name = item.Name,
                         Order = item.Order,
-                        Tags = item.Tags.ToArray(),
+                        Tags = [.. item.Tags, ],
                     },
             });
     }
@@ -109,7 +110,7 @@ internal partial class HeidiDbVariables : TemplateContextRegistrationBase
             return _types[type];
         }
 
-        return new DatabaseType()
+        return new DatabaseType
             {
                 Name = type.ToString(),
                 Protocol = string.Empty,

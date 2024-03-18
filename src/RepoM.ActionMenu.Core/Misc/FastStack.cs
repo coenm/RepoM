@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 /// Lightweight stack object.
 /// </summary>
 /// <typeparam name="T">Type of the object</typeparam>
+/// <remarks>Copied from Scriban</remarks>
 internal struct FastStack<T>
 {
     private const int DEFAULT_CAPACITY = 4;
@@ -30,18 +31,18 @@ internal struct FastStack<T>
     /// </summary>
     public int Count { get; private set; }
 
-    public T[] Items => _array;
+    public readonly T[] Items => _array;
 
     // Removes all Objects from the Stack.
     public void Clear()
     {
-        // Don't need to doc this but we clear the elements so that the gc can reclaim the references.
+        // Don't need to doc this, but we clear the elements so that the gc can reclaim the references.
         Array.Clear(_array, 0, Count);
         Count = 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T Peek()
+    public readonly T Peek()
     {
         ThrowForEmptyStack();
         return _array[Count - 1];
@@ -54,7 +55,7 @@ internal struct FastStack<T>
     {
         ThrowForEmptyStack();
         T item = _array[--Count];
-        _array[Count] = default(T); // Free memory quicker.
+        _array[Count] = default!; // Free memory quicker.
         return item;
     }
 
@@ -70,7 +71,7 @@ internal struct FastStack<T>
         _array[Count++] = item;
     }
 
-    private void ThrowForEmptyStack()
+    private readonly void ThrowForEmptyStack()
     {
         if (Count == 0)
         {

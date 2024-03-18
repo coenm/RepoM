@@ -32,15 +32,15 @@ public static class Program
                     }
             },
             {
-                typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName!,
-                new TypeInfoDescriptor(nameof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context), typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName!)
+                typeof(Interface.YamlModel.ActionMenus.Context).FullName!,
+                new TypeInfoDescriptor(nameof(Interface.YamlModel.ActionMenus.Context), typeof(Interface.YamlModel.ActionMenus.Context).FullName!)
                     {
                         Link = "repository_action_types.md#context",
                     }
             },
             {
-                typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName! + "?",
-                new TypeInfoDescriptor(nameof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context), typeof(RepoM.ActionMenu.Interface.YamlModel.ActionMenus.Context).FullName! + "?")
+                typeof(Interface.YamlModel.ActionMenus.Context).FullName! + "?",
+                new TypeInfoDescriptor(nameof(Interface.YamlModel.ActionMenus.Context), typeof(Interface.YamlModel.ActionMenus.Context).FullName! + "?")
                     {
                         Link = "repository_action_types.md#context",
                     }

@@ -31,10 +31,14 @@ internal class RepositoryActionFolderV1Mapper : ActionToRepositoryActionMapperBa
 
         if (isDeferred)
         {
-            yield return new DeferredSubActionsUserInterfaceRepositoryAction(name, repository, context, action.Actions != null)
+            yield return new DeferredSubActionsUserInterfaceRepositoryAction(
+                name,
+                repository,
+                context,
+                action.Actions != null,
+                async ctx => await ctx.AddActionMenusAsyncArray(action.Actions).ConfigureAwait(false))
             {
                 CanExecute = true,
-                DeferredFunc = async ctx => await ctx.AddActionMenusAsyncArray(action.Actions).ConfigureAwait(false),
             };
         }
         else

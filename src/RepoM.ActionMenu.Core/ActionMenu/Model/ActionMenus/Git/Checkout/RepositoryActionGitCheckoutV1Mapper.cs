@@ -22,9 +22,12 @@ internal class RepositoryActionGitCheckoutV1Mapper : ActionToRepositoryActionMap
         var noRemoteBranchesFoundTranslated = await context.TranslateAsync("No remote branches found");
         var tryFetchChangesTranslated = await context.TranslateAsync("Try to fetch changes if you're expecting remote branches");
 
-        yield return new DeferredSubActionsUserInterfaceRepositoryAction(name, repository, context, false)
-        {
-            DeferredFunc = _ =>
+        yield return new DeferredSubActionsUserInterfaceRepositoryAction(
+            name,
+            repository,
+            context,
+            false,
+            _ =>
                 Task.FromResult(repository.LocalBranches
                           .Take(50)
                           .Select(branch => new UserInterfaceRepositoryAction(branch, repository)
@@ -35,40 +38,41 @@ internal class RepositoryActionGitCheckoutV1Mapper : ActionToRepositoryActionMap
                           .Union(new UserInterfaceRepositoryActionBase[]
                               {
                                       new UserInterfaceSeparatorRepositoryAction(repository),
-                                      new DeferredSubActionsUserInterfaceRepositoryAction(remoteBranchesTranslated, repository, context, false)
+                                      new DeferredSubActionsUserInterfaceRepositoryAction(
+                                          remoteBranchesTranslated,
+                                          repository,
+                                          context,
+                                          false,
+                                          _ =>
                                           {
-                                              DeferredFunc = _ =>
+                                              UserInterfaceRepositoryActionBase[] remoteBranches = repository
+                                               .ReadAllBranches()
+                                               .Select(branch => new UserInterfaceRepositoryAction(branch, repository)
+                                                   {
+                                                       RepositoryCommand = GitRepositoryCommand.Checkout(branch),
+                                                       CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
+                                                   })
+                                               .ToArray();
+
+                                              if (remoteBranches.Length > 0)
+                                              {
+                                                  return Task.FromResult(remoteBranches);
+                                              }
+
+                                              var errorMenu = new UserInterfaceRepositoryActionBase[]
                                                   {
-                                                      UserInterfaceRepositoryActionBase[] remoteBranches = repository
-                                                                                                           .ReadAllBranches()
-                                                                                                           .Select(branch => new UserInterfaceRepositoryAction(branch, repository)
-                                                                                                               {
-                                                                                                                   RepositoryCommand = GitRepositoryCommand.Checkout(branch),
-                                                                                                                   CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
-                                                                                                               })
-                                                                                                           .ToArray();
-
-                                                      if (remoteBranches.Length > 0)
-                                                      {
-                                                          return Task.FromResult(remoteBranches);
-                                                      }
-
-                                                      var errorMenu = new UserInterfaceRepositoryActionBase[]
+                                                      new UserInterfaceRepositoryAction(noRemoteBranchesFoundTranslated, repository)
                                                           {
-                                                              new UserInterfaceRepositoryAction(noRemoteBranchesFoundTranslated, repository)
-                                                                  {
-                                                                      CanExecute = false,
-                                                                  },
-                                                              new UserInterfaceRepositoryAction(tryFetchChangesTranslated, repository)
-                                                                  {
-                                                                      CanExecute = false,
-                                                                  },
-                                                          };
-                                                      return Task.FromResult(errorMenu);
-                                                  },
-                                          },
+                                                              CanExecute = false,
+                                                          },
+                                                      new UserInterfaceRepositoryAction(tryFetchChangesTranslated, repository)
+                                                          {
+                                                              CanExecute = false,
+                                                          },
+                                                  };
+                                              return Task.FromResult(errorMenu);
+                                          }),
                               })
-                          .ToArray()),
-        };
+                          .ToArray()));
     }
 }
