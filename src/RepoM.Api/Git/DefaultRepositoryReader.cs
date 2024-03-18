@@ -29,7 +29,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         var repoPath = LibGit2Sharp.Repository.Discover(path);
         if (string.IsNullOrEmpty(repoPath))
         {
-            _logger.LogWarning("Could not Discover git repo in path {path}", path);
+            _logger.LogWarning("Could not Discover git repo in path {Path}", path);
             return null;
         }
 
@@ -40,7 +40,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         }
         else
         {
-            _logger.LogWarning("Could not read git repo in path {path}", repoPath);
+            _logger.LogWarning("Could not read git repo in path {Path}", repoPath);
         }
 
         return result;
@@ -59,7 +59,7 @@ public class DefaultRepositoryReader : IRepositoryReader
             }
             catch (LockedFileException)
             {
-                _logger.LogWarning("LockedFileException {path}", repoPath);
+                _logger.LogWarning("LockedFileException {Path}", repoPath);
 
                 if (currentTry >= maxRetries)
                 {
@@ -70,7 +70,7 @@ public class DefaultRepositoryReader : IRepositoryReader
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Unexpected exception hwn reading repo {path}. {msg}", repoPath, e.Message);
+                _logger.LogError(e, "Unexpected exception hwn reading repo {Path}. {Message}", repoPath, e.Message);
                 throw;
             }
 
@@ -91,7 +91,7 @@ public class DefaultRepositoryReader : IRepositoryReader
 
             if (string.IsNullOrWhiteSpace(workingDirectory.Parent?.FullName))
             {
-                _logger.LogError("WorkingDirectory.Parent.Fullname was null or empty for repository found in '{path}'. Return null", repoPath);
+                _logger.LogError("WorkingDirectory.Parent.Fullname was null or empty for repository found in '{Path}'. Return null", repoPath);
                 return null;
             }
 
@@ -134,7 +134,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Could not read (LibGit2Sharp) repo in {path}.", repoPath);
+            _logger.LogError(e, "Could not read (LibGit2Sharp) repo in {Path}.", repoPath);
             return null;
         }
     }

@@ -40,7 +40,7 @@ public class DefaultDriveEnumerator : IPathProvider
     {
         List<string> directories = _appSettings.ReposRootDirectories;
 
-        if (!directories.Any())
+        if (directories.Count == 0)
         {
             return Array.Empty<string>();
         }
@@ -60,7 +60,7 @@ public class DefaultDriveEnumerator : IPathProvider
             }
             catch (Exception e)
             {
-                _logger.LogWarning("Configuration error. Path '{path}' does not exist. {message}", path, e.Message);
+                _logger.LogWarning("Configuration error. Path '{Path}' does not exist. {Message}", path, e.Message);
             }
         }
 

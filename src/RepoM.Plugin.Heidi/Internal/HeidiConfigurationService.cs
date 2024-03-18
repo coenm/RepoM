@@ -110,16 +110,16 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     {
         try
         {
-            _logger.LogDebug("Filename {name} {type} ({fullPath})", e.Name, e.ChangeType, e.FullPath);
+            _logger.LogDebug("Filename {Name} {Type} ({FullPath})", e.Name, e.ChangeType, e.FullPath);
 
             // for now, check exact path and file
             if (!e.FullPath.Equals(_heidiConfigFile, StringComparison.CurrentCultureIgnoreCase))
             {
-                _logger.LogWarning("Filename updated but wasn't configured file, '{configured}', '{updated}'", _heidiConfigFile, e.FullPath);
+                _logger.LogWarning("Filename updated but wasn't configured file, '{Configured}', '{Updated}'", _heidiConfigFile, e.FullPath);
                 return;
             }
 
-            var heidiDatabases = await _reader.ParseAsync(e.FullPath).ConfigureAwait(false);
+            List<HeidiSingleDatabaseConfiguration> heidiDatabases = await _reader.ParseAsync(e.FullPath).ConfigureAwait(false);
             var repoHeids = new List<RepoHeidi>();
 
             foreach (HeidiSingleDatabaseConfiguration c in heidiDatabases)
@@ -147,7 +147,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Could not process Heidi configuration {message}", exception.Message);
+            _logger.LogError(exception, "Could not process Heidi configuration {Message}", exception.Message);
         }
     }
 }

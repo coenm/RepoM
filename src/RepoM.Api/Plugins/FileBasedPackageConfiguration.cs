@@ -59,7 +59,7 @@ internal class FileBasedPackageConfiguration : IPackageConfiguration
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Could not persist configuration {message}", e.Message);
+            _logger.LogError(e, "Could not persist configuration {Message}", e.Message);
         }
     }
 
@@ -86,7 +86,7 @@ internal class FileBasedPackageConfiguration : IPackageConfiguration
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not create directory '{directoryName}'. {message}", directoryName, e.Message);
+                _logger.LogError(e, "Could not create directory '{DirectoryName}'. {Message}", directoryName, e.Message);
             }
 
             return _fileSystem.Directory.Exists(directoryName);
@@ -113,7 +113,7 @@ internal class FileBasedPackageConfiguration : IPackageConfiguration
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Could not deserialize '{filename}'", filename);
+            _logger.LogError(e, "Could not deserialize '{Filename}'", filename);
             return null;
         }
     }
