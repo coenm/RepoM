@@ -32,11 +32,6 @@ public class TypeInfoDescriptor
         }
     }
 
-    private static bool IsNullableType(ITypeSymbol typeSymbol)
-    {
-        return typeSymbol is INamedTypeSymbol { NullableAnnotation: NullableAnnotation.Annotated, };
-    }
-
     public TypeInfoDescriptor(string name, string csharpTypeName)
     {
         CSharpTypeName = csharpTypeName;
@@ -66,7 +61,12 @@ public class TypeInfoDescriptor
 
     public string? Link { get; init; }
 
-    public bool Nullable { get; set; } = false;
+    public bool Nullable { get; set; }
+
+    private static bool IsNullableType(ITypeSymbol typeSymbol)
+    {
+        return typeSymbol is INamedTypeSymbol { NullableAnnotation: NullableAnnotation.Annotated, };
+    }
 }
 
 /// <summary>

@@ -34,15 +34,8 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
 
     private ActionMenuDeserializer(IDictionary<string, Type> menuActionTypes, ITemplateParser templateParser)
     {
-        if (menuActionTypes == null)
-        {
-            throw new ArgumentNullException(nameof(menuActionTypes));
-        }
-
-        if (templateParser == null)
-        {
-            throw new ArgumentNullException(nameof(templateParser));
-        }
+        ArgumentNullException.ThrowIfNull(menuActionTypes);
+        ArgumentNullException.ThrowIfNull(templateParser);
 
         var factoryMethods = new Dictionary<Type, Func<object>>
             {

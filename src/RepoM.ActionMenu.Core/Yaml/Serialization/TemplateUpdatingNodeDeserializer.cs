@@ -54,12 +54,6 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
         foreach (PropertyInfo prop in props.Concat(props2))
         {
-            if (prop.Name == "Name")
-            {
-                // todo coenm remove, debug
-                int i = 0;
-            }
-
             var currentValue = prop.GetMethod!.Invoke(value, null);
             if (currentValue == null)
             {

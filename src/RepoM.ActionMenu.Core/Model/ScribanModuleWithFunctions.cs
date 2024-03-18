@@ -449,18 +449,10 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
 
     protected void RegisterVariable(string name, object value)
     {
-        if (name == null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
-
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(value);
 
         var names = name.Split(',');
-
 
         foreach (var subName in names)
         {

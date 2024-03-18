@@ -343,7 +343,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                         IncludeLinks = true,
                     });
 
-                if (!result.Any())
+                if (result.Count == 0)
                 {
                     _logger.LogInformation("No PRs found for project {ProjectId}.", projectId);
                     _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
@@ -411,7 +411,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
         _repositoryDirectoryDevOpsRepoIdMapping.AddOrUpdate(repository.SafePath, _ => repoIdGuid, (_, _) => repoIdGuid);
 
-        if (_pullRequestsPerProject.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Any())
+        if (_pullRequestsPerProject.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Length > 0)
         {
             _logger.LogTrace("Returning pull requests from cache where repo id was given.");
             return projectPrs.Where(x => x.RepositoryId.Equals(repoIdGuid)).ToList();

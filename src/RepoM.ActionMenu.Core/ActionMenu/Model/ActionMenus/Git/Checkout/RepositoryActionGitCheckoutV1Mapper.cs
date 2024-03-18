@@ -48,7 +48,7 @@ internal class RepositoryActionGitCheckoutV1Mapper : ActionToRepositoryActionMap
                                                                                                                })
                                                                                                            .ToArray();
 
-                                                      if (remoteBranches.Any())
+                                                      if (remoteBranches.Length > 0)
                                                       {
                                                           return Task.FromResult(remoteBranches);
                                                       }

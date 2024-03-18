@@ -81,16 +81,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
 
     internal static bool FileExists(IMenuContext context, string path)
     {
-        if (path == null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentOutOfRangeException(nameof(path), "Path cannot be null or empty.");
-        }
-
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
         return context.FileSystem.File.Exists(path);
     }
 
@@ -119,16 +110,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
 
     internal static bool DirectoryExists(IMenuContext context, string path)
     {
-        if (path == null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentOutOfRangeException(nameof(path), "Path cannot be null or empty.");
-        }
-
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
         return context.FileSystem.Directory.Exists(path);
     }
 

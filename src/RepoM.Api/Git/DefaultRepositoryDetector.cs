@@ -129,7 +129,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 
     private async Task EatRepo(string path)
     {
-        _logger.LogDebug("{method} - repo {head}", nameof(EatRepo), path);
+        _logger.LogDebug("{Method} - repo {Head}", nameof(EatRepo), path);
         Repository? repo = await _repositoryReader.ReadRepositoryAsync(path).ConfigureAwait(false);
 
         if (repo?.WasFound ?? false)
@@ -143,7 +143,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         var path = GetRepositoryPathFromHead(headFile);
         if (!string.IsNullOrEmpty(path))
         {
-            _logger.LogDebug("{method} - repo {head}", nameof(NotifyHeadDeletion), path);
+            _logger.LogDebug("{Method} - repo {Head}", nameof(NotifyHeadDeletion), path);
             OnDelete?.Invoke(path);
         }
     }

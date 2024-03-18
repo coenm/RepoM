@@ -37,8 +37,8 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
-        _plugins = plugins.ToArray() ?? throw new ArgumentNullException(nameof(plugins));
-        _mappers = mappers.ToArray() ?? throw new ArgumentNullException(nameof(mappers));
+        _plugins = plugins.ToArray();
+        _mappers = mappers.ToArray();
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
         _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

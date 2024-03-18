@@ -132,7 +132,7 @@ public class RepositoryActionBrowseRepositoryV1MapperTests
         List<UserInterfaceRepositoryActionBase> result = await _sut.MapAsync(_action, _context, _repository).ToListAsync();
 
         // assert
-        result.Should().HaveCount(1);
+        result.Should().ContainSingle();
         result[0].Should().BeOfType<DeferredSubActionsUserInterfaceRepositoryAction>();
         await Verifier.Verify(result).IgnoreMembersWithType<IRepository>();
     }

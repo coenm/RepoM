@@ -66,7 +66,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     public Task ScanForLocalRepositoriesAsync()
     {
-        _logger.LogDebug("{method} - repo scanning", nameof(ScanForLocalRepositoriesAsync));
+        _logger.LogDebug("{Method} - repo scanning", nameof(ScanForLocalRepositoriesAsync));
         Scanning = true;
         OnScanStateChanged?.Invoke(this, Scanning);
 
@@ -96,7 +96,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             {
                 foreach (var head in _repositoryStore.Get())
                 {
-                    _logger.LogDebug("{method} - repo {head}", nameof(ScanRepositoriesFromStoreAsync), head);
+                    _logger.LogDebug("{Method} - repo {Head}", nameof(ScanRepositoriesFromStoreAsync), head);
                     OnCheckKnownRepository(head, KnownRepositoryNotifications.WhenFound);
                 }
             });
@@ -110,7 +110,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private async void OnFoundNewRepository(string file)
     {
-        _logger.LogDebug("{method} - repo {file}", nameof(OnFoundNewRepository), file);
+        _logger.LogDebug("{Method} - repo {File}", nameof(OnFoundNewRepository), file);
 
         Repository? repo = null;
         try
@@ -130,7 +130,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private async Task OnCheckKnownRepository(string file, KnownRepositoryNotifications notification)
     {
-        _logger.LogDebug("{method} - start {head}", nameof(OnCheckKnownRepository), file);
+        _logger.LogDebug("{Method} - start {Head}", nameof(OnCheckKnownRepository), file);
 
         Repository? repo = await _repositoryReader.ReadRepositoryAsync(file);
         if (repo?.WasFound ?? false)
@@ -256,7 +256,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         }
 
         _repositoryObservers[path].Start();
-        _logger.LogDebug("{method} - repo {repo}, path: {path} (total length: {repositoryObserversLength})", nameof(CreateRepositoryObserver), repo.Name, path, _repositoryObservers.Count);
+        _logger.LogDebug("{Method} - repo {Repo}, path: {Path} (total length: {RepositoryObserversLength})", nameof(CreateRepositoryObserver), repo.Name, path, _repositoryObservers.Count);
     }
 
     private void OnRepositoryChangeDetected(Repository repo)
@@ -273,11 +273,11 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             return;
         }
 
-        _logger.LogDebug("{method} - repo {head}", nameof(OnRepositoryChangeDetected), repo.Path);
+        _logger.LogDebug("{Method} - repo {Head}", nameof(OnRepositoryChangeDetected), repo.Path);
 
         if (!_repositoryInformationAggregator.HasRepository(path))
         {
-            _logger.LogDebug("{method} - create observer {head}", nameof(OnRepositoryChangeDetected), repo.Path);
+            _logger.LogDebug("{Method} - create observer {Head}", nameof(OnRepositoryChangeDetected), repo.Path);
             CreateRepositoryObserver(repo, path);
 
             // use that delay to prevent a lot of sequential writes 
@@ -292,7 +292,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private void OnRepositoryObserverChange(Repository repository)
     {
-        _logger.LogDebug("{method} - repo {path}", nameof(OnRepositoryObserverChange), repository.Path);
+        _logger.LogDebug("{Method} - repo {Path}", nameof(OnRepositoryObserverChange), repository.Path);
         OnCheckKnownRepository(repository.Path, KnownRepositoryNotifications.WhenFound | KnownRepositoryNotifications.WhenNotFound);
     }
 
@@ -314,7 +314,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             return;
         }
 
-        _logger.LogDebug("{method} - repo {head}", nameof(OnRepositoryDeletionDetected), repoPath);
+        _logger.LogDebug("{Method} - repo {Head}", nameof(OnRepositoryDeletionDetected), repoPath);
 
         if (_repositoryIgnoreStore.IsIgnored(repoPath))
         {
@@ -330,9 +330,9 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     public bool Scanning { get; private set; } = false;
 
-    public int DelayGitRepositoryStatusAfterCreationMilliseconds { get; set; } = 5000;
+    public int DelayGitRepositoryStatusAfterCreationMilliseconds { get; init; } = 5000;
 
-    public int DelayGitStatusAfterFileOperationMilliseconds { get; set; } = 500;
+    public int DelayGitStatusAfterFileOperationMilliseconds { get; init; } = 500;
 
     [Flags]
     private enum KnownRepositoryNotifications

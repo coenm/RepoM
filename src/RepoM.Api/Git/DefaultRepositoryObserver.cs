@@ -34,9 +34,9 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         {
             _gitRepo = new LibGit2Sharp.Repository(repository.Path);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            _logger.LogWarning("Could not create LibGit2Sharp Repository from path {Path}", repository.Path);
+            _logger.LogWarning(e, "Could not create LibGit2Sharp Repository from path {Path}", repository.Path);
         }
 
         
@@ -130,7 +130,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
                 }
                 catch (Exception e)
                 {
-                    _logger.LogWarning("Directory exists failed {Dir} {Message}", fileSystemEventArgs.FullPath, e.Message);
+                    _logger.LogWarning(e, "Directory exists failed {Dir} {Message}", fileSystemEventArgs.FullPath, e.Message);
                 }
             }
         }
