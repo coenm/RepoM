@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Clipboard;
 
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.ActionMenu.Interface.SimpleInjector;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Plugin.Clipboard.RepositoryAction;
@@ -25,7 +25,6 @@ public class ClipboardPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
-        // new style
         container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.ClipboardCopy.RepositoryActionClipboardCopyV1>();
         container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.ClipboardCopy.RepositoryActionClipboardCopyV1Mapper>(Lifestyle.Singleton);
 

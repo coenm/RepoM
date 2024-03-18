@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 {
     private const string HEAD_LOG_FILE = @".git\logs\HEAD";
+    private int _detectionToAlertDelayMilliseconds;
     private IFileSystemWatcher? _watcher;
     private readonly IRepositoryReader _repositoryReader;
     private readonly ILogger _logger;
@@ -28,7 +29,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 
     public void Setup(string path, int detectionToAlertDelayMilliseconds)
     {
-        DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
+        _detectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
         _watcher = _fileSystem.FileSystemWatcher.New(path);
         _watcher.Created += WatcherCreated;
@@ -99,7 +100,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         }
 
         // todo
-        Task.Run(() => Task.Delay(DetectionToAlertDelayMilliseconds))
+        Task.Run(() => Task.Delay(_detectionToAlertDelayMilliseconds))
             .ContinueWith(async t => await EatRepo(e.FullPath).ConfigureAwait(false));
     }
 
@@ -162,6 +163,4 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         _watcher.Dispose();
         _watcher = null;
     }
-
-    public int DetectionToAlertDelayMilliseconds { get; private set; }
 }
