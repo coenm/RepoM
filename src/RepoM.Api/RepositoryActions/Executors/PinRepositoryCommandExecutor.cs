@@ -19,9 +19,7 @@ public sealed class PinRepositoryCommandExecutor : ICommandExecutor<PinRepositor
 
     public void Execute(IRepository repository, PinRepositoryCommand repositoryCommand)
     {
-        // todo
-        // at this moment, we must cast to Repository
-
+        // todo at this moment, we must cast to Repository
         if (repository is not Repository repo)
         {
             return;

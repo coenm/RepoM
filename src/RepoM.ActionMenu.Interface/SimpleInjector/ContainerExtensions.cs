@@ -5,7 +5,9 @@ using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using System;
 using System.Reflection;
 using global::SimpleInjector;
+using JetBrains.Annotations;
 
+[PublicAPI]
 public static class ContainerExtensions
 {
     public static void RegisterActionMenuMapper<T>(this Container container, Lifestyle lifestyle) where T : class, IActionToRepositoryActionMapper
@@ -21,13 +23,6 @@ public static class ContainerExtensions
     public static void RegisterActionMenuType(this Container container, Type type)
     {
         container.Collection.AppendInstance<IKeyTypeRegistration<IMenuAction>>(new FixedTypeRegistration<IMenuAction>(type, TypeRepositoryActionAttributeReader.GetValue(type)));
-    }
-
-    // stupid, for test purposes. todo
-    public static IKeyTypeRegistration<IMenuAction> CreateRegistrationObject<T>()
-    {
-        Type type = typeof(T);
-        return new FixedTypeRegistration<IMenuAction>(type, TypeRepositoryActionAttributeReader.GetValue(type));
     }
 }
 
