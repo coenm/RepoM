@@ -10,7 +10,7 @@ using RepoM.ActionMenu.Interface.Scriban;
 /// </summary>
 [UsedImplicitly]
 [ActionMenuContext("statistics")]
-internal partial class UsageVariables : TemplateContextRegistrationBase
+internal class UsageVariables : TemplateContextRegistrationBase
 {
     /// <summary>
     /// Gets the number of actions performed on the current repository.
@@ -25,7 +25,7 @@ internal partial class UsageVariables : TemplateContextRegistrationBase
     [ActionMenuContextMember("count")]
     public int GetCount(IActionMenuGenerationContext context)
     {
-        return 0;
+        return context.Repository.Name.Length;
     }
 
     /// <summary>
