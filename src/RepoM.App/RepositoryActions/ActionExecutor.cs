@@ -26,7 +26,7 @@ public sealed class ActionExecutor
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Execute command '{command}' failed.", repositoryCommand.GetType().Name);
+            _logger.LogError(e, "Execute command '{Command}' failed.", repositoryCommand.GetType().Name);
         }
     }
 }
