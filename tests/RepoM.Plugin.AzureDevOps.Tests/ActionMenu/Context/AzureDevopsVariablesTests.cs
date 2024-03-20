@@ -98,7 +98,8 @@ public class AzureDevopsVariablesTests
     public void GetPullRequests_ShouldReturnEmpty_WhenServiceReturnsNull()
     {
         // arrange
-        A.CallTo(() => _service.GetPullRequests(_context.Repository, "my_project_id", null)).Returns(null);
+        List<PullRequest> getPullRequestsResult = null!;
+        A.CallTo(() => _service.GetPullRequests(_context.Repository, "my_project_id", null)).Returns(getPullRequestsResult);
 
         // act
         IEnumerable result = _sut.GetPullRequests(_context, "my_project_id");

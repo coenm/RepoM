@@ -24,13 +24,13 @@ public static class DocumentationGeneration
                    $"{_serializer.Serialize(data)}{Environment.NewLine}{Environment.NewLine}" +
                    $"# end-snippet";
         
-        return Verifier.Verify(yaml, settings: GetVerifySettings(), extension: "yaml", sourceFile: sourceFile);
+        return VerifyYaml(yaml, sourceFile);
     }
 
     public static SettingsTask CreateAndVerifyDocumentation<TModel>(TModel data, [CallerFilePath] string sourceFile = "")
     {
         var yaml = _serializer.Serialize(data);
-        return Verifier.Verify(yaml, settings: GetVerifySettings(), extension: "yaml", sourceFile: sourceFile);
+        return VerifyYaml(yaml, sourceFile);
     }
 
     [Obsolete]
@@ -56,18 +56,12 @@ public static class DocumentationGeneration
 
         return await File.ReadAllTextAsync(fullFilename);
     }
-
-    private static VerifySettings GetVerifySettings()
+    
+    private static SettingsTask VerifyYaml(string yaml, string sourceFile = "")
     {
-        return new VerifySettings();
-        // var dir = _info.SolutionDirectory;
-        // if (string.IsNullOrWhiteSpace(dir))
-        // {
-        //     throw new Exception("Could not grab solution directory");
-        // }
-        // dir = Path.Combine(dir, "docs", "snippets");
-        // var settings = new VerifySettings();
-        // settings.UseDirectory(dir);
-        // return settings;
+        // ReSharper disable once ExplicitCallerInfoArgument
+        #pragma warning disable S3236
+        return Verifier.Verify(yaml, extension: "yaml", sourceFile: sourceFile);
+        #pragma warning restore S3236
     }
 }
