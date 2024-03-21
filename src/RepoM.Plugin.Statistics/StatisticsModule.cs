@@ -89,19 +89,19 @@ internal class StatisticsModule : IModule
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not read or deserialize data from '{filename}'. {message}", file, e.Message);
+                _logger.LogError(e, "Could not read or deserialize data from '{Filename}'. {Message}", file, e.Message);
             }
 
             if (Array.TrueForAll(events, item => item.Timestamp <= threshold))
             {
                 try
                 {
-                    _logger.LogDebug("Remove old Statistics file '{filename}'", file);
+                    _logger.LogDebug("Remove old Statistics file '{Filename}'", file);
                     _fileSystem.File.Delete(file);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Could not delete '{filename}'. {message}", file, e.Message);
+                    _logger.LogError(e, "Could not delete '{Filename}'. {Message}", file, e.Message);
                 }
             }
         }
@@ -127,7 +127,7 @@ internal class StatisticsModule : IModule
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not read or deserialize data from '{filename}'. {message}", file, e.Message);
+                _logger.LogError(e, "Could not read or deserialize data from '{Filename}'. {Message}", file, e.Message);
             }
 
             foreach (IEvent item in list)
@@ -164,12 +164,12 @@ internal class StatisticsModule : IModule
                        {
                            try
                            {
-                               _logger.LogDebug("Try Create directory '{basePath}'.", _basePath);
+                               _logger.LogDebug("Try Create directory '{BasePath}'.", _basePath);
                                _fileSystem.Directory.CreateDirectory(_basePath);
                            }
                            catch (Exception e)
                            {
-                               _logger.LogError(e, "Could not create directory '{basePath}'. {message}", _basePath, e.Message);
+                               _logger.LogError(e, "Could not create directory '{BasePath}'. {Message}", _basePath, e.Message);
                            }
                        }
 
@@ -181,7 +181,7 @@ internal class StatisticsModule : IModule
                            }
                            catch (Exception e)
                            {
-                               _logger.LogError(e, "Could not write json to '{filename}'. {message}", filename, e.Message);
+                               _logger.LogError(e, "Could not write json to '{Filename}'. {Message}", filename, e.Message);
                            }
                        }
                    });

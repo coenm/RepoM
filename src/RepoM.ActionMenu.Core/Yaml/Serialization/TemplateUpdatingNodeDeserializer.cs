@@ -48,26 +48,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                 var isNullable = Nullable.GetUnderlyingType(prop.PropertyType) != null;
                 if (!isNullable)
                 {
-                    // create
-                    if (prop.PropertyType == typeof(Predicate))
-                    {
-                        prop.SetMethod!.Invoke(value, [new ScribanPredicate(),]);
-                    }
-
-                    if (prop.PropertyType == typeof(Text))
-                    {
-                        prop.SetMethod!.Invoke(value, [new ScribanText(),]);
-                    }
-
-                    if (prop.PropertyType == typeof(Script))
-                    {
-                        prop.SetMethod!.Invoke(value, [new ScribanScript(),]);
-                    }
-
-                    if (prop.PropertyType == typeof(Variable))
-                    {
-                        prop.SetMethod!.Invoke(value, [new ScribanText(),]);
-                    }
+                    InitializeCurrentValue(value, prop);
                 }
             }
 
@@ -78,82 +59,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                 continue;
             }
 
-            if (prop.PropertyType == typeof(Script))
-            {
-                // no default value.
-            }
-
-            if (prop.PropertyType == typeof(Variable))
-            {
-                if (TryGetCustomAttributeData<VariableAttribute>(prop, out CustomAttributeData? attribute))
-                {
-                    IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
-
-                    if (constructorArguments.Count == 0)
-                    {
-                        (currentValue as Variable)!.DefaultValue = null; // not needed?~
-                    }
-                }
-            }
-
-            if (prop.PropertyType == typeof(Predicate))
-            {
-                if (TryGetCustomAttributeData<PredicateAttribute>(prop, out CustomAttributeData? attribute))
-                {
-                    IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
-
-                    if (constructorArguments.Count == 1)
-                    {
-                        var defaultValue = (bool)constructorArguments[0].Value;
-                        (currentValue as Predicate)!.DefaultValue = defaultValue;
-                    }
-                }
-            }
-
-            if (prop.PropertyType == typeof(Text))
-            {
-                if (TryGetCustomAttributeData<TextAttribute>(prop, out CustomAttributeData? attribute))
-                {
-                    IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
-
-                    if (constructorArguments.Count == 1)
-                    {
-                        var defaultValue = (string)constructorArguments[0].Value;
-                        (currentValue as Text)!.DefaultValue = defaultValue;
-                    }
-                }
-            }
-
-            if (prop.PropertyType == typeof(Text))
-            {
-                if (TryGetCustomAttributeData<RenderToNullableStringAttribute>(prop, out CustomAttributeData? attribute))
-                {
-                    IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
-
-                    if (constructorArguments.Count == 1)
-                    {
-                        var defaultValue = (string?)constructorArguments[0].Value;
-
-                        if (defaultValue is not null)
-                        {
-                            if (currentValue == null)
-                            {
-                                var newValue = new Text
-                                {
-                                    Value = string.Empty,
-                                };
-                                currentValue = newValue;
-                                prop.SetMethod!.Invoke(value, [newValue,]);
-                            }
-                        }
-
-                        if (currentValue != null)
-                        {
-                            (currentValue as Text)!.DefaultValue = defaultValue;
-                        }
-                    }
-                }
-            }
+            currentValue = SetDefaultValue(value, prop, currentValue);
 
             if (currentValue is ICreateTemplate createTemplate)
             {
@@ -162,6 +68,109 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
         }
 
         return true;
+    }
+
+    private static object? SetDefaultValue(object value, PropertyInfo prop, object currentValue)
+    {
+        if (prop.PropertyType == typeof(Script))
+        {
+            // no default value.
+        }
+
+        if (prop.PropertyType == typeof(Variable))
+        {
+            if (TryGetCustomAttributeData<VariableAttribute>(prop, out CustomAttributeData? attribute))
+            {
+                IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
+
+                if (constructorArguments.Count == 0)
+                {
+                    (currentValue as Variable)!.DefaultValue = null; // not needed?
+                }
+            }
+        }
+
+        if (prop.PropertyType == typeof(Predicate))
+        {
+            if (TryGetCustomAttributeData<PredicateAttribute>(prop, out CustomAttributeData? attribute))
+            {
+                IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
+
+                if (constructorArguments.Count == 1)
+                {
+                    var defaultValue = (bool)constructorArguments[0].Value!; // we know it is a boolean.
+                    (currentValue as Predicate)!.DefaultValue = defaultValue;
+                }
+            }
+        }
+
+        if (prop.PropertyType == typeof(Text))
+        {
+            if (TryGetCustomAttributeData<TextAttribute>(prop, out CustomAttributeData? attribute))
+            {
+                IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
+
+                if (constructorArguments.Count == 1)
+                {
+                    var defaultValue = (string)constructorArguments[0].Value!; // we know it is a string.
+                    (currentValue as Text)!.DefaultValue = defaultValue;
+                }
+            }
+        }
+
+        if (prop.PropertyType == typeof(Text))
+        {
+            if (TryGetCustomAttributeData<RenderToNullableStringAttribute>(prop, out CustomAttributeData? attribute))
+            {
+                IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
+
+                if (constructorArguments.Count == 1)
+                {
+                    var defaultValue = (string?)constructorArguments[0].Value;
+
+                    if (defaultValue is not null && currentValue == null)
+                    {
+                        var newValue = new Text
+                            {
+                                Value = string.Empty,
+                            };
+                        currentValue = newValue;
+                        prop.SetMethod!.Invoke(value, [newValue,]);
+                    }
+
+                    if (currentValue != null)
+                    {
+                        (currentValue as Text)!.DefaultValue = defaultValue ?? string.Empty;
+                    }
+                }
+            }
+        }
+
+        return currentValue;
+    }
+
+    private static void InitializeCurrentValue(object value, PropertyInfo prop)
+    {
+        // create
+        if (prop.PropertyType == typeof(Predicate))
+        {
+            prop.SetMethod!.Invoke(value, [new ScribanPredicate(),]);
+        }
+
+        if (prop.PropertyType == typeof(Text))
+        {
+            prop.SetMethod!.Invoke(value, [new ScribanText(),]);
+        }
+
+        if (prop.PropertyType == typeof(Script))
+        {
+            prop.SetMethod!.Invoke(value, [new ScribanScript(),]);
+        }
+
+        if (prop.PropertyType == typeof(Variable))
+        {
+            prop.SetMethod!.Invoke(value, [new ScribanText(),]);
+        }
     }
 
     private static PropertyInfo[] GetPropertyInfos(Type type)

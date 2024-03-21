@@ -34,7 +34,7 @@ public sealed class GitRepositoryCommandExecutor : ICommandExecutor<GitRepositor
                 _repositoryWriter.Checkout(repository, repositoryCommand.Branch);
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException($"GitAction {repositoryCommand.GitAction} not understood.");
         }
     }
 }

@@ -5,7 +5,7 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 
 public class Variable : EvaluateObjectBase
 {
-    public object DefaultValue { get; set; } = null!;
+    public object? DefaultValue { get; set; }
 
     public static implicit operator Variable(string content)
     {
