@@ -125,7 +125,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         PushGlobal(RepositoryActionsScriptContext);
     }
 
-    private static IContextRegistration Decorate<T>(IContextRegistration rootScriptObject) where T : TemplateContext
+    private static ContextRegistrationDecorator<T> Decorate<T>(IContextRegistration rootScriptObject) where T : TemplateContext
     {
         return new ContextRegistrationDecorator<T>(rootScriptObject);
     }
