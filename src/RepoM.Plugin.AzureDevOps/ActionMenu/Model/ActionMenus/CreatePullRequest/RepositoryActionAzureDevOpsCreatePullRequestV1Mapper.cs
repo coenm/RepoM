@@ -39,7 +39,7 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
         // check if branch exists!
         if (!repository.Branches.Contains(toBranch))
         {
-            _logger.LogInformation("Branch {branch} does not exist", toBranch);
+            _logger.LogInformation("Branch {Branch} does not exist", toBranch);
             yield break;
         }
         

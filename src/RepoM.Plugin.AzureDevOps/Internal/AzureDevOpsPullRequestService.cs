@@ -283,31 +283,31 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                 List<GitRepository>? repositories = null;
                 try
                 {
-                    _logger.LogInformation("Grabbing repositories for project {projectId}.", projectId);
+                    _logger.LogInformation("Grabbing repositories for project {ProjectId}.", projectId);
                     repositories = await gitClient.GetRepositoriesAsync(projectId, includeLinks: true, includeAllUrls: true, includeHidden: true);
                 }
                 catch (Microsoft.TeamFoundation.Core.WebApi.ProjectDoesNotExistException e)
                 {
-                    _logger.LogWarning(e, "Project does not exist (projectId {projectId})", projectId);
+                    _logger.LogWarning(e, "Project does not exist (projectId {ProjectId})", projectId);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogWarning(e, "Unable to Get repositories from client ({projectId}).", projectId);
+                    _logger.LogWarning(e, "Unable to Get repositories from client ({ProjectId}).", projectId);
                 }
 
                 if (repositories == null || repositories.Count == 0)
                 {
-                    _logger.LogInformation("No repositories found for project {projectId}.", projectId);
+                    _logger.LogInformation("No repositories found for project {ProjectId}.", projectId);
                     _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, _) => Array.Empty<GitRepository>());
                     continue;
                 }
 
-                _logger.LogInformation("Updating repositories {count}", projectId.Length);
+                _logger.LogInformation("Updating repositories {Count}", projectId.Length);
                 _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => repositories.ToArray(), (_, _) => repositories.ToArray());
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not fetch repositories for project {project}. {message}", projectId, e.Message);
+                _logger.LogError(e, "Could not fetch repositories for project {ProjectId}. {Message}", projectId, e.Message);
                 _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, _) => Array.Empty<GitRepository>());
             }
         }

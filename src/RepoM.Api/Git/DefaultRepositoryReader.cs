@@ -57,9 +57,9 @@ public class DefaultRepositoryReader : IRepositoryReader
             {
                 repository = ReadRepositoryInternal(repoPath);
             }
-            catch (LockedFileException)
+            catch (LockedFileException e)
             {
-                _logger.LogWarning("LockedFileException {Path}", repoPath);
+                _logger.LogWarning(e, "LockedFileException {Path}", repoPath);
 
                 if (currentTry >= maxRetries)
                 {
@@ -192,10 +192,10 @@ public class DefaultRepositoryReader : IRepositoryReader
         {
         }
 
-        internal string Name { get; init; } = string.Empty;
+        internal required string Name { get; init; }
 
-        internal bool IsDetached { get; init; } = false;
+        internal required bool IsDetached { get; init; }
 
-        internal bool IsOnTag { get; init; } = false;
+        internal required bool IsOnTag { get; init; }
     }
 }
