@@ -28,15 +28,8 @@ internal partial class DummyVariablesProvider : TemplateContextRegistrationBase
 
     public IEnumerable ConfigurationsProp => GetConfigImpl();
 
-    private IEnumerable GetConfigImpl()
+    private List<DummyConfig> GetConfigImpl()
     {
-        List<DummyConfig> result = new();
-
-        foreach (DummyConfig item in _dummyService.GetValues())
-        {
-            result.Add(item);
-        }
-
-        return result;
+        return [.. _dummyService.GetValues(), ];
     }
 }
