@@ -130,23 +130,16 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     public class InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, TResult> : DelegateCustomFunction where T : TemplateContext
     {
         public InternalDelegateCustomFunctionWithInterfaceContext(Func<T1, T2, TResult> func)
-            : base(RewriteFunc<T/*, T1*/>(func))
-        // : base(RewriteFunc<ActionMenuGenerationContext, IActionMenuGenerationContext>(func))
+            : base(RewriteFunc<T>(func))
         {
             Func = func;
         }
 
-        private static Delegate RewriteFunc<TTemplateContext/*, TContextInterface*/>(Func<T1, T2, TResult> func)
-            where TTemplateContext : TemplateContext/*, TContextInterface*/
+        private static Delegate RewriteFunc<TTemplateContext>(Func<T1, T2, TResult> func)
+            where TTemplateContext : TemplateContext
         {
-            // todo implemenets
-            //if (typeof(T1) == typeof(TContextInterface))
-            {
-                // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
-                return (TTemplateContext arg1, T2 arg2) => func((T1)(object)arg1, arg2);
-            }
-
-            return func;
+            // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
+            return (TTemplateContext arg1, T2 arg2) => func((T1)(object)arg1, arg2);
         }
 
         public Func<T1, T2, TResult> Func { get; }
@@ -165,23 +158,16 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     public class InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, T3, TResult> : DelegateCustomFunction where T : TemplateContext
     {
         public InternalDelegateCustomFunctionWithInterfaceContext(Func<T1, T2, T3, TResult> func)
-            : base(RewriteFunc<T/*, T1*/>(func))
-        // : base(RewriteFunc<ActionMenuGenerationContext, IActionMenuGenerationContext>(func))
+            : base(RewriteFunc<T>(func))
         {
             Func = func;
         }
 
-        private static Delegate RewriteFunc<TTemplateContext/*, TContextInterface*/>(Func<T1, T2, T3, TResult> func)
-            where TTemplateContext : TemplateContext/*, TContextInterface*/
+        private static Delegate RewriteFunc<TTemplateContext>(Func<T1, T2, T3, TResult> func)
+            where TTemplateContext : TemplateContext
         {
-            // todo implemenets
-            //if (typeof(T1) == typeof(TContextInterface))
-            {
-                // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
-                return (TTemplateContext arg1, T2 arg2, T3 arg3) => func((T1)(object)arg1, arg2, arg3);
-            }
-
-            return func;
+            // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
+            return (TTemplateContext arg1, T2 arg2, T3 arg3) => func((T1)(object)arg1, arg2, arg3);
         }
 
         public Func<T1, T2, T3, TResult> Func { get; }
@@ -194,31 +180,23 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return Func(arg1, arg2, arg3);
         }
     }
-
-
+    
     /// <summary>
     /// A custom function taking 4 arguments.
     /// </summary>
     public class InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, T3, T4, TResult> : DelegateCustomFunction where T : TemplateContext
     {
         public InternalDelegateCustomFunctionWithInterfaceContext(Func<T1, T2, T3, T4, TResult> func)
-            : base(RewriteFunc<T/*, T1*/>(func))
-        // : base(RewriteFunc<ActionMenuGenerationContext, IActionMenuGenerationContext>(func))
+            : base(RewriteFunc<T>(func))
         {
             Func = func;
         }
 
-        private static Delegate RewriteFunc<TTemplateContext/*, TContextInterface*/>(Func<T1, T2, T3, T4, TResult> func)
-            where TTemplateContext : TemplateContext/*, TContextInterface*/
+        private static Delegate RewriteFunc<TTemplateContext>(Func<T1, T2, T3, T4, TResult> func)
+            where TTemplateContext : TemplateContext
         {
-            // todo implemenets
-            //if (typeof(T1) == typeof(TContextInterface))
-            {
-                // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
-                return (TTemplateContext arg1, T2 arg2, T3 arg3, T4 arg4) => func((T1)(object)arg1, arg2, arg3, arg4);
-            }
-
-            return func;
+            // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
+            return (TTemplateContext arg1, T2 arg2, T3 arg3, T4 arg4) => func((T1)(object)arg1, arg2, arg3, arg4);
         }
 
         public Func<T1, T2, T3, T4, TResult> Func { get; }
@@ -239,23 +217,16 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     public class InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, T3, T4, T5, TResult> : DelegateCustomFunction where T : TemplateContext
     {
         public InternalDelegateCustomFunctionWithInterfaceContext(Func<T1, T2, T3, T4, T5, TResult> func)
-            : base(RewriteFunc<T/*, T1*/>(func))
-        // : base(RewriteFunc<ActionMenuGenerationContext, IActionMenuGenerationContext>(func))
+            : base(RewriteFunc<T>(func))
         {
             Func = func;
         }
 
-        private static Delegate RewriteFunc<TTemplateContext/*, TContextInterface*/>(Func<T1, T2, T3, T4, T5, TResult> func)
-            where TTemplateContext : TemplateContext/*, TContextInterface*/
+        private static Delegate RewriteFunc<TTemplateContext>(Func<T1, T2, T3, T4, T5, TResult> func)
+            where TTemplateContext : TemplateContext
         {
-            // todo implemenets
-            //if (typeof(T1) == typeof(TContextInterface))
-            {
-                // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
-                return (TTemplateContext arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) => func((T1)(object)arg1, arg2, arg3, arg4, arg5);
-            }
-
-            return func;
+            // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
+            return (TTemplateContext arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) => func((T1)(object)arg1, arg2, arg3, arg4, arg5);
         }
 
         public Func<T1, T2, T3, T4, T5, TResult> Func { get; }
@@ -311,7 +282,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     public class InternalDelegateCustomActionWithInterfaceContext<T, T1, T2> : DelegateCustomFunction where T : TemplateContext
     {
         public InternalDelegateCustomActionWithInterfaceContext(Action<T1, T2> func)
-            : base(RewriteFunc<T/*, T1*/>(func))
+            : base(RewriteFunc<T>(func))
         {
             Func = func;
         }
@@ -326,17 +297,11 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return null!;
         }
 
-        private static Delegate RewriteFunc<TTemplateContext/*, TContextInterface*/>(Action<T1, T2> func)
-            where TTemplateContext : TemplateContext/*, TContextInterface*/
+        private static Delegate RewriteFunc<TTemplateContext>(Action<T1, T2> func)
+            where TTemplateContext : TemplateContext
         {
-            // todo implemenets
-            //if (typeof(T1) == typeof(TContextInterface))
-            {
-                // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
-                return (TTemplateContext arg1, T2 arg2) => func((T1)(object)arg1, arg2);
-            }
-
-            return func;
+            // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
+            return (TTemplateContext arg1, T2 arg2) => func((T1)(object)arg1, arg2);
         }
     }
 
@@ -346,7 +311,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     public class InternalDelegateCustomActionWithInterfaceContext<T, T1, T2, T3> : DelegateCustomFunction where T : TemplateContext
     {
         public InternalDelegateCustomActionWithInterfaceContext(Action<T1, T2, T3> func)
-            : base(RewriteFunc<T/*, T1*/>(func))
+            : base(RewriteFunc<T>(func))
         {
             Func = func;
         }
@@ -362,17 +327,11 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return null!;
         }
 
-        private static Delegate RewriteFunc<TTemplateContext/*, TContextInterface*/>(Action<T1, T2, T3> func)
-            where TTemplateContext : TemplateContext/*, TContextInterface*/
+        private static Delegate RewriteFunc<TTemplateContext>(Action<T1, T2, T3> func)
+            where TTemplateContext : TemplateContext
         {
-            // todo implemenets
-            //if (typeof(T1) == typeof(TContextInterface))
-            {
-                // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
-                return (TTemplateContext arg1, T2 arg2, T3 arg3) => func((T1)(object)arg1, arg2, arg3);
-            }
-
-            return func;
+            // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
+            return (TTemplateContext arg1, T2 arg2, T3 arg3) => func((T1)(object)arg1, arg2, arg3);
         }
     }
 
@@ -382,7 +341,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     public class InternalDelegateCustomActionWithInterfaceContext<T, T1, T2, T3, T4> : DelegateCustomFunction where T : TemplateContext
     {
         public InternalDelegateCustomActionWithInterfaceContext(Action<T1, T2, T3, T4> func)
-            : base(RewriteFunc<T/*, T1*/>(func))
+            : base(RewriteFunc<T>(func))
         {
             Func = func;
         }
@@ -399,17 +358,11 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return null!;
         }
 
-        private static Delegate RewriteFunc<TTemplateContext/*, TContextInterface*/>(Action<T1, T2, T3, T4> func)
-            where TTemplateContext : TemplateContext/*, TContextInterface*/
+        private static Delegate RewriteFunc<TTemplateContext>(Action<T1, T2, T3, T4> func)
+            where TTemplateContext : TemplateContext
         {
-            // todo implemenets
-            //if (typeof(T1) == typeof(TContextInterface))
-            {
-                // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
-                return (TTemplateContext arg1, T2 arg2, T3 arg3, T4 arg4) => func((T1)(object)arg1, arg2, arg3, arg4);
-            }
-
-            return func;
+            // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
+            return (TTemplateContext arg1, T2 arg2, T3 arg3, T4 arg4) => func((T1)(object)arg1, arg2, arg3, arg4);
         }
     }
 
@@ -419,7 +372,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     public class InternalDelegateCustomActionWithInterfaceContext<T, T1, T2, T3, T4, T5> : DelegateCustomFunction where T : TemplateContext
     {
         public InternalDelegateCustomActionWithInterfaceContext(Action<T1, T2, T3, T4, T5> func)
-            : base(RewriteFunc<T/*, T1*/>(func))
+            : base(RewriteFunc<T>(func))
         {
             Func = func;
         }
@@ -437,17 +390,11 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return null!;
         }
 
-        private static Delegate RewriteFunc<TTemplateContext/*, TContextInterface*/>(Action<T1, T2, T3, T4, T5> func)
-            where TTemplateContext : TemplateContext/*, TContextInterface*/
+        private static Delegate RewriteFunc<TTemplateContext>(Action<T1, T2, T3, T4, T5> func)
+            where TTemplateContext : TemplateContext
         {
-            // todo implemenets
-            //if (typeof(T1) == typeof(TContextInterface))
-            {
-                // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
-                return (TTemplateContext arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) => func((T1)(object)arg1, arg2, arg3, arg4, arg5);
-            }
-
-            return func;
+            // Probably does not matter as Func is used to invoke, only important thing is the signature of the method.
+            return (TTemplateContext arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) => func((T1)(object)arg1, arg2, arg3, arg4, arg5);
         }
     }
 }
