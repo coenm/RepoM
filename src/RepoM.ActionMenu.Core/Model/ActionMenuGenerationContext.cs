@@ -120,11 +120,6 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         _rootScriptObject = rootScriptObject ?? throw new ArgumentNullException(nameof(rootScriptObject));
 
-        // foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
-        // {
-        // contextRegistration.RegisterFunctions(Decorate<ActionMenuGenerationContext>(_rootScriptObject));
-        // }
-
         PushGlobal(_rootScriptObject);
         RepositoryActionsScriptContext = new DisposableContextScriptObject(this, Env, _contextActionMappers);
         PushGlobal(RepositoryActionsScriptContext);
@@ -183,7 +178,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         var repoMScriptObject = (RepoMScriptObject)_rootScriptObject.Clone(true);
 
-        var e = ((EnvSetScriptObject)_rootScriptObject["env"]).Clone(true);
+        IScriptObject e = ((EnvSetScriptObject)_rootScriptObject["env"]).Clone(true);
         repoMScriptObject.SetValue("env", e, false);
 
         var result = new ActionMenuGenerationContext(
@@ -460,8 +455,8 @@ internal class ContextRegistrationDecorator<T> : IContextRegistration where T : 
     private static bool Check<T1>()
     {
         // todo check.
-        var x = typeof(T1).IsInterface;
-        var x1 = typeof(T1).IsAssignableFrom(typeof(T));
-        return x && x1;
+        var isInterface = typeof(T1).IsInterface;
+        var isAssignableFrom = typeof(T1).IsAssignableFrom(typeof(T));
+        return isInterface && isAssignableFrom;
     }
 }

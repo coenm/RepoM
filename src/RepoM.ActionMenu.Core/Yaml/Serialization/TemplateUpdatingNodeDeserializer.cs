@@ -2,6 +2,7 @@ namespace RepoM.ActionMenu.Core.Yaml.Serialization;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using RepoM.ActionMenu.Core.Misc;
@@ -11,7 +12,9 @@ using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
 // ReSharper disable once UnusedTypeParameter, Justification: intentionally
+#pragma warning disable S2326
 internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T : class, INodeDeserializer
+#pragma warning restore S2326
 {
     private readonly INodeDeserializer _nodeDeserializer;
     private readonly ITemplateParser _templateParser;
@@ -34,23 +37,8 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
             return true;
         }
 
-        PropertyInfo[] props = expectedType
-           .GetProperties(true)
-           .Where(x =>
-               x is { CanWrite: true, CanRead: true, }
-               &&
-               typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
-           )
-           .ToArray();
-
-        PropertyInfo[] props2 = value.GetType()
-            .GetProperties(true)
-            .Where(x =>
-                 x is { CanWrite: true, CanRead: true, }
-                 &&
-                 typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(x.PropertyType.GetTypeInfo())
-             )
-             .ToArray();
+        PropertyInfo[] props = GetPropertyInfos(expectedType);
+        PropertyInfo[] props2 = GetPropertyInfos(value.GetType());
 
         foreach (PropertyInfo prop in props.Concat(props2))
         {
@@ -97,10 +85,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
             if (prop.PropertyType == typeof(Variable))
             {
-                CustomAttributeData? attribute = prop.GetCustomAttributesData()
-                    .SingleOrDefault(a => a.AttributeType.FullName == typeof(VariableAttribute).FullName);
-
-                if (attribute != null)
+                if (TryGetCustomAttributeData<VariableAttribute>(prop, out CustomAttributeData? attribute))
                 {
                     IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
 
@@ -113,10 +98,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
             if (prop.PropertyType == typeof(Predicate))
             {
-                CustomAttributeData? attribute = prop.GetCustomAttributesData()
-                    .SingleOrDefault(a => a.AttributeType.FullName == typeof(PredicateAttribute).FullName);
-
-                if (attribute != null)
+                if (TryGetCustomAttributeData<PredicateAttribute>(prop, out CustomAttributeData? attribute))
                 {
                     IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
 
@@ -130,10 +112,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
             if (prop.PropertyType == typeof(Text))
             {
-                CustomAttributeData? attribute = prop.GetCustomAttributesData()
-                    .SingleOrDefault(a => a.AttributeType.FullName == typeof(TextAttribute).FullName);
-
-                if (attribute != null)
+                if (TryGetCustomAttributeData<TextAttribute>(prop, out CustomAttributeData? attribute))
                 {
                     IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
 
@@ -147,10 +126,7 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
             if (prop.PropertyType == typeof(Text))
             {
-                CustomAttributeData? attribute = prop.GetCustomAttributesData()
-                    .SingleOrDefault(a => a.AttributeType.FullName == typeof(RenderToNullableStringAttribute).FullName);
-
-                if (attribute != null)
+                if (TryGetCustomAttributeData<RenderToNullableStringAttribute>(prop, out CustomAttributeData? attribute))
                 {
                     IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
 
@@ -186,5 +162,22 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
         }
 
         return true;
+    }
+
+    private static PropertyInfo[] GetPropertyInfos(Type type)
+    {
+        return type
+               .GetProperties(true)
+               .Where(propertyInfo =>
+                   propertyInfo is { CanWrite: true, CanRead: true, }
+                   &&
+                   typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(propertyInfo.PropertyType.GetTypeInfo())
+               ).ToArray();
+    }
+
+    private static bool TryGetCustomAttributeData<TAttribute>(PropertyInfo propertyInfo, [NotNullWhen(true)] out CustomAttributeData? customAttributeData ) where TAttribute : Attribute
+    {
+        customAttributeData = propertyInfo.GetCustomAttributesData().SingleOrDefault(a => a.AttributeType.FullName == typeof(TAttribute).FullName);
+        return customAttributeData != null;
     }
 }

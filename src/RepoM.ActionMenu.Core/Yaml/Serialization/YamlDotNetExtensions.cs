@@ -13,11 +13,13 @@ internal static class YamlDotNetExtensions
 
         if (includeNonPublic)
         {
+#pragma warning disable S3011
             bindingFlags |= BindingFlags.NonPublic;
+#pragma warning restore S3011
         }
 
         return type.IsInterface
-            ? (new Type[] { type, })
+            ? new[] { type, }
             .Concat(type.GetInterfaces())
             .SelectMany(i => i.GetProperties(bindingFlags))
             : type.GetProperties(bindingFlags);

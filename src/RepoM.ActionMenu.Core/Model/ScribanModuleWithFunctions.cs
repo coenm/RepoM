@@ -66,6 +66,29 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     {
         RegisterCustomFunction(name, DelegateCustomFunction.CreateFunc(func));
     }
+    
+    protected void RegisterFunction<T1, T2, T3, T4, T5, T6>(string name, Func<T1, T2, T3, T4, T5, T6> func)
+    {
+        RegisterCustomFunction(name, DelegateCustomFunction.CreateFunc(func));
+    }
+
+    protected void RegisterCustomFunction(string name, IScriptCustomFunction func)
+    {
+        RegisterVariable(name, func);
+    }
+
+    protected void RegisterVariable(string name, object value)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(value);
+
+        var names = name.Split(',');
+
+        foreach (var subName in names)
+        {
+            SetValue(subName, value, true);
+        }
+    }
 
     /// <summary>
     /// A custom function taking 1 argument.
@@ -178,9 +201,9 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
     /// </summary>
     public class InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, T3, T4, TResult> : DelegateCustomFunction where T : TemplateContext
     {
-        public InternalDelegateCustomFunctionWithInterfaceContext(Func<T1, T2, T3, T4, TResult> func) 
+        public InternalDelegateCustomFunctionWithInterfaceContext(Func<T1, T2, T3, T4, TResult> func)
             : base(RewriteFunc<T/*, T1*/>(func))
-            // : base(RewriteFunc<ActionMenuGenerationContext, IActionMenuGenerationContext>(func))
+        // : base(RewriteFunc<ActionMenuGenerationContext, IActionMenuGenerationContext>(func))
         {
             Func = func;
         }
@@ -247,7 +270,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return Func(arg1, arg2, arg3, arg4, arg5);
         }
     }
-    
+
     /// <summary>
     /// A custom action taking 1 argument.
     /// </summary>
@@ -282,7 +305,6 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
         }
     }
     
-
     /// <summary>
     /// A custom action taking 2 arguments.
     /// </summary>
@@ -317,10 +339,6 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return func;
         }
     }
-
-
-
-
 
     /// <summary>
     /// A custom action taking 3 arguments.
@@ -358,10 +376,6 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
         }
     }
 
-
-
-
-
     /// <summary>
     /// A custom action taking 4 arguments.
     /// </summary>
@@ -398,7 +412,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             return func;
         }
     }
-    
+
     /// <summary>
     /// A custom action taking 5 arguments.
     /// </summary>
@@ -409,7 +423,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
         {
             Func = func;
         }
-        
+
         public Action<T1, T2, T3, T4, T5> Func { get; }
 
         protected override object InvokeImpl(TemplateContext context, SourceSpan span, object[] arguments)
@@ -434,29 +448,6 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             }
 
             return func;
-        }
-    }
-
-    protected void RegisterFunction<T1, T2, T3, T4, T5, T6>(string name, Func<T1, T2, T3, T4, T5, T6> func)
-    {
-        RegisterCustomFunction(name, DelegateCustomFunction.CreateFunc(func));
-    }
-
-    protected void RegisterCustomFunction(string name, IScriptCustomFunction func)
-    {
-        RegisterVariable(name, func);
-    }
-
-    protected void RegisterVariable(string name, object value)
-    {
-        ArgumentNullException.ThrowIfNull(name);
-        ArgumentNullException.ThrowIfNull(value);
-
-        var names = name.Split(',');
-
-        foreach (var subName in names)
-        {
-            SetValue(subName, value, true);
         }
     }
 }
