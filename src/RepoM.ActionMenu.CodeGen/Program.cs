@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Misc;
 using RepoM.ActionMenu.CodeGen.Models;
+using RepoM.ActionMenu.Core.TestLib.Utils;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.AssemblyInformation;
@@ -51,10 +52,8 @@ public static class Program
     {
         // var ns = typeSymbol.ContainingNamespace.ToDisplayString();
         // var fullClassName = $"{ns}.{className}";
-
         var compile = new CompileRepoM();
-
-        var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
+        var rootFolder = ThisProjectAssembly.Info.GetSolutionDirectory();
         var srcFolder = Path.Combine(rootFolder, "src");
         var docsFolderSource = Path.Combine(rootFolder, "docs_new", "mdsource");
         var docsFolder = Path.Combine(rootFolder, "docs_new");
@@ -89,10 +88,10 @@ public static class Program
 
         foreach (var project in projects)
         {
-            var pathToSolution = Path.Combine(srcFolder, project, $"{project}.csproj");
-            FileSystemHelper.CheckFile(pathToSolution);
+            var fullCsProjectFilename = Path.Combine(srcFolder, project, $"{project}.csproj");
+            FileSystemHelper.CheckFile(fullCsProjectFilename);
 
-            ProjectDescriptor projectDescriptor = await CompileAndExtractProjectDescription(compile, pathToSolution, project, files);
+            ProjectDescriptor projectDescriptor = await CompileAndExtractProjectDescription(compile, fullCsProjectFilename, project, files);
             processedProjects.Add(project, projectDescriptor);
         }
 

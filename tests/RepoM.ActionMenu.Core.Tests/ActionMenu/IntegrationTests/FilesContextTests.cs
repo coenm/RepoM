@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
+using EasyTestFile;
+using EasyTestFileXunit;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Core.Plugin.Repository;
@@ -13,6 +15,8 @@ using Xunit.Categories;
 
 public class FilesContextTests : IntegrationActionTestBase
 {
+    private readonly EasyTestFileSettings _testFileSettings;
+
     public FilesContextTests()
     {
         var rootPath = Path.Combine("C:", "Repositories", "work", "RepoX");
@@ -22,15 +26,8 @@ public class FilesContextTests : IntegrationActionTestBase
         FileSystem.AddFile(Path.Combine(rootPath, "src", "test solution.sln"), new MockFileData("dummy"));
         FileSystem.AddFile(Path.Combine(rootPath, "src", "dummy.txt"), new MockFileData("dummy"));
 
-
-        //     IAzureDevOpsPullRequestService azureDevOpsPullRequestService = A.Fake<IAzureDevOpsPullRequestService>();
-        //     Container.RegisterInstance(azureDevOpsPullRequestService);
-        //
-        //     A.CallTo(() => azureDevOpsPullRequestService.GetPullRequests(Repository, "dummy_project_id", null!)).Returns(new List<PullRequest>()
-        //         {
-        //             new (Guid.Empty, "test pr", "https://azure-devops.test/pr/123"),
-        //         });
-        //     A.CallTo(() => azureDevOpsPullRequestService.GetPullRequests(Repository, "805ACF64-0F06-47EC-96BF-E830895E2740", null)).Returns(_prs);
+        _testFileSettings = new EasyTestFileSettings();
+        _testFileSettings.UseExtension("yaml");
     }
 
     /// <summary>
@@ -41,7 +38,7 @@ public class FilesContextTests : IntegrationActionTestBase
     public async Task Context_FindFiles_Documentation()
     {
         // arrange
-        var yaml = await DocumentationGeneration.LoadYamlFileAsync("file.find_files.actionmenu.yaml");
+        var yaml = await EasyTestFile.LoadAsText(_testFileSettings);
         AddRootFile(yaml);
 
         // act

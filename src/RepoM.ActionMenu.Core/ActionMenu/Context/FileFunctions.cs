@@ -40,7 +40,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// As a result, the variable `solution_files` is an enumerable of strings, for example:
     /// <code-file language='yaml' filename='file.find_files.verified.yaml' />
     /// <repository-action-sample/>
-    /// <code-file language='yaml' filename='file.find_files.actionmenu.yaml' />
+    /// <snippet name='find_files@actionmenu01' mode='snippet' />
     /// </example>
     [ActionMenuContextMember("find_files")]
     public static string[] FindFiles(ActionMenuGenerationContext /*IMenuContext*/ context, SourceSpan span, string rootPath, string searchPattern)
@@ -74,7 +74,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// </code>
     /// <repository-action-sample/>
     /// TODO: this content is not correct, change filename
-    /// <code-file language='yaml' filename='file.find_files.actionmenu.yaml' />
+    /// <snippet name='find_files@actionmenu01' mode='snippet' />
     /// </example>
     [ActionMenuContextMember("file_exists")]
     public static bool FileExists(ActionMenuGenerationContext context, string path)
@@ -104,7 +104,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// </code>
     /// <repository-action-sample/>
     /// TODO: this content is not correct, change filename
-    /// <code-file language='yaml' filename='file.find_files.actionmenu.yaml' />
+    /// <snippet name='find_files@actionmenu01' mode='snippet' />
     /// </example>
     [ActionMenuContextMember("dir_exists")]
     public static bool DirectoryExists(ActionMenuGenerationContext context, string path)

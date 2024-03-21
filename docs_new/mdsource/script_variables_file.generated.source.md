@@ -39,37 +39,7 @@ exists = file.dir_exists('C:/Project/');
 
 TODO: this content is not correct, change filename
 
-
-```yaml
-context:
-- type: evaluate-script@1
-  content: |-
-    func get_filename(path)
-      ret path | string.split("\\") | array.last
-    end
-
-    solution_files = file.find_files(repository.safe_path, "*.sln");
-
-action-menu:
-# Open in visual studio when only one sln file was found in the repo.
-- type: command@1
-  name: Open in Visual Studio
-  command: '{{ array.first(solution_files) }}'
-  active: 'array.size(solution_files) == 1'
-
-# Use folder to choose sln file when multiple sln files found.
-- type: folder@1
-  name: Open in Visual Studio
-  active: 'array.size(solution_files) > 1'
-  actions:
-  - type: foreach@1
-    enumerable: solution_files
-    variable: sln
-    actions:
-    - type: command@1
-      name: '{{ get_filename(sln) }}'
-      command: '{{ sln }}'
-```
+snippet: find_files@actionmenu01
 
 
 ## file_exists
@@ -101,37 +71,7 @@ exists = file.file_exists('C:\Project\my-solution.sln');
 
 TODO: this content is not correct, change filename
 
-
-```yaml
-context:
-- type: evaluate-script@1
-  content: |-
-    func get_filename(path)
-      ret path | string.split("\\") | array.last
-    end
-
-    solution_files = file.find_files(repository.safe_path, "*.sln");
-
-action-menu:
-# Open in visual studio when only one sln file was found in the repo.
-- type: command@1
-  name: Open in Visual Studio
-  command: '{{ array.first(solution_files) }}'
-  active: 'array.size(solution_files) == 1'
-
-# Use folder to choose sln file when multiple sln files found.
-- type: folder@1
-  name: Open in Visual Studio
-  active: 'array.size(solution_files) > 1'
-  actions:
-  - type: foreach@1
-    enumerable: solution_files
-    variable: sln
-    actions:
-    - type: command@1
-      name: '{{ get_filename(sln) }}'
-      command: '{{ sln }}'
-```
+snippet: find_files@actionmenu01
 
 
 ## find_files
@@ -172,35 +112,5 @@ As a result, the variable `solution_files` is an enumerable of strings, for exam
 
 #### RepositoryAction sample
 
-
-```yaml
-context:
-- type: evaluate-script@1
-  content: |-
-    func get_filename(path)
-      ret path | string.split("\\") | array.last
-    end
-
-    solution_files = file.find_files(repository.safe_path, "*.sln");
-
-action-menu:
-# Open in visual studio when only one sln file was found in the repo.
-- type: command@1
-  name: Open in Visual Studio
-  command: '{{ array.first(solution_files) }}'
-  active: 'array.size(solution_files) == 1'
-
-# Use folder to choose sln file when multiple sln files found.
-- type: folder@1
-  name: Open in Visual Studio
-  active: 'array.size(solution_files) > 1'
-  actions:
-  - type: foreach@1
-    enumerable: solution_files
-    variable: sln
-    actions:
-    - type: command@1
-      name: '{{ get_filename(sln) }}'
-      command: '{{ sln }}'
-```
+snippet: find_files@actionmenu01
 

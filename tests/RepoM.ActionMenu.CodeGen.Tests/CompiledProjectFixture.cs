@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using RepoM.ActionMenu.CodeGen.Misc;
 using RepoM.ActionMenu.CodeGen.Models;
+using RepoM.ActionMenu.Core.TestLib.Utils;
 using Xunit;
 
 [UsedImplicitly]
@@ -19,7 +20,7 @@ public class CompiledProjectFixture : IAsyncLifetime
 
     public CompiledProjectFixture()
     {
-        var rootFolder = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "../../../../.."));
+        var rootFolder = ThisProjectAssembly.Info.GetSolutionDirectory();
         var srcFolder = Path.Combine(rootFolder, "tests");
         _pathToSolution = Path.Combine(srcFolder, PROJECT_NAME, $"{PROJECT_NAME}.csproj");
     }

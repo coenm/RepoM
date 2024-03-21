@@ -1,4 +1,6 @@
-﻿context:
+# begin-snippet: find_files@actionmenu01
+
+context:
 - type: evaluate-script@1
   content: |-
     func get_filename(path)
@@ -26,3 +28,5 @@ action-menu:
     - type: command@1
       name: '{{ get_filename(sln) }}'
       command: '{{ sln }}'
+
+# end-snippet
