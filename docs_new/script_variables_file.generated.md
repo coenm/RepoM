@@ -39,7 +39,8 @@ exists = file.dir_exists('C:/Project/');
 
 TODO: this content is not correct, change filename
 
-
+<!-- snippet: find_files@actionmenu01 -->
+<a id='snippet-find_files@actionmenu01'></a>
 ```yaml
 context:
 - type: evaluate-script@1
@@ -70,6 +71,8 @@ action-menu:
       name: '{{ get_filename(sln) }}'
       command: '{{ sln }}'
 ```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_FindFiles_Documentation.testfile.yaml#L1-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-find_files@actionmenu01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ## file_exists
@@ -101,7 +104,8 @@ exists = file.file_exists('C:\Project\my-solution.sln');
 
 TODO: this content is not correct, change filename
 
-
+<!-- snippet: find_files@actionmenu01 -->
+<a id='snippet-find_files@actionmenu01'></a>
 ```yaml
 context:
 - type: evaluate-script@1
@@ -132,6 +136,8 @@ action-menu:
       name: '{{ get_filename(sln) }}'
       command: '{{ sln }}'
 ```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_FindFiles_Documentation.testfile.yaml#L1-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-find_files@actionmenu01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ## find_files
@@ -172,7 +178,8 @@ As a result, the variable `solution_files` is an enumerable of strings, for exam
 
 #### RepositoryAction sample
 
-
+<!-- snippet: find_files@actionmenu01 -->
+<a id='snippet-find_files@actionmenu01'></a>
 ```yaml
 context:
 - type: evaluate-script@1
@@ -203,4 +210,6 @@ action-menu:
       name: '{{ get_filename(sln) }}'
       command: '{{ sln }}'
 ```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_FindFiles_Documentation.testfile.yaml#L1-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-find_files@actionmenu01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
