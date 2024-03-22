@@ -32,7 +32,7 @@ internal class DefaultContextActionTypeConverter : IYamlTypeConverter
         var value = ((Scalar)parser.Current).Value;
         parser.MoveNext();
 
-        return new ContextActionSetVariableV1()
+        return new ContextActionSetVariableV1
             {
                 Name = key,
                 Value = value,

@@ -79,74 +79,112 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 
         if (prop.PropertyType == typeof(Variable))
         {
-            if (TryGetCustomAttributeData<VariableAttribute>(prop, out CustomAttributeData? attribute))
-            {
-                IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
-
-                if (constructorArguments.Count == 0)
-                {
-                    (currentValue as Variable)!.DefaultValue = null; // not needed?
-                }
-            }
+            SetDefaultVariableValue(prop, currentValue);
         }
 
         if (prop.PropertyType == typeof(Predicate))
         {
-            if (TryGetCustomAttributeData<PredicateAttribute>(prop, out CustomAttributeData? attribute))
-            {
-                IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
-
-                if (constructorArguments.Count == 1)
-                {
-                    var defaultValue = (bool)constructorArguments[0].Value!; // we know it is a boolean.
-                    (currentValue as Predicate)!.DefaultValue = defaultValue;
-                }
-            }
+            SetDefaultPredicateValue(prop, currentValue);
         }
 
         if (prop.PropertyType == typeof(Text))
         {
-            if (TryGetCustomAttributeData<TextAttribute>(prop, out CustomAttributeData? attribute))
-            {
-                IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
-
-                if (constructorArguments.Count == 1)
-                {
-                    var defaultValue = (string)constructorArguments[0].Value!; // we know it is a string.
-                    (currentValue as Text)!.DefaultValue = defaultValue;
-                }
-            }
+            SetDefaultTextValue(prop, currentValue);
         }
 
         if (prop.PropertyType == typeof(Text))
         {
-            if (TryGetCustomAttributeData<RenderToNullableStringAttribute>(prop, out CustomAttributeData? attribute))
-            {
-                IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
-
-                if (constructorArguments.Count == 1)
-                {
-                    var defaultValue = (string?)constructorArguments[0].Value;
-
-                    if (defaultValue is not null && currentValue == null)
-                    {
-                        var newValue = new Text
-                            {
-                                Value = string.Empty,
-                            };
-                        currentValue = newValue;
-                        prop.SetMethod!.Invoke(value, [newValue,]);
-                    }
-
-                    if (currentValue != null)
-                    {
-                        (currentValue as Text)!.DefaultValue = defaultValue ?? string.Empty;
-                    }
-                }
-            }
+            currentValue = SetDefaultNullableTextValue(value, prop, currentValue);
         }
 
         return currentValue;
+    }
+
+    private static void SetDefaultVariableValue(PropertyInfo prop, object currentValue)
+    {
+        if (!TryGetCustomAttributeData<VariableAttribute>(prop, out CustomAttributeData? attribute))
+        {
+            return;
+        }
+
+        IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
+
+        if (constructorArguments.Count != 0)
+        {
+            return;
+        }
+
+        (currentValue as Variable)!.DefaultValue = null; // not needed?
+    }
+
+    private static void SetDefaultPredicateValue(PropertyInfo prop, object currentValue)
+    {
+        if (!TryGetCustomAttributeData<PredicateAttribute>(prop, out CustomAttributeData? attribute))
+        {
+            return;
+        }
+
+        IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
+
+        if (constructorArguments.Count != 1)
+        {
+            return;
+        }
+
+        var defaultValue = (bool)constructorArguments[0].Value!; // we know it is a boolean.
+        (currentValue as Predicate)!.DefaultValue = defaultValue;
+    }
+
+    private static void SetDefaultTextValue(PropertyInfo prop, object currentValue)
+    {
+        if (!TryGetCustomAttributeData<TextAttribute>(prop, out CustomAttributeData? attribute))
+        {
+            return;
+        }
+
+        IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
+
+        if (constructorArguments.Count != 1)
+        {
+            return;
+        }
+
+        var defaultValue = (string)constructorArguments[0].Value!; // we know it is a string.
+        (currentValue as Text)!.DefaultValue = defaultValue;
+    }
+
+    private static object SetDefaultNullableTextValue(object value, PropertyInfo prop, object currentValue)
+    {
+        if (!TryGetCustomAttributeData<RenderToNullableStringAttribute>(prop, out CustomAttributeData? attribute))
+        {
+            return currentValue;
+        }
+
+        IList<CustomAttributeTypedArgument> constructorArguments = attribute.ConstructorArguments;
+
+        if (constructorArguments.Count != 1)
+        {
+            return currentValue;
+        }
+
+        var defaultValue = (string?)constructorArguments[0].Value;
+
+        if (defaultValue is not null && currentValue == null)
+        {
+            var newValue = new Text
+                {
+                    Value = string.Empty,
+                };
+            currentValue = newValue;
+            prop.SetMethod!.Invoke(value, [newValue,]);
+        }
+
+        if (currentValue != null)
+        {
+            (currentValue as Text)!.DefaultValue = defaultValue ?? string.Empty;
+        }
+
+        return currentValue!;
     }
 
     private static void InitializeCurrentValue(object value, PropertyInfo prop)

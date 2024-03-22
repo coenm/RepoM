@@ -3,7 +3,6 @@ namespace RepoM.ActionMenu.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using RepoM.ActionMenu.Core.ConfigReader;
@@ -87,7 +86,6 @@ public static class Bootstrapper
         }
     }
 }
-
 
 [DebuggerDisplay($"{{{nameof(Tag)}}}")]
 file sealed class FixedTypeRegistration<T> : IKeyTypeRegistration<T>
