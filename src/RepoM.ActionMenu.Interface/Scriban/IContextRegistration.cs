@@ -2,6 +2,10 @@ namespace RepoM.ActionMenu.Interface.Scriban;
 
 using System;
 
+#pragma warning disable S2436
+// Reduce the number of generic parameters in the 'InternalDelegateCustomFunctionWithInterfaceContext' class to no more than the 2 authorized.
+// https://rules.sonarsource.com/csharp/RSPEC-2436/
+
 public interface IContextRegistration
 {
     IContextRegistration CreateOrGetSubRegistration(string key);
@@ -40,3 +44,5 @@ public interface IContextRegistration
 
     void RegisterVariable(string name, object value);
 }
+
+#pragma warning restore S2436
