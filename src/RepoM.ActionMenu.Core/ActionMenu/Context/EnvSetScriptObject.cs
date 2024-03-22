@@ -30,7 +30,10 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
 
     public IEnumerable<string> GetMembers()
     {
-        return _stack.Items.SelectMany(x => x.GetMembers()).Distinct();
+        return _stack.Items
+            .Where(envScriptObject => envScriptObject != null)
+            .SelectMany(envScriptObject => envScriptObject.GetMembers())
+            .Distinct();
     }
 
     public bool Contains(string member)
@@ -73,7 +76,7 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
 
     public IScriptObject Clone(bool deep)
     {
-        var items = _stack.Items;
+        EnvScriptObject[] items = _stack.Items;
         var result = new EnvSetScriptObject((EnvScriptObject)items[0].Clone(true));
 
         if (items.Length <= 1)

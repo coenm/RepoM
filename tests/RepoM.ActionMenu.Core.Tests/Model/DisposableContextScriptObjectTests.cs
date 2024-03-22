@@ -29,7 +29,10 @@ public class DisposableContextScriptObjectTests
     private readonly IActionMenuDeserializer _deserializer = A.Fake<IActionMenuDeserializer>();
     private readonly IFileReader _fileReader = A.Fake<IFileReader>();
     private readonly ActionMenuGenerationContext _context;
-    private readonly EnvSetScriptObject _env = new(new EnvScriptObject(new Dictionary<string, string>()));
+    private readonly EnvSetScriptObject _env = new(new EnvScriptObject(new Dictionary<string, string>()
+        {
+            { "x", "y" },
+        }));
     private readonly List<IContextActionProcessor> _mappers;
     private readonly DisposableContextScriptObject _sut;
 
@@ -42,6 +45,22 @@ public class DisposableContextScriptObjectTests
                 A.Fake<IContextActionProcessor>(),
             };
         _sut = new DisposableContextScriptObject(_context, _env, _mappers);
+    }
+
+    [Fact]
+    public void Ctor_ShouldThrow_WhenArgumentNull()
+    {
+        // arrange
+
+        // act
+        Func<DisposableContextScriptObject> act1 = () => new DisposableContextScriptObject(_context, _env, null!);
+        Func<DisposableContextScriptObject> act2 = () => new DisposableContextScriptObject(_context, null!, _mappers);
+        Func<DisposableContextScriptObject> act3 = () => new DisposableContextScriptObject(null!, _env, _mappers);
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
+        act2.Should().Throw<ArgumentNullException>();
+        act3.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -67,7 +86,7 @@ public class DisposableContextScriptObjectTests
         IContextAction contextItem = A.Fake<IContextAction>();
         A.CallTo(() => _mappers[0].CanProcess(contextItem)).Returns(false);
         A.CallTo(() => _mappers[1].CanProcess(contextItem)).Returns(false);
-        
+
         // act
         Func<Task> act = async () => await _sut.AddContextActionAsync(contextItem);
 
@@ -110,6 +129,97 @@ public class DisposableContextScriptObjectTests
         A.CallTo(() => _mappers[0].ProcessAsync(contextItem, _context, _sut)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _mappers[1].ProcessAsync(A<IContextAction>._, A<IContextMenuActionMenuGenerationContext>._, A<IScope>._)).MustNotHaveHappened();
 
+    }
+
+    [Fact]
+    public void PushEnvironmentVariable_ShouldAddVariables()
+    {
+        // arrange
+        var env = new EnvSetScriptObject(
+            new EnvScriptObject(
+                new Dictionary<string, string>()
+                {
+                    { "x", "y" },
+                }));
+        var sut = new DisposableContextScriptObject(_context, env, _mappers);
+
+        // assume
+        env.Count.Should().Be(1);
+
+        // act
+        sut.PushEnvironmentVariable(
+            new Dictionary<string, string>
+            {
+                { "x1", "y" },
+                { "x2", "y" },
+            });
+
+        // assert
+        env.Count.Should().Be(3);
+        env.GetMembers().Should().BeEquivalentTo("x", "x1", "x2");
+    }
+
+    [Fact]
+    public void PushEnvironmentVariable_ShouldAddVariables_Distinct()
+    {
+        // arrange
+        var env = new EnvSetScriptObject(
+            new EnvScriptObject(
+                new Dictionary<string, string>()
+                    {
+                        { "x", "y" },
+                    }));
+        var sut = new DisposableContextScriptObject(_context, env, _mappers);
+
+        // assume
+        env.Count.Should().Be(1);
+
+        // act
+        sut.PushEnvironmentVariable(
+            new Dictionary<string, string>
+                {
+                    { "x1", "y" },
+                    { "x", "yNEW" },
+                });
+
+        // assert
+        env.Count.Should().Be(2);
+        env.GetMembers().Should().BeEquivalentTo("x", "x1");
+    }
+
+    [Fact]
+    public void Dispose_ShouldPopAllPushedEnvironmentVariables()
+    {
+        // arrange
+        var env = new EnvSetScriptObject(
+            new EnvScriptObject(
+                new Dictionary<string, string>()
+                    {
+                        { "x1", "y" },
+                        { "x2", "yy" },
+                    }));
+        var sut = new DisposableContextScriptObject(_context, env, _mappers);
+        sut.PushEnvironmentVariable(
+            new Dictionary<string, string>
+                {
+                    { "x2", "yy2" },
+                    { "x3", "yyy" },
+                });
+        sut.PushEnvironmentVariable(
+            new Dictionary<string, string>
+                {
+                    { "x21", "yy2" },
+                    { "x31", "yyy" },
+                });
+
+        // assume
+        env.Count.Should().Be(5);
+
+        // act
+        sut.Dispose();
+
+        // assert
+        env.Count.Should().Be(2);
     }
 }
 

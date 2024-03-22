@@ -21,7 +21,7 @@ internal sealed class DisposableContextScriptObject : ScriptObject, IScope
         _envCounter = 0;
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _envSetScriptObject = envSetScriptObject ?? throw new ArgumentNullException(nameof(envSetScriptObject));
-        _mappers = mappers;
+        _mappers = mappers ?? throw new ArgumentNullException(nameof(mappers));
         _context.PushGlobal(this);
     }
 
@@ -52,11 +52,8 @@ internal sealed class DisposableContextScriptObject : ScriptObject, IScope
                 _envCounter--;
             }
         }
-        
-        if (_context.PopGlobal() != this)
-        {
-            throw new Exception("Popped wrong script object");
-        }
+
+        _context.PopGlobal();
     }
 
     public void PushEnvironmentVariable(IDictionary<string, string> envVars)
