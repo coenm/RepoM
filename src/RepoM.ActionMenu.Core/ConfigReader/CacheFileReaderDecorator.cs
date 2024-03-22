@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
 using DotNetEnv;
+using JetBrains.Annotations;
 using RepoM.ActionMenu.Core.Yaml.Model;
 
+[UsedImplicitly]
 internal class CacheFileReaderDecorator : IFileReader
 {
     private readonly IFileReader _decoratee;

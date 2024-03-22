@@ -28,7 +28,7 @@ internal class FileStore<T> where T : class
         // TODO HostFileChangeMonitor uses real file system instead of IFileSystem.
         var policy = new CacheItemPolicy();
         var filePaths = new List<string>(1) { filename, };
-        policy.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths));
+        policy.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths)); // todo dispose HostFileChangeMonitor??
         var cacheResult = _cache.AddOrGetExisting(filename, value, policy) as T;
         return cacheResult ?? value;
     }

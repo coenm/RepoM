@@ -24,10 +24,16 @@ internal class EvaluateObjectConverter : IYamlTypeConverter
 
     public object ReadYaml(IParser parser, Type type)
     {
-        var value = ((Scalar)parser.Current).Value;
-        parser.MoveNext();
+        ParsingEvent current = parser.Current ?? throw new YamlException("No current event.");
 
-        EvaluateObjectBase? obj;
+        var value = ((Scalar)current).Value;
+
+        if (!parser.MoveNext())
+        {
+            throw new YamlException("No next item found.");
+        }
+
+        EvaluateObjectBase obj;
         if (_factory.TryGetValue(type, out Func<object>? factoryMethod))
         {
             obj = (EvaluateObjectBase)factoryMethod.Invoke();
@@ -37,7 +43,7 @@ internal class EvaluateObjectConverter : IYamlTypeConverter
             obj = (EvaluateObjectBase)Activator.CreateInstance(type)!;
         }
 
-        obj!.Value = value;
+        obj.Value = value;
         return obj;
     }
 
@@ -46,6 +52,6 @@ internal class EvaluateObjectConverter : IYamlTypeConverter
         var stringValue = (value as EvaluateObjectBase)?.Value;
         emitter.Emit(string.IsNullOrEmpty(stringValue)
             ? new Scalar(AnchorName.Empty, TagName.Empty, string.Empty)
-            : new Scalar(stringValue!));
+            : new Scalar(stringValue));
     }
 }

@@ -17,6 +17,8 @@ internal class KeyValueTypeDiscriminatorWithDefaultType<TInterface, TDefaultImpl
         BaseType = typeof(TInterface);
     }
 
+    public Type BaseType { get; }
+
     public bool TryDiscriminate(IParser buffer, out Type? suggestedType)
     {
         var result = _discriminator.TryDiscriminate(buffer, out suggestedType);
@@ -28,6 +30,4 @@ internal class KeyValueTypeDiscriminatorWithDefaultType<TInterface, TDefaultImpl
         
         return true;
     }
-
-    public Type BaseType { get; }
 }

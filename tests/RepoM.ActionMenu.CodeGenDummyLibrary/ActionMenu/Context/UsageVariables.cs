@@ -39,8 +39,10 @@ internal class UsageVariables : TemplateContextRegistrationBase
     /// </code>
     /// </example>
     [ActionMenuContextMember("overall_count")]
+#pragma warning disable S3400
     public int GetOverallCount()
     {
         return 523;
     }
+#pragma warning restore S3400
 }
