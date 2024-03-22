@@ -5,6 +5,10 @@ using Scriban;
 using Scriban.Parsing;
 using Scriban.Runtime;
 
+#pragma warning disable S2436
+// Reduce the number of generic parameters in the 'InternalDelegateCustomFunctionWithInterfaceContext' class to no more than the 2 authorized.
+// https://rules.sonarsource.com/csharp/RSPEC-2436/
+
 internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
 {
     protected virtual void RegisterFunctions()
@@ -120,13 +124,14 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
         protected override object InvokeImpl(TemplateContext context, SourceSpan span, object[] arguments)
         {
             var arg1 = (T1)arguments[0];
-            return Func(arg1);
+            return Func(arg1)!;
         }
     }
 
     /// <summary>
     /// A custom function taking 2 arguments.
     /// </summary>
+
     public class InternalDelegateCustomFunctionWithInterfaceContext<T, T1, T2, TResult> : DelegateCustomFunction where T : TemplateContext
     {
         public InternalDelegateCustomFunctionWithInterfaceContext(Func<T1, T2, TResult> func)
@@ -148,7 +153,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
         {
             var arg1 = (T1)arguments[0];
             var arg2 = (T2)arguments[1];
-            return Func(arg1, arg2);
+            return Func(arg1, arg2)!;
         }
     }
 
@@ -177,7 +182,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             var arg1 = (T1)arguments[0];
             var arg2 = (T2)arguments[1];
             var arg3 = (T3)arguments[2];
-            return Func(arg1, arg2, arg3);
+            return Func(arg1, arg2, arg3)!;
         }
     }
     
@@ -207,7 +212,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             var arg2 = (T2)arguments[1];
             var arg3 = (T3)arguments[2];
             var arg4 = (T4)arguments[3];
-            return Func(arg1, arg2, arg3, arg4);
+            return Func(arg1, arg2, arg3, arg4)!;
         }
     }
 
@@ -238,7 +243,7 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
             var arg3 = (T3)arguments[2];
             var arg4 = (T4)arguments[3];
             var arg5 = (T5)arguments[4];
-            return Func(arg1, arg2, arg3, arg4, arg5);
+            return Func(arg1, arg2, arg3, arg4, arg5)!;
         }
     }
 
@@ -398,3 +403,5 @@ internal abstract class ScribanModuleWithFunctions : RepoMScriptObject
         }
     }
 }
+
+#pragma warning restore S2436

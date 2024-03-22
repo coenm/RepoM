@@ -38,7 +38,7 @@ internal class FileBasedPackageConfiguration : IPackageConfiguration
 
     public async Task PersistConfigurationAsync<T>(T configuration, int version)
     {
-        if (configuration == null)
+        if (Equals(configuration, default(T)))
         {
             return;
         }

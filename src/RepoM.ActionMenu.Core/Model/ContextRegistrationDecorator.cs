@@ -5,6 +5,11 @@ using RepoM.ActionMenu.Interface.Scriban;
 using Scriban;
 using Scriban.Runtime;
 
+
+#pragma warning disable S2436
+// Reduce the number of generic parameters in the 'InternalDelegateCustomFunctionWithInterfaceContext' class to no more than the 2 authorized.
+// https://rules.sonarsource.com/csharp/RSPEC-2436/
+
 internal class ContextRegistrationDecorator<T> : IContextRegistration where T : TemplateContext
 {
     private readonly IContextRegistration _contextRegistration;
@@ -176,9 +181,10 @@ internal class ContextRegistrationDecorator<T> : IContextRegistration where T : 
 
     private static bool Check<T1>()
     {
-        // todo check.
         var isInterface = typeof(T1).IsInterface;
         var isAssignableFrom = typeof(T1).IsAssignableFrom(typeof(T));
         return isInterface && isAssignableFrom;
     }
 }
+
+#pragma warning restore S2436
