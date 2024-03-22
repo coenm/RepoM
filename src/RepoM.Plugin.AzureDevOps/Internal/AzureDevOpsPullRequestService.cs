@@ -66,7 +66,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         var key = _configuration.AzureDevOpsPersonalAccessToken;
         if (string.IsNullOrWhiteSpace(key))
         {
-            _logger.LogInformation($"'{nameof(_configuration.AzureDevOpsPersonalAccessToken)}' was null or empty. Module will not be enabled.");
+            _logger.LogInformation("'{Property}' was null or empty. Module will not be enabled.", nameof(_configuration.AzureDevOpsPersonalAccessToken));
             return Task.CompletedTask;
         }
 

@@ -23,10 +23,12 @@ internal class UsageVariables : TemplateContextRegistrationBase
     /// </code>
     /// </example>
     [ActionMenuContextMember("count")]
+#pragma warning disable CA1822
     public int GetCount(IActionMenuGenerationContext context)
     {
         return context.Repository.Name.Length;
     }
+#pragma warning restore CA1822
 
     /// <summary>
     /// Gets the number of actions performed on all repositories known in RepoM.
@@ -40,9 +42,11 @@ internal class UsageVariables : TemplateContextRegistrationBase
     /// </example>
     [ActionMenuContextMember("overall_count")]
 #pragma warning disable S3400
+#pragma warning disable CA1822
     public int GetOverallCount()
     {
         return 523;
     }
+#pragma warning restore CA1822
 #pragma warning restore S3400
 }
