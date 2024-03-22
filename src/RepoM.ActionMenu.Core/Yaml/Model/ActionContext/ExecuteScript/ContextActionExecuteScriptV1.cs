@@ -55,7 +55,7 @@ public sealed class ContextActionExecuteScriptV1 : IContextAction, IEnabled
     /// Whether the variable is enabled.
     /// </summary>
     [Predicate(true)]
-    public Predicate Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
+    public Predicate Enabled { get; init; } = new ScribanPredicate();
 
     public override string ToString()
     {

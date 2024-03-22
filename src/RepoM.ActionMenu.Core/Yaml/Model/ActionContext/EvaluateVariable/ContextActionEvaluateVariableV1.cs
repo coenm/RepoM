@@ -28,14 +28,14 @@ public class ContextActionEvaluateVariableV1 : NamedContextAction, IContextActio
     /// Value of the variable.
     /// </summary>
     [Variable]
-    public Variable Value { get; init; } = new ScribanVariable(); // todo nullable?
+    public Variable Value { get; init; } = new ScribanVariable();
 
     //// <inheritdoc cref="IEnabled.Enabled"/>
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
     [Predicate(true)]
-    public Predicate Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
+    public Predicate Enabled { get; init; } = new ScribanPredicate();
 
     public override string ToString()
     {

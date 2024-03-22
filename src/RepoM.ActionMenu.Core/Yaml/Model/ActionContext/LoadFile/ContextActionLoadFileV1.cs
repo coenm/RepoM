@@ -5,7 +5,7 @@ using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 /// <summary>
-/// ContextAction to load configuration from an other file.
+/// ContextAction to load configuration from another file.
 /// </summary>
 /// <example>
 /// <code>
@@ -27,14 +27,14 @@ public class ContextActionLoadFileV1 : NamedContextAction, IContextAction, IEnab
     /// Full path of the filename to load.
     /// </summary>
     [Text]
-    public Text Filename { get; init; } = new ScribanText(); // todo nullable?
+    public Text Filename { get; init; } = new ScribanText();
 
     //// <inheritdoc cref="IEnabled.Enabled"/>
     /// <summary>
     /// Whether the variable is enabled.
     /// </summary>
     [Predicate(true)]
-    public Predicate Enabled { get; init; } = new ScribanPredicate(); // todo nullable?
+    public Predicate Enabled { get; init; } = new ScribanPredicate();
 
     public override string ToString()
     {
