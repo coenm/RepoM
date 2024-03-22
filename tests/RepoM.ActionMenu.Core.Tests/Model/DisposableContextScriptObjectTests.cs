@@ -6,12 +6,13 @@ using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using FakeItEasy;
+using FluentAssertions;
 using RepoM.ActionMenu.Core.ActionMenu.Context;
 using RepoM.ActionMenu.Core.ConfigReader;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
-using RepoM.ActionMenu.Core.Yaml.Serialization;
+using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
@@ -30,7 +31,7 @@ public class DisposableContextScriptObjectTests
     private readonly ActionMenuGenerationContext _context;
     private readonly EnvSetScriptObject _env = new(new EnvScriptObject(new Dictionary<string, string>()));
     private readonly List<IContextActionProcessor> _mappers;
-    private DisposableContextScriptObject _sut;
+    private readonly DisposableContextScriptObject _sut;
 
     public DisposableContextScriptObjectTests()
     {
@@ -57,6 +58,58 @@ public class DisposableContextScriptObjectTests
         {
             A.CallTo(m).MustNotHaveHappened();
         }
+    }
+
+    [Fact]
+    public async Task AddContextActionAsync_ShouldThrow_WhenNoMapperFound()
+    {
+        // arrange
+        IContextAction contextItem = A.Fake<IContextAction>();
+        A.CallTo(() => _mappers[0].CanProcess(contextItem)).Returns(false);
+        A.CallTo(() => _mappers[1].CanProcess(contextItem)).Returns(false);
+        
+        // act
+        Func<Task> act = async () => await _sut.AddContextActionAsync(contextItem);
+
+        // assert
+        _ = await act.Should().ThrowAsync<Exception>().WithMessage("Cannot find mapper");
+    }
+
+    [Fact]
+    public async Task AddContextActionAsync_ShouldCallMappers_WhenContextItemDoesNotImplementIEnabledInterface()
+    {
+        // arrange
+        IContextAction contextItem = A.Fake<IContextAction>();
+        A.CallTo(() => _mappers[0].CanProcess(contextItem)).Returns(false);
+        A.CallTo(() => _mappers[1].CanProcess(contextItem)).Returns(false);
+
+        // act
+        Func<Task> act = async () => await _sut.AddContextActionAsync(contextItem);
+
+        // assert
+        _ = await act.Should().ThrowAsync<Exception>();
+        foreach (IContextActionProcessor m in _mappers)
+        {
+            A.CallTo(() => m.CanProcess(contextItem)).MustHaveHappenedOnceExactly();
+            A.CallTo(m).MustHaveHappenedOnceExactly();
+        }
+    }
+
+    [Fact]
+    public async Task AddContextActionAsync_ShouldUseMapperForProcessing_WhenMapperFound()
+    {
+        // arrange
+        IContextAction contextItem = A.Fake<IContextAction>();
+        A.CallTo(() => _mappers[0].CanProcess(contextItem)).Returns(true); // this one will be used for processing
+        A.CallTo(() => _mappers[1].CanProcess(contextItem)).Returns(false);
+
+        // act
+        await _sut.AddContextActionAsync(contextItem);
+
+        // assert
+        A.CallTo(() => _mappers[0].ProcessAsync(contextItem, _context, _sut)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _mappers[1].ProcessAsync(A<IContextAction>._, A<IContextMenuActionMenuGenerationContext>._, A<IScope>._)).MustNotHaveHappened();
+
     }
 }
 
