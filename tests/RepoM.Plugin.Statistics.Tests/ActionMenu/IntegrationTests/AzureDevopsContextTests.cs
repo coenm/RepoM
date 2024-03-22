@@ -53,6 +53,6 @@ public class StatisticsContextTests : IntegrationActionTestBase<StatisticsPackag
         // intentionally skip verification of the container
         // as it breaks.
         /*Container.Verify();*/
-        Assert.True(true);
+        true.Should().BeTrue();
     }
 }
