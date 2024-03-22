@@ -33,7 +33,9 @@ internal struct FastStack<T>
 
     public readonly T[] Items => _array;
 
-    // Removes all Objects from the Stack.
+    /// <summary>
+    /// Removes all Objects from the Stack.
+    /// </summary>
     public void Clear()
     {
         // Don't need to doc this, but we clear the elements so that the gc can reclaim the references.
@@ -41,6 +43,10 @@ internal struct FastStack<T>
         Count = 0;
     }
 
+    /// <summary>
+    /// Peeks the last added element of the stack. 
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when stack is empty.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly T Peek()
     {
@@ -48,8 +54,10 @@ internal struct FastStack<T>
         return _array[Count - 1];
     }
 
-    // Pops an item from the top of the stack. If the stack is empty, Pop
-    // throws an InvalidOperationException.
+    /// <summary>
+    /// Pops an item from the top of the stack. 
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when stack is empty.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Pop()
     {
@@ -59,13 +67,16 @@ internal struct FastStack<T>
         return item;
     }
 
-    // Pushes an item to the top of the stack.
+    /// <summary>
+    /// Pushes an item to the top of the stack.
+    /// </summary>
+    /// <param name="item">Item to add.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Push(T item)
     {
         if (Count == _array.Length)
         {
-            Array.Resize(ref _array, (_array.Length == 0) ? DEFAULT_CAPACITY : 2 * _array.Length);
+            Array.Resize(ref _array, _array.Length == 0 ? DEFAULT_CAPACITY : 2 * _array.Length);
         }
 
         _array[Count++] = item;
