@@ -4,6 +4,10 @@ using System;
 using RepoM.ActionMenu.Interface.Scriban;
 using Scriban.Runtime;
 
+#pragma warning disable S2436
+// Reduce the number of generic parameters in the 'InternalDelegateCustomFunctionWithInterfaceContext' class to no more than the 2 authorized.
+// https://rules.sonarsource.com/csharp/RSPEC-2436/
+
 internal class RepoMScriptObject : ScriptObject, IContextRegistration
 {
     public override IScriptObject Clone(bool deep)
@@ -21,7 +25,7 @@ internal class RepoMScriptObject : ScriptObject, IContextRegistration
 
     IContextRegistration IContextRegistration.CreateOrGetSubRegistration(string key)
     {
-        if (this.TryGetValue(key, out object value))
+        if (this.TryGetValue(key, out var value))
         {
             if (value is IContextRegistration cr)
             {
@@ -139,3 +143,5 @@ internal class RepoMScriptObject : ScriptObject, IContextRegistration
         }
     }
 }
+
+#pragma warning restore S2436
