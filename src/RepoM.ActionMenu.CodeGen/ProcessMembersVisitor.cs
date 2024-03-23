@@ -144,14 +144,14 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             SymbolDisplayFormat symbolDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining).WithMiscellaneousOptions(SymbolDisplayMiscellaneousOptions.None);
 
-            void Coen(ITypeSymbol symbol)
+            void JustSomeCode(ITypeSymbol symbol)
             {
                 var Name = symbol.ToDisplayString(symbolDisplayFormat);
                 var IsEnumerable = symbol.AllInterfaces.Any(x => x.ToString() == "System.Collections.IEnumerable");
                 var IsVoid = symbol.SpecialType == SpecialType.System_Void;
                 if (IsEnumerable && (symbol is INamedTypeSymbol namedSymbol))
                 {
-                    var FirstTypeArgumentName = namedSymbol.TypeArguments.FirstOrDefault()?.ToDisplayString(symbolDisplayFormat);
+                    var firstTypeArgumentName = namedSymbol.TypeArguments.FirstOrDefault()?.ToDisplayString(symbolDisplayFormat);
                 }
             }
 
