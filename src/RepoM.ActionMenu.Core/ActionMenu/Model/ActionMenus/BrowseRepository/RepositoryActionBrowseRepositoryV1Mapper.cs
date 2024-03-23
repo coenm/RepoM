@@ -24,7 +24,7 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
         var name = await context.RenderStringAsync(action.Name).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(name))
         {
-            name = await context.TranslateAsync("Browse remote").ConfigureAwait(false);
+            name = "Browse remote";
         }
 
         var forceSingle = await action.FirstOnly.EvaluateAsync(context).ConfigureAwait(false);
