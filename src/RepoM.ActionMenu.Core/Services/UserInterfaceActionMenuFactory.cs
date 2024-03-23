@@ -46,11 +46,9 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
     public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository, string filename)
     {
-        _logger.LogTrace("CreateMenuAsync CreateActionMenuGenerationContext");
         ActionMenuGenerationContext context = await CreateActionMenuGenerationContext(repository).ConfigureAwait(false);
 
         // load yaml
-        _logger.LogTrace("CreateActionMenuGenerationContext LoadAsync");
         Root actions = await LoadAsync(filename).ConfigureAwait(false);
 
         // process context (vars + methods)
