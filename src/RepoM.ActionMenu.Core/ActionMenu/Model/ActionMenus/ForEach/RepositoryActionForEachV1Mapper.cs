@@ -35,7 +35,6 @@ internal class RepositoryActionForEachV1Mapper : ActionToRepositoryActionMapperB
 
             using IScope scope = context.CreateGlobalScope();
             
-            // todo evaluate to string or not?
             scope.SetValue(action.Variable, item, true);
 
             if (action.IterationContext != null)

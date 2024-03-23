@@ -60,7 +60,7 @@ public class DefaultDriveEnumerator : IPathProvider
             }
             catch (Exception e)
             {
-                _logger.LogWarning("Configuration error. Path '{Path}' does not exist. {Message}", path, e.Message);
+                _logger.LogWarning(e, "Configuration error. Path '{Path}' does not exist. {Message}", path, e.Message);
             }
         }
 

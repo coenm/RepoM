@@ -34,8 +34,8 @@ internal sealed class RepositoryActionPinV1 : IMenuAction, IContext, IName
     /// <summary>
     /// The pin mode `[Toggle, Pin, UnPin]`.
     /// </summary>
-    public PinMode? Mode { get; set; } // todo scriban?!
-    
+    public PinMode? Mode { get; set; } // GitHub issue: https://github.com/coenm/RepoM/issues/87
+
     public override string ToString()
     {
         return $"({TYPE_VALUE}) {Mode}";
