@@ -69,21 +69,22 @@ public class DefaultDriveEnumeratorTests
         // assert
         result.Should().BeEquivalentTo("d:\\abc\\");
     }
-
-    [Fact]
-    public void GetPaths_ShouldReturnHardDrives_WhenNoExistingPredefinedPathsFound()
+    
+    [Theory]
+    [InlineData(null)]
+    [InlineData("d:\\abc-not-exist\\")]
+    public void GetPaths_ShouldReturnHardDrives_WhenNoExistingPredefinedPathsFound(string? path)
     {
         // arrange
-        _appSettings.ReposRootDirectories = new List<string> { "d:\\abc-not-exist\\", };
+        _appSettings.ReposRootDirectories = path == null ? [] : [path,];
         IFileSystem fileSystem = A.Fake<IFileSystem>();
         IDriveInfoFactory driveInfo = A.Fake<IDriveInfoFactory>();
         A.CallTo(() => driveInfo.GetDrives()).Returns(
-            new []
-                {
-                    CreateDriveInfo("C:\\", DriveType.Fixed),
-                    CreateDriveInfo("D:\\", DriveType.Fixed),
-                    CreateDriveInfo("E:\\", DriveType.Removable),
-                });
+            [
+                CreateDriveInfo("C:\\", DriveType.Fixed),
+                CreateDriveInfo("D:\\", DriveType.Fixed),
+                CreateDriveInfo("E:\\", DriveType.Removable),
+            ]);
         A.CallTo(() => fileSystem.DriveInfo).Returns(driveInfo);
         
         var sut = new DefaultDriveEnumerator(_appSettings, fileSystem, NullLogger.Instance);
