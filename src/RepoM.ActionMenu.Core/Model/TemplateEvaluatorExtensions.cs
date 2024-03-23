@@ -40,7 +40,7 @@ internal static class TemplateEvaluatorExtensions
             return defaultValue;
         }
 
-        var result = await instance.EvaluateAsync(text);
+        var result = await instance.EvaluateAsync(text).ConfigureAwait(false);
 
         if (result == null)
         {
