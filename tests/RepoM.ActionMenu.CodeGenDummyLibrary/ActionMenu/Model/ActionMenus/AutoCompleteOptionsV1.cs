@@ -17,7 +17,7 @@ internal class AutoCompleteOptionsV1
     [Required]
     [PropertyType(typeof(MergeStrategyV1))]
     [PropertyDefaultTypedValue<MergeStrategyV1>(MergeStrategyV1.NoFastForward)]
-    public MergeStrategyV1 MergeStrategy { get; set; } = MergeStrategyV1.NoFastForward; // todo enum?
+    public MergeStrategyV1 MergeStrategy { get; set; } = MergeStrategyV1.NoFastForward; // GitHub issue: https://github.com/coenm/RepoM/issues/87
 
     /// <summary>
     /// Boolean specifying if the source branche should be deleted afer completion.

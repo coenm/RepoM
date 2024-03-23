@@ -22,7 +22,7 @@ Properties:
 - `pr-title`: Pull Request title. When not provided, the title will be defined based on the branch name.
 Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch` ([Text](repository_action_types.md#text))
 - `to-branch`: Name of the branch the pull request should be merged into. For instance `develop`, or `main`. ([Text](repository_action_types.md#text))
-- `reviewer-ids`: List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID). (List<Text>)
+- `reviewer-ids`: List of reviewer ids. The id should be a valid Azure DevOps user id (i.e. GUID). (List<Text>)
 - `draft-pr`: Boolean specifying if th PR should be marked as draft. ([Predicate](repository_action_types.md#predicate))
 - `include-work-items`: Boolean specifying if workitems should be included in the PR. RepoM will try to resolve the workitems by looping through the commit messages. ([Predicate](repository_action_types.md#predicate))
 - `open-in-browser`: Boolean specifying if the Pull request should be opened in the browser after creation. ([Predicate](repository_action_types.md#predicate))

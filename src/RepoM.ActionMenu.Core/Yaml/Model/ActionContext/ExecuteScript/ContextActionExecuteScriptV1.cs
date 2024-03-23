@@ -48,7 +48,7 @@ public sealed class ContextActionExecuteScriptV1 : IContextAction, IEnabled
     /// Script content.
     /// </summary>
     [Script]
-    public Script? Content { get; init; } = new ScribanScript(); // todo nullable ?
+    public Script Content { get; init; } = new ScribanScript();
 
     //// <inheritdoc cref="IEnabled.Enabled"/>
     /// <summary>

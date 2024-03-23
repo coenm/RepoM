@@ -6,7 +6,7 @@ using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
-using Variable = RepoM.ActionMenu.Interface.YamlModel.Templating.Variable;
+using Variable = Interface.YamlModel.Templating.Variable;
 
 /// <summary>
 /// Action to create repeated actions based on a variable.
@@ -39,7 +39,7 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction, IContext
     /// </summary>
     [Required]
     [Variable]
-    public Variable Enumerable { get; init; } = new ScribanVariable(); // todo enumerable?
+    public Variable Enumerable { get; init; } = new ScribanVariable();
 
     /// <summary>
     /// The name of the variable to access to current enumeration of the <see cref="Enumerable"/> items. For each iteration, the variable `{var.name}` has the value of the current iteration.

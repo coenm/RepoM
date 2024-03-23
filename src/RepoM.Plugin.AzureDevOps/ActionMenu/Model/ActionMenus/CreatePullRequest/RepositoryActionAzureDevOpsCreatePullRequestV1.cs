@@ -57,7 +57,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     public Text ToBranch { get; set; } = null!;
 
     /// <summary>
-    /// List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
+    /// List of reviewer ids. The id should be a valid Azure DevOps user id (i.e. GUID).
     /// </summary>
     [PropertyType(typeof(List<string>))] 
     public List<Text> ReviewerIds { get; set; } = new();
