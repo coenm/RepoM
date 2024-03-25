@@ -37,41 +37,48 @@ exists = file.dir_exists('C:/Project/');
 
 #### RepositoryAction sample
 
-TODO: this content is not correct, change filename
-
-<!-- snippet: find_files@actionmenu01 -->
-<a id='snippet-find_files@actionmenu01'></a>
+<!-- snippet: dir_exists@actionmenu01 -->
+<a id='snippet-dir_exists@actionmenu01'></a>
 ```yaml
 context:
+
+# create a variable to store the path to the Visual Studio Code executable
 - type: evaluate-script@1
   content: |-
-    func get_filename(path)
-      ret path | string.split("\\") | array.last
-    end
+    exe_vs_code = env.LocalAppData + "/Programs/Microsoft VS Code/code.exe";
 
-    solution_files = file.find_files(repository.safe_path, "*.sln");
+# create a variable to store the path to the documentation directory
+# based on the remote name
+- type: render-variable@1
+  name: repo_docs_directory
+  value: 'G:\\My Drive\\RepoDocs\\github.com\\{{ remote_name_origin }}'
 
 action-menu:
-# Open in visual studio when only one sln file was found in the repo.
-- type: command@1
-  name: Open in Visual Studio
-  command: '{{ array.first(solution_files) }}'
-  active: 'array.size(solution_files) == 1'
 
-# Use folder to choose sln file when multiple sln files found.
+# If the document directory exists ..
 - type: folder@1
-  name: Open in Visual Studio
-  active: 'array.size(solution_files) > 1'
+  name: Documentation
+  active: file.dir_exists(repo_docs_directory)
+  is-deferred: true
   actions:
-  - type: foreach@1
-    enumerable: solution_files
-    variable: sln
-    actions:
-    - type: command@1
-      name: '{{ get_filename(sln) }}'
-      command: '{{ sln }}'
+  # .. show the menu item to open it in Visual Studio Code
+  - type: executable@1
+    name: Open in Visual Studio Code
+    executable: '{{ exe_vs_code }}'
+    arguments: '"{{ repo_docs_directory }}"'
+  # .. and a menu item to open it in Windows File Explorer
+  - type: command@1
+    name: Open in Windows File Explorer
+    command: '"{{ repo_docs_directory }}"'
+
+# if the directory does not exists, create a menu item to create it
+- type: command@1
+  name: Create Documentation directory
+  command: cmd
+  arguments: /k mkdir "{{ repo_docs_directory }}"
+  active: '!file.dir_exists(repo_docs_directory)'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_FindFiles_Documentation.testfile.yaml#L1-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-find_files@actionmenu01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_Documentation.DirectoryExists.testfile.yaml#L1-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-dir_exists@actionmenu01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -102,41 +109,18 @@ exists = file.file_exists('C:\Project\my-solution.sln');
 
 #### RepositoryAction sample
 
-TODO: this content is not correct, change filename
-
-<!-- snippet: find_files@actionmenu01 -->
-<a id='snippet-find_files@actionmenu01'></a>
+<!-- snippet: file_exists@actionmenu01 -->
+<a id='snippet-file_exists@actionmenu01'></a>
 ```yaml
-context:
-- type: evaluate-script@1
-  content: |-
-    func get_filename(path)
-      ret path | string.split("\\") | array.last
-    end
-
-    solution_files = file.find_files(repository.safe_path, "*.sln");
-
 action-menu:
-# Open in visual studio when only one sln file was found in the repo.
-- type: command@1
-  name: Open in Visual Studio
-  command: '{{ array.first(solution_files) }}'
-  active: 'array.size(solution_files) == 1'
-
-# Use folder to choose sln file when multiple sln files found.
-- type: folder@1
-  name: Open in Visual Studio
-  active: 'array.size(solution_files) > 1'
-  actions:
-  - type: foreach@1
-    enumerable: solution_files
-    variable: sln
-    actions:
-    - type: command@1
-      name: '{{ get_filename(sln) }}'
-      command: '{{ sln }}'
+# Show menu item to edit the .editorconfig file if it exists.
+- type: executable@1
+  name: Edit .editorconfig in Visual Studio Code
+  executable: '{{ env.LocalAppData }}/Programs/Microsoft VS Code/code.exe'
+  arguments: '"{{ repository.safe_path }}/.editorconfig"'
+  active: 'file.file_exists(repository.safe_path + "/.editorconfig")'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_FindFiles_Documentation.testfile.yaml#L1-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-find_files@actionmenu01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_Documentation.FileExists.testfile.yaml#L1-L11' title='Snippet source file'>snippet source</a> | <a href='#snippet-file_exists@actionmenu01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -210,6 +194,6 @@ action-menu:
       name: '{{ get_filename(sln) }}'
       command: '{{ sln }}'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_FindFiles_Documentation.testfile.yaml#L1-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-find_files@actionmenu01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_Documentation.FindFiles.testfile.yaml#L1-L32' title='Snippet source file'>snippet source</a> | <a href='#snippet-find_files@actionmenu01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
