@@ -20,7 +20,7 @@ public class CoreBrowseRepositoryCommandExecutorDecorator : ICommandExecutor<Cor
 
     {
         _pluginBrowseCommandExecutor = pluginBrowseCommandExecutor ?? throw new ArgumentNullException(nameof(pluginBrowseCommandExecutor));
-        _ = decoratee; // ignore the decoratee because we are to remap command.
+        _ = decoratee ?? throw new ArgumentNullException(nameof(decoratee)); // ignore the decoratee because we are to remap command.
     }
 
     public void Execute(IRepository repository, CoreCommand.BrowseRepositoryCommand action)
