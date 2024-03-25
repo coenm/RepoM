@@ -8,7 +8,7 @@ using Scriban;
 
 internal class ScribanPredicate : Predicate, ICreateTemplate
 {
-    private bool? _fixedValue = null;
+    private bool? _fixedValue;
     private Template? _template;
 
     void ICreateTemplate.CreateTemplate(ITemplateParser templateParser)

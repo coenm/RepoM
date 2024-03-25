@@ -6,31 +6,31 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 
 public class Predicate : EvaluateObjectBase
 {
-    protected bool? StaticValue; // todo slaat nergens op?!
+    protected bool? StaticValue;
 
     public bool DefaultValue { get; set; }
 
-    public static implicit operator Predicate(bool content)
+    public static implicit operator Predicate(bool value)
     {
-        return content
-            ? new Predicate { Value = "true", StaticValue = content, }
-            : new Predicate { Value = "false", StaticValue = content, };
+        return value
+            ? new Predicate { Value = "true", StaticValue = value, }
+            : new Predicate { Value = "false", StaticValue = value, };
     }
 
-    public static implicit operator Predicate(string content)
+    public static implicit operator Predicate(string value)
     {
         bool? staticValue = null;
 
-        if ("true".Equals(content, StringComparison.CurrentCultureIgnoreCase))
+        if ("true".Equals(value, StringComparison.CurrentCultureIgnoreCase))
         {
             staticValue = true;
         }
-        else if ("false".Equals(content, StringComparison.CurrentCultureIgnoreCase))
+        else if ("false".Equals(value, StringComparison.CurrentCultureIgnoreCase))
         {
             staticValue = false;
         }
 
-        return new Predicate { Value = content, StaticValue =  staticValue, };
+        return new Predicate { Value = value, StaticValue =  staticValue, };
     }
 
     public override string ToString()
