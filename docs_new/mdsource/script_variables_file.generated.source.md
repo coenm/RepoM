@@ -37,9 +37,7 @@ exists = file.dir_exists('C:/Project/');
 
 #### RepositoryAction sample
 
-TODO: this content is not correct, change filename
-
-snippet: find_files@actionmenu01
+snippet: dir_exists@actionmenu01
 
 
 ## file_exists
@@ -69,9 +67,7 @@ exists = file.file_exists('C:\Project\my-solution.sln');
 
 #### RepositoryAction sample
 
-TODO: this content is not correct, change filename
-
-snippet: find_files@actionmenu01
+snippet: file_exists@actionmenu01
 
 
 ## find_files

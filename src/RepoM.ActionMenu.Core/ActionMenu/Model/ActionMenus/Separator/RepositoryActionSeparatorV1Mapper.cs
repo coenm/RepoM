@@ -13,7 +13,7 @@ internal class RepositoryActionSeparatorV1Mapper : ActionToRepositoryActionMappe
 {
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionSeparatorV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
-        await Task.Yield(); //todo
+        await Task.Yield();
         yield return new UserInterfaceSeparatorRepositoryAction(repository);
     }
 }

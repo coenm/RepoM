@@ -1,0 +1,11 @@
+# begin-snippet: file_exists@actionmenu01
+
+action-menu:
+# Show menu item to edit the .editorconfig file if it exists.
+- type: executable@1
+  name: Edit .editorconfig in Visual Studio Code
+  executable: '{{ env.LocalAppData }}/Programs/Microsoft VS Code/code.exe'
+  arguments: '"{{ repository.safe_path }}/.editorconfig"'
+  active: 'file.file_exists(repository.safe_path + "/.editorconfig")'
+
+# end-snippet

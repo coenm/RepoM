@@ -45,10 +45,10 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     [ActionMenuContextMember("find_files")]
     public static string[] FindFiles(ActionMenuGenerationContext /*IMenuContext*/ context, SourceSpan span, string rootPath, string searchPattern)
     {
-        return FindFiles(context as IMenuContext, span, rootPath, searchPattern);
+        return FindFilesInner(context as IMenuContext, span, rootPath, searchPattern);
     }
 
-    internal static string[] FindFiles(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
+    internal static string[] FindFilesInner(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
     {
         try
         {
@@ -73,16 +73,15 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// exists = file.file_exists('C:\Project\my-solution.sln');
     /// </code>
     /// <repository-action-sample/>
-    /// TODO: this content is not correct, change filename
-    /// <snippet name='find_files@actionmenu01' mode='snippet' />
+    /// <snippet name='file_exists@actionmenu01' mode='snippet' />
     /// </example>
     [ActionMenuContextMember("file_exists")]
     public static bool FileExists(ActionMenuGenerationContext context, string path)
     {
-        return FileExists(context as IMenuContext, path);
+        return FileExistsInner(context as IMenuContext, path);
     }
 
-    internal static bool FileExists(IMenuContext context, string path)
+    internal static bool FileExistsInner(IMenuContext context, string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         return context.FileSystem.File.Exists(path);
@@ -103,16 +102,15 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// exists = file.dir_exists('C:/Project/');
     /// </code>
     /// <repository-action-sample/>
-    /// TODO: this content is not correct, change filename
-    /// <snippet name='find_files@actionmenu01' mode='snippet' />
+    /// <snippet name='dir_exists@actionmenu01' mode='snippet' />
     /// </example>
     [ActionMenuContextMember("dir_exists")]
     public static bool DirectoryExists(ActionMenuGenerationContext context, string path)
     {
-        return DirectoryExists(context as IMenuContext, path);
+        return DirectoryExistsInner(context as IMenuContext, path);
     }
 
-    internal static bool DirectoryExists(IMenuContext context, string path)
+    internal static bool DirectoryExistsInner(IMenuContext context, string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         return context.FileSystem.Directory.Exists(path);

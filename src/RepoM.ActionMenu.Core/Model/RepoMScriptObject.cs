@@ -12,7 +12,8 @@ internal class RepoMScriptObject : ScriptObject, IContextRegistration
 {
     public override IScriptObject Clone(bool deep)
     {
-        // todo not sure if this clone is okay.
+        // Not sure if this clone is okay.
+        // needs testing
         IScriptObject result = base.Clone(deep);
 
         if (result is RepoMScriptObject repoMScriptObject)

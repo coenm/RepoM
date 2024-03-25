@@ -33,6 +33,7 @@ internal static class TemplateEvaluatorExtensions
         return evaluateBoolean.EvaluateAsync(instance);
     }
 
+    /// <exception cref="NotSupportedException">Thrown when evaluated text cannot be converted into a boolean.</exception>
     public static async Task<bool> EvaluateToBooleanAsync(this ITemplateEvaluator instance, string? text, bool defaultValue)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -73,6 +74,6 @@ internal static class TemplateEvaluatorExtensions
             return false;
         }
 
-        throw new Exception();
+        throw new NotSupportedException($"Type {result.GetType().Name} cannot be converted into a boolean.");
     }
 }

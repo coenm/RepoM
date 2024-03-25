@@ -1,8 +1,8 @@
 namespace RepoM.ActionMenu.Core.Tests.Model;
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using System.Xml.XPath;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
@@ -61,5 +61,45 @@ public class TemplateEvaluatorExtensionsTests
 
         // assert
         result.Should().Be(defaultValue);
+    }
+    
+    public static IEnumerable<object[]> EvaluateBooleanScenarios
+    {
+        get
+        {
+            foreach (var defaultValue in new[] { true, false, })
+            {
+                yield return Create("true", defaultValue, true);
+                yield return Create("false", defaultValue, false);
+
+                yield return Create(0, defaultValue, false);
+                yield return Create(1, defaultValue, true);
+                yield return Create(100, defaultValue, true);
+
+                yield return Create(true, defaultValue, true);
+                yield return Create(false, defaultValue, false);
+
+                yield return Create(null!, defaultValue, defaultValue);
+            }
+
+            static object[] Create(object evaluateValue, bool defaultValue, bool expectedResult)
+            {
+                return [evaluateValue, defaultValue, expectedResult,];
+            }
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(EvaluateBooleanScenarios))]
+    public async Task EvaluateToBooleanAsync_ShouldReturnBooleanBasedOnOutput(object templateEvaluateOutput, bool defaultValue, bool expectedResult)
+    {
+        // arrange
+        A.CallTo(() => _instance.EvaluateAsync("T3xt")).Returns(Task.FromResult(templateEvaluateOutput));
+
+        // act
+        var result = await Sut.EvaluateToBooleanAsync(_instance, "T3xt", defaultValue);
+
+        // assert
+        result.Should().Be(expectedResult);
     }
 }

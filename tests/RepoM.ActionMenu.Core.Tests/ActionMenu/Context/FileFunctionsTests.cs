@@ -44,7 +44,7 @@ public class FileFunctionsTests
          .Returns(files);
 
         // act
-        IEnumerable result = Sut.FindFiles(_context, _span, path, search);
+        IEnumerable result = Sut.FindFilesInner(_context, _span, path, search);
 
         // assert
         result.Should().BeEquivalentTo(Array.Empty<string>());
@@ -72,7 +72,7 @@ public class FileFunctionsTests
         A.CallTo(() => _context.FileSystem).Returns(fs);
 
         // act
-        IEnumerable result = Sut.FindFiles(_context, _span, path, "*.sln");
+        IEnumerable result = Sut.FindFilesInner(_context, _span, path, "*.sln");
 
         // assert
         result.Should().BeEquivalentTo(new List<string>
@@ -81,7 +81,6 @@ public class FileFunctionsTests
                 @"C:\Project\My Repositories\src\test solution.sln",
             });
     }
-
 
     [Fact]
     [Documentation]
@@ -97,7 +96,7 @@ public class FileFunctionsTests
         A.CallTo(() => _context.FileSystem).Returns(fs);
 
         // act
-        IEnumerable result = Sut.FindFiles(_context, _span, @"C:\Project\", "*.sln");
+        IEnumerable result = Sut.FindFilesInner(_context, _span, @"C:\Project\", "*.sln");
 
         // assert
         result.Should().BeEquivalentTo(new List<string>

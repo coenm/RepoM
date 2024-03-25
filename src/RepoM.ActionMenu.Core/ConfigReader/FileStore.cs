@@ -25,11 +25,19 @@ internal class FileStore<T> where T : class
 
     internal T AddOrGetExisting(string filename, T value)
     {
-        // TODO HostFileChangeMonitor uses real file system instead of IFileSystem.
         var policy = new CacheItemPolicy();
-        var filePaths = new List<string>(1) { filename, };
-        policy.ChangeMonitors.Add(new HostFileChangeMonitor(filePaths)); // todo dispose HostFileChangeMonitor??
+        policy.ChangeMonitors.Add(CreateMonitorForFilename(filename));
         var cacheResult = _cache.AddOrGetExisting(filename, value, policy) as T;
         return cacheResult ?? value;
+    }
+
+    private static HostFileChangeMonitor CreateMonitorForFilename(string filename)
+    {
+        // GitHub issue: https://github.com/coenm/RepoM/issues/88
+        // the HostFileChangeMonitor relies on a real file system, not the IFileSystem used in RepoM.
+        // also the HostFIleChangeMontor implements IDisposable.
+        // not sure if the ObjectCache takes care of that.
+        var filePaths = new List<string>(1) { filename, };
+        return new HostFileChangeMonitor(filePaths);
     }
 }
