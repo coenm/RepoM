@@ -1,6 +1,5 @@
 namespace RepoM.ActionMenu.Core.Tests.Model;
 
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -12,12 +11,8 @@ using Sut = Core.Model.TemplateEvaluatorExtensions;
 [SuppressMessage("ReSharper", "InvokeAsExtensionMethod", Justification = "ExtensionClass is sut")]
 public class TemplateEvaluatorExtensionsTests
 {
-    private readonly ITemplateEvaluator _instance;
-
-    public TemplateEvaluatorExtensionsTests()
-    {
-        _instance = A.Fake<ITemplateEvaluator>();
-    }
+    private const string TEXT = "t3xt";
+    private readonly ITemplateEvaluator _instance = A.Fake<ITemplateEvaluator>();
 
     [Fact]
     public async Task RenderNullableString_ShouldReturnEmptyString_WhenArgumentIsNull()
@@ -36,11 +31,10 @@ public class TemplateEvaluatorExtensionsTests
     public async Task RenderNullableString_ShouldReturnRenderedString_WhenArgumentIsNotNull()
     {
         // arrange
-        var txt = "text";
-        A.CallTo(() => _instance.RenderStringAsync(txt)).Returns(Task.FromResult("DUMMY RESULT"));
+        A.CallTo(() => _instance.RenderStringAsync(TEXT)).Returns(Task.FromResult("DUMMY RESULT"));
 
         // act
-        var result = await Sut.RenderNullableString(_instance, txt);
+        var result = await Sut.RenderNullableString(_instance, TEXT);
 
         // assert
         result.Should().Be("DUMMY RESULT");
@@ -62,42 +56,43 @@ public class TemplateEvaluatorExtensionsTests
         // assert
         result.Should().Be(defaultValue);
     }
-    
-    public static IEnumerable<object[]> EvaluateBooleanScenarios
+
+    public static TheoryData<object, bool, bool> EvaluateToBooleanAsyncScenarios()
     {
-        get
+        TheoryData<object, bool, bool> testCases = [];
+
+        foreach (var defaultValue in new[] { true, false, })
         {
-            foreach (var defaultValue in new[] { true, false, })
-            {
-                yield return Create("true", defaultValue, true);
-                yield return Create("false", defaultValue, false);
+            AddTestCase("true", defaultValue, true);
+            AddTestCase("false", defaultValue, false);
 
-                yield return Create(0, defaultValue, false);
-                yield return Create(1, defaultValue, true);
-                yield return Create(100, defaultValue, true);
+            AddTestCase(0, defaultValue, false);
+            AddTestCase(1, defaultValue, true);
+            AddTestCase(100, defaultValue, true);
 
-                yield return Create(true, defaultValue, true);
-                yield return Create(false, defaultValue, false);
+            AddTestCase(true, defaultValue, true);
+            AddTestCase(false, defaultValue, false);
 
-                yield return Create(null!, defaultValue, defaultValue);
-            }
+            AddTestCase(null!, defaultValue, defaultValue);
+        }
 
-            static object[] Create(object evaluateValue, bool defaultValue, bool expectedResult)
-            {
-                return [evaluateValue, defaultValue, expectedResult,];
-            }
+        return testCases;
+
+        void AddTestCase(object evaluateValue, bool defaultValue, bool expectedResult)
+        {
+            testCases.Add(evaluateValue, defaultValue, expectedResult);
         }
     }
 
     [Theory]
-    [MemberData(nameof(EvaluateBooleanScenarios))]
+    [MemberData(nameof(EvaluateToBooleanAsyncScenarios))]
     public async Task EvaluateToBooleanAsync_ShouldReturnBooleanBasedOnOutput(object templateEvaluateOutput, bool defaultValue, bool expectedResult)
     {
         // arrange
-        A.CallTo(() => _instance.EvaluateAsync("T3xt")).Returns(Task.FromResult(templateEvaluateOutput));
+        A.CallTo(() => _instance.EvaluateAsync(TEXT)).Returns(Task.FromResult(templateEvaluateOutput));
 
         // act
-        var result = await Sut.EvaluateToBooleanAsync(_instance, "T3xt", defaultValue);
+        var result = await Sut.EvaluateToBooleanAsync(_instance, TEXT, defaultValue);
 
         // assert
         result.Should().Be(expectedResult);

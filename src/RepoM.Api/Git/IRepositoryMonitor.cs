@@ -6,7 +6,7 @@ using RepoM.Core.Plugin.Repository;
 
 public interface IRepositoryMonitor
 {
-    event EventHandler<Repository> OnChangeDetected;
+    event EventHandler<IRepository> OnChangeDetected;
 
     event EventHandler<string> OnDeletionDetected;
 
@@ -22,7 +22,7 @@ public interface IRepositoryMonitor
 
     void IgnoreByPath(string path);
 
-    void SetPinned(bool newValue, Repository repository);
+    void SetPinned(bool newValue, IRepository repository);
 
     bool IsPinned(IRepository repository);
 }

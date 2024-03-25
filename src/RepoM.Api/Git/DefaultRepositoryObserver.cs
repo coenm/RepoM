@@ -6,18 +6,19 @@ using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using RepoM.Core.Plugin.Repository;
 
 public sealed class DefaultRepositoryObserver : IRepositoryObserver
 {
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
     private int _detectionToAlertDelayMilliseconds;
-    private Repository? _repository;
+    private IRepository? _repository;
     private IFileSystemWatcher? _watcher;
     private bool _ioDetected;
     private LibGit2Sharp.Repository? _gitRepo;
 
-    public Action<Repository> OnChange { get; set; } = delegate { };
+    public Action<IRepository> OnChange { get; set; } = delegate { };
 
     public DefaultRepositoryObserver(ILogger logger, IFileSystem fileSystem)
     {
@@ -25,7 +26,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
     
-    public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
+    public void Setup(IRepository repository, int detectionToAlertDelayMilliseconds)
     {
         _detectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
@@ -192,7 +193,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
                         return;
                     }
 
-                    Repository? repo = _repository;
+                    IRepository? repo = _repository;
                     if (repo == null)
                     {
                         return;

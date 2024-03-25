@@ -54,13 +54,13 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     public bool IsPinned => _monitor.IsPinned(Repository);
 
-    public string Name => (Repository.Name ?? string.Empty) + (IsSynchronizing ? SyncAppendix : string.Empty);
+    public string Name => Repository.Name + (IsSynchronizing ? SyncAppendix : string.Empty);
 
-    public string Path => Repository.Path ?? string.Empty;
+    public string Path => Repository.Path;
 
-    public string Location => Repository.Location ?? string.Empty;
+    public string Location => Repository.Location;
 
-    public string CurrentBranch => Repository.CurrentBranch ?? string.Empty;
+    public string CurrentBranch => Repository.CurrentBranch;
 
     public string AheadBy => Repository.AheadBy?.ToString() ?? string.Empty;
 

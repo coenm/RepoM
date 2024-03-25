@@ -15,7 +15,7 @@ using RepoM.Core.Plugin.RepositoryFinder;
 
 public class DefaultRepositoryMonitor : IRepositoryMonitor
 {
-    public event EventHandler<Repository>? OnChangeDetected;
+    public event EventHandler<IRepository>? OnChangeDetected;
     public event EventHandler<string>? OnDeletionDetected;
     public event EventHandler<bool>? OnScanStateChanged;
 
@@ -224,7 +224,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _repositoryInformationAggregator.RemoveByPath(path);
     }
 
-    public void SetPinned(bool newValue, Repository repository)
+    public void SetPinned(bool newValue, IRepository repository)
     {
         if (newValue && !_pinned.ContainsKey(repository.SafePath))
         {
@@ -244,7 +244,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         return _pinned.ContainsKey(repository.SafePath);
     }
 
-    private void CreateRepositoryObserver(Repository repo, string path)
+    private void CreateRepositoryObserver(IRepository repo, string path)
     {
         if (!_repositoryObservers.ContainsKey(path))
         {
@@ -259,7 +259,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _logger.LogDebug("{Method} - repo {Repo}, path: {Path} (total length: {RepositoryObserversLength})", nameof(CreateRepositoryObserver), repo.Name, path, _repositoryObservers.Count);
     }
 
-    private void OnRepositoryChangeDetected(Repository repo)
+    private void OnRepositoryChangeDetected(IRepository repo)
     {
         var path = repo.Path;
 
@@ -290,7 +290,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _repositoryInformationAggregator.Add(repo, this);
     }
 
-    private void OnRepositoryObserverChange(Repository repository)
+    private void OnRepositoryObserverChange(IRepository repository)
     {
         _logger.LogDebug("{Method} - repo {Path}", nameof(OnRepositoryObserverChange), repository.Path);
         OnCheckKnownRepository(repository.Path, KnownRepositoryNotifications.WhenFound | KnownRepositoryNotifications.WhenNotFound);

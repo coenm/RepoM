@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using RepoM.Api.Common;
+using RepoM.Core.Plugin.Repository;
 
 public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggregator
 {
@@ -18,11 +19,17 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
 
     public ObservableCollection<RepositoryViewModel> Repositories { get; }
 
-    public void Add(Repository repository, IRepositoryMonitor repositoryMonitor)
+    public void Add(IRepository repository, IRepositoryMonitor repositoryMonitor)
     {
+        // todo at this moment, we must cast to Repository
+        if (repository is not Repository repo)
+        {
+            throw new NotImplementedException("We expect a Repository object.");
+        }
+
         _dispatcher.Invoke(() =>
             {
-                var view = new RepositoryViewModel(repository, repositoryMonitor);
+                var view = new RepositoryViewModel(repo, repositoryMonitor);
 
                 Repositories.Remove(view);
                 Repositories.Add(view);

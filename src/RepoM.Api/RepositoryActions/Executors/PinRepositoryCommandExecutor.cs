@@ -19,14 +19,8 @@ public sealed class PinRepositoryCommandExecutor : ICommandExecutor<PinRepositor
 
     public void Execute(IRepository repository, PinRepositoryCommand repositoryCommand)
     {
-        // todo at this moment, we must cast to Repository
-        if (repository is not Repository repo)
-        {
-            return;
-        }
-
         var newPinnedValue = repositoryCommand.Type == PinRepositoryCommand.PinRepositoryType.Pin;
-        newPinnedValue |= repositoryCommand.Type == PinRepositoryCommand.PinRepositoryType.Toggle && !_monitor.IsPinned(repo);
-      _monitor.SetPinned(newPinnedValue, repo);
+        newPinnedValue |= repositoryCommand.Type == PinRepositoryCommand.PinRepositoryType.Toggle && !_monitor.IsPinned(repository);
+        _monitor.SetPinned(newPinnedValue, repository);
     }
 }
