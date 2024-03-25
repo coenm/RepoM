@@ -1,0 +1,9 @@
+﻿{
+  Type: set-variable@1,
+  Value: 123,
+  Enabled: {
+    DefaultValue: true,
+    Value: 
+  },
+  Name: variable_name
+}

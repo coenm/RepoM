@@ -1,35 +1,45 @@
 namespace RepoM.ActionMenu.Core.Tests.Yaml.Serialization;
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
 using RepoM.ActionMenu.Core.Misc;
+using RepoM.ActionMenu.Core.Yaml.Model;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
 using RepoM.ActionMenu.Core.Yaml.Serialization;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+using VerifyXunit;
 using Xunit;
 
 public class ActionMenuDeserializerTests
 {
-    private readonly FixedTemplateParser _templateParser = new FixedTemplateParser();
-    private IEnumerable<IKeyTypeRegistration<IMenuAction>> _registrations = new List<IKeyTypeRegistration<IMenuAction>>();
+    private readonly FixedTemplateParser _templateParser = new();
+    private readonly IEnumerable<IKeyTypeRegistration<IMenuAction>> _registrations = [];
+
+    private readonly ActionMenuDeserializer _sut;
+
+    public ActionMenuDeserializerTests()
+    {
+        _sut = new ActionMenuDeserializer(_registrations, _templateParser);
+    }
 
     [Fact]
-    public void Abc()
+    public async Task DeserializeContextRoot_ShouldHandleYaml_WhenContextCanBeDeserializedWithDefaultContextActionTypeConverter()
     {
         // arrange
-        var sut = new ActionMenuDeserializer(_registrations, _templateParser);
+        const string YAML = """
+                            context:
+                            - variable_name: 123
+                            """;
 
-        var result = sut.DeserializeRoot("");
+        // act
+        ContextRoot result = _sut.DeserializeContextRoot(YAML);
 
-
-
-        //
-        //
-        // var converter = new CustomTypeConverter();
-        //
-        // // Test converting from YAML to custom type
-        // var yaml = @"name: John
-        //          age: 30";
-        // var expectedObject = new CustomObject { Name = "John", Age = 30 };
-        // var actualObject = converter.ConvertFromYaml(yaml, typeof(CustomObject));
+        // assert
+        ContextActionSetVariableV1 contextActionSetVariable = result.Context!.Single().Should().BeOfType<ContextActionSetVariableV1>().Subject;
+        contextActionSetVariable.Value.Should().BeOfType<string>();
+        await Verifier.Verify(contextActionSetVariable);
     }
 }
