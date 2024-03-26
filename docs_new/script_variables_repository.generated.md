@@ -6,12 +6,13 @@ This module contains the following methods, variables and/or constants:
 
 - [`repository.branch`](#branch)
 - [`repository.branches`](#branches)
+- [`repository.linux_path`](#linux_path)
 - [`repository.local_branches`](#local_branches)
 - [`repository.location`](#location)
 - [`repository.name`](#name)
 - [`repository.path`](#path)
 - [`repository.remotes`](#remotes)
-- [`repository.safe_path`](#safe_path)
+- [`repository.windows_path`](#windows_path)
 
 ## branch
 
@@ -32,6 +33,16 @@ Gets the current branch of the repository
 ### Returns
 
 The name of the current branch.
+
+## linux_path
+
+`repository.linux_path`
+
+Gets the path of the repository in linux style (i.e. use `\`). The path does NOT end with a backslash.
+
+### Returns
+
+The backslash based path of the repository without the last backslash.
 
 ## local_branches
 
@@ -77,11 +88,11 @@ repository.name
 
 `repository.path`
 
-Gets the path of the repository.
+Gets the path of the repository. The path is windows or linux based (depending on the running OS) and does NOT end with a (back)slash.
 
 ### Returns
 
-The path of the repository.
+The repository path.
 
 ## remotes
 
@@ -93,11 +104,11 @@ Gets the remotes.
 
 Remotes.
 
-## safe_path
+## windows_path
 
-`repository.safe_path`
+`repository.windows_path`
 
-Gets the safe path of the repository.
+Gets the path of the repository in windows style (i.e. use `/`). The path does NOT end with a slash.
 
 ### Returns
 

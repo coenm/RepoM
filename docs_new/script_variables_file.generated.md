@@ -117,8 +117,8 @@ action-menu:
 - type: executable@1
   name: Edit .editorconfig in Visual Studio Code
   executable: '{{ env.LocalAppData }}/Programs/Microsoft VS Code/code.exe'
-  arguments: '"{{ repository.safe_path }}/.editorconfig"'
-  active: 'file.file_exists(repository.safe_path + "/.editorconfig")'
+  arguments: '"{{ repository.linux_path }}/.editorconfig"'
+  active: 'file.file_exists(repository.linux_path + "/.editorconfig")'
 ```
 <sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FilesContextTests.Context_Documentation.FileExists.testfile.yaml#L1-L11' title='Snippet source file'>snippet source</a> | <a href='#snippet-file_exists@actionmenu01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
@@ -172,7 +172,7 @@ context:
       ret path | string.split("\\") | array.last
     end
 
-    solution_files = file.find_files(repository.safe_path, "*.sln");
+    solution_files = file.find_files(repository.path, "*.sln");
 
 action-menu:
 # Open in visual studio when only one sln file was found in the repo.
