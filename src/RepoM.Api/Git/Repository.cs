@@ -20,8 +20,10 @@ public class Repository : IRepository
         Location = string.Empty;
         SafePath = GetSafePath(path);
         _normalizedPath = Normalize(path);
+        WindowsPath = GetWindowsPath(path);
+        LinuxPath = GetLinuxPath(path);
     }
-
+    
     public override bool Equals(object? obj)
     {
         if (obj is not Repository other)
@@ -46,19 +48,23 @@ public class Repository : IRepository
 
     public string Path { get; }
 
-    public string Location { get; set; }
+    public string WindowsPath { get; }
+
+    public string LinuxPath { get; }
+
+    public string Location { get; init; }
 
     public string CurrentBranch { get; set; }
 
     public string[] Branches { get; set; }
 
-    public string[] LocalBranches { get; set; }
+    public string[] LocalBranches { get; init; }
 
     public string[] Tags { get; set; } = Array.Empty<string>();
 
     [System.ComponentModel.Browsable(false)]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public Func<string[]>? AllBranchesReader { get; set; }
+    public Func<string[]>? AllBranchesReader { get; init; }
 
     public string[] ReadAllBranches()
     {
@@ -129,6 +135,23 @@ public class Repository : IRepository
             StashCount ?? 0);
     }
 
+    private static string GetLinuxPath(string input)
+    {
+        return GetSafePath(input);
+    }
+
+    private static string GetWindowsPath(string input)
+    {
+        // use '\' for Windows systems 
+        var safePath = input.Replace('/', '\\');
+        if (safePath.EndsWith('\\'))
+        {
+            safePath = safePath[..^1];
+        }
+
+        return safePath;
+    }
+
     private static string GetSafePath(string input)
     {
         // use '/' for linux systems and bash command line (will work on cmd and powershell as well)
@@ -148,7 +171,6 @@ public class Repository : IRepository
         // so we add a random char with Path.Combine() and remove it again
         path = System.IO.Path.Combine(path, "_");
         path = path[..^1];
-
         return System.IO.Path.GetDirectoryName(path);
     }
 }

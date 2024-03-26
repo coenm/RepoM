@@ -65,13 +65,13 @@ namespace RepoM.ActionMenu.Core.Tests
               name: devopsEnvironments
               value: 
               - name: Develop
-                url: '-d.bdodt.nl'
+                url: '-d.github-dt.nl'
               - name: Test
-                url: '-t.bdodt.nl'
+                url: '-t.github-dt.nl'
               - name: Acceptation
-                url: '-a.bdo.nl'
+                url: '-a.github.nl'
               - name: Production
-                url: '.bdo.nl'  
+                url: '.github.nl'  
                 
             - type: evaluate-script@1
               content: |-
@@ -118,7 +118,7 @@ namespace RepoM.ActionMenu.Core.Tests
             - tag: work
             
             - tag: github-conditional
-              when: repository.safe_path | string.contains "Projects/Github"
+              when: repository.linux_path | string.contains "Projects/Github"
             
             action-menu:
             - type: just-text@1

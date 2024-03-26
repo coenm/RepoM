@@ -6,22 +6,27 @@ using RepoM.Core.Plugin.Repository;
 
 public class DummyRepository : IRepository
 {
-    public string SafePath { get; } = "C:/Projects/Github/RepoM/RepoM.git";
+    public string SafePath => "C:/Projects/Github/RepoM";
 
-    public List<Remote> Remotes { get; } = new List<Remote>()
-        {
-            new Remote("origin", "https://github.com/coenm/RepoM.git"),
-            new Remote("dummy", "https://github.com/coenm/RepoZ"),
-        };
-    public bool HasUnpushedChanges { get; } = false;
+    public List<Remote> Remotes { get; } =
+        [
+            new("origin", "https://github.com/coenm/RepoM.git"),
+            new("dummy", "https://github.com/coenm/RepoZ"),
+        ];
 
-    public string Name { get; } = "dummy name";
+    public bool HasUnpushedChanges => false;
 
-    public string Path { get; } = "dummy path";
+    public string Name => "dummy name";
 
-    public string Location { get; } = "dummy location";
+    public string Path => WindowsPath;
+    
+    public string WindowsPath=> @"C:\Projects\Github\RepoM";
 
-    public string CurrentBranch { get; } = "dummy current branch";
+    public string LinuxPath => "C:/Projects/Github/RepoM";
+
+    public string Location => "dummy location";
+
+    public string CurrentBranch => "dummy current branch";
 
     public string[] Branches { get; } = Array.Empty<string>();
 
@@ -34,5 +39,5 @@ public class DummyRepository : IRepository
         return Array.Empty<string>();
     }
 
-    public bool HasLocalChanges { get; } = false;
+    public bool HasLocalChanges => false;
 }

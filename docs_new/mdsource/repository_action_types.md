@@ -71,7 +71,7 @@ A predicate is a scriban expression resulting in a boolean. Beause it is an expr
 | `0` | false |
 | `1 == 2` | false |
 | `a = [1, 2, 3]; a.size > 10` | false |
-| `file.file_exists(repository.safe_path + "/readme.md")` | true or false depending if file exists |
+| `file.file_exists(repository.path + "\readme.md")` | true or false depending if file exists |
 
 ### Internals
 

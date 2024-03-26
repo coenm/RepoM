@@ -11,6 +11,10 @@ public interface IRepository
 
     string Path { get; }
 
+    string WindowsPath { get; }
+
+    string LinuxPath { get; }
+
     string Location { get; }
 
     string CurrentBranch { get; }

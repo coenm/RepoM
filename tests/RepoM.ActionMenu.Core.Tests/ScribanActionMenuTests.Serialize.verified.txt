@@ -8,7 +8,7 @@
 - tag: work
   when: ''
 - tag: github-conditional
-  when: repository.safe_path | string.contains "Projects/Github"
+  when: repository.linux_path | string.contains "Projects/Github"
 action-menu:
 - type: just-text@1
   name: repository.pwd2 {{ repository.pwd }}
@@ -107,13 +107,13 @@ context:
 - type: set-variable@1
   value:
   - name: Develop
-    url: -d.bdodt.nl
+    url: -d.github-dt.nl
   - name: Test
-    url: -t.bdodt.nl
+    url: -t.github-dt.nl
   - name: Acceptation
-    url: -a.bdo.nl
+    url: -a.github.nl
   - name: Production
-    url: .bdo.nl
+    url: .github.nl
   enabled: ''
   name: devopsEnvironments
 - type: evaluate-script@1

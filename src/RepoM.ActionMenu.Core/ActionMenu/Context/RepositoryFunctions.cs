@@ -34,21 +34,33 @@ internal partial class RepositoryFunctions : ScribanModuleWithFunctions
     public string Name => _repository.Name;
 
     /// <summary>
-    /// Gets the path of the repository.
+    /// Gets the path of the repository. The path is windows or linux based (depending on the running OS) and does NOT end with a (back)slash.
     /// </summary>
-    /// <returns>The path of the repository.</returns>
+    /// <returns>The repository path.</returns>
     [ActionMenuContextMember("path")]
-    public string Path => _repository.Path;
+    public string Path => Environment.OSVersion.Platform switch
+        {
+            PlatformID.Win32NT => WindowsPath,
+            PlatformID.Unix => LinuxPath,
+            _ => string.Empty,
+        };
 
     /// <summary>
-    /// Gets the safe path of the repository.
+    /// Gets the path of the repository in windows style (i.e. use `/`). The path does NOT end with a slash.
     /// </summary>
     /// <returns>The path of the repository.</returns>
-    [ActionMenuContextMember("safe_path")]
-    public string SafePath => _repository.SafePath;
+    [ActionMenuContextMember("windows_path")]
+    public string WindowsPath => _repository.WindowsPath;
 
+    /// <summary>
+    /// Gets the path of the repository in linux style (i.e. use `\`). The path does NOT end with a backslash.
+    /// </summary>
+    /// <returns>The backslash based path of the repository without the last backslash.</returns>
+    [ActionMenuContextMember("linux_path")]
+    public string LinuxPath => _repository.LinuxPath;
+    
     /// <summary>   
-    /// Gets the Location of the repository.
+    /// Gets the Location of the repository. 
     /// </summary>
     /// <returns>The path of the repository.</returns>
     [ActionMenuContextMember("location")]

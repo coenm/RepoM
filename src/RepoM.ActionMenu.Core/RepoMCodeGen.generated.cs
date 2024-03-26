@@ -31,12 +31,13 @@ namespace RepoM.ActionMenu.Core.ActionMenu.Context
         {
             RegisterConstant("branch", CurrentBranch);
             RegisterConstant("branches", Branches);
+            RegisterConstant("linux_path", LinuxPath);
             RegisterConstant("local_branches", LocalBranches);
             RegisterConstant("location", Location);
             RegisterConstant("name", Name);
             RegisterConstant("path", Path);
             RegisterConstant("remotes", Remotes);
-            RegisterConstant("safe_path", SafePath);
+            RegisterConstant("windows_path", WindowsPath);
         }
     }
 }

@@ -5,7 +5,7 @@ action-menu:
 - type: executable@1
   name: Edit .editorconfig in Visual Studio Code
   executable: '{{ env.LocalAppData }}/Programs/Microsoft VS Code/code.exe'
-  arguments: '"{{ repository.safe_path }}/.editorconfig"'
-  active: 'file.file_exists(repository.safe_path + "/.editorconfig")'
+  arguments: '"{{ repository.linux_path }}/.editorconfig"'
+  active: 'file.file_exists(repository.linux_path + "/.editorconfig")'
 
 # end-snippet

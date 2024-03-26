@@ -7,7 +7,7 @@ context:
       ret path | string.split("\\") | array.last
     end
 
-    solution_files = file.find_files(repository.safe_path, "*.sln");
+    solution_files = file.find_files(repository.path, "*.sln");
 
 action-menu:
 # Open in visual studio when only one sln file was found in the repo.
