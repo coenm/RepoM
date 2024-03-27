@@ -1,15 +1,16 @@
 namespace RepoM.Plugin.LuceneQueryParser.Tests;
 
+using System;
 using System.Threading.Tasks;
 using Argon;
 using FluentAssertions;
-using Lucene.Net.QueryParsers.Classic;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Plugin.LuceneQueryParser;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
+using ParseException = RepoM.Plugin.LuceneQueryParser.ParseException;
 
 // https://lucene.apache.org/core/2_9_4/queryparsersyntax.html
 public class LuceneQueryParserTests
@@ -184,7 +185,7 @@ public class LuceneQueryParserTests
         // arrange
 
         // act
-        var act = () => _ = _sut.Parse(input);
+        Func<IQuery> act = () => _ = _sut.Parse(input);
 
         // assert
         act.Should().ThrowExactly<ParseException>();

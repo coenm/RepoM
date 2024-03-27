@@ -43,16 +43,16 @@ public class LuceneQueryParser : INamedQueryParser
             var result = (SetQuery)_queryParser.Parse(text);
             return ConvertSetQuery(result);
         }
-        catch (ParseException e)
+        catch (Lucene.Net.QueryParsers.Classic.ParseException e)
         {
             _logger.LogDebug(e, "Parse exception '{Text}' could not be parsed", text);
-            throw;
+            throw new ParseException("Could not parse text", text, e);
         }
         catch (Exception e)
         {
             // Should not happen. Log just in case.
-            _logger.LogError(e, "Unexpected Parse exception '{Text}' could not be parsed {Message}", text, e.Message);
-            throw;
+            _logger.LogError(e, "Unexpected parse exception '{Text}' could not be parsed {Message}", text, e.Message);
+            throw new ParseException("Could not parse text", text, e);
         }
     }
 
