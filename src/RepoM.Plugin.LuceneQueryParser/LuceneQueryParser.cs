@@ -135,7 +135,7 @@ public class LuceneQueryParser : INamedQueryParser
         // not supported
     }
 
-    private static IQuery ConvertPrefixQuery(PrefixQuery pq)
+    private static StartsWithTerm ConvertPrefixQuery(PrefixQuery pq)
     {
         return new StartsWithTerm(pq.Field, pq.Prefix.Text);
     }
