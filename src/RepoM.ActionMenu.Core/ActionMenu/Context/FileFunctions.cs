@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.Attributes;
@@ -48,6 +49,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
         return FindFilesInner(context as IMenuContext, span, rootPath, searchPattern);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static string[] FindFilesInner(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
     {
         try
@@ -81,6 +83,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
         return FileExistsInner(context as IMenuContext, path);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool FileExistsInner(IMenuContext context, string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
@@ -110,12 +113,14 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
         return DirectoryExistsInner(context as IMenuContext, path);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool DirectoryExistsInner(IMenuContext context, string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         return context.FileSystem.Directory.Exists(path);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IEnumerable<string> GetFileEnumerator(IFileSystem fileSystem, string path, string searchPattern)
     {
         // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
