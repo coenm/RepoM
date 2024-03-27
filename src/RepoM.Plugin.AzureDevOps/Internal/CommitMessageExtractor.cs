@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using RepoM.Core.Plugin.Repository;
 
-// todo: move this to Core, and add to IRepository
 internal static class CommitMessageExtractor
 {
     public static IEnumerable<string> GetCommitMessagesUntilBranch(IRepository repository, string toBranch)

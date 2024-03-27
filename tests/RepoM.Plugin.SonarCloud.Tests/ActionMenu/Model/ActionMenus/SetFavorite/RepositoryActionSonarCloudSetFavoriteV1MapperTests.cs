@@ -43,6 +43,20 @@ public class RepositoryActionSonarCloudSetFavoriteV1MapperTests
     }
 
     [Fact]
+    public void Ctor_ShouldThrow_WhenArgumentNull()
+    {
+        // arrange
+
+        // act
+        Func<RepositoryActionSonarCloudSetFavoriteV1Mapper> act1 = () => new RepositoryActionSonarCloudSetFavoriteV1Mapper(A.Dummy<ISonarCloudFavoriteService>(), null!);
+        Func<RepositoryActionSonarCloudSetFavoriteV1Mapper> act2 = () => new RepositoryActionSonarCloudSetFavoriteV1Mapper(null!, A.Dummy<ILogger>());
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
+        act2.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
     public void CanMap_ShouldReturnTrue_WhenTypeIsCorrect()
     {
         _sut.CanMap(_action).Should().BeTrue();
