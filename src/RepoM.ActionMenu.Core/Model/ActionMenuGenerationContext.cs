@@ -87,6 +87,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public IActionMenuGenerationContext Clone()
     {
+#pragma warning disable S125
         // this method doesn't work yet. Cloning the full Template context is not possible.
         // to be implemented (https://github.com/coenm/RepoM/issues/85)
         /*
@@ -95,6 +96,8 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         IScriptObject e = ((EnvSetScriptObject)_rootScriptObject["env"]).Clone(true);
         repoMScriptObject.SetValue("env", e, false);
         */
+#pragma warning restore S125
+
         var result = new ActionMenuGenerationContext(
             _templateParser,
             FileSystem,
