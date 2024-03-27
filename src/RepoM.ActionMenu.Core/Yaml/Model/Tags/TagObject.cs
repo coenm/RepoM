@@ -1,9 +1,11 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.Tags;
 
-using System.ComponentModel;
+using JetBrains.Annotations;
+using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 
 /// <inheritdoc cref="ITag"/>
+[UsedImplicitly]
 internal class TagObject : ITag
 {
     /// <inheritdoc cref="ITag.Tag"/>
@@ -11,6 +13,5 @@ internal class TagObject : ITag
 
     /// <inheritdoc cref="ITag.When"/>
     [Predicate(true)]
-    [DefaultValue(true)] // todo
-    public Predicate When { get; set; } = new Predicate();
+    public Predicate When { get; set; } = new ScribanPredicate();
 }

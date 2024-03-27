@@ -281,7 +281,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             CreateRepositoryObserver(repo, path);
 
             // use that delay to prevent a lot of sequential writes 
-            // when a lot repositories get found in a row
+            // when a lot of repositories get found in a row
             _storeFlushTimer.Change(5000, Timeout.Infinite);
         }
 
