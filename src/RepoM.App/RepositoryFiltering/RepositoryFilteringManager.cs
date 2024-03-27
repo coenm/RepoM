@@ -38,30 +38,15 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         INamedQueryParser defaultParser = queryParsersArray.First(x => x.Name != "Lucene");
         INamedQueryParser queryParser = Array.Find(queryParsersArray, x => x.Name == "Lucene") ?? defaultParser;
 
-        IQuery? Map(QueryConfiguration input)
-        {
-            if (string.IsNullOrWhiteSpace(input.Query))
-            {
-                return null;
-            }
-
-            if ("query@1".Equals(input.Kind, StringComparison.CurrentCulture))
-            {
-                return queryParser.Parse(input.Query);
-            }
-
-            return defaultParser.Parse(input.Query);
-        }
-
         _queryDictionary = filterSettingsService.Configuration
-            .Select(x => new RepositoryFilterConfiguration
-                {
-                    AlwaysVisible = Map(x.Value.AlwaysVisible),
-                    Description = x.Value.Description,
-                    Filter = Map(x.Value.Filter),
-                    Name = x.Key,
-                })
-            .ToList();
+                                                .Select(x => new RepositoryFilterConfiguration
+                                                    {
+                                                        AlwaysVisible = Map(x.Value.AlwaysVisible),
+                                                        Description = x.Value.Description,
+                                                        Filter = Map(x.Value.Filter),
+                                                        Name = x.Key,
+                                                    })
+                                                .ToList();
 
         if (!_queryDictionary.Exists(x => x.Name.Equals("Default", StringComparison.CurrentCultureIgnoreCase)))
         {
@@ -102,6 +87,23 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         else if (!SetFilter(_appSettingsService.SelectedFilter))
         {
             SetFilter(first.Name);
+        }
+
+        return;
+
+        IQuery? Map(QueryConfiguration input)
+        {
+            if (string.IsNullOrWhiteSpace(input.Query))
+            {
+                return null;
+            }
+
+            if ("query@1".Equals(input.Kind, StringComparison.CurrentCulture))
+            {
+                return queryParser.Parse(input.Query);
+            }
+
+            return defaultParser.Parse(input.Query);
         }
     }
 

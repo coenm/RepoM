@@ -1,6 +1,7 @@
 namespace RepoM.Plugin.LuceneQueryParser;
 
 using System;
+using JetBrains.Annotations;
 
 public sealed class ParseException : Exception
 {
@@ -9,6 +10,7 @@ public sealed class ParseException : Exception
         Text = text;
     }
 
+    [PublicAPI]
     public string Text { get; }
 
     public override string ToString()
