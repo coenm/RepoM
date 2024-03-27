@@ -13,10 +13,10 @@ internal sealed class DisposableContextScriptObject : ScriptObject, IScope
 {
     private readonly ActionMenuGenerationContext _context;
     private readonly EnvSetScriptObject _envSetScriptObject;
-    private readonly List<IContextActionProcessor> _mappers;
+    private readonly IContextActionProcessor[] _mappers;
     private int _envCounter;
 
-    internal DisposableContextScriptObject(ActionMenuGenerationContext context, EnvSetScriptObject envSetScriptObject, List<IContextActionProcessor> mappers)
+    internal DisposableContextScriptObject(ActionMenuGenerationContext context, EnvSetScriptObject envSetScriptObject, IContextActionProcessor[] mappers)
     {
         _envCounter = 0;
         _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -33,7 +33,7 @@ internal sealed class DisposableContextScriptObject : ScriptObject, IScope
             return;
         }
 
-        IContextActionProcessor? mapper = _mappers.Find(mapper => mapper.CanProcess(contextItem));
+        IContextActionProcessor? mapper = Array.Find(_mappers, mapper => mapper.CanProcess(contextItem));
         if (mapper == null)
         {
             throw new Exception("Cannot find mapper");

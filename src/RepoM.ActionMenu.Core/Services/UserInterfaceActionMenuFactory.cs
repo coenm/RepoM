@@ -11,6 +11,12 @@ using RepoM.ActionMenu.Core.ConfigReader;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.Yaml.Model;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.EvaluateVariable;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.ExecuteScript;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.LoadFile;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.RendererVariable;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
 using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -25,6 +31,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     private readonly IActionMenuDeserializer _deserializer;
     private readonly IFileReader _fileReader;
     private readonly ILogger _logger;
+    private readonly IContextActionProcessor[] _contextActionMappers;
 
     public UserInterfaceActionMenuFactory(
         IFileSystem fileSystem, 
@@ -42,13 +49,21 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
         _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+        _contextActionMappers = new IContextActionProcessor[]
+            {
+                new ContextActionExecuteScriptV1Processor(),
+                new ContextActionSetVariableV1Processor(),
+                new ContextActionEvaluateVariableV1Processor(),
+                new ContextActionRenderVariableV1Processor(),
+                new ContextActionLoadFileV1Processor(_fileReader),
+            };
     }
 
     public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository, string filename)
     {
         ActionMenuGenerationContext context = await CreateActionMenuGenerationContext(repository).ConfigureAwait(false);
 
-        // load yaml
         Root actions = await LoadAsync(filename).ConfigureAwait(false);
 
         // process context (vars + methods)
@@ -68,7 +83,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
     public async Task<IEnumerable<string>> GetTagsAsync(IRepository repository, string filename)
     {
-        var context = new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins, _mappers, _deserializer, _fileReader);
+        ActionMenuGenerationContext context = await CreateActionMenuGenerationContext(repository).ConfigureAwait(false);
 
         // load yaml
         Root actions = await LoadAsync(filename).ConfigureAwait(false);
@@ -91,7 +106,9 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         await Task.Yield();
         
         _logger.LogTrace("CreateActionMenuGenerationContext ActionMenuGenerationContext ctor");
-        return new ActionMenuGenerationContext(repository, _templateParser, _fileSystem, _plugins, _mappers, _deserializer, _fileReader);
+        var actionMenuGenerationContext = new ActionMenuGenerationContext(_templateParser, _fileSystem, _plugins, _mappers, _deserializer, _contextActionMappers);
+        actionMenuGenerationContext.Initialize(repository);
+        return actionMenuGenerationContext;
     }
 
     private async Task<Root> LoadAsync(string filename)

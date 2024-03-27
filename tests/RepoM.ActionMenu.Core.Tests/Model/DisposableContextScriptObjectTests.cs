@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.ActionMenu.Core.ActionMenu.Context;
-using RepoM.ActionMenu.Core.ConfigReader;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
@@ -27,23 +26,24 @@ public class DisposableContextScriptObjectTests
     private readonly ITemplateContextRegistration[] _functionsArray = Array.Empty<ITemplateContextRegistration>();
     private readonly IActionToRepositoryActionMapper[] _mapper = Array.Empty<IActionToRepositoryActionMapper>();
     private readonly IActionMenuDeserializer _deserializer = A.Fake<IActionMenuDeserializer>();
-    private readonly IFileReader _fileReader = A.Fake<IFileReader>();
     private readonly ActionMenuGenerationContext _context;
     private readonly EnvSetScriptObject _env = new(new EnvScriptObject(new Dictionary<string, string>()
         {
             { "x", "y" },
         }));
-    private readonly List<IContextActionProcessor> _mappers;
+    private readonly IContextActionProcessor[] _mappers;
     private readonly DisposableContextScriptObject _sut;
 
     public DisposableContextScriptObjectTests()
     {
-        _context = new ActionMenuGenerationContext(_repository, _templateParser, _fileSystem, _functionsArray, _mapper, _deserializer, _fileReader);
-        _mappers = new List<IContextActionProcessor>
-            {
+        _mappers =
+            [
                 A.Fake<IContextActionProcessor>(),
                 A.Fake<IContextActionProcessor>(),
-            };
+            ];
+        _context = new ActionMenuGenerationContext(_templateParser, _fileSystem, _functionsArray, _mapper, _deserializer, _mappers);
+        _context.Initialize(_repository);
+
         _sut = new DisposableContextScriptObject(_context, _env, _mappers);
     }
 
