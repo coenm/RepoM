@@ -30,7 +30,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         INamedQueryParser[] queryParsersArray = queryParsers.ToArray();
-        if (!queryParsersArray.Any())
+        if (queryParsersArray.Length == 0)
         {
             throw new ArgumentOutOfRangeException(nameof(queryParsers));
         }
