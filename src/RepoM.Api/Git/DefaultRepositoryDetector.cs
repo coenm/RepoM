@@ -99,7 +99,6 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
             return;
         }
 
-        // todo
         Task.Run(() => Task.Delay(_detectionToAlertDelayMilliseconds))
             .ContinueWith(async t => await EatRepo(e.FullPath).ConfigureAwait(false));
     }

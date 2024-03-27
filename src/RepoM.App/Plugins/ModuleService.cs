@@ -20,7 +20,7 @@ internal class ModuleService : IAsyncDisposable
 
     public Task StartAsync()
     {
-        return Task.WhenAll(_modules.Select(x => x.StartAsync()));
+        return Task.Run(async () => await Task.WhenAll(_modules.Select(module => module.StartAsync())));
     }
 
     public Task StopAsync()
@@ -33,10 +33,12 @@ internal class ModuleService : IAsyncDisposable
             {
                 await module.StopAsync().ConfigureAwait(false);
 
+                // ReSharper disable once SuspiciousTypeConversion.Global
                 if (module is IAsyncDisposable asyncDisposable)
                 {
                     await asyncDisposable.DisposeAsync().ConfigureAwait(false);
                 }
+                // ReSharper disable once SuspiciousTypeConversion.Global
                 else if (module is IDisposable disposable)
                 {
                     disposable.Dispose();

@@ -21,7 +21,8 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
 
     public void Add(IRepository repository, IRepositoryMonitor repositoryMonitor)
     {
-        // todo at this moment, we must cast to Repository
+        // GitHub issue: https://github.com/coenm/RepoM/issues/90
+        // at this moment, we must cast to Repository
         if (repository is not Repository repo)
         {
             throw new NotImplementedException("We expect a Repository object.");
@@ -78,19 +79,19 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
             return null;
         }
 
-        if (!path.EndsWith("\\", StringComparison.Ordinal))
+        if (!path.EndsWith('\\'))
         {
             path += "\\";
         }
 
         RepositoryViewModel[] viewsByPath = views!
                                        .Where(r =>
-                                           r?.Path != null
+                                           r.Path != null
                                            &&
                                            path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase))
                                        .ToArray();
 
-        if (!viewsByPath.Any())
+        if (viewsByPath.Length == 0)
         {
             return null;
         }

@@ -43,7 +43,7 @@ public partial class App : Application
         app.Run();
     }
 
-    protected override void OnStartup(StartupEventArgs e)
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
@@ -85,7 +85,15 @@ public partial class App : Application
 
         _hotKeyService.Register();
         _windowSizeService.Register();
-        _moduleService.StartAsync().GetAwaiter().GetResult();
+
+        try
+        {
+            await _moduleService.StartAsync().ConfigureAwait(false); // don't care about ui thread
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Could not start all modules.");
+        }
     }
     
     protected override void OnExit(ExitEventArgs e)
