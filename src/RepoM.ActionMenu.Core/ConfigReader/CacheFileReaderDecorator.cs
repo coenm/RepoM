@@ -2,9 +2,9 @@ namespace RepoM.ActionMenu.Core.ConfigReader;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
-using DotNetEnv;
 using JetBrains.Annotations;
 using RepoM.ActionMenu.Core.Yaml.Model;
 

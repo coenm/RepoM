@@ -37,7 +37,7 @@ internal class RepositoryActionSonarCloudSetFavoriteV1Mapper : ActionToRepositor
         }
         else
         {
-            _logger.LogDebug("SonarCloud service is not initialized. Therefor, no menu item");
+            _logger.LogDebug("SonarCloud service is not initialized. Therefore, no menu item");
         }
     }
 }

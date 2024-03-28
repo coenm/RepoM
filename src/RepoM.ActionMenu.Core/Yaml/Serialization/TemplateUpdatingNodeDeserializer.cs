@@ -218,8 +218,8 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
                .Where(propertyInfo =>
                    propertyInfo is { CanWrite: true, CanRead: true, }
                    &&
-                   typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(propertyInfo.PropertyType.GetTypeInfo())
-               ).ToArray();
+                   typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(propertyInfo.PropertyType.GetTypeInfo()))
+                .ToArray();
     }
 
     private static bool TryGetCustomAttributeData<TAttribute>(PropertyInfo propertyInfo, [NotNullWhen(true)] out CustomAttributeData? customAttributeData ) where TAttribute : Attribute
