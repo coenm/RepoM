@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>

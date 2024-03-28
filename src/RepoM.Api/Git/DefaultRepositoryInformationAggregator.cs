@@ -73,7 +73,12 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
             /* there are extremely rare threading issues with System.Array.Copy() here */
         }
 
-        var hasAny = views?.Any() ?? false;
+        if (views == null)
+        {
+            return null;
+        }
+
+        var hasAny = views.Count > 0;
         if (!hasAny)
         {
             return null;
@@ -84,12 +89,12 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
             path += "\\";
         }
 
-        RepositoryViewModel[] viewsByPath = views!
-                                       .Where(r =>
-                                           r.Path != null
-                                           &&
-                                           path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase))
-                                       .ToArray();
+        RepositoryViewModel[] viewsByPath = views
+           .Where(r =>
+               r.Path != null
+               &&
+               path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase))
+           .ToArray();
 
         if (viewsByPath.Length == 0)
         {

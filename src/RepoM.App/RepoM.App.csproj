@@ -41,18 +41,18 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="SimpleInjector" Version="5.4.4" />
-    <PackageReference Include="System.IO.Abstractions" Version="20.0.15" />
+    <PackageReference Include="System.IO.Abstractions" Version="21.0.2" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.2" />
-    <PackageReference Include="DotNetEnv" Version="2.5.0" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.3" />
+    <PackageReference Include="DotNetEnv" Version="3.0.0" />
     <PackageReference Include="FluentWPF" Version="0.9.0" />
-    <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
+    <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />

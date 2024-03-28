@@ -21,20 +21,9 @@ public static class PackageExtensions
 {
     public static Task RegisterPackagesAsync(this Container container, IEnumerable<Assembly> assemblies, Func<string, IPackageConfiguration> packageConfigurationFactoryMethod)
     {
-        if (container is null)
-        {
-            throw new ArgumentNullException(nameof(container));
-        }
-
-        if (assemblies is null)
-        {
-            throw new ArgumentNullException(nameof(assemblies));
-        }
-
-        if (packageConfigurationFactoryMethod == null)
-        {
-            throw new ArgumentNullException(nameof(packageConfigurationFactoryMethod));
-        }
+        ArgumentNullException.ThrowIfNull(container);
+        ArgumentNullException.ThrowIfNull(assemblies);
+        ArgumentNullException.ThrowIfNull(packageConfigurationFactoryMethod);
 
         return RegisterPackagesInnerAsync(container, assemblies, packageConfigurationFactoryMethod);
     }
@@ -45,12 +34,9 @@ public static class PackageExtensions
     /// </summary>
     /// <param name="assemblies">The assemblies that will be searched for packages.</param>
     /// <returns>Returns a list of created packages.</returns>
-    private static IEnumerable<IPackage> GetPackagesToRegister(IEnumerable<Assembly> assemblies)
+    private static IPackage[] GetPackagesToRegister(IEnumerable<Assembly> assemblies)
     {
-        if (assemblies is null)
-        {
-            throw new ArgumentNullException(nameof(assemblies));
-        }
+        ArgumentNullException.ThrowIfNull(assemblies);
 
         assemblies = assemblies.ToArray();
 
@@ -79,7 +65,7 @@ public static class PackageExtensions
         {
             var assemblyName = assembly.GetName().Name ?? string.Empty;
 
-            foreach (IPackage packageWithConfiguration in GetPackagesToRegister(new[] { assembly, }))
+            foreach (IPackage packageWithConfiguration in GetPackagesToRegister([assembly,]))
             {
                 var fileName = assemblyName;
                 if (fileName.StartsWith("RepoM.Plugin."))
@@ -136,7 +122,7 @@ public static class PackageExtensions
         }
         catch (Exception ex)
         {
-            string message = string.Format(
+            var message = string.Format(
                 CultureInfo.InvariantCulture,
                 "The creation of package type {0} failed. {1}",
                 packageType.FullName,
@@ -148,7 +134,7 @@ public static class PackageExtensions
 
     private static bool HasDefaultConstructor(this Type type)
     {
-        return Array.Exists(type.GetConstructors(), ctor => !ctor.GetParameters().Any());
+        return Array.Exists(type.GetConstructors(), ctor => ctor.GetParameters().Length == 0);
     }
 
     private static TypeInfo Info(this Type type)

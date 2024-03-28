@@ -55,7 +55,7 @@ public class PluginFinder : IPluginFinder
           .Where(file =>
              file.Name.StartsWith("RepoM.Plugin.")
              &&
-             file.Extension.ToLower() == ".dll");
+             ".dll".Equals(file.Extension, StringComparison.OrdinalIgnoreCase));
     }
     
     private PluginInfo GetPluginInfo(string assemblyPath)

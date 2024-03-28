@@ -10,15 +10,8 @@ public class QueryParsersViewModel : List<MenuItemViewModel>
 {
     public QueryParsersViewModel(IRepositoryFilteringManager repositoryFilterManager, IThreadDispatcher threadDispatcher)
     {
-        if (repositoryFilterManager == null)
-        {
-            throw new ArgumentNullException(nameof(repositoryFilterManager));
-        }
-
-        if (threadDispatcher == null)
-        {
-            throw new ArgumentNullException(nameof(threadDispatcher));
-        }
+        ArgumentNullException.ThrowIfNull(repositoryFilterManager);
+        ArgumentNullException.ThrowIfNull(threadDispatcher);
 
         repositoryFilterManager.SelectedQueryParserChanged += (_, _) =>
             {
