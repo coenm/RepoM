@@ -57,7 +57,7 @@ public sealed class LoggingRepositoryTagsFactoryDecorator : IRepositoryTagsFacto
             return await _provider.GetTagsAsync(repository).ConfigureAwait(false);
         }
         
-        private IDisposable Measure(Repository repository)
+        private MeasureLog Measure(Repository repository)
         {
             return new MeasureLog(_logger, repository);
         }

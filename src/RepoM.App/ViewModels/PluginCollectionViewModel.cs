@@ -9,10 +9,7 @@ public class PluginCollectionViewModel : List<MenuItemViewModel>
 {
     public PluginCollectionViewModel(IModuleManager moduleManager)
     {
-        if (moduleManager == null)
-        {
-            throw new ArgumentNullException(nameof(moduleManager));
-        }
+        ArgumentNullException.ThrowIfNull(moduleManager);
 
         AddRange(moduleManager.Plugins.Select(plugin => new PluginViewModel(plugin)));
     }

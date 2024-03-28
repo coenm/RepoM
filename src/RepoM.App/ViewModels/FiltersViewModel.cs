@@ -10,15 +10,8 @@ public class FiltersViewModel : List<MenuItemViewModel>
 {
     public FiltersViewModel(IRepositoryFilteringManager repositoryFilterManager, IThreadDispatcher threadDispatcher)
     {
-        if (repositoryFilterManager == null)
-        {
-            throw new ArgumentNullException(nameof(repositoryFilterManager));
-        }
-
-        if (threadDispatcher == null)
-        {
-            throw new ArgumentNullException(nameof(threadDispatcher));
-        }
+        ArgumentNullException.ThrowIfNull(repositoryFilterManager);
+        ArgumentNullException.ThrowIfNull(threadDispatcher);
 
         repositoryFilterManager.SelectedFilterChanged += (_, _) =>
             {

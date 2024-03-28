@@ -30,7 +30,7 @@ public class DeferredSubActionsRepositoryAction : RepositoryAction
         init => _action = value;
     }
 
-    private static IDisposable CreateDummyDisposable()
+    private static DummyIDisposable CreateDummyDisposable()
     {
         return new DummyIDisposable();
     }

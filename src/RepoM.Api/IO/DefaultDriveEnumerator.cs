@@ -25,7 +25,7 @@ public class DefaultDriveEnumerator : IPathProvider
     {
         var paths = GetPreconfiguredPaths();
 
-        if (paths.Any())
+        if (paths.Length != 0)
         {
             return paths;
         }
@@ -64,7 +64,7 @@ public class DefaultDriveEnumerator : IPathProvider
             }
         }
 
-        if (!paths.Any())
+        if (paths.Count == 0)
         {
             return Array.Empty<string>();
         }

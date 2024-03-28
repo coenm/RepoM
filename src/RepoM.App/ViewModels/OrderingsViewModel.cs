@@ -10,15 +10,8 @@ public class OrderingsViewModel : List<MenuItemViewModel>
 {
     public OrderingsViewModel(IRepositoryComparerManager repositoryComparerManager, IThreadDispatcher threadDispatcher)
     {
-        if (repositoryComparerManager == null)
-        {
-            throw new ArgumentNullException(nameof(repositoryComparerManager));
-        }
-
-        if (threadDispatcher == null)
-        {
-            throw new ArgumentNullException(nameof(threadDispatcher));
-        }
+        ArgumentNullException.ThrowIfNull(repositoryComparerManager);
+        ArgumentNullException.ThrowIfNull(threadDispatcher);
 
         repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) =>
             {
