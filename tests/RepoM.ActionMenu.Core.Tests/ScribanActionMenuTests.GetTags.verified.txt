@@ -1,0 +1,6 @@
+﻿[
+  private,
+  github,
+  work,
+  github-conditional
+]

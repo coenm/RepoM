@@ -1,0 +1,13 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Open SonarClouds favorite in browser,
+    RepositoryCommand: {
+      $type: BrowseRepositoryCommand,
+      Url: https://sonarcloud.io/project/overview?id=RepoM
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

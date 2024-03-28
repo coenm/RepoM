@@ -3,6 +3,7 @@ namespace RepoM.Api.Git;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using LibGit2Sharp;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
@@ -18,7 +19,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public Repository? ReadRepository(string path)
+    public async Task<Repository?> ReadRepositoryAsync(string path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -28,24 +29,24 @@ public class DefaultRepositoryReader : IRepositoryReader
         var repoPath = LibGit2Sharp.Repository.Discover(path);
         if (string.IsNullOrEmpty(repoPath))
         {
-            _logger.LogWarning("Could not Discover git repo in path {path}", path);
+            _logger.LogWarning("Could not Discover git repo in path {Path}", path);
             return null;
         }
 
-        Repository? result = ReadRepositoryWithRetries(repoPath, 3);
+        Repository? result = await ReadRepositoryWithRetries(repoPath, 3).ConfigureAwait(false);
         if (result != null)
         {
-            result.Tags = _resolver.GetTags(result).ToArray();
+            result.Tags = (await _resolver.GetTagsAsync(result).ConfigureAwait(false)).ToArray();
         }
         else
         {
-            _logger.LogWarning("Could not read git repo in path {path}", repoPath);
+            _logger.LogWarning("Could not read git repo in path {Path}", repoPath);
         }
 
         return result;
     }
 
-    private Repository? ReadRepositoryWithRetries(string repoPath, int maxRetries)
+    private async Task<Repository?> ReadRepositoryWithRetries(string repoPath, int maxRetries)
     {
         Repository? repository = null;
         var currentTry = 1;
@@ -56,16 +57,21 @@ public class DefaultRepositoryReader : IRepositoryReader
             {
                 repository = ReadRepositoryInternal(repoPath);
             }
-            catch (LockedFileException)
+            catch (LockedFileException e)
             {
-                _logger.LogWarning("LockedFileException {path}", repoPath);
+                _logger.LogWarning(e, "LockedFileException {Path}", repoPath);
 
                 if (currentTry >= maxRetries)
                 {
                     throw;
                 }
 
-                System.Threading.Thread.Sleep(500);
+                await Task.Delay(500).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unexpected exception hwn reading repo {Path}. {Message}", repoPath, e.Message);
+                throw;
             }
 
             currentTry++;
@@ -85,7 +91,7 @@ public class DefaultRepositoryReader : IRepositoryReader
 
             if (string.IsNullOrWhiteSpace(workingDirectory.Parent?.FullName))
             {
-                _logger.LogError("WorkingDirectory.Parent.Fullname was null or empty for repository found in '{path}'. Return null", repoPath);
+                _logger.LogError("WorkingDirectory.Parent.Fullname was null or empty for repository found in '{Path}'. Return null", repoPath);
                 return null;
             }
 
@@ -128,7 +134,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Could not read (LibGit2Sharp) repo in {path}.", repoPath);
+            _logger.LogError(e, "Could not read (LibGit2Sharp) repo in {Path}.", repoPath);
             return null;
         }
     }
@@ -186,10 +192,10 @@ public class DefaultRepositoryReader : IRepositoryReader
         {
         }
 
-        internal string Name { get; init; } = string.Empty;
+        internal required string Name { get; init; }
 
-        internal bool IsDetached { get; init; } = false;
+        internal required bool IsDetached { get; init; }
 
-        internal bool IsOnTag { get; init; } = false;
+        internal required bool IsOnTag { get; init; }
     }
 }

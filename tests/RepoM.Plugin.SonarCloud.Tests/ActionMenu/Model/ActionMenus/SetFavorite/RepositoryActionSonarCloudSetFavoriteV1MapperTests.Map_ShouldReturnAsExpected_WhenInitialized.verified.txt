@@ -1,0 +1,12 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: menu name(evaluated),
+    RepositoryCommand: {
+      $type: SonarCloudSetFavoriteRepositoryCommand,
+      Key: proj-abc(evaluated)
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

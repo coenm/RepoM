@@ -14,16 +14,9 @@ It's populating itself as you work with git. It does not get in the way and only
 
 RepoM will not compete with your favourite git clients, so keep them. It's not about working within a repository: It's a new way to use all of your repositories to make your daily work easier.
 
-📦  [Check the Releases page](https://github.com/coenm/RepoM/releases) to **download** the latest version and see **what's new**!
-
-## Credits
-
-RepoM is a fork of [RepoZ](https://github.com/awaescher/RepoZ), which was created by [Andreas Wäscher](https://github.com/awaescher).
-RepoZ contains functionality that has been stripped in RepoM like supporting MacOS, releasing versions using chocolatey, the commandline sidekick (`grr``), and performing actions at multiple repostitories at once.
-
 ## The Hub
 
-The hub provides a quick overview of your repositories including their current branch and a short status information. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer, opening a command line tool in a given repository and checking out git branches.
+The hub provides a quick overview of your repositories including their current branch, a short status information, and optionally some provided tags. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer, opening a command line tool in a given repository, checking out git branches and lots of other predefined or customizable actions.
 
 ![Screenshot](https://raw.githubusercontent.com/awaescher/RepoZ/master/_doc/RepoZ-ReadMe-UI-Both.png)
 
@@ -38,9 +31,17 @@ For Windows, use the hotkeys <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> to show
 <!--
 To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you selected a repository. To open a command prompt instead, hold <kbd>Ctrl</kbd> on Windows while pressing <kbd>Return</kbd>. These modifier keys will also work with mouse navigation.
 -->
+
+## Configuration
+
+
+
+
 ## Context Menu
 
 The main functionality of RepoM are the quick actions to execute per repository. For instance, you can quickly naviate to the repository by directly opening the windows explorer or by opening a command prompt. This context menu is user and repostirory specific and can be defined using yaml. This way, you can add an context menu item (action) for opening the repository in Visual Studio (for a C# project) and for an other repository you can add the action to open a repository in Eclipse.
+
+To read more about the context menu, click here.
 
 These actions are defined in the `RepositoryActions.yaml` located in your `%APPDATA%\RepoM\` folder. More information can be found [here](docs/RepositoryActions.md).
 
@@ -77,3 +78,7 @@ RepoM uses plugins to extend functionality. At this moment, when a plugin is ava
   - [WebBrowser](docs/RepoM.Plugin.WebBrowser.md)
   - [WindowsExplorerGitInfo](docs/RepoM.Plugin.WindowsExplorerGitInfo.md)
   
+## Credits
+
+RepoM is a fork of [RepoZ](https://github.com/awaescher/RepoZ), which was created by [Andreas Wäscher](https://github.com/awaescher).
+RepoZ contains functionality that has been stripped in RepoM like supporting MacOS, releasing versions using chocolatey, the commandline sidekick (`grr``), and performing actions at multiple repostitories at once.

@@ -56,7 +56,7 @@ public class FileAppSettingsService : IAppSettingsService
         IDirectoryInfo? directoryInfo = _fileSystem.Directory.GetParent(file);
         if (directoryInfo == null)
         {
-            _logger.LogError("Could not save configuration because no parent of '{file}' found", file);
+            _logger.LogError("Could not save configuration because no parent of '{File}' found", file);
             return;
         }
 
@@ -71,7 +71,7 @@ public class FileAppSettingsService : IAppSettingsService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Could not check or create directory '{path}'. {message}", path, ex.Message);
+            _logger.LogWarning(ex, "Could not check or create directory '{Path}'. {Message}", path, ex.Message);
         }
 
         try
@@ -80,7 +80,7 @@ public class FileAppSettingsService : IAppSettingsService
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Could not save configuration to file '{file}'. {message}", file, ex.Message);
+            _logger.LogError(ex, "Could not save configuration to file '{File}'. {Message}", file, ex.Message);
         }
     }
 

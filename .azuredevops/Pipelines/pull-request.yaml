@@ -43,9 +43,9 @@ stages:
             includePreviewVersions: false
 
         - task: UseDotNet@2
-          displayName: "Use dotnet sdk 8.0.x"
+          displayName: "Use dotnet sdk 8.0.100"
           inputs:
-            version: 8.0.x
+            version: 8.0.100
             includePreviewVersions: false
 
         - script: dotnet --info
@@ -58,7 +58,7 @@ stages:
             checkLatest: true
 
         - pwsh: |
-            dotnet tool install --global --version 25.1.0 MarkdownSnippets.Tool
+            dotnet tool install --global --version 25.1.0 MarkdownSnippets.Tool 
             mdsnippets 
             
             $changedLines = git status --porcelain=v1

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="2.5.0" />
+    <PackageReference Include="Scriban" Version="5.9.1" />
+    <PackageReference Include="SimpleInjector" Version="5.4.4" />
+    <PackageReference Include="System.IO.Abstractions" Version="20.0.15" />
+    <PackageReference Include="YamlDotNet" Version="15.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RepoM.ActionMenu.Interface\RepoM.ActionMenu.Interface.csproj" />
+    <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
+  </ItemGroup>
+
+</Project>

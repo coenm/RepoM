@@ -25,7 +25,7 @@ internal class RepositoryScoreCalculatorFactory : IRepositoryScoreCalculatorFact
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, "Could not create a IRepositoryComparer for configuration type '{configuration}'", configuration);
+            _logger.LogCritical(e, "Could not create a IRepositoryComparer for configuration type '{Configuration}'", configuration);
             throw;
         }
     }

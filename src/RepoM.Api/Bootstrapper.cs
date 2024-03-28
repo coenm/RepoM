@@ -81,7 +81,7 @@ public class CoreBootstrapper
             .Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)))
             .ToArray();
 
-        if (assemblies.Any())
+        if (assemblies.Length > 0)
         {
             await container
                 .RegisterPackagesAsync(

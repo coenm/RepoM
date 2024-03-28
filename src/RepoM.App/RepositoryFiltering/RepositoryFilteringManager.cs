@@ -30,7 +30,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         INamedQueryParser[] queryParsersArray = queryParsers.ToArray();
-        if (!queryParsersArray.Any())
+        if (queryParsersArray.Length == 0)
         {
             throw new ArgumentOutOfRangeException(nameof(queryParsers));
         }
@@ -38,30 +38,15 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         INamedQueryParser defaultParser = queryParsersArray.First(x => x.Name != "Lucene");
         INamedQueryParser queryParser = Array.Find(queryParsersArray, x => x.Name == "Lucene") ?? defaultParser;
 
-        IQuery? Map(QueryConfiguration input)
-        {
-            if (string.IsNullOrWhiteSpace(input.Query))
-            {
-                return null;
-            }
-
-            if ("query@1".Equals(input.Kind, StringComparison.CurrentCulture))
-            {
-                return queryParser.Parse(input.Query);
-            }
-
-            return defaultParser.Parse(input.Query);
-        }
-
         _queryDictionary = filterSettingsService.Configuration
-            .Select(x => new RepositoryFilterConfiguration
-                {
-                    AlwaysVisible = Map(x.Value.AlwaysVisible),
-                    Description = x.Value.Description,
-                    Filter = Map(x.Value.Filter),
-                    Name = x.Key,
-                })
-            .ToList();
+                                                .Select(x => new RepositoryFilterConfiguration
+                                                    {
+                                                        AlwaysVisible = Map(x.Value.AlwaysVisible),
+                                                        Description = x.Value.Description,
+                                                        Filter = Map(x.Value.Filter),
+                                                        Name = x.Key,
+                                                    })
+                                                .ToList();
 
         if (!_queryDictionary.Exists(x => x.Name.Equals("Default", StringComparison.CurrentCultureIgnoreCase)))
         {
@@ -89,7 +74,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         }
         else if (!SetQueryParser(_appSettingsService.QueryParserKey))
         {
-            _logger.LogInformation("Could not set query parser '{key}'. Falling back to first query parser.", _appSettingsService.QueryParserKey);
+            _logger.LogInformation("Could not set query parser '{Key}'. Falling back to first query parser.", _appSettingsService.QueryParserKey);
             SetQueryParser(_repositoryComparerKeys[0]);
         }
 
@@ -102,6 +87,23 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         else if (!SetFilter(_appSettingsService.SelectedFilter))
         {
             SetFilter(first.Name);
+        }
+
+        return;
+
+        IQuery? Map(QueryConfiguration input)
+        {
+            if (string.IsNullOrWhiteSpace(input.Query))
+            {
+                return null;
+            }
+
+            if ("query@1".Equals(input.Kind, StringComparison.CurrentCulture))
+            {
+                return queryParser.Parse(input.Query);
+            }
+
+            return defaultParser.Parse(input.Query);
         }
     }
 
@@ -127,7 +129,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
     {  
         if (!_queryParser.SetComparer(key))
         {
-            _logger.LogWarning("Could not update/set the comparer key {key}.", key);
+            _logger.LogWarning("Could not update/set the comparer key {Key}.", key);
             return false;
         }
 

@@ -12,7 +12,6 @@ using RepoM.Api.Plugins;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class PluginFinderTests
 {
     private readonly MockFileSystem _fileSystem;

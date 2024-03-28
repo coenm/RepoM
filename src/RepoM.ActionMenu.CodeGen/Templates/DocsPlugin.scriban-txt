@@ -1,0 +1,92 @@
+{{~
+func write_type_with_link(t)
+  result = t.Name;
+
+  if !string.empty t.Link
+    result = "[" + t.Name + "](" + t.Link + ")"
+  end
+
+  if (t.Nullable)
+    result = result + ", optional";
+  end
+
+  ret result;
+end
+
+func write_default_when_null(s, default_value = "\\<empty\\>")
+  if string.empty s
+    ret default_value
+  else
+    ret s
+  end
+end
+
+~}}
+{{~ if plugin.IsPlugin ~}}
+# {{ plugin.IsPlugin ? plugin.PluginName : "RepoM Core Repository Actions" }}
+
+{{~ if !string.empty plugin.PluginMarkdownDescription ~}}
+{{ plugin.PluginMarkdownDescription }}
+{{~ else if !string.empty plugin.PluginDescription ~}}
+{{ plugin.PluginDescription }}
+{{~ end ~}}
+
+{{~ ##  include: _plugin_enable  ## ~}}
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.
+
+- ProjectName: {{ write_default_when_null plugin.ProjectName }}
+- PluginName: {{ write_default_when_null plugin.PluginName }}
+- PluginDescription: {{ write_default_when_null plugin.PluginDescription }}
+- PluginMarkdownDescription: {{ write_default_when_null plugin.PluginMarkdownDescription }}
+{{~ else ~}}
+# {{ plugin.IsPlugin ? plugin.PluginName : "RepoM Core Repository Actions" }}
+{{~ end ~}}
+
+{{~ if array.size(plugin.ActionMenus) > 0  ~}}
+This module contains the following methods, variables and/or constants:
+  {{~ for member in plugin.ActionMenus ~}}
+
+## {{ member.Name }}
+
+{{ member.Description }}
+
+Properties:
+
+    {{~ for p in member.ActionMenuProperties ~}}
+- `{{ hyphenated p.CSharpName }}`: {{ p.Description }} ({{ write_type_with_link p.ReturnType }})
+    {{~ end ~}}
+    {{~ if member.Examples ~}}
+
+### Example
+      {{~ if !string.empty member.Examples.Description ~}}
+{{ member.Examples.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+      {{ end }}
+      {{~ for example_item in member.Examples.Items ~}}
+        {{~ if example_item.TypeName == 'Code' ~}}
+    
+```{{ example_item.Language | string.downcase }}
+         {{~ if example_item.UseRaw ~}}
+{{ example_item.Content | string.rstrip }}
+         {{~ else ~}}
+{{ example_item.Content | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+         {{~ end ~}}
+```
+
+        {{~ else if example_item.TypeName == 'Snippet' ~}}
+{{ example_item.Mode | string.downcase }}: {{ example_item.Name }}
+
+        {{~ else if example_item.TypeName == 'Header' ~}}
+#### {{ example_item.Text }}
+
+        {{~ else if example_item.TypeName == 'Text' ~}}
+{{ example_item.Content }}
+        {{~ else if example_item.TypeName == 'Paragraph' ~}}
+    
+{{ example_item.Text }}
+        {{~ else ~}}
+    NAME NOT FOUND!! {{ example_item.TypeName }}.      
+        {{~ end ~}}
+      {{~ end ~}}
+    {{~ end ~}}  
+  {{~ end ~}}
+{{~ end ~}}

@@ -1,0 +1,62 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Create feature to develop (123-my-new-ui-with..),
+    RepositoryCommand: {
+      $type: CreatePullRequestRepositoryCommand,
+      ProjectId: 11111111-F973-4BE7-B39A-A9F85B18C75E,
+      ReviewerIds: [
+        22222222-F973-4BE7-B39A-A9F85B18C75E,
+        33333333-F973-4BE7-B39A-A9F85B18C75E
+      ],
+      ToBranch: develop,
+      PullRequestTitle: Release 2016-01-05,
+      Draft: false,
+      IncludeWorkItems: true,
+      OpenInBrowser: true,
+      AutoComplete: {
+        MergeStrategy: Squash,
+        DeleteSourceBranch: true,
+        TransitionWorkItems: true
+      }
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Complete feature,
+    RepositoryCommand: {
+      $type: CreatePullRequestRepositoryCommand,
+      ProjectId: 11111111-F973-4BE7-B39A-A9F85B18C75E,
+      ReviewerIds: [
+        22222222-F973-4BE7-B39A-A9F85B18C75E
+      ],
+      ToBranch: develop,
+      PullRequestTitle: Feature 123-my-new-ui-with-multiple-new-screens-so-this-has-a-long-branch-name,
+      Draft: false,
+      IncludeWorkItems: true,
+      OpenInBrowser: true
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Create Pull Request,
+    RepositoryCommand: {
+      $type: CreatePullRequestRepositoryCommand,
+      ProjectId: 11111111-F973-4BE7-B39A-A9F85B18C75E,
+      ToBranch: develop,
+      PullRequestTitle: ,
+      Draft: false,
+      IncludeWorkItems: true,
+      OpenInBrowser: true
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

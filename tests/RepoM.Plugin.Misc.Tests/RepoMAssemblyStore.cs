@@ -34,6 +34,13 @@ internal static class RepoMAssemblyStore
             }
         }
 
+        // tmp, not sure why it is someties forgotten.
+        Assembly a = typeof(RepoM.Api.CoreBootstrapper).Assembly;
+        if (!results.Contains(a))
+        {
+            results.Add(a);
+        }
+
         return results;
     }
 }

@@ -13,7 +13,6 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class DocsAppSettingsTests
 {
     private readonly VerifySettings _verifySettings = new();

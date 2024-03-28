@@ -34,18 +34,18 @@ public class ModuleManager : IModuleManager
         // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression, Justification: Sonar Warning
         if (enabled)
         {
-            _logger.LogInformation("Enabling plugin {dll}", dll);
+            _logger.LogInformation("Enabling plugin {Dll}", dll);
         }
         else
         {
-            _logger.LogInformation("Disabling plugin {dll}", dll);
+            _logger.LogInformation("Disabling plugin {Dll}", dll);
         }
         
         var pluginsCopy = _appSettingsService.Plugins.ToList();
         PluginSettings? item = pluginsCopy.SingleOrDefault(plugin => plugin.DllName == dll);
         if (item == null)
         {
-            _logger.LogError("Could not find plugin {dll}", dll);
+            _logger.LogError("Could not find plugin {Dll}", dll);
             return;
         }
 

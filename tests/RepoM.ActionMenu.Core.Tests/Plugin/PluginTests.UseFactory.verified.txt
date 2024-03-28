@@ -1,0 +1,44 @@
+﻿[
+  {
+    Name: key k1,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: dbname x1,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: dbname x2,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: key k2,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: dbname x21,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: dbname x22,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

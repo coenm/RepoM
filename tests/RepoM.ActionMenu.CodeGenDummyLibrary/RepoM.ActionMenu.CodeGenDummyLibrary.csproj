@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\RepoM.ActionMenu.Interface\RepoM.ActionMenu.Interface.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.Api\RepoM.Api.csproj" />
+  </ItemGroup>
+
+</Project>

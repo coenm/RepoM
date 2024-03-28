@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.ActionMenu.Interface.SimpleInjector;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Plugin.WebBrowser.ActionProvider;
 using RepoM.Plugin.WebBrowser.PersistentConfiguration;
+using RepoM.Plugin.WebBrowser.RepositoryActions;
 using RepoM.Plugin.WebBrowser.Services;
 using SimpleInjector;
 
@@ -65,11 +64,12 @@ public class WebBrowserPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionBrowserV1>();
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionBrowserV1Mapper>(Lifestyle.Singleton);
+        container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.Browser.RepositoryActionBrowserV1>();
+        container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.Browser.RepositoryActionBrowserV1Mapper>(Lifestyle.Singleton);
 
         // action executor
-        container.Register(typeof(IActionExecutor<>), new[] { typeof(WebBrowserPackage).Assembly, }, Lifestyle.Singleton);
+        container.Register<ICommandExecutor<RepositoryActions.Actions.BrowseRepositoryCommand>, BrowseRepositoryCommandExecutor>(Lifestyle.Singleton);
+        container.RegisterDecorator<ICommandExecutor<Core.Plugin.RepositoryActions.Commands.BrowseRepositoryCommand>, CoreBrowseRepositoryCommandExecutorDecorator>(Lifestyle.Singleton);
     }
 
     private static void RegisterInternals(Container container)
@@ -77,7 +77,7 @@ public class WebBrowserPackage : IPackage
         container.Register<IWebBrowserService, WebBrowserService>(Lifestyle.Singleton);
     }
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<WebBrowserConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = new WebBrowserConfigV1
@@ -91,7 +91,7 @@ public class WebBrowserPackage : IPackage
     }
 
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     [UsedImplicitly]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Reflection")]
     private static async Task<WebBrowserConfigV1> PersistExampleConfigAsync(IPackageConfiguration packageConfiguration)

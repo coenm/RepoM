@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using RepoM.Api.Common;
+using RepoM.Core.Plugin.Repository;
 
 public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggregator
 {
@@ -18,11 +19,18 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
 
     public ObservableCollection<RepositoryViewModel> Repositories { get; }
 
-    public void Add(Repository repository, IRepositoryMonitor repositoryMonitor)
+    public void Add(IRepository repository, IRepositoryMonitor repositoryMonitor)
     {
+        // GitHub issue: https://github.com/coenm/RepoM/issues/90
+        // at this moment, we must cast to Repository
+        if (repository is not Repository repo)
+        {
+            throw new NotImplementedException("We expect a Repository object.");
+        }
+
         _dispatcher.Invoke(() =>
             {
-                var view = new RepositoryViewModel(repository, repositoryMonitor);
+                var view = new RepositoryViewModel(repo, repositoryMonitor);
 
                 Repositories.Remove(view);
                 Repositories.Add(view);
@@ -71,19 +79,19 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
             return null;
         }
 
-        if (!path.EndsWith("\\", StringComparison.Ordinal))
+        if (!path.EndsWith('\\'))
         {
             path += "\\";
         }
 
         RepositoryViewModel[] viewsByPath = views!
                                        .Where(r =>
-                                           r?.Path != null
+                                           r.Path != null
                                            &&
                                            path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase))
                                        .ToArray();
 
-        if (!viewsByPath.Any())
+        if (viewsByPath.Length == 0)
         {
             return null;
         }

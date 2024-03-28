@@ -1,0 +1,14 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: My Github,
+    RepositoryCommand: {
+      $type: BrowseRepositoryCommand,
+      Url: https://github.com/coenm,
+      ProfileName: work-profile
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

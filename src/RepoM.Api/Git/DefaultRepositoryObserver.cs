@@ -6,18 +6,19 @@ using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using RepoM.Core.Plugin.Repository;
 
 public sealed class DefaultRepositoryObserver : IRepositoryObserver
 {
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
     private int _detectionToAlertDelayMilliseconds;
-    private Repository? _repository;
+    private IRepository? _repository;
     private IFileSystemWatcher? _watcher;
     private bool _ioDetected;
     private LibGit2Sharp.Repository? _gitRepo;
 
-    public Action<Repository> OnChange { get; set; } = delegate { };
+    public Action<IRepository> OnChange { get; set; } = delegate { };
 
     public DefaultRepositoryObserver(ILogger logger, IFileSystem fileSystem)
     {
@@ -25,7 +26,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
     
-    public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
+    public void Setup(IRepository repository, int detectionToAlertDelayMilliseconds)
     {
         _detectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
@@ -34,9 +35,9 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
         {
             _gitRepo = new LibGit2Sharp.Repository(repository.Path);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            _logger.LogWarning("Could not create LibGit2Sharp Repository from path {path}", repository.Path);
+            _logger.LogWarning(e, "Could not create LibGit2Sharp Repository from path {Path}", repository.Path);
         }
 
         
@@ -130,13 +131,13 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
                 }
                 catch (Exception e)
                 {
-                    _logger.LogWarning("Directory exists failed {dir} {msg}", fileSystemEventArgs.FullPath, e.Message);
+                    _logger.LogWarning(e, "Directory exists failed {Dir} {Message}", fileSystemEventArgs.FullPath, e.Message);
                 }
             }
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Could not determine ignored. {message}", e.Message);
+            _logger.LogError(e, "Could not determine ignored. {Message}", e.Message);
         }
 
 
@@ -150,7 +151,7 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
             return;
         }
 
-        _logger.LogTrace("[DefaultRepositoryObserver] {caller} ({name} - {changeType} - {path})", "", e.Name, e.ChangeType, e.FullPath);
+        _logger.LogTrace("[DefaultRepositoryObserver] {Caller} ({Name} - {ChangeType} - {Path})", "", e.Name, e.ChangeType, e.FullPath);
         PauseWatcherAndScheduleCallback();
     }
 
@@ -192,13 +193,13 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
                         return;
                     }
 
-                    Repository? repo = _repository;
+                    IRepository? repo = _repository;
                     if (repo == null)
                     {
                         return;
                     }
 
-                    _logger.LogDebug("ONCHANGE on {repo}", repo.Name);
+                    _logger.LogDebug("ONCHANGE on {Repository}", repo.Name);
                     OnChange.Invoke(repo);
                 });
     }

@@ -1,0 +1,8 @@
+﻿[
+  {
+    Name: dummy-name(evaluated),
+    RepositoryCommand: {},
+    ExecutionCausesSynchronizing: true,
+    CanExecute: true
+  }
+]

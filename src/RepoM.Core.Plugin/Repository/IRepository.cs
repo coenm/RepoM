@@ -11,6 +11,10 @@ public interface IRepository
 
     string Path { get; }
 
+    string WindowsPath { get; }
+
+    string LinuxPath { get; }
+
     string Location { get; }
 
     string CurrentBranch { get; }
@@ -26,4 +30,9 @@ public interface IRepository
     List<Remote> Remotes { get; }
 
     bool HasUnpushedChanges { get; }
+
+    public string[] ReadAllBranches();
+
+
+    public bool HasLocalChanges { get; }
 }

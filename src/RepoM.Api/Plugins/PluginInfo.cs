@@ -14,11 +14,13 @@ public readonly struct PluginInfo
         if (packageAttribute != null)
         {
             Name = packageAttribute.Name;
+            ToolTip = packageAttribute.ToolTip;
             Description = packageAttribute.Description;
         }
         else
         {
             Name = new FileInfo(assemblyPath).Name; // can throw
+            ToolTip = string.Empty;
             Description = string.Empty;
         }
     }
@@ -26,6 +28,8 @@ public readonly struct PluginInfo
     public string AssemblyPath { get; }
 
     public string Name { get; }
+
+    public string ToolTip { get; }
 
     public string Description { get; }
 

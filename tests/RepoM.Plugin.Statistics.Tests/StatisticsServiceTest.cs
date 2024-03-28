@@ -10,7 +10,6 @@ using RepoM.Plugin.Statistics.Interface;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class StatisticsServiceTest
 {
     private readonly StatisticsService _sut;

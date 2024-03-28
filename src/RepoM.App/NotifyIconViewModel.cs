@@ -11,6 +11,8 @@ using RepoM.App.Services;
 /// </summary>
 public class NotifyIconViewModel
 {
+    private const string APP_NAME = "RepoM";
+
     /// <summary>
     /// Shows a window, if none is already open.
     /// </summary>
@@ -24,15 +26,15 @@ public class NotifyIconViewModel
     public ICommand StartWithWindows =>
         new DelegateCommand
             {
-                CanExecuteFunc = () => !AutoStart.IsStartup("RepoM"),
-                CommandAction = () => AutoStart.SetStartup("RepoM", true),
+                CanExecuteFunc = () => !AutoStart.IsStartup(APP_NAME),
+                CommandAction = () => AutoStart.SetStartup(APP_NAME, true),
             };
 
     public ICommand DoNotStartWithWindows =>
         new DelegateCommand
             {
-                CanExecuteFunc = () => AutoStart.IsStartup("RepoM"),
-                CommandAction = () => AutoStart.SetStartup("RepoM", false),
+                CanExecuteFunc = () => AutoStart.IsStartup(APP_NAME),
+                CommandAction = () => AutoStart.SetStartup(APP_NAME, false),
             };
 
     /// <summary>

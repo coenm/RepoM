@@ -2,9 +2,7 @@ namespace RepoM.Plugin.SonarCloud.Tests;
 
 using SonarQube.Net.Common.Authentication;
 using SonarQube.Net;
-using VerifyXunit;
 
-[UsesVerify]
 public class PocSonarCloud
 {
     private readonly SonarQubeClient _client;

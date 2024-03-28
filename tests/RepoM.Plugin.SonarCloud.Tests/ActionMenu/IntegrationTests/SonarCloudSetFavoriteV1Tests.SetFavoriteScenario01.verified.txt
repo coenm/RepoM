@@ -1,0 +1,13 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Star repository on SonarCloud,
+    RepositoryCommand: {
+      $type: SonarCloudSetFavoriteRepositoryCommand,
+      Key: dummy
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

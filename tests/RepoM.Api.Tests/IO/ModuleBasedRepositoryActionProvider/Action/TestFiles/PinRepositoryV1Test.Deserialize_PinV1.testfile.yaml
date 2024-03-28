@@ -1,9 +1,0 @@
-repository-actions:
-  actions:
-  - type: pin-repository@1
-  - type: pin-repository@1
-    mode: toggle
-  - type: pin-repository@1
-    mode: pin
-  - type: pin-repository@1
-    mode: unpin

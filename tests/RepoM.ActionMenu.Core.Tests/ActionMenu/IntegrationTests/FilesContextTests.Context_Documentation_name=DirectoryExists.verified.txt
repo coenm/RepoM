@@ -1,0 +1,14 @@
+﻿[
+  {
+    Name: Create Documentation directory,
+    RepositoryCommand: {
+      Executable: cmd,
+      Arguments: [
+        /k mkdir "G:\\My Drive\\RepoDocs\\github.com\\"
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

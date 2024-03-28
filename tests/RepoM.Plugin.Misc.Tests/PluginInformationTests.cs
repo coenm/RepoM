@@ -23,7 +23,7 @@ public class PluginInformationTests
         // assert
         Assert.NotNull(result);
         result.Name.Should().NotBeNullOrWhiteSpace();
-        result.Description.Should().NotBeNullOrWhiteSpace();
+        result.ToolTip.Should().NotBeNullOrWhiteSpace();
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class PluginInformationTests
         IEnumerable<PackageAttribute> packagesInformation = PluginStore.Assemblies.Select(GetFromAssembly);
 
         // assert
-        packagesInformation.Should().OnlyHaveUniqueItems(a => a.Description);
+        packagesInformation.Should().OnlyHaveUniqueItems(a => a.ToolTip);
     }
 
     private static PackageAttribute GetFromAssembly(Assembly assembly)

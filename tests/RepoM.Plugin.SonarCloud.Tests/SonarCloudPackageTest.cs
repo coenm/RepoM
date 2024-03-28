@@ -3,15 +3,13 @@ namespace RepoM.Plugin.SonarCloud.Tests;
 using System;
 using FakeItEasy;
 using RepoM.Api.Common;
-using RepoM.Core.Plugin.Expressions;
 using SimpleInjector;
 using Xunit;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
-using VerifyXunit;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
 
-[UsesVerify]
 public class SonarCloudPackageTest
 {
     private readonly Container _container;
@@ -86,6 +84,6 @@ public class SonarCloudPackageTest
     private void RegisterExternals(Container container)
     {
         container.RegisterInstance(_appSettingsService);
-        container.RegisterSingleton(A.Dummy<IRepositoryExpressionEvaluator>);
+        container.RegisterSingleton(A.Dummy<ILogger>);
     }
 }

@@ -1,0 +1,13 @@
+﻿[
+  {
+    Name: dummy-name(evaluated),
+    RepositoryCommand: {
+      Executable: abc.exe(evaluated),
+      Arguments: [
+        a b x(evaluated)
+      ]
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

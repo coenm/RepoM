@@ -1,0 +1,97 @@
+﻿[
+  {
+    Name: repository.pwd2 ,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: file name C:\file1.env,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: file name C:\file2.env,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: env name Develop env(DEF):`my def 12`,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: env name Test env(DEF):`my def 12`,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: env name Acceptation env(DEF):`my def 12`,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: env name Production env(DEF):`my def 12`,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Text coenm drinks a lot of beer and winesub coen in VISUAL Studio Code 7 https://sonarcloud.io/project/overview?id=sf23-2 env(DEF) my def 12-second!,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: my-folder,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true,
+    SubActions: [
+      {
+        Name: Text coenm23 in VISUAL Studio Code 7 ,
+        RepositoryCommand: {},
+        Repository: {Scrubbed},
+        ExecutionCausesSynchronizing: false,
+        CanExecute: true
+      }
+    ]
+  },
+  {
+    Name: git,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true,
+    SubActions: [
+      {
+        Name: Checkout,
+        RepositoryCommand: {},
+        Repository: {Scrubbed},
+        ExecutionCausesSynchronizing: false,
+        CanExecute: true
+      },
+      {
+        Name: CheckOut!,
+        RepositoryCommand: {},
+        Repository: {Scrubbed},
+        ExecutionCausesSynchronizing: false,
+        CanExecute: true
+      }
+    ]
+  }
+]

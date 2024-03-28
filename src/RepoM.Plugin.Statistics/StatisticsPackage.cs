@@ -3,14 +3,14 @@ namespace RepoM.Plugin.Statistics;
 using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryOrdering;
-using RepoM.Core.Plugin.VariableProviders;
+using RepoM.Plugin.Statistics.ActionMenu.Context;
 using RepoM.Plugin.Statistics.Ordering;
 using RepoM.Plugin.Statistics.PersistentConfiguration;
 using RepoM.Plugin.Statistics.RepositoryActions;
-using RepoM.Plugin.Statistics.VariableProviders;
 using SimpleInjector;
 
 [UsedImplicitly]
@@ -72,13 +72,12 @@ public class StatisticsPackage : IPackage
         container.Register<IRepositoryComparerFactory<LastOpenedConfigurationV1>, LastOpenedComparerFactory>(Lifestyle.Singleton);
 
         // action executor
-        container.RegisterDecorator(typeof(IActionExecutor<>), typeof(RecordStatisticsActionExecutorDecorator<>), Lifestyle.Singleton);
-
-        // variable provider
-        container.Collection.Append<IVariableProvider, UsageVariableProvider>(Lifestyle.Singleton);
+        container.RegisterDecorator(typeof(ICommandExecutor<>), typeof(RecordStatisticsCommandExecutorDecorator<>), Lifestyle.Singleton);
 
         // module
         container.Collection.Append<IModule, StatisticsModule>(Lifestyle.Singleton);
+
+        container.Collection.Append<ITemplateContextRegistration, UsageVariables>(Lifestyle.Singleton);
     }
 
     private static void RegisterInternals(Container container)
@@ -86,7 +85,7 @@ public class StatisticsPackage : IPackage
         container.Register<IStatisticsService, StatisticsService>(Lifestyle.Singleton);
     }
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<StatisticsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = new StatisticsConfigV1

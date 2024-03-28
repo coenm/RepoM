@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
+    <ProjectReference Include="..\RepoM.ActionMenu.Interface\RepoM.ActionMenu.Interface.csproj" />
     <ProjectReference Include="..\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj" />
   </ItemGroup>
 </Project>

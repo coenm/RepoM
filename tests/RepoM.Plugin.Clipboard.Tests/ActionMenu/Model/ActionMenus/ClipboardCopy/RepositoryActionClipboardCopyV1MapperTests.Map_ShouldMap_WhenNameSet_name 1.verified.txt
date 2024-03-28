@@ -1,0 +1,12 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: name 1(evaluated),
+    RepositoryCommand: {
+      $type: CopyToClipboardRepositoryCommand,
+      Text: (evaluated)
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Core.Plugin.RepositoryActions.Actions;
+using RepoM.Core.Plugin.RepositoryActions.Commands;
 
 public abstract class RepositoryActionBase
 {
@@ -13,7 +13,7 @@ public abstract class RepositoryActionBase
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
-    public IAction Action { get; init; } = NullAction.Instance;
+    public IRepositoryCommand Action { get; init; } = NullRepositoryCommand.Instance;
 
     public IRepository Repository { get; }
 

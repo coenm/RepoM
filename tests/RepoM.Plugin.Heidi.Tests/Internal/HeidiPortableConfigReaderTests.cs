@@ -16,7 +16,6 @@ using VerifyXunit;
 using Xunit;
 
 [UsesEasyTestFile]
-[UsesVerify]
 public class HeidiPortableConfigReaderTests
 {
     private readonly HeidiPortableConfigReader _sut;

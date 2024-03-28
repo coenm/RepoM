@@ -2,6 +2,7 @@
   {
     AssemblyPath: d:\dummy\RepoM.Plugin.Abc.dll,
     Name: RepoM.Plugin.Abc.dll,
+    ToolTip: ,
     Description: ,
     Hash: AQI=
   }

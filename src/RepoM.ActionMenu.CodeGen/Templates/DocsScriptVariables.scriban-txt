@@ -1,0 +1,94 @@
+﻿{{~
+func is_const(member)
+    ret member.IsConst;
+end
+
+func is_funcs(member)
+    ret !member.IsConst;
+end
+
+func prefix_module(member)
+    ret module.Name | string.append "." | string.append member | string.downcase;
+end
+
+module_name = module.Name | string.downcase;
+~}}
+{{~ if !module.IsBuiltin ~}}
+# `{{module.Name}}`
+
+{{ module.Description }}
+
+{{~ end ~}}
+{{~ if array.size(module.Members) > 0  ~}}
+This module contains the following methods, variables and/or constants:
+
+  {{~ for member in module.Members ~}}
+- [`{{ prefix_module member.Name }}`](#{{ member.Name | string.downcase }})
+  {{~ end ~}}
+{{~ end ~}}
+{{~ ~}}
+{{~ for member in module.Members ~}}
+
+## {{ member.Name }}
+
+`{{ prefix_module member.Name }}{{~ if member.Params.size > 0 ~}}({{~ for param in member.Params ~}}{{ param.Name }}{{ param.IsOptional?'?':''}}{{ for.last?'':',' }}{{~ end ~}}){{~ end ~}}`
+
+  {{~ if member.Description ~}}
+{{ member.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+  {{~ end ~}}
+  {{~ if member.Params.size > 0 ~}}
+
+Argument{{if member.Params.size > 1}}s{{end}}:
+
+    {{~ for param in member.Params ~}}
+- `{{ param.Name }}`: {{ param.Description}}
+    {{~end ~}}
+  {{~ end ~}}
+  {{~ if member.Returns ~}}
+
+### Returns
+
+{{ member.Returns | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+  {{~ end ~}}
+  {{~ if member.Remarks ~}}
+
+### Remarks
+
+{{ member.Remarks | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+  {{~ end ~}}
+  {{~ if member.Examples ~}}
+
+### Example
+      {{ if !string.empty member.Examples.Description }}
+{{ member.Examples.Description | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+      {{ end }}
+      {{~ for example_item in member.Examples.Items ~}}
+        {{~ if example_item.TypeName == 'Code' ~}}
+
+```{{ example_item.Language | string.downcase }}
+     {{~ if example_item.UseRaw ~}}
+{{ example_item.Content | string.rstrip }}
+    {{~ else ~}}
+{{ example_item.Content | regex.replace `^\s{4}` '' 'm' | string.rstrip }}
+    {{~ end ~}}
+```
+
+{{~ else if example_item.TypeName == 'Snippet' ~}}
+{{ example_item.Mode | string.downcase }}: {{ example_item.Name }}
+
+        {{~ else if example_item.TypeName == 'Header' ~}}
+#### {{ example_item.Text }}
+
+        {{~ else if example_item.TypeName == 'Text' ~}}
+{{ example_item.Content }}
+
+        {{~ else if example_item.TypeName == 'Paragraph' ~}}
+
+{{ example_item.Text }}
+
+        {{~ else ~}}
+NAME NOT FOUND!! {{ example_item.TypeName }}.      
+        {{~ end ~}}
+      {{~ end ~}}
+  {{~ end ~}}  
+{{~ end ~}}

@@ -1,8 +1,0 @@
-repository-actions:
-  actions:
-  - type: foreach@1
-    enumerable: '{var.DTAP}'
-    variable: environment
-    actions:
-    - type: just-text@1
-      name: '{var.environment} {var.url}'

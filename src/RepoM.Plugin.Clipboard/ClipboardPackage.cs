@@ -2,11 +2,11 @@ namespace RepoM.Plugin.Clipboard;
 
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.ActionMenu.Interface.SimpleInjector;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Plugin.Clipboard.ActionProvider;
+using RepoM.Plugin.Clipboard.RepositoryAction;
+using RepoM.Plugin.Clipboard.RepositoryAction.Actions;
 using SimpleInjector;
 using TextCopy;
 
@@ -25,14 +25,14 @@ public class ClipboardPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionClipboardCopyV1>();
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionClipboardCopyV1Mapper>(Lifestyle.Singleton);
+        container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.ClipboardCopy.RepositoryActionClipboardCopyV1>();
+        container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.ClipboardCopy.RepositoryActionClipboardCopyV1Mapper>(Lifestyle.Singleton);
 
         // ordering
         // (see Statistics for example)
 
         // action executor
-        container.Register(typeof(IActionExecutor<>), new[] { typeof(ClipboardPackage).Assembly, }, Lifestyle.Singleton);
+        container.Register<ICommandExecutor<CopyToClipboardRepositoryCommand>, CopyToClipboardRepositoryCommandExecutor>(Lifestyle.Singleton);
 
         // variable provider
 

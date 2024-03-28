@@ -63,12 +63,12 @@ public static class StatusCompressor
 
         if (repository.CurrentBranchIsOnTag)
         {
-            // put tabs in parenthesis ()
+            // put tabs in parentheses
             branch = $"({branch})";
         }
         else
         {
-            // put commit shas in parenthesis (), shorten them and show ellipses afterwards
+            // put commit shas in parentheses, shorten them and show ellipses afterward
             if (repository.CurrentBranchIsDetached && branch.Length > COMMIT_SHA_DISPLAY_CHARS)
             {
                 branch = $"({branch[..COMMIT_SHA_DISPLAY_CHARS]}{StatusCharacterMap.ELLIPSES_SIGN})";
@@ -87,6 +87,7 @@ public static class StatusCompressor
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AppendUpStream(Repository repository, StringBuilder builder)
     {
         var isAhead = (repository.AheadBy ?? 0) > 0;

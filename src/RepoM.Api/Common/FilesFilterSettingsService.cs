@@ -50,7 +50,7 @@ public class FilesFilterSettingsService : IFilterSettingsService
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Could not copy template file '{templateFilename}' to '{file}'", templateFilename, file);
+                    _logger.LogError(e, "Could not copy template file '{TemplateFilename}' to '{File}'", templateFilename, file);
                 }
             }
 
@@ -84,7 +84,7 @@ public class FilesFilterSettingsService : IFilterSettingsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not load configuration from file '{file}'. {message}", file, ex.Message);
+            _logger.LogError(ex, "Could not load configuration from file '{File}'. {Message}", file, ex.Message);
             throw;
         }
     }

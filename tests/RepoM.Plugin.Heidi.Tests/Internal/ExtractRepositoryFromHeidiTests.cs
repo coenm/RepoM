@@ -8,7 +8,6 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class ExtractRepositoryFromHeidiTests
 {
     private readonly ExtractRepositoryFromHeidi _sut;

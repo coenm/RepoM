@@ -1,18 +1,10 @@
 namespace RepoM.App;
 
-using ExpressionStringEvaluator.Methods;
-using ExpressionStringEvaluator.VariableProviders.DateTime;
-using ExpressionStringEvaluator.VariableProviders;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.Git.ProcessExecution;
 using RepoM.Api.Git;
-using RepoM.Api.IO.ExpressionEvaluator;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Deserialization;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.IO.VariableProviders;
 using RepoM.Api.IO;
 using RepoM.Api.Ordering.Az;
 using RepoM.Api.Ordering.Composition;
@@ -21,7 +13,6 @@ using RepoM.Api.Ordering.Label;
 using RepoM.Api.Ordering.Score;
 using RepoM.Api.Ordering.Sum;
 using RepoM.Api.RepositoryActions.Decorators;
-using RepoM.Api.RepositoryActions.Executors;
 using RepoM.App.i18n;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryFiltering.QueryMatchers;
@@ -29,13 +20,11 @@ using RepoM.App.RepositoryFiltering;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
 using RepoM.Core.Plugin.Common;
-using RepoM.Core.Plugin.Expressions;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using System.IO.Abstractions;
-using System.Reflection;
 using System;
 using System.Threading.Tasks;
 using SimpleInjector;
@@ -44,11 +33,8 @@ using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using RepoM.App.Services.HotKey;
 using RepoM.Api;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.Services.Common;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using System.Runtime.Caching;
+using RepoM.App.ActionMenuCore;
 
 internal static class Bootstrapper
 {
@@ -64,8 +50,6 @@ internal static class Bootstrapper
         Container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>(Lifestyle.Singleton);
         Container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>(Lifestyle.Singleton);
         Container.RegisterInstance<IAppDataPathProvider>(DefaultAppDataPathProvider.Instance);
-        Container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>(Lifestyle.Singleton);
-        Container.RegisterDecorator<IRepositoryActionProvider, LoggingRepositoryActionProviderDecorator>(Lifestyle.Singleton);
         Container.Register<IRepositoryReader, DefaultRepositoryReader>(Lifestyle.Singleton);
         Container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);
         Container.Register<IRepositoryStore, DefaultRepositoryStore>(Lifestyle.Singleton);
@@ -80,9 +64,10 @@ internal static class Bootstrapper
         Container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>(Lifestyle.Singleton);
         Container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
         Container.RegisterInstance<IClock>(SystemClock.Instance);
-        Container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
+
+        Container.Register<IRepositoryTagsFactory, RepositoryTagsFactoryV2>(Lifestyle.Singleton);
         Container.RegisterDecorator<IRepositoryTagsFactory, LoggingRepositoryTagsFactoryDecorator>(Lifestyle.Singleton);
-        Container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
+
         Container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
 
         Container.Register<IRepositoryMatcher, RepositoryMatcher>(Lifestyle.Singleton);
@@ -100,74 +85,8 @@ internal static class Bootstrapper
 
         Container.RegisterInstance<IFileSystem>(fileSystem);
 
-        Container.Register<IRepositoryExpressionEvaluator, RepositoryExpressionEvaluator>(Lifestyle.Singleton);
-        Assembly[] repoExpressionEvaluators =
-            {
-                typeof(IVariableProvider).Assembly,
-                typeof(RepositoryExpressionEvaluator).Assembly,
-                typeof(IRepositoryExpressionEvaluator).Assembly,
-            };
-
-        RegisterExpressionStringVariableProviders();
-
-        Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, CustomEnvironmentVariableVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, RepoMVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<Core.Plugin.VariableProviders.IVariableProvider, RepositoryVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, VariableProviderAdapter>(Lifestyle.Singleton);
-
-        Container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);
-        Container.RegisterInstance(new DateTimeVariableProviderOptions
-        {
-            DateTimeProvider = () => DateTime.Now,
-        });
-        Container.RegisterInstance(new DateTimeNowVariableProviderOptions
-        {
-            DateTimeProvider = () => DateTime.Now,
-        });
-        Container.RegisterInstance(new DateTimeDateVariableProviderOptions
-        {
-            DateTimeProvider = () => DateTime.Now,
-        });
-
-        Container.Register<ActionDeserializerComposition>(Lifestyle.Singleton);
-
-        // Register custom Repository Action deserializers
-        var actionDeserializerTypes = GetExportedTypesFrom(typeof(IActionDeserializer).Assembly)
-          .Where(t => typeof(IActionDeserializer).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
-          .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, })
-          .Where(t => t != typeof(DefaultActionDeserializer<>));
-        Container.Collection.Register<IActionDeserializer>(actionDeserializerTypes, Lifestyle.Singleton);
-
-        // Register all repository action types
-        GetExportedTypesFrom(typeof(IActionDeserializer).Assembly)
-            .Where(t => typeof(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction).GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
-            .Where(t => t.GetTypeInfo() is { IsAbstract: false, IsGenericTypeDefinition: false, })
-            .Where(t => t != typeof(Api.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction))
-            .ForEach(t => Container.RegisterDefaultRepositoryActionDeserializerForType(t));
-
-        static IEnumerable<Type> GetExportedTypesFrom(Assembly assembly)
-        {
-            try
-            {
-                return assembly.DefinedTypes.Select(info => info.AsType());
-            }
-            catch (NotSupportedException)
-            {
-                // A type load exception would typically happen on an Anonymously Hosted DynamicMethods
-                // Assembly and it would be safe to skip this exception.
-                return Enumerable.Empty<Type>();
-            }
-        }
+        ActionMenu.Core.Bootstrapper.RegisterServices(Container);
         
-        Container.Register<ActionMapperComposition>(Lifestyle.Singleton);
-        Container.Collection.Register<IActionToRepositoryActionMapper>(
-            new[] { typeof(IActionToRepositoryActionMapper).Assembly, },
-            Lifestyle.Singleton);
-
-        Container.Register<IRepositoryActionDeserializer, YamlDynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
-        Container.Register<RepositorySpecificConfiguration>(Lifestyle.Singleton);
-
-
         Container.RegisterSingleton<IRepositoryComparerFactory, RepositoryComparerCompositionFactory>();
         Container.RegisterSingleton<IRepositoryScoreCalculatorFactory, RepositoryScoreCalculatorFactory>();
 
@@ -182,24 +101,14 @@ internal static class Bootstrapper
         Container.Register<IRepositoryComparerFactory<SumComparerConfigurationV1>, SumRepositoryComparerFactory>(Lifestyle.Singleton);
 
         Container.RegisterSingleton<ActionExecutor>();
-        Container.Register(typeof(IActionExecutor<>), new[] { typeof(DelegateActionExecutor).Assembly, }, Lifestyle.Singleton);
+        Container.Register(typeof(ICommandExecutor<>), new[] { typeof(CoreBootstrapper).Assembly, }, Lifestyle.Singleton);
         Container.RegisterDecorator(
-            typeof(IActionExecutor<>),
-            typeof(LoggerActionExecutorDecorator<>),
+            typeof(ICommandExecutor<>),
+            typeof(LoggerCommandExecutorDecorator<>),
             Lifestyle.Singleton);
 
         Container.RegisterSingleton<HotKeyService>();
         Container.RegisterSingleton<WindowSizeService>();
-    }
-
-    private static void RegisterExpressionStringVariableProviders()
-    {
-        Container.Collection.Append<IVariableProvider, DateTimeNowVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, DateTimeTimeVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, DateTimeDateVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, EmptyVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, SlashVariableProvider>(Lifestyle.Singleton);
-        Container.Collection.Append<IVariableProvider, BackslashVariableProvider>(Lifestyle.Singleton);
     }
 
     public static async Task RegisterPlugins(

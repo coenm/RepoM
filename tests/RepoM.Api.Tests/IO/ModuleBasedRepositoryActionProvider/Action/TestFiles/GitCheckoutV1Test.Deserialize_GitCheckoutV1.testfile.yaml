@@ -1,3 +1,0 @@
-repository-actions:
-  actions:
-  - type: git-checkout@1

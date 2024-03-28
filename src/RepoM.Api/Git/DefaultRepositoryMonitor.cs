@@ -15,7 +15,7 @@ using RepoM.Core.Plugin.RepositoryFinder;
 
 public class DefaultRepositoryMonitor : IRepositoryMonitor
 {
-    public event EventHandler<Repository>? OnChangeDetected;
+    public event EventHandler<IRepository>? OnChangeDetected;
     public event EventHandler<string>? OnDeletionDetected;
     public event EventHandler<bool>? OnScanStateChanged;
 
@@ -66,7 +66,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     public Task ScanForLocalRepositoriesAsync()
     {
-        _logger.LogDebug("{method} - repo scanning", nameof(ScanForLocalRepositoriesAsync));
+        _logger.LogDebug("{Method} - repo scanning", nameof(ScanForLocalRepositoriesAsync));
         Scanning = true;
         OnScanStateChanged?.Invoke(this, Scanning);
 
@@ -96,7 +96,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             {
                 foreach (var head in _repositoryStore.Get())
                 {
-                    _logger.LogDebug("{method} - repo {head}", nameof(ScanRepositoriesFromStoreAsync), head);
+                    _logger.LogDebug("{Method} - repo {Head}", nameof(ScanRepositoriesFromStoreAsync), head);
                     OnCheckKnownRepository(head, KnownRepositoryNotifications.WhenFound);
                 }
             });
@@ -108,22 +108,31 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _repositoryStore.Set(heads);
     }
 
-    private void OnFoundNewRepository(string file)
+    private async void OnFoundNewRepository(string file)
     {
-        _logger.LogDebug("{method} - repo {file}", nameof(OnFoundNewRepository), file);
+        _logger.LogDebug("{Method} - repo {File}", nameof(OnFoundNewRepository), file);
 
-        Repository? repo = _repositoryReader.ReadRepository(file);
+        Repository? repo = null;
+        try
+        {
+            repo = await _repositoryReader.ReadRepositoryAsync(file);
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning(e, "Something went wrong while reading repo.");
+        }
+
         if (repo?.WasFound ?? false)
         {
             OnRepositoryChangeDetected(repo);
         }
     }
 
-    private void OnCheckKnownRepository(string file, KnownRepositoryNotifications notification)
+    private async Task OnCheckKnownRepository(string file, KnownRepositoryNotifications notification)
     {
-        _logger.LogDebug("{method} - start {head}", nameof(OnCheckKnownRepository), file);
+        _logger.LogDebug("{Method} - start {Head}", nameof(OnCheckKnownRepository), file);
 
-        Repository? repo = _repositoryReader.ReadRepository(file);
+        Repository? repo = await _repositoryReader.ReadRepositoryAsync(file);
         if (repo?.WasFound ?? false)
         {
             if (notification.HasFlag(KnownRepositoryNotifications.WhenFound))
@@ -142,6 +151,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private void ObserveRepositoryChanges()
     {
+        _logger.LogTrace("ObserveRepositoryChanges start");
+
         _detectors = new List<IRepositoryDetector>();
 
         foreach (var path in _pathProvider.GetPaths())
@@ -158,20 +169,29 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             detector.OnDelete = OnRepositoryDeletionDetected;
             detector.Setup(path, DelayGitRepositoryStatusAfterCreationMilliseconds);
         }
+
+        _logger.LogTrace("ObserveRepositoryChanges finished");
     }
 
     public void Observe()
     {
+        _logger.LogTrace("Monitor.Observe starting");
         if (_detectors == null)
         {
+            _logger.LogTrace("Monitor.Observe ScanRepositoriesFromStoreAsync");
             ScanRepositoriesFromStoreAsync();
 
+            _logger.LogTrace("Monitor.Observe ObserveRepositoryChanges");
             ObserveRepositoryChanges();
         }
 
+        _logger.LogTrace("Monitor.Observe starting detectors");
         _detectors?.ForEach(w => w.Start());
+        _logger.LogTrace("Monitor.Observe starting detectors finished");
 
         _autoFetchHandler.Active = true;
+
+        _logger.LogTrace("Monitor.Observe finished");
     }
 
     public void Reset()
@@ -204,7 +224,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _repositoryInformationAggregator.RemoveByPath(path);
     }
 
-    public void SetPinned(bool newValue, Repository repository)
+    public void SetPinned(bool newValue, IRepository repository)
     {
         if (newValue && !_pinned.ContainsKey(repository.SafePath))
         {
@@ -224,7 +244,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         return _pinned.ContainsKey(repository.SafePath);
     }
 
-    private void CreateRepositoryObserver(Repository repo, string path)
+    private void CreateRepositoryObserver(IRepository repo, string path)
     {
         if (!_repositoryObservers.ContainsKey(path))
         {
@@ -236,10 +256,10 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         }
 
         _repositoryObservers[path].Start();
-        _logger.LogDebug("{method} - repo {repo}, path: {path} (total length: {repositoryObserversLength})", nameof(CreateRepositoryObserver), repo.Name, path, _repositoryObservers.Count);
+        _logger.LogDebug("{Method} - repo {Repo}, path: {Path} (total length: {RepositoryObserversLength})", nameof(CreateRepositoryObserver), repo.Name, path, _repositoryObservers.Count);
     }
 
-    private void OnRepositoryChangeDetected(Repository repo)
+    private void OnRepositoryChangeDetected(IRepository repo)
     {
         var path = repo.Path;
 
@@ -253,15 +273,15 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             return;
         }
 
-        _logger.LogDebug("{method} - repo {head}", nameof(OnRepositoryChangeDetected), repo.Path);
+        _logger.LogDebug("{Method} - repo {Head}", nameof(OnRepositoryChangeDetected), repo.Path);
 
         if (!_repositoryInformationAggregator.HasRepository(path))
         {
-            _logger.LogDebug("{method} - create observer {head}", nameof(OnRepositoryChangeDetected), repo.Path);
+            _logger.LogDebug("{Method} - create observer {Head}", nameof(OnRepositoryChangeDetected), repo.Path);
             CreateRepositoryObserver(repo, path);
 
             // use that delay to prevent a lot of sequential writes 
-            // when a lot repositories get found in a row
+            // when a lot of repositories get found in a row
             _storeFlushTimer.Change(5000, Timeout.Infinite);
         }
 
@@ -270,9 +290,9 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _repositoryInformationAggregator.Add(repo, this);
     }
 
-    private void OnRepositoryObserverChange(Repository repository)
+    private void OnRepositoryObserverChange(IRepository repository)
     {
-        _logger.LogDebug("{method} - repo {path}", nameof(OnRepositoryObserverChange), repository.Path);
+        _logger.LogDebug("{Method} - repo {Path}", nameof(OnRepositoryObserverChange), repository.Path);
         OnCheckKnownRepository(repository.Path, KnownRepositoryNotifications.WhenFound | KnownRepositoryNotifications.WhenNotFound);
     }
 
@@ -294,7 +314,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             return;
         }
 
-        _logger.LogDebug("{method} - repo {head}", nameof(OnRepositoryDeletionDetected), repoPath);
+        _logger.LogDebug("{Method} - repo {Head}", nameof(OnRepositoryDeletionDetected), repoPath);
 
         if (_repositoryIgnoreStore.IsIgnored(repoPath))
         {
@@ -310,9 +330,9 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     public bool Scanning { get; private set; } = false;
 
-    public int DelayGitRepositoryStatusAfterCreationMilliseconds { get; set; } = 5000;
+    public int DelayGitRepositoryStatusAfterCreationMilliseconds { get; init; } = 5000;
 
-    public int DelayGitStatusAfterFileOperationMilliseconds { get; set; } = 500;
+    public int DelayGitStatusAfterFileOperationMilliseconds { get; init; } = 500;
 
     [Flags]
     private enum KnownRepositoryNotifications

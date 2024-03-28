@@ -20,7 +20,6 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
-[UsesVerify]
 public class HeidiConfigurationServiceTests
 {
     private const string FILENAME = "heidi.portable.txt";

@@ -1,0 +1,24 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Copy static text when feature branch,
+    RepositoryCommand: {
+      $type: CopyToClipboardRepositoryCommand,
+      Text: static text
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: Copy git checkout command to clipboard,
+    RepositoryCommand: {
+      $type: CopyToClipboardRepositoryCommand,
+      Text: git checkout -b branch feature/123-my-new-ui-with-multiple-new-screens-so-this-has-a-long-branch-name
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

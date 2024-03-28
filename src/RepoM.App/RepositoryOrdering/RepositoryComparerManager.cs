@@ -37,7 +37,7 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Could not get comparer configuration. Falling back to default. {message}", e.Message);
+            _logger.LogError(e, "Could not get comparer configuration. Falling back to default. {Message}", e.Message);
         }
         
         foreach ((var key, IRepositoriesComparerConfiguration config) in multipleConfigurations)
@@ -46,12 +46,12 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
             {
                 if (!comparers.TryAdd(key, new RepositoryComparerAdapter(repositoryComparerFactory.Create(config))))
                 {
-                    _logger.LogWarning("Could not add comparer for key '{key}'.", key);
+                    _logger.LogWarning("Could not add comparer for key '{Key}'.", key);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not create a repository comparer for key '{key}'. {message}", key, e.Message);
+                _logger.LogError(e, "Could not create a repository comparer for key '{Key}'. {Message}", key, e.Message);
             }
         }
 
@@ -72,7 +72,7 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
         }
         else if (!SetRepositoryComparer(_appSettingsService.SortKey))
         {
-            _logger.LogInformation("Could not set comparer '{key}'. Falling back to first comparer.", _appSettingsService.SortKey);
+            _logger.LogInformation("Could not set comparer '{Key}'. Falling back to first comparer.", _appSettingsService.SortKey);
             SetRepositoryComparer(_repositoryComparerKeys[0]);
         }
     }
@@ -89,7 +89,7 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
     {
         if (!_comparer.SetComparer(key))
         {
-            _logger.LogWarning("Could not update/set the comparer key {key}.", key);
+            _logger.LogWarning("Could not update/set the comparer key {Key}.", key);
             return false;
         }
 

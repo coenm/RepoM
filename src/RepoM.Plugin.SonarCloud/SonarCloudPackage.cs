@@ -1,12 +1,14 @@
 namespace RepoM.Plugin.SonarCloud;
 
 using System.Threading.Tasks;
-using ExpressionStringEvaluator.Methods;
 using JetBrains.Annotations;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoM.ActionMenu.Interface.Scriban;
+using RepoM.ActionMenu.Interface.SimpleInjector;
 using RepoM.Core.Plugin;
+using RepoM.Core.Plugin.RepositoryActions;
+using RepoM.Plugin.SonarCloud.ActionMenu.Context;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
+using RepoM.Plugin.SonarCloud.RepositoryCommands;
 using SimpleInjector;
 
 [UsedImplicitly]
@@ -37,14 +39,21 @@ public class SonarCloudPackage : IPackage
 
     private static void RegisterServices(Container container)
     {
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionSonarCloudSetFavoriteV1>();
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionSonarCloudV1Mapper>(Lifestyle.Singleton);
-        container.Collection.Append<IMethod, SonarCloudIsFavoriteMethod>(Lifestyle.Singleton);
+        // repository actions
+        container.RegisterActionMenuType<ActionMenu.Model.ActionMenus.SetFavorite.RepositoryActionSonarCloudSetFavoriteV1>();
+        container.RegisterActionMenuMapper<ActionMenu.Model.ActionMenus.SetFavorite.RepositoryActionSonarCloudSetFavoriteV1Mapper>(Lifestyle.Singleton);
+
+        // others
         container.Register<ISonarCloudFavoriteService, SonarCloudFavoriteService>(Lifestyle.Singleton);
         container.Collection.Append<IModule, SonarCloudModule>(Lifestyle.Singleton);
+
+        // action executor
+        container.Register<ICommandExecutor<SonarCloudSetFavoriteRepositoryCommand>, SonarCloudSetFavoriteRepositoryCommandExecutor>(Lifestyle.Singleton);
+
+        container.Collection.Append<ITemplateContextRegistration, SonarCloudVariables>(Lifestyle.Singleton);
     }
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<SonarCloudConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = new SonarCloudConfigV1()

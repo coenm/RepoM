@@ -59,11 +59,6 @@ internal static class PropertyInfoExtensions
                 attributes.OfType<RequiredAttribute>().Any() ? "required" : "optional",
             };
 
-        if (attributes.Any(attribute => attribute is EvaluatedPropertyAttribute))
-        {
-            props.Add("evaluated");
-        }
-
         if (attributes.Any(attribute => attribute is UiConfiguredAttribute))
         {
             props.Add("UI configured");

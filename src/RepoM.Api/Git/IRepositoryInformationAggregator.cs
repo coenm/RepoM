@@ -1,10 +1,11 @@
 namespace RepoM.Api.Git;
 
 using System.Collections.ObjectModel;
+using RepoM.Core.Plugin.Repository;
 
 public interface IRepositoryInformationAggregator
 {
-    void Add(Repository repository, IRepositoryMonitor repositoryMonitor);
+    void Add(IRepository repository, IRepositoryMonitor repositoryMonitor);
 
     void RemoveByPath(string path);
 

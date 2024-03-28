@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 {
     private const string HEAD_LOG_FILE = @".git\logs\HEAD";
+    private int _detectionToAlertDelayMilliseconds;
     private IFileSystemWatcher? _watcher;
     private readonly IRepositoryReader _repositoryReader;
     private readonly ILogger _logger;
@@ -28,7 +29,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 
     public void Setup(string path, int detectionToAlertDelayMilliseconds)
     {
-        DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
+        _detectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
         _watcher = _fileSystem.FileSystemWatcher.New(path);
         _watcher.Created += WatcherCreated;
@@ -74,14 +75,21 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         NotifyHeadDeletion(e.OldFullPath);
     }
 
-    private void WatcherChanged(object sender, FileSystemEventArgs e)
+    private async void WatcherChanged(object sender, FileSystemEventArgs e)
     {
         if (!IsHead(e.FullPath))
         {
             return;
         }
 
-        EatRepo(e.FullPath);
+        try
+        {
+            await EatRepo(e.FullPath).ConfigureAwait(false);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Something went down when eating repo");
+        }
     }
 
     private void WatcherCreated(object sender, FileSystemEventArgs e)
@@ -91,8 +99,8 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
             return;
         }
 
-        Task.Run(() => Task.Delay(DetectionToAlertDelayMilliseconds))
-            .ContinueWith(t => EatRepo(e.FullPath));
+        Task.Run(() => Task.Delay(_detectionToAlertDelayMilliseconds))
+            .ContinueWith(async t => await EatRepo(e.FullPath).ConfigureAwait(false));
     }
 
     private static bool IsHead(string path)
@@ -119,10 +127,10 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         return path.IndexOf(HEAD_LOG_FILE, StringComparison.OrdinalIgnoreCase);
     }
 
-    private void EatRepo(string path)
+    private async Task EatRepo(string path)
     {
-        _logger.LogDebug("{method} - repo {head}", nameof(EatRepo), path);
-        Repository? repo = _repositoryReader.ReadRepository(path);
+        _logger.LogDebug("{Method} - repo {Head}", nameof(EatRepo), path);
+        Repository? repo = await _repositoryReader.ReadRepositoryAsync(path).ConfigureAwait(false);
 
         if (repo?.WasFound ?? false)
         {
@@ -135,7 +143,7 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         var path = GetRepositoryPathFromHead(headFile);
         if (!string.IsNullOrEmpty(path))
         {
-            _logger.LogDebug("{method} - repo {head}", nameof(NotifyHeadDeletion), path);
+            _logger.LogDebug("{Method} - repo {Head}", nameof(NotifyHeadDeletion), path);
             OnDelete?.Invoke(path);
         }
     }
@@ -154,6 +162,4 @@ public sealed class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
         _watcher.Dispose();
         _watcher = null;
     }
-
-    public int DetectionToAlertDelayMilliseconds { get; private set; }
 }

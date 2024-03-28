@@ -1,0 +1,72 @@
+﻿{
+  IsCommand: false,
+  IsAction: false,
+  IsFunc: false,
+  IsConst: false,
+  Description: Find files in a given directory based on the search pattern. Resulting filenames are absolute path based.,
+  Returns: Returns an enumerable collection of full paths of the files or directories that matches the specified search pattern.,
+  Examples: {
+    Items: [
+      {
+        TypeName: Text,
+        Content: Locate all solution files in the given directory.
+      },
+      {
+        TypeName: Code,
+        Content:
+find_files 'C:\Users\coenm\RepoM' '*.sln'
+    # find_files('C:\Users\coenm\RepoM','*.sln'),
+        UseRaw: false
+      },
+      {
+        TypeName: Code,
+        Content: ["C:\Users\coenm\RepoM\src\RepoM.sln"],
+        UseRaw: false
+      },
+      {
+        TypeName: Header,
+        Text: Usage
+      },
+      {
+        TypeName: Text,
+        Content: test / para
+      },
+      {
+        TypeName: Code,
+        Content: avc,
+        UseRaw: false
+      },
+      {
+        TypeName: Header,
+        Text: Result
+      },
+      {
+        TypeName: Text,
+        Content: test / para
+      },
+      {
+        TypeName: Header,
+        Text: RepositoryAction sample
+      },
+      {
+        TypeName: Code,
+        Content: abc,
+        UseRaw: false
+      },
+      {
+        TypeName: Code,
+        Language: yaml,
+        Content: DUMMY CONTENT,
+        UseRaw: true
+      },
+      {
+        TypeName: Text,
+        Content: snippet: name1
+      },
+      {
+        TypeName: Text,
+        Content: include: name2
+      }
+    ]
+  }
+}

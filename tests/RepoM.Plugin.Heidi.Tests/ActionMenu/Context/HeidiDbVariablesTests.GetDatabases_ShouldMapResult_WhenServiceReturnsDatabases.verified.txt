@@ -1,0 +1,81 @@
+﻿[
+  {
+    Metadata: {
+      Name: cc,
+      Order: 5
+    },
+    Database: {
+      Key: Key1,
+      Host: Host1,
+      User: usr1,
+      Password: pwd1pwd,
+      Port: 101,
+      UsesWindowsAuthentication: false,
+      DatabaseType: {
+        Name: MariaDB/MySQL,
+        Protocol: SSH
+      },
+      Library: lib1,
+      Comment: comment1,
+      Databases: [
+        db0
+      ]
+    }
+  },
+  {
+    Metadata: {
+      Name: bb,
+      Order: 1,
+      Tags: [
+        Test,
+        Dev
+      ]
+    },
+    Database: {
+      Key: Key2,
+      Host: Host2,
+      User: usr2,
+      Password: pwd2pwd,
+      Port: 102,
+      UsesWindowsAuthentication: true,
+      DatabaseType: {
+        Name: MSSQL,
+        Protocol: named pipe
+      },
+      Library: lib2,
+      Comment: comment2,
+      Databases: [
+        db0,
+        db1
+      ]
+    }
+  },
+  {
+    Metadata: {
+      Name: aa,
+      Order: 5,
+      Tags: [
+        Dev
+      ]
+    },
+    Database: {
+      Key: Key3,
+      Host: Host3,
+      User: usr3,
+      Password: pwd3pwd,
+      Port: 103,
+      UsesWindowsAuthentication: false,
+      DatabaseType: {
+        Name: MSSQL,
+        Protocol: TCP/IP
+      },
+      Library: lib3,
+      Comment: comment3,
+      Databases: [
+        db0,
+        db1,
+        db2
+      ]
+    }
+  }
+]

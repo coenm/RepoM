@@ -2,15 +2,12 @@ namespace RepoM.Plugin.Heidi;
 
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoM.Core.Plugin;
-using RepoM.Core.Plugin.VariableProviders;
 using RepoM.Plugin.Heidi.Internal;
 using SimpleInjector;
-using RepoM.Plugin.Heidi.VariableProviders;
-using RepoM.Plugin.Heidi.ActionProvider;
 using RepoM.Plugin.Heidi.PersistentConfiguration;
+using RepoM.ActionMenu.Interface.Scriban;
+using RepoM.Plugin.Heidi.ActionMenu.Context;
 
 [UsedImplicitly]
 public class HeidiPackage : IPackage
@@ -47,8 +44,6 @@ public class HeidiPackage : IPackage
     private static void RegisterPluginHooks(Container container)
     {
         // repository actions
-        container.RegisterDefaultRepositoryActionDeserializerForType<RepositoryActionHeidiDatabasesV1>();
-        container.Collection.Append<IActionToRepositoryActionMapper, ActionHeidiDatabasesV1Mapper>(Lifestyle.Singleton);
 
         // ordering
         // (see Statistics for example)
@@ -56,11 +51,10 @@ public class HeidiPackage : IPackage
         // action executor
         // (see Statistics for example)
 
-        // variable provider
-        container.Collection.Append<IVariableProvider, HeidiDbVariableProvider>(Lifestyle.Singleton);
-
         // module
         container.Collection.Append<IModule, HeidiModule>(Lifestyle.Singleton);
+
+        container.Collection.Append<ITemplateContextRegistration, HeidiDbVariables>(Lifestyle.Singleton);
     }
 
     private static void RegisterInternals(Container container)
@@ -71,7 +65,7 @@ public class HeidiPackage : IPackage
         container.RegisterInstance<IHeidiPasswordDecoder>(HeidiPasswordDecoder.Instance);
     }
 
-    /// <remarks>This method is used by reflection to generate documentation file</remarks>>
+    /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<HeidiConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = new HeidiConfigV1();
