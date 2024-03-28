@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.Statistics.Tests.Ordering;
 
+using System;
 using FakeItEasy;
 using FluentAssertions;
 using RepoM.Core.Plugin.Common;
@@ -16,6 +17,20 @@ public class UsageScorerFactoryTest
     {
         _clock = A.Fake<IClock>();
         _service = new StatisticsService(_clock);
+    }
+
+    [Fact]
+    public void Ctor_ShouldThrow_WhenArgumentNull()
+    {
+        // arrange
+
+        // act
+        Func<UsageScorerFactory> act1 = () => new UsageScorerFactory(null!, A.Dummy<IClock>());
+        Func<UsageScorerFactory> act2 = () => new UsageScorerFactory(_service, null!);
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
+        act2.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

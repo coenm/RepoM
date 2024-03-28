@@ -12,13 +12,21 @@ using Xunit;
 
 public class HasPullRequestsMatcherTest
 {
-    private readonly IRepository _repository;
-    private readonly IAzureDevOpsPullRequestService _azureDevOpsPullRequestService;
+    private readonly IRepository _repository = A.Fake<IRepository>();
+    private readonly IAzureDevOpsPullRequestService _azureDevOpsPullRequestService = A.Fake<IAzureDevOpsPullRequestService>();
 
-    public HasPullRequestsMatcherTest()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Ctor_ShouldThrow_WhenArgumentNull(bool ignoreCase)
     {
-        _repository = A.Fake<IRepository>();
-        _azureDevOpsPullRequestService = A.Fake<IAzureDevOpsPullRequestService>();
+        // arrange
+
+        // act
+        Func<HasPullRequestsMatcher> act1 = () => new HasPullRequestsMatcher(null!, ignoreCase);
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
     }
 
     [Theory]
@@ -95,11 +103,11 @@ public class HasPullRequestsMatcherTest
     {
         get
         {
-            yield return new object[] { new TermRange("has", null, true, "x", false), };
-            yield return new object[] { new SimpleTerm(string.Empty, string.Empty), };
-            yield return new object[] { new SimpleTerm(string.Empty, "data"), };
-            yield return new object[] { new SimpleTerm("is", "data"), };
-            yield return new object[] { new SimpleTerm("has", "wrong-value"), };
+            yield return [new TermRange("has", null, true, "x", false),];
+            yield return [new SimpleTerm(string.Empty, string.Empty),];
+            yield return [new SimpleTerm(string.Empty, "data"),];
+            yield return [new SimpleTerm("is", "data"),];
+            yield return [new SimpleTerm("has", "wrong-value"),];
         }
     }
 
@@ -107,12 +115,12 @@ public class HasPullRequestsMatcherTest
     {
         get
         {
-            yield return new object[] { new SimpleTerm("has", "prs"), };
-            yield return new object[] { new SimpleTerm("has", "pr"), };
-            yield return new object[] { new SimpleTerm("has", "pull-request"), };
-            yield return new object[] { new SimpleTerm("has", "pull-requests"), };
-            yield return new object[] { new SimpleTerm("has", "pullrequest"), };
-            yield return new object[] { new SimpleTerm("has", "pullrequests"), };
+            yield return [new SimpleTerm("has", "prs"),];
+            yield return [new SimpleTerm("has", "pr"),];
+            yield return [new SimpleTerm("has", "pull-request"),];
+            yield return [new SimpleTerm("has", "pull-requests"),];
+            yield return [new SimpleTerm("has", "pullrequest"),];
+            yield return [new SimpleTerm("has", "pullrequests"),];
         }
     }
 }
