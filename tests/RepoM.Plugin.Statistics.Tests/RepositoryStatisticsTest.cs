@@ -12,6 +12,20 @@ using Xunit;
 public class RepositoryStatisticsTest
 {
     [Fact]
+    public void Ctor_ShouldThrow_WhenArgumentNull()
+    {
+        // arrange
+
+        // act
+        Func<RepositoryStatistics> act1 = () => new RepositoryStatistics(null!, A.Dummy<IClock>());
+        Func<RepositoryStatistics> act2 = () => new RepositoryStatistics("", null!);
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
+        act2.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
     public void Recordings_ShouldBeEmpty_WhenConstructed()
     {
         // arrange

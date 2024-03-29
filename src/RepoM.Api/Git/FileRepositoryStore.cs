@@ -47,7 +47,7 @@ public abstract class FileRepositoryStore : IRepositoryStore
         }
     }
 
-    private IEnumerable<string> Get(string file)
+    private string[] Get(string file)
     {
         if (!_fileSystem.File.Exists(file))
         {

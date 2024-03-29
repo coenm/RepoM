@@ -46,7 +46,7 @@ public class LuceneQueryParserPackageTest
         INamedQueryParser[] instances = _container.GetAllInstances<INamedQueryParser>().ToArray();
 
         // assert
-        _ = instances.Should().HaveCount(1).And.AllBeOfType<LuceneQueryParser>();
+        _ = instances.Should().ContainSingle().And.AllBeOfType<LuceneQueryParser>();
     }
 
     [Fact]

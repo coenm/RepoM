@@ -62,6 +62,22 @@ public class UsageScoreCalculatorTest
     }
 
     [Fact]
+    public void Ctor_ShouldThrow_WhenArgumentNull()
+    {
+        // arrange
+
+        // act
+        Func<UsageScoreCalculator> act1 = () => new UsageScoreCalculator(A.Dummy<IStatisticsService>(), A.Dummy<IClock>(), null!);
+        Func<UsageScoreCalculator> act2 = () => new UsageScoreCalculator(A.Dummy<IStatisticsService>(), null!, _defaultConfig);
+        Func<UsageScoreCalculator> act3 = () => new UsageScoreCalculator(null!, A.Dummy<IClock>(), _defaultConfig);
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
+        act2.Should().Throw<ArgumentNullException>();
+        act3.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
     public void Score_ShouldUseRecordings_WhenCalculating()
     {
         // arrange
