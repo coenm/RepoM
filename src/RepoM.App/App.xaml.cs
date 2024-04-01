@@ -22,6 +22,7 @@ using RepoM.App.Services;
 using Container = SimpleInjector.Container;
 using RepoM.App.Services.HotKey;
 using Serilog.Enrichers;
+using RepoM.Api;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -75,6 +76,9 @@ public partial class App : Application
         Bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
 #endif
 
+        EnsureStartup ensureStartup = Bootstrapper.Container.GetInstance<EnsureStartup>();
+        await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
+        
         UseRepositoryMonitor(Bootstrapper.Container);
 
         _ = Bootstrapper.Container.GetInstance<MainWindow>(); // not sure if this is required.

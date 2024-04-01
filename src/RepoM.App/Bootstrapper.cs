@@ -109,6 +109,8 @@ internal static class Bootstrapper
 
         Container.RegisterSingleton<HotKeyService>();
         Container.RegisterSingleton<WindowSizeService>();
+
+        Container.RegisterSingleton<EnsureStartup>();
     }
 
     public static async Task RegisterPlugins(
