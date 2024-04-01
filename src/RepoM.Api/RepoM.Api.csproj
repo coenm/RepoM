@@ -20,4 +20,11 @@
     <ProjectReference Include="..\RepoM.ActionMenu.Interface\RepoM.ActionMenu.Interface.csproj" />
     <ProjectReference Include="..\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\*.yaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\*.yaml" />
+  </ItemGroup>
 </Project>

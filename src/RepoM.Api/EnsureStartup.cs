@@ -1,39 +1,41 @@
 namespace RepoM.Api;
 
 using System;
-using System.Collections;
-using System.Configuration;
 using System.IO;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using RepoM.Api.Resources;
 using RepoM.Core.Plugin.Common;
 
 public class EnsureStartup
 {
     private readonly IFileSystem _fileSystem;
     private readonly IAppDataPathProvider _appDataProvider;
-    private readonly ILogger _logger;
 
-    public EnsureStartup(IFileSystem fileSystem, IAppDataPathProvider appDataProvider, ILogger logger)
+    public EnsureStartup(IFileSystem fileSystem, IAppDataPathProvider appDataProvider)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _appDataProvider = appDataProvider ?? throw new ArgumentNullException(nameof(appDataProvider));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task EnsureFilesAsync()
     {
-        var filename = Path.Combine(_appDataProvider.AppDataPath, "RepositoryActionsV2.yaml");
+        await CheckOrCreateAsync("RepositoryActionsV2.yaml", () => EmbeddedResources.GetRepositoryActionsV2Yaml());
+    }
 
-        if (!_fileSystem.File.Exists(filename))
+    private async Task CheckOrCreateAsync(string filename, Func<Stream> func)
+    {
+        var fullFilename = Path.Combine(_appDataProvider.AppDataPath, filename);
+
+        if (!_fileSystem.File.Exists(fullFilename))
         {
-            await TryCreateAsync(filename, new MemoryStream()).ConfigureAwait(false);
+            await using Stream stream = func.Invoke();
+            await TryCreateAsync(fullFilename, stream).ConfigureAwait(false);
         }
 
-        if (!_fileSystem.File.Exists(filename))
+        if (!_fileSystem.File.Exists(fullFilename))
         {
-            throw new FileNotFoundException(filename);
+            throw new FileNotFoundException(fullFilename);
         }
     }
 
