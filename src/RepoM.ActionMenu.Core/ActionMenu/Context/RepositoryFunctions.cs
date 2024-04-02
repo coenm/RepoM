@@ -34,6 +34,20 @@ internal partial class RepositoryFunctions : ScribanModuleWithFunctions
     public string Name => _repository.Name;
 
     /// <summary>
+    /// Gets the information if the repository is a bare repository.
+    /// </summary>
+    /// <returns>If the repository is cloned as bare repository.</returns>
+    /// <example>
+    /// <usage/>
+    /// <code>
+    /// repository.is_bare
+    /// </code>
+    /// </example>
+    [ActionMenuContextMember("is_bare")]
+    public bool IsBare => _repository.IsBare;
+
+
+    /// <summary>
     /// Gets the path of the repository. The path is windows or linux based (depending on the running OS) and does NOT end with a (back)slash.
     /// </summary>
     /// <returns>The repository path.</returns>

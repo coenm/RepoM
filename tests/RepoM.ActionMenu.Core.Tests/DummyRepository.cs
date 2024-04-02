@@ -18,6 +18,8 @@ public class DummyRepository : IRepository
 
     public string Name => "dummy name";
 
+    public bool IsBare => false;
+
     public string Path => WindowsPath;
     
     public string WindowsPath=> @"C:\Projects\Github\RepoM";

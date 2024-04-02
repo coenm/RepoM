@@ -6,6 +6,7 @@ This module contains the following methods, variables and/or constants:
 
 - [`repository.branch`](#branch)
 - [`repository.branches`](#branches)
+- [`repository.is_bare`](#is_bare)
 - [`repository.linux_path`](#linux_path)
 - [`repository.local_branches`](#local_branches)
 - [`repository.location`](#location)
@@ -33,6 +34,26 @@ Gets the current branch of the repository
 ### Returns
 
 The name of the current branch.
+
+## is_bare
+
+`repository.is_bare`
+
+Gets the information if the repository is a bare repository.
+
+### Returns
+
+If the repository is cloned as bare repository.
+
+### Example
+      
+#### Usage
+
+
+```
+repository.is_bare
+```
+
 
 ## linux_path
 

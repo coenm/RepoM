@@ -12,6 +12,7 @@ public class Repository : IRepository
 
     public Repository(string path)
     {
+        IsBare = false;
         Name = string.Empty;
         Branches = Array.Empty<string>();
         LocalBranches = Array.Empty<string>();
@@ -43,6 +44,8 @@ public class Repository : IRepository
     {
         return Path.GetHashCode();
     }
+
+    public bool IsBare { get; init; }
 
     public string Name { get; set; }
 

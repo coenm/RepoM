@@ -85,10 +85,16 @@ public class DefaultRepositoryReader : IRepositoryReader
         try
         {
             using var repo = new LibGit2Sharp.Repository(repoPath);
-            RepositoryStatus status = repo.RetrieveStatus();
 
-            var workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
+            RepositoryStatus? status = null;
+            var workingDirectory = new DirectoryInfo(repoPath);
 
+            if (!repo.Info.IsBare)
+            {
+                status = repo.RetrieveStatus();
+                workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
+            }
+            
             if (string.IsNullOrWhiteSpace(workingDirectory.Parent?.FullName))
             {
                 _logger.LogError("WorkingDirectory.Parent.Fullname was null or empty for repository found in '{Path}'. Return null", repoPath);
@@ -99,6 +105,7 @@ public class DefaultRepositoryReader : IRepositoryReader
 
             var repository = new Repository(workingDirectory.FullName)
                 {
+                    IsBare = repo.Info.IsBare,
                     Name = workingDirectory.Name,
                     Location = workingDirectory.Parent.FullName,
                     Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
