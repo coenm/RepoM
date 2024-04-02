@@ -3,6 +3,7 @@ namespace RepoM.Api.Tests;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
@@ -58,15 +59,34 @@ public class EnsureStartupTests
     [InlineData("RepoM.Filtering.yaml")]
     [InlineData("RepoM.Ordering.yaml")]
     [InlineData("appsettings.serilog.json")]
-    public async Task EnsureFilesAsync_ShouldWhenFileDoesNotExists(string filename)
+    public async Task EnsureFilesAsync_ShouldThrowFileNotFoundException_WhenFileDoesNotExists(string filename)
     {
         // arrange
+        A.CallTo(() => _fileSystem.File.Exists(A<string?>._)).Returns(true);
         A.CallTo(() => _fileSystem.File.Exists(A<string>.That.EndsWith(filename))).Returns(false);
 
         // act
         Func<Task> act = _sut.EnsureFilesAsync;
 
         // assert
-        await act.Should().ThrowAsync<FileNotFoundException>();
+        await act.Should().ThrowAsync<FileNotFoundException>().WithMessage("*" + filename);
+    }
+
+    [Theory]
+    [InlineData("RepositoryActionsV2.yaml")]
+    [InlineData("RepoM.Filtering.yaml")]
+    [InlineData("RepoM.Ordering.yaml")]
+    [InlineData("appsettings.serilog.json")]
+    public async Task EnsureFilesAsync_ShouldCreate_WhenFileDoesNotExists(string filename)
+    {
+        // arrange
+        A.CallTo(() => _fileSystem.File.Exists(A<string?>._)).Returns(true);
+        A.CallTo(() => _fileSystem.File.Exists(A<string>.That.EndsWith(filename))).ReturnsNextFromSequence(false, true);
+
+        // act
+        await _sut.EnsureFilesAsync();
+
+        // assert
+        A.CallTo(() => _fileSystem.File.WriteAllBytesAsync(A<string>.That.EndsWith(filename), A<byte[]>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
 }
