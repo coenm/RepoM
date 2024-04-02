@@ -23,7 +23,6 @@ public class EnsureStartup
         await CheckOrCreateAsync("RepositoryActionsV2.yaml", EmbeddedResources.GetRepositoryActionsV2Yaml).ConfigureAwait(false);
         await CheckOrCreateAsync("RepoM.Filtering.yaml", EmbeddedResources.GetFilteringYaml).ConfigureAwait(false);
         await CheckOrCreateAsync("RepoM.Ordering.yaml", EmbeddedResources.GetSortingYaml).ConfigureAwait(false);
-        await CheckOrCreateAsync("RepoM.Ordering.yaml", EmbeddedResources.GetSortingYaml).ConfigureAwait(false);
         await CheckOrCreateAsync("appsettings.serilog.json", EmbeddedResources.GetSerilogAppSettings).ConfigureAwait(false);
     }
 
@@ -31,11 +30,13 @@ public class EnsureStartup
     {
         var fullFilename = Path.Combine(_appDataProvider.AppDataPath, filename);
 
-        if (!_fileSystem.File.Exists(fullFilename))
+        if (_fileSystem.File.Exists(fullFilename))
         {
-            await using Stream stream = func.Invoke();
-            await TryCreateAsync(fullFilename, stream).ConfigureAwait(false);
+            return;
         }
+
+        await using Stream stream = func.Invoke();
+        await TryCreateAsync(fullFilename, stream).ConfigureAwait(false);
 
         if (!_fileSystem.File.Exists(fullFilename))
         {
