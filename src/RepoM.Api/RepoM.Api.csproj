@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\*.yaml" />
+    <None Remove="Resources\*.*" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\*.yaml" />
+    <EmbeddedResource Include="Resources\*.*" />
   </ItemGroup>
 </Project>

@@ -20,7 +20,11 @@ public class EnsureStartup
 
     public async Task EnsureFilesAsync()
     {
-        await CheckOrCreateAsync("RepositoryActionsV2.yaml", () => EmbeddedResources.GetRepositoryActionsV2Yaml());
+        await CheckOrCreateAsync("RepositoryActionsV2.yaml", EmbeddedResources.GetRepositoryActionsV2Yaml).ConfigureAwait(false);
+        await CheckOrCreateAsync("RepoM.Filtering.yaml", EmbeddedResources.GetFilteringYaml).ConfigureAwait(false);
+        await CheckOrCreateAsync("RepoM.Ordering.yaml", EmbeddedResources.GetSortingYaml).ConfigureAwait(false);
+        await CheckOrCreateAsync("RepoM.Ordering.yaml", EmbeddedResources.GetSortingYaml).ConfigureAwait(false);
+        await CheckOrCreateAsync("appsettings.serilog.json", EmbeddedResources.GetSerilogAppSettings).ConfigureAwait(false);
     }
 
     private async Task CheckOrCreateAsync(string filename, Func<Stream> func)

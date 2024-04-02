@@ -64,7 +64,7 @@ public partial class App : Application
         IHmacService hmacService = new HmacSha256Service();
         IPluginFinder pluginFinder = new PluginFinder(fileSystem, hmacService);
 
-        IConfiguration config = SetupConfiguration(fileSystem);
+        IConfiguration config = SetupConfiguration();
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
         logger.LogInformation("Started");
@@ -74,14 +74,14 @@ public partial class App : Application
 
 #if DEBUG
         Bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
+#else
+        Bootstrapper.Container.Options.EnableAutoVerification = false;
 #endif
 
         EnsureStartup ensureStartup = Bootstrapper.Container.GetInstance<EnsureStartup>();
         await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
         
         UseRepositoryMonitor(Bootstrapper.Container);
-
-        _ = Bootstrapper.Container.GetInstance<MainWindow>(); // not sure if this is required.
 
         _moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
         _hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
@@ -115,30 +115,10 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    private static IConfiguration SetupConfiguration(IFileSystem fileSystem)
+    private static IConfiguration SetupConfiguration()
     {
         const string FILENAME = "appsettings.serilog.json";
         var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.AppDataPath, FILENAME);
-        if (!fileSystem.File.Exists(fullFilename))
-        {
-            try
-            {
-                var fullFilenameTemplate = Path.Combine(DefaultAppDataPathProvider.Instance.AppResourcesPath, FILENAME);
-                if (fileSystem.File.Exists(fullFilenameTemplate))
-                {
-                    fileSystem.File.Copy(fullFilenameTemplate, fullFilename);
-                }
-            }
-            catch (Exception)
-            {
-                // swallow
-            }
-        }
-
-        if (!fileSystem.File.Exists(fullFilename))
-        {
-            fullFilename = FILENAME;
-        }
 
         IConfigurationBuilder builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())

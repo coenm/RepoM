@@ -5,10 +5,6 @@ context:
       ret input == null
     end
 
-    func translate(input)
-      ret input
-    end
-
     func get_filename(path)
       ret path | string.split("\\") | array.last
     end
@@ -52,25 +48,19 @@ context:
     end
 
     remote_name_origin = get_remote_origin_name();
-    is_work_repository = remotes_contain("BDO-NL");
+    is_work_repository = remotes_contain("My-Work");
     is_bdo_tis_repository = is_work_repository && file.file_exists(repository.linux_path + "/.azuredevops/Pipelines/gated.yml")
     is_github_repository = remotes_contain("github.com");
-    is_integration_test_framework = remotes_contain("IntegrationServices.IntegrationTestFramework");
-    is_end_to_end_api_test_framework = remotes_contain("EndToEndApiTestFramework");
+
     solution_files = file.find_files(repository.linux_path, "*.sln");
     solution_file = array.first(solution_files);
     system_test_csproj_files = file.find_files(repository.linux_path, "*.SystemTests.csproj");
     smoke_tests_csproj_files = file.find_files(repository.linux_path, "*.SmokeTests.csproj");
     
     exe_vs_code = env.LocalAppData + "/Programs/Microsoft VS Code/code.exe";
-    exe_heidi_sql = "C:/StandAloneProgramFiles/HeidiSQL_12.3_64_Portable/heidisql.exe";
-    exe_ssms = "C:/Program Files (x86)/Microsoft SQL Server Management Studio 18/Common7/IDE/Ssms.exe";
-    exe_monitoring = "C:/Projects/Private/git/SimpleTestRunner/src/TestRunner.Application/bin/Release/net6.0-windows/TestRunner.Application.exe"
     
     path_repo_tis_wat = `C:\Users\Munckhof CJJ\OneDrive - BDO\BDO\TisWatConfig\` + remote_name_origin;
     path_bdo_repo_root = `C:\Projects\Bdo\git\`;
-
-    url_bdo_devops = "https://dev.azure.com/tfs-bdonl/BDO-NL/";
 
 - root_path_repom: C:\\Users\\Munckhof CJJ\\OneDrive - BDO\\BDO\\RepoM\\
 
@@ -112,18 +102,6 @@ context:
   name: runsettings_template_file
   value: '{{ env.REPOZ_CONFIG_PATH }}\\Runsettings.Template.runsettings'
 
-- type: set-variable@1
-  name: devops_environments
-  value: 
-  - name: Develop
-    url: '-d.bdodt.nl'
-  - name: Test
-    url: '-t.bdodt.nl'
-  - name: Acceptation
-    url: '-a.bdo.nl'
-  - name: Production
-    url: '.bdo.nl'
-
 # - type: load-file@1
 #   filename: '{{ repo_yaml_file }}'
 #   enabled: is_bdo_tis_repository
@@ -141,36 +119,10 @@ context:
   enabled: is_work_repository
 
 tags:
-- tag: TW
-  when: 'repository_path_contains "C:/Repositories/"'
-- tag: DQE
-  when: 'repository_path_contains "Projects/Bdo/git/DataQualityEngine"'
-- tag: DRC
-  when: 'repository_path_contains("Projects/Bdo/git/DRC") || repository_path_contains ("DataRotonde Core")'
-- tag: APT
-  when: 'repository_path_contains "Projects/Bdo/git/APT"'
-- tag: EA
-  when: 'repository_path_contains "Projects/Bdo/git/E-Accounting"'
-- tag: EAS
-  when: 'repository_path_contains("Projects/Bdo/git/ExtAuthService") || repository_path_contains("Projects/Bdo/git/External Auth Service")'
-- tag: PE
-  when: 'repository_path_contains "Projects/Bdo/git/PE"'
-- tag: wiki
-  when: 'repository_path_contains("Projects/Bdo/git") && repository_path_contains("Wiki")'
-- tag: BDO
+- tag: Work
   when: is_work_repository
-- tag: TIS
-  when: 'is_work_repository && file.file_exists(repository.linux_path + "/.azuredevops/Pipelines/gated.yml")'
-- tag: wcf
-  when: 'is_work_repository && !string.empty(env.URL_SERVICE) && string.contains(env.URL_SERVICE, ".svc")'
-- tag: Test
-  when: 'is_integration_test_framework || is_end_to_end_api_test_framework'
-- tag: Compliance
-  when: 'is_work_repository && repository_path_contains("Projects/Bdo/git/Compliance")'
-- tag: github
-  when: 'repository_path_contains "Projects/Github"'
-- tag: Prive
-  when: '!is_work_repository && ( repository_path_contains("Projects/Private") || repository_path_contains("Projects/Bdo-prive") )'
+- tag: Private
+  when: '!is_work_repository || repository_path_contains("Projects/Private") '
 
 action-menu:
 
@@ -229,354 +181,10 @@ action-menu:
 
 - type: separator@1
 
-# Documentation per repository
-- type: folder@1
-  name: Docs
-  active: file.dir_exists(repo_docs_directory)
-  actions:
-  - type: executable@1
-    name: Open in Visual Studio Code
-    executable: '{{ exe_vs_code }}'
-    arguments: '"{{ repo_docs_directory }}"'
-  - type: command@1
-    name: Open in Windows File Explorer
-    command: '"{{ repo_docs_directory }}"'
-
-- type: folder@1
-  name: DevOps
-  active: is_work_repository
-  actions:
-  - type: browse-repository@1
-
-  - type: browser@1
-    name: Pipelines
-    # url: '{{ url_bdo_devops }}_build?definitionScope={{ web.url_encode(env.DEVOPS_PIPELINE_PATH_SUFFIX) }}'
-    url: '{{ url_bdo_devops }}_build?definitionScope={{ env.DEVOPS_PIPELINE_PATH_SUFFIX }}'
-    active: '!string.empty(env.DEVOPS_PIPELINE_PATH_SUFFIX)'
-    profile: BDO
-  
-  - type: folder@1
-    name: Pull Request
-    active: '!string.empty(env.DEVOPS_GIT_REPO_NAME)'
-    context:
-    - type: evaluate-script@1
-      content: |-
-        project_id = env.AZURE_DEVOPS_PROJECT_ID;
-        prs = azure_devops.get_pull_requests(env.AZURE_DEVOPS_PROJECT_ID);
-        now = date.now | date.to_string "%Y-%m-%d"
-        devops_guid_reviewer = "5d084100-0024-67e1-b736-8b669ca9397e";
-
-    actions:
-
-    - type: command@1
-      name: Create local release branch
-      command: cmd
-      arguments: /k cd "{{ repository.linux_path }}" & git pull & git checkout -b release/{{ date.now | date.to_string "%Y.%m.%d" }} & exit
-      active: repository.branch == "develop"
-
-    - type: azure-devops-create-pr@1
-      project-id: "{{ project_id }}"
-      name: Create release to master {{ now }}
-      pr-title: 'Release {{ now }}'
-      to-branch: master
-      reviewer-ids:
-      - "{{ devops_guid_reviewer }}"
-      draft-pr: true
-      include-work-items: true
-      open-in-browser: true
-      auto-complete:
-        merge-strategy: NoFastForward
-        delete-source-branch: true
-        transition-work-items: true
-      active: repository.branch | string.starts_with "release/"
-    
-    - type: azure-devops-create-pr@1
-      context:
-      - type: evaluate-script@1
-        content: |-
-          branch_name = sanitize_feature_branch_name();    
-      project-id: "{{ project_id }}"
-      name: Create hotfix to master ({{ branch_name | string.truncate 20 ".." }})
-      pr-title: 'Hotfix {{ branch_name }}' 
-      to-branch: master
-      reviewer-ids:
-      - "{{ devops_guid_reviewer }}"
-      draft-pr: true
-      include-work-items: true
-      open-in-browser: true
-      auto-complete:
-        merge-strategy: Squash
-        delete-source-branch: true
-        transition-work-items: true
-      active: repository.branch | string.starts_with "hotfix/"    
-
-    - type: azure-devops-create-pr@1
-      project-id: "{{ project_id }}"
-      name: Create release to main {{ now }}
-      pr-title: 'Release {{ now }}'
-      to-branch: main
-      reviewer-ids:
-      - "{{ devops_guid_reviewer }}"
-      draft-pr: true
-      include-work-items: true
-      open-in-browser: true
-      auto-complete:
-        merge-strategy: NoFastForward
-        delete-source-branch: true
-        transition-work-items: true
-      active: repository.branch | string.starts_with "release/"
-
-    - type: azure-devops-create-pr@1
-      project-id: "{{ project_id }}"
-      name: Create master to develop
-      to-branch: develop
-      pr-title: Master to develop
-      reviewer-ids:
-      - "{{ devops_guid_reviewer }}"
-      draft-pr: true
-      include-work-items: false
-      open-in-browser: true
-      auto-complete:
-        merge-strategy: NoFastForward
-        delete-source-branch: true
-        transition-work-items: true
-      active: repository.branch == "master" || repository.branch == "main"
-
-    - type: azure-devops-create-pr@1
-      context:
-      - type: evaluate-script@1
-        content: |-
-          branch_name = sanitize_feature_branch_name();
-      project-id: "{{ project_id }}"
-      name: Create feature to develop ({{ branch_name | string.truncate 20 ".." }})
-      pr-title: '{{ branch_name }}' 
-      to-branch: develop
-      reviewer-ids:
-      - "{{ devops_guid_reviewer }}"
-      draft-pr: true
-      include-work-items: true
-      open-in-browser: true
-      auto-complete:
-        merge-strategy: Squash
-        delete-source-branch: true
-        transition-work-items: true
-      active: is_feature_branch()
-
-    - type: azure-devops-create-pr@1
-      context:
-      - type: evaluate-script@1
-        content: |-
-          branch_name = sanitize_feature_branch_name();
-      project-id: "{{ project_id }}"
-      name: Create feature to main ({{ branch_name | string.truncate 20 ".." }})
-      pr-title: '{{ branch_name }}' 
-      to-branch: main
-      reviewer-ids:
-      - "{{ devops_guid_reviewer }}"
-      draft-pr: true
-      include-work-items: true
-      open-in-browser: true
-      auto-complete:
-        merge-strategy: Squash
-        delete-source-branch: true
-        transition-work-items: true
-      active: is_feature_branch()
-
-    - type: azure-devops-create-pr@1
-      context:
-      - type: evaluate-script@1
-        content: |-
-          branch_name = sanitize_feature_branch_name();
-      project-id: "{{ project_id }}"
-      name: Create feature to master ({{ branch_name | string.truncate 20 ".." }})
-      pr-title: '{{ branch_name }}' 
-      to-branch: master
-      reviewer-ids:
-      - "{{ devops_guid_reviewer }}"
-      draft-pr: true
-      include-work-items: true
-      open-in-browser: true
-      auto-complete:
-        merge-strategy: Squash
-        delete-source-branch: true
-        transition-work-items: true
-      active: is_feature_branch()      
-
-    - type: separator@1
-    
-    - type: browser@1
-      active: array.size(prs) == 0
-      name: Browse
-      url: '{{ url_bdo_devops }}_git/{{ env.DEVOPS_GIT_REPO_NAME }}/pullrequests?_a=active'
-      profile: BDO
-
-    - type: foreach@1
-      active: array.size(prs) > 0
-      enumerable: prs
-      variable: pr
-      actions:
-      - type: browser@1
-        name: '{{ pr.name | string.truncate 40 "..." }}'
-        url: '{{ pr.url }}'
-        profile: BDO
-
-  - type: browser@1
-    name: Wiki
-    url: '{{ url_bdo_devops }}_wiki/wikis/{{ env.WIKI_URL_SUFFIX }}'
-    active: '!string.empty(env.WIKI_URL_SUFFIX)'
-    profile: BDO
-
-- type: folder@1
-  name: '{{ if string.contains(env.URL_SERVICE, ".svc") }}Wcf Service{{ else }}Swagger{{ end }}'
-  active: is_work_repository && !string.empty(env.URL_SERVICE) && !applications
-  actions:
-  - type: foreach@1
-    enumerable: devops_environments
-    variable: environment
-    actions:
-    - type: browser@1
-      name: '{{ environment.name }}'
-      url: '{{ string.replace(env.URL_SERVICE, ".bdo.nl", environment.url) }}'
-      profile: BDO
-  
-- type: folder@1
-  name: 'Swagger/Wcf'
-  active: is_work_repository && applications
-  actions:
-  - type: foreach@1
-    enumerable: devops_environments
-    variable: 'environment'
-    actions: 
-    - type: folder@1
-      name: '{{ environment.name }}'
-      actions:
-      - type: foreach@1
-        enumerable: applications
-        variable: application
-        actions:
-        - type: browser@1
-          name: '{{ application.name }}'
-          url: '{{ string.replace(application.url, ".bdo.nl", environment.url) }}'
-          active: array.size(application.sub) == 0
-          profile: BDO
-        - type: folder@1
-          name: '{{ application.name }}'
-          active: array.size(application.sub) > 0
-          actions:
-          - type: foreach@1
-            enumerable: application.sub
-            variable: sub
-            actions:
-            - type: browser@1
-              name: '{{ sub.name }}'
-              url: '{{ string.replace(application.url, ".bdo.nl", environment.url) }}{{ sub.url }}'
-              profile: BDO
-
-- type: folder@1
-  name: Analysis
-  active: 'is_work_repository && (!string.empty(env.WHITESOURCE_PROJECT_ID) || !string.empty(env.SONARCLOUD_PROJECT_ID) )'
-  actions:
-  - type: browser@1
-    name: SonarCloud
-    url: 'https://sonarcloud.io/project/overview?id={{ env.SONARCLOUD_PROJECT_ID }}'
-    profile: BDO
-    active: '!string.empty(env.SONARCLOUD_PROJECT_ID)'    
-  - type: browser@1
-    name: SonarCloud Settings
-    url: https://sonarcloud.io/project/settings?category=exclusions&id={{ env.SONARCLOUD_PROJECT_ID }}
-    profile: BDO
-    active: '!string.empty(env.SONARCLOUD_PROJECT_ID)'
-  - type: browser@1
-    name: Whitesource
-    url: 'https://saas-eu.whitesourcesoftware.com/Wss/WSS.html#!project;id={{ env.WHITESOURCE_PROJECT_ID }}'
-    profile: BDO
-    active: '!string.empty(env.WHITESOURCE_PROJECT_ID)'
-  - type: browser@1
-    name: LogicMonitor
-    url: https://bdonl.logicmonitor.com/santaba/uiv3/website/index.jsp#tree/{{ env.LOGICMONITOR_ID }}
-    profile: BDO
-    active: '!string.empty(env.LOGICMONITOR_ID)'
-
-  - type: folder@1
-    name: ApplicationInsights
-    active: 'is_work_repository && !string.empty(env.RESOURCE_GROUP) && !string.empty(env.APPLICATION_INSIGHTS)'
-    actions:
-    - type: foreach@1
-      enumerable: azure_environments
-      variable: environment
-      actions:
-      - type: browser@1
-        name: '{{ environment.name }}'
-        url: 'https://portal.azure.com/#@{{ environment.tentant }}/resource/subscriptions/{{ environment.subscription }}/resourceGroups/{{ string.replace(env.RESOURCE_GROUP, "BDONL", environment.resourcegroup_prefix) }}/providers/microsoft.insights/components/{{ string.replace(env.APPLICATION_INSIGHTS, "bdonl", environment.resourcegroup_prefix) }}/overview'
-        profile: '{{ environment.browser_profile }}'
-
-- type: folder@1
-  name: Tests
-  context:
-  - type: render-variable@1
-    name: runsettings_path
-    value: '{{ repo_environment_file_directory }}'
-  # SystemTests
-  - type: render-variable@1
-    name: system_tests_filename
-    value: '{{ array.first(system_test_csproj_files) }}'
-    enabled: 'array.size(system_test_csproj_files) > 0'
-  - type: set-variable@1
-    name: system_tests_filter
-    value: --filter "TestCategory=SystemTests&TestCategory!=PipelineIgnore"
-  - type: set-variable@1
-    name: smoke_tests_filter
-    value: --filter "TestCategory!=SystemTests&TestCategory!=PipelineIgnore"      
-  - type: evaluate-variable@1
-    name: system_tests_filename_exists
-    value: 'array.size(system_test_csproj_files) > 0'
-  # SmokeTests
-  - type: render-variable@1
-    name: smoke_tests_filename
-    value: '{{ array.first(smoke_tests_csproj_files) }}'
-    enabled: 'array.size(smoke_tests_csproj_files) > 0'
-  - type: evaluate-variable@1
-    name: smoke_tests_filename_exists
-    value: 'array.size(smoke_tests_csproj_files) > 0'
-  actions:
- 
-  - type: folder@1
-    name: dotnet test
-    actions:
-    - type: command@1
-      name: Unittests sln
-      command: cmd
-      arguments: /k dotnet test -c release "{{ solution_file }}" --filter "FullyQualifiedName!=TestAutomation&TestCategory!=SystemTests" --verbosity q
-    
-    - type: foreach@1
-      enumerable: 'runsettings_environments'
-      variable: environment
-      iteration-context:
-      - type: render-variable@1
-        name: runsettings_file
-        value: '{{ repo_environment_file_directory }}\\{{ environment.filename }}'
-      - type: evaluate-variable@1
-        name: runsettings_file_exists
-        value: 'file.file_exists(repo_environment_file_directory + "\\" + environment.filename)'
-      actions:
-      - type: command@1
-        name: TA Systeem {{ environment.name }}
-        command: cmd
-        arguments: /k dotnet test -c release "{{ system_tests_filename }}" {{ system_tests_filter }} --settings:"{{ runsettings_file }}"
-        active: 'system_tests_filename_exists && runsettings_file_exists'
-      - type: command@1
-        name: TA Smoke {{ environment.name }}
-        command: cmd
-        arguments: /k dotnet test -c release "{{ smoke_tests_filename }}" {{ smoke_tests_filter }} --settings:"{{ runsettings_file }}"
-        active: 'smoke_tests_filename_exists && runsettings_file_exists'
-
-- type: separator@1
-
-- type: browse-repository@1
-
 - type: folder@1
   name: Git
   actions:
+  - type: browse-repository@1
   - type: git-fetch@1
   - type: git-pull@1
   - type: git-push@1
@@ -592,21 +200,12 @@ action-menu:
 - type: folder@1
   name: '-- Examples --'
   actions:
-  - type: clipboard-copy@1
-    name: Copy current branch name
-    text: '{{ repository.branch }}'
-
-  - type: clipboard-copy@1
-    name: Copy command 'git checkout -b {{ repository.branch | string.truncate 15 "..." }}'
-    text: '{{ repository.branch }}'
-    active: 'repository.branch | string.starts_with "feature/"'
+  
+  - type: just-text@1
+    name: 'Current branch is {{ repository.branch }}'
 
   - type: command@1
     name: 'Create Directory {{ repo_docs_directory }}'
     command: cmd
     arguments: /k mkdir "{{ repo_docs_directory }}"
     active: '!file.dir_exists(repo_docs_directory)'
-
-  - type: just-text@1
-    name: 'Usage counter: {{ statistics.count }}'
-    active: true

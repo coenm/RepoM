@@ -73,23 +73,7 @@ public class FilesCompareSettingsService : ICompareSettingsService
 
         if (!_fileSystem.File.Exists(file))
         {
-            var templateFilename = _fileSystem.Path.Combine(_appDataPathProvider.AppResourcesPath, FILENAME);
-            if (_fileSystem.File.Exists(templateFilename))
-            {
-                try
-                {
-                    _fileSystem.File.Copy(templateFilename, file);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Could not copy template file '{TemplateFilename}' to '{File}'", templateFilename, file);
-                }
-            }
-
-            if (!_fileSystem.File.Exists(file))
-            {
-                throw new FileNotFoundException("Comparer configuration file not found", file);
-            }
+            throw new FileNotFoundException("Comparer configuration file not found", file);
         }
 
         try
