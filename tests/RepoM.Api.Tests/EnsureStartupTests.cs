@@ -52,4 +52,21 @@ public class EnsureStartupTests
         // assert
         A.CallTo(() => _fileSystem.File.Exists(expectedFilename)).MustHaveHappenedOnceExactly();
     }
+
+    [Theory]
+    [InlineData("RepositoryActionsV2.yaml")]
+    [InlineData("RepoM.Filtering.yaml")]
+    [InlineData("RepoM.Ordering.yaml")]
+    [InlineData("appsettings.serilog.json")]
+    public async Task EnsureFilesAsync_ShouldWhenFileDoesNotExists(string filename)
+    {
+        // arrange
+        A.CallTo(() => _fileSystem.File.Exists(A<string>.That.EndsWith(filename))).Returns(false);
+
+        // act
+        Func<Task> act = _sut.EnsureFilesAsync;
+
+        // assert
+        await act.Should().ThrowAsync<FileNotFoundException>();
+    }
 }
