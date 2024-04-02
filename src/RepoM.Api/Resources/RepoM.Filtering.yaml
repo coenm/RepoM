@@ -15,4 +15,4 @@ Private:
     query: RepoM OR is:pinned
   filter:
     kind: query@1
-    query: (-tag:work OR tag:prive)
+    query: (-tag:work OR tag:private)

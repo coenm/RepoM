@@ -1,6 +1,11 @@
 context:
 - type: evaluate-script@1
   content: |-
+    # at this moment, you must leave this function intact
+    func translate(input)
+      ret input
+    end
+
     func is_null(input)
       ret input == null
     end
@@ -49,19 +54,13 @@ context:
 
     remote_name_origin = get_remote_origin_name();
     is_work_repository = remotes_contain("My-Work");
-    is_bdo_tis_repository = is_work_repository && file.file_exists(repository.linux_path + "/.azuredevops/Pipelines/gated.yml")
     is_github_repository = remotes_contain("github.com");
 
     solution_files = file.find_files(repository.linux_path, "*.sln");
     solution_file = array.first(solution_files);
-    system_test_csproj_files = file.find_files(repository.linux_path, "*.SystemTests.csproj");
-    smoke_tests_csproj_files = file.find_files(repository.linux_path, "*.SmokeTests.csproj");
     
     exe_vs_code = env.LocalAppData + "/Programs/Microsoft VS Code/code.exe";
     
-    path_repo_tis_wat = `C:\Users\Munckhof CJJ\OneDrive - BDO\BDO\TisWatConfig\` + remote_name_origin;
-    path_bdo_repo_root = `C:\Projects\Bdo\git\`;
-
 - root_path_repom: C:\\Users\\Munckhof CJJ\\OneDrive - BDO\\BDO\\RepoM\\
 
 # Specific var files
@@ -69,10 +68,6 @@ context:
   name: repo_docs_directory
   value: 'G:\\My Drive\\RepoDocs\\github.com\\{{ remote_name_origin }}'
   enabled: is_github_repository
-
-- type: render-variable@1
-  name: repo_docs_directory
-  value: 'C:\\Users\\Munckhof CJJ\\OneDrive - BDO\\BDO\\RepoDocs\\{{ remote_name_origin }}'
 
 # Env files
 - type: render-variable@1
@@ -85,33 +80,15 @@ context:
 
 - type: render-variable@1
   name: repo_yaml_file
-  value: '{{ env.REPOZ_CONFIG_PATH }}\\{{ remote_name_origin }}\\RepoMV2.yaml'
-
-- type: render-variable@1
-  name: repo_environment_template_file
-  value: '{{ env.REPOZ_CONFIG_PATH }}\\RepoM.Template.env'
+  value: 'C:\\WorkCofigs\\{{ remote_name_origin }}\\RepoMV2.yaml'
 
 # Runsettings
-- type: render-variable@1
-  name: runsettings_file_directory
-  value: '{{ env.REPOZ_CONFIG_PATH }}\\{{ remote_name_origin }}'
-- type: render-variable@1
-  name: runsettings_file
-  value: '{{ env.REPOZ_CONFIG_PATH }}\\{{ remote_name_origin }}\\local.runsettings'
-- type: render-variable@1
-  name: runsettings_template_file
-  value: '{{ env.REPOZ_CONFIG_PATH }}\\Runsettings.Template.runsettings'
-
-# - type: load-file@1
-#   filename: '{{ repo_yaml_file }}'
-#   enabled: is_bdo_tis_repository
- 
 - type: load-file@1
   filename: '{{ repo_environment_file }}'
   enabled: is_work_repository
 
 - type: load-file@1
-  filename: '{{ env.REPOZ_CONFIG_PATH }}\\BDO.env'
+  filename: '{{ env.REPOZ_CONFIG_PATH }}\\work.env'
   enabled: is_work_repository
 
 - type: load-file@1
@@ -119,10 +96,12 @@ context:
   enabled: is_work_repository
 
 tags:
-- tag: Work
+
+- tag: work
   when: is_work_repository
-- tag: Private
-  when: '!is_work_repository || repository_path_contains("Projects/Private") '
+
+- tag: private
+  when: '!is_work_repository && repository_path_contains("Projects/Private")'
 
 action-menu:
 
