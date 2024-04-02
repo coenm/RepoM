@@ -1,0 +1,190 @@
+context:
+- type: evaluate-script@1
+  content: |-
+    # at this moment, you must leave this function intact
+    func translate(input)
+      ret input
+    end
+
+    func is_null(input)
+      ret input == null
+    end
+
+    func get_filename(path)
+      ret path | string.split("\\") | array.last
+    end
+
+    func remotes_contain_inner(remotes, url_part)
+      urls = remotes | array.map "url"
+      filtered = array.filter(urls, do 
+        ret string.contains($0, url_part) 
+      end)
+      ret array.size(filtered) > 0;
+    end
+
+    func remotes_contain(url_part)
+      ret remotes_contain_inner(repository.remotes, url_part)
+    end
+
+    func get_remote_origin()
+      remotes = repository.remotes;
+      filtered = array.filter(remotes, do 
+        remote = $0;
+        ret remote.key == "origin"
+      end)
+      ret array.first(filtered);
+    end
+
+    func get_remote_origin_name()
+      remote = get_remote_origin();
+      ret remote?.name;
+    end
+
+    func repository_path_contains(path)
+      ret repository.linux_path | string.contains path
+    end
+
+    func is_feature_branch()
+      ret repository.branch | string.starts_with "feature/"
+    end
+
+    func sanitize_feature_branch_name()
+      ret repository.branch | string.replace "feature/" "" | string.strip
+    end
+
+    remote_name_origin = get_remote_origin_name();
+    is_work_repository = remotes_contain("My-Work");
+    is_github_repository = remotes_contain("github.com");
+
+    solution_files = file.find_files(repository.linux_path, "*.sln");
+    solution_file = array.first(solution_files);
+    
+    exe_vs_code = env.LocalAppData + "/Programs/Microsoft VS Code/code.exe";
+    
+- root_path_repom: C:\\Users\\Munckhof CJJ\\OneDrive - BDO\\BDO\\RepoM\\
+
+# Specific var files
+- type: render-variable@1
+  name: repo_docs_directory
+  value: 'G:\\My Drive\\RepoDocs\\github.com\\{{ remote_name_origin }}'
+  enabled: is_github_repository
+
+# Env files
+- type: render-variable@1
+  name: repo_environment_file_directory
+  value: '{{ env.REPOZ_CONFIG_PATH }}\\{{ remote_name_origin }}'
+
+- type: render-variable@1
+  name: repo_environment_file
+  value: '{{ env.REPOZ_CONFIG_PATH }}\\{{ remote_name_origin }}\\RepoM.env'
+
+- type: render-variable@1
+  name: repo_yaml_file
+  value: 'C:\\WorkCofigs\\{{ remote_name_origin }}\\RepoMV2.yaml'
+
+# Runsettings
+- type: load-file@1
+  filename: '{{ repo_environment_file }}'
+  enabled: is_work_repository
+
+- type: load-file@1
+  filename: '{{ env.REPOZ_CONFIG_PATH }}\\work.env'
+  enabled: is_work_repository
+
+- type: load-file@1
+  filename: '{{ repo_yaml_file }}'
+  enabled: is_work_repository
+
+tags:
+
+- tag: work
+  when: is_work_repository
+
+- tag: private
+  when: '!is_work_repository && repository_path_contains("Projects/Private")'
+
+action-menu:
+
+- type: command@1
+  name: Open in Windows File Explorer
+  command: '"{{ repository.path }}"'
+
+- type: command@1
+  name: Open in Windows Terminal
+  command: wt
+  arguments: -d "{{ repository.linux_path }}"
+
+- type: executable@1
+  name: 'Open in Windows PowerShell'
+  executable: '{{ env.WINDIR }}/System32/WindowsPowerShell/v1.0/powershell.exe'
+  arguments: -executionpolicy bypass -noexit -command "Set-Location '{{ repository.linux_path }}'"
+
+# Open in visual studio when exactly one '.sln' file was found:
+- type: command@1
+  name: Open in Visual Studio
+  command: '{{ solution_file }}'
+  active: array.size(solution_files) == 1
+
+# Otherwise, Visual studio folder with all '.sln' files when multiple sln files were found:
+- type: folder@1
+  name: Open in Visual Studio
+  active: array.size(solution_files) > 1
+  actions:
+  - type: foreach@1
+    enumerable: solution_files
+    variable: sln
+    actions:
+    - type: command@1
+      name: '{{ get_filename(sln) }}'
+      command: '{{ sln }}'
+  
+- type: executable@1
+  name: Open in Visual Studio Code
+  executable: '{{ exe_vs_code }}'
+  arguments: '"{{ repository.linux_path }}"'
+
+- type: executable@1
+  name: Open in Sourcetree
+  executable: '{{ env.LocalAppData }}/SourceTree/SourceTree.exe'
+  arguments: -f "{{ repository.windows_path }}"
+
+- type: executable@1
+  name: Open in Everything
+  executable: '{{ env.ProgramW6432 }}/Everything/Everything.exe'
+  arguments: -s """"{{ repository.path }}""" "
+
+- type: executable@1
+  name: Open in TotalCommander
+  executable: '{{ env.ProgramW6432 }}/totalcmd/TOTALCMD64.EXE'
+  arguments: /O /T /L="{{ repository.linux_path }}"
+
+- type: separator@1
+
+- type: folder@1
+  name: Git
+  actions:
+  - type: browse-repository@1
+  - type: git-fetch@1
+  - type: git-pull@1
+  - type: git-push@1
+  - type: git-checkout@1
+
+- type: separator@1
+
+- type: ignore-repository@1
+
+- type: separator@1
+  active: is_work_repository
+
+- type: folder@1
+  name: '-- Examples --'
+  actions:
+  
+  - type: just-text@1
+    name: 'Current branch is {{ repository.branch }}'
+
+  - type: command@1
+    name: 'Create Directory {{ repo_docs_directory }}'
+    command: cmd
+    arguments: /k mkdir "{{ repo_docs_directory }}"
+    active: '!file.dir_exists(repo_docs_directory)'
