@@ -159,8 +159,8 @@ stages:
           displayName: Merge coverage reports
           name: MergeCoverageReports
 
-        - task: PublishCodeCoverageResults@1
-          displayName: 'Publish code coverage to devops'
+        - task: PublishCodeCoverageResults@2
+          displayName: Publish code coverage to devops
           inputs:
             codeCoverageTool: Cobertura
             summaryFileLocation: '$(Agent.TempDirectory)/Cobertura.xml'       
