@@ -188,9 +188,13 @@ stages:
               _output/**/*.xlm
               _output/**/*.config
               _output/**/*.pdb
-              _output/Win/Assemblies/runtimes/freebsd/**/*.*
               _output/Win/Assemblies/runtimes/!(win*)/**/*.*
               _output/Win/Assemblies/!(runtimes)/*.resources.dll
+
+        - pwsh: |
+            Get-ChildItem -Path "_output\Win\Assemblies" -Recurse | Where-Object { $_.PSIsContainer -and @(Get-ChildItem -LiteralPath $_.FullName -Recurse -Force).Count -eq 0 } | Remove-Item -Recurse
+            Get-ChildItem -Path "_output\Win\Assemblies\runtimes" -Recurse | Where-Object { $_.PSIsContainer -and @(Get-ChildItem -LiteralPath $_.FullName -Recurse -Force).Count -eq 0 } | Remove-Item -Recurse
+          displayName: Remove empty directories
 
         - pwsh: |
             nuget install NSIS -OutputDirectory ./packages
