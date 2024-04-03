@@ -159,8 +159,8 @@ stages:
           displayName: Merge coverage reports
           name: MergeCoverageReports
 
-        - task: PublishCodeCoverageResults@1
-          displayName: 'Publish code coverage to devops'
+        - task: PublishCodeCoverageResults@2
+          displayName: Publish code coverage to devops
           inputs:
             codeCoverageTool: Cobertura
             summaryFileLocation: '$(Agent.TempDirectory)/Cobertura.xml'       
@@ -172,7 +172,7 @@ stages:
           name: CodeCov               
 
         - task: DotNetCoreCLI@2
-          displayName: "Dotnet Publish RepoM"
+          displayName: Dotnet Publish RepoM
           inputs:
             command: publish
             arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies"
@@ -182,12 +182,19 @@ stages:
             zipAfterPublish: false
 
         - task: DeleteFiles@1
-          displayName: 'Remove unneeded files'
+          displayName: Remove unneeded files
           inputs:
             contents: |
               _output/**/*.xlm
               _output/**/*.config
               _output/**/*.pdb
+              _output/Win/Assemblies/runtimes/!(win*)/**/*.*
+              _output/Win/Assemblies/!(runtimes)/*.resources.dll
+
+        - pwsh: |
+            Get-ChildItem -Path "_output\Win\Assemblies" -Recurse | Where-Object { $_.PSIsContainer -and @(Get-ChildItem -LiteralPath $_.FullName -Recurse -Force).Count -eq 0 } | Remove-Item -Recurse
+            Get-ChildItem -Path "_output\Win\Assemblies\runtimes" -Recurse | Where-Object { $_.PSIsContainer -and @(Get-ChildItem -LiteralPath $_.FullName -Recurse -Force).Count -eq 0 } | Remove-Item -Recurse
+          displayName: Remove empty directories
 
         - pwsh: |
             nuget install NSIS -OutputDirectory ./packages
@@ -195,43 +202,15 @@ stages:
           displayName: Create installer
           
         - task: DeleteFiles@1
-          displayName: 'Remove binaries'
+          displayName: Remove binaries
           inputs:
             contents: |
               _output/win
 
         - task: PublishBuildArtifacts@1
-          displayName: "Publish artifact"
+          displayName: Publish artifact
           inputs:
             # PathtoPublish: "$(Build.ArtifactStagingDirectory)"
             PathtoPublish: "_output"
             ArtifactName: installer
     
-
-        # - task: CopyFiles@2
-        #   displayName: "Copy files to artifact"
-        #   inputs:
-        #     SourceFolder: "$(Build.SourcesDirectory)"
-        #     Contents: |
-        #       **\bin\Release\*.s?nupkg
-        #     TargetFolder: "$(Build.ArtifactStagingDirectory)"
-        #     OverWrite: true
-
-        # - task: PublishBuildArtifacts@1
-        #   displayName: "Publish artifact"
-        #   inputs:
-        #     PathtoPublish: "$(Build.ArtifactStagingDirectory)"
-        #     ArtifactName: packages
-  
-        # - task: NuGetAuthenticate@0
-        #   displayName: Nuget authenticate
-
-        # - task: DotNetCoreCLI@2
-        #   displayName: Push packages to CI feed
-        #   inputs:
-        #     command: push
-        #     packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg;$(Pipeline.Workspace)/**/*.snupkg;!$(Pipeline.Workspace)/**/*.symbols.nupkg'
-        #     nuGetFeedType: internal
-        #     publishVstsFeed: $(ci_feed)
-        #     allowPackageConflicts: false
-        #     condition: and(succeeded(), ne(variables['ci_feed'], ''), ne(variables['Build.Reason'], 'PullRequest'))
