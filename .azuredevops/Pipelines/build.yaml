@@ -172,7 +172,7 @@ stages:
           name: CodeCov               
 
         - task: DotNetCoreCLI@2
-          displayName: "Dotnet Publish RepoM"
+          displayName: Dotnet Publish RepoM
           inputs:
             command: publish
             arguments: "--configuration $(buildConfiguration) --output _output/Win/Assemblies"
@@ -182,7 +182,7 @@ stages:
             zipAfterPublish: false
 
         - task: DeleteFiles@1
-          displayName: 'Remove unneeded files'
+          displayName: Remove unneeded files
           inputs:
             contents: |
               _output/**/*.xlm
@@ -196,13 +196,13 @@ stages:
           displayName: Create installer
           
         - task: DeleteFiles@1
-          displayName: 'Remove binaries'
+          displayName: Remove binaries
           inputs:
             contents: |
               _output/win
 
         - task: PublishBuildArtifacts@1
-          displayName: "Publish artifact"
+          displayName: Publish artifact
           inputs:
             # PathtoPublish: "$(Build.ArtifactStagingDirectory)"
             PathtoPublish: "_output"
