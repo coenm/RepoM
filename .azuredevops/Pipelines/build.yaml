@@ -208,31 +208,3 @@ stages:
             PathtoPublish: "_output"
             ArtifactName: installer
     
-
-        # - task: CopyFiles@2
-        #   displayName: "Copy files to artifact"
-        #   inputs:
-        #     SourceFolder: "$(Build.SourcesDirectory)"
-        #     Contents: |
-        #       **\bin\Release\*.s?nupkg
-        #     TargetFolder: "$(Build.ArtifactStagingDirectory)"
-        #     OverWrite: true
-
-        # - task: PublishBuildArtifacts@1
-        #   displayName: "Publish artifact"
-        #   inputs:
-        #     PathtoPublish: "$(Build.ArtifactStagingDirectory)"
-        #     ArtifactName: packages
-  
-        # - task: NuGetAuthenticate@0
-        #   displayName: Nuget authenticate
-
-        # - task: DotNetCoreCLI@2
-        #   displayName: Push packages to CI feed
-        #   inputs:
-        #     command: push
-        #     packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg;$(Pipeline.Workspace)/**/*.snupkg;!$(Pipeline.Workspace)/**/*.symbols.nupkg'
-        #     nuGetFeedType: internal
-        #     publishVstsFeed: $(ci_feed)
-        #     allowPackageConflicts: false
-        #     condition: and(succeeded(), ne(variables['ci_feed'], ''), ne(variables['Build.Reason'], 'PullRequest'))
