@@ -188,9 +188,9 @@ stages:
               _output/**/*.xlm
               _output/**/*.config
               _output/**/*.pdb
-              _output/runtimes/freebsd/**/*.*
-              _output/runtimes/!(win*)/**/*.*
-              _output/!(runtimes)/*.resources.dll
+              _output/Win/Assemblies/runtimes/freebsd/**/*.*
+              _output/Win/Assemblies/runtimes/!(win*)/**/*.*
+              _output/Win/Assemblies/!(runtimes)/*.resources.dll
 
         - pwsh: |
             nuget install NSIS -OutputDirectory ./packages
