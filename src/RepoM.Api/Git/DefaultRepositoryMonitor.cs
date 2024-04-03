@@ -246,17 +246,22 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private void CreateRepositoryObserver(IRepository repo, string path)
     {
-        if (!_repositoryObservers.ContainsKey(path))
+        if (_repositoryObservers.TryGetValue(path, out IRepositoryObserver? observer))
         {
-            IRepositoryObserver observer = _repositoryObserverFactory.Create();
-            observer.Setup(repo, DelayGitStatusAfterFileOperationMilliseconds);
-            _repositoryObservers.Add(path, observer);
-
-            observer.OnChange += OnRepositoryObserverChange;
+            return;
         }
 
-        _repositoryObservers[path].Start();
-        _logger.LogDebug("{Method} - repo {Repo}, path: {Path} (total length: {RepositoryObserversLength})", nameof(CreateRepositoryObserver), repo.Name, path, _repositoryObservers.Count);
+        observer = _repositoryObserverFactory.Create();
+
+        if (!_repositoryObservers.TryAdd(path, observer))
+        {
+            observer.Dispose();
+            return;
+        }
+
+        observer.Setup(repo, DelayGitStatusAfterFileOperationMilliseconds);
+        observer.OnChange += OnRepositoryObserverChange;
+        observer.Start();
     }
 
     private void OnRepositoryChangeDetected(IRepository repo)
@@ -303,8 +308,12 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             return;
         }
 
+        if (!_repositoryObservers.Remove(path))
+        {
+            return;
+        }
+
         observer.Stop();
-        _repositoryObservers.Remove(path);
     }
 
     private void OnRepositoryDeletionDetected(string repoPath)

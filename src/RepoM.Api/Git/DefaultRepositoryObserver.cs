@@ -67,14 +67,16 @@ public sealed class DefaultRepositoryObserver : IRepositoryObserver
 
     public void Dispose()
     {
-        if (_watcher != null)
+        IFileSystemWatcher? watcher = _watcher;
+        _watcher = null;
+
+        if (watcher != null)
         {
-            _watcher.Created -= FileSystemUpdated;
-            _watcher.Changed -= FileSystemUpdated;
-            _watcher.Deleted -= FileSystemUpdated;
-            _watcher.Renamed -= FileSystemUpdated;
-            _watcher.Dispose();
-            _watcher = null;
+            watcher.Created -= FileSystemUpdated;
+            watcher.Changed -= FileSystemUpdated;
+            watcher.Deleted -= FileSystemUpdated;
+            watcher.Renamed -= FileSystemUpdated;
+            watcher.Dispose();
         }
 
         LibGit2Sharp.Repository? gr = _gitRepo;
