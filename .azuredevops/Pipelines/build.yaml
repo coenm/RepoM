@@ -188,6 +188,7 @@ stages:
               _output/**/*.xlm
               _output/**/*.config
               _output/**/*.pdb
+              _output/runtimes/freebsd/**/*.*
               _output/runtimes/!(win*)/**/*.*
               _output/!(runtimes)/*.resources.dll
 
