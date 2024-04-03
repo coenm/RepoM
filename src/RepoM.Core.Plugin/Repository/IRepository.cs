@@ -9,6 +9,8 @@ public interface IRepository
 {
     string Name { get; }
 
+    bool IsBare { get; }
+
     string Path { get; }
 
     string WindowsPath { get; }

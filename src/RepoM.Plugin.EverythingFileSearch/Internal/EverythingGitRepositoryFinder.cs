@@ -16,7 +16,7 @@ internal class EverythingGitRepositoryFinder : IGitRepositoryFinder
 
     public List<string> Find(string root, Action<string>? onFoundAction)
     {
-        const string SEARCH = "file: .git\\HEAD";
+        const string SEARCH = "file:\"HEAD\" endwith:\"HEAD\" startwith:\"HEAD\"";
 
         var result = Everything64Api.Search($"\"{root}\" {SEARCH}")
                                     .Where(item => !string.IsNullOrWhiteSpace(item))
