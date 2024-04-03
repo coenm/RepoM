@@ -188,6 +188,7 @@ stages:
               _output/**/*.xlm
               _output/**/*.config
               _output/**/*.pdb
+              _output/runtimes/!(win*)/**/*.*
 
         - pwsh: |
             nuget install NSIS -OutputDirectory ./packages
