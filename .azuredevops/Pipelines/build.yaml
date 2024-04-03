@@ -189,6 +189,7 @@ stages:
               _output/**/*.config
               _output/**/*.pdb
               _output/runtimes/!(win*)/**/*.*
+              _output/!(runtimes)/*.resources.dll
 
         - pwsh: |
             nuget install NSIS -OutputDirectory ./packages
