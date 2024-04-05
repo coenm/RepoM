@@ -1,28 +1,23 @@
 namespace RepoM.App.RepositoryFiltering.QueryMatchers;
 
 using System;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 [UsedImplicitly]
-public class TagMatcher : IQueryMatcher
+public class NameMatcher : IQueryMatcher
 {
     public bool? IsMatch(in IRepository repository, in TermBase term)
     {
-        if (term is SimpleTerm st)
-        {
-            return IsMatch(repository, st);
-        }
-
-        if (term is StartsWithTerm swt)
-        {
-            return IsMatch(repository, swt);
-        }
-
-        return null;
+        return term switch
+            {
+                SimpleTerm st => IsMatch(repository, st),
+                StartsWithTerm swt => IsMatch(repository, swt),
+                _ => null,
+            };
     }
 
     private static bool? IsMatch(in IRepository repository, in StartsWithTerm term)
@@ -32,11 +27,7 @@ public class TagMatcher : IQueryMatcher
             return null;
         }
 
-        var value = term.Value;
-        return Array.Exists(repository.Tags, tag =>
-            tag.Equals(value, StringComparison.CurrentCulture)
-            ||
-            tag.StartsWith(value, StringComparison.CurrentCulture));
+        return repository.Name.StartsWith(term.Value, StringComparison.CurrentCulture);
     }
 
     private static bool? IsMatch(in IRepository repository, in SimpleTerm term)
@@ -46,11 +37,12 @@ public class TagMatcher : IQueryMatcher
             return null;
         }
 
-        return repository.Tags.Contains(term.Value);
+        return repository.Name.Equals(term.Value, StringComparison.CurrentCulture);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CheckTerm(in string term)
     {
-        return "tag".Equals(term, StringComparison.CurrentCulture);
+        return "name".Equals(term, StringComparison.CurrentCulture);
     }
 }
