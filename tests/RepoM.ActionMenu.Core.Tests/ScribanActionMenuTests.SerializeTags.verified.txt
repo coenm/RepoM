@@ -1,0 +1,78 @@
+﻿tags:
+- tag: private
+  when: 1 == 1
+- tag: github
+  when: 1 == 2
+- tag: github
+  when: 1 == 2  || true
+- tag: work
+  when: ''
+- tag: github-conditional
+  when: repository.linux_path | string.contains "Projects/Github"
+context:
+- type: evaluate-script@1
+  content: >-
+    func translate(input)
+      ret 'translate says:' + input;
+    end
+  enabled: ''
+- type: set-variable@1
+  value: coenm
+  enabled: ''
+  name: name
+- type: set-variable@1
+  value: coenm1
+  enabled: ''
+  name: name1
+- type: set-variable@1
+  value:
+  - name: Develop
+    url: -d.github-dt.nl
+  - name: Test
+    url: -t.github-dt.nl
+  - name: Acceptation
+    url: -a.github.nl
+  - name: Production
+    url: .github.nl
+  enabled: ''
+  name: devopsEnvironments
+- type: evaluate-script@1
+  content: >-
+    a = 'beer';
+
+    b = 'wine';
+
+    name = name + ' drinks a lot of ' + a + ' and ' + b;
+
+
+    now2 = date.now;
+
+
+    my_age = 39;
+
+
+    func sub1
+       ret $0 - $1
+    end
+
+
+    func sub2(x,y)
+       ret x - y + 10
+    end
+
+
+    func sonar_url(project_id)
+      ret 'https://sonarcloud.io/project/overview?id='  + project_id;
+    end
+
+
+    dummy_calc = sub2(19, 3);
+  enabled: ''
+- type: load-file@1
+  filename: C:\file1.env
+  enabled: ''
+  name: ''
+- type: render-variable@1
+  value: text `{{ name }}` text2
+  enabled: 1 == 1
+  name: my-text

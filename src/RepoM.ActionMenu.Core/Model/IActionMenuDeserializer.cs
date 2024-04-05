@@ -4,9 +4,7 @@ using RepoM.ActionMenu.Core.Yaml.Model;
 
 internal interface IActionMenuDeserializer
 {
-    string Serialize(Root root);
+    string Serialize<T>(T actionMenuRoot) where T : ContextRoot;
 
-    Root DeserializeRoot(string content);
-    
-    ContextRoot DeserializeContextRoot(string content);
+    T Deserialize<T>(string content) where T : ContextRoot;
 }

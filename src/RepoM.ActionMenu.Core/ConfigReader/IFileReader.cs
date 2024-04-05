@@ -6,7 +6,9 @@ using RepoM.ActionMenu.Core.Yaml.Model;
 
 internal interface IFileReader
 {
-    Task<Root?> DeserializeRoot(string filename);
+    Task<ActionMenuRoot?> DeserializeRoot(string filename);
+
+    Task<TagsRoot?> DeserializeTagsRoot(string filename);
 
     Task<ContextRoot?> DeserializeContextRoot(string filename);
 

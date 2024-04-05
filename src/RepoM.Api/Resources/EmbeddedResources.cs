@@ -9,6 +9,11 @@ internal static class EmbeddedResources
     private static readonly Assembly _assembly = typeof(EmbeddedResources).Assembly;
     private static readonly string _namespace = typeof(EmbeddedResources).Namespace!;
 
+    public static Stream GetTagsV2Yaml()
+    {
+        return ResolveFromAssembly("TagsV2.yaml");
+    }
+
     public static Stream GetRepositoryActionsV2Yaml()
     {
         return ResolveFromAssembly("RepositoryActionsV2.yaml");

@@ -38,6 +38,7 @@ public class EnsureStartupTests
 
     [Theory]
     [InlineData("RepositoryActionsV2.yaml")]
+    [InlineData("TagsV2.yaml")]
     [InlineData("RepoM.Filtering.yaml")]
     [InlineData("RepoM.Ordering.yaml")]
     [InlineData("appsettings.serilog.json")]
@@ -56,6 +57,7 @@ public class EnsureStartupTests
 
     [Theory]
     [InlineData("RepositoryActionsV2.yaml")]
+    [InlineData("TagsV2.yaml")]
     [InlineData("RepoM.Filtering.yaml")]
     [InlineData("RepoM.Ordering.yaml")]
     [InlineData("appsettings.serilog.json")]
@@ -74,6 +76,7 @@ public class EnsureStartupTests
 
     [Theory]
     [InlineData("RepositoryActionsV2.yaml")]
+    [InlineData("TagsV2.yaml")]
     [InlineData("RepoM.Filtering.yaml")]
     [InlineData("RepoM.Ordering.yaml")]
     [InlineData("appsettings.serilog.json")]

@@ -2,9 +2,7 @@ namespace RepoM.ActionMenu.Core.Yaml.Model;
 
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;
 
-public class Root : ContextRoot
+public class ActionMenuRoot : ContextRoot
 {
-    public Tags.Tags? Tags { get; set; }
-
     public ActionMenu? ActionMenu { get; set; }
 }
