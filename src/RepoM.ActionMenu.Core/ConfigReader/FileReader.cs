@@ -21,26 +21,19 @@ internal class FileReader : IFileReader
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
     }
 
-    public async Task<Root?> DeserializeRoot(string filename)
+    public Task<ActionMenuRoot?> DeserializeRoot(string filename)
     {
-        if (!_fileSystem.File.Exists(filename))
-        {
-            return null;
-        }
-
-        var content = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-        return _deserializer.DeserializeRoot(content);
+        return Deserialize<ActionMenuRoot>(filename);
     }
 
-    public async Task<ContextRoot?> DeserializeContextRoot(string filename)
+    public Task<TagsRoot?> DeserializeTagsRoot(string filename)
     {
-        if (!_fileSystem.File.Exists(filename))
-        {
-            return null;
-        }
+        return Deserialize<TagsRoot>(filename);
+    }
 
-        var content = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-        return _deserializer.DeserializeContextRoot(content);
+    public Task<ContextRoot?> DeserializeContextRoot(string filename)
+    {
+        return Deserialize<ContextRoot>(filename);
     }
 
     public async Task<IDictionary<string, string>?> ReadEnvAsync(string filename)
@@ -52,5 +45,16 @@ internal class FileReader : IFileReader
 
         var content = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
         return Env.LoadContents(content, _loadOptions).ToDictionary();
+    }
+
+    private async Task<T?> Deserialize<T>(string filename) where T : ContextRoot
+    {
+        if (!_fileSystem.File.Exists(filename))
+        {
+            return null;
+        }
+
+        var content = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
+        return _deserializer.Deserialize<T>(content);
     }
 }

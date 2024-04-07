@@ -35,7 +35,7 @@ public class ActionMenuDeserializerTests
                             """;
 
         // act
-        ContextRoot result = _sut.DeserializeContextRoot(YAML);
+        ContextRoot result = _sut.Deserialize<ContextRoot>(YAML);
 
         // assert
         ContextActionSetVariableV1 contextActionSetVariable = result.Context!.Single().Should().BeOfType<ContextActionSetVariableV1>().Subject;

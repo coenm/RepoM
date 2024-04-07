@@ -64,7 +64,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     {
         ActionMenuGenerationContext context = await CreateActionMenuGenerationContext(repository).ConfigureAwait(false);
 
-        Root actions = await LoadAsync(filename).ConfigureAwait(false);
+        ActionMenuRoot actions = await LoadAsync(filename).ConfigureAwait(false);
 
         // process context (vars + methods)
         _logger.LogTrace("CreateActionMenuGenerationContext AddRepositoryContextAsync");
@@ -86,7 +86,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         ActionMenuGenerationContext context = await CreateActionMenuGenerationContext(repository).ConfigureAwait(false);
 
         // load yaml
-        Root actions = await LoadAsync(filename).ConfigureAwait(false);
+        TagsRoot actions = await LoadTagsAsync(filename).ConfigureAwait(false);
 
         if (actions.Tags == null)
         {
@@ -111,9 +111,15 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         return actionMenuGenerationContext;
     }
 
-    private async Task<Root> LoadAsync(string filename)
+    private async Task<ActionMenuRoot> LoadAsync(string filename)
     {
-        Root? actions = await _fileReader.DeserializeRoot(filename).ConfigureAwait(false);
+        ActionMenuRoot? actions = await _fileReader.DeserializeRoot(filename).ConfigureAwait(false);
+        return actions ?? throw new NotImplementedException("Could not deserialize file");
+    }
+
+    private async Task<TagsRoot> LoadTagsAsync(string filename)
+    {
+        TagsRoot? actions = await _fileReader.DeserializeTagsRoot(filename).ConfigureAwait(false);
         return actions ?? throw new NotImplementedException("Could not deserialize file");
     }
 }

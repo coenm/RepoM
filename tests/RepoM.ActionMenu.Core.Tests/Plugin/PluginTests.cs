@@ -31,11 +31,7 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
               value: text `{{ name }}` text2
               enabled: 1 == 1
 
-            tags:
-            - tag: private
-           
             action-menu:
-           
             - type: foreach@1
               enumerable: dummy.configuration_interface_method 1 "test" true
               variable: item

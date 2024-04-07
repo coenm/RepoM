@@ -82,34 +82,21 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
             .Build();
     }
 
-    public Root DeserializeRoot(string content)
+    public T Deserialize<T>(string content) where T : ContextRoot
     {
         try
         {
-            return _deserializer.Deserialize<Root>(content);
+            return _deserializer.Deserialize<T>(content);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
-    }
+    }   
 
-    public ContextRoot DeserializeContextRoot(string content)
+    public string Serialize<T>(T actionMenuRoot) where T : ContextRoot
     {
-        try
-        {
-            return _deserializer.Deserialize<ContextRoot>(content);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
-
-    public string Serialize(Root root)
-    {
-        return _serializer.Serialize(root, typeof(Root));
+        return _serializer.Serialize(actionMenuRoot, typeof(T));
     }
 }

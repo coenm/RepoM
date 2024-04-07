@@ -34,9 +34,6 @@ To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you 
 
 ## Configuration
 
-
-
-
 ## Context Menu
 
 The main functionality of RepoM are the quick actions to execute per repository. For instance, you can quickly naviate to the repository by directly opening the windows explorer or by opening a command prompt. This context menu is user and repostirory specific and can be defined using yaml. This way, you can add an context menu item (action) for opening the repository in Visual Studio (for a C# project) and for an other repository you can add the action to open a repository in Eclipse.
@@ -47,7 +44,8 @@ These actions are defined in the `RepositoryActions.yaml` located in your `%APPD
 
 ## Tagging
 
-The `RepositoryActions.yaml` file also contains a section to define tags per repository on which you can filter and search when using the hub. How to define tags is described in the [RepositoryActions](docs/RepositoryActions.md) documentation.
+It is possible to dynamically assign tags to repositories such that you can filter, order, and search repositories using these tags.
+How to define and use tags is described in the [Tags](docs_new/Tags.md) documentation.
 
 ## Search
 

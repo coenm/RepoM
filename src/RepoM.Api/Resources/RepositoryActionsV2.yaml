@@ -95,14 +95,6 @@ context:
   filename: '{{ repo_yaml_file }}'
   enabled: is_work_repository
 
-tags:
-
-- tag: work
-  when: is_work_repository
-
-- tag: private
-  when: '!is_work_repository && repository_path_contains("Projects/Private")'
-
 action-menu:
 
 - type: command@1

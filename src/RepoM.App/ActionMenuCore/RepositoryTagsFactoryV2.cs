@@ -24,7 +24,7 @@ public class RepositoryTagsFactoryV2 : IRepositoryTagsFactory
         _newStyleActionMenuFactory = newStyleActionMenuFactory ?? throw new ArgumentNullException(nameof(newStyleActionMenuFactory));
         _ = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
 
-        _filename = fileSystem.Path.Combine(appDataPathProvider.AppDataPath, "RepositoryActionsV2.yaml");
+        _filename = fileSystem.Path.Combine(appDataPathProvider.AppDataPath, "TagsV2.yaml");
     }
 
     public Task<IEnumerable<string>> GetTagsAsync(Repository repository)

@@ -1,15 +1,4 @@
-﻿tags:
-- tag: private
-  when: 1 == 1
-- tag: github
-  when: 1 == 2
-- tag: github
-  when: 1 == 2  || true
-- tag: work
-  when: ''
-- tag: github-conditional
-  when: repository.linux_path | string.contains "Projects/Github"
-action-menu:
+﻿action-menu:
 - type: just-text@1
   name: repository.pwd2 {{ repository.pwd }}
   active: ''

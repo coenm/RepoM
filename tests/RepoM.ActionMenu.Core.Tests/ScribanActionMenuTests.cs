@@ -9,6 +9,7 @@ namespace RepoM.ActionMenu.Core.Tests
     using Microsoft.Extensions.Logging.Abstractions;
     using RepoM.ActionMenu.Core;
     using RepoM.ActionMenu.Core.Model;
+    using RepoM.ActionMenu.Core.Yaml.Model;
     using RepoM.ActionMenu.Interface.UserInterface;
     using RepoM.Core.Plugin.Repository;
     using SimpleInjector;
@@ -49,7 +50,7 @@ namespace RepoM.ActionMenu.Core.Tests
                 bx = 'winex';
             """;
 
-        private const string YAML =
+        private const string TAGS =
             """
             context:
             - type: evaluate-script@1
@@ -119,6 +120,63 @@ namespace RepoM.ActionMenu.Core.Tests
             
             - tag: github-conditional
               when: repository.linux_path | string.contains "Projects/Github"
+            """;
+
+        private const string ACTION_MENU =
+            """
+            context:
+            - type: evaluate-script@1
+              content: |-
+                func translate(input)
+                  ret 'translate says:' + input;
+                end
+            
+            - name: coenm
+            - name1: coenm1
+              
+            - type: set-variable@1
+              name: devopsEnvironments
+              value: 
+              - name: Develop
+                url: '-d.github-dt.nl'
+              - name: Test
+                url: '-t.github-dt.nl'
+              - name: Acceptation
+                url: '-a.github.nl'
+              - name: Production
+                url: '.github.nl'  
+                
+            - type: evaluate-script@1
+              content: |-
+                a = 'beer';
+                b = 'wine';
+                name = name + ' drinks a lot of ' + a + ' and ' + b;
+                
+                now2 = date.now;
+                
+                my_age = 39;
+                
+                func sub1
+                   ret $0 - $1
+                end
+                
+                func sub2(x,y)
+                   ret x - y + 10
+                end
+                
+                func sonar_url(project_id)
+                  ret 'https://sonarcloud.io/project/overview?id='  + project_id;
+                end
+                
+                dummy_calc = sub2(19, 3);
+                
+            - type: load-file@1
+              filename: 'C:\file1.env'
+                  
+            - type: render-variable@1
+              name: my-text
+              value: text `{{ name }}` text2
+              enabled: 1 == 1
             
             action-menu:
             - type: just-text@1
@@ -183,7 +241,8 @@ namespace RepoM.ActionMenu.Core.Tests
             var fileSystem = new MockFileSystem(
                 new Dictionary<string, MockFileData>
                     {
-                        { "C:\\RepositoryActionsV2.yaml", new MockFileData(YAML, Encoding.UTF8) },
+                        { "C:\\RepositoryActionsV2.yaml", new MockFileData(ACTION_MENU, Encoding.UTF8) },
+                        { "C:\\TagsV2.yaml", new MockFileData(TAGS, Encoding.UTF8) },
                         { "C:\\SubV2.yaml", new MockFileData(SUB, Encoding.UTF8) },
                         { "C:\\file1.env", new MockFileData(FILE1_ENV, Encoding.UTF8) },
                         { "C:\\file2.env", new MockFileData(FILE2_ENV, Encoding.UTF8) },
@@ -213,7 +272,7 @@ namespace RepoM.ActionMenu.Core.Tests
             IUserInterfaceActionMenuFactory sut = Bootstrapper.GetUserInterfaceActionMenu(_container);
 
             // act
-            IEnumerable<string> result = await sut.GetTagsAsync(_repository, "C:\\RepositoryActionsV2.yaml");
+            IEnumerable<string> result = await sut.GetTagsAsync(_repository, "C:\\TagsV2.yaml");
 
             // assert
             await Verifier.Verify(result);
@@ -226,7 +285,20 @@ namespace RepoM.ActionMenu.Core.Tests
             IActionMenuDeserializer deserializer = _container.GetInstance<IActionMenuDeserializer>();
 
             // act
-            var result = deserializer.Serialize(deserializer.DeserializeRoot(YAML));
+            var result = deserializer.Serialize(deserializer.Deserialize<ActionMenuRoot>(ACTION_MENU));
+
+            // assert
+            await Verifier.Verify(result);
+        }
+        
+        [Fact]
+        public async Task SerializeTags()
+        {
+            // arrange
+            IActionMenuDeserializer deserializer = _container.GetInstance<IActionMenuDeserializer>();
+
+            // act
+            var result = deserializer.Serialize(deserializer.Deserialize<TagsRoot>(TAGS));
 
             // assert
             await Verifier.Verify(result);
