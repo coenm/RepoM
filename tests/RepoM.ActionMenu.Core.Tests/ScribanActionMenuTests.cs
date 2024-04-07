@@ -285,7 +285,7 @@ namespace RepoM.ActionMenu.Core.Tests
             IActionMenuDeserializer deserializer = _container.GetInstance<IActionMenuDeserializer>();
 
             // act
-            var result = deserializer.Serialize(deserializer.Deserialize<ContextRoot>(ACTION_MENU));
+            var result = deserializer.Serialize(deserializer.Deserialize<ActionMenuRoot>(ACTION_MENU));
 
             // assert
             await Verifier.Verify(result);
