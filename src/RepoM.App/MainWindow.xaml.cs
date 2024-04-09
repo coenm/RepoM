@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
 using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Interface.UserInterface;
@@ -29,6 +30,8 @@ using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using SourceChord.FluentWPF;
+using Control = System.Windows.Controls.Control;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -122,6 +125,7 @@ public partial class MainWindow
         ShowUpdateIfAvailable();
         txtFilter.Focus();
         txtFilter.SelectAll();
+        TryFixFreeze();
     }
 
     protected override void OnDeactivated(EventArgs e)
@@ -170,7 +174,21 @@ public partial class MainWindow
                 Activate();
                 txtFilter.Focus();
                 txtFilter.SelectAll();
+                TryFixFreeze();
             });
+    }
+
+    private void TryFixFreeze()
+    {
+        return;
+
+        // if (!"true".Equals(Environment.GetEnvironmentVariable("REPO_ONE_TRY_FIX_FREEZE")))
+        // {
+        //     return;
+        // }
+        //
+        // Width += 1;
+        // Width -= 1;
     }
 
     private void OnScanStateChanged(object? sender, bool isScanning)
@@ -476,26 +494,32 @@ public partial class MainWindow
 
     private void PlaceFormByTaskBarLocation()
     {
-        var topY = SystemParameters.WorkArea.Top;
-        var bottomY = SystemParameters.WorkArea.Height - Height;
-        var leftX = SystemParameters.WorkArea.Left;
-        var rightX = SystemParameters.WorkArea.Width - Width;
+        Point position = GetTopLeftPlaceFormByTaskBarLocation(
+            SystemParameters.WorkArea,
+            Height,
+            Width,
+            Screen.PrimaryScreen);
+        Left = position.X;
+        Top = position.Y;
+    }
 
-        switch (TaskBarLocator.GetTaskBarLocation())
+    private static Point GetTopLeftPlaceFormByTaskBarLocation(Rect workArea, double height, double width, Screen? primaryScreen)
+    {
+        var topY = workArea.Top;
+        var bottomY = workArea.Height - height;
+        var leftX = workArea.Left;
+        var rightX = workArea.Width - width;
+
+        switch (TaskBarLocator.GetTaskBarLocation(primaryScreen))
         {
             case TaskBarLocator.TaskBarLocation.Top:
-                Top = topY;
-                Left = rightX;
-                break;
+                return new Point(rightX, topY);
             case TaskBarLocator.TaskBarLocation.Left:
-                Top = bottomY;
-                Left = leftX;
-                break;
+                return new Point(leftX, bottomY);
             case TaskBarLocator.TaskBarLocation.Bottom:
             case TaskBarLocator.TaskBarLocation.Right:
-                Top = bottomY;
-                Left = rightX;
-                break;
+            default:
+                return new Point(rightX, bottomY);
         }
     }
 

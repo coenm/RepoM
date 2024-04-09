@@ -2,6 +2,7 @@ namespace RepoM.Api.Common;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -209,6 +210,36 @@ public class FileAppSettingsService : IAppSettingsService
             NotifyChange();
             Save();
         }
+    }
+
+    public void UpdateMenuSize(string resolution, MenuSize size)
+    {
+        Settings.PreferredMenuSizes[resolution] = new Size
+            {
+                Height = size.MenuHeight,
+                Width = size.MenuWidth,
+            };
+
+        NotifyChange();
+        Save();
+    }
+
+    public bool TryGetMenuSize(string resolution, [NotNullWhen(true)] out MenuSize? size)
+    {
+        if (Settings.PreferredMenuSizes.TryGetValue(resolution, out Size? value))
+        {
+            size = new MenuSize
+                {
+                    MenuHeight = value.Height,
+                    MenuWidth = value.Width,
+                };
+        }
+        else
+        {
+            size = null;
+        }
+
+        return size != null;
     }
 
     public List<string> ReposRootDirectories

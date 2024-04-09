@@ -12,31 +12,24 @@ public static class TaskBarLocator
         Right,
     }
 
-    public static TaskBarLocation GetTaskBarLocation()
+    public static TaskBarLocation GetTaskBarLocation(Screen? primaryScreen)
     {
-        TaskBarLocation taskBarLocation = TaskBarLocation.Bottom;
-
-        if (Screen.PrimaryScreen == null)
+        if (primaryScreen == null)
         {
-            return taskBarLocation;
+            return TaskBarLocation.Bottom;
         }
-        
-        bool taskBarOnTopOrBottom = Screen.PrimaryScreen.WorkingArea.Width == Screen.PrimaryScreen.Bounds.Width;
+
+        var taskBarOnTopOrBottom = primaryScreen.WorkingArea.Width == primaryScreen.Bounds.Width;
 
         if (taskBarOnTopOrBottom)
         {
-            if (Screen.PrimaryScreen.WorkingArea.Top > 0)
-            {
-                taskBarLocation = TaskBarLocation.Top;
-            }
-        }
-        else
-        {
-            taskBarLocation = Screen.PrimaryScreen.WorkingArea.Left > 0
-                ? TaskBarLocation.Left
-                : TaskBarLocation.Right;
+            return primaryScreen.WorkingArea.Top > 0
+                ? TaskBarLocation.Top
+                : TaskBarLocation.Bottom;
         }
 
-        return taskBarLocation;
+        return primaryScreen.WorkingArea.Left > 0
+            ? TaskBarLocation.Left
+            : TaskBarLocation.Right;
     }
 }

@@ -66,7 +66,6 @@ internal static class Bootstrapper
         Container.RegisterInstance<IClock>(SystemClock.Instance);
 
         Container.Register<IRepositoryTagsFactory, RepositoryTagsFactoryV2>(Lifestyle.Singleton);
-        Container.RegisterDecorator<IRepositoryTagsFactory, LoggingRepositoryTagsFactoryDecorator>(Lifestyle.Singleton);
 
         Container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
 

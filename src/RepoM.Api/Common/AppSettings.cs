@@ -46,6 +46,12 @@ public sealed class AppSettings
     public Size MenuSize { get; set; } = Size.Default;
 
     /// <summary>
+    /// Preferred menu sizes of the RepoM.
+    /// </summary>
+    [UiConfigured]
+    public Dictionary<string, Size> PreferredMenuSizes { get; set; } = new();
+
+    /// <summary>
     /// List of root directories where RepoM will search for git repositories. If null or empty, all fixed drives will be searched from the root.
     /// </summary>
     [ManualConfigured]
@@ -71,7 +77,8 @@ public sealed class AppSettings
             ReposRootDirectories = new(),
             EnabledSearchProviders = new List<string>(1),
             Plugins = new List<PluginOptions>(),
-        };
+            PreferredMenuSizes = new Dictionary<string, Size>(),
+    };
 }
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
