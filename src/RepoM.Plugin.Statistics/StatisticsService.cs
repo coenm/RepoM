@@ -60,9 +60,7 @@ internal class StatisticsService : IStatisticsService
 
     public IReadOnlyRepositoryStatistics? GetRepositoryRecording(IRepository repository)
     {
-        return _recordings.TryGetValue(repository.SafePath, out RepositoryStatistics? repositoryStatistics)
-            ? repositoryStatistics
-            : null;
+        return _recordings.GetValueOrDefault(repository.SafePath);
     }
 
     public void Apply(IEvent evt)
