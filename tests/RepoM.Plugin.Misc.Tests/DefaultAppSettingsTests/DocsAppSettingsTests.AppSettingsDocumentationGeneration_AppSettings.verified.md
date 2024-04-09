@@ -6,6 +6,7 @@
 - `AutoFetchMode`: The git fetching strategy. This determines how often RepoM will fetch from git. (optional, UI configured)
 - `PruneOnFetch`: This option determines if RepoM should prune branches when fetching from git. (optional, UI configured)
 - `MenuSize`: The menu size of RepoM. This is set when the window is resized. (optional, UI configured)
+- `PreferredMenuSizes`: Preferred menu sizes of the RepoM. (optional, UI configured)
 - `ReposRootDirectories`: List of root directories where RepoM will search for git repositories. If null or empty, all fixed drives will be searched from the root. (optional, Manual configured)
 - `EnabledSearchProviders`: List of search providers. Search providers can be added by plugins. (optional, UI configured)
 - `Plugins`: List of plugins. (optional, UI configured)
