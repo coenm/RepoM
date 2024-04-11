@@ -180,15 +180,14 @@ public partial class MainWindow
 
     private void TryFixFreeze()
     {
-        return;
+        if (!"true".Equals(Environment.GetEnvironmentVariable("REPO_ONE_TRY_FIX_FREEZE")))
+        {
+            return;
+        }
 
-        // if (!"true".Equals(Environment.GetEnvironmentVariable("REPO_ONE_TRY_FIX_FREEZE")))
-        // {
-        //     return;
-        // }
-        //
-        // Width += 1;
-        // Width -= 1;
+        var w = Width;
+        Width += 0.001;
+        Width = w;
     }
 
     private void OnScanStateChanged(object? sender, bool isScanning)
