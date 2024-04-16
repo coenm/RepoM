@@ -134,8 +134,6 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
             }
 
             _mode = value;
-            Console.WriteLine("Auto fetch is: " + _mode.GetValueOrDefault());
-
             UpdateBehavior();
         }
     }

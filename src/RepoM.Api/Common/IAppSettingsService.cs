@@ -24,10 +24,10 @@ public interface IAppSettingsService
     bool PruneOnFetch { get; set; }
 
     [Obsolete("Will be removed in next version")]
-    double MenuWidth { get; set; }
+    double? MenuWidth { get; }
 
     [Obsolete("Will be removed in next version")]
-    double MenuHeight { get; set; }
+    double? MenuHeight { get; }
 
     void UpdateMenuSize(string resolution, MenuSize size);
 

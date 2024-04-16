@@ -43,10 +43,10 @@ public sealed class AppSettings
     /// The menu size of RepoM. This is set when the window is resized.
     /// </summary>
     [UiConfigured]
-    public Size MenuSize { get; set; } = Size.Default;
+    public Size? MenuSize { get; set; }
 
     /// <summary>
-    /// Preferred menu sizes of the RepoM.
+    /// Preferred menu sizes of the RepoM. Will be set when window is resized.
     /// </summary>
     [UiConfigured]
     public Dictionary<string, Size> PreferredMenuSizes { get; set; } = new();
@@ -73,7 +73,7 @@ public sealed class AppSettings
         {
             AutoFetchMode = AutoFetchMode.Off,
             PruneOnFetch = false,
-            MenuSize = Size.Default,
+            MenuSize = null,
             ReposRootDirectories = new(),
             EnabledSearchProviders = new List<string>(1),
             Plugins = new List<PluginOptions>(),
@@ -89,15 +89,9 @@ public sealed class ManualConfiguredAttribute : Attribute { }
 
 public class Size
 {
-    public double Height { get; set; }
+    public double Height { get; init; }
 
-    public double Width { get; set; }
-
-    public static Size Default => new()
-        {
-            Width = -1,
-            Height = -1,
-        };
+    public double Width { get; init; }
 }
 
 public class PluginOptions

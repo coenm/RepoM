@@ -151,7 +151,7 @@ internal class StatisticsModule : IModule
                .Buffer(buffer)
                .Subscribe(data =>
                    {
-                       IEvent[] events = data.ToArray();
+                       IEvent[] events = [.. data, ];
                        if (events.Length == 0)
                        {
                            return;

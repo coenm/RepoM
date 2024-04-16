@@ -20,7 +20,7 @@ internal class WindowSizeService : IDisposable
     private IDisposable? _registrationWindowSizeChanged;
     private IDisposable? _registrationDisplaySettingsChanged;
     private readonly SynchronizationContext _uiDispatcher;
-    private static readonly TimeSpan _throttle = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan _throttleWindowSizeChanged = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan _throttleDisplaySettingsChanged = TimeSpan.FromSeconds(1);
 
     public WindowSizeService(MainWindow mainWindow, IAppSettingsService appSettings, IThreadDispatcher threadDispatcher)
@@ -42,14 +42,14 @@ internal class WindowSizeService : IDisposable
         }
         else
         {
-            if (_appSettings.MenuWidth > 0)
+            if (_appSettings.MenuWidth is > 0)
             {
-                _mainWindow.Width = _appSettings.MenuWidth;
+                _mainWindow.Width = _appSettings.MenuWidth.Value;
             }
             
-            if (_appSettings.MenuHeight > 0)
+            if (_appSettings.MenuHeight is > 0)
             {
-                _mainWindow.Height = _appSettings.MenuHeight;
+                _mainWindow.Height = _appSettings.MenuHeight.Value;
             }
 
             _appSettings.UpdateMenuSize(
@@ -62,10 +62,10 @@ internal class WindowSizeService : IDisposable
         }
         
         _registrationDisplaySettingsChanged = Observable
-          .FromEventPattern<EventHandler, EventArgs>(
+            .FromEventPattern<EventHandler, EventArgs>(
               handler => SystemEvents.DisplaySettingsChanged += handler,
               handler => SystemEvents.DisplaySettingsChanged -= handler)
-          .ObserveOn(Scheduler.Default)
+            .ObserveOn(Scheduler.Default)
             .Throttle(_throttleDisplaySettingsChanged)
             .Select(eventPattern =>
                 {
@@ -89,16 +89,15 @@ internal class WindowSizeService : IDisposable
                 handler => _mainWindow.SizeChanged += handler,
                 handler => _mainWindow.SizeChanged -= handler)
             .ObserveOn(Scheduler.Default)
-            .Select(eventPattern => new CustomSizeChangedEventArgs(eventPattern.EventArgs, _currentResolution))
-            .Throttle(_throttle)
+            .Throttle(_throttleWindowSizeChanged)
             .Subscribe(sizeChangedEvent =>
                 {
                     _appSettings.UpdateMenuSize(
-                        sizeChangedEvent.Resolution,
+                        _currentResolution, // Yes, This possibliy can go wrong
                         new MenuSize
                         {
-                            MenuHeight = sizeChangedEvent.NewSize.Height,
-                            MenuWidth = sizeChangedEvent.NewSize.Width,
+                            MenuHeight = sizeChangedEvent.EventArgs.NewSize.Height,
+                            MenuWidth = sizeChangedEvent.EventArgs.NewSize.Width,
                         });
                 });
 
