@@ -75,13 +75,16 @@ internal class WindowSizeService : IDisposable
                     _ = _appSettings.TryGetMenuSize(_currentResolution, out MenuSize? menuSize);
                     return menuSize;
                 })
-            .Where(menuSize => menuSize != null)
-            .Select(menuSize => menuSize!.Value)
+            .Where(menuSize => menuSize.HasValue
+                               &&
+                               (Math.Abs(_mainWindow.Width - menuSize.Value.MenuWidth) > 0.001
+                                ||
+                                Math.Abs(_mainWindow.Height - menuSize.Value.MenuHeight) > 0.001))
             .ObserveOn(_uiDispatcher)
             .Subscribe(menuSize =>
                 {
-                    _mainWindow.Width = menuSize.MenuWidth;
-                    _mainWindow.Height = menuSize.MenuHeight;
+                    _mainWindow.Width = menuSize!.Value.MenuWidth;
+                    _mainWindow.Height = menuSize!.Value.MenuHeight;
                 });
         
         _registrationWindowSizeChanged = Observable
