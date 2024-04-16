@@ -9,7 +9,6 @@ using System.Windows;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using RepoM.Api.Common;
-using Size = System.Windows.Size;
 
 internal class WindowSizeService : IDisposable
 {
@@ -126,17 +125,4 @@ internal class WindowSizeService : IDisposable
         Screen? screen = Screen.PrimaryScreen;
         return screen == null ? UNKNOWN_RESOLUTION : $"{screen.Bounds.Width}x{screen.Bounds.Height}";
     }
-}
-
-file class CustomSizeChangedEventArgs : RoutedEventArgs
-{
-    public CustomSizeChangedEventArgs(SizeChangedEventArgs sizeChangedEventArgs, string resolution)
-    {
-        Resolution = resolution;
-        NewSize = sizeChangedEventArgs.NewSize;
-    }
-
-    public Size NewSize { get; }
-
-    public string Resolution { get; }
 }
