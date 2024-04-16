@@ -16,7 +16,7 @@ public class FileAppSettingsService : IAppSettingsService
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
     private AppSettings? _settings;
-    private readonly List<Action> _invalidationHandlers = new();
+    private readonly List<Action> _invalidationHandlers = new(1);
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     private List<PluginSettings>? _plugins;
