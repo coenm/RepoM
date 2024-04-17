@@ -1,6 +1,7 @@
 namespace RepoM.App.Tests.Services;
 
 using System;
+using System.Threading;
 using System.Windows;
 using FakeItEasy;
 using FluentAssertions;
@@ -52,6 +53,38 @@ public class WindowSizeServiceTests
         Action act = () => sut.Unregister();
 
         // assert
+    }
+
+    [WpfFact]
+    public void Register_ShouldReturn()
+    {
+        // arrange
+        IThreadDispatcher threadDispatcher = A.Fake<IThreadDispatcher>();
+        SynchronizationContext current = SynchronizationContext.Current!;
+        A.CallTo(() => threadDispatcher.SynchronizationContext).Returns(current);
+        var sut = new TestableWindowSizeService(new Window(), A.Dummy<IAppSettingsService>(), threadDispatcher, A.Dummy<ILogger>());
+
+        // act
+        Action act = () => sut.Register();
+
+        // assert
+        act.Should().NotThrow();
+    }
+
+    [WpfFact]
+    public void UnRegister_ShouldReturn_WhenRegistered()
+    {
+        // arrange
+        IThreadDispatcher threadDispatcher = A.Fake<IThreadDispatcher>();
+        SynchronizationContext current = SynchronizationContext.Current!;
+        A.CallTo(() => threadDispatcher.SynchronizationContext).Returns(current);
+        var sut = new TestableWindowSizeService(new Window(), A.Dummy<IAppSettingsService>(), threadDispatcher, A.Dummy<ILogger>());
+        sut.Register();
+
+        // act
+        Action act = () => sut.Unregister();
+
+        // assert
         act.Should().NotThrow();
     }
 }
@@ -66,6 +99,6 @@ file class TestableWindowSizeService : WindowSizeService
 
     protected override string GetResolution()
     {
-        return "dummy";
+        return "1x2";
     }
 }
