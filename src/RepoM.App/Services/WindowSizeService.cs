@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using RepoM.Api.Common;
 
@@ -16,16 +17,18 @@ internal class WindowSizeService : IDisposable
     private volatile string _currentResolution = UNKNOWN_RESOLUTION;
     private readonly MainWindow _mainWindow;
     private readonly IAppSettingsService _appSettings;
+    private readonly ILogger _logger;
     private IDisposable? _registrationWindowSizeChanged;
     private IDisposable? _registrationDisplaySettingsChanged;
     private readonly SynchronizationContext _uiDispatcher;
     private static readonly TimeSpan _throttleWindowSizeChanged = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan _throttleDisplaySettingsChanged = TimeSpan.FromSeconds(1);
 
-    public WindowSizeService(MainWindow mainWindow, IAppSettingsService appSettings, IThreadDispatcher threadDispatcher)
+    public WindowSizeService(MainWindow mainWindow, IAppSettingsService appSettings, IThreadDispatcher threadDispatcher, ILogger logger)
     {
         _mainWindow = mainWindow ?? throw new ArgumentNullException(nameof(mainWindow));
         _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         ArgumentNullException.ThrowIfNull(threadDispatcher);
         _uiDispatcher = threadDispatcher.SynchronizationContext;
     }
@@ -68,22 +71,42 @@ internal class WindowSizeService : IDisposable
             .Throttle(_throttleDisplaySettingsChanged)
             .Select(eventPattern =>
                 {
-                    // update resolution in select is not very nice.
-                    _currentResolution = GetResolution(); 
+                    try
+                    {
+                        // update resolution in select is not very nice.
+                        _currentResolution = GetResolution();
 
-                    _ = _appSettings.TryGetMenuSize(_currentResolution, out MenuSize? menuSize);
-                    return menuSize;
+                        _ = _appSettings.TryGetMenuSize(_currentResolution, out MenuSize? menuSize);
+                        return menuSize;
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Could not get resolution or menu for current screen.");
+                        return null;
+                    }
                 })
-            .Where(menuSize => menuSize.HasValue
-                               &&
-                               (Math.Abs(_mainWindow.Width - menuSize.Value.MenuWidth) > 0.001
-                                ||
-                                Math.Abs(_mainWindow.Height - menuSize.Value.MenuHeight) > 0.001))
-            .ObserveOn(_uiDispatcher)
+            .Where(menuSize => menuSize.HasValue)
+            .Select(menuSize => menuSize!.Value)
+            .ObserveOn(_uiDispatcher) // Accessing the mainWindow should be done from UI thread.
+            .Where(menuSize =>
+                {
+                    try
+                    {
+                        return Math.Abs(_mainWindow.Width - menuSize.MenuWidth) > 0.001
+                               ||
+                               Math.Abs(_mainWindow.Height - menuSize.MenuHeight) > 0.001;
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Could not determine if window size has changed.");
+                        return true;
+                    }
+
+                })
             .Subscribe(menuSize =>
                 {
-                    _mainWindow.Width = menuSize!.Value.MenuWidth;
-                    _mainWindow.Height = menuSize!.Value.MenuHeight;
+                    _mainWindow.Width = menuSize!.MenuWidth;
+                    _mainWindow.Height = menuSize!.MenuHeight;
                 });
         
         _registrationWindowSizeChanged = Observable
