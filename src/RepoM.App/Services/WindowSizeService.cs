@@ -15,7 +15,7 @@ internal class WindowSizeService : IDisposable
 {
     private const string UNKNOWN_RESOLUTION = "unknown";
     private volatile string _currentResolution = UNKNOWN_RESOLUTION;
-    private readonly MainWindow _mainWindow;
+    private readonly Window _mainWindow;
     private readonly IAppSettingsService _appSettings;
     private readonly ILogger _logger;
     private IDisposable? _registrationWindowSizeChanged;
@@ -24,7 +24,7 @@ internal class WindowSizeService : IDisposable
     private static readonly TimeSpan _throttleWindowSizeChanged = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan _throttleDisplaySettingsChanged = TimeSpan.FromSeconds(1);
 
-    public WindowSizeService(MainWindow mainWindow, IAppSettingsService appSettings, IThreadDispatcher threadDispatcher, ILogger logger)
+    public WindowSizeService(Window mainWindow, IAppSettingsService appSettings, IThreadDispatcher threadDispatcher, ILogger logger)
     {
         _mainWindow = mainWindow ?? throw new ArgumentNullException(nameof(mainWindow));
         _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
