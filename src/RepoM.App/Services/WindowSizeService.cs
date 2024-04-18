@@ -21,8 +21,8 @@ internal class WindowSizeService : IDisposable
     private IDisposable? _registrationWindowSizeChanged;
     private IDisposable? _registrationDisplaySettingsChanged;
     private readonly SynchronizationContext _uiDispatcher;
-    private static readonly TimeSpan _throttleWindowSizeChanged = TimeSpan.FromSeconds(5);
-    private static readonly TimeSpan _throttleDisplaySettingsChanged = TimeSpan.FromSeconds(1);
+    protected static readonly TimeSpan ThrottleWindowSizeChanged = TimeSpan.FromSeconds(5);
+    protected static readonly TimeSpan ThrottleDisplaySettingsChanged = TimeSpan.FromSeconds(1);
 
     public WindowSizeService(Window mainWindow, IAppSettingsService appSettings, IThreadDispatcher threadDispatcher, ILogger logger)
     {
@@ -68,7 +68,7 @@ internal class WindowSizeService : IDisposable
               handler => SystemEvents.DisplaySettingsChanged += handler,
               handler => SystemEvents.DisplaySettingsChanged -= handler)
             .ObserveOn(Scheduler.Default)
-            .Throttle(_throttleDisplaySettingsChanged)
+            .Throttle(ThrottleDisplaySettingsChanged)
             .Select(eventPattern =>
                 {
                     try
@@ -114,7 +114,7 @@ internal class WindowSizeService : IDisposable
                 handler => _mainWindow.SizeChanged += handler,
                 handler => _mainWindow.SizeChanged -= handler)
             .ObserveOn(Scheduler.Default)
-            .Throttle(_throttleWindowSizeChanged)
+            .Throttle(ThrottleWindowSizeChanged)
             .Subscribe(sizeChangedEvent =>
                 {
                     _appSettings.UpdateMenuSize(

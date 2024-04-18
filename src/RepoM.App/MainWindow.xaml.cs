@@ -14,6 +14,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
@@ -49,6 +50,7 @@ public partial class MainWindow
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
     private readonly IRepositoryMatcher _repositoryMatcher;
     private readonly IUserInterfaceActionMenuFactory _newStyleActionMenuFactory;
+    private readonly ILogger _logger;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     public MainWindow(
@@ -65,11 +67,13 @@ public partial class MainWindow
         IRepositoryFilteringManager repositoryFilteringManager,
         IRepositoryMatcher repositoryMatcher,
         IModuleManager moduleManager,
-        IUserInterfaceActionMenuFactory newStyleActionMenuFactory)
+        IUserInterfaceActionMenuFactory newStyleActionMenuFactory,
+        ILogger logger)
     {
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
         _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
         _newStyleActionMenuFactory = newStyleActionMenuFactory ?? throw new ArgumentNullException(nameof(newStyleActionMenuFactory));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
@@ -209,7 +213,7 @@ public partial class MainWindow
         }
         catch (Exception exception)
         {
-            Console.WriteLine(exception);
+            _logger.LogError(exception, "Could not invoke action on current repository.");
         }
     }
 
@@ -238,6 +242,8 @@ public partial class MainWindow
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Could not create menu.");
+
             // log?
             ctxMenu.Items.Clear();
             ctxMenu.Items.Add(new AcrylicMenuItem

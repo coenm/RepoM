@@ -12,8 +12,21 @@ using RepoM.Api.Common;
 using RepoM.App.Services;
 using Xunit;
 
-public class WindowSizeServiceTests
+public class WindowSizeServiceTests : IDisposable
 {
+    private readonly IThreadDispatcher _threadDispatcher;
+    private readonly IAppSettingsService _appSettingsService;
+    private Window? _window;
+
+    public WindowSizeServiceTests()
+    {
+        _threadDispatcher = A.Fake<IThreadDispatcher>();
+        SynchronizationContext current = SynchronizationContext.Current!;
+        A.CallTo(() => _threadDispatcher.SynchronizationContext).Returns(current);
+
+        _appSettingsService = A.Fake<IAppSettingsService>();
+    }
+
     [StaFact]
     public void Ctor_ShouldThrow_WhenArgumentNull()
     {
@@ -55,16 +68,14 @@ public class WindowSizeServiceTests
         Action act = () => sut.Unregister();
 
         // assert
+        act.Should().NotThrow();
     }
 
     [WpfFact]
     public void Register_ShouldReturn()
     {
         // arrange
-        IThreadDispatcher threadDispatcher = A.Fake<IThreadDispatcher>();
-        SynchronizationContext current = SynchronizationContext.Current!;
-        A.CallTo(() => threadDispatcher.SynchronizationContext).Returns(current);
-        var sut = new TestableWindowSizeService(new Window(), A.Dummy<IAppSettingsService>(), threadDispatcher, A.Dummy<ILogger>());
+        var sut = new TestableWindowSizeService(new Window(), A.Dummy<IAppSettingsService>(), _threadDispatcher, A.Dummy<ILogger>());
 
         // act
         Action act = () => sut.Register();
@@ -77,10 +88,7 @@ public class WindowSizeServiceTests
     public void UnRegister_ShouldReturn_WhenRegistered()
     {
         // arrange
-        IThreadDispatcher threadDispatcher = A.Fake<IThreadDispatcher>();
-        SynchronizationContext current = SynchronizationContext.Current!;
-        A.CallTo(() => threadDispatcher.SynchronizationContext).Returns(current);
-        var sut = new TestableWindowSizeService(new Window(), A.Dummy<IAppSettingsService>(), threadDispatcher, A.Dummy<ILogger>());
+        var sut = new TestableWindowSizeService(new Window(), A.Dummy<IAppSettingsService>(), _threadDispatcher, A.Dummy<ILogger>());
         sut.Register();
 
         // act
@@ -94,57 +102,78 @@ public class WindowSizeServiceTests
     public void Register_ShouldSubscribeAndHandleSizeChangedEvents()
     {
         // arrange
-        IThreadDispatcher threadDispatcher = A.Fake<IThreadDispatcher>();
-        SynchronizationContext current = SynchronizationContext.Current!;
-        A.CallTo(() => threadDispatcher.SynchronizationContext).Returns(current);
-        var window = new Window { Width = 1, Height = 1, };
-        IAppSettingsService appSettingsService = A.Dummy<IAppSettingsService>();
+        List<int> callingThreadIds = [];
+        var currentThreadId = Environment.CurrentManagedThreadId;
+        var signal = new ManualResetEventSlim();
 
-        List<int> originalThread = [];
+        _window = new Window { Width = 1, Height = 1, };
+        
         MenuSize? configuredMenuSize = new MenuSize
             {
-                MenuHeight = 123,
-                MenuWidth = 345,
+                MenuHeight = 12,
+                MenuWidth = 34,
             };
-        A.CallTo(() => appSettingsService.TryGetMenuSize("1x2", out configuredMenuSize))
-         .Invokes(_ => originalThread.Add(Environment.CurrentManagedThreadId))
-         .Returns(true);
+        A.CallTo(() => _appSettingsService.TryGetMenuSize("1x2", out configuredMenuSize)).Returns(true);
 
-        var mre = new ManualResetEventSlim();
         List<MenuSize> updatedMenuSize = [];
-        _ = A.CallTo(() => appSettingsService.UpdateMenuSize("1x2", A<MenuSize>._))
+        _ = A.CallTo(() => _appSettingsService.UpdateMenuSize("1x2", A<MenuSize>._))
          .Invokes(call =>
              {
-                 originalThread.Add(Environment.CurrentManagedThreadId);
+                 callingThreadIds.Add(Environment.CurrentManagedThreadId);
                  updatedMenuSize.Add((MenuSize)call.Arguments[1]!);
-                 mre.Set();
+                 signal.Set();
              });
 
-        var sut = new TestableWindowSizeService(window, appSettingsService, threadDispatcher, A.Dummy<ILogger>());
+        var sut = new TestableWindowSizeService(_window, _appSettingsService, _threadDispatcher, A.Dummy<ILogger>());
         sut.Register();
 
         // act
-        window.Show();
-        window.Height += 10;
-        window.Width += 10;
-        mre.Wait(TimeSpan.FromSeconds(10));
+        ResizeWindow(_window, 40, 140);
+        sut.WaitForWindowSizeChanged(signal);
 
         // assert
         updatedMenuSize.Single().Should().BeEquivalentTo(
             new MenuSize
             {
-                MenuHeight = 133,
-                MenuWidth = 355,
+                MenuHeight = 40,
+                MenuWidth = 140,
             });
+        callingThreadIds.Should().HaveCountGreaterOrEqualTo(1);
+        callingThreadIds.Should().NotContain(currentThreadId);
+
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            _window?.Close();
+        }
+        catch (Exception)
+        {
+            // ignore
+        }
+    }
+
+    private static void ResizeWindow(Window window, double height, double width)
+    {
+        window.Show();
+        window.Height = height;
+        window.Width = width;
+        window.Hide();
     }
 }
-
 
 file class TestableWindowSizeService : WindowSizeService
 {
     public TestableWindowSizeService(Window mainWindow, IAppSettingsService appSettings, IThreadDispatcher threadDispatcher, ILogger logger)
         : base(mainWindow, appSettings, threadDispatcher, logger)
     {
+    }
+
+    public bool WaitForWindowSizeChanged(ManualResetEventSlim signal)
+    {
+        return signal.Wait(ThrottleWindowSizeChanged.Add(TimeSpan.FromSeconds(5)));
     }
 
     protected override string GetResolution()
