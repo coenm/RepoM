@@ -15,7 +15,6 @@ using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
-using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
@@ -40,17 +39,17 @@ using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 public partial class MainWindow
 {
     private volatile bool _refreshDelayed;
+    private DateTime _timeOfLastRefresh = DateTime.MinValue;
+    private bool _closeOnDeactivate = true;
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly DefaultRepositoryMonitor? _monitor;
     private readonly ITranslationService _translationService;
-    private bool _closeOnDeactivate = true;
-    private DateTime _timeOfLastRefresh = DateTime.MinValue;
     private readonly IFileSystem _fileSystem;
     private readonly ActionExecutor _executor;
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
     private readonly IRepositoryMatcher _repositoryMatcher;
-    private readonly IUserInterfaceActionMenuFactory _newStyleActionMenuFactory;
     private readonly ILogger _logger;
+    private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     public MainWindow(
@@ -67,13 +66,13 @@ public partial class MainWindow
         IRepositoryFilteringManager repositoryFilteringManager,
         IRepositoryMatcher repositoryMatcher,
         IModuleManager moduleManager,
-        IUserInterfaceActionMenuFactory newStyleActionMenuFactory,
-        ILogger logger)
+        ILogger logger,
+        IUserMenuActionMenuFactory userMenuActionFactory)
     {
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
         _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
-        _newStyleActionMenuFactory = newStyleActionMenuFactory ?? throw new ArgumentNullException(nameof(newStyleActionMenuFactory));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _userMenuActionFactory = userMenuActionFactory ?? throw new ArgumentNullException(nameof(userMenuActionFactory));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
@@ -287,43 +286,29 @@ public partial class MainWindow
                 IsEnabled = true,
             });
 
-        var newStyleFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, "RepositoryActionsV2.yaml");
-        var fileExists = _fileSystem.File.Exists(newStyleFilename);
-
-        if (!fileExists)
+        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(true))
         {
-            items.Add(new AcrylicMenuItem
-                {
-                    Header = "File " + newStyleFilename + "  not found.",
-                    IsEnabled = true,
-                });
-        }
-        else
-        {
-            await foreach(UserInterfaceRepositoryActionBase action in _newStyleActionMenuFactory.CreateMenuAsync(vm.Repository, newStyleFilename).ConfigureAwait(true))
+            if (action is UserInterfaceSeparatorRepositoryAction)
             {
-                if (action is UserInterfaceSeparatorRepositoryAction)
+                if (items.Count > 0 && items[^1] is not Separator)
                 {
-                    if (items.Count > 0 && items[^1] is not Separator)
-                    {
-                        items.Add(new Separator());
-                    }
+                    items.Add(new Separator());
                 }
-                else if (action is DeferredSubActionsUserInterfaceRepositoryAction deferredAction)
+            }
+            else if (action is DeferredSubActionsUserInterfaceRepositoryAction deferredAction)
+            {
+                Control? controlItem = await CreateMenuItemNewStyleAsync(action, vm).ConfigureAwait(true);
+                if (controlItem != null)
                 {
-                    Control? controlItem = await CreateMenuItemNewStyleAsync(action, vm).ConfigureAwait(true);
-                    if (controlItem != null)
-                    {
-                        items.Add(controlItem);
-                    }
+                    items.Add(controlItem);
                 }
-                else if (action is UserInterfaceRepositoryAction uiAction)
+            }
+            else if (action is UserInterfaceRepositoryAction uiAction)
+            {
+                Control? controlItem = await CreateMenuItemNewStyleAsync(action, vm).ConfigureAwait(true);
+                if (controlItem != null)
                 {
-                    Control? controlItem = await CreateMenuItemNewStyleAsync(action, vm).ConfigureAwait(true);
-                    if (controlItem != null)
-                    {
-                        items.Add(controlItem);
-                    }
+                    items.Add(controlItem);
                 }
             }
         }
@@ -396,11 +381,9 @@ public partial class MainWindow
         {
             skip = 1;
         }
-        
-        var newStyleFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, "RepositoryActionsV2.yaml");
 
-        UserInterfaceRepositoryActionBase uiRepositoryAction = await _newStyleActionMenuFactory
-            .CreateMenuAsync(selectedView.Repository, newStyleFilename)
+        UserInterfaceRepositoryActionBase uiRepositoryAction = await _userMenuActionFactory
+            .CreateMenuAsync(selectedView.Repository)
             .Skip(skip)
             .FirstAsync()
             .ConfigureAwait(false);
