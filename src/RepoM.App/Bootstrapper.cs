@@ -67,6 +67,7 @@ internal static class Bootstrapper
         Container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
         Container.RegisterInstance<IClock>(SystemClock.Instance);
 
+        Container.Register<IUserMenuActionMenuFactory, UserMenuActionMenuFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryTagsFactory, RepositoryTagsFactoryV2>(Lifestyle.Singleton);
 
         Container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
