@@ -6,6 +6,12 @@ using RepoM.ActionMenu.Interface.ActionMenuFactory;
 
 internal class ContextActionRenderVariableV1Processor : ContextActionProcessorBase<ContextActionRenderVariableV1>
 {
+    private ContextActionRenderVariableV1Processor()
+    {
+    }
+
+    public static ContextActionRenderVariableV1Processor Instance { get; } = new();
+
     protected override async Task ProcessAsync(ContextActionRenderVariableV1 contextContextAction, IContextMenuActionMenuGenerationContext context, IScope scope)
     {
         string? result;

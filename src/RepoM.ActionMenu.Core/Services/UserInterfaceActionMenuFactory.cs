@@ -52,10 +52,10 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
         _contextActionMappers =
             [
-                new ContextActionExecuteScriptV1Processor(),
-                new ContextActionSetVariableV1Processor(),
-                new ContextActionEvaluateVariableV1Processor(),
-                new ContextActionRenderVariableV1Processor(),
+                ContextActionExecuteScriptV1Processor.Instance,
+                ContextActionSetVariableV1Processor.Instance,
+                ContextActionEvaluateVariableV1Processor.Instance,
+                ContextActionRenderVariableV1Processor.Instance,
                 new ContextActionLoadFileV1Processor(_fileReader),
             ];
     }
