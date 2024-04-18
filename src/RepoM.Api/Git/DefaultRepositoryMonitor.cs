@@ -97,7 +97,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
                 foreach (var head in _repositoryStore.Get())
                 {
                     _logger.LogDebug("{Method} - repo {Head}", nameof(ScanRepositoriesFromStoreAsync), head);
-                    OnCheckKnownRepository(head, KnownRepositoryNotifications.WhenFound);
+                    _ = OnCheckKnownRepository(head, KnownRepositoryNotifications.WhenFound);
                 }
             });
     }
@@ -175,23 +175,26 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     public void Observe()
     {
-        _logger.LogTrace("Monitor.Observe starting");
-        if (_detectors == null)
-        {
-            _logger.LogTrace("Monitor.Observe ScanRepositoriesFromStoreAsync");
-            ScanRepositoriesFromStoreAsync();
+        Task.Run(() =>
+            {
+                _logger.LogTrace("Monitor.Observe starting");
+                if (_detectors == null)
+                {
+                    _logger.LogTrace("Monitor.Observe ScanRepositoriesFromStoreAsync");
+                    ScanRepositoriesFromStoreAsync();
 
-            _logger.LogTrace("Monitor.Observe ObserveRepositoryChanges");
-            ObserveRepositoryChanges();
-        }
+                    _logger.LogTrace("Monitor.Observe ObserveRepositoryChanges");
+                    ObserveRepositoryChanges();
+                }
 
-        _logger.LogTrace("Monitor.Observe starting detectors");
-        _detectors?.ForEach(w => w.Start());
-        _logger.LogTrace("Monitor.Observe starting detectors finished");
+                _logger.LogTrace("Monitor.Observe starting detectors");
+                _detectors?.ForEach(w => w.Start());
+                _logger.LogTrace("Monitor.Observe starting detectors finished");
 
-        _autoFetchHandler.Active = true;
+                _autoFetchHandler.Active = true;
 
-        _logger.LogTrace("Monitor.Observe finished");
+                _logger.LogTrace("Monitor.Observe finished");
+            }).GetAwaiter().GetResult();
     }
 
     public void Reset()
