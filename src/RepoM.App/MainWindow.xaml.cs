@@ -244,7 +244,6 @@ public partial class MainWindow
         {
             _logger.LogError(e, "Could not create menu.");
 
-            // log?
             ctxMenu.Items.Clear();
             ctxMenu.Items.Add(new AcrylicMenuItem
                 {
@@ -254,11 +253,6 @@ public partial class MainWindow
             ctxMenu.Items.Add(new AcrylicMenuItem
                 {
                     Header = e.Message,
-                    IsEnabled = false,
-                });
-            ctxMenu.Items.Add(new AcrylicMenuItem
-                {
-                    Header = "TODO Check logging for stacktrace",
                     IsEnabled = false,
                 });
 
@@ -515,17 +509,13 @@ public partial class MainWindow
         var leftX = workArea.Left;
         var rightX = workArea.Width - width;
 
-        switch (TaskBarLocator.GetTaskBarLocation(primaryScreen))
-        {
-            case TaskBarLocator.TaskBarLocation.Top:
-                return new Point(rightX, topY);
-            case TaskBarLocator.TaskBarLocation.Left:
-                return new Point(leftX, bottomY);
-            case TaskBarLocator.TaskBarLocation.Bottom:
-            case TaskBarLocator.TaskBarLocation.Right:
-            default:
-                return new Point(rightX, bottomY);
-        }
+        return TaskBarLocator.GetTaskBarLocation(primaryScreen) switch
+            {
+                TaskBarLocator.TaskBarLocation.Top => new Point(rightX, topY),
+                TaskBarLocator.TaskBarLocation.Left => new Point(leftX, bottomY),
+                TaskBarLocator.TaskBarLocation.Bottom or TaskBarLocator.TaskBarLocation.Right => new Point(rightX, bottomY),
+                _ => new Point(rightX, bottomY),
+            };
     }
 
     private void ShowUpdateIfAvailable()
