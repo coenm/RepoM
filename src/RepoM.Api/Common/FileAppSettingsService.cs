@@ -2,6 +2,7 @@ namespace RepoM.Api.Common;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -15,10 +16,15 @@ public class FileAppSettingsService : IAppSettingsService
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
     private AppSettings? _settings;
-    private readonly List<Action> _invalidationHandlers = new();
+    private readonly List<Action> _invalidationHandlers = new(1);
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     private List<PluginSettings>? _plugins;
+    private static readonly JsonSerializerSettings _jsonSerializationSettings = new()
+        {
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,
+        };
 
     public FileAppSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, ILogger logger)
     {
@@ -76,7 +82,7 @@ public class FileAppSettingsService : IAppSettingsService
 
         try
         {
-            _fileSystem.File.WriteAllText(GetFileName(), JsonConvert.SerializeObject(_settings, Formatting.Indented));
+            _fileSystem.File.WriteAllText(file, JsonConvert.SerializeObject(_settings, _jsonSerializationSettings));
         }
         catch(Exception ex)
         {
@@ -177,38 +183,40 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
-    public double MenuWidth
+    public double? MenuWidth => Settings.MenuSize?.Width;
+
+    public double? MenuHeight => Settings.MenuSize?.Height;
+
+    public void UpdateMenuSize(string resolution, MenuSize size)
     {
-        get => Settings.MenuSize.Width;
-        set
-        {
-            if (Math.Abs(value - Settings.MenuSize.Width) < 0.001)
+        Settings.PreferredMenuSizes[resolution] = new Size
             {
-                return;
-            }
+                Height = size.MenuHeight,
+                Width = size.MenuWidth,
+            };
 
-            Settings.MenuSize.Width = value;
+        Settings.MenuSize = null;
 
-            NotifyChange();
-            Save();
-        }
+        NotifyChange();
+        Save();
     }
 
-    public double MenuHeight
+    public bool TryGetMenuSize(string resolution, [NotNullWhen(true)] out MenuSize? size)
     {
-        get => Settings.MenuSize.Height;
-        set
+        if (Settings.PreferredMenuSizes.TryGetValue(resolution, out Size? value))
         {
-            if (Math.Abs(value - Settings.MenuSize.Height) < 0.001)
-            {
-                return;
-            }
-
-            Settings.MenuSize.Height = value;
-
-            NotifyChange();
-            Save();
+            size = new MenuSize
+                {
+                    MenuHeight = value.Height,
+                    MenuWidth = value.Width,
+                };
         }
+        else
+        {
+            size = null;
+        }
+
+        return size != null;
     }
 
     public List<string> ReposRootDirectories
@@ -216,7 +224,7 @@ public class FileAppSettingsService : IAppSettingsService
         get => Settings.ReposRootDirectories;
         set
         {
-            Settings.ReposRootDirectories = value.ToList();
+            Settings.ReposRootDirectories = [.. value, ];
 
             NotifyChange();
             Save();
@@ -228,7 +236,7 @@ public class FileAppSettingsService : IAppSettingsService
         get => Settings.EnabledSearchProviders;
         set
         {
-            Settings.EnabledSearchProviders = value.ToList();
+            Settings.EnabledSearchProviders = [.. value, ];
 
             NotifyChange();
             Save();
@@ -267,6 +275,6 @@ public class FileAppSettingsService : IAppSettingsService
 
     private void NotifyChange()
     {
-        _invalidationHandlers.ForEach(h => h.Invoke());
+       _invalidationHandlers.ForEach(h => h.Invoke());
     }
 }

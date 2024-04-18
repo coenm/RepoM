@@ -2,6 +2,7 @@ namespace RepoM.Api.Common;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Core.Plugin.RepositoryFiltering.Configuration;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
@@ -22,9 +23,15 @@ public interface IAppSettingsService
 
     bool PruneOnFetch { get; set; }
 
-    double MenuWidth { get; set; }
+    [Obsolete("Will be removed in next version")]
+    double? MenuWidth { get; }
 
-    double MenuHeight { get; set; }
+    [Obsolete("Will be removed in next version")]
+    double? MenuHeight { get; }
+
+    void UpdateMenuSize(string resolution, MenuSize size);
+
+    bool TryGetMenuSize(string resolution, [NotNullWhen(true)] out MenuSize? size);
 
     List<string> ReposRootDirectories { get; set; }
 
@@ -40,6 +47,14 @@ public interface IAppSettingsService
 
     void RegisterInvalidationHandler(Action handler);
 }
+
+public struct MenuSize
+{
+    public double MenuWidth { get; init; }
+
+    public double MenuHeight { get; init; }
+}
+
 
 public class PluginSettings
 {

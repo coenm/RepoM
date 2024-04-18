@@ -151,7 +151,7 @@ internal class StatisticsModule : IModule
                .Buffer(buffer)
                .Subscribe(data =>
                    {
-                       IEvent[] events = data.ToArray();
+                       IEvent[] events = [.. data, ];
                        if (events.Length == 0)
                        {
                            return;
@@ -173,16 +173,18 @@ internal class StatisticsModule : IModule
                            }
                        }
 
-                       if (_fileSystem.Directory.Exists(_basePath))
+                       if (!_fileSystem.Directory.Exists(_basePath))
                        {
-                           try
-                           {
-                               _fileSystem.File.WriteAllText(filename, json);
-                           }
-                           catch (Exception e)
-                           {
-                               _logger.LogError(e, "Could not write json to '{Filename}'. {Message}", filename, e.Message);
-                           }
+                           return;
+                       }
+
+                       try
+                       {
+                           _fileSystem.File.WriteAllText(filename, json);
+                       }
+                       catch (Exception e)
+                       {
+                           _logger.LogError(e, "Could not write json to '{Filename}'. {Message}", filename, e.Message);
                        }
                    });
     }

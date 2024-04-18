@@ -61,8 +61,6 @@ context:
     
     exe_vs_code = env.LocalAppData + "/Programs/Microsoft VS Code/code.exe";
     
-- root_path_repom: C:\\Users\\Munckhof CJJ\\OneDrive - BDO\\BDO\\RepoM\\
-
 # Specific var files
 - type: render-variable@1
   name: repo_docs_directory
@@ -72,15 +70,15 @@ context:
 # Env files
 - type: render-variable@1
   name: repo_environment_file_directory
-  value: '{{ env.REPOZ_CONFIG_PATH }}\\{{ remote_name_origin }}'
+  value: '{{ env.REPOZ_CONFIG_PATH }}\{{ remote_name_origin }}'
 
 - type: render-variable@1
   name: repo_environment_file
-  value: '{{ env.REPOZ_CONFIG_PATH }}\\{{ remote_name_origin }}\\RepoM.env'
+  value: '{{ env.REPOZ_CONFIG_PATH }}\{{ remote_name_origin }}\RepoM.env'
 
 - type: render-variable@1
   name: repo_yaml_file
-  value: 'C:\\WorkCofigs\\{{ remote_name_origin }}\\RepoMV2.yaml'
+  value: 'C:\\WorkCofigs\{{ remote_name_origin }}\RepoMV2.yaml'
 
 # Runsettings
 - type: load-file@1
@@ -88,7 +86,7 @@ context:
   enabled: is_work_repository
 
 - type: load-file@1
-  filename: '{{ env.REPOZ_CONFIG_PATH }}\\work.env'
+  filename: '{{ env.REPOZ_CONFIG_PATH }}\work.env'
   enabled: is_work_repository
 
 - type: load-file@1
@@ -170,6 +168,10 @@ action-menu:
 
 - type: folder@1
   name: '-- Examples --'
+  context:
+  - type: render-variable@1
+    name: repo_docs_directory
+    value: 'C:\docs\{{ repository.name }}\' 
   actions:
   
   - type: just-text@1

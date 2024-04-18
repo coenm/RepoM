@@ -50,14 +50,14 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        _contextActionMappers = new IContextActionProcessor[]
-            {
+        _contextActionMappers =
+            [
                 new ContextActionExecuteScriptV1Processor(),
                 new ContextActionSetVariableV1Processor(),
                 new ContextActionEvaluateVariableV1Processor(),
                 new ContextActionRenderVariableV1Processor(),
                 new ContextActionLoadFileV1Processor(_fileReader),
-            };
+            ];
     }
 
     public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository, string filename)
@@ -90,7 +90,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
         if (actions.Tags == null)
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         // process context (vars + methods)

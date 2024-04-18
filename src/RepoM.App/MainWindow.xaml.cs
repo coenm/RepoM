@@ -12,7 +12,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
+using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
@@ -29,6 +31,8 @@ using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using SourceChord.FluentWPF;
+using Control = System.Windows.Controls.Control;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -46,6 +50,7 @@ public partial class MainWindow
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
     private readonly IRepositoryMatcher _repositoryMatcher;
     private readonly IUserInterfaceActionMenuFactory _newStyleActionMenuFactory;
+    private readonly ILogger _logger;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     public MainWindow(
@@ -62,11 +67,13 @@ public partial class MainWindow
         IRepositoryFilteringManager repositoryFilteringManager,
         IRepositoryMatcher repositoryMatcher,
         IModuleManager moduleManager,
-        IUserInterfaceActionMenuFactory newStyleActionMenuFactory)
+        IUserInterfaceActionMenuFactory newStyleActionMenuFactory,
+        ILogger logger)
     {
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
         _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
         _newStyleActionMenuFactory = newStyleActionMenuFactory ?? throw new ArgumentNullException(nameof(newStyleActionMenuFactory));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
@@ -122,6 +129,7 @@ public partial class MainWindow
         ShowUpdateIfAvailable();
         txtFilter.Focus();
         txtFilter.SelectAll();
+        TryFixFreeze();
     }
 
     protected override void OnDeactivated(EventArgs e)
@@ -170,7 +178,20 @@ public partial class MainWindow
                 Activate();
                 txtFilter.Focus();
                 txtFilter.SelectAll();
+                TryFixFreeze();
             });
+    }
+
+    private void TryFixFreeze()
+    {
+        if (!"true".Equals(Environment.GetEnvironmentVariable("REPO_ONE_TRY_FIX_FREEZE")))
+        {
+            return;
+        }
+
+        var w = Width;
+        Width += 0.001;
+        Width = w;
     }
 
     private void OnScanStateChanged(object? sender, bool isScanning)
@@ -192,7 +213,7 @@ public partial class MainWindow
         }
         catch (Exception exception)
         {
-            Console.WriteLine(exception);
+            _logger.LogError(exception, "Could not invoke action on current repository.");
         }
     }
 
@@ -221,7 +242,8 @@ public partial class MainWindow
         }
         catch (Exception e)
         {
-            // log?
+            _logger.LogError(e, "Could not create menu.");
+
             ctxMenu.Items.Clear();
             ctxMenu.Items.Add(new AcrylicMenuItem
                 {
@@ -231,11 +253,6 @@ public partial class MainWindow
             ctxMenu.Items.Add(new AcrylicMenuItem
                 {
                     Header = e.Message,
-                    IsEnabled = false,
-                });
-            ctxMenu.Items.Add(new AcrylicMenuItem
-                {
-                    Header = "TODO Check logging for stacktrace",
                     IsEnabled = false,
                 });
 
@@ -476,27 +493,29 @@ public partial class MainWindow
 
     private void PlaceFormByTaskBarLocation()
     {
-        var topY = SystemParameters.WorkArea.Top;
-        var bottomY = SystemParameters.WorkArea.Height - Height;
-        var leftX = SystemParameters.WorkArea.Left;
-        var rightX = SystemParameters.WorkArea.Width - Width;
+        Point position = GetTopLeftPlaceFormByTaskBarLocation(
+            SystemParameters.WorkArea,
+            Height,
+            Width,
+            Screen.PrimaryScreen);
+        Left = position.X;
+        Top = position.Y;
+    }
 
-        switch (TaskBarLocator.GetTaskBarLocation())
-        {
-            case TaskBarLocator.TaskBarLocation.Top:
-                Top = topY;
-                Left = rightX;
-                break;
-            case TaskBarLocator.TaskBarLocation.Left:
-                Top = bottomY;
-                Left = leftX;
-                break;
-            case TaskBarLocator.TaskBarLocation.Bottom:
-            case TaskBarLocator.TaskBarLocation.Right:
-                Top = bottomY;
-                Left = rightX;
-                break;
-        }
+    private static Point GetTopLeftPlaceFormByTaskBarLocation(Rect workArea, double height, double width, Screen? primaryScreen)
+    {
+        var topY = workArea.Top;
+        var bottomY = workArea.Height - height;
+        var leftX = workArea.Left;
+        var rightX = workArea.Width - width;
+
+        return TaskBarLocator.GetTaskBarLocation(primaryScreen) switch
+            {
+                TaskBarLocator.TaskBarLocation.Top => new Point(rightX, topY),
+                TaskBarLocator.TaskBarLocation.Left => new Point(leftX, bottomY),
+                TaskBarLocator.TaskBarLocation.Bottom or TaskBarLocator.TaskBarLocation.Right => new Point(rightX, bottomY),
+                _ => new Point(rightX, bottomY),
+            };
     }
 
     private void ShowUpdateIfAvailable()

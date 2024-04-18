@@ -34,6 +34,7 @@ using RepoM.App.Plugins;
 using RepoM.App.Services.HotKey;
 using RepoM.Api;
 using System.Runtime.Caching;
+using System.Windows;
 using RepoM.App.ActionMenuCore;
 
 internal static class Bootstrapper
@@ -43,6 +44,7 @@ internal static class Bootstrapper
     public static void RegisterServices(IFileSystem fileSystem)
     {
         Container.RegisterInstance<ObjectCache>(MemoryCache.Default);
+        Container.RegisterSingleton<Window>(() => Container.GetInstance<MainWindow>());
         Container.Register<MainWindow>(Lifestyle.Singleton);
         Container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>(Lifestyle.Singleton);
         Container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>(Lifestyle.Singleton);
@@ -66,7 +68,6 @@ internal static class Bootstrapper
         Container.RegisterInstance<IClock>(SystemClock.Instance);
 
         Container.Register<IRepositoryTagsFactory, RepositoryTagsFactoryV2>(Lifestyle.Singleton);
-        Container.RegisterDecorator<IRepositoryTagsFactory, LoggingRepositoryTagsFactoryDecorator>(Lifestyle.Singleton);
 
         Container.Register<IRepositoryComparerManager, RepositoryComparerManager>(Lifestyle.Singleton);
 
