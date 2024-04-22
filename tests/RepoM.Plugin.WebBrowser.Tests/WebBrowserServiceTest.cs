@@ -3,6 +3,8 @@ namespace RepoM.Plugin.WebBrowser.Tests;
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Plugin.WebBrowser.Services;
 using Xunit;
 
@@ -14,7 +16,7 @@ public class WebBrowserServiceTest
         // arrange
 
         // act
-        Func<WebBrowserService> act1 = () => new WebBrowserService(null!);
+        Func<WebBrowserService> act1 = () => new WebBrowserService(null!, NullLogger.Instance);
 
         // assert
         act1.Should().Throw<ArgumentNullException>();
@@ -26,7 +28,7 @@ public class WebBrowserServiceTest
 
         // arrange
         var config = new WebBrowserConfiguration();
-        var sut = new WebBrowserService(config);
+        var sut = new WebBrowserService(config, NullLogger.Instance);
 
         // act
         var result = sut.ProfileExist("name");
@@ -47,7 +49,7 @@ public class WebBrowserServiceTest
                         { "Name", new BrowserProfileConfig() },
                     },
             };
-        var sut = new WebBrowserService(config);
+        var sut = new WebBrowserService(config, NullLogger.Instance);
 
         // act
         var result = sut.ProfileExist("name");
@@ -70,7 +72,7 @@ public class WebBrowserServiceTest
                         { "name3", new BrowserProfileConfig() },
                     },
             };
-        var sut = new WebBrowserService(config);
+        var sut = new WebBrowserService(config, NullLogger.Instance);
 
         // act
         var result = sut.ProfileExist("name2");
@@ -92,7 +94,7 @@ public class WebBrowserServiceTest
                         { "name3", new BrowserProfileConfig() },
                     },
             };
-        var sut = new DummyWebBrowserService(config);
+        var sut = new DummyWebBrowserService(config, NullLogger.Instance);
 
         // act
         sut.OpenUrl("https://google.com");
@@ -116,7 +118,7 @@ public class WebBrowserServiceTest
                         { "Edge", "msedge.exe" },
                     },
             };
-        var sut = new DummyWebBrowserService(config);
+        var sut = new DummyWebBrowserService(config, NullLogger.Instance);
 
         // act
         sut.OpenUrl("https://google.com", "Private");
@@ -140,7 +142,7 @@ public class WebBrowserServiceTest
                         { "Edge", "msedge.exe" },
                     },
             };
-        var sut = new DummyWebBrowserService(config);
+        var sut = new DummyWebBrowserService(config, NullLogger.Instance);
 
         // act
         sut.OpenUrl("https://google.com", "Private");
@@ -164,7 +166,7 @@ public class WebBrowserServiceTest
                         { "Edge", "msedge.exe" },
                     },
             };
-        var sut = new DummyWebBrowserService(config);
+        var sut = new DummyWebBrowserService(config, NullLogger.Instance);
 
         // act
         sut.OpenUrl("https://google.com", "Private-Not-Exists");
@@ -188,7 +190,7 @@ public class WebBrowserServiceTest
                         { "Edge", "msedge.exe" },
                     },
             };
-        var sut = new DummyWebBrowserService(config);
+        var sut = new DummyWebBrowserService(config, NullLogger.Instance);
 
         // act
         sut.OpenUrl("https://google.com", "Private");
@@ -214,7 +216,7 @@ public class WebBrowserServiceTest
                         { "Edge", "msedge.exe" },
                     },
             };
-        var sut = new DummyWebBrowserService(config);
+        var sut = new DummyWebBrowserService(config, NullLogger.Instance);
 
         // act
         sut.OpenUrl("https://google.com", "Private");
@@ -226,7 +228,7 @@ public class WebBrowserServiceTest
 
 file class DummyWebBrowserService : WebBrowserService
 {
-    public DummyWebBrowserService(WebBrowserConfiguration configuration) : base(configuration)
+    public DummyWebBrowserService(WebBrowserConfiguration configuration, ILogger logger) : base(configuration, logger)
     {
     }
 
