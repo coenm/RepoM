@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Yaml.Model;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext.SetVariable;
@@ -22,7 +23,7 @@ public class ActionMenuDeserializerTests
 
     public ActionMenuDeserializerTests()
     {
-        _sut = new ActionMenuDeserializer(_registrations, _templateParser);
+        _sut = new ActionMenuDeserializer(_registrations, _templateParser, NullLogger.Instance);
     }
 
     [Fact]
