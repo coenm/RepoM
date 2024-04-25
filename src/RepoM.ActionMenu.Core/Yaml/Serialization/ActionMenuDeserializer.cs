@@ -2,7 +2,9 @@ namespace RepoM.ActionMenu.Core.Yaml.Serialization;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.Yaml.Model;
@@ -34,17 +36,21 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
             { typeof(Predicate), () => new ScribanPredicate() },
             { typeof(Text), () => new ScribanText() },
         };
+    private readonly ILogger _logger;
 
-    public ActionMenuDeserializer(IEnumerable<IKeyTypeRegistration<IMenuAction>> keyTypeRegistrations, ITemplateParser templateParser)
-        : this(keyTypeRegistrations.ToDictionary(item => item.Tag, item => item.ConfigurationType), templateParser)
+    public ActionMenuDeserializer(IEnumerable<IKeyTypeRegistration<IMenuAction>> keyTypeRegistrations, ITemplateParser templateParser, ILogger logger)
+        : this(keyTypeRegistrations.ToDictionary(item => item.Tag, item => item.ConfigurationType), templateParser, logger)
     {
     }
 
-    private ActionMenuDeserializer(IDictionary<string, Type> menuActionTypes, ITemplateParser templateParser)
+    private ActionMenuDeserializer(IDictionary<string, Type> menuActionTypes, ITemplateParser templateParser, ILogger logger)
     {
         ArgumentNullException.ThrowIfNull(menuActionTypes);
         ArgumentNullException.ThrowIfNull(templateParser);
-        
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _logger = logger;
+
         _serializer = new SerializerBuilder()
             .WithNamingConvention(HyphenatedNamingConvention.Instance) // CamelCaseNamingConvention.Instance
             .WithDefaultScalarStyle(ScalarStyle.Any)
@@ -70,7 +76,7 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
                                     { ContextActionSetVariableV1.TYPE_VALUE, typeof(ContextActionSetVariableV1)},
                                     { ContextActionLoadFileV1.TYPE_VALUE, typeof(ContextActionLoadFileV1)},
                                 }));
-                    options.AddKeyValueTypeDiscriminator<IMenuAction>("type", menuActionTypes);
+                    options.AddTypeDiscriminator(new RequiredKeyValueTypeDiscriminator<IMenuAction>("type", menuActionTypes, _logger));
                 },
                 maxDepth: -1,
                 maxLength: -1)
