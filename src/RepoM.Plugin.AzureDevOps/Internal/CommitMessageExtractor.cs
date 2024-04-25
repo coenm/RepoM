@@ -3,11 +3,12 @@ namespace RepoM.Plugin.AzureDevOps.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Repository;
 
 internal static class CommitMessageExtractor
 {
-    public static IEnumerable<string> GetCommitMessagesUntilBranch(IRepository repository, string toBranch)
+    public static IEnumerable<string> GetCommitMessagesUntilBranch(IRepository repository, string toBranch, ILogger logger)
     {
         try
         {
@@ -15,16 +16,17 @@ internal static class CommitMessageExtractor
 
             var commitMessages = repo.Commits
                                      .QueryBy(new LibGit2Sharp.CommitFilter
-                                         {
+                                        {
                                              ExcludeReachableFrom = repo.Branches[toBranch].UpstreamBranchCanonicalName,
-                                         })
+                                             FirstParentOnly = true,
+                                        })
                                      .Select(c => c.Message)
                                      .ToArray();
             return commitMessages;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // swallow for now, when moved to IRepository, use logger.
+            logger.LogError(ex, "Failed to get commit messages until branch {Branch}", toBranch);
             return Array.Empty<string>();
         }
     }

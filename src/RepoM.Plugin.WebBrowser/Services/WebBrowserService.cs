@@ -1,15 +1,18 @@
 namespace RepoM.Plugin.WebBrowser.Services;
 
 using System;
+using Microsoft.Extensions.Logging;
 using RepoM.Api.IO;
 
 internal class WebBrowserService : IWebBrowserService
 {
     private readonly WebBrowserConfiguration _configuration;
+    private readonly ILogger _logger;
 
-    public WebBrowserService(WebBrowserConfiguration configuration)
+    public WebBrowserService(WebBrowserConfiguration configuration, ILogger logger)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _logger = logger;
     }
 
     public bool ProfileExist(string name)
@@ -59,6 +62,6 @@ internal class WebBrowserService : IWebBrowserService
     // virtual because of testing
     protected virtual void StartProcess(string process, string arguments)
     {
-        ProcessHelper.StartProcess(process, arguments);
+        ProcessHelper.StartProcess(process, arguments, _logger);
     }
 }

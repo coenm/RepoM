@@ -3,6 +3,7 @@ namespace RepoM.Plugin.WebBrowser.Tests;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FakeItEasy;
+using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.WebBrowser;
 using RepoM.Plugin.WebBrowser.PersistentConfiguration;
@@ -20,19 +21,19 @@ public class WebBrowserPackageTest
         _container = new Container();
 
         var webBrowserConfigV1 = new WebBrowserConfigV1
-            {
-                Browsers = new Dictionary<string, string>
+        {
+            Browsers = new Dictionary<string, string>
                 {
                     { "Edge", "msedge.exe" },
                 },
-                Profiles = new Dictionary<string, ProfileConfig>
+            Profiles = new Dictionary<string, ProfileConfig>
                 {
                     {
                         "incognito",
                         new ProfileConfig { BrowserName = "Edge", CommandLineArguments = "--incognito", }
                     },
                 },
-            };
+        };
         A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(1 as int?));
         A.CallTo(() => _packageConfiguration.LoadConfigurationAsync<WebBrowserConfigV1>()).ReturnsLazily(() => webBrowserConfigV1);
         A.CallTo(() => _packageConfiguration.PersistConfigurationAsync(A<WebBrowserConfigV1>._, 1)).Returns(Task.CompletedTask);
@@ -42,6 +43,7 @@ public class WebBrowserPackageTest
     public async Task RegisterServices_ShouldBeSuccessful_WhenExternalDependenciesAreRegistered()
     {
         // arrange
+        RegisterExternals(_container);
         var sut = new WebBrowserPackage();
 
         // act
@@ -59,6 +61,7 @@ public class WebBrowserPackageTest
     public async Task RegisterServices_ShouldPersistNewConfig_WhenVersionIsNotCorrect(int? version)
     {
         // arrange
+        RegisterExternals(_container);
         A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(version));
         var sut = new WebBrowserPackage();
 
@@ -70,5 +73,10 @@ public class WebBrowserPackageTest
 
         // implicit, Verify throws when container is not valid.
         _container.Verify(VerificationOption.VerifyAndDiagnose);
+    }
+
+    private static void RegisterExternals(Container container)
+    {
+        container.RegisterSingleton(A.Dummy<ILogger>);
     }
 }

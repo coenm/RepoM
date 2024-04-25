@@ -112,11 +112,17 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         var prBodyJson = JsonConvert.SerializeObject(prBody);
         StringContent httpContent = new(prBodyJson, new MediaTypeHeaderValue("application/json"));
         HttpResponseMessage response = await _httpClient.PatchAsync($"{projectId}/_apis/git/repositories/{repoId}/pullrequests/{pr.PullRequestId}?api-version=7.0", httpContent, cancellationToken);
-        _ = response.EnsureSuccessStatusCode();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            _logger.LogError("PR creation went wrong with following response: {Message}", content);
+            throw new HttpRequestException(content, null, response.StatusCode);
+        }
 
         if (openInBrowser)
         {
-            ProcessHelper.StartProcess(CreatePullRequestUrl(pr.Repository.WebUrl, pr.PullRequestId), string.Empty);
+            ProcessHelper.StartProcess(CreatePullRequestUrl(pr.Repository.WebUrl, pr.PullRequestId), string.Empty, _logger);
         }
     }
 
@@ -131,13 +137,16 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
         if (openInBrowser)
         {
-            ProcessHelper.StartProcess(CreatePullRequestUrl(pr.Repository.WebUrl, pr.PullRequestId), string.Empty);
+            ProcessHelper.StartProcess(CreatePullRequestUrl(pr.Repository.WebUrl, pr.PullRequestId), string.Empty, _logger);
         }
     }
 
     private async Task<GitPullRequest?> CreatePullRequestInternalAsync(IRepository repository, string projectId, List<string> reviewersIds, string toBranch, string? title = null, bool isDraft = false, bool includeWorkItems = true, CancellationToken cancellationToken = default)
     {
-        title ??= repository.CurrentBranch[(repository.CurrentBranch.IndexOf('/') + 1)..];
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            title = repository.CurrentBranch[(repository.CurrentBranch.IndexOf('/') + 1)..];
+        }
 
         Guid repoId = FindRepositoryGuid(repository);
 
@@ -150,7 +159,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
         if (includeWorkItems)
         {
-            IEnumerable<string> commitMessages = CommitMessageExtractor.GetCommitMessagesUntilBranch(repository, toBranch);
+            IEnumerable<string> commitMessages = CommitMessageExtractor.GetCommitMessagesUntilBranch(repository, toBranch, _logger);
 
             workItems = WorkItemExtractor
                       .GetDistinctWorkItemsFromCommitMessages(commitMessages)
@@ -179,9 +188,14 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         var prBodyJson = JsonConvert.SerializeObject(prBody);
         StringContent httpContent = new(prBodyJson, new MediaTypeHeaderValue("application/json"));
         HttpResponseMessage response = await _httpClient.PostAsync($"{projectId}/_apis/git/repositories/{repoId}/pullrequests?api-version=7.0", httpContent, cancellationToken);
-        _ = response.EnsureSuccessStatusCode();
-        
         var responseContent = await response.Content.ReadAsStringAsync(cancellationToken) ?? throw new Exception("Invalid return type");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("PR creation went wrong with following response: {Message}", responseContent);
+            throw new HttpRequestException(responseContent, null, response.StatusCode);
+        }
+
         GitPullRequest? result = JsonConvert.DeserializeObject<GitPullRequest>(responseContent);
 
         if (result == null)
