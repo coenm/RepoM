@@ -9,7 +9,7 @@ public class GitRepositoryFinderFactory : IGitRepositoryFinderFactory
 
     public GitRepositoryFinderFactory(ISingleGitRepositoryFinderFactory factory)
     {
-        _factory = factory ?? throw new ArgumentNullException(nameof(ISingleGitRepositoryFinderFactory));
+        _factory = factory ?? throw new ArgumentNullException(nameof(factory));
     }
 
     public IGitRepositoryFinder Create()

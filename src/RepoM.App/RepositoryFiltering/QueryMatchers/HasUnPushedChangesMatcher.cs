@@ -11,11 +11,11 @@ using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 public class HasUnPushedChangesMatcher : IQueryMatcher
 {
     private static readonly string[] _values =
-        {
+        [
             "changes",
             "unpushed-changes",
             "unpushedchanges",
-        };
+        ];
 
     public bool? IsMatch(in IRepository repository, in TermBase term)
     {

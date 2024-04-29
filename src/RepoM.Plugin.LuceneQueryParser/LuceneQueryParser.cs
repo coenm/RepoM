@@ -31,6 +31,7 @@ public class LuceneQueryParser : INamedQueryParser
                 AllowLeadingWildcard = true,
                 FuzzyMinSim = 1.0f, //FuzzyQuery 
                 PhraseSlop = 0, // disable Proximity
+                LowercaseExpandedTerms = false, // https://stackoverflow.com/questions/4949196/prefixquery-case-sensitive
             };
     }
 

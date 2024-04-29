@@ -2,6 +2,7 @@ namespace RepoM.App.RepositoryFiltering.QueryMatchers;
 
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
@@ -12,17 +13,12 @@ public class TagMatcher : IQueryMatcher
 {
     public bool? IsMatch(in IRepository repository, in TermBase term)
     {
-        if (term is SimpleTerm st)
-        {
-            return IsMatch(repository, st);
-        }
-
-        if (term is StartsWithTerm swt)
-        {
-            return IsMatch(repository, swt);
-        }
-
-        return null;
+        return term switch
+            {
+                SimpleTerm st => IsMatch(repository, st),
+                StartsWithTerm swt => IsMatch(repository, swt),
+                _ => null,
+            };
     }
 
     private static bool? IsMatch(in IRepository repository, in StartsWithTerm term)
@@ -49,6 +45,7 @@ public class TagMatcher : IQueryMatcher
         return repository.Tags.Contains(term.Value);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CheckTerm(in string term)
     {
         return "tag".Equals(term, StringComparison.CurrentCulture);

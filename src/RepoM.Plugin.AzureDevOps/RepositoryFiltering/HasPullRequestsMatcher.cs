@@ -9,14 +9,14 @@ using RepoM.Plugin.AzureDevOps.Internal;
 internal class HasPullRequestsMatcher : IQueryMatcher
 {
     private static readonly string[] _values =
-        {
+        [
             "pr",
             "prs",
             "pullrequest",
             "pullrequests",
             "pull-request",
             "pull-requests",
-        };
+        ];
 
     private readonly IAzureDevOpsPullRequestService _azureDevOpsPullRequestService;
 
