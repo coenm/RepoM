@@ -55,49 +55,7 @@ public class FileAppSettingsService : IAppSettingsService
 
         return AppSettings.Default;
     }
-
-    private void Save()
-    {
-        var file = GetFileName();
-        IDirectoryInfo? directoryInfo = _fileSystem.Directory.GetParent(file);
-        if (directoryInfo == null)
-        {
-            _logger.LogError("Could not save configuration because no parent of '{File}' found", file);
-            return;
-        }
-
-        var path = directoryInfo.FullName;
-
-        try
-        {
-            if (!_fileSystem.Directory.Exists(path))
-            {
-                _fileSystem.Directory.CreateDirectory(path);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Could not check or create directory '{Path}'. {Message}", path, ex.Message);
-        }
-
-        try
-        {
-            _fileSystem.File.WriteAllText(file, JsonConvert.SerializeObject(_settings, _jsonSerializationSettings));
-        }
-        catch(Exception ex)
-        {
-            _logger.LogError(ex, "Could not save configuration to file '{File}'. {Message}", file, ex.Message);
-        }
-    }
-
-    private string GetFileName()
-    {
-        return Path.Combine(_appDataPathProvider.AppDataPath, "appsettings.json");
-    }
-
-    private AppSettings Settings => _settings ??= Load();
-
-
+    
     public string SortKey
     {
         get => Settings.SortKey;
@@ -231,18 +189,6 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
-    public List<string> EnabledSearchProviders
-    {
-        get => Settings.EnabledSearchProviders;
-        set
-        {
-            Settings.EnabledSearchProviders = [.. value, ];
-
-            NotifyChange();
-            Save();
-        }
-    }
-
     public List<PluginSettings> Plugins
     {
         get => _plugins ??= Convert(Settings.Plugins);
@@ -263,9 +209,61 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
+    private AppSettings Settings => _settings ??= Load();
+    
+    private void Save()
+    {
+        var file = GetFileName();
+        IDirectoryInfo? directoryInfo = _fileSystem.Directory.GetParent(file);
+        if (directoryInfo == null)
+        {
+            _logger.LogError("Could not save configuration because no parent of '{File}' found", file);
+            return;
+        }
+
+        var path = directoryInfo.FullName;
+
+        try
+        {
+            if (!_fileSystem.Directory.Exists(path))
+            {
+                _fileSystem.Directory.CreateDirectory(path);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not check or create directory '{Path}'. {Message}", path, ex.Message);
+        }
+
+        try
+        {
+            FixSettingsByRemovingObsoleteProps();
+            var jsonString = JsonConvert.SerializeObject(_settings, _jsonSerializationSettings);
+            _fileSystem.File.WriteAllText(file, jsonString);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Could not save configuration to file '{File}'. {Message}", file, ex.Message);
+        }
+    }
+
+    [Obsolete("This fix will be removed when EnabledSearchProviders has been removed.")]
+    private void FixSettingsByRemovingObsoleteProps()
+    {
+        if (_settings != null)
+        {
+            _settings.EnabledSearchProviders = null;
+        }
+    }
+
+    private string GetFileName()
+    {
+        return Path.Combine(_appDataPathProvider.AppDataPath, "appsettings.json");
+    }
+    
     private static List<PluginSettings> Convert(IEnumerable<PluginOptions> plugins)
     {
-        return plugins.Select(x => new PluginSettings(x.Name, x.DllName, x.Enabled)).ToList();
+        return plugins.Select(pluginOptions => new PluginSettings(pluginOptions.Name, pluginOptions.DllName, pluginOptions.Enabled)).ToList();
     }
 
     public void RegisterInvalidationHandler(Action handler)

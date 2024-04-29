@@ -6,7 +6,6 @@ using System.Reflection;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.AzureDevOps;
 using RepoM.Plugin.Clipboard;
-using RepoM.Plugin.EverythingFileSearch;
 using RepoM.Plugin.Heidi;
 using RepoM.Plugin.LuceneQueryParser;
 using RepoM.Plugin.SonarCloud;
@@ -22,7 +21,6 @@ internal static class PluginStore
         {
             yield return new AzureDevOpsPackage();
             yield return new ClipboardPackage();
-            yield return new EverythingPackage();
             yield return new HeidiPackage();
             yield return new LuceneQueryParserPackage();
             yield return new SonarCloudPackage();

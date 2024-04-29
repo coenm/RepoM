@@ -43,7 +43,6 @@
     <ProjectReference Include="..\..\src\RepoM.Core.Plugin\RepoM.Core.Plugin.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.Clipboard\RepoM.Plugin.Clipboard.csproj" />
-    <ProjectReference Include="..\..\src\RepoM.Plugin.EverythingFileSearch\RepoM.Plugin.EverythingFileSearch.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.LuceneQueryParser\RepoM.Plugin.LuceneQueryParser.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />

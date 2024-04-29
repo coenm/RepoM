@@ -11,7 +11,6 @@ This is the default configuration.
   "PruneOnFetch": false,
   "PreferredMenuSizes": {},
   "ReposRootDirectories": [],
-  "EnabledSearchProviders": [],
   "Plugins": []
 }
 ```

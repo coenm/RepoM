@@ -85,7 +85,7 @@ internal static class Bootstrapper
 
         Container.Register<IModuleManager, ModuleManager>(Lifestyle.Singleton);
         
-        Container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
+        Container.Register<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
         Container.RegisterInstance<IFileSystem>(fileSystem);
 

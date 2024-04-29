@@ -39,10 +39,7 @@ public sealed class AppSettings
     [UiConfigured]
     public bool PruneOnFetch { get; set; } = false;
 
-    /// <summary>
-    /// The menu size of RepoM. This is set when the window is resized.
-    /// </summary>
-    [UiConfigured]
+    [Obsolete("Will be removed in next version")]
     public Size? MenuSize { get; set; }
 
     /// <summary>
@@ -57,11 +54,8 @@ public sealed class AppSettings
     [ManualConfigured]
     public List<string> ReposRootDirectories { get; set; } = new();
 
-    /// <summary>
-    /// List of search providers. Search providers can be added by plugins.
-    /// </summary>
-    [UiConfigured]
-    public List<string> EnabledSearchProviders { get; set; } = new();
+    [Obsolete("Will be removed in next version")]
+    public List<string>? EnabledSearchProviders { get; set; }
 
     /// <summary>
     /// List of plugins.
@@ -75,9 +69,9 @@ public sealed class AppSettings
             PruneOnFetch = false,
             MenuSize = null,
             ReposRootDirectories = new(),
-            EnabledSearchProviders = new List<string>(1),
-            Plugins = new List<PluginOptions>(),
-            PreferredMenuSizes = new Dictionary<string, Size>(),
+            EnabledSearchProviders = null,
+            Plugins = [],
+            PreferredMenuSizes = new(),
     };
 }
 
