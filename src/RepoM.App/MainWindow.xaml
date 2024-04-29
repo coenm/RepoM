@@ -1,28 +1,28 @@
-﻿<Window x:Class="RepoM.App.MainWindow"
-						xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-						xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-						xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-						xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-						xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
-						mc:Ignorable="d"
-						xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-						xmlns:converters="clr-namespace:RepoM.App.Converters"
-						xmlns:controls="clr-namespace:RepoM.App.Controls"
-						xmlns:app="clr-namespace:RepoM.App"
-						TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-						TextElement.FontWeight="Regular"
-						TextElement.FontSize="12"
-						TextOptions.TextFormattingMode="Ideal"
-						TextOptions.TextRenderingMode="Auto"
-						BorderThickness="0"
-						Title="RepoM"
-						Height="540"
-						Width="350"
-						ShowInTaskbar="False"
-						fw:AcrylicWindow.TintColor="#101010"
-						fw:AcrylicWindow.FallbackColor="#303030"
-						fw:AcrylicWindow.TintOpacity="0.7"
-						fw:AcrylicWindow.Enabled="True">
+﻿<fw:AcrylicWindow x:Class="RepoM.App.MainWindow"
+          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
+          mc:Ignorable="d"
+          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+          xmlns:converters="clr-namespace:RepoM.App.Converters"
+          xmlns:controls="clr-namespace:RepoM.App.Controls"
+          xmlns:app="clr-namespace:RepoM.App"
+          TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+          TextElement.FontWeight="Regular"
+          TextElement.FontSize="12"
+          TextOptions.TextFormattingMode="Ideal"
+          TextOptions.TextRenderingMode="Auto"
+          BorderThickness="0"
+          Title="RepoM"
+          Height="540"
+          Width="350"
+          ShowInTaskbar="False"
+          fw:AcrylicWindow.TintColor="#101010"
+          fw:AcrylicWindow.FallbackColor="#303030"
+          fw:AcrylicWindow.TintOpacity="0.7"
+          fw:AcrylicWindow.Enabled="True">
 	<Window.Resources>
 		<converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
 	</Window.Resources>
@@ -400,4 +400,4 @@
 
 	</Grid>
 
-</Window>
+</fw:AcrylicWindow>
