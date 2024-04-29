@@ -69,7 +69,6 @@ public static class Program
                 
                 "RepoM.Plugin.AzureDevOps",
                 "RepoM.Plugin.Clipboard",
-                "RepoM.Plugin.EverythingFileSearch",
                 "RepoM.Plugin.Heidi",
                 "RepoM.Plugin.LuceneQueryParser",
                 "RepoM.Plugin.SonarCloud",

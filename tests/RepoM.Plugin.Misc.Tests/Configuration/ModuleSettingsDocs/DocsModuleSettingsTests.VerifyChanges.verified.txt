@@ -3,7 +3,6 @@
     $type: AzureDevopsConfigV1
   },
   ClipboardPackage: null,
-  EverythingPackage: null,
   HeidiPackage: {
     $type: HeidiConfigV1
   },

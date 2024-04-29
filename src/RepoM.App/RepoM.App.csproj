@@ -27,7 +27,6 @@
     <ProjectReference Include="..\RepoM.Plugin.Clipboard\RepoM.Plugin.Clipboard.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.LuceneQueryParser\RepoM.Plugin.LuceneQueryParser.csproj" />
-    <ProjectReference Include="..\RepoM.Plugin.EverythingFileSearch\RepoM.Plugin.EverythingFileSearch.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.Statistics\RepoM.Plugin.Statistics.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.WebBrowser\RepoM.Plugin.WebBrowser.csproj" />

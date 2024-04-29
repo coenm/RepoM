@@ -35,8 +35,6 @@ public interface IAppSettingsService
 
     List<string> ReposRootDirectories { get; set; }
 
-    List<string> EnabledSearchProviders { get; set; }
-
     string SortKey { get; set; }
 
     string QueryParserKey { get; set; }

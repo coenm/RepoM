@@ -11,12 +11,10 @@ using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
-using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
-using RepoM.Core.Plugin.RepositoryFinder;
 using SystemTests.IO;
 using SystemTests.Mocks;
 
@@ -41,17 +39,14 @@ public class DefaultRepositoryMonitorTests
         var repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
         _fileSystem.Directory.CreateDirectory(repoPath);
 
-        IAppSettingsService appSettingsService = A.Fake<IAppSettingsService>();
-        A.CallTo(() => appSettingsService.EnabledSearchProviders).Returns(new List<string>(0));
-
         IFileSystem fs = new FileSystem();
         var defaultRepositoryReader = new DefaultRepositoryReader(A.Dummy<IRepositoryTagsFactory>(), NullLogger.Instance);
         _monitor = new DefaultRepositoryMonitor(
-            new GivenPathProvider(new [] { repoPath, }),
+            new GivenPathProvider([repoPath,]),
             defaultRepositoryReader,
             new DefaultRepositoryDetectorFactory(defaultRepositoryReader, fs, NullLoggerFactory.Instance),
             new DefaultRepositoryObserverFactory(NullLoggerFactory.Instance, fs),
-            new GitRepositoryFinderFactory(appSettingsService, new List<ISingleGitRepositoryFinderFactory> { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem), }),
+            new GitRepositoryFinderFactory(new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem)),
             new UselessRepositoryStore(),
             new DefaultRepositoryInformationAggregator(
                 new DirectThreadDispatcher()),

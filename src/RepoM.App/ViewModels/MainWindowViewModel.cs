@@ -2,7 +2,6 @@ namespace RepoM.App.ViewModels;
 
 using System;
 using System.ComponentModel;
-using System.Linq;
 using JetBrains.Annotations;
 using RepoM.Api.Common;
 using RepoM.Api.Git.AutoFetch;
@@ -93,38 +92,5 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         get => _appSettingsService.PruneOnFetch;
         set => _appSettingsService.PruneOnFetch = value;
-    }
-
-    public bool EnabledSearchRepoEverything
-    {
-        get => _appSettingsService.EnabledSearchProviders.Exists(item => "Everything".Equals(item, StringComparison.CurrentCultureIgnoreCase));
-        set
-        {
-            if (value)
-            {
-                if (EnabledSearchRepoEverything)
-                {
-                    return;
-                }
-
-                var list = _appSettingsService.EnabledSearchProviders.ToList();
-                list.Add("Everything");
-                _appSettingsService.EnabledSearchProviders = list;
-            }
-            else
-            {
-                if (!EnabledSearchRepoEverything)
-                {
-                    return;
-                }
-
-                var list = _appSettingsService.EnabledSearchProviders.ToList();
-                var count = list.RemoveAll(item => "Everything".Equals(item, StringComparison.CurrentCultureIgnoreCase));
-                if (count > 0)
-                {
-                    _appSettingsService.EnabledSearchProviders = list;
-                }
-            }
-        }
     }
 }
