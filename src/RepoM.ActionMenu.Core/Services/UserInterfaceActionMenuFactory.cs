@@ -22,6 +22,27 @@ using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
 
+internal class UserInterfaceActionMenuFactoryTaskDecorator : IUserInterfaceActionMenuFactory
+{
+    private IUserInterfaceActionMenuFactory _userInterfaceActionMenuFactoryImplementation;
+
+    public UserInterfaceActionMenuFactoryTaskDecorator(IUserInterfaceActionMenuFactory userInterfaceActionMenuFactoryImplementation)
+    {
+        _userInterfaceActionMenuFactoryImplementation = userInterfaceActionMenuFactoryImplementation;
+    }
+
+
+    public IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository, string filename)
+    {
+        return _userInterfaceActionMenuFactoryImplementation.CreateMenuAsync(repository, filename);
+    }
+
+    public Task<IEnumerable<string>> GetTagsAsync(IRepository repository, string filename)
+    {
+        return _userInterfaceActionMenuFactoryImplementation.GetTagsAsync(repository, filename);
+    }
+}
+
 internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 {
     private readonly IFileSystem _fileSystem;
@@ -67,18 +88,13 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         ActionMenuRoot actions = await LoadAsync(filename).ConfigureAwait(false);
 
         // process context (vars + methods)
-        _logger.LogTrace("CreateActionMenuGenerationContext AddRepositoryContextAsync");
         await context.AddRepositoryContextAsync(actions.Context).ConfigureAwait(false);
 
         // process actions
-        _logger.LogTrace("CreateActionMenuGenerationContext foreach AddActionMenusAsync");
         await foreach (UserInterfaceRepositoryActionBase item in context.AddActionMenusAsync(actions.ActionMenu).ConfigureAwait(false))
         {
-            _logger.LogTrace("CreateActionMenuGenerationContext foreach inner");
             yield return item;
         }
-
-        _logger.LogTrace("CreateMenuAsync Done");
     }
 
     public async Task<IEnumerable<string>> GetTagsAsync(IRepository repository, string filename)

@@ -3,6 +3,7 @@ namespace RepoM.Api.Tests.Git;
 using System.IO.Abstractions.TestingHelpers;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Git;
 using RepoM.Core.Plugin.Common;
 using Xunit;
@@ -15,7 +16,7 @@ public class DefaultRepositoryIgnoreStoreTests
     {
         IAppDataPathProvider appDataPathProvider = A.Fake<IAppDataPathProvider>();
         A.CallTo(() => appDataPathProvider.AppDataPath).Returns(""); //dummy value
-        _sut = new DefaultRepositoryIgnoreStore(appDataPathProvider, new MockFileSystem());
+        _sut = new DefaultRepositoryIgnoreStore(appDataPathProvider, new MockFileSystem(), NullLogger.Instance);
 
         _sut.IgnoreByPath(@"C:\data\repos\first");
         _sut.IgnoreByPath(@"C:\data\repox*");

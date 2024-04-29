@@ -15,8 +15,8 @@ public class FilesFilterSettingsService : IFilterSettingsService
     private const string FILENAME = "RepoM.Filtering.yaml";
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
-    private readonly IAppDataPathProvider _appDataPathProvider;
     private Dictionary<string, RepositoryFilterConfiguration>? _configuration;
+    private readonly string _filename;
     
     public FilesFilterSettingsService(
         IAppDataPathProvider appDataPathProvider,
@@ -25,28 +25,22 @@ public class FilesFilterSettingsService : IFilterSettingsService
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        ArgumentNullException.ThrowIfNull(appDataPathProvider);
+        _filename = _fileSystem.Path.Combine(appDataPathProvider.AppDataPath, FILENAME);
     }
 
     public Dictionary<string, RepositoryFilterConfiguration> Configuration => _configuration ??= Load();
 
-    private string GetFileName()
-    {
-        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, FILENAME);
-    }
-
     private Dictionary<string, RepositoryFilterConfiguration> Load()
     {
-        var file = GetFileName();
-
-        if (!_fileSystem.File.Exists(file))
+        if (!_fileSystem.File.Exists(_filename))
         {
-            throw new FileNotFoundException("Filtering configuration file not found", file);
+            throw new FileNotFoundException("Filtering configuration file not found", _filename);
         }
 
         try
         {
-            var yml = _fileSystem.File.ReadAllText(file);
+            var yml = _fileSystem.File.ReadAllText(_filename);
 
             DeserializerBuilder builder = new DeserializerBuilder()
                 .WithNamingConvention(HyphenatedNamingConvention.Instance);
@@ -56,7 +50,7 @@ public class FilesFilterSettingsService : IFilterSettingsService
             Dictionary<string, RepositoryFilterConfiguration>? result = deserializer.Deserialize<Dictionary<string, RepositoryFilterConfiguration>?>(yml);
             if (result == null)
             {
-                return new Dictionary<string, RepositoryFilterConfiguration>();
+                return [];
             }
 
             foreach (KeyValuePair<string, RepositoryFilterConfiguration> item in result)
@@ -68,7 +62,7 @@ public class FilesFilterSettingsService : IFilterSettingsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not load configuration from file '{File}'. {Message}", file, ex.Message);
+            _logger.LogError(ex, "Could not load configuration from file '{File}'. {Message}", _filename, ex.Message);
             throw;
         }
     }

@@ -28,33 +28,47 @@ internal class UserMenuActionMenuFactory : IUserMenuActionMenuFactory
         _factory = userInterfaceActionMenuFactory ?? throw new ArgumentNullException(nameof(userInterfaceActionMenuFactory));
     }
 
+
     public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository)
     {
-        var fullFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, FILENAME);
-        var fileExists = _fileSystem.File.Exists(fullFilename);
+        List<UserInterfaceRepositoryActionBase> result = await Task.Run(async () =>
+            {
+                List<UserInterfaceRepositoryActionBase> result = new();
 
-        if (!fileExists)
-        {
-            yield return new UserInterfaceRepositoryAction(FILENAME + " not found", repository)
-                {
-                    CanExecute = false,
-                    ExecutionCausesSynchronizing = false,
-                };
-            yield return new UserInterfaceRepositoryAction("Restart RepoM to create " + FILENAME, repository)
-                {
-                    CanExecute = false,
-                    ExecutionCausesSynchronizing = false,
-                };
-            yield return new UserInterfaceRepositoryAction("Open directory in explorer", repository)
-                {
-                    CanExecute = true,
-                    ExecutionCausesSynchronizing = true,
-                    RepositoryCommand = new OpenDirectoryCommand(_appDataPathProvider.AppDataPath),
-                };
-            yield break;
-        }
+                var fullFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, FILENAME);
+                var fileExists = _fileSystem.File.Exists(fullFilename);
 
-        await foreach (UserInterfaceRepositoryActionBase item in _factory.CreateMenuAsync(repository, fullFilename).ConfigureAwait(false))
+
+                if (!fileExists)
+                {
+                    result.Add(new UserInterfaceRepositoryAction(FILENAME + " not found", repository)
+                        {
+                            CanExecute = false,
+                            ExecutionCausesSynchronizing = false,
+                        });
+                    result.Add(new UserInterfaceRepositoryAction("Restart RepoM to create " + FILENAME, repository)
+                        {
+                            CanExecute = false,
+                            ExecutionCausesSynchronizing = false,
+                        });
+                    result.Add(new UserInterfaceRepositoryAction("Open directory in explorer", repository)
+                        {
+                            CanExecute = true,
+                            ExecutionCausesSynchronizing = true,
+                            RepositoryCommand = new OpenDirectoryCommand(_appDataPathProvider.AppDataPath),
+                        });
+                    return result;
+                }
+
+                await foreach (UserInterfaceRepositoryActionBase item in _factory.CreateMenuAsync(repository, fullFilename).ConfigureAwait(false))
+                {
+                    result.Add(item);
+                }
+
+                return result;
+            });
+
+        foreach (UserInterfaceRepositoryActionBase item in result)
         {
             yield return item;
         }

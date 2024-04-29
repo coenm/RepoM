@@ -4,14 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 public abstract class FileRepositoryStore : IRepositoryStore
 {
     private readonly IFileSystem _fileSystem;
+    private readonly ILogger _logger;
 
-    protected FileRepositoryStore(IFileSystem fileSystem)
+    protected FileRepositoryStore(IFileSystem fileSystem, ILogger logger)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     protected abstract string GetFileName();
@@ -26,6 +29,7 @@ public abstract class FileRepositoryStore : IRepositoryStore
     {
         var file = GetFileName();
         var path = _fileSystem.Directory.GetParent(file)?.FullName;
+        _logger.LogDebug("Start File Repository Store {Method} - {Path}", nameof(Set), path);
 
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -47,11 +51,12 @@ public abstract class FileRepositoryStore : IRepositoryStore
         }
     }
 
-    private string[] Get(string file)
+    private IEnumerable<string> Get(string file)
     {
+        _logger.LogDebug("Start File Repository Store {Method} - {File}", nameof(Get), file);
         if (!_fileSystem.File.Exists(file))
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         try
@@ -63,6 +68,6 @@ public abstract class FileRepositoryStore : IRepositoryStore
             // swallow for now.
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 }

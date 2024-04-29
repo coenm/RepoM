@@ -54,7 +54,8 @@ public class DefaultRepositoryMonitorTests
             new GitRepositoryFinderFactory(appSettingsService, new List<ISingleGitRepositoryFinderFactory> { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem), }),
             new UselessRepositoryStore(),
             new DefaultRepositoryInformationAggregator(
-                new DirectThreadDispatcher()),
+                new DirectThreadDispatcher(),
+                NullLogger.Instance),
             A.Dummy<IAutoFetchHandler>(),
             A.Dummy<IRepositoryIgnoreStore>(),
             _fileSystem,

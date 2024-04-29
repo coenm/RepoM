@@ -29,6 +29,7 @@ public static class Bootstrapper
     private static void RegisterPublicTypes(Container container)
     {
         container.Register<IUserInterfaceActionMenuFactory, UserInterfaceActionMenuFactory>(Lifestyle.Singleton);
+        container.RegisterDecorator<IUserInterfaceActionMenuFactory, UserInterfaceActionMenuFactoryTaskDecorator>(Lifestyle.Singleton);
     }
 
     private static void RegisterPrivateTypes(Container container)

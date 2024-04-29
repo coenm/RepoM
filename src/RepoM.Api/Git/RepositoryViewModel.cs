@@ -65,7 +65,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     public string BehindBy => Repository.BehindBy?.ToString() ?? string.Empty;
 
-    public string[] Branches => Repository.Branches ?? Array.Empty<string>();
+    public string[] Branches => Repository.Branches ?? [];
 
     public string LocalUntracked => Repository.LocalUntracked?.ToString() ?? string.Empty;
 

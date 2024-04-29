@@ -104,8 +104,10 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
     private void RepositoryStoreFlushTimerCallback(object? state)
     {
+        _logger.LogDebug("{Method} start", nameof(RepositoryStoreFlushTimerCallback));
         var heads = _repositoryInformationAggregator.Repositories.Select(v => v.Path).ToArray();
         _repositoryStore.Set(heads);
+        _logger.LogDebug("{Method} DONE", nameof(RepositoryStoreFlushTimerCallback));
     }
 
     private async void OnFoundNewRepository(string file)

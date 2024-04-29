@@ -10,14 +10,14 @@ public class WindowsPathSkipper : IPathSkipper
 
     public WindowsPathSkipper()
     {
-        _exclusions = new List<string>()
-            {
+        _exclusions =
+            [
                 Environment.GetFolderPath(Environment.SpecialFolder.Windows),
                 @"$Recycle.Bin",
                 @"\Package Cache",
                 @"\.nuget",
                 @"\Local\Temp",
-            };
+            ];
     }
 
     public bool ShouldSkip(string path)

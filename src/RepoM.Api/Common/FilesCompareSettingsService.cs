@@ -16,9 +16,9 @@ public class FilesCompareSettingsService : ICompareSettingsService
     private const string FILENAME = "RepoM.Ordering.yaml";
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
-    private readonly IAppDataPathProvider _appDataPathProvider;
     private Dictionary<string, IRepositoriesComparerConfiguration>? _configuration;
     private readonly IDeserializer _deserializer;
+    private readonly string _filename;
 
     public FilesCompareSettingsService(
         IAppDataPathProvider appDataPathProvider,
@@ -30,7 +30,8 @@ public class FilesCompareSettingsService : ICompareSettingsService
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        ArgumentNullException.ThrowIfNull(appDataPathProvider);
+        _filename = _fileSystem.Path.Combine(appDataPathProvider.AppDataPath, FILENAME);
 
         var comparerTypesDictionary = comparerRegistrations.ToDictionary(registration => registration.Tag, registration => registration.ConfigurationType);
         var scorerTypesDictionary = scorerRegistrations.ToDictionary(registration => registration.Tag, registration => registration.ConfigurationType);
@@ -49,11 +50,6 @@ public class FilesCompareSettingsService : ICompareSettingsService
 
     public Dictionary<string, IRepositoriesComparerConfiguration> Configuration => _configuration ??= Load();
     
-    private string GetFileName()
-    {
-        return _fileSystem.Path.Combine(_appDataPathProvider.AppDataPath, FILENAME);
-    }
-
     private Dictionary<string, IRepositoriesComparerConfiguration> Load()
     {
         try
@@ -62,28 +58,26 @@ public class FilesCompareSettingsService : ICompareSettingsService
         }
         catch (Exception e)
         {
-            _logger.LogWarning(e, "Could not read and parse {Filename} file. The structure has changed, maybe it is an easy fix by just replacing all '@' signs with the fixed string 'type: ' and you will be good to go. {Message}", GetFileName(), e.Message);
+            _logger.LogWarning(e, "Could not read and parse {Filename} file. The structure has changed, maybe it is an easy fix by just replacing all '@' signs with the fixed string 'type: ' and you will be good to go. {Message}", _filename, e.Message);
             throw;
         }
     }
 
     private Dictionary<string, IRepositoriesComparerConfiguration> LoadInner()
     {
-        var file = GetFileName();
-
-        if (!_fileSystem.File.Exists(file))
+        if (!_fileSystem.File.Exists(_filename))
         {
-            throw new FileNotFoundException("Comparer configuration file not found", file);
+            throw new FileNotFoundException("Comparer configuration file not found", _filename);
         }
 
         try
         {
-            var yml = _fileSystem.File.ReadAllText(file);
+            var yml = _fileSystem.File.ReadAllText(_filename);
             return _deserializer.Deserialize<Dictionary<string, IRepositoriesComparerConfiguration>>(yml);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Could not load configuration from file '{File}'. {Message}", file, ex.Message);
+            _logger.LogError(ex, "Could not load configuration from file '{File}'. {Message}", _filename, ex.Message);
             throw;
         }
     }

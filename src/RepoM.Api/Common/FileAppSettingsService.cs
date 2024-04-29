@@ -17,9 +17,10 @@ public class FileAppSettingsService : IAppSettingsService
     private readonly ILogger _logger;
     private AppSettings? _settings;
     private readonly List<Action> _invalidationHandlers = new(1);
-    private readonly IAppDataPathProvider _appDataPathProvider;
 
     private List<PluginSettings>? _plugins;
+    private readonly string _filename;
+
     private static readonly JsonSerializerSettings _jsonSerializationSettings = new()
         {
             Formatting = Formatting.Indented,
@@ -30,21 +31,21 @@ public class FileAppSettingsService : IAppSettingsService
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        ArgumentNullException.ThrowIfNull(appDataPathProvider);
+
+        _filename = Path.Combine(appDataPathProvider.AppDataPath, "appsettings.json");
     }
 
     private AppSettings Load()
     {
-        var file = GetFileName();
-
-        if (!_fileSystem.File.Exists(file))
+        if (!_fileSystem.File.Exists(_filename))
         {
             return AppSettings.Default;
         }
 
         try
         {
-            var json = _fileSystem.File.ReadAllText(file);
+            var json = _fileSystem.File.ReadAllText(_filename);
             AppSettings? result = JsonConvert.DeserializeObject<AppSettings>(json);
             return result ?? AppSettings.Default;
         }
@@ -58,11 +59,10 @@ public class FileAppSettingsService : IAppSettingsService
 
     private void Save()
     {
-        var file = GetFileName();
-        IDirectoryInfo? directoryInfo = _fileSystem.Directory.GetParent(file);
+        IDirectoryInfo? directoryInfo = _fileSystem.Directory.GetParent(_filename);
         if (directoryInfo == null)
         {
-            _logger.LogError("Could not save configuration because no parent of '{File}' found", file);
+            _logger.LogError("Could not save configuration because no parent of '{File}' found", _filename);
             return;
         }
 
@@ -82,21 +82,15 @@ public class FileAppSettingsService : IAppSettingsService
 
         try
         {
-            _fileSystem.File.WriteAllText(file, JsonConvert.SerializeObject(_settings, _jsonSerializationSettings));
+            _fileSystem.File.WriteAllText(_filename, JsonConvert.SerializeObject(_settings, _jsonSerializationSettings));
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Could not save configuration to file '{File}'. {Message}", file, ex.Message);
+            _logger.LogError(ex, "Could not save configuration to file '{File}'. {Message}", _filename, ex.Message);
         }
     }
 
-    private string GetFileName()
-    {
-        return Path.Combine(_appDataPathProvider.AppDataPath, "appsettings.json");
-    }
-
     private AppSettings Settings => _settings ??= Load();
-
 
     public string SortKey
     {
@@ -275,6 +269,7 @@ public class FileAppSettingsService : IAppSettingsService
 
     private void NotifyChange()
     {
+        _logger.LogDebug("FileAppSettingsService update {Method}", nameof(NotifyChange));
        _invalidationHandlers.ForEach(h => h.Invoke());
     }
 }

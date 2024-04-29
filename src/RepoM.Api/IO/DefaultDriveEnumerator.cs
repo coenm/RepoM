@@ -23,6 +23,7 @@ public class DefaultDriveEnumerator : IPathProvider
 
     public string[] GetPaths()
     {
+        _logger.LogDebug("Called {Method}", nameof(GetPaths));
         var paths = GetPreconfiguredPaths();
 
         if (paths.Length != 0)
@@ -31,9 +32,9 @@ public class DefaultDriveEnumerator : IPathProvider
         }
 
         return _fileSystem.DriveInfo.GetDrives()
-                         .Where(d => d.DriveType == DriveType.Fixed)
-                         .Select(d => d.RootDirectory.FullName)
-                         .ToArray();
+            .Where(d => d.DriveType == DriveType.Fixed)
+            .Select(d => d.RootDirectory.FullName)
+            .ToArray();
     }
 
     private string[] GetPreconfiguredPaths()
@@ -42,7 +43,7 @@ public class DefaultDriveEnumerator : IPathProvider
 
         if (directories.Count == 0)
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         HashSet<string> paths = new(directories.Count);
@@ -66,9 +67,9 @@ public class DefaultDriveEnumerator : IPathProvider
 
         if (paths.Count == 0)
         {
-            return Array.Empty<string>();
+            return [];
         }
 
-        return paths.ToArray();
+        return [.. paths, ];
     }
 }

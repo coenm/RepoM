@@ -80,6 +80,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             return Task.CompletedTask;
         }
 
+        _logger.LogTrace("Initialize azure devops timers {Method}", nameof(InitializeAsync));
         _updateTimer1 = new Timer(async _ => await UpdatePullRequests(_azureDevopsGitClient), null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(4));
         _updateTimer2 = new Timer(async _ => await UpdateProjectsAsync(_azureDevopsGitClient), null, TimeSpan.FromSeconds(7), TimeSpan.FromMinutes(10));
 
@@ -146,7 +147,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             repoId = await FindRepositoryGuidByProjectId(repository, projectId);
         }
 
-        ResourceRef[] workItems = Array.Empty<ResourceRef>();
+        ResourceRef[] workItems = [];
 
         if (includeWorkItems)
         {
@@ -249,19 +250,20 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
         if (!_gitRepositoriesPerProject.ContainsKey(projectId))
         {
-            _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, gitRepositories) => gitRepositories);
+            _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => [], (_, gitRepositories) => gitRepositories);
             _ = UpdateProjectsAsync(_azureDevopsGitClient);
         }
 
         if (!_pullRequestsPerProject.ContainsKey(projectId))
         {
-            _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, prs) => prs);
+            _pullRequestsPerProject.AddOrUpdate(projectId, _ => [], (_, prs) => prs);
             _ = UpdatePullRequests(_azureDevopsGitClient);
         }
     }
 
     private async Task UpdateProjectsAsync(GitHttpClient? gitClient)
     {
+        _logger.LogTrace("DevOps: Start timer method {Method}", nameof(UpdateProjectsAsync));
         var projectIds = _gitRepositoriesPerProject.Keys.ToArray();
 
         if (projectIds.Length == 0)
@@ -298,7 +300,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                 if (repositories == null || repositories.Count == 0)
                 {
                     _logger.LogInformation("No repositories found for project {ProjectId}.", projectId);
-                    _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, _) => Array.Empty<GitRepository>());
+                    _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => [], (_, _) => []);
                     continue;
                 }
 
@@ -308,13 +310,14 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not fetch repositories for project {ProjectId}. {Message}", projectId, e.Message);
-                _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => Array.Empty<GitRepository>(), (_, _) => Array.Empty<GitRepository>());
+                _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => [], (_, _) => []);
             }
         }
     }
 
     private async Task UpdatePullRequests(GitHttpClient? gitClient)
     {
+        _logger.LogTrace("DevOps: Start timer method {Method}", nameof(UpdatePullRequests));
         var projectIds = _pullRequestsPerProject.Keys.ToArray();
 
         if (projectIds.Length == 0)
@@ -346,7 +349,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                 if (result.Count == 0)
                 {
                     _logger.LogInformation("No PRs found for project {ProjectId}.", projectId);
-                    _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
+                    _pullRequestsPerProject.AddOrUpdate(projectId, _ => [], (_, _) => []);
                     continue;
                 }
 
@@ -364,7 +367,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             catch (Exception e)
             {
                 _logger.LogError(e, "Could not fetch pull requests for project {Project}. {Message}", projectId, e.Message);
-                _pullRequestsPerProject.AddOrUpdate(projectId, _ => Array.Empty<PullRequest>(), (_, _) => Array.Empty<PullRequest>());
+                _pullRequestsPerProject.AddOrUpdate(projectId, _ => [], (_, _) => []);
             }
         }
     }

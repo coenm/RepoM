@@ -4,16 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Core.Plugin.Repository;
 
 public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggregator
 {
     private readonly IThreadDispatcher _dispatcher;
+    private readonly ILogger _logger;
 
-    public DefaultRepositoryInformationAggregator(IThreadDispatcher dispatcher)
+    public DefaultRepositoryInformationAggregator(IThreadDispatcher dispatcher, ILogger logger)
     {
         _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         Repositories = new ObservableCollection<RepositoryViewModel>();
     }
 
@@ -30,6 +33,7 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
 
         _dispatcher.Invoke(() =>
             {
+                _logger.LogTrace("DefaultRepositoryInformationAggregator Add repository {Name}", repo.Name);
                 var view = new RepositoryViewModel(repo, repositoryMonitor);
 
                 Repositories.Remove(view);
@@ -66,7 +70,7 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
         List<RepositoryViewModel>? views = null;
         try
         {
-            views = Repositories.ToList();
+            views = [.. Repositories, ];
         }
         catch (ArgumentException)
         {

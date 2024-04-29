@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Common;
 
 public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgnoreStore
@@ -16,10 +17,11 @@ public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgno
 
     public DefaultRepositoryIgnoreStore(
         IAppDataPathProvider appDataPathProvider,
-        IFileSystem fileSystem)
-        : base(fileSystem)
+        IFileSystem fileSystem,
+        ILogger logger)
+        : base(fileSystem, logger)
     {
-        _ = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        ArgumentNullException.ThrowIfNull(appDataPathProvider);
         _fullFilename = Path.Combine(appDataPathProvider.AppDataPath, "Repositories.ignore");
     }
 
