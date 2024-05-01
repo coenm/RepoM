@@ -23,8 +23,8 @@ public class DisposableContextScriptObjectTests
     private readonly IRepository _repository = A.Fake<IRepository>();
     private readonly ITemplateParser _templateParser = new FixedTemplateParser();
     private readonly IFileSystem _fileSystem = new MockFileSystem();
-    private readonly ITemplateContextRegistration[] _functionsArray = Array.Empty<ITemplateContextRegistration>();
-    private readonly IActionToRepositoryActionMapper[] _mapper = Array.Empty<IActionToRepositoryActionMapper>();
+    private readonly ITemplateContextRegistration[] _functionsArray = [];
+    private readonly IActionToRepositoryActionMapper[] _mapper = [];
     private readonly IActionMenuDeserializer _deserializer = A.Fake<IActionMenuDeserializer>();
     private readonly ActionMenuGenerationContext _context;
     private readonly EnvSetScriptObject _env = new(new EnvScriptObject(new Dictionary<string, string>()

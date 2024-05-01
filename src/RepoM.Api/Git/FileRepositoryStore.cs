@@ -51,7 +51,7 @@ public abstract class FileRepositoryStore : IRepositoryStore
     {
         if (!_fileSystem.File.Exists(file))
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         try
@@ -63,6 +63,6 @@ public abstract class FileRepositoryStore : IRepositoryStore
             // swallow for now.
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 }

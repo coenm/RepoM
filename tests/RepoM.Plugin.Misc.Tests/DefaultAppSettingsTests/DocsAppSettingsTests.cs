@@ -3,7 +3,6 @@ namespace RepoM.Plugin.Misc.Tests.DefaultAppSettingsTests;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Common;
@@ -12,6 +11,10 @@ using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
+
+#if !DEBUG
+using FluentAssertions;
+#endif
 
 public class DocsAppSettingsTests
 {

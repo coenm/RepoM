@@ -1,7 +1,6 @@
 namespace RepoM.ActionMenu.Core.Tests.Plugin
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.IO.Abstractions;
     using System.IO.Abstractions.TestingHelpers;
     using System.Text;
@@ -81,7 +80,7 @@ namespace RepoM.ActionMenu.Core.Tests.Plugin
                         },
                 };
 
-            A.CallTo(() => dummyService.GetValues()).Returns(dummyValues.ToImmutableArray());
+            A.CallTo(() => dummyService.GetValues()).Returns([..dummyValues]);
 
             _container.Options.EnableAutoVerification = false;
         }

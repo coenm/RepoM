@@ -1,19 +1,8 @@
 namespace RepoM.Plugin.Misc.Tests.Configuration;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using NuDoq;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
-using RepoM.Plugin.Misc.Tests.TestFramework;
-using RepoM.Plugin.Misc.Tests.TestFramework.AssemblyAndTypeHelpers;
-using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
-using VerifyXunit;
-using Xunit;
 
 public class DocsRepositoryActionsTests
 {

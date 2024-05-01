@@ -2,7 +2,6 @@ namespace RepoM.ActionMenu.Core.Yaml.Serialization;
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core.Misc;

@@ -14,8 +14,8 @@ public class Repository : IRepository
     {
         IsBare = false;
         Name = string.Empty;
-        Branches = Array.Empty<string>();
-        LocalBranches = Array.Empty<string>();
+        Branches = [];
+        LocalBranches = [];
         CurrentBranch = string.Empty;
         Path = path;
         Location = string.Empty;
@@ -63,7 +63,7 @@ public class Repository : IRepository
 
     public string[] LocalBranches { get; init; }
 
-    public string[] Tags { get; set; } = Array.Empty<string>();
+    public string[] Tags { get; set; } = [];
 
     [System.ComponentModel.Browsable(false)]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -71,7 +71,7 @@ public class Repository : IRepository
 
     public string[] ReadAllBranches()
     {
-        return AllBranchesReader?.Invoke() ?? Array.Empty<string>();
+        return AllBranchesReader?.Invoke() ?? [];
     }
 
     public bool CurrentBranchHasUpstream { get; set; }

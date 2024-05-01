@@ -1,7 +1,5 @@
 namespace RepoM.Plugin.Heidi.ActionMenu.Context;
 
-using System;
-
 internal readonly record struct Database
 {
     public Database()
@@ -36,5 +34,5 @@ internal readonly record struct Database
     /// <summary>
     /// Databases. Single database on PostgreSQL. Interbase and Firebird expect a local file here.
     /// </summary>
-    public string[] Databases { get; internal init; } = Array.Empty<string>();
+    public string[] Databases { get; internal init; } = [];
 }

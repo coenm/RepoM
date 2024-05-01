@@ -56,7 +56,7 @@ public class FilesFilterSettingsService : IFilterSettingsService
             Dictionary<string, RepositoryFilterConfiguration>? result = deserializer.Deserialize<Dictionary<string, RepositoryFilterConfiguration>?>(yml);
             if (result == null)
             {
-                return new Dictionary<string, RepositoryFilterConfiguration>();
+                return new();
             }
 
             foreach (KeyValuePair<string, RepositoryFilterConfiguration> item in result)

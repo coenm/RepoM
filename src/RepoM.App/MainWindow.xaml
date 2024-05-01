@@ -304,7 +304,9 @@
                                     </StackPanel>
 									<TextBlock Text="{Binding CurrentBranch}"
                                                FontSize="13.5"
-                                               Margin="8, 3, 8, 3" />
+                                               Margin="8, 3, 8, 3" 
+                                               Visibility="{Binding Path=IsNotBare, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                               />
                                     <StackPanel Orientation="Horizontal">
 
                                         <Border Margin="8, 5, 8, 3"

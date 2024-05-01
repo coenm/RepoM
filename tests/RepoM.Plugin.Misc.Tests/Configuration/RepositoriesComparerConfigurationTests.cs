@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
 using NuDoq;
 using RepoM.Plugin.Misc.Tests.TestFramework;
 using RepoM.Plugin.Misc.Tests.TestFramework.AssemblyAndTypeHelpers;
@@ -14,6 +13,9 @@ using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
+#if !DEBUG
+using FluentAssertions;
+#endif
 
 public class RepositoriesComparerConfigurationTests
 {

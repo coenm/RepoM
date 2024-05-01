@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using NuDoq;
 using RepoM.Api.Plugins;
@@ -17,6 +16,10 @@ using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
+
+#if !DEBUG
+using FluentAssertions;
+#endif
 
 public class DocsModuleSettingsTests
 {

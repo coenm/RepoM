@@ -1,7 +1,5 @@
 namespace RepoM.ActionMenu.Core.Tests.Plugin;
 
-using System;
-
 public readonly record struct DummyConfig()
 {
     public string Key { get; init; } = string.Empty;
@@ -12,5 +10,5 @@ public readonly record struct DummyConfig()
 
     public bool IsOnline { get; init; } = false;
 
-    public string[] DatabaseNames { get; init; } = Array.Empty<string>();
+    public string[] DatabaseNames { get; init; } = [];
 }
