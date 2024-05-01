@@ -28,7 +28,7 @@
 	<tb:TaskbarIcon x:Key="NotifyIcon"
                     IconSource="/App.ico"
                     LeftClickCommand="{Binding OpenCommand}"
-					NoLeftClickDelay="False"
+					NoLeftClickDelay="True"
                     ContextMenu="{StaticResource SysTrayMenu}">
 
 		<!-- self-assign a data context (could also be done programmatically) -->
