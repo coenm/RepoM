@@ -13,16 +13,19 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
     private readonly Timer _timer;
     private readonly Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
     private int _lastFetchRepository = -1;
+    private readonly IAppSettingsService _appSettingsService;
+    private readonly IRepositoryInformationAggregator _repositoryInformationAggregator;
+    private readonly IRepositoryWriter _repositoryWriter;
 
     public DefaultAutoFetchHandler(
         IAppSettingsService appSettingsService,
         IRepositoryInformationAggregator repositoryInformationAggregator,
         IRepositoryWriter repositoryWriter)
     {
-        AppSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-        RepositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
-        RepositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
-        AppSettingsService.RegisterInvalidationHandler(() => Mode = AppSettingsService.AutoFetchMode);
+        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        _repositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
+        _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
+        _appSettingsService.RegisterInvalidationHandler(() => Mode = _appSettingsService.AutoFetchMode);
 
         _profiles = new Dictionary<AutoFetchMode, AutoFetchProfile>
             {
@@ -60,7 +63,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
     private void FetchNext(object? timerState)
     {
-        var hasAny = RepositoryInformationAggregator.Repositories?.Any() ?? false;
+        var hasAny = _repositoryInformationAggregator.Repositories?.Any() ?? false;
         if (!hasAny)
         {
             return;
@@ -71,9 +74,9 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         // 2. makes sure that no repository is jumped over because the list
         //    of repositories is constantly changed and not sorted in any way in memory.
         //    So we cannot guarantee that each repository is fetched on each iteration if we do not sort.
-        var repositories = RepositoryInformationAggregator.Repositories?
-                                                          .OrderBy(r => r.Name)
-                                                          .ToArray() ?? Array.Empty<RepositoryViewModel>();
+        var repositories = _repositoryInformationAggregator.Repositories?
+            .OrderBy(r => r.Name)
+            .ToArray() ?? [];
 
         // temporarily disable the timer to prevent parallel fetch executions
         UpdateBehavior(AutoFetchMode.Off);
@@ -87,12 +90,10 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
         RepositoryViewModel repositoryViewModel = repositories[_lastFetchRepository];
 
-        Console.WriteLine($"Auto-fetching {repositoryViewModel.Name} (index {_lastFetchRepository} of {repositories.Length})");
-
         repositoryViewModel.IsSynchronizing = true;
         try
         {
-            RepositoryWriter.Fetch(repositoryViewModel.Repository);
+            _repositoryWriter.Fetch(repositoryViewModel.Repository);
         }
         catch
         {
@@ -116,7 +117,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
             if (value && _mode == null)
             {
-                Mode = AppSettingsService.AutoFetchMode;
+                Mode = _appSettingsService.AutoFetchMode;
             }
 
             UpdateBehavior();
@@ -137,10 +138,4 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
             UpdateBehavior();
         }
     }
-
-    public IAppSettingsService AppSettingsService { get; }
-
-    public IRepositoryInformationAggregator RepositoryInformationAggregator { get; }
-
-    public IRepositoryWriter RepositoryWriter { get; }
 }

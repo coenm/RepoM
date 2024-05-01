@@ -81,7 +81,7 @@ public partial class MainWindow
 
         InitializeComponent();
 
-        AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
+        SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
         
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
@@ -128,7 +128,6 @@ public partial class MainWindow
         ShowUpdateIfAvailable();
         txtFilter.Focus();
         txtFilter.SelectAll();
-        TryFixFreeze();
     }
 
     protected override void OnDeactivated(EventArgs e)
@@ -177,20 +176,7 @@ public partial class MainWindow
                 Activate();
                 txtFilter.Focus();
                 txtFilter.SelectAll();
-                TryFixFreeze();
             });
-    }
-
-    private void TryFixFreeze()
-    {
-        if (!"true".Equals(Environment.GetEnvironmentVariable("REPO_ONE_TRY_FIX_FREEZE")))
-        {
-            return;
-        }
-
-        var w = Width;
-        Width += 0.001;
-        Width = w;
     }
 
     private void OnScanStateChanged(object? sender, bool isScanning)
@@ -758,11 +744,11 @@ public partial class MainWindow
         // show/hide the titlebar to move the window for screenshots, for example
         if (e.Key == Key.F11)
         {
-            AcrylicWindowStyle currentStyle = AcrylicWindow.GetAcrylicWindowStyle(this);
+            AcrylicWindowStyle currentStyle = GetAcrylicWindowStyle(this);
             AcrylicWindowStyle newStyle = currentStyle == AcrylicWindowStyle.None
                 ? AcrylicWindowStyle.Normal
                 : AcrylicWindowStyle.None;
-            AcrylicWindow.SetAcrylicWindowStyle(this, newStyle);
+            SetAcrylicWindowStyle(this, newStyle);
         }
 
         // keep window open on deactivate to make screenshots, for example

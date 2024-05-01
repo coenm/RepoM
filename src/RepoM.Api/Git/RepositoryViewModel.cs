@@ -53,6 +53,8 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     public bool IsPinned => _monitor.IsPinned(Repository);
 
+    public bool IsNotBare => !Repository.IsBare;
+
     public string Name => Repository.Name + (IsSynchronizing ? SyncAppendix : string.Empty);
 
     public string Path => Repository.Path;
@@ -65,7 +67,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     public string BehindBy => Repository.BehindBy?.ToString() ?? string.Empty;
 
-    public string[] Branches => Repository.Branches ?? Array.Empty<string>();
+    public string[] Branches => Repository.Branches ?? [];
 
     public string LocalUntracked => Repository.LocalUntracked?.ToString() ?? string.Empty;
 
