@@ -54,13 +54,7 @@ public class RepositoriesScorerConfigurationTests
         }
     }
 
-    public static IEnumerable<object[]> RepositoryComparersDataXunit
-    {
-        get
-        {
-            return RepositoryScorersData.Select(x => new object[] { x, }).ToArray();
-        }
-    }
+    public static IEnumerable<object[]> RepositoryComparersDataXunit => RepositoryScorersData.Select(x => new object[] { x, });
 
     [Fact]
     public async Task VerifyChanges()
