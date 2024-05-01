@@ -1,7 +1,5 @@
 namespace RepoM.Plugin.Heidi.ActionMenu.Context;
 
-using System;
-
 internal readonly record struct MetaData
 {
     public MetaData()
@@ -12,5 +10,5 @@ internal readonly record struct MetaData
 
     public int Order { get; init; } = 0;
 
-    public string[] Tags { get; init; } = Array.Empty<string>();
+    public string[] Tags { get; init; } = [];
 }

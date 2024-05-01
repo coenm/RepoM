@@ -70,19 +70,19 @@ public class HeidiConfigurationServiceTests
                     {
                         Name = "RepoM Prod",
                         Order = 23,
-                        Tags = Array.Empty<string>(),
+                        Tags = [],
                         Repository = "RepoM",
                     },
                 new RepoHeidi("OSS/Github/RepoM-D")                    {
                         Name = "RepoM Dev!!",
                         Order = 5,
-                        Tags = Array.Empty<string>(),
+                        Tags = [],
                         Repository = "RepoM",
                     },
                 new RepoHeidi("OSS/Abc")                    {
                         Name = "Abc Prod",
                         Order = 0,
-                        Tags = Array.Empty<string>(),
+                        Tags = [],
                         Repository = "Abc",
                     },
             };

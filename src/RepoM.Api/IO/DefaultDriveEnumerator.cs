@@ -42,7 +42,7 @@ public class DefaultDriveEnumerator : IPathProvider
 
         if (directories.Count == 0)
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         HashSet<string> paths = new(directories.Count);
@@ -66,7 +66,7 @@ public class DefaultDriveEnumerator : IPathProvider
 
         if (paths.Count == 0)
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         return paths.ToArray();

@@ -18,7 +18,7 @@ public class DeferredSubActionsRepositoryAction : RepositoryAction
         {
             if (_action == null)
             {
-                return () => Array.Empty<RepositoryActionBase>();
+                return () => [];
             }
 
             return () =>

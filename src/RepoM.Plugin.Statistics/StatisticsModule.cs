@@ -80,12 +80,12 @@ internal class StatisticsModule : IModule
 
         foreach (var file in orderedEnumerable)
         {
-            IEvent[] events = Array.Empty<IEvent>();
+            IEvent[] events = [];
 
             try
             {
                 var json = await _fileSystem.File.ReadAllTextAsync(file, CancellationToken.None).ConfigureAwait(false);
-                events = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? Array.Empty<IEvent>();
+                events = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? [];
             }
             catch (Exception e)
             {
@@ -118,12 +118,12 @@ internal class StatisticsModule : IModule
 
         foreach (var file in orderedEnumerable)
         {
-            IEvent[] list = Array.Empty<IEvent>();
+            IEvent[] list = [];
 
             try
             {
                 var json = await _fileSystem.File.ReadAllTextAsync(file, CancellationToken.None).ConfigureAwait(false);
-                list = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? Array.Empty<IEvent>();
+                list = JsonConvert.DeserializeObject<IEvent[]>(json, _settings) ?? [];
             }
             catch (Exception e)
             {

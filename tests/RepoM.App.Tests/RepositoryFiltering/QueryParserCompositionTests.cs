@@ -37,7 +37,7 @@ public class QueryParserCompositionTests
         // arrange
 
         // act
-        Action act = () => _ = new QueryParserComposition(Array.Empty<INamedQueryParser>());
+        Action act = () => _ = new QueryParserComposition([]);
 
         // assert
         act.Should().Throw<IndexOutOfRangeException>();

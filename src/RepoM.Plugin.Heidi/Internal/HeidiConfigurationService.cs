@@ -141,7 +141,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
                 newResult[repository.Repository].Add(item);
             }
 
-            _rawDatabases = heidiDatabases.ToImmutableArray();
+            _rawDatabases = [..heidiDatabases];
             _repositoryHeidiConfigs = newResult;
             ConfigurationUpdated?.Invoke(this, EventArgs.Empty);
         }

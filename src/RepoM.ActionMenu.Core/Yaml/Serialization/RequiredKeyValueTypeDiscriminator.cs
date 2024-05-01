@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
-using YamlDotNet.Serialization.BufferedDeserialization;
 using YamlDotNet.Serialization.BufferedDeserialization.TypeDiscriminators;
 
 internal class RequiredKeyValueTypeDiscriminator<TInterface> : ITypeDiscriminator
@@ -27,21 +26,21 @@ internal class RequiredKeyValueTypeDiscriminator<TInterface> : ITypeDiscriminato
     {
         var result = _discriminator.TryDiscriminate(buffer, out suggestedType);
 
-        if (!result)
+        if (result)
         {
-            if (buffer.Current is Scalar scalar)
-            {
-                _logger.LogError("Could not find required type. Type found {Type}", scalar.Value);
-            }
-            else
-            {
-                _logger.LogError("Could not find required type");
-            }
-
-            suggestedType = null;
-            return false;
+            return true;
         }
 
-        return true;
+        if (buffer.Current is Scalar scalar)
+        {
+            _logger.LogError("Could not find required type. Type found {Type}", scalar.Value);
+        }
+        else
+        {
+            _logger.LogError("Could not find required type");
+        }
+
+        suggestedType = null;
+        return false;
     }
 }

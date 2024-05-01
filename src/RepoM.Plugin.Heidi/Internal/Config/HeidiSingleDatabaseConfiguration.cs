@@ -57,5 +57,5 @@ internal readonly record struct HeidiSingleDatabaseConfiguration
     /// <summary>
     /// Databases, separated by semicolon. Single database on PostgreSQL. Interbase and Firebird expect a local file here.
     /// </summary>
-    public string[] Databases { get; init; } = Array.Empty<string>();
+    public string[] Databases { get; init; } = [];
 }

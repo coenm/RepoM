@@ -125,7 +125,7 @@ public class DefaultRepositoryReader : IRepositoryReader
                     LocalRemoved = status?.Removed.Count(),
                     LocalIgnored = status?.Ignored.Count(),
                     StashCount = repo.Stashes?.Count() ?? 0,
-                    Tags = Array.Empty<string>(),
+                    Tags = [],
                 };
 
             RemoteCollection? remoteCollection = repo.Network?.Remotes;
@@ -166,7 +166,7 @@ public class DefaultRepositoryReader : IRepositoryReader
         }
         catch (Exception)
         {
-            return Array.Empty<string>();
+            return [];
         }
     }
 

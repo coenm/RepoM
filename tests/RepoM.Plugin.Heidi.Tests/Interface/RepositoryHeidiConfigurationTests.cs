@@ -13,7 +13,7 @@ public class RepositoryHeidiConfigurationTests
     {
         // arrange
         string @string = "string";
-        string[] array = Array.Empty<string>();
+        string[] array = [];
         HeidiDbConfig config = new HeidiDbConfig();
 
         // act

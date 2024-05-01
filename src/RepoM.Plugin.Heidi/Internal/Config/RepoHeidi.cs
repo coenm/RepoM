@@ -1,7 +1,5 @@
 namespace RepoM.Plugin.Heidi.Internal.Config;
 
-using System;
-
 internal readonly record struct RepoHeidi
 {
     public RepoHeidi(string key)
@@ -17,5 +15,5 @@ internal readonly record struct RepoHeidi
 
     public string Name { get; init; } = string.Empty;
     
-    public string[] Tags { get; init; } = Array.Empty<string>();
+    public string[] Tags { get; init; } = [];
 }

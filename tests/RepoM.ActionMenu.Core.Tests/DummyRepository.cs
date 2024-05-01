@@ -1,6 +1,5 @@
 namespace RepoM.ActionMenu.Core.Tests;
 
-using System;
 using System.Collections.Generic;
 using RepoM.Core.Plugin.Repository;
 
@@ -30,15 +29,15 @@ public class DummyRepository : IRepository
 
     public string CurrentBranch => "dummy current branch";
 
-    public string[] Branches { get; } = Array.Empty<string>();
+    public string[] Branches { get; } = [];
 
-    public string[] LocalBranches { get; } = Array.Empty<string>();
+    public string[] LocalBranches { get; } = [];
 
-    public string[] Tags { get; } = Array.Empty<string>();
+    public string[] Tags { get; } = [];
 
     public string[] ReadAllBranches()
     {
-        return Array.Empty<string>();
+        return [];
     }
 
     public bool HasLocalChanges => false;
