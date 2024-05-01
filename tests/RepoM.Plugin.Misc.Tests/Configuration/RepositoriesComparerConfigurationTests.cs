@@ -13,6 +13,9 @@ using RepoM.Plugin.Misc.Tests.TestFramework.NuDoc;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
+#if !DEBUG
+using FluentAssertions;
+#endif
 
 public class RepositoriesComparerConfigurationTests
 {
