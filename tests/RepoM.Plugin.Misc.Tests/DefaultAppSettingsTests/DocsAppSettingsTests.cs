@@ -12,6 +12,10 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
+#if !DEBUG
+using FluentAssertions;
+#endif
+
 public class DocsAppSettingsTests
 {
     private readonly VerifySettings _verifySettings = new();

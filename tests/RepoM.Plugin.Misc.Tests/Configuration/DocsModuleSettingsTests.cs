@@ -17,6 +17,10 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 
+#if !DEBUG
+using FluentAssertions;
+#endif
+
 public class DocsModuleSettingsTests
 {
     private const string VERIFY_DIRECTORY = "ModuleSettingsDocs";
