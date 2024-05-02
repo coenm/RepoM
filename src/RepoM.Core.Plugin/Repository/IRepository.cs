@@ -37,4 +37,6 @@ public interface IRepository
 
 
     public bool HasLocalChanges { get; }
+
+    public bool IsBehind { get; }
 }

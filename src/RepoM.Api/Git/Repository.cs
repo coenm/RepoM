@@ -98,6 +98,8 @@ public class Repository : IRepository
                                      (LocalStaged ?? 0) > 0 ||
                                      (LocalRemoved ?? 0) > 0;
 
+    public bool IsBehind => (BehindBy ?? 0) > 0;
+
     public int? AheadBy { get; set; }
 
     public int? BehindBy { get; set; }
