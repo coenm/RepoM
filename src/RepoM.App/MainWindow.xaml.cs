@@ -88,7 +88,13 @@ public partial class MainWindow
         var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
         var pluginsViewModel = new PluginCollectionViewModel(moduleManager);
 
-        DataContext = new MainWindowViewModel(appSettingsService, orderingsViewModel, queryParsersViewModel, filterViewModel, pluginsViewModel);
+        DataContext = new MainWindowViewModel(
+            appSettingsService,
+            orderingsViewModel,
+            queryParsersViewModel,
+            filterViewModel,
+            pluginsViewModel,
+            new HelpViewModel(_translationService));
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;
@@ -107,10 +113,6 @@ public partial class MainWindow
         repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
-
-        AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
-        txtHelpCaption.Text = appName?.Name + " " + appName?.Version?.ToString(2);
-        txtHelp.Text = GetHelp();
 
         PlaceFormByTaskBarLocation();
     }
@@ -859,20 +861,6 @@ public partial class MainWindow
         lstRepositories.SelectedIndex = 0;
         var item = (ListBoxItem)lstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
         item?.Focus();
-    }
-
-    private string GetHelp()
-    {
-        return _translationService.Translate(
-            "Help Detail",
-            StatusCharacterMap.IDENTICAL_SIGN,
-            StatusCharacterMap.STASH_SIGN,
-            StatusCharacterMap.IDENTICAL_SIGN,
-            StatusCharacterMap.ARROW_UP_SIGN,
-            StatusCharacterMap.ARROW_DOWN_SIGN,
-            StatusCharacterMap.NO_UPSTREAM_SIGN,
-            StatusCharacterMap.STASH_SIGN
-        );
     }
 
     public bool IsShown => Visibility == Visibility.Visible && IsActive;
