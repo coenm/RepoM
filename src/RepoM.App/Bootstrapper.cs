@@ -77,6 +77,7 @@ internal static class Bootstrapper
         Container.Collection.Append<INamedQueryParser, DefaultQueryParser>(Lifestyle.Singleton);
 
         Container.Collection.Append<IQueryMatcher, IsPinnedMatcher>(Lifestyle.Singleton);
+        Container.Collection.Append<IQueryMatcher, IsBehindMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, IsBareRepositoryMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, TagMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, NameMatcher>(Lifestyle.Singleton);

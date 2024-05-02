@@ -41,4 +41,6 @@ public class DummyRepository : IRepository
     }
 
     public bool HasLocalChanges => false;
+
+    public bool IsBehind => false;
 }
