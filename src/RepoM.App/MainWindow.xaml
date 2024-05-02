@@ -9,6 +9,7 @@
           xmlns:converters="clr-namespace:RepoM.App.Converters"
           xmlns:controls="clr-namespace:RepoM.App.Controls"
           xmlns:app="clr-namespace:RepoM.App"
+          xmlns:viewModels="clr-namespace:RepoM.App.ViewModels"
           TextElement.Foreground="{DynamicResource MaterialDesignBody}"
           TextElement.FontWeight="Regular"
           TextElement.FontSize="12"
@@ -22,7 +23,8 @@
           fw:AcrylicWindow.TintColor="#101010"
           fw:AcrylicWindow.FallbackColor="#303030"
           fw:AcrylicWindow.TintOpacity="0.7"
-          fw:AcrylicWindow.Enabled="True">
+          fw:AcrylicWindow.Enabled="True"
+          d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
 	<Window.Resources>
 		<converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
 	</Window.Resources>
@@ -385,14 +387,14 @@
 				</DockPanel>
 			</Grid>
 			<ScrollViewer>
-				<StackPanel>
-					<TextBlock Name="txtHelpCaption"
-							   TextWrapping="Wrap"
-							   TextElement.FontWeight="Bold"
-							   TextElement.FontSize="12" />
-					<TextBlock Name="txtHelp"
-							   TextWrapping="Wrap"
-							   TextElement.FontSize="12" />
+                <StackPanel DataContext="{Binding Help}">
+                    <TextBlock TextWrapping="Wrap"
+                               TextElement.FontWeight="Bold"
+                               TextElement.FontSize="12" 
+                               Text="{Binding Header}"/>
+					<TextBlock TextWrapping="Wrap"
+                               TextElement.FontSize="12" 
+                               Text="{Binding Description}" />
 					<Button Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
 							Content="{DynamicResource GotIt}"></Button>
 				</StackPanel>

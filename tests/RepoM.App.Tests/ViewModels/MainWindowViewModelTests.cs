@@ -17,6 +17,7 @@ public class MainWindowViewModelTests
     private readonly QueryParsersViewModel _queryParsersViewModel;
     private readonly FiltersViewModel _filtersViewModel;
     private readonly PluginCollectionViewModel _pluginsViewModel;
+    private readonly HelpViewModel _helpViewModel;
     
     public MainWindowViewModelTests()
     {
@@ -30,6 +31,7 @@ public class MainWindowViewModelTests
         _queryParsersViewModel = new QueryParsersViewModel(repositoryFilterManager, threadDispatcher);
         _filtersViewModel = new FiltersViewModel(repositoryFilterManager, threadDispatcher);
         _pluginsViewModel = new PluginCollectionViewModel(moduleManager);
+        _helpViewModel = new HelpViewModel(A.Fake<ITranslationService>());
     }
 
     [Fact]
@@ -38,11 +40,12 @@ public class MainWindowViewModelTests
         // arrange
 
         // act
-        Action act1 = () => _ = new MainWindowViewModel(_appSettingsService, _orderingsViewModel, _queryParsersViewModel, _filtersViewModel, null!);
-        Action act2 = () => _ = new MainWindowViewModel(_appSettingsService, _orderingsViewModel, _queryParsersViewModel, null!, _pluginsViewModel);
-        Action act3 = () => _ = new MainWindowViewModel(_appSettingsService, _orderingsViewModel, null!, _filtersViewModel, _pluginsViewModel);
-        Action act4 = () => _ = new MainWindowViewModel(_appSettingsService, null!, _queryParsersViewModel, _filtersViewModel, _pluginsViewModel);
-        Action act5 = () => _ = new MainWindowViewModel(null!, _orderingsViewModel, _queryParsersViewModel, _filtersViewModel, _pluginsViewModel);
+        Action act1 = () => _ = new MainWindowViewModel(_appSettingsService, _orderingsViewModel, _queryParsersViewModel, _filtersViewModel, null!, _helpViewModel);
+        Action act2 = () => _ = new MainWindowViewModel(_appSettingsService, _orderingsViewModel, _queryParsersViewModel, null!, _pluginsViewModel, _helpViewModel);
+        Action act3 = () => _ = new MainWindowViewModel(_appSettingsService, _orderingsViewModel, null!, _filtersViewModel, _pluginsViewModel, _helpViewModel);
+        Action act4 = () => _ = new MainWindowViewModel(_appSettingsService, null!, _queryParsersViewModel, _filtersViewModel, _pluginsViewModel, _helpViewModel);
+        Action act5 = () => _ = new MainWindowViewModel(null!, _orderingsViewModel, _queryParsersViewModel, _filtersViewModel, _pluginsViewModel, _helpViewModel);
+        Action act6 = () => _ = new MainWindowViewModel(_appSettingsService, _orderingsViewModel, _queryParsersViewModel, _filtersViewModel, _pluginsViewModel, null!);
 
         // assert
         act1.Should().ThrowExactly<ArgumentNullException>();
@@ -50,6 +53,7 @@ public class MainWindowViewModelTests
         act3.Should().ThrowExactly<ArgumentNullException>();
         act4.Should().ThrowExactly<ArgumentNullException>();
         act5.Should().ThrowExactly<ArgumentNullException>();
+        act6.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
@@ -58,7 +62,7 @@ public class MainWindowViewModelTests
         // arrange
 
         // act
-        var sut = new MainWindowViewModel(_appSettingsService, _orderingsViewModel, _queryParsersViewModel, _filtersViewModel, _pluginsViewModel);
+        var sut = new MainWindowViewModel(_appSettingsService, _orderingsViewModel, _queryParsersViewModel, _filtersViewModel, _pluginsViewModel, _helpViewModel);
 
         // assert
         sut.QueryParsers.Should().BeSameAs(_queryParsersViewModel);

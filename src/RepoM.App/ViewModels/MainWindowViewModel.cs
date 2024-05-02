@@ -16,13 +16,15 @@ public class MainWindowViewModel : INotifyPropertyChanged
         OrderingsViewModel orderingsViewModel,
         QueryParsersViewModel queryParsersViewModel,
         FiltersViewModel filtersViewModel,
-        PluginCollectionViewModel pluginsViewModel)
+        PluginCollectionViewModel pluginsViewModel,
+        HelpViewModel helpViewModel)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         Orderings = orderingsViewModel ?? throw new ArgumentNullException(nameof(orderingsViewModel));
         QueryParsers = queryParsersViewModel ?? throw new ArgumentNullException(nameof(queryParsersViewModel));
         Filters = filtersViewModel ?? throw new ArgumentNullException(nameof(filtersViewModel));
         Plugins = pluginsViewModel ?? throw new ArgumentNullException(nameof(pluginsViewModel));
+        Help = helpViewModel;
     }
 
     private AutoFetchMode AutoFetchMode
@@ -47,6 +49,8 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public FiltersViewModel Filters { [UsedImplicitly] get; }
 
     public PluginCollectionViewModel Plugins { [UsedImplicitly] get; }
+
+    public HelpViewModel Help { [UsedImplicitly] get; }
 
     public bool AutoFetchOff
     {
