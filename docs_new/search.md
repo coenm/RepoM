@@ -2,7 +2,7 @@
 
 After opening RepoM, you can search for respositories using the searchbox at the top.
 
-By default, this box enabled you to search for repositories by simply matching repository names (i.e., the query parser is very limited).
+By default, this box enabled you to search for repositories by simply matching repository names (i.e., the default query parser is very limited).
 
 It is possible to use a different query parser enabling the use of complex queries.
 
