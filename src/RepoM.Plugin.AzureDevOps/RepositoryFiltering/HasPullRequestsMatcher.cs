@@ -50,7 +50,7 @@ internal class HasPullRequestsMatcher : IQueryMatcher
         return null;
     }
 
-    private bool HasPullRequests(IRepository repository)
+    private bool HasPullRequests(in IRepository repository)
     {
         try
         {
