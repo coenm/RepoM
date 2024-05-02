@@ -49,7 +49,8 @@ How to define and use tags is described in the [Tags](docs_new/Tags.md) document
 
 ## Search
 
-[Search](docs/Search.md)
+It is possible to filter or search for repositories using the search box at the top of RepoM.
+See the [Search](docs_new/search.md) for more information.
 
 ## Ordering and Filtering
 
