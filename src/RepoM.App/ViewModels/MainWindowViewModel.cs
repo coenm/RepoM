@@ -24,7 +24,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         QueryParsers = queryParsersViewModel ?? throw new ArgumentNullException(nameof(queryParsersViewModel));
         Filters = filtersViewModel ?? throw new ArgumentNullException(nameof(filtersViewModel));
         Plugins = pluginsViewModel ?? throw new ArgumentNullException(nameof(pluginsViewModel));
-        Help = helpViewModel;
+        Help = helpViewModel ?? throw new ArgumentNullException(nameof(helpViewModel));
     }
 
     private AutoFetchMode AutoFetchMode
