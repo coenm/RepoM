@@ -23,7 +23,6 @@ Currently, the following query parsers are available:
 
 sdf
 
-
 ### Query matchers
 
 `IQueryMatcher`
