@@ -25,9 +25,7 @@ sdf
 
 ### Query matchers
 
-`IQueryMatcher`
-
-sfd
+Terms are matched using query matchers. A list of query matchers can be found over [here](querymatchers.md).
 
 ## Terms
 
