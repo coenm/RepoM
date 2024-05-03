@@ -6,6 +6,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using DotNetEnv;
+using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Core.Yaml.Model;
 
@@ -14,11 +15,13 @@ internal class FileReader : IFileReader
     private static readonly LoadOptions _loadOptions = new (setEnvVars: false);
     private readonly IFileSystem _fileSystem;
     private readonly IActionMenuDeserializer _deserializer;
+    private readonly ILogger _logger;
 
-    public FileReader(IFileSystem fileSystem, IActionMenuDeserializer deserializer)
+    public FileReader(IFileSystem fileSystem, IActionMenuDeserializer deserializer, ILogger logger)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public Task<ActionMenuRoot?> DeserializeRoot(string filename)
@@ -54,7 +57,15 @@ internal class FileReader : IFileReader
             return null;
         }
 
-        var content = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
-        return _deserializer.Deserialize<T>(content);
+        try
+        {
+            var content = await _fileSystem.File.ReadAllTextAsync(filename).ConfigureAwait(false);
+            return _deserializer.Deserialize<T>(content);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Could not deserialize {Filename} as {Type}", filename, typeof(T).Name);
+            throw;
+        }
     }
 }

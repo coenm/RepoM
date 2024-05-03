@@ -17,7 +17,6 @@ using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
-using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.BufferedDeserialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -26,8 +25,8 @@ using YamlDotNet.Serialization.NodeDeserializers;
 internal class ActionMenuDeserializer : IActionMenuDeserializer
 {
     private readonly IDeserializer _deserializer;
-    private readonly ISerializer _serializer;
-
+    private readonly ILogger _logger;
+    private readonly object _syncLock = new();
     private static readonly Dictionary<Type, Func<object>> _factoryMethods = new()
         {
             { typeof(Script), () => new ScribanScript() },
@@ -35,7 +34,6 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
             { typeof(Predicate), () => new ScribanPredicate() },
             { typeof(Text), () => new ScribanText() },
         };
-    private readonly ILogger _logger;
 
     public ActionMenuDeserializer(IEnumerable<IKeyTypeRegistration<IMenuAction>> keyTypeRegistrations, ITemplateParser templateParser, ILogger logger)
         : this(keyTypeRegistrations.ToDictionary(item => item.Tag, item => item.ConfigurationType), templateParser, logger)
@@ -46,15 +44,7 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
     {
         ArgumentNullException.ThrowIfNull(menuActionTypes);
         ArgumentNullException.ThrowIfNull(templateParser);
-        ArgumentNullException.ThrowIfNull(logger);
-
-        _logger = logger;
-
-        _serializer = new SerializerBuilder()
-            .WithNamingConvention(HyphenatedNamingConvention.Instance) // CamelCaseNamingConvention.Instance
-            .WithDefaultScalarStyle(ScalarStyle.Any)
-            .WithTypeConverter(new EvaluateObjectConverter(_factoryMethods))
-            .Build();
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _deserializer = new DeserializerBuilder()
             .WithNamingConvention(HyphenatedNamingConvention.Instance)
@@ -91,17 +81,28 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
     {
         try
         {
-            return _deserializer.Deserialize<T>(content);
+            // At startup, sometimes deserialization fails and until now, I have no idea why.
+            // This error makes sure no context menus are generated and an error message is logged
+            // I have added some error logging and I found that it has probably something to do with Tag deserialization.
+            // For now, I just want to try a lock to make deserialization it threadsafe and check if this error keeps occuring in the future.
+            lock(_syncLock) 
+            {
+                return _deserializer.Deserialize<T>(content);
+            }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            if (content is null)
+            {
+                _logger.LogError(e, "Deserializing content for type {Type} failed. Content is null", typeof(T).Name);
+            }
+            else
+            {
+                _logger.LogError(e, "Deserializing content for type {Type} failed. Content length is {Length}", typeof(T).Name, content.Length);
+                _logger.LogDebug("Content: {Content}", content); // This is not very nice
+            }
+
             throw;
         }
     }   
-
-    public string Serialize<T>(T actionMenuRoot) where T : ContextRoot
-    {
-        return _serializer.Serialize(actionMenuRoot, typeof(T));
-    }
 }
