@@ -8,8 +8,6 @@ namespace RepoM.ActionMenu.Core.Tests
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
     using RepoM.ActionMenu.Core;
-    using RepoM.ActionMenu.Core.Model;
-    using RepoM.ActionMenu.Core.Yaml.Model;
     using RepoM.ActionMenu.Interface.UserInterface;
     using RepoM.Core.Plugin.Repository;
     using SimpleInjector;
@@ -273,32 +271,6 @@ namespace RepoM.ActionMenu.Core.Tests
 
             // act
             IEnumerable<string> result = await sut.GetTagsAsync(_repository, "C:\\TagsV2.yaml");
-
-            // assert
-            await Verifier.Verify(result);
-        }
-        
-        [Fact]
-        public async Task Serialize()
-        {
-            // arrange
-            IActionMenuDeserializer deserializer = _container.GetInstance<IActionMenuDeserializer>();
-
-            // act
-            var result = deserializer.Serialize(deserializer.Deserialize<ActionMenuRoot>(ACTION_MENU));
-
-            // assert
-            await Verifier.Verify(result);
-        }
-        
-        [Fact]
-        public async Task SerializeTags()
-        {
-            // arrange
-            IActionMenuDeserializer deserializer = _container.GetInstance<IActionMenuDeserializer>();
-
-            // act
-            var result = deserializer.Serialize(deserializer.Deserialize<TagsRoot>(TAGS));
 
             // assert
             await Verifier.Verify(result);

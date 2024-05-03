@@ -1,9 +1,12 @@
 namespace RepoM.ActionMenu.Core.Tests.Yaml.Serialization;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Yaml.Model;
@@ -18,12 +21,30 @@ public class ActionMenuDeserializerTests
 {
     private readonly FixedTemplateParser _templateParser = new();
     private readonly IEnumerable<IKeyTypeRegistration<IMenuAction>> _registrations = [];
-
     private readonly ActionMenuDeserializer _sut;
 
     public ActionMenuDeserializerTests()
     {
         _sut = new ActionMenuDeserializer(_registrations, _templateParser, NullLogger.Instance);
+    }
+
+    [Fact]
+    public void Ctor_ShouldThrow_WhenArgumentNull()
+    {
+        // arrange
+        IEnumerable<IKeyTypeRegistration<IMenuAction>> keyTypeRegistrations = A.Fake<IEnumerable<IKeyTypeRegistration<IMenuAction>>>();
+        ITemplateParser templateParser = A.Dummy<ITemplateParser>();
+        ILogger logger = A.Dummy<ILogger>();
+        
+        // act
+        Func<ActionMenuDeserializer> act1 = () => new ActionMenuDeserializer(keyTypeRegistrations, templateParser, null!);
+        Func<ActionMenuDeserializer> act2 = () => new ActionMenuDeserializer(keyTypeRegistrations, null!, logger);
+        Func<ActionMenuDeserializer> act3 = () => new ActionMenuDeserializer(null!, templateParser, logger);
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
+        act2.Should().Throw<ArgumentNullException>();
+        act3.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
