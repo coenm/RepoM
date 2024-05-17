@@ -20,37 +20,16 @@ internal class RepositoryMatcher : IRepositoryMatcher
 
     public bool Matches(IRepository repository, IQuery query)
     {
-        if (query is TrueQuery)
+        return query switch
         {
-            return true;
-        }
-
-        if (query is FalseQuery)
-        {
-            return false;
-        }
-
-        if (query is AndQuery and)
-        {
-            return HandleAnd(repository, and);
-        }
-
-        if (query is OrQuery or)
-        {
-            return HandleOr(repository, or);
-        }
-        
-        if (query is NotQuery not)
-        {
-            return !Matches(repository, not.Item);
-        }
-
-        if (query is TermBase st)
-        {
-            return HandleTerm(repository, st);
-        }
-
-        return true;
+            TrueQuery => true,
+            FalseQuery => false,
+            AndQuery and => HandleAnd(repository, and),
+            OrQuery or => HandleOr(repository, or),
+            NotQuery not => !Matches(repository, not.Item),
+            TermBase st => HandleTerm(repository, st),
+            _ => true,
+        };
     }
 
     private bool HandleTerm(IRepository repository, TermBase termBase)
