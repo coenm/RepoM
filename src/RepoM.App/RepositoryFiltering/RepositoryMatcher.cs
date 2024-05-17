@@ -1,5 +1,6 @@
 namespace RepoM.App.RepositoryFiltering;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -71,12 +72,12 @@ internal class RepositoryMatcher : IRepositoryMatcher
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool HandleAnd(IRepository repository, AndQuery and)
     {
-        return and.Items.All(query => Matches(repository, query));
+        return Array.TrueForAll(and.Items, query => Matches(repository, query));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool HandleOr(IRepository repository, OrQuery or)
     {
-        return or.Items.Any(query => Matches(repository, query));
+        return Array.Exists(or.Items, query => Matches(repository, query));
     }
 }
