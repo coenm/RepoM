@@ -2,6 +2,7 @@ namespace RepoM.App.RepositoryFiltering;
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
@@ -67,17 +68,15 @@ internal class RepositoryMatcher : IRepositoryMatcher
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool HandleAnd(IRepository repository, AndQuery and)
     {
-        return and.Items
-            .Select(q => Matches(repository, q))
-            .All(result => result);
+        return and.Items.All(query => Matches(repository, query));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool HandleOr(IRepository repository, OrQuery or)
     {
-        return or.Items
-            .Select(q => Matches(repository, q))
-            .Any(result => result);
+        return or.Items.Any(query => Matches(repository, query));
     }
 }
