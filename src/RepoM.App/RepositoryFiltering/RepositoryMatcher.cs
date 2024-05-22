@@ -1,7 +1,9 @@
 namespace RepoM.App.RepositoryFiltering;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
@@ -18,37 +20,16 @@ internal class RepositoryMatcher : IRepositoryMatcher
 
     public bool Matches(IRepository repository, IQuery query)
     {
-        if (query is TrueQuery)
+        return query switch
         {
-            return true;
-        }
-
-        if (query is FalseQuery)
-        {
-            return false;
-        }
-
-        if (query is AndQuery and)
-        {
-            return HandleAnd(repository, and);
-        }
-
-        if (query is OrQuery or)
-        {
-            return HandleOr(repository, or);
-        }
-        
-        if (query is NotQuery not)
-        {
-            return !Matches(repository, not.Item);
-        }
-
-        if (query is TermBase st)
-        {
-            return HandleTerm(repository, st);
-        }
-
-        return true;
+            TrueQuery => true,
+            FalseQuery => false,
+            AndQuery and => HandleAnd(repository, and),
+            OrQuery or => HandleOr(repository, or),
+            NotQuery not => !Matches(repository, not.Item),
+            TermBase st => HandleTerm(repository, st),
+            _ => true,
+        };
     }
 
     private bool HandleTerm(IRepository repository, TermBase termBase)
@@ -67,17 +48,15 @@ internal class RepositoryMatcher : IRepositoryMatcher
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool HandleAnd(IRepository repository, AndQuery and)
     {
-        return and.Items
-            .Select(q => Matches(repository, q))
-            .All(result => result);
+        return Array.TrueForAll(and.Items, query => Matches(repository, query));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool HandleOr(IRepository repository, OrQuery or)
     {
-        return or.Items
-            .Select(q => Matches(repository, q))
-            .Any(result => result);
+        return Array.Exists(or.Items, query => Matches(repository, query));
     }
 }
