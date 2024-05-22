@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -285,7 +284,7 @@ public partial class MainWindow
             }
             else if (action is DeferredSubActionsUserInterfaceRepositoryAction deferredAction)
             {
-                Control? controlItem = await CreateMenuItemNewStyleAsync(action, vm).ConfigureAwait(true);
+                Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
                 if (controlItem != null)
                 {
                     items.Add(controlItem);
@@ -293,7 +292,7 @@ public partial class MainWindow
             }
             else if (action is UserInterfaceRepositoryAction uiAction)
             {
-                Control? controlItem = await CreateMenuItemNewStyleAsync(action, vm).ConfigureAwait(true);
+                Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
                 if (controlItem != null)
                 {
                     items.Add(controlItem);
@@ -582,7 +581,7 @@ public partial class MainWindow
         return item;
     }
 
-    private async Task<Control?> /*MenuItem*/ CreateMenuItemNewStyleAsync(UserInterfaceRepositoryActionBase action, RepositoryViewModel? affectedViews = null)
+    private Control? /*MenuItem*/ CreateMenuItemNewStyleAsync(UserInterfaceRepositoryActionBase action, RepositoryViewModel? affectedViews = null)
     {
         if (action is UserInterfaceSeparatorRepositoryAction)
         {
@@ -641,7 +640,7 @@ public partial class MainWindow
                 
                 foreach (UserInterfaceRepositoryActionBase subAction in await deferredRepositoryAction.GetAsync().ConfigureAwait(true))
                 {
-                    Control? controlItem = await CreateMenuItemNewStyleAsync(subAction).ConfigureAwait(true);
+                    Control? controlItem = CreateMenuItemNewStyleAsync(subAction);
                     if (controlItem == null)
                     {
                         continue;
@@ -681,7 +680,7 @@ public partial class MainWindow
 
                 foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
                 {
-                    Control? controlItem = await CreateMenuItemNewStyleAsync(subAction).ConfigureAwait(true);
+                    Control? controlItem = CreateMenuItemNewStyleAsync(subAction);
                     if (controlItem == null)
                     {
                         continue;
