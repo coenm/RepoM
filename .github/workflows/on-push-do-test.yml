@@ -9,7 +9,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [ windows-2019 ]
+        # windows-latest
     runs-on: ${{ matrix.os }}    
 
     steps:
