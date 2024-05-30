@@ -381,7 +381,12 @@
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>
 							<controls:AcrylicContextMenu x:Name="mnuRepositoryContext" >
-							</controls:AcrylicContextMenu>
+                                <!--<controls:AcrylicContextMenu.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling" />
+                                    </ItemsPanelTemplate>
+                                </controls:AcrylicContextMenu.ItemsPanel>-->
+                            </controls:AcrylicContextMenu>
 						</ListBox.ContextMenu>
 					</ListBox>
 				</DockPanel>
