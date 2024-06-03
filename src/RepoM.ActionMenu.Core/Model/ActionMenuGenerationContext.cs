@@ -15,6 +15,7 @@ using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using Scriban;
+using Scriban.Runtime;
 using FileFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.FileFunctions;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
 using RepositoryFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.RepositoryFunctions;
@@ -130,6 +131,8 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     private static RepoMScriptObject CreateAndInitRepoMScriptObject(IRepository repository)
     {
         var scriptObj = new RepoMScriptObject();
+
+        scriptObj.Import(typeof(InitialFunctions));
 
         scriptObj.SetValue("file", new FileFunctions(), true);
         scriptObj.SetValue("repository", new RepositoryFunctions(repository), true);

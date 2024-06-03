@@ -19,12 +19,6 @@ The following `TagsV2.yaml` file defines three different tags (work, private, gi
 context:
 - type: evaluate-script@1
   content: |-
-    # at this moment, you must leave this function intact
-    # todo, make sure this is not required anymore.
-    func translate(input)
-      ret input
-    end
-
     func remotes_contain_inner(remotes, url_part)
       urls = remotes | array.map "url"
       filtered = array.filter(urls, do 

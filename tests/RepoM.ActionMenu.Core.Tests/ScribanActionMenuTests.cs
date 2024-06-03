@@ -51,12 +51,6 @@ namespace RepoM.ActionMenu.Core.Tests
         private const string TAGS =
             """
             context:
-            - type: evaluate-script@1
-              content: |-
-                func translate(input)
-                  ret 'translate says:' + input;
-                end
-            
             - name: coenm
             - name1: coenm1
               
@@ -123,12 +117,6 @@ namespace RepoM.ActionMenu.Core.Tests
         private const string ACTION_MENU =
             """
             context:
-            - type: evaluate-script@1
-              content: |-
-                func translate(input)
-                  ret 'translate says:' + input;
-                end
-            
             - name: coenm
             - name1: coenm1
               
