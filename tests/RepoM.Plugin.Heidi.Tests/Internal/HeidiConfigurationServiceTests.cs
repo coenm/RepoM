@@ -266,19 +266,21 @@ public class HeidiConfigurationServiceTests
     [Fact]
     public async Task InitializeAsync_ShouldReadHeidiFile_WhenFileExists()
     {
+        var fullFilename = Path.Combine(PATH, FILENAME);
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
-        A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _fileSystem.File.Exists(fullFilename)).Returns(true);
+        A.CallTo(() => _configReader.ParseAsync(fullFilename))
          .Returns(Task.FromResult(_heidiConfigurationResult));
 
         // act
         await _sut.InitializeAsync();
-        mre.WaitOne(TimeSpan.FromSeconds(2));
+        var updated = mre.WaitOne(TimeSpan.FromSeconds(5));
 
         // assert
+        updated.Should().BeTrue("we expect an event to happen.");
         A.CallTo(() => _fileSystem.FileSystemWatcher.New(A<string>._, A<string>._)).MustHaveHappened();
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _configReader.ParseAsync(fullFilename)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
