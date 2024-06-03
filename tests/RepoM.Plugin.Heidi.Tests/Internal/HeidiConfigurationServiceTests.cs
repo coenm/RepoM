@@ -24,6 +24,8 @@ public class HeidiConfigurationServiceTests
 {
     private const string FILENAME = "heidi.portable.txt";
     private const string PATH = "C:\\heidi\\";
+    private readonly string _fullFilename = Path.Combine(PATH, FILENAME);
+    private readonly TimeSpan _initTimeout = TimeSpan.FromSeconds(30);
 
     private readonly IFileSystem _fileSystem;
     private readonly IHeidiPortableConfigReader _configReader;
@@ -55,7 +57,7 @@ public class HeidiConfigurationServiceTests
         A.CallTo(() => _fileSystem.FileSystemWatcher.New(A<string>._, A<string>._)).Returns(_fileWatcher);
         A.CallTo(() => _heidiSettings.ConfigFilename).Returns(FILENAME);
         A.CallTo(() => _heidiSettings.ConfigPath).Returns(PATH);
-        A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
+        A.CallTo(() => _fileSystem.File.Exists(_fullFilename)).Returns(true);
 
         A.CallTo(() => _repository.Remotes)
          .Returns(new List<Remote>
@@ -123,11 +125,11 @@ public class HeidiConfigurationServiceTests
             var hre = A.Dummy<IHeidiRepositoryExtractor>();
             var hs = A.Dummy<IHeidiSettings>();
 
-            yield return new object[] { l, fs, hpcr, hre, null!, };
-            yield return new object[] { l, fs, hpcr, null!, hs, };
-            yield return new object[] { l, fs, null!, hre, hs, };
-            yield return new object[] { l, null!, hpcr, hre, hs, };
-            yield return new object[] { null!, fs, hpcr, hre, hs, };
+            yield return [l, fs, hpcr, hre, null!,];
+            yield return [l, fs, hpcr, null!, hs,];
+            yield return [l, fs, null!, hre, hs,];
+            yield return [l, null!, hpcr, hre, hs,];
+            yield return [null!, fs, hpcr, hre, hs,];
         }
     }
 
@@ -153,13 +155,13 @@ public class HeidiConfigurationServiceTests
     public async Task GetAllDatabases_ShouldReturnDatabases_WhenInitializedCompleted()
     {
         // arrange
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _configReader.ParseAsync(_fullFilename))
          .Returns(Task.FromResult(_heidiConfigurationResult));
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
 
         await _sut.InitializeAsync();
-        mre.WaitOne();
+        mre.WaitOne(_initTimeout);
 
         // act
         ImmutableArray<HeidiSingleDatabaseConfiguration> result = _sut.GetAllDatabases();
@@ -174,8 +176,8 @@ public class HeidiConfigurationServiceTests
         // arrange
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
-        A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _fileSystem.File.Exists(_fullFilename)).Returns(true);
+        A.CallTo(() => _configReader.ParseAsync(_fullFilename))
          .Returns(Task.FromResult(_heidiConfigurationResult));
 
         RepoHeidi? aRef;
@@ -191,17 +193,17 @@ public class HeidiConfigurationServiceTests
              })
          .AssignsOutAndRefParametersLazily((HeidiSingleDatabaseConfiguration config, RepoHeidi? output) =>
              {
-                 var matches = _heidis.Where(x => x.HeidiKey.Equals(config.Key)).ToArray();
+                 RepoHeidi[] matches = _heidis.Where(x => x.HeidiKey.Equals(config.Key)).ToArray();
                  if (matches.Length > 0)
                  {
-                     return new object[] { matches.First(), };
+                     return [matches.First(),];
                  }
-                 return new object[] { null!, };
+                 return [null!,];
 
              });
 
         await _sut.InitializeAsync();
-        mre.WaitOne(TimeSpan.FromSeconds(2));
+        mre.WaitOne(_initTimeout);
 
         // act
         IEnumerable<RepositoryHeidiConfiguration> result = _sut.GetByRepository(_repository);
@@ -217,20 +219,20 @@ public class HeidiConfigurationServiceTests
     {
         // arrange
         A.CallTo(() => _repository.Remotes)
-         .Returns(new List<Remote>
-             {
+         .Returns(
+             [
                  new("bb", "http://github.com/a/b.git"),
                  new(originKey, "http://github.com/coenm/Abcd.git"),
-             });
+             ]);
 
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
-        A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _fileSystem.File.Exists(_fullFilename)).Returns(true);
+        A.CallTo(() => _configReader.ParseAsync(_fullFilename))
          .Returns(Task.FromResult(_heidiConfigurationResult));
 
         await _sut.InitializeAsync();
-        mre.WaitOne(TimeSpan.FromSeconds(2));
+        mre.WaitOne(_initTimeout);
 
         // act
         IEnumerable<RepositoryHeidiConfiguration> result = _sut.GetByRepository(_repository);
@@ -249,12 +251,12 @@ public class HeidiConfigurationServiceTests
         // arrange
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
-        A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _fileSystem.File.Exists(_fullFilename)).Returns(true);
+        A.CallTo(() => _configReader.ParseAsync(_fullFilename))
          .Returns(Task.FromResult(_heidiConfigurationResult));
 
         await _sut.InitializeAsync();
-        mre.WaitOne(TimeSpan.FromSeconds(2));
+        mre.WaitOne(_initTimeout);
 
         // act
         IEnumerable<RepositoryHeidiConfiguration> result = _sut.GetByKey(key!);
@@ -268,17 +270,18 @@ public class HeidiConfigurationServiceTests
     {
         var mre = new ManualResetEvent(false);
         _sut.ConfigurationUpdated += (_, _) => mre.Set();
-        A.CallTo(() => _fileSystem.File.Exists(Path.Combine(PATH, FILENAME))).Returns(true);
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME)))
+        A.CallTo(() => _fileSystem.File.Exists(_fullFilename)).Returns(true);
+        A.CallTo(() => _configReader.ParseAsync(_fullFilename))
          .Returns(Task.FromResult(_heidiConfigurationResult));
 
         // act
         await _sut.InitializeAsync();
-        mre.WaitOne(TimeSpan.FromSeconds(2));
+        var updated = mre.WaitOne(_initTimeout);
 
         // assert
+        updated.Should().BeTrue("we expect an event to happen.");
         A.CallTo(() => _fileSystem.FileSystemWatcher.New(A<string>._, A<string>._)).MustHaveHappened();
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _configReader.ParseAsync(_fullFilename)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -322,13 +325,12 @@ public class HeidiConfigurationServiceTests
 
         // act
         _changeEventDummyFileSystemWatcher.Change(PATH, FILENAME + "dummy");
-        await Task.Delay(5000);
+        await Task.Delay(TimeSpan.FromSeconds(10));
 
         // assert
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustNotHaveHappened();
+        A.CallTo(() => _configReader.ParseAsync(_fullFilename)).MustNotHaveHappened();
     }
 
-    // fragille test, failed once on build server
     [Fact]
     public async Task Events_ShouldBeBundled_WhenHappeningWithinWindow()
     {
@@ -341,7 +343,7 @@ public class HeidiConfigurationServiceTests
              Task.FromResult(_heidiConfigurationResult));
 
         await _sut.InitializeAsync();
-        mre.WaitOne(TimeSpan.FromSeconds(1));
+        mre.WaitOne(_initTimeout);
         Fake.ClearRecordedCalls(_configReader);
 
         // act
@@ -351,10 +353,10 @@ public class HeidiConfigurationServiceTests
         await Task.Delay(100);
         _changeEventDummyFileSystemWatcher.Change(PATH, FILENAME);
 
-        await Task.Delay(5000);
+        await Task.Delay(TimeSpan.FromSeconds(10));
 
         // assert
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _configReader.ParseAsync(_fullFilename)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -367,7 +369,7 @@ public class HeidiConfigurationServiceTests
          .Returns(Task.FromResult(new List<HeidiSingleDatabaseConfiguration>()));
 
         await _sut.InitializeAsync();
-        mre.WaitOne(TimeSpan.FromSeconds(1));
+        mre.WaitOne(_initTimeout);
         
         Fake.ClearRecordedCalls(_configReader);
 
@@ -375,10 +377,10 @@ public class HeidiConfigurationServiceTests
         _sut.Dispose();
 
         _changeEventDummyFileSystemWatcher.Change(PATH, FILENAME);
-        await Task.Delay(5000);
+        await Task.Delay(TimeSpan.FromSeconds(10));
 
         // assert
-        A.CallTo(() => _configReader.ParseAsync(Path.Combine(PATH, FILENAME))).MustNotHaveHappened();
+        A.CallTo(() => _configReader.ParseAsync(_fullFilename)).MustNotHaveHappened();
     }
 
     [Fact]

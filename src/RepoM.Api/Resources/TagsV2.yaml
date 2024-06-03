@@ -1,11 +1,6 @@
 context:
 - type: evaluate-script@1
   content: |-
-    # at this moment, you must leave this function intact
-    func translate(input)
-      ret input
-    end
-
     func remotes_contain_inner(remotes, url_part)
       urls = remotes | array.map "url"
       filtered = array.filter(urls, do 

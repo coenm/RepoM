@@ -1,11 +1,6 @@
 context:
 - type: evaluate-script@1
   content: |-
-    # at this moment, you must leave this function intact
-    func translate(input)
-      ret input
-    end
-
     func is_null(input)
       ret input == null
     end
