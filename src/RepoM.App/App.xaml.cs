@@ -21,7 +21,6 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 using RepoM.App.Services;
 using Container = SimpleInjector.Container;
 using RepoM.App.Services.HotKey;
-using Serilog.Enrichers;
 using RepoM.Api;
 
 /// <summary>

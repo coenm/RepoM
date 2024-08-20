@@ -105,7 +105,7 @@ stages:
             command: restore
             projects: '**/*.csproj'
 
-        - task: SonarCloudPrepare@1
+        - task: SonarCloudPrepare@2
           displayName: Prepare analysis on SonarCloud
           inputs:
             SonarCloud: SonarCloudGithub
@@ -135,8 +135,8 @@ stages:
               /p:ExcludeByAttribute=CompilerGenerated 
             publishTestResults: true
 
-        - task: SonarCloudAnalyze@1
+        - task: SonarCloudAnalyze@2
           displayName: Run Code Analysis
 
-        - task: SonarCloudPublish@1
+        - task: SonarCloudPublish@2
           displayName: Publish Quality Gate Result
