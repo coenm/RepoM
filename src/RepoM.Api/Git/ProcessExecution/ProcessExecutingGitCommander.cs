@@ -14,7 +14,8 @@ public partial class ProcessExecutingGitCommander : IGitCommander
 {
     private readonly ILogger _logger;
     private const string GIT_EXE = "git";
-    
+    private const int GIT_PROCESS_TIMEOUT_MS = 10_000;
+
     /// <summary>
     /// Starting with version 1.7.10, Git uses UTF-8.
     /// Use this encoding for Git input and output.
@@ -98,8 +99,6 @@ public partial class ProcessExecutingGitCommander : IGitCommander
 
     private static string Start(IRepository repository, string[] command, Action<ProcessStartInfo> initialize)
     {
-        var timeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
-
         var psi = new ProcessStartInfo
             {
                 FileName = GIT_EXE,
@@ -125,15 +124,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
             {
                 if (e.Data == null)
                 {
-                    try
-                    {
-                        outputWaitHandle.Set();
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        // if the wait handle was disposed,
-                        // we can ignore the call to .Set()
-                    }
+                    TrySetAutoResetEvent(outputWaitHandle);
                 }
                 else
                 {
@@ -145,15 +136,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
             {
                 if (e.Data == null)
                 {
-                    try
-                    {
-                        errorWaitHandle.Set();
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        // if the wait handle was disposed,
-                        // we can ignore the call to .Set()
-                    }
+                    TrySetAutoResetEvent(errorWaitHandle);
                 }
                 else
                 {
@@ -167,9 +150,9 @@ public partial class ProcessExecutingGitCommander : IGitCommander
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
 
-            if (process.WaitForExit(timeout) &&
-                outputWaitHandle.WaitOne(timeout) &&
-                errorWaitHandle.WaitOne(timeout))
+            if (process.WaitForExit(GIT_PROCESS_TIMEOUT_MS) &&
+                outputWaitHandle.WaitOne(GIT_PROCESS_TIMEOUT_MS) &&
+                errorWaitHandle.WaitOne(GIT_PROCESS_TIMEOUT_MS))
             {
                 // Process completed. Check process.ExitCode here.
                 return output.ToString();
@@ -180,7 +163,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
         }
         finally
         {
-            if (!process.WaitForExit((int)TimeSpan.FromSeconds(10).TotalMilliseconds))
+            if (!process.WaitForExit(GIT_PROCESS_TIMEOUT_MS))
             {
                 throw new GitCommandException("Command did not terminate.");
             }
@@ -201,12 +184,25 @@ public partial class ProcessExecutingGitCommander : IGitCommander
     {
         return arg.Contains(' ') ? "\"" + arg + "\"" : arg;
     }
-    
+
     private static void AssertValidCommand(string[] command)
     {
         if (command.Length < 1 || !_validCommandName.IsMatch(command[0]))
         {
-            throw new Exception("bad git command: " + (command.Length == 0 ? "" : command[0]));
+            throw new GitCommandException("bad git command: " + (command.Length == 0 ? "" : command[0]));
+        }
+    }
+
+    private static void TrySetAutoResetEvent(AutoResetEvent handle)
+    {
+        try
+        {
+            handle.Set();
+        }
+        catch (ObjectDisposedException)
+        {
+            // if the wait handle was disposed,
+            // we can ignore the call to .Set()
         }
     }
 
