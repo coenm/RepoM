@@ -16,6 +16,6 @@ The following default configuration is used:
 
 Properties:
 
-- `PersonalAccessToken`: Personal access token (PAT) to access Azure Devops. The PAT should be granted access to `todo` rights.
+- `PersonalAccessToken`: Personal access token (PAT) to access Azure Devops. The PAT should be granted access to read pull requests.
 To create a PAT, goto `https://dev.azure.com/[my-organisation]/_usersSettings/tokens`.
-- `BaseUrl`: The base url of azure devops for your organisation (ie. `https://dev.azure.com/[my-organisation]/`).
+- `BaseUrl`: The base url of azure devops for your organisation (i.e. `https://dev.azure.com/[my-organisation]/`).
