@@ -141,10 +141,6 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
-    public double? MenuWidth => Settings.MenuSize?.Width;
-
-    public double? MenuHeight => Settings.MenuSize?.Height;
-
     public void UpdateMenuSize(string resolution, MenuSize size)
     {
         Settings.PreferredMenuSizes[resolution] = new Size
@@ -152,8 +148,6 @@ public class FileAppSettingsService : IAppSettingsService
                 Height = size.MenuHeight,
                 Width = size.MenuWidth,
             };
-
-        Settings.MenuSize = null;
 
         NotifyChange();
         Save();
@@ -237,22 +231,12 @@ public class FileAppSettingsService : IAppSettingsService
 
         try
         {
-            FixSettingsByRemovingObsoleteProps();
             var jsonString = JsonConvert.SerializeObject(_settings, _jsonSerializationSettings);
             _fileSystem.File.WriteAllText(file, jsonString);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Could not save configuration to file '{File}'. {Message}", file, ex.Message);
-        }
-    }
-
-    [Obsolete("This fix will be removed when EnabledSearchProviders has been removed.")]
-    private void FixSettingsByRemovingObsoleteProps()
-    {
-        if (_settings != null)
-        {
-            _settings.EnabledSearchProviders = null;
         }
     }
 

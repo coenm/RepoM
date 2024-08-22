@@ -44,16 +44,6 @@ internal class WindowSizeService : IDisposable
         }
         else
         {
-            if (_appSettings.MenuWidth is > 0)
-            {
-                _mainWindow.Width = _appSettings.MenuWidth.Value;
-            }
-            
-            if (_appSettings.MenuHeight is > 0)
-            {
-                _mainWindow.Height = _appSettings.MenuHeight.Value;
-            }
-
             _appSettings.UpdateMenuSize(
                 _currentResolution,
                 new MenuSize

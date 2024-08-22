@@ -39,9 +39,6 @@ public sealed class AppSettings
     [UiConfigured]
     public bool PruneOnFetch { get; set; } = false;
 
-    [Obsolete("Will be removed in next version")]
-    public Size? MenuSize { get; set; }
-
     /// <summary>
     /// Preferred menu sizes of the RepoM. Will be set when window is resized.
     /// </summary>
@@ -54,9 +51,6 @@ public sealed class AppSettings
     [ManualConfigured]
     public List<string> ReposRootDirectories { get; set; } = new();
 
-    [Obsolete("Will be removed in next version")]
-    public List<string>? EnabledSearchProviders { get; set; }
-
     /// <summary>
     /// List of plugins.
     /// </summary>
@@ -67,12 +61,10 @@ public sealed class AppSettings
         {
             AutoFetchMode = AutoFetchMode.Off,
             PruneOnFetch = false,
-            MenuSize = null,
             ReposRootDirectories = new(),
-            EnabledSearchProviders = null,
             Plugins = [],
             PreferredMenuSizes = new(),
-    };
+        };
 }
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
