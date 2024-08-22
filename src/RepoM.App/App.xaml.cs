@@ -21,7 +21,6 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 using RepoM.App.Services;
 using Container = SimpleInjector.Container;
 using RepoM.App.Services.HotKey;
-using Serilog.Enrichers;
 using RepoM.Api;
 
 /// <summary>
@@ -134,7 +133,7 @@ public partial class App : Application
         LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
             .Enrich.WithThreadId()
             .Enrich.WithThreadName()
-            .Enrich.WithProperty(ThreadNameEnricher.ThreadNamePropertyName, "BG")
+            .Enrich.WithProperty("ThreadName", "BG")
             .ReadFrom.Configuration(config);
 
         Logger logger = loggerConfiguration.CreateLogger();
