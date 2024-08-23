@@ -63,7 +63,7 @@ internal sealed class RepositoryActionDummyAbcV1 : IMenuAction, IContext
     public Text ToBranch { get; set; } = null!;
 
     /// <summary>
-    /// List of reviewer ids. The id should be a valid Azure DevOps user id (ie. GUID).
+    /// List of reviewer ids. The id should be a valid Azure DevOps user id (i.e. GUID).
     /// </summary>
     public List<Text> ReviewerIds { get; set; } = new();
 

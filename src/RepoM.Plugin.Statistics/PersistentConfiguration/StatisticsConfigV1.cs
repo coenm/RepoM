@@ -7,7 +7,7 @@ using System;
 public class StatisticsConfigV1
 {
     /// <summary>
-    /// Timespan for buffered events before making them persistant (ie. `00:05:00` for five minutes). Must be greater then or equal to `00:00:10` (10 seconds).
+    /// Timespan for buffered events before making them persistant (i.e. `00:05:00` for five minutes). Must be greater then or equal to `00:00:10` (10 seconds).
     /// </summary>
     public TimeSpan? PersistenceBuffer { get; init; }
 

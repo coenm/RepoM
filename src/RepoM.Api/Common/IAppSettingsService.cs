@@ -23,12 +23,6 @@ public interface IAppSettingsService
 
     bool PruneOnFetch { get; set; }
 
-    [Obsolete("Will be removed in next version")]
-    double? MenuWidth { get; }
-
-    [Obsolete("Will be removed in next version")]
-    double? MenuHeight { get; }
-
     void UpdateMenuSize(string resolution, MenuSize size);
 
     bool TryGetMenuSize(string resolution, [NotNullWhen(true)] out MenuSize? size);
@@ -46,7 +40,7 @@ public interface IAppSettingsService
     void RegisterInvalidationHandler(Action handler);
 }
 
-public struct MenuSize
+public readonly struct MenuSize
 {
     public double MenuWidth { get; init; }
 
