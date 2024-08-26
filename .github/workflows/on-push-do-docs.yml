@@ -6,15 +6,18 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 8.0.x
+
     - name: Run MarkdownSnippets
       run: |
         dotnet tool install --global --version 27.0.2 MarkdownSnippets.Tool
         mdsnippets ${GITHUB_WORKSPACE}
       shell: bash
+      
     - name: Push changes
       run: |
         git config --local user.email "action@github.com"
