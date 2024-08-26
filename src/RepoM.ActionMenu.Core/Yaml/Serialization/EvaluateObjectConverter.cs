@@ -22,7 +22,7 @@ internal class EvaluateObjectConverter : IYamlTypeConverter
         return typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo());
     }
 
-    public object ReadYaml(IParser parser, Type type)
+    public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
     {
         ParsingEvent current = parser.Current ?? throw new YamlException("No current event.");
 
@@ -47,7 +47,7 @@ internal class EvaluateObjectConverter : IYamlTypeConverter
         return obj;
     }
 
-    public void WriteYaml(IEmitter emitter, object? value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
         var stringValue = (value as EvaluateObjectBase)?.Value;
         emitter.Emit(string.IsNullOrEmpty(stringValue)
