@@ -46,9 +46,9 @@ stages:
           displayName: Update git submodules
 
         - task: UseDotNet@2
-          displayName: "Use dotnet sdk 8.0.100"
+          displayName: "Use dotnet sdk 8.0.401"
           inputs:
-            version: 8.0.100
+            version: 8.0.401
             includePreviewVersions: false
 
         - script: dotnet --info
@@ -144,15 +144,6 @@ stages:
         - task: SonarCloudPublish@2
           displayName: Publish Quality Gate Result
 
-        # https://docs.codecov.com/docs/codecov-uploader
-        # todo fix path
-        # ./codecov.exe -f "../**/coverag*.cobertura.xml"
-        # - pwsh: |
-        #     Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-        #     ./codecov.exe -f "$(Agent.TempDirectory)/**/coverage.cobertura.xml"
-        #   displayName: Export coverage to CodeCov
-        #   name: CodeCov
-
         - pwsh: |
             dotnet tool install --tool-path . dotnet-reportgenerator-globaltool
             ./reportgenerator "-reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml" "-targetdir:$(Agent.TempDirectory)" "-reporttypes:Cobertura"
@@ -163,13 +154,7 @@ stages:
           displayName: Publish code coverage to devops
           inputs:
             codeCoverageTool: Cobertura
-            summaryFileLocation: '$(Agent.TempDirectory)/Cobertura.xml'       
-
-        - pwsh: |
-            Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-            ./codecov.exe -f "$(Agent.TempDirectory)\Cobertura.xml"
-          displayName: Export coverage to CodeCov
-          name: CodeCov               
+            summaryFileLocation: '$(Agent.TempDirectory)/Cobertura.xml'
 
         - task: DotNetCoreCLI@2
           displayName: Dotnet Publish RepoM
