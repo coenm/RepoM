@@ -25,9 +25,9 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
     }
 
-    public bool Deserialize(IParser reader, Type expectedType, Func<IParser, Type, object?> nestedObjectDeserializer, out object? value)
+    public bool Deserialize(IParser reader, Type expectedType, Func<IParser, Type, object?> nestedObjectDeserializer, out object? value, ObjectDeserializer rootDeserializer)
     {
-        if (!_nodeDeserializer.Deserialize(reader, expectedType, nestedObjectDeserializer, out value))
+        if (!_nodeDeserializer.Deserialize(reader, expectedType, nestedObjectDeserializer, out value, rootDeserializer))
         {
             return false;
         }

@@ -35,7 +35,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Scriban" Version="5.10.0" />
-    <PackageReference Include="YamlDotNet" Version="15.3.0" />
+    <PackageReference Include="YamlDotNet" Version="16.0.0" />
     <PackageReference Include="EasyTestFile.XUnit" Version="2.1.5-alpha" />
   </ItemGroup>
 

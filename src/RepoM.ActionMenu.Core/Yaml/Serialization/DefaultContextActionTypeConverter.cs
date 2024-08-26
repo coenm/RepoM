@@ -20,7 +20,7 @@ internal class DefaultContextActionTypeConverter : IYamlTypeConverter
         return type == typeof(DefaultV1Type);
     }
 
-    public object ReadYaml(IParser parser, Type type)
+    public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
     {
         if (parser.Current is not MappingStart)
         {
@@ -46,9 +46,9 @@ internal class DefaultContextActionTypeConverter : IYamlTypeConverter
             };
     }
 
-    public void WriteYaml(IEmitter emitter, object? value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type type, ObjectSerializer serializer)
     {
-        throw new NotImplementedException();
+    throw new NotImplementedException();
     }
 
     private static string GetStringFromScalar(IParser parser)
