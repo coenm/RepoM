@@ -35,17 +35,10 @@ stages:
         - script: git submodule update --init --recursive
           displayName: Update git submodules
 
-        # required for mdsnippets?!
         - task: UseDotNet@2
-          displayName: "Use dotnet sdk 6.0.x"
+          displayName: "Use dotnet sdk 8.0.401"
           inputs:
-            version: 6.0.x
-            includePreviewVersions: false
-
-        - task: UseDotNet@2
-          displayName: "Use dotnet sdk 8.0.100"
-          inputs:
-            version: 8.0.100
+            version: 8.0.401
             includePreviewVersions: false
 
         - script: dotnet --info
@@ -73,7 +66,7 @@ stages:
             checkLatest: true
 
         - pwsh: |
-            dotnet tool install --global --version 25.1.0 MarkdownSnippets.Tool 
+            dotnet tool install --global --version 27.0.2 MarkdownSnippets.Tool 
             mdsnippets 
             
             $changedLines = git status --porcelain=v1
