@@ -32,7 +32,7 @@ For this example, the current repository branch name is `feature/abcdefghi` and 
 Text uses the following scriban lexer and parser options:
 
 <!-- snippet: DefaultLexerAndParserOptions_DefaultParserOptions -->
-<a id='snippet-defaultlexerandparseroptions_defaultparseroptions'></a>
+<a id='snippet-DefaultLexerAndParserOptions_DefaultParserOptions'></a>
 ```cs
 public static readonly ParserOptions DefaultParserOptions = new()
 {
@@ -41,11 +41,11 @@ public static readonly ParserOptions DefaultParserOptions = new()
     ParseFloatAsDecimal = default,
 };
 ```
-<sup><a href='/src/RepoM.ActionMenu.Core/Model/Lexers.cs#L24-L31' title='Snippet source file'>snippet source</a> | <a href='#snippet-defaultlexerandparseroptions_defaultparseroptions' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/RepoM.ActionMenu.Core/Model/Lexers.cs#L24-L31' title='Snippet source file'>snippet source</a> | <a href='#snippet-DefaultLexerAndParserOptions_DefaultParserOptions' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 <!-- snippet: DefaultLexerAndParserOptions_MixedLexer -->
-<a id='snippet-defaultlexerandparseroptions_mixedlexer'></a>
+<a id='snippet-DefaultLexerAndParserOptions_MixedLexer'></a>
 ```cs
 public static readonly LexerOptions MixedLexer = new()
 {
@@ -54,7 +54,7 @@ public static readonly LexerOptions MixedLexer = new()
     Mode = ScriptMode.Default,
 };
 ```
-<sup><a href='/src/RepoM.ActionMenu.Core/Model/Lexers.cs#L15-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-defaultlexerandparseroptions_mixedlexer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/RepoM.ActionMenu.Core/Model/Lexers.cs#L15-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-DefaultLexerAndParserOptions_MixedLexer' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Predicate
@@ -78,7 +78,7 @@ A predicate is a scriban expression resulting in a boolean. Beause it is an expr
 Predicate uses the following scriban lexer and parser options:
 
 <!-- snippet: DefaultLexerAndParserOptions_DefaultParserOptions -->
-<a id='snippet-defaultlexerandparseroptions_defaultparseroptions'></a>
+<a id='snippet-DefaultLexerAndParserOptions_DefaultParserOptions'></a>
 ```cs
 public static readonly ParserOptions DefaultParserOptions = new()
 {
@@ -87,11 +87,11 @@ public static readonly ParserOptions DefaultParserOptions = new()
     ParseFloatAsDecimal = default,
 };
 ```
-<sup><a href='/src/RepoM.ActionMenu.Core/Model/Lexers.cs#L24-L31' title='Snippet source file'>snippet source</a> | <a href='#snippet-defaultlexerandparseroptions_defaultparseroptions' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/RepoM.ActionMenu.Core/Model/Lexers.cs#L24-L31' title='Snippet source file'>snippet source</a> | <a href='#snippet-DefaultLexerAndParserOptions_DefaultParserOptions' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 <!-- snippet: DefaultLexerAndParserOptions_ScriptOnlyLexer -->
-<a id='snippet-defaultlexerandparseroptions_scriptonlylexer'></a>
+<a id='snippet-DefaultLexerAndParserOptions_ScriptOnlyLexer'></a>
 ```cs
 public static readonly LexerOptions ScriptOnlyLexer = new()
 {
@@ -99,5 +99,5 @@ public static readonly LexerOptions ScriptOnlyLexer = new()
     Mode = ScriptMode.ScriptOnly,
 };
 ```
-<sup><a href='/src/RepoM.ActionMenu.Core/Model/Lexers.cs#L7-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-defaultlexerandparseroptions_scriptonlylexer' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/RepoM.ActionMenu.Core/Model/Lexers.cs#L7-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-DefaultLexerAndParserOptions_ScriptOnlyLexer' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
