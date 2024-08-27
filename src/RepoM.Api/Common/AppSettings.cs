@@ -37,7 +37,7 @@ public sealed class AppSettings
     /// This option determines if RepoM should prune branches when fetching from git.
     /// </summary>
     [UiConfigured]
-    public bool PruneOnFetch { get; set; } = false;
+    public bool PruneOnFetch { get; set; }
 
     /// <summary>
     /// Preferred menu sizes of the RepoM. Will be set when window is resized.

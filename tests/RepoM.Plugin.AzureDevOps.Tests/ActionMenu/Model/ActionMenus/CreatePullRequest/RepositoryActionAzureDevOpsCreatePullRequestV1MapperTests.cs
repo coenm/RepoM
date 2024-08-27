@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
-using RepoM.ActionMenu.Interface.YamlModel.Templating;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.ActionMenu.Model.ActionMenus.CreatePullRequest;
 using VerifyXunit;
@@ -91,7 +90,7 @@ public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
         const string TO_BRANCH = "feature/abc-def";
         _action.ToBranch = TO_BRANCH;
         A.CallTo(() => _repository.HasLocalChanges).Returns(false);
-        A.CallTo(() => _repository.Branches).Returns(new[] { "feature/ABC-def", "feature/abc-defx", "main", });
+        A.CallTo(() => _repository.Branches).Returns(["feature/ABC-def", "feature/abc-defx", "main",]);
         A.CallTo(() => _context.RenderStringAsync(A<string>._)).ReturnsLazily(call => Task.FromResult(string.Empty + call.Arguments[0]));
         
         // act
@@ -108,9 +107,9 @@ public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
         const string TO_BRANCH = "feature/abc-def";
         _action.ToBranch = TO_BRANCH;
         A.CallTo(() => _repository.HasLocalChanges).Returns(false);
-        A.CallTo(() => _repository.Branches).Returns(new[] { "feature/abc-def", });
+        A.CallTo(() => _repository.Branches).Returns(["feature/abc-def",]);
         A.CallTo(() => _repository.CurrentBranch).Returns(TO_BRANCH);
-        A.CallTo(() => _context.RenderStringAsync((A<string>._))).ReturnsLazily(call => Task.FromResult(string.Empty + call.Arguments[0]));
+        A.CallTo(() => _context.RenderStringAsync(A<string>._)).ReturnsLazily(call => Task.FromResult(string.Empty + call.Arguments[0]));
         
         // act
         List<UserInterfaceRepositoryActionBase> result = await _sut.MapAsync(_action, _context, _repository).ToListAsync();
@@ -128,7 +127,7 @@ public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
         _action.ToBranch = TO_BRANCH;
         _action.ProjectId = PROJECT_ID;
         A.CallTo(() => _repository.HasLocalChanges).Returns(false);
-        A.CallTo(() => _repository.Branches).Returns(new[] { "main", });
+        A.CallTo(() => _repository.Branches).Returns(["main",]);
         A.CallTo(() => _repository.CurrentBranch).Returns("feature/x");
         A.CallTo(() => _context.RenderStringAsync(A<string>._)).ReturnsLazily(call => Task.FromResult(string.Empty + call.Arguments[0]));
         
@@ -150,12 +149,12 @@ public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
         _action.DraftPr = "false";
         _action.IncludeWorkItems = "false";
         _action.OpenInBrowser = "true";
-        _action.ReviewerIds = new List<Text> { "def", "abc", };
+        _action.ReviewerIds = ["def", "abc",];
         _action.PrTitle = "pr title";
         _action.Name = "pr name";
 
         A.CallTo(() => _repository.HasLocalChanges).Returns(false);
-        A.CallTo(() => _repository.Branches).Returns(new[] { "main", });
+        A.CallTo(() => _repository.Branches).Returns(["main",]);
         A.CallTo(() => _repository.CurrentBranch).Returns("feature/x");
         A.CallTo(() => _context.RenderStringAsync(A<string>._)).ReturnsLazily(call => Task.FromResult("evaluated: " + call.Arguments[0]));
         A.CallTo(() => _context.RenderStringAsync(TO_BRANCH)).ReturnsLazily(call => Task.FromResult(TO_BRANCH));
@@ -178,7 +177,7 @@ public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
         _action.DraftPr = "false";
         _action.IncludeWorkItems = "false";
         _action.OpenInBrowser = "true";
-        _action.ReviewerIds = new List<Text> { "def", "abc", };
+        _action.ReviewerIds = ["def", "abc",];
         _action.PrTitle = "pr title";
         _action.Name = "pr name";
         _action.AutoComplete = new AutoCompleteOptionsV1
@@ -189,7 +188,7 @@ public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
             };
 
         A.CallTo(() => _repository.HasLocalChanges).Returns(false);
-        A.CallTo(() => _repository.Branches).Returns(new[] { "main", });
+        A.CallTo(() => _repository.Branches).Returns(["main",]);
         A.CallTo(() => _repository.CurrentBranch).Returns("feature/x");
         A.CallTo(() => _context.RenderStringAsync(A<string>._)).ReturnsLazily(call => Task.FromResult("evaluated: " + call.Arguments[0]));
         A.CallTo(() => _context.RenderStringAsync(TO_BRANCH)).ReturnsLazily(call => Task.FromResult(TO_BRANCH));
