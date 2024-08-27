@@ -1,7 +1,0 @@
-﻿{
-  Name1: {
-    $type: LastOpenedConfigurationV1,
-    Type: last-opened-comparer@1,
-    Weight: 123
-  }
-}

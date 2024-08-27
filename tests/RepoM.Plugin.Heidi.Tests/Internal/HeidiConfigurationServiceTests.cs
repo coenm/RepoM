@@ -23,7 +23,7 @@ using Xunit;
 public class HeidiConfigurationServiceTests
 {
     private const string FILENAME = "heidi.portable.txt";
-    private const string PATH = "C:\\heidi\\";
+    private const string PATH = @"C:\heidi\";
     private readonly string _fullFilename = Path.Combine(PATH, FILENAME);
     private readonly TimeSpan _initTimeout = TimeSpan.FromSeconds(30);
 
@@ -60,14 +60,13 @@ public class HeidiConfigurationServiceTests
         A.CallTo(() => _fileSystem.File.Exists(_fullFilename)).Returns(true);
 
         A.CallTo(() => _repository.Remotes)
-         .Returns(new List<Remote>
-            {
-                new("bb", "http://github.com/a/b.git"),
-                new("origin", "http://github.com/coenm/RepoM.git"),
-            });
+         .Returns([
+                 new("bb", "http://github.com/a/b.git"),
+                 new("origin", "http://github.com/coenm/RepoM.git"),
+             ]);
 
-        _heidis = new List<RepoHeidi>
-            {
+        _heidis =
+            [
                 new RepoHeidi("OSS/Github/RepoM-P")
                     {
                         Name = "RepoM Prod",
@@ -75,22 +74,27 @@ public class HeidiConfigurationServiceTests
                         Tags = [],
                         Repository = "RepoM",
                     },
-                new RepoHeidi("OSS/Github/RepoM-D")                    {
+
+                new RepoHeidi("OSS/Github/RepoM-D")
+                    {
                         Name = "RepoM Dev!!",
                         Order = 5,
                         Tags = [],
                         Repository = "RepoM",
                     },
-                new RepoHeidi("OSS/Abc")                    {
+
+                new RepoHeidi("OSS/Abc")
+                    {
                         Name = "Abc Prod",
                         Order = 0,
                         Tags = [],
                         Repository = "Abc",
                     },
-            };
 
-        _heidiConfigurationResult = new List<HeidiSingleDatabaseConfiguration>
-            {
+            ];
+
+        _heidiConfigurationResult =
+            [
                 new HeidiSingleDatabaseConfiguration("OSS/Github/RepoM-P")
                     {
                         // Order = 23,
@@ -98,6 +102,7 @@ public class HeidiConfigurationServiceTests
                         // Name = "RepoM Prod",
                         // Repositories = new []{ "RepoM", },
                     },
+
                 new HeidiSingleDatabaseConfiguration("OSS/Github/RepoM-D")
                     {
                         // Order = 5,
@@ -105,6 +110,7 @@ public class HeidiConfigurationServiceTests
                         // Name = "RepoM Dev!!",
                         // Repositories = new []{ "RepoM", "RepomTest", },
                     },
+
                 new HeidiSingleDatabaseConfiguration("OSS/Abc")
                     {
                         // Order = 0,
@@ -112,7 +118,8 @@ public class HeidiConfigurationServiceTests
                         // Name = "Abc Prod",
                         // Repositories = new []{ "Abc", },
                     },
-            };
+
+            ];
     }
 
     public static IEnumerable<object[]> CtorNullArguments
@@ -320,7 +327,11 @@ public class HeidiConfigurationServiceTests
          .Returns(Task.FromResult(new List<HeidiSingleDatabaseConfiguration>()));
 
         await _sut.InitializeAsync();
-        mre.WaitOne(TimeSpan.FromSeconds(1));
+        var poked = mre.WaitOne(TimeSpan.FromSeconds(5));
+        if (poked)
+        {
+            await Task.Delay(_sut.FileEventsThrottleTimeout.Add(TimeSpan.FromMilliseconds(100)));
+        }
         Fake.ClearRecordedCalls(_configReader);
 
         // act
@@ -328,6 +339,7 @@ public class HeidiConfigurationServiceTests
         await Task.Delay(TimeSpan.FromSeconds(10));
 
         // assert
+        poked.Should().BeTrue();
         A.CallTo(() => _configReader.ParseAsync(_fullFilename)).MustNotHaveHappened();
     }
 

@@ -26,6 +26,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     private Dictionary<string, List<RepositoryHeidiConfiguration>> _repositoryHeidiConfigs = new();
     private ImmutableArray<HeidiSingleDatabaseConfiguration> _rawDatabases;
     private string? _heidiConfigFile;
+    internal readonly TimeSpan FileEventsThrottleTimeout = TimeSpan.FromSeconds(1);
 
     public event EventHandler? ConfigurationUpdated;
 
@@ -55,7 +56,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
                 .FromEventPattern<FileSystemEventArgs>(_fileWatcher, nameof(_fileWatcher.Changed))
                 .ObserveOn(Scheduler.Default)
                 .Select(e => e.EventArgs)
-                .Throttle(TimeSpan.FromSeconds(1))
+                .Throttle(FileEventsThrottleTimeout)
                 .Subscribe(OnFileUpdate);
 
             Task.Run(() => OnFileUpdate(new FileSystemEventArgs(WatcherChangeTypes.Changed, _settings.ConfigPath, _settings.ConfigFilename)));
@@ -137,7 +138,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
                     repository,
                     heidiDatabases.Single(x => x.Key.Equals(repository.HeidiKey)),
                     e.FullPath);
-                newResult.TryAdd(repository.Repository, new List<RepositoryHeidiConfiguration>());
+                newResult.TryAdd(repository.Repository, []);
                 newResult[repository.Repository].Add(item);
             }
 

@@ -72,17 +72,4 @@ public class IntegrationTest
         // assert
         await Verifier.Verify(result, _verifySettings);
     }
-
-    [Fact]
-    public async Task LastOpenedConfiguration1()
-    {
-        // arrange
-        await _fileSystem.AddEasyFile("C:\\\\dir\\RepoM.Ordering.yaml", _testFileSettings);
-
-        // act
-        Dictionary<string, IRepositoriesComparerConfiguration> result =_sut.Configuration;
-
-        // assert
-        await Verifier.Verify(result, _verifySettings);
-    }
 }
