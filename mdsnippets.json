@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/SimonCropp/MarkdownSnippets/master/schema.json",
   "LinkFormat": "GitHub",
   "TocLevel": 3,
-  "ExcludeDirectories":  [ "_ReSharper.Caches", "packages", "build"],
+  "ExcludeDirectories":  [ "_ReSharper.Caches", "packages", "build", ".azuredevops" ],
   "MaxWidth": 160,
   "TreatMissingAsWarning": true,
   "WriteHeader": false,

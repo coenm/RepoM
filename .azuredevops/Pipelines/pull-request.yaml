@@ -35,11 +35,17 @@ stages:
         - script: git submodule update --init --recursive
           displayName: Update git submodules
 
+        - powershell: .azuredevops/Variables/_pipelines.ps1
+          failOnStderr: true
+          displayName: ⚙ Set pipeline variables based on source
+          name: SetPipelineVariables
+
         - task: UseDotNet@2
-          displayName: "Use dotnet sdk 8.0.401"
+          displayName: "Use specified dotnet sdk version"
           inputs:
-            version: 8.0.401
+            version: $(DOTNETSDKVERSION)
             includePreviewVersions: false
+            condition: and(succeeded(), ne(variables['DOTNETSDKVERSION'], ''))
 
         - script: dotnet --info
           displayName: Show dotnet SDK info
@@ -98,16 +104,18 @@ stages:
             command: restore
             projects: '**/*.csproj'
 
-        - task: SonarCloudPrepare@2
-          displayName: Prepare analysis on SonarCloud
-          inputs:
-            SonarCloud: SonarCloudGithub
-            organization: coenm-github
-            projectKey: RepoM
-            projectName: RepoM
-            extraProperties: |
-              sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx
-              sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml
+        # - task: SonarCloudPrepare@2
+        #   displayName: Prepare analysis on SonarCloud
+        #   inputs:
+        #     SonarCloud: SonarCloudGithub
+        #     organization: coenm-github
+        #     projectKey: RepoM
+        #     projectName: RepoM
+        #     extraProperties: |
+        #       sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx
+        #       sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml
+
+        - template: Templates/prepare-code-analysis.yml
 
         - task: DotNetCoreCLI@2
           displayName: DotNet Build
@@ -128,8 +136,10 @@ stages:
               /p:ExcludeByAttribute=CompilerGenerated 
             publishTestResults: true
 
-        - task: SonarCloudAnalyze@2
-          displayName: Run Code Analysis
+        - template: Templates/publish-code-analysis.yml
 
-        - task: SonarCloudPublish@2
-          displayName: Publish Quality Gate Result
+        # - task: SonarCloudAnalyze@2
+        #   displayName: Run Code Analysis
+
+        # - task: SonarCloudPublish@2
+        #   displayName: Publish Quality Gate Result
