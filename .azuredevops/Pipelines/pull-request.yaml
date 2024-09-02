@@ -33,19 +33,12 @@ stages:
           clean: true
 
         - script: git submodule update --init --recursive
-          displayName: Update git submodules
+          displayName: 🔄 Update git submodules
 
-        - task: UseDotNet@2
-          displayName: "Use dotnet sdk 8.0.401"
-          inputs:
-            version: 8.0.401
-            includePreviewVersions: false
-
-        - script: dotnet --info
-          displayName: Show dotnet SDK info
+        - template: Templates/dotnet-sdk-install.yaml        
 
         - task: PowerShell@2
-          displayName: Export variables
+          displayName: 🤖 Export variables
           inputs:
             targetType: 'inline'
             script: |
@@ -60,7 +53,7 @@ stages:
             ignoreLASTEXITCODE: true
 
         - task: NuGetToolInstaller@1
-          displayName: Install Nuget 5x
+          displayName: ⬇️ Install Nuget 5x
           inputs:
             versionSpec: '5.*'
             checkLatest: true
@@ -82,42 +75,33 @@ stages:
               Write-Error "There are local changes in the git repository meaning not all markdown snippets are up to date."
               exit 1
             }
-          displayName: Verify markdown snippets are up to date
+          displayName: 📄 Verify markdown snippets
           name: mdsnippets
           failOnStderr: true
 
         - pwsh: |
             dotnet tool install --tool-path . nbgv
             ./nbgv cloud -a
-          displayName: Set build number
+          displayName: 4️⃣2️⃣ Set build number
           name: Nbgv
 
         - task: DotNetCoreCLI@2
-          displayName: DotNet Restore
+          displayName: 🛠️ DotNet Restore
           inputs:
             command: restore
             projects: '**/*.csproj'
 
-        - task: SonarCloudPrepare@2
-          displayName: Prepare analysis on SonarCloud
-          inputs:
-            SonarCloud: SonarCloudGithub
-            organization: coenm-github
-            projectKey: RepoM
-            projectName: RepoM
-            extraProperties: |
-              sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx
-              sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml
+        - template: Templates/prepare-code-analysis.yaml
 
         - task: DotNetCoreCLI@2
-          displayName: DotNet Build
+          displayName: 🛠️ DotNet Build
           inputs:
             command: build
             projects: '**/*.sln'
             arguments: '--configuration $(BuildConfiguration)'
 
         - task: DotNetCoreCLI@2
-          displayName: Dotnet Test
+          displayName: 🧪 Dotnet Test
           inputs:
             command: test
             projects: 'tests/**/*.csproj'
@@ -128,8 +112,4 @@ stages:
               /p:ExcludeByAttribute=CompilerGenerated 
             publishTestResults: true
 
-        - task: SonarCloudAnalyze@2
-          displayName: Run Code Analysis
-
-        - task: SonarCloudPublish@2
-          displayName: Publish Quality Gate Result
+        - template: Templates/publish-code-analysis.yaml

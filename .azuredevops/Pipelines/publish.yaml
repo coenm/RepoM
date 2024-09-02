@@ -5,68 +5,87 @@ resources:
   pipelines:
   - pipeline: CI
     source: RepoM.Build
-    trigger:
-      tags:
-      - auto-release
+    trigger: true
+
+variables:
+- group: Publishing secrets
 
 stages:
-- stage: GitHubRelease
-  displayName: GitHub Release
+- stage: UpdateBuildNumber
+  displayName: Set build number
   jobs:
-  - deployment: create
+  - job: SetBuildNumber
+    displayName: Set build number
     pool:
       vmImage: ubuntu-latest
-    environment: No-Approval
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: none
-          - powershell: |
-              Write-Host "##vso[build.updatebuildnumber]$(resources.pipeline.CI.runName)"
-            displayName: Set pipeline name
-          - task: GitHubRelease@1
-            displayName: GitHub release (create)
-            inputs:
-              gitHubConnection: github_coenm_pan
-              repositoryName: $(Build.Repository.Name)
-              target: $(resources.pipeline.CI.sourceCommit)
-              tagSource: userSpecifiedTag
-              tag: v$(resources.pipeline.CI.runName)
-              title: v$(resources.pipeline.CI.runName)
-              isDraft: true
-              changeLogCompareToRelease: lastNonDraftRelease
-              changeLogType: issueBased
-              changeLogLabels: |
-                [
-                  { "label" : "bug", "displayName" : "Fixes", "state" : "closed" },
-                  { "label" : "enhancement", "displayName": "Enhancements", "state" : "closed" }
-                ]
+    steps:
+    - checkout: none
+    - powershell: |
+        Write-Host "##vso[build.updatebuildnumber]$(resources.pipeline.CI.runName)"
+      displayName: ⚙️ Set up pipeline
 
-- stage: nuget_org
-  displayName: nuget.org
-  dependsOn: GitHubRelease
+- stage: ManualValidation
+  displayName: "Manual Validation"
   jobs:
-  - deployment: push
+  - job: WaitForValidation
+    pool: server
+    timeoutInMinutes: 1441
+    displayName: Wait for validation
+    steps:
+    - task: ManualValidation@0
+      displayName: 🧐 Manual validation
+      timeoutInMinutes: 1440
+      inputs:
+        notifyUsers:
+        instructions: 'Please approve or reject the deployment.'
+        onTimeout: 'reject'
+
+- stage: GithubRelease
+  displayName: Github Release
+  jobs:
+  - job: release
+    displayName: Github Release
     pool:
       vmImage: ubuntu-latest
-    environment: No-Approval
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: CI
-            artifact: packages
-            displayName: Download nuget packages artifact
-            patterns: 'packages/*'
-          - task: NuGetToolInstaller@1
-            displayName: Use NuGet 5.x
-            inputs:
-              versionSpec: 5.x
-          - task: NuGetCommand@2
-            displayName: NuGet push nupkg
-            inputs:
-              command: push
-              packagesToPush: '$(Pipeline.Workspace)/CI/packages/*.nupkg;!$(Pipeline.Workspace)/**/*.symbols.nupkg'
-              nuGetFeedType: external
-              publishFeedCredentials: nuget.org     
+    steps:
+    - checkout: none
+    - powershell: |
+        if ('$(resources.pipeline.CI.runName)'.Contains('-')) {
+          Write-Host "##vso[task.setvariable variable=IsPrerelease]true"
+        } else {
+          Write-Host "##vso[task.setvariable variable=IsPrerelease]false"
+        }
+      displayName: ⚙️ Set up pipeline
+    - download: CI
+      artifact: installer
+      displayName: 🔻 Download installer artifact
+      patterns: 'installer/*'
+    - download: CI
+      artifact: release-dependencies
+      displayName: 🔻 Download publisher artifact
+      patterns: 'release-dependencies/*'
+    - task: GitHubRelease@1
+      displayName: 📢 Create GitHub release
+      inputs:
+        gitHubConnection: github_coenm_pan
+        repositoryName: $(Build.Repository.Name)
+        target: $(resources.pipeline.CI.sourceCommit)
+        tagSource: userSpecifiedTag
+        tag: v$(resources.pipeline.CI.runName)
+        title: v$(resources.pipeline.CI.runName)
+        isDraft: false 
+        isPreRelease: $(IsPrerelease)
+        assets: $(Pipeline.Workspace)/CI/installer/*Setup.exe
+        changeLogCompareToRelease: lastNonDraftRelease
+        changeLogType: issueBased
+        changeLogLabels: |
+          [
+            { "label" : "breaking change", "displayName" : "Breaking changes", "state" : "closed" },
+            { "label" : "bug", "displayName" : "Fixes", "state" : "closed" },
+            { "label" : "enhancement", "displayName": "Enhancements", "state" : "closed" }
+          ]
+    - powershell: |
+        dotnet tool install --global dotnet-releaser
+        dotnet-releaser changelog --update --github-token $(GITHUB_TOKEN) $(Pipeline.Workspace)/CI/release-dependencies/dotnet-releaser.toml $(resources.pipeline.CI.runName)
+      displayName: 📢 Update GitHub release using Releaser
+      

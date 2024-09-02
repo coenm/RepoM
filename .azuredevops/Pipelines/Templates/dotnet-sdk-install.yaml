@@ -1,0 +1,16 @@
+steps:
+
+  - powershell: .azuredevops/Variables/_pipelines.ps1
+    failOnStderr: true
+    displayName: ⚙️ Set pipeline variables based on source
+    name: SetPipelineVariables
+
+  - task: UseDotNet@2
+    displayName: ⚙️ Use specified dotnet sdk version
+    inputs:
+      version: $(DOTNETSDKVERSION)
+      includePreviewVersions: false
+      condition: and(succeeded(), ne(variables['DOTNETSDKVERSION'], ''))
+
+  - script: dotnet --info
+    displayName: Show dotnet SDK info
