@@ -35,20 +35,22 @@ stages:
         - script: git submodule update --init --recursive
           displayName: Update git submodules
 
-        - powershell: .azuredevops/Variables/_pipelines.ps1
-          failOnStderr: true
-          displayName: ⚙ Set pipeline variables based on source
-          name: SetPipelineVariables
+        # - powershell: .azuredevops/Variables/_pipelines.ps1
+        #   failOnStderr: true
+        #   displayName: ⚙ Set pipeline variables based on source
+        #   name: SetPipelineVariables
 
-        - task: UseDotNet@2
-          displayName: "Use specified dotnet sdk version"
-          inputs:
-            version: $(DOTNETSDKVERSION)
-            includePreviewVersions: false
-            condition: and(succeeded(), ne(variables['DOTNETSDKVERSION'], ''))
+        # - task: UseDotNet@2
+        #   displayName: "Use specified dotnet sdk version"
+        #   inputs:
+        #     version: $(DOTNETSDKVERSION)
+        #     includePreviewVersions: false
+        #     condition: and(succeeded(), ne(variables['DOTNETSDKVERSION'], ''))
 
-        - script: dotnet --info
-          displayName: Show dotnet SDK info
+        # - script: dotnet --info
+        #   displayName: Show dotnet SDK info
+
+        - template: Templates/dotnet-sdk-install.yaml        
 
         - task: PowerShell@2
           displayName: Export variables
@@ -104,17 +106,6 @@ stages:
             command: restore
             projects: '**/*.csproj'
 
-        # - task: SonarCloudPrepare@2
-        #   displayName: Prepare analysis on SonarCloud
-        #   inputs:
-        #     SonarCloud: SonarCloudGithub
-        #     organization: coenm-github
-        #     projectKey: RepoM
-        #     projectName: RepoM
-        #     extraProperties: |
-        #       sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx
-        #       sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml
-
         - template: Templates/prepare-code-analysis.yaml
 
         - task: DotNetCoreCLI@2
@@ -137,9 +128,3 @@ stages:
             publishTestResults: true
 
         - template: Templates/publish-code-analysis.yaml
-
-        # - task: SonarCloudAnalyze@2
-        #   displayName: Run Code Analysis
-
-        # - task: SonarCloudPublish@2
-        #   displayName: Publish Quality Gate Result

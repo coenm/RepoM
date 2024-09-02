@@ -49,20 +49,22 @@ stages:
         - script: git submodule update --init --recursive
           displayName: Update git submodules
 
-        - powershell: .azuredevops/Variables/_pipelines.ps1
-          failOnStderr: true
-          displayName: ⚙ Set pipeline variables based on source
-          name: SetPipelineVariables
+        # - powershell: .azuredevops/Variables/_pipelines.ps1
+        #   failOnStderr: true
+        #   displayName: ⚙ Set pipeline variables based on source
+        #   name: SetPipelineVariables
 
-        - task: UseDotNet@2
-          displayName: "Use specified dotnet sdk version"
-          inputs:
-            version: $(DOTNETSDKVERSION)
-            includePreviewVersions: false
-            condition: and(succeeded(), ne(variables['DOTNETSDKVERSION'], ''))
+        # - task: UseDotNet@2
+        #   displayName: "Use specified dotnet sdk version"
+        #   inputs:
+        #     version: $(DOTNETSDKVERSION)
+        #     includePreviewVersions: false
+        #     condition: and(succeeded(), ne(variables['DOTNETSDKVERSION'], ''))
 
-        - script: dotnet --info
-          displayName: Show dotnet SDK info
+        # - script: dotnet --info
+        #   displayName: Show dotnet SDK info
+
+        - template: Templates/dotnet-sdk-install.yaml
       
         - task: NuGetToolInstaller@1
           displayName: Install Nuget 5x
@@ -117,17 +119,6 @@ stages:
             command: restore
             projects: '**/*.csproj'
 
-        # - task: SonarCloudPrepare@2
-        #   displayName: Prepare analysis on SonarCloud
-        #   inputs:
-        #     SonarCloud: SonarCloudGithub
-        #     organization: coenm-github
-        #     projectKey: RepoM
-        #     projectName: RepoM
-        #     extraProperties: |
-        #       sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx 
-        #       sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml 
-
         - template: Templates/prepare-code-analysis.yaml
 
         - task: DotNetCoreCLI@2
@@ -152,24 +143,6 @@ stages:
 
         - template: Templates/publish-code-analysis.yaml
 
-        # - task: SonarCloudAnalyze@2
-        #   displayName: Run Code Analysis
-
-        # - task: SonarCloudPublish@2
-        #   displayName: Publish Quality Gate Result
-
-        # - pwsh: |
-        #     dotnet tool install --tool-path . dotnet-reportgenerator-globaltool
-        #     ./reportgenerator "-reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml" "-targetdir:$(Agent.TempDirectory)" "-reporttypes:Cobertura"
-        #   displayName: Merge coverage reports
-        #   name: MergeCoverageReports
-
-        # - task: PublishCodeCoverageResults@2
-        #   displayName: Publish code coverage to devops
-        #   inputs:
-        #     codeCoverageTool: Cobertura
-        #     summaryFileLocation: '$(Agent.TempDirectory)/Cobertura.xml'
-
         - task: DotNetCoreCLI@2
           displayName: Dotnet Publish RepoM
           inputs:
@@ -181,37 +154,4 @@ stages:
             zipAfterPublish: false
 
         - template: Templates/create-installer.yaml
-
-        # - task: DeleteFiles@1
-        #   displayName: Remove unneeded files
-        #   inputs:
-        #     contents: |
-        #       _output/**/*.xlm
-        #       _output/**/*.config
-        #       _output/**/*.pdb
-        #       _output/Win/Assemblies/runtimes/!(win*)/**/*.*
-        #       _output/Win/Assemblies/!(runtimes)/*.resources.dll
-
-        # - pwsh: |
-        #     Get-ChildItem -Path "_output\Win\Assemblies" -Recurse | Where-Object { $_.PSIsContainer -and @(Get-ChildItem -LiteralPath $_.FullName -Recurse -Force).Count -eq 0 } | Remove-Item -Recurse
-        #     Get-ChildItem -Path "_output\Win\Assemblies\runtimes" -Recurse | Where-Object { $_.PSIsContainer -and @(Get-ChildItem -LiteralPath $_.FullName -Recurse -Force).Count -eq 0 } | Remove-Item -Recurse
-        #   displayName: Remove empty directories
-
-        # - pwsh: |
-        #     nuget install NSIS -OutputDirectory ./packages
-        #     makensis.exe /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 _setup/RepoM.nsi 
-        #   displayName: Create installer
-          
-        # - task: DeleteFiles@1
-        #   displayName: Remove binaries
-        #   inputs:
-        #     contents: |
-        #       _output/win
-
-        # - task: PublishBuildArtifacts@1
-        #   displayName: Publish artifact
-        #   inputs:
-        #     # PathtoPublish: "$(Build.ArtifactStagingDirectory)"
-        #     PathtoPublish: "_output"
-        #     ArtifactName: installer
     
