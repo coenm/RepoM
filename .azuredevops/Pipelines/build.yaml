@@ -60,7 +60,7 @@ stages:
         - pwsh: |
             dotnet tool install --tool-path . nbgv
             ./nbgv cloud -a
-          displayName: Set build number
+          displayName: 4️⃣2️⃣ Set build number
           name: Nbgv
 
         - task: PowerShell@2
