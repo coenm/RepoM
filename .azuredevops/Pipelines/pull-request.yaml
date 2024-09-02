@@ -115,7 +115,7 @@ stages:
         #       sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx
         #       sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml
 
-        - template: Templates/prepare-code-analysis.yml
+        - template: Templates/prepare-code-analysis.yaml
 
         - task: DotNetCoreCLI@2
           displayName: DotNet Build
@@ -136,7 +136,7 @@ stages:
               /p:ExcludeByAttribute=CompilerGenerated 
             publishTestResults: true
 
-        - template: Templates/publish-code-analysis.yml
+        - template: Templates/publish-code-analysis.yaml
 
         # - task: SonarCloudAnalyze@2
         #   displayName: Run Code Analysis
