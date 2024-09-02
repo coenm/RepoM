@@ -139,4 +139,6 @@ stages:
             zipAfterPublish: false
 
         - template: Templates/create-installer.yaml
+
+        - template: Templates/publish-release-dependencies.yaml       
     

@@ -1,0 +1,5 @@
+# configuration file for dotnet-releaser
+[github]
+user = "coenm"
+repo = "RepoM"
+version_prefix = "v"

@@ -61,9 +61,9 @@ stages:
       displayName: 🔻 Download installer artifact
       patterns: 'installer/*'
     - download: CI
-      artifact: publisher
+      artifact: release-dependencies
       displayName: 🔻 Download publisher artifact
-      patterns: 'publisher/*'
+      patterns: 'release-dependencies/*'
     - task: GitHubRelease@1
       displayName: 📢 Create GitHub release
       inputs:
@@ -75,7 +75,7 @@ stages:
         title: v$(resources.pipeline.CI.runName)
         isDraft: false 
         isPreRelease: $(IsPrerelease)
-        assets: $(Pipeline.Workspace)/CI/installer/*.dll
+        assets: $(Pipeline.Workspace)/CI/installer/*Setup.exe
         changeLogCompareToRelease: lastNonDraftRelease
         changeLogType: issueBased
         changeLogLabels: |
@@ -86,6 +86,6 @@ stages:
           ]
     - powershell: |
         dotnet tool install --global dotnet-releaser
-        dotnet-releaser changelog --update --github-token $(GITHUB_TOKEN) $(Pipeline.Workspace)/CI/publisher/dotnet-releaser.toml $(resources.pipeline.CI.runName)
+        dotnet-releaser changelog --update --github-token $(GITHUB_TOKEN) $(Pipeline.Workspace)/CI/release-dependencies/dotnet-releaser.toml $(resources.pipeline.CI.runName)
       displayName: 📢 Update GitHub release using Releaser
       
