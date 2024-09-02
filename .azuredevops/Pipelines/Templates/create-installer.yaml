@@ -3,12 +3,12 @@ steps:
 - task: DeleteFiles@1
   displayName: Remove unneeded files
   inputs:
-  contents: |
-    _output/**/*.xlm
-    _output/**/*.config
-    _output/**/*.pdb
-    _output/Win/Assemblies/runtimes/!(win*)/**/*.*
-    _output/Win/Assemblies/!(runtimes)/*.resources.dll
+    contents: |
+      _output/**/*.xlm
+      _output/**/*.config
+      _output/**/*.pdb
+      _output/Win/Assemblies/runtimes/!(win*)/**/*.*
+      _output/Win/Assemblies/!(runtimes)/*.resources.dll
 
 - pwsh: |
     Get-ChildItem -Path "_output\Win\Assemblies" -Recurse | Where-Object { $_.PSIsContainer -and @(Get-ChildItem -LiteralPath $_.FullName -Recurse -Force).Count -eq 0 } | Remove-Item -Recurse
