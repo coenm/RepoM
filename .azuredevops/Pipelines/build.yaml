@@ -47,12 +47,12 @@ stages:
           clean: true
 
         - script: git submodule update --init --recursive
-          displayName: Update git submodules
+          displayName: 🔄 Update git submodules
 
         - template: Templates/dotnet-sdk-install.yaml
       
         - task: NuGetToolInstaller@1
-          displayName: Install Nuget 5x
+          displayName: ⬇️ Install Nuget 5x
           inputs:
             versionSpec: '5.*'
             checkLatest: true

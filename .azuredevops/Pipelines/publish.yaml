@@ -33,7 +33,7 @@ stages:
     displayName: Wait for validation
     steps:
     - task: ManualValidation@0
-      displayName: 'Manual validation'
+      displayName: 🧐 Manual validation
       timeoutInMinutes: 1440
       inputs:
         notifyUsers:
