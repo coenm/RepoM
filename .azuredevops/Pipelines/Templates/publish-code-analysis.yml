@@ -15,5 +15,5 @@ steps:
 - task: PublishCodeCoverageResults@2
   displayName: Publish code coverage to devops
   inputs:
-  codeCoverageTool: Cobertura
-  summaryFileLocation: '$(Agent.TempDirectory)/Cobertura.xml'
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(Agent.TempDirectory)/Cobertura.xml'
