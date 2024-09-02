@@ -18,7 +18,7 @@ steps:
 - pwsh: |
     nuget install NSIS -OutputDirectory ./packages
     makensis.exe /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 _setup/RepoM.nsi 
-  displayName: Create installer
+  displayName: ⚙️ Create installer
 
 - task: DeleteFiles@1
   displayName: Remove binaries
@@ -27,7 +27,7 @@ steps:
       _output/win
 
 - task: PublishBuildArtifacts@1
-  displayName: Publish artifact
+  displayName: 📢 Publish artifact
   inputs:
     # PathtoPublish: "$(Build.ArtifactStagingDirectory)"
     PathtoPublish: "_output"

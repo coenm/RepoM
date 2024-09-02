@@ -99,7 +99,7 @@ stages:
         #   name: mdsnippets
 
         - task: DotNetCoreCLI@2
-          displayName: DotNet Restore
+          displayName: 🛠️ DotNet Restore
           inputs:
             command: restore
             projects: '**/*.csproj'
@@ -107,7 +107,7 @@ stages:
         - template: Templates/prepare-code-analysis.yaml
 
         - task: DotNetCoreCLI@2
-          displayName: DotNet Build
+          displayName: 🛠️ DotNet Build
           inputs:
             command: build
             projects: '**/*.sln'
@@ -115,7 +115,7 @@ stages:
 
          # https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/dotnet-core?view=azure-devops&tabs=dotnetfive
         - task: DotNetCoreCLI@2
-          displayName: Dotnet Test
+          displayName: 🧪 Dotnet Test
           inputs:
             command: test
             projects: 'tests/**/*.csproj'

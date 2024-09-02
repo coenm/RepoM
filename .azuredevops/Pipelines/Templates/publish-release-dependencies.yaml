@@ -1,13 +1,13 @@
 steps:
 
 - task: CopyFiles@2
-  displayName: Copy release dependencies
+  displayName: 🗃️ Copy release dependencies
   inputs:
     contents: 'dotnet-releaser.toml'
     targetFolder: _output_release_dependencies
 
 - task: PublishBuildArtifacts@1
-  displayName: Publish release dependencies
+  displayName: 📢 Publish release dependencies
   inputs:
     PathtoPublish: "_output_release_dependencies"
     ArtifactName: release-dependencies

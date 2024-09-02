@@ -1,10 +1,10 @@
 steps:
 
 - task: SonarCloudAnalyze@2
-  displayName: Run Code Analysis
+  displayName: ⚙️ Run Code Analysis
 
 - task: SonarCloudPublish@2
-  displayName: Publish Quality Gate Result
+  displayName: 📢 Publish Quality Gate Result
 
 - pwsh: |
     dotnet tool install --tool-path . dotnet-reportgenerator-globaltool
@@ -13,7 +13,7 @@ steps:
   name: MergeCoverageReports
 
 - task: PublishCodeCoverageResults@2
-  displayName: Publish code coverage to devops
+  displayName: 📢 Publish code coverage to devops
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(Agent.TempDirectory)/Cobertura.xml'

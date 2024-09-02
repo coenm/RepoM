@@ -38,7 +38,7 @@ stages:
         - template: Templates/dotnet-sdk-install.yaml        
 
         - task: PowerShell@2
-          displayName: Export variables
+          displayName: 🤖 Export variables
           inputs:
             targetType: 'inline'
             script: |
@@ -75,7 +75,7 @@ stages:
               Write-Error "There are local changes in the git repository meaning not all markdown snippets are up to date."
               exit 1
             }
-          displayName: Verify markdown snippets are up to date
+          displayName: 📄 Verify markdown snippets are up to date
           name: mdsnippets
           failOnStderr: true
 
@@ -86,14 +86,14 @@ stages:
           name: Nbgv
 
         - task: DotNetCoreCLI@2
-          displayName: DotNet Restore
+          displayName: 🛠️ DotNet Restore
           inputs:
             command: restore
             projects: '**/*.csproj'
 
         - template: Templates/prepare-code-analysis.yaml
 
-        - task: DotNetCoreCLI@2
+        - task: 🛠️ DotNetCoreCLI@2
           displayName: DotNet Build
           inputs:
             command: build
@@ -101,7 +101,7 @@ stages:
             arguments: '--configuration $(BuildConfiguration)'
 
         - task: DotNetCoreCLI@2
-          displayName: Dotnet Test
+          displayName: 🧪 Dotnet Test
           inputs:
             command: test
             projects: 'tests/**/*.csproj'

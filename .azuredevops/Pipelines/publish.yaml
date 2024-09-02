@@ -22,7 +22,7 @@ stages:
     - checkout: none
     - powershell: |
         Write-Host "##vso[build.updatebuildnumber]$(resources.pipeline.CI.runName)"
-      displayName: ⚙ Set up pipeline
+      displayName: ⚙️ Set up pipeline
 
 - stage: ManualValidation
   displayName: "Manual Validation"
@@ -55,7 +55,7 @@ stages:
         } else {
           Write-Host "##vso[task.setvariable variable=IsPrerelease]false"
         }
-      displayName: ⚙ Set up pipeline
+      displayName: ⚙️ Set up pipeline
     - download: CI
       artifact: installer
       displayName: 🔻 Download installer artifact
