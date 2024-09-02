@@ -93,8 +93,8 @@ stages:
 
         - template: Templates/prepare-code-analysis.yaml
 
-        - task: 🛠️ DotNetCoreCLI@2
-          displayName: DotNet Build
+        - task: DotNetCoreCLI@2
+          displayName: 🛠️ DotNet Build
           inputs:
             command: build
             projects: '**/*.sln'
