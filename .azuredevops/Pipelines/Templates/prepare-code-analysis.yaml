@@ -10,3 +10,5 @@ steps:
     extraProperties: |
       sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/**/*.trx
       sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*.opencover.xml
+  condition: or( ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.IsFork'], 'false') )
+  
