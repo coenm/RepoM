@@ -13,7 +13,6 @@ using RepoM.Api.IO;
 using RepoM.App.i18n;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.Services.WebApi;
 using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using Serilog;
@@ -116,7 +115,7 @@ public partial class App : Application
 
 // #pragma warning disable CA1416 // Validate platform compatibility
         _notifyIcon?.Dispose();
-        // #pragma warning restore CA1416 // Validate platform compatibility
+// #pragma warning restore CA1416 // Validate platform compatibility
 
         ReleaseAndDisposeMutex();
 
@@ -160,25 +159,23 @@ public partial class App : Application
 
     private static bool IsAlreadyRunning()
     {
-        bool createdNew;
-        
         try
         {
-            _mutex = new Mutex(true, "Local\\github.com/coenm/RepoM", out createdNew);
+            _mutex = new Mutex(true, "Local\\github.com/coenm/RepoM", out var createdNew);
+
+            if (createdNew)
+            {
+                return false;
+            }
         }
         catch (Exception)
         {
             return true;
         }
 
-        if (!createdNew)
-        {
-            _mutex.Dispose();
-            _mutex = null;
-            return true;
-        }
-
-        return false;
+        _mutex.Dispose();
+        _mutex = null;
+        return true;
     }
 
     private static void ReleaseAndDisposeMutex()
