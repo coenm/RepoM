@@ -2,11 +2,11 @@ steps:
 
 - task: SonarCloudAnalyze@2
   displayName: ⚙️ Run Code Analysis
-  condition: or( ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.IsFork'], 'false') )
+  condition: and(succeeded(), or( ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.IsFork'], 'false') ))
 
 - task: SonarCloudPublish@2
   displayName: 📢 Publish Quality Gate Result
-  condition: or( ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.IsFork'], 'false') )
+  condition: and(succeeded(), or( ne(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.IsFork'], 'false') ))
 
 - pwsh: |
     dotnet tool install --tool-path . dotnet-reportgenerator-globaltool
