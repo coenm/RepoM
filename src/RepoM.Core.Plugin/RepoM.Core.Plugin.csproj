@@ -9,4 +9,8 @@
     <PackageReference Include="SimpleInjector" Version="5.5.0" />
     <PackageReference Include="System.IO.Abstractions" Version="21.0.29" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.6.143" />
+  </ItemGroup>
 </Project>

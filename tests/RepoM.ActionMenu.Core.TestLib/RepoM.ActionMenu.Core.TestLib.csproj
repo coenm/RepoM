@@ -22,11 +22,11 @@
     </PackageReference>
     <PackageReference Include="Meziantou.Xunit.ParallelTestFramework" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="System.IO.Abstractions" Version="21.0.29" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="21.0.29" />
-    <PackageReference Include="Verify.ClipboardAccept" Version="26.2.0" />
-    <PackageReference Include="Verify.Xunit" Version="26.2.0" />
+    <PackageReference Include="Verify.ClipboardAccept" Version="26.4.0" />
+    <PackageReference Include="Verify.Xunit" Version="26.4.0" />
     <PackageReference Include="xunit" Version="2.9.0" />
     <PackageReference Include="Xunit.EnumMemberData" Version="1.0.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
@@ -34,12 +34,16 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Scriban" Version="5.10.0" />
-    <PackageReference Include="YamlDotNet" Version="16.0.0" />
+    <PackageReference Include="YamlDotNet" Version="16.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.6.143" />
   </ItemGroup>
   
 </Project>
