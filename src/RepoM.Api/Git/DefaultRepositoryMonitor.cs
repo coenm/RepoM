@@ -200,8 +200,11 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
         foreach (IRepositoryObserver observer in _repositoryObservers.Values)
         {
-            observer.Stop();
-            observer.Dispose();
+            if (observer != null)
+            {
+                observer.Stop();
+                observer.Dispose();
+            }
         }
 
         _repositoryObservers.Clear();

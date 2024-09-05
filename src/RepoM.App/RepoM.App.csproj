@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <AssemblyName>RepoM</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -16,6 +16,7 @@
   <PropertyGroup>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <AppDesigner Include="Properties\" />
