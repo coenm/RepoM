@@ -5,65 +5,45 @@ resources:
   pipelines:
   - pipeline: CI
     source: RepoM.Build
-    trigger: true
+    trigger:
+      tags:
+      - auto-release
 
 variables:
 - group: Publishing secrets
 
 stages:
-- stage: UpdateBuildNumber
-  displayName: Set build number
-  jobs:
-  - job: SetBuildNumber
-    displayName: Set build number
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-    - checkout: none
-    - powershell: |
-        Write-Host "##vso[build.updatebuildnumber]$(resources.pipeline.CI.runName)"
-      displayName: ⚙️ Set up pipeline
-
-- stage: ManualValidation
-  displayName: "Manual Validation"
-  jobs:
-  - job: WaitForValidation
-    pool: server
-    timeoutInMinutes: 1441
-    displayName: Wait for validation
-    steps:
-    - task: ManualValidation@0
-      displayName: 🧐 Manual validation
-      timeoutInMinutes: 1440
-      inputs:
-        notifyUsers:
-        instructions: 'Please approve or reject the deployment.'
-        onTimeout: 'reject'
-
 - stage: GithubRelease
   displayName: Github Release
   jobs:
-  - job: release
+
+  - job: Release
     displayName: Github Release
     pool:
       vmImage: ubuntu-latest
     steps:
+
     - checkout: none
+
     - powershell: |
+        Write-Host "##vso[build.updatebuildnumber]$(resources.pipeline.CI.runName)"
         if ('$(resources.pipeline.CI.runName)'.Contains('-')) {
           Write-Host "##vso[task.setvariable variable=IsPrerelease]true"
         } else {
           Write-Host "##vso[task.setvariable variable=IsPrerelease]false"
         }
       displayName: ⚙️ Set up pipeline
+
     - download: CI
       artifact: installer
       displayName: 🔻 Download installer artifact
       patterns: 'installer/*'
+
     - download: CI
       artifact: release-dependencies
       displayName: 🔻 Download publisher artifact
       patterns: 'release-dependencies/*'
+
     - task: GitHubRelease@1
       displayName: 📢 Create GitHub release
       inputs:
