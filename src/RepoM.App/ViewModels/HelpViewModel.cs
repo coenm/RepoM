@@ -21,8 +21,7 @@ public class HelpViewModel
 
     private static string GetHeader()
     {
-        AssemblyName? appName = Assembly.GetEntryAssembly()?.GetName();
-        return appName?.Name + ' ' + appName?.Version?.ToString(2).Trim();
+        return ((Assembly.GetEntryAssembly()?.GetName().Name ?? ThisAssembly.AssemblyName) + " " + ThisAssembly.AssemblyInformationalVersion).Trim();
     }
 
     private static string GetHelp(ITranslationService translationService)
