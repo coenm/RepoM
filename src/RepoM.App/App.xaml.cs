@@ -28,6 +28,7 @@ using RepoM.Api;
 /// </summary>
 public partial class App : Application
 {
+    private static Mutex? _mutex;
     private static IRepositoryMonitor? _repositoryMonitor;
     private TaskbarIcon? _notifyIcon;
     private ModuleService? _moduleService;
@@ -37,6 +38,11 @@ public partial class App : Application
     [STAThread]
     public static void Main()
     {
+        if (IsAlreadyRunning())
+        {
+            return;
+        }
+
         Thread.CurrentThread.Name ??= "UI";
         var app = new App();
         app.InitializeComponent();
@@ -111,6 +117,8 @@ public partial class App : Application
         _notifyIcon?.Dispose();
 // #pragma warning restore CA1416 // Validate platform compatibility
 
+        ReleaseAndDisposeMutex();
+
         base.OnExit(e);
     }
 
@@ -147,6 +155,48 @@ public partial class App : Application
     {
         _repositoryMonitor = container.GetInstance<IRepositoryMonitor>();
         _repositoryMonitor.Observe();
+    }
+
+    private static bool IsAlreadyRunning()
+    {
+        try
+        {
+            _mutex = new Mutex(true, "Local\\github.com/coenm/RepoM", out var createdNew);
+
+            if (createdNew)
+            {
+                return false;
+            }
+        }
+        catch (Exception)
+        {
+            return true;
+        }
+
+        _mutex.Dispose();
+        _mutex = null;
+        return true;
+    }
+
+    private static void ReleaseAndDisposeMutex()
+    {
+        try
+        {
+            _mutex?.ReleaseMutex();
+        }
+        catch (Exception)
+        {
+            // ignore
+        }
+
+        try
+        {
+            _mutex?.Dispose();
+        }
+        catch (Exception)
+        {
+            // ignore
+        }
     }
 
     public static string? AvailableUpdate { get; private set; } = null;
