@@ -81,7 +81,7 @@ public static class Program
         Template templateDocs = await LoadTemplateAsync("Templates/DocsScriptVariables.scriban-txt");
         Template templatePluginDocs = await LoadTemplateAsync("Templates/DocsPlugin.scriban-txt");
 
-        Dictionary<string, string> files = await LoadFiles();
+        Dictionary<string, string> files = await LoadFilesAsync(rootFolder);
         
         var processedProjects = new Dictionary<string, ProjectDescriptor>();
 
@@ -329,13 +329,14 @@ public static class Program
         return template;
     }
 
-    private static async Task<Dictionary<string, string>> LoadFiles()
+    private static async Task<Dictionary<string, string>> LoadFilesAsync(string root)
     {
-        string[] files = Directory.GetFiles("C:\\Projects\\Private\\git\\RepoM\\docs\\snippets"); // todo coenm
+        var path = Path.Combine(root, "docs", "snippets");
+        var fileNames = Directory.GetFiles(path);
 
-        var result = new Dictionary<string, string>(files.Length);
+        var result = new Dictionary<string, string>(fileNames.Length);
 
-        foreach (string file in files)
+        foreach (var file in fileNames)
         {
             var f = new FileInfo(file);
             var fileContent = await File.ReadAllTextAsync(file);
