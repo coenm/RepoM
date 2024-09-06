@@ -42,12 +42,21 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
         try
         {
-            _connection = new VssConnection(
-                _configuration.AzureDevOpsBaseUrl,
-                new VssBasicCredential(string.Empty, _configuration.AzureDevOpsPersonalAccessToken));
-            _httpClient.BaseAddress = _configuration.AzureDevOpsBaseUrl;
-            _httpClient.DefaultRequestHeaders.Accept.Add(new("application/json"));
-            _httpClient.DefaultRequestHeaders.Authorization = new("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($":{_configuration.AzureDevOpsPersonalAccessToken}")));
+            if (string.IsNullOrEmpty(configuration.AzureDevOpsPersonalAccessToken))
+            {
+                //throw new ArgumentNullException(nameof(configuration.AzureDevOpsPersonalAccessToken));
+                _logger.LogInformation("No Azure configuration present");
+            }
+            else
+            {
+                _connection = new VssConnection(
+                    _configuration.AzureDevOpsBaseUrl,
+                    new VssBasicCredential(string.Empty, _configuration.AzureDevOpsPersonalAccessToken));
+                _httpClient.BaseAddress = _configuration.AzureDevOpsBaseUrl;
+                _httpClient.DefaultRequestHeaders.Accept.Add(new("application/json"));
+                _httpClient.DefaultRequestHeaders.Authorization = new("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($":{_configuration.AzureDevOpsPersonalAccessToken}")));
+            }
+
         }
         catch (Exception e)
         {
