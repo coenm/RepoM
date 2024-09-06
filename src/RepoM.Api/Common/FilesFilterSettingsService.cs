@@ -2,7 +2,6 @@ namespace RepoM.Api.Common;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.Abstractions;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Common;
@@ -17,7 +16,7 @@ public class FilesFilterSettingsService : IFilterSettingsService
     private readonly ILogger _logger;
     private readonly IAppDataPathProvider _appDataPathProvider;
     private Dictionary<string, RepositoryFilterConfiguration>? _configuration;
-    
+
     public FilesFilterSettingsService(
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem,
@@ -41,7 +40,7 @@ public class FilesFilterSettingsService : IFilterSettingsService
 
         if (!_fileSystem.File.Exists(file))
         {
-            throw new FileNotFoundException("Filtering configuration file not found", file);
+            throw new System.IO.FileNotFoundException("Filtering configuration file not found", file);
         }
 
         try

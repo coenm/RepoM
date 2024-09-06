@@ -21,10 +21,10 @@ public class FileAppSettingsService : IAppSettingsService
 
     private List<PluginSettings>? _plugins;
     private static readonly JsonSerializerSettings _jsonSerializationSettings = new()
-        {
-            Formatting = Formatting.Indented,
-            NullValueHandling = NullValueHandling.Ignore,
-        };
+    {
+        Formatting = Formatting.Indented,
+        NullValueHandling = NullValueHandling.Ignore,
+    };
 
     public FileAppSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, ILogger logger)
     {
@@ -55,7 +55,7 @@ public class FileAppSettingsService : IAppSettingsService
 
         return AppSettings.Default;
     }
-    
+
     public string SortKey
     {
         get => Settings.SortKey;
@@ -106,7 +106,7 @@ public class FileAppSettingsService : IAppSettingsService
             Save();
         }
     }
-    
+
     public AutoFetchMode AutoFetchMode
     {
         get => Settings.AutoFetchMode;
@@ -143,11 +143,16 @@ public class FileAppSettingsService : IAppSettingsService
 
     public void UpdateMenuSize(string resolution, MenuSize size)
     {
+#if DEBUG
+        _logger.LogWarning("Debug mode is on. Do not save menu size settings");
+        return;
+#endif
+
         Settings.PreferredMenuSizes[resolution] = new Size
-            {
-                Height = size.MenuHeight,
-                Width = size.MenuWidth,
-            };
+        {
+            Height = size.MenuHeight,
+            Width = size.MenuWidth,
+        };
 
         NotifyChange();
         Save();
@@ -158,14 +163,19 @@ public class FileAppSettingsService : IAppSettingsService
         if (Settings.PreferredMenuSizes.TryGetValue(resolution, out Size? value))
         {
             size = new MenuSize
-                {
-                    MenuHeight = value.Height,
-                    MenuWidth = value.Width,
-                };
+            {
+                MenuHeight = value.Height,
+                MenuWidth = value.Width,
+            };
+#if DEBUG
+            _logger.LogInformation("Debug mode is on. Ignore menu size settings");
+            size = null;
+#endif
         }
         else
         {
             size = null;
+            _logger.LogWarning("No menu size found for resolution '{Resolution}'", resolution);
         }
 
         return size != null;
@@ -176,7 +186,7 @@ public class FileAppSettingsService : IAppSettingsService
         get => Settings.ReposRootDirectories;
         set
         {
-            Settings.ReposRootDirectories = [.. value, ];
+            Settings.ReposRootDirectories = [.. value,];
 
             NotifyChange();
             Save();
@@ -204,7 +214,7 @@ public class FileAppSettingsService : IAppSettingsService
     }
 
     private AppSettings Settings => _settings ??= Load();
-    
+
     private void Save()
     {
         var file = GetFileName();
@@ -242,9 +252,18 @@ public class FileAppSettingsService : IAppSettingsService
 
     private string GetFileName()
     {
-        return Path.Combine(_appDataPathProvider.AppDataPath, "appsettings.json");
+        string tempPath;
+
+#if DEBUG
+        this._logger.LogInformation("Debug mode is on. Do not save settings to main release file.");
+        tempPath = Path.Combine(this._appDataPathProvider.AppDataPath, "appsettings.debug.json");
+#else
+        tempPath = Path.Combine(this._appDataPathProvider.AppDataPath, "appsettings.json");
+#endif
+
+        return tempPath;
     }
-    
+
     private static List<PluginSettings> Convert(IEnumerable<PluginOptions> plugins)
     {
         return plugins.Select(pluginOptions => new PluginSettings(pluginOptions.Name, pluginOptions.DllName, pluginOptions.Enabled)).ToList();
@@ -257,6 +276,6 @@ public class FileAppSettingsService : IAppSettingsService
 
     private void NotifyChange()
     {
-       _invalidationHandlers.ForEach(h => h.Invoke());
+        _invalidationHandlers.ForEach(h => h.Invoke());
     }
 }

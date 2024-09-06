@@ -453,13 +453,11 @@ public partial class MainWindow
         Navigate("https://github.com/sponsors/awaescher");
     }
 
-    private static void Navigate(string url)
-    {
+    private static void Navigate(string url) =>
         Process.Start(new ProcessStartInfo(url)
-            {
-                UseShellExecute = true,
-            });
-    }
+        {
+            UseShellExecute = true,
+        });
 
     private void PlaceFormByTaskBarLocation()
     {

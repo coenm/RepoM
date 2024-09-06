@@ -13,7 +13,13 @@ public class DefaultRepositoryStore : FileRepositoryStore
         : base(fileSystem)
     {
         AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-        _fullFilename = Path.Combine(AppDataPathProvider.AppDataPath, "Repositories.cache");
+
+
+#if DEBUG
+        _fullFilename = Path.Combine(AppDataPathProvider.AppDataPath, "Repositories.cache.debug");
+#else
+       _fullFilename = Path.Combine(AppDataPathProvider.AppDataPath, "Repositories.cache");
+#endif
     }
 
     protected override string GetFileName()
