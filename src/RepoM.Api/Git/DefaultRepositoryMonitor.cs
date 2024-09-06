@@ -200,6 +200,11 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
         foreach (IRepositoryObserver observer in _repositoryObservers.Values)
         {
+            if (observer == null)
+            {
+                _logger.LogError("Null Observer in _repositoryObservers detected");
+                continue;
+            }
             observer.Stop();
             observer.Dispose();
         }
