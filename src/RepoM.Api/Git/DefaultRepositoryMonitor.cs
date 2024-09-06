@@ -13,7 +13,7 @@ using RepoM.Api.IO;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFinder;
 
-public class DefaultRepositoryMonitor : IRepositoryMonitor
+public class DefaultRepositoryMonitor: IRepositoryMonitor
 {
     public event EventHandler<IRepository>? OnChangeDetected;
     public event EventHandler<string>? OnDeletionDetected;
@@ -49,19 +49,19 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         IFileSystem fileSystem,
         ILogger logger)
     {
-        _repositoryReader = repositoryReader ?? throw new ArgumentNullException(nameof(repositoryReader));
-        _repositoryDetectorFactory = repositoryDetectorFactory ?? throw new ArgumentNullException(nameof(repositoryDetectorFactory));
-        _repositoryObserverFactory = repositoryObserverFactory ?? throw new ArgumentNullException(nameof(repositoryObserverFactory));
-        _gitRepositoryFinderFactory = gitRepositoryFinderFactory ?? throw new ArgumentNullException(nameof(gitRepositoryFinderFactory));
-        _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
-        _repositoryStore = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
+        _repositoryReader                = repositoryReader ?? throw new ArgumentNullException(nameof(repositoryReader));
+        _repositoryDetectorFactory       = repositoryDetectorFactory ?? throw new ArgumentNullException(nameof(repositoryDetectorFactory));
+        _repositoryObserverFactory       = repositoryObserverFactory ?? throw new ArgumentNullException(nameof(repositoryObserverFactory));
+        _gitRepositoryFinderFactory      = gitRepositoryFinderFactory ?? throw new ArgumentNullException(nameof(gitRepositoryFinderFactory));
+        _pathProvider                    = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
+        _repositoryStore                 = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
         _repositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
-        _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _autoFetchHandler = autoFetchHandler ?? throw new ArgumentNullException(nameof(autoFetchHandler));
-        _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
-        _storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
+        _repositoryIgnoreStore           = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
+        _fileSystem                      = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger                          = logger ?? throw new ArgumentNullException(nameof(logger));
+        _autoFetchHandler                = autoFetchHandler ?? throw new ArgumentNullException(nameof(autoFetchHandler));
+        _repositoryObservers             = new Dictionary<string, IRepositoryObserver>();
+        _storeFlushTimer                 = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
     }
 
     public Task ScanForLocalRepositoriesAsync()
@@ -72,7 +72,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
         var scannedPaths = 0;
 
-        var paths = _pathProvider.GetPaths();
+        var                  paths               = _pathProvider.GetPaths();
         IGitRepositoryFinder gitRepositoryFinder = _gitRepositoryFinderFactory.Create();
 
         IEnumerable<Task> tasks = paths.Select(path => Task.Run(() => gitRepositoryFinder.Find(path, OnFoundNewRepository))
@@ -166,7 +166,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             _detectors.Add(detector);
 
             detector.OnAddOrChange = OnRepositoryChangeDetected;
-            detector.OnDelete = OnRepositoryDeletionDetected;
+            detector.OnDelete      = OnRepositoryDeletionDetected;
             detector.Setup(path, DelayGitRepositoryStatusAfterCreationMilliseconds);
         }
 
@@ -290,8 +290,8 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             _logger.LogDebug("{Method} - create observer {Head}", nameof(OnRepositoryChangeDetected), repo.Path);
             CreateRepositoryObserver(repo, path);
 
-            // use that delay to prevent a lot of sequential writes 
-            // when a lot of repositories get found in a row
+              // use that delay to prevent a lot of sequential writes
+              // when a lot of repositories get found in a row
             _storeFlushTimer.Change(5000, Timeout.Infinite);
         }
 
@@ -351,7 +351,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
     [Flags]
     private enum KnownRepositoryNotifications
     {
-        WhenFound = 1,
+        WhenFound    = 1,
         WhenNotFound = 2,
     }
 }
