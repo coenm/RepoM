@@ -13,7 +13,7 @@ using Scriban.Parsing;
 using Scriban.Syntax;
 
 /// <summary>
-/// Provides file related action menu functions and variables accessable through `file`.
+/// Provides file related action menu functions and variables accessible through `file`.
 /// </summary>
 [ActionMenuContext("file")]
 internal partial class FileFunctions : ScribanModuleWithFunctions
@@ -46,7 +46,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     [ActionMenuContextMember("find_files")]
     public static string[] FindFiles(ActionMenuGenerationContext /*IMenuContext*/ context, SourceSpan span, string rootPath, string searchPattern)
     {
-        return FindFilesInner(context as IMenuContext, span, rootPath, searchPattern);
+        return FindFilesInner(context, span, rootPath, searchPattern);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -87,7 +87,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     internal static bool FileExistsInner(IMenuContext context, string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        return context.FileSystem.File.Exists(path);
+        return context.FileSystem.FileInfo.New(path).Exists;
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     internal static bool DirectoryExistsInner(IMenuContext context, string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        return context.FileSystem.Directory.Exists(path);
+        return context.FileSystem.DirectoryInfo.New(path).Exists;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -126,8 +126,14 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
         // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
         // .app or .xcodeproj on macOS
         return fileSystem.DirectoryInfo.New(path)
-             .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
-             .Select(f => f.FullName)
-             .Where(f => !f.StartsWith('.'));
+             .EnumerateFileSystemInfos(searchPattern, new EnumerationOptions()
+             {
+                 RecurseSubdirectories = true,
+                 AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Device | FileAttributes.Directory,
+                 IgnoreInaccessible = true,
+                 MatchType = MatchType.Simple,
+                 ReturnSpecialDirectories = false,
+             })
+             .Select(f => f.FullName);
     }
 }
