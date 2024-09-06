@@ -8,20 +8,20 @@ using System.IO.Abstractions;
 using System.Threading;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
-using RepoM.Api.Git;
-using RepoM.Api.IO;
-using RepoM.App.i18n;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using RepoM.Api;
+using RepoM.Api.Git;
+using RepoM.Api.IO;
 using RepoM.Api.Plugins;
+using RepoM.App.i18n;
 using RepoM.App.Plugins;
+using RepoM.App.Services;
+using RepoM.App.Services.HotKey;
 using Serilog;
 using Serilog.Core;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-using RepoM.App.Services;
 using Container = SimpleInjector.Container;
-using RepoM.App.Services.HotKey;
-using RepoM.Api;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -92,7 +92,7 @@ public partial class App : Application
 
         EnsureStartup ensureStartup = Bootstrapper.Container.GetInstance<EnsureStartup>();
         await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
-        
+
         UseRepositoryMonitor(Bootstrapper.Container);
 
         this._moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
