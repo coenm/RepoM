@@ -35,6 +35,9 @@ public partial class App : Application
     private HotKeyService? _hotKeyService;
     private WindowSizeService? _windowSizeService;
 
+    /// <summary>
+    /// Main program start point
+    /// </summary>
     [STAThread]
     public static void Main()
     {
@@ -49,6 +52,10 @@ public partial class App : Application
         app.Run();
     }
 
+    /// <summary>
+    /// OnStartup event
+    /// </summary>
+    /// <param name="e"></param>
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -61,7 +68,7 @@ public partial class App : Application
             new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
         Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
-        _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
+        this._notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
 
         var fileSystem = new FileSystem();
 
@@ -88,34 +95,38 @@ public partial class App : Application
         
         UseRepositoryMonitor(Bootstrapper.Container);
 
-        _moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
-        _hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
-        _windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
+        this._moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
+        this._hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
+        this._windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
 
-        _hotKeyService.Register();
-        _windowSizeService.Register();
+        this._hotKeyService.Register();
+        this._windowSizeService.Register();
 
         try
         {
-            await _moduleService.StartAsync().ConfigureAwait(false); // don't care about ui thread
+            await this._moduleService.StartAsync().ConfigureAwait(false); // don't care about ui thread
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Could not start all modules.");
         }
     }
-    
+
+    /// <summary>
+    /// OnExit Event
+    /// </summary>
+    /// <param name="e"></param>
     protected override void OnExit(ExitEventArgs e)
     {
-        _windowSizeService?.Unregister();
-        
-        _moduleService?.StopAsync().GetAwaiter().GetResult();
+        this._windowSizeService?.Unregister();
 
-        _hotKeyService?.Unregister();
+        this._moduleService?.StopAsync().GetAwaiter().GetResult();
 
-// #pragma warning disable CA1416 // Validate platform compatibility
-        _notifyIcon?.Dispose();
-// #pragma warning restore CA1416 // Validate platform compatibility
+        this._hotKeyService?.Unregister();
+
+        // #pragma warning disable CA1416 // Validate platform compatibility
+        this._notifyIcon?.Dispose();
+        // #pragma warning restore CA1416 // Validate platform compatibility
 
         ReleaseAndDisposeMutex();
 
@@ -199,5 +210,5 @@ public partial class App : Application
         }
     }
 
-    public static string? AvailableUpdate { get; private set; } = null;
+    public static string? AvailableUpdate { get; private set; }
 }
