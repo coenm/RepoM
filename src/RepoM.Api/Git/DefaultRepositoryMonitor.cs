@@ -200,6 +200,12 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
         foreach (IRepositoryObserver observer in _repositoryObservers.Values)
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (observer == null)
+            {
+                _logger.LogError("Null Observer in _repositoryObservers detected");
+                continue;
+            }
             observer.Stop();
             observer.Dispose();
         }
@@ -285,7 +291,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
             _logger.LogDebug("{Method} - create observer {Head}", nameof(OnRepositoryChangeDetected), repo.Path);
             CreateRepositoryObserver(repo, path);
 
-            // use that delay to prevent a lot of sequential writes 
+            // use that delay to prevent a lot of sequential writes
             // when a lot of repositories get found in a row
             _storeFlushTimer.Change(5000, Timeout.Infinite);
         }
