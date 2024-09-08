@@ -55,8 +55,8 @@ public static class Program
         var compile = new CompileRepoM();
         var rootFolder = ThisProjectAssembly.Info.GetSolutionDirectory();
         var srcFolder = Path.Combine(rootFolder, "src");
-        var docsFolderSource = Path.Combine(rootFolder, "docs_new", "mdsource");
-        var docsFolder = Path.Combine(rootFolder, "docs_new");
+        var docsFolder = Path.Combine(rootFolder, "docs");
+        var docsFolderSource = Path.Combine(docsFolder, "mdsource");
 
         FileSystemHelper.CheckDirectory(srcFolder);
         FileSystemHelper.CheckDirectory(docsFolder);
@@ -331,7 +331,7 @@ public static class Program
 
     private static async Task<Dictionary<string, string>> LoadFilesAsync(string root)
     {
-        var path = Path.Combine(root, "docs", "snippets");
+        var path = Path.Combine(root, "docs_old", "snippets");
         var fileNames = Directory.GetFiles(path);
 
         var result = new Dictionary<string, string>(fileNames.Length);
