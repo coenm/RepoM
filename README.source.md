@@ -40,41 +40,41 @@ The main functionality of RepoM are the quick actions to execute per repository.
 
 To read more about the context menu, click here.
 
-These actions are defined in the `RepositoryActions.yaml` located in your `%APPDATA%\RepoM\` folder. More information can be found [here](docs/RepositoryActions.md).
+These actions are defined in the `RepositoryActions.yaml` located in your `%APPDATA%\RepoM\` folder. More information can be found [here](docs_old/RepositoryActions.md).
 
 ## Tagging
 
 It is possible to dynamically assign tags to repositories such that you can filter, order, and search repositories using these tags.
-How to define and use tags is described in the [Tags](docs_new/Tags.md) documentation.
+How to define and use tags is described in the [Tags](docs/Tags.md) documentation.
 
 ## Search
 
 It is possible to filter or search for repositories using the search box at the top of RepoM.
-See the [Search](docs_new/search.md) for more information.
+See the [Search](docs/search.md) for more information.
 
 ## Ordering and Filtering
 
-The order of the repositories shown in RepoM is customizable. The default is alphabetical on the repository name. Read more about ordering [here](docs/Ordering.md).
+The order of the repositories shown in RepoM is customizable. The default is alphabetical on the repository name. Read more about ordering [here](docs_old/Ordering.md).
 
-The repositories shown in RepoM are filtered using the search box in RepoM. But the default set can also be configured using different presets. [This page](docs/Filtering.md) describes how to create custom filter presets.
+The repositories shown in RepoM are filtered using the search box in RepoM. But the default set can also be configured using different presets. [This page](docs_old/Filtering.md) describes how to create custom filter presets.
 
 ## Global configuration
 
-When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but, at this moment, one property must be altered manually. Read more over [here](docs/Settings.md).
+When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but, at this moment, one property must be altered manually. Read more over [here](docs_old/Settings.md).
 
 ## Plugins
 
 RepoM uses plugins to extend functionality. At this moment, when a plugin is available in the installed directory, it will be found and can be enabled or disabled. This is done in the hamburger menu of RepoM. Enabling or disabling requires a restart of RepoM.
 
-- [Plugins](docs/Plugins.md)
-  - [AzureDevOps](docs/RepoM.Plugin.AzureDevOps.md)
-  - [Clipboard](docs/RepoM.Plugin.Clipboard.md)
-  - [Heidi](docs/RepoM.Plugin.Heidi.md)
-  - [LuceneQueryParser](docs/RepoM.Plugin.LuceneQueryParser.md)
-  - [SonarCloud](docs/RepoM.Plugin.SonarCloud.md)
-  - [Statistics](docs/RepoM.Plugin.Statistics.md)
-  - [WebBrowser](docs/RepoM.Plugin.WebBrowser.md)
-  - [WindowsExplorerGitInfo](docs/RepoM.Plugin.WindowsExplorerGitInfo.md)
+- [Plugins](docs_old/Plugins.md)
+  - [AzureDevOps](docs_old/RepoM.Plugin.AzureDevOps.md)
+  - [Clipboard](docs_old/RepoM.Plugin.Clipboard.md)
+  - [Heidi](docs_old/RepoM.Plugin.Heidi.md)
+  - [LuceneQueryParser](docs_old/RepoM.Plugin.LuceneQueryParser.md)
+  - [SonarCloud](docs_old/RepoM.Plugin.SonarCloud.md)
+  - [Statistics](docs_old/RepoM.Plugin.Statistics.md)
+  - [WebBrowser](docs_old/RepoM.Plugin.WebBrowser.md)
+  - [WindowsExplorerGitInfo](docs_old/RepoM.Plugin.WindowsExplorerGitInfo.md)
   
 ## Credits
 
