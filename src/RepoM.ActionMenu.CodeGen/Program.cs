@@ -85,14 +85,21 @@ public static class Program
         
         var processedProjects = new Dictionary<string, ProjectDescriptor>();
 
+
+        Console.WriteLine("Compiling projects ..");
         foreach (var project in projects)
         {
             var fullCsProjectFilename = Path.Combine(srcFolder, project, $"{project}.csproj");
+            Console.WriteLine($" - {fullCsProjectFilename} .. ");
+
             FileSystemHelper.CheckFile(fullCsProjectFilename);
 
             ProjectDescriptor projectDescriptor = await CompileAndExtractProjectDescription(compile, fullCsProjectFilename, project, files);
             processedProjects.Add(project, projectDescriptor);
+            Console.WriteLine("    done");
         }
+
+        Console.WriteLine(string.Empty);
 
         Dictionary<string, List<MemberDescriptor>> _allTypes2 = new();
         
@@ -177,8 +184,7 @@ public static class Program
                 }
             }
         }
-
-
+        
         // Generate plugin documentation
         foreach ((var projectName, ProjectDescriptor? project) in processedProjects)
         {
