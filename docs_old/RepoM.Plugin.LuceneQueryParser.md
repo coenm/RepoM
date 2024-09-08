@@ -1,6 +1,6 @@
 # Lucene Query Parser
 
-To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.<!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.<!-- singleLineInclude: _plugin_enable. path: /docs_old/mdsource/_plugin_enable.include.md -->
 
 ## Configuration<!-- include: DocsModuleSettingsTests.DocsModuleSettings_LuceneQueryParserPackage#desc.verified.md -->
 

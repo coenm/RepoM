@@ -2,7 +2,7 @@
 
 This module add functionality to keep track of actions performed on repositories. This can be used in orderings (and mabye later on in filtering) of repositories.
 
-To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.<!-- singleLineInclude: _plugin_enable. path: /docs/mdsource/_plugin_enable.include.md -->
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.<!-- singleLineInclude: _plugin_enable. path: /docs_old/mdsource/_plugin_enable.include.md -->
 
 ## Configuration<!-- include: DocsModuleSettingsTests.DocsModuleSettings_StatisticsPackage#desc.verified.md -->
 
