@@ -14,6 +14,8 @@ It's populating itself as you work with git. It does not get in the way and only
 
 RepoM will not compete with your favourite git clients, so keep them. It's not about working within a repository: It's a new way to use all of your repositories to make your daily work easier.
 
+If you recognise this introduction you might be right. RepoM is a fork of the popular [RepoZ](#credits).
+
 ## The Hub
 
 The hub provides a quick overview of your repositories including their current branch, a short status information, and optionally some provided tags. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer, opening a command line tool in a given repository, checking out git branches and lots of other predefined or customizable actions.
