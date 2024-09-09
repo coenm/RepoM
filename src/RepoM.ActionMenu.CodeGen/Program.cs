@@ -10,6 +10,7 @@ using RepoM.ActionMenu.CodeGen.Misc;
 using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.AssemblyInformation;
 using Scriban;
 

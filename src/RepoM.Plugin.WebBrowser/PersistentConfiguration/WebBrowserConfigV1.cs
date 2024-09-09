@@ -1,7 +1,7 @@
 namespace RepoM.Plugin.WebBrowser.PersistentConfiguration;
 
 using System.Collections.Generic;
-using RepoM.Core.Plugin.AssemblyInformation;
+using RepoM.Core.Plugin;
 
 /// <remarks>DO NOT CHANGE PROPERTYNAMES, TYPES, or VISIBILITIES</remarks>
 /// <summary>Module configuration (version 1)</summary>

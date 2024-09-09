@@ -1,6 +1,6 @@
 namespace RepoM.Plugin.Heidi.PersistentConfiguration;
 
-using RepoM.Core.Plugin.AssemblyInformation;
+using RepoM.Core.Plugin;
 
 /// <remarks>DO NOT CHANGE PROPERTYNAMES, TYPES, or VISIBILITIES</remarks>
 /// <summary>Module configuration (version 1)</summary>
