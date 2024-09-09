@@ -80,17 +80,11 @@ public class WebBrowserPackage : IPackage
     /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<WebBrowserConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
-        var config = new WebBrowserConfigV1
-        {
-            Browsers = null,
-            Profiles = null,
-        };
-
+        var config = WebBrowserConfigV1.CreateDefault();
         await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
         return config;
     }
-
-
+    
     /// <remarks>This method is used by reflection to generate documentation file</remarks>
     [UsedImplicitly]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Reflection")]

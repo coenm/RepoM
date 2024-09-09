@@ -473,5 +473,6 @@ no-fast-forward merge. The source branch is updated during the rebase operation.
       IsClass: true
     }
   ],
-  IsPlugin: false
+  IsPlugin: false,
+  HasConfiguration: false
 }

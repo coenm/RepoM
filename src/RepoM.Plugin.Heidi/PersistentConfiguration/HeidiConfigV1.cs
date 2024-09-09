@@ -1,7 +1,10 @@
 namespace RepoM.Plugin.Heidi.PersistentConfiguration;
 
+using RepoM.Core.Plugin.AssemblyInformation;
+
 /// <remarks>DO NOT CHANGE PROPERTYNAMES, TYPES, or VISIBILITIES</remarks>
 /// <summary>Module configuration (version 1)</summary>
+[ModuleConfiguration]
 public class HeidiConfigV1
 {
     /// <summary>
@@ -18,4 +21,10 @@ public class HeidiConfigV1
     /// The full executable of Heidi.
     /// </summary>
     public string? ExecutableFilename { get; init;}
+
+    [ModuleConfigurationDefaultValueFactoryMethod]
+    internal static HeidiConfigV1 CreateDefault()
+    {
+        return new HeidiConfigV1();
+    }
 }

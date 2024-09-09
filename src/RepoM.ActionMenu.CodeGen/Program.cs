@@ -179,6 +179,18 @@ public static class Program
                 allMemberTypes[classDescriptor.FullName].AddRange(classDescriptor.Members);
             }
 
+            foreach (ModuleConfigurationClassDescriptor classDescriptor in project.ConfigurationClasses)
+            {
+                allMemberTypes.TryAdd(classDescriptor.FullName, []);
+                allMemberTypes[classDescriptor.FullName].AddRange(classDescriptor.Members);
+            }
+
+            foreach (ModuleConfigurationClassDescriptor classDescriptor in project.ConfigurationClasses)
+            {
+                allMemberTypes.TryAdd(classDescriptor.FullName, []);
+                allMemberTypes[classDescriptor.FullName].AddRange(classDescriptor.Members);
+            }
+
             foreach (ClassDescriptor classDescriptor in project.Types)
             {
                 allMemberTypes.TryAdd(classDescriptor.FullName, []);
@@ -248,6 +260,7 @@ public static class Program
             AttributeData? obsoleteAttribute = typeSymbol.FindAttribute<ObsoleteAttribute>();
             AttributeData? actionMenuContextAttribute = typeSymbol.FindAttribute<ActionMenuContextAttribute>();
             AttributeData? repositoryActionAttribute = typeSymbol.FindAttribute<RepositoryActionAttribute>();
+            AttributeData? moduleConfigurationAttribute = typeSymbol.FindAttribute<ModuleConfigurationAttribute>();
             
             if (actionMenuContextAttribute != null && obsoleteAttribute == null)
             {
@@ -267,6 +280,16 @@ public static class Program
                         Name = new RepositoryActionAttribute((string)repositoryActionAttribute.ConstructorArguments[0].Value!).Type,
                     };
                 projectDescriptor.ActionMenus.Add(actionMenuClassDescriptor);
+
+                classDescriptor = actionMenuClassDescriptor;
+            }
+            else if (moduleConfigurationAttribute != null)
+            {
+                var actionMenuClassDescriptor = new ModuleConfigurationClassDescriptor
+                {
+                    IsObsolete = false,
+                };
+                projectDescriptor.ConfigurationClasses.Add(actionMenuClassDescriptor);
 
                 classDescriptor = actionMenuClassDescriptor;
             }

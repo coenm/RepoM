@@ -1,9 +1,11 @@
 namespace RepoM.Plugin.Statistics.PersistentConfiguration;
 
 using System;
+using RepoM.Core.Plugin.AssemblyInformation;
 
 /// <remarks>DO NOT CHANGE PROPERTYNAMES, TYPES, or VISIBILITIES</remarks>
 /// <summary>Module configuration (version 1)</summary>
+[ModuleConfiguration]
 public class StatisticsConfigV1
 {
     /// <summary>
@@ -15,4 +17,14 @@ public class StatisticsConfigV1
     /// Number of days to keep statical information before deleting them. 
     /// </summary>
     public int? RetentionDays { get; init; }
+
+    [ModuleConfigurationDefaultValueFactoryMethod]
+    internal static StatisticsConfigV1 CreateDefault()
+    {
+        return new StatisticsConfigV1
+        {
+            PersistenceBuffer = TimeSpan.FromMinutes(5),
+            RetentionDays = 30,
+        };
+    }
 }

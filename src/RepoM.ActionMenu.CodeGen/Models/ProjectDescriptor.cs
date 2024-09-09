@@ -27,6 +27,11 @@ public sealed class ProjectDescriptor
     /// The directory of the project.
     /// </summary>
     public required string Directory { get; init; }
+    
+    /// <summary>
+    /// List of class descriptors for configuration classes
+    /// </summary>
+    public List<ModuleConfigurationClassDescriptor> ConfigurationClasses { get; } = [];
 
     /// <summary>
     /// List of class descriptors for repository actions.
@@ -62,7 +67,12 @@ public sealed class ProjectDescriptor
     /// is plugin or not.
     /// </summary>
     public bool IsPlugin { get; private set; }
-    
+
+    /// <summary>
+    /// When the project is a plugin, it might have some configuration.
+    /// </summary>
+    public bool HasConfiguration => ConfigurationClasses.Count > 0;
+
     [ScriptMemberIgnore]
     public void SetPackageInformation(PackageAttribute attribute)
     {

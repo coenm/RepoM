@@ -24,7 +24,7 @@ public class AzureDevOpsPackageTests
 
         var azureDevopsConfigV1 = new AzureDevopsConfigV1
             {
-                PersonalAccessToken = "PAT",
+                PersonalAccessToken2 = "PAT",
                 BaseUrl = "https://dev.azure.com/MyOrg",
             };
         A.CallTo(() => _packageConfiguration.GetConfigurationVersionAsync()).Returns(Task.FromResult(1 as int?));

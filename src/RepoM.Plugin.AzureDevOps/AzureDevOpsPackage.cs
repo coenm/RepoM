@@ -37,7 +37,7 @@ public class AzureDevOpsPackage : IPackage
 
         config ??= await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
 
-        container.RegisterInstance<IAzureDevopsConfiguration>(new AzureDevopsConfiguration(config.BaseUrl, config.PersonalAccessToken));
+        container.RegisterInstance<IAzureDevopsConfiguration>(new AzureDevopsConfiguration(config.BaseUrl, config.PersonalAccessToken2));
     }
 
     private static void RegisterServices(Container container)
@@ -59,7 +59,7 @@ public class AzureDevOpsPackage : IPackage
     /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<AzureDevopsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
-        var config = new AzureDevopsConfigV1();
+        var config = AzureDevopsConfigV1.CreateDefault();
         await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
         return config;
     }
