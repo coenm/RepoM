@@ -4,11 +4,6 @@ Provides functionality to start a web browser from an action with profile inform
 
 To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. After enabling or disabling a plugin, you should restart RepoM.
 
-- ProjectName: RepoM.Plugin.WebBrowser
-- PluginName: WebBrowser
-- PluginDescription: Provides functionality to start a web browser from an action with profile information.
-- PluginMarkdownDescription: \<empty\>
-
 ## Configuration
 
 The configuration. TODO
