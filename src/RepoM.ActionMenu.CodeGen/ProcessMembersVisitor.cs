@@ -20,11 +20,11 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
     // todo extend.
     private static readonly string[] _collectionTypes =
-        {
-            "System.Collections.Generic.List<T>",
-            "System.Collections.Generic.IList<T>",
-            "System.Collections.Generic.IEnumerable<T>",
-        };
+    [
+        "System.Collections.Generic.List<T>",
+        "System.Collections.Generic.IList<T>",
+        "System.Collections.Generic.IEnumerable<T>",
+    ];
 
     public ProcessMembersVisitor(ITypeSymbol typeSymbol, IDictionary<string, string> files)
     {

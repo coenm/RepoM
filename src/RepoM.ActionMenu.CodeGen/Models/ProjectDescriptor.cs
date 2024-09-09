@@ -11,27 +11,37 @@ public sealed class ProjectDescriptor
     /// <summary>
     /// Assembly Name
     /// </summary>
-    public string AssemblyName { get; set; } = null!;
+    public required string AssemblyName { get; init; }
 
     /// <summary>
     /// Project name
     /// </summary>
-    public string ProjectName { get; set; } = null!;
+    public required string ProjectName { get; init; }
+
+    /// <summary>
+    /// Full filename of the sln or csproj.
+    /// </summary>
+    public required string FullFilename { get; init; }
+
+    /// <summary>
+    /// The directory of the project.
+    /// </summary>
+    public required string Directory { get; init; }
 
     /// <summary>
     /// List of class descriptors for repository actions.
     /// </summary>
-    public List<ActionMenuClassDescriptor> ActionMenus { get; } = new();
+    public List<ActionMenuClassDescriptor> ActionMenus { get; } = [];
 
     /// <summary>
     /// List of class descriptors for context (ie scriban methods, properties)
     /// </summary>
-    public List<ActionMenuContextClassDescriptor> ActionContextMenus { get; } = new();
+    public List<ActionMenuContextClassDescriptor> ActionContextMenus { get; } = [];
 
     /// <summary>
-    /// Regular types (to be used when action type has sub type property)
+    /// Regular types (to be used when action type has subtype property)
     /// </summary>
-    public List<ClassDescriptor> Types { get; } = new();
+    public List<ClassDescriptor> Types { get; } = [];
 
     /// <summary>
     /// when project is plugin, the pluginname.
@@ -51,8 +61,8 @@ public sealed class ProjectDescriptor
     /// <summary>
     /// is plugin or not.
     /// </summary>
-    public bool IsPlugin { get; private set; } = false;
-
+    public bool IsPlugin { get; private set; }
+    
     [ScriptMemberIgnore]
     public void SetPackageInformation(PackageAttribute attribute)
     {

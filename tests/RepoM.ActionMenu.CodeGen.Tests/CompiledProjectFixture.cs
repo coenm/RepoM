@@ -29,7 +29,7 @@ public class CompiledProjectFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        _project = await Program.CompileAndExtractProjectDescription(
+        _project = await Program.CompileAndExtractProjectDescriptionAsync(
             _compile,
             _pathToSolution,
             PROJECT_NAME,

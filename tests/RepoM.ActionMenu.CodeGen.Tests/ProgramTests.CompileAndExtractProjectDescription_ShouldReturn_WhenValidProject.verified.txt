@@ -1,6 +1,8 @@
 ﻿{
   AssemblyName: RepoM.ActionMenu.CodeGenDummyLibrary,
   ProjectName: RepoM.ActionMenu.CodeGenDummyLibrary,
+  FullFilename: {SolutionDirectory}tests\RepoM.ActionMenu.CodeGenDummyLibrary\RepoM.ActionMenu.CodeGenDummyLibrary.csproj,
+  Directory: {SolutionDirectory}tests\RepoM.ActionMenu.CodeGenDummyLibrary,
   ActionMenus: [
     {
       ActionMenuProperties: [
@@ -234,6 +236,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
       Name: dummy-abc@1,
       ClassName: RepositoryActionDummyAbcV1,
       Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
+      FullName: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.RepositoryActionDummyAbcV1,
       IsEnum: false,
       IsClass: true,
       Description: Action menu item to create a pull request in Azure Devops.,
@@ -352,6 +355,7 @@ devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
       Name: statistics,
       ClassName: UsageVariables,
       Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Context,
+      FullName: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Context.UsageVariables,
       IsEnum: false,
       IsClass: true,
       Description: Provides statistical information accessible through `statistics`.
@@ -407,6 +411,7 @@ devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
       ],
       ClassName: AutoCompleteOptionsV1,
       Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
+      FullName: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1,
       IsEnum: false,
       IsClass: true,
       Description: Auto complete options.
@@ -456,12 +461,14 @@ no-fast-forward merge. The source branch is updated during the rebase operation.
       ],
       ClassName: MergeStrategyV1,
       Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
+      FullName: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1,
       IsEnum: true,
       IsClass: false
     },
     {
       ClassName: ThisAssembly,
       Namespace: <global namespace>,
+      FullName: <global namespace>.ThisAssembly,
       IsEnum: false,
       IsClass: true
     }

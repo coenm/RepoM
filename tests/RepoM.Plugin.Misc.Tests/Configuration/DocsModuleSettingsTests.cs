@@ -189,7 +189,7 @@ public class DocsModuleSettingsTests
 
         _fileSystem.RemoveFile("C:\\tmp\\Module\\dummy.json");
 
-        object?[] arguments = { _fileBasedPackageConfiguration, };
+        object?[] arguments = [_fileBasedPackageConfiguration,];
         var rawResult = methodInfo.Invoke(package, arguments);
 
         var persistedContent = _fileSystem.GetFile("C:\\tmp\\Module\\dummy.json").TextContents;

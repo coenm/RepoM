@@ -9,7 +9,7 @@ public class ActionMenuClassDescriptor : ClassDescriptor
     /// <summary>
     /// Properties
     /// </summary>
-    public List<ActionMenuMemberDescriptor> ActionMenuProperties { get; set; } = new List<ActionMenuMemberDescriptor>();
+    public List<ActionMenuMemberDescriptor> ActionMenuProperties { get; } = [];
 
     public string RepositoryActionName => Name;
 

@@ -16,9 +16,9 @@ public sealed class PackageAttribute : Attribute
         Description = description;
     }
 
-    public string Name { get; set; }
+    public string Name { get; }
 
-    public string ToolTip { get; set; }
+    public string ToolTip { get; }
 
     public string Description { get; }
 }
