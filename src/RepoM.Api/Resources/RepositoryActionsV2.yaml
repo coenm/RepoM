@@ -214,7 +214,6 @@ action-menu:
   name: 📦 Git
   actions:
   # - type: browse-repository@1
-  # - type: pin-repository@1
   - type: git-fetch@1
   - type: git-pull@1
   - type: git-push@1
@@ -222,6 +221,8 @@ action-menu:
 
 - type: separator@1
   # active: is_work_repository
+
+- type: pin-repository@1
 
 - type: folder@1
   name: ❓ About {{get_remote_name()}}
