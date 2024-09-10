@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Broslyn" Version="1.2.0" />
     <PackageReference Include="Microsoft.Build.Locator" Version="1.7.8" />
-    <PackageReference Include="MSBuild.StructuredLogger" Version="2.2.291" />
+    <PackageReference Include="MSBuild.StructuredLogger" Version="2.2.337" />
     <PackageReference Include="Scriban" Version="5.10.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
   </ItemGroup>
