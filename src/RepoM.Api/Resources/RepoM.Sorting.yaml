@@ -1,4 +1,4 @@
-Private: 
+Most Active: 
   type: composition-comparer@1
   comparers:
   - type: score-comparer@1
@@ -86,4 +86,3 @@ Work Dynamic:
   - type: az-comparer@1
     property: Name
     weight: 1
-
