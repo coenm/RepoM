@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +19,14 @@
     <!-- End-of not nice -->
     <ProjectReference Include="..\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
     <ProjectReference Include="..\RepoM.ActionMenu.Interface\RepoM.ActionMenu.Interface.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.Clipboard\RepoM.Plugin.Clipboard.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.LuceneQueryParser\RepoM.Plugin.LuceneQueryParser.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.Statistics\RepoM.Plugin.Statistics.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.WebBrowser\RepoM.Plugin.WebBrowser.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.WindowsExplorerGitInfo\RepoM.Plugin.WindowsExplorerGitInfo.csproj" />
   </ItemGroup>
 
   <ItemGroup>

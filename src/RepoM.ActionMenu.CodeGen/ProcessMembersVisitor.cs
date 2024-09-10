@@ -265,6 +265,11 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
         }
     }
 
+    public void Visit(ModuleConfigurationClassDescriptor descriptor)
+    {
+        Visit(descriptor as ClassDescriptor);
+    }
+
     public void Visit(ClassDescriptor descriptor)
     {
         if (_typeSymbol is INamedTypeSymbol { TypeKind: TypeKind.Enum, } symbol)

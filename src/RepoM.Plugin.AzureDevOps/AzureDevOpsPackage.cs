@@ -37,7 +37,7 @@ public class AzureDevOpsPackage : IPackage
 
         config ??= await PersistDefaultConfigAsync(packageConfiguration).ConfigureAwait(false);
 
-        container.RegisterInstance<IAzureDevopsConfiguration>(new AzureDevopsConfiguration(config.BaseUrl, config.PersonalAccessToken2));
+        container.RegisterInstance<IAzureDevopsConfiguration>(new AzureDevopsConfiguration(config.BaseUrl, config.PersonalAccessToken));
     }
 
     private static void RegisterServices(Container container)

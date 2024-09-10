@@ -11,7 +11,7 @@ public class AzureDevopsConfigV1
     /// Personal access token (PAT) to access Azure Devops. The PAT should be granted access to read and write pull requests.
     /// To create a PAT, goto `https://dev.azure.com/[my-organisation]/_usersSettings/tokens`.
     /// </summary>
-    public string? PersonalAccessToken2 { get; init; }
+    public string? PersonalAccessToken { get; init; }
 
     /// <summary>
     /// The base url of azure devops for your organisation (i.e. `https://dev.azure.com/[my-organisation]/`).
