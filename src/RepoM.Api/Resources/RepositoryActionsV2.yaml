@@ -195,31 +195,29 @@ action-menu     :
   name          : 'Warning: No remote repos to browse to'
   active        : array.size(repository.remotes) == 0
 
-# single remote, create url menu item
-- type          : url@1
-  name          : '🔗 {{ try_get_remote_origin_long_name() }}'
-  url           : '{{ repository.remotes[0].url }}'
-  active        : array.size(repository.remotes) == 1
+# #single remote, create url menu item
+# - type          : url@1
+#   name          : '🔗 {{ try_get_remote_origin_long_name() }}'
+#   url           : '{{ repository.remotes[0].url }}'
+#   active        : array.size(repository.remotes) == 1
 
-# Multiple remotes, create folder with multiple menu items
-- type          : folder@1
-  name          : 🔗 Remote repos
-  active        : array.size(repository.remotes) > 1
-  actions       : 
-  - type        : foreach@1
-    enumerable  : repository.remotes
-    variable    : remote
-    actions     : 
-    - type      : url@1
-      name      : '{{ try_get_remote_repo_long_name(remote.url) }} [{{ remote.key }}] '
-      url       : '{{ remote.url }}'
+# #Multiple remotes, create folder with multiple menu items
+# - type          : folder@1
+#   name          : 🔗 Remote repos
+#   active        : array.size(repository.remotes) > 1
+#   actions       : 
+#   - type        : foreach@1
+#     enumerable  : repository.remotes
+#     variable    : remote
+#     actions     : 
+#     - type      : url@1
+#       name      : '{{ try_get_remote_repo_long_name(remote.url) }} [{{ remote.key }}] '
+#       url       : '{{ remote.url }}'
 
-- type: separator@1
-
+- type          : browse-repository@1
 - type          : folder@1
   name          : 📦 Git
   actions       : 
-  # - type      : browse-repository@1
   - type        : git-fetch@1
   - type        : git-pull@1
   - type        : git-push@1
