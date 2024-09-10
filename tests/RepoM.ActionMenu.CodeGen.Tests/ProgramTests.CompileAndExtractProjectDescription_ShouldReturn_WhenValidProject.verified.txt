@@ -282,7 +282,8 @@ devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
             Name: azure-devops-create-pr@1-scenario03
           }
         ]
-      }
+      },
+      DotNetType: RepositoryActionDummyAbcV1
     }
   ],
   ActionContextMenus: [
@@ -358,7 +359,8 @@ devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
       FullName: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Context.UsageVariables,
       IsEnum: false,
       IsClass: true,
-      Description: Provides statistical information accessible through `statistics`.
+      Description: Provides statistical information accessible through `statistics`.,
+      DotNetType: UsageVariables
     }
   ],
   Types: [
@@ -414,7 +416,8 @@ devops_project_id = "805ACF64-0F06-47EC-96BF-E830895E2740";
       FullName: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.AutoCompleteOptionsV1,
       IsEnum: false,
       IsClass: true,
-      Description: Auto complete options.
+      Description: Auto complete options.,
+      DotNetType: AutoCompleteOptionsV1
     },
     {
       Members: [
@@ -463,7 +466,8 @@ no-fast-forward merge. The source branch is updated during the rebase operation.
       Namespace: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus,
       FullName: RepoM.ActionMenu.CodeGenDummyLibrary.ActionMenu.Model.ActionMenus.MergeStrategyV1,
       IsEnum: true,
-      IsClass: false
+      IsClass: false,
+      DotNetType: MergeStrategyV1
     },
     {
       ClassName: ThisAssembly,
