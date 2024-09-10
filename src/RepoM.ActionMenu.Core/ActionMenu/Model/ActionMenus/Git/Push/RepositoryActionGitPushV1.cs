@@ -20,7 +20,7 @@ internal sealed class RepositoryActionGitPushV1 : IMenuAction, IName
     }
 
     /// <inheritdoc cref="IName.Name"/>
-    [Text("Push")]
+    [Text("🔼 Push")]
     public Text Name { get; set; } = null!;
 
     /// <inheritdoc cref="IMenuAction.Active"/>
