@@ -4,9 +4,11 @@ using RepoM.Core.Plugin;
 
 /// <remarks>DO NOT CHANGE PROPERTYNAMES, TYPES, or VISIBILITIES</remarks>
 /// <summary>Module configuration (version 1)</summary>
-[ModuleConfiguration]
+[ModuleConfiguration(VERSION)]
 public class HeidiConfigV1
 {
+    internal const int VERSION = 1;
+
     /// <summary>
     /// The full directory where the portable configuration file is stored.
     /// </summary>

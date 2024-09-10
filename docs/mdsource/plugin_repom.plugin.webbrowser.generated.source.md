@@ -6,7 +6,18 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 
 ## Configuration
 
-The configuration. TODO
+Default configuration:
+
+```json
+{
+  "Version": 1,
+  "Settings": {
+    "Browsers": null,
+    "Profiles": null
+  }
+}
+```
+
 
 This module contains the following methods, variables and/or constants:
 

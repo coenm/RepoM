@@ -5,9 +5,11 @@ using RepoM.Core.Plugin;
 
 /// <remarks>DO NOT CHANGE PROPERTYNAMES, TYPES, or VISIBILITIES</remarks>
 /// <summary>Module configuration (version 1)</summary>
-[ModuleConfiguration]
+[ModuleConfiguration(VERSION)]
 public class WebBrowserConfigV1
 {
+    internal const int VERSION = 1;
+
     /// <summary>
     /// Dictionary of known browsers and their path to use for opening urls.
     /// </summary>

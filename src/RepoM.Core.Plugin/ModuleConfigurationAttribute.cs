@@ -9,4 +9,10 @@ using System;
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class ModuleConfigurationAttribute : Attribute
 {
+    public ModuleConfigurationAttribute(int version)
+    {
+        Version = version;
+    }
+
+    public int Version { get; }
 }

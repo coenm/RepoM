@@ -89,7 +89,7 @@ public class StatisticsPackage : IPackage
     private static async Task<StatisticsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = StatisticsConfigV1.CreateDefault();
-        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        await packageConfiguration.PersistConfigurationAsync(config, StatisticsConfigV1.VERSION).ConfigureAwait(false);
         return config;
     }
 }

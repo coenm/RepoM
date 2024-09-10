@@ -44,8 +44,17 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 {{~ end ~}}
 
 ## Configuration
-{{~ if plugin.HasConfiguration }}
-The configuration. TODO
+{{~ if plugin.HasConfiguration ~}}
+{{~ if !string.empty plugin.ConfigurationClasses[0].DefaultValueJson }}
+Default configuration:
+
+```json
+{{ plugin.ConfigurationClasses[0].DefaultValueJson | string.rstrip }}
+```
+{{ else }}
+Could not find the default configuration.
+{{~ end ~}}
+
 {{ else }}
 This plugin has no configuration.
 {{~ end ~}}

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Misc;
@@ -11,7 +12,9 @@ using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
-using Text = RepoM.ActionMenu.Interface.YamlModel.Templating.Text;
+using RepoM.Api.Plugins;
+using RepoM.Core.Plugin;
+using Text = Interface.YamlModel.Templating.Text;
 
 public class ProcessMembersVisitor : IClassDescriptorVisitor
 {
@@ -111,7 +114,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             descriptor.Members.Add(memberDescriptor);
 
-            Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 
@@ -268,6 +271,35 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
     public void Visit(ModuleConfigurationClassDescriptor descriptor)
     {
         Visit(descriptor as ClassDescriptor);
+
+        AttributeData? moduleConfigurationAttribute = _typeSymbol.FindAttribute<ModuleConfigurationAttribute>();
+
+        if (moduleConfigurationAttribute == null)
+        {
+            return;
+        }
+
+        var version = (int)moduleConfigurationAttribute.ConstructorArguments[0].Value!;
+
+        ISymbol? defaultFactoryMethodSymbol = _typeSymbol.GetMembers().SingleOrDefault(symbol => symbol.FindAttribute<ModuleConfigurationDefaultValueFactoryMethodAttribute>() != null);
+        if (!(defaultFactoryMethodSymbol is IMethodSymbol methodSymbol))
+        {
+            return;
+        }
+
+        if (descriptor.DotNetType == null)
+        {
+            throw new Exception(descriptor.FullName + "  No type found for ModuleConfigurationDefaultValueFactoryMethodAttribute");
+        }
+
+        var defaultValueResult = descriptor.DotNetType.InvokeMember(
+            "CreateDefault",
+            BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic,
+            null,
+            null,
+            null);
+
+        descriptor.DefaultValueJson = FileBasedPackageConfiguration.SerializeConfiguration(defaultValueResult, version);
     }
 
     public void Visit(ClassDescriptor descriptor)
@@ -293,7 +325,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                         XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                     };
 
-                Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+                XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
                 descriptor.Members.Add(memberDescriptor);
             }
 
@@ -389,7 +421,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             descriptor.Members.Add(memberDescriptor);
 
-            Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 }

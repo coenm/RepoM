@@ -60,7 +60,7 @@ public class AzureDevOpsPackage : IPackage
     private static async Task<AzureDevopsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = AzureDevopsConfigV1.CreateDefault();
-        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        await packageConfiguration.PersistConfigurationAsync(config, AzureDevopsConfigV1.VERSION).ConfigureAwait(false);
         return config;
     }
 }

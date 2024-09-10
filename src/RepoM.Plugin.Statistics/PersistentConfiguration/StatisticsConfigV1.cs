@@ -5,9 +5,11 @@ using RepoM.Core.Plugin;
 
 /// <remarks>DO NOT CHANGE PROPERTYNAMES, TYPES, or VISIBILITIES</remarks>
 /// <summary>Module configuration (version 1)</summary>
-[ModuleConfiguration]
+[ModuleConfiguration(VERSION)]
 public class StatisticsConfigV1
 {
+    internal const int VERSION = 1;
+
     /// <summary>
     /// Timespan for buffered events before making them persistant (i.e. `00:05:00` for five minutes). Must be greater then or equal to `00:00:10` (10 seconds).
     /// </summary>

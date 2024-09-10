@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Misc;
@@ -249,6 +250,35 @@ public static class Program
         return projectDescriptor;
     }
 
+    private static Type? GetTypeFromTypeSymbol(ITypeSymbol typeSymbol)
+    {
+        var displayName = typeSymbol.ToDisplayString();
+
+        AppDomain.CurrentDomain.Load(new AssemblyName(typeSymbol.ContainingAssembly.Name));
+
+        foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            foreach (Type foundType in assembly.GetTypes())
+            {
+                if (foundType.FullName == displayName)
+                {
+                    return foundType;
+                }
+            }
+        }
+
+        try
+        {
+            return Type.GetType(displayName);
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+
+        return null;
+    }
+
     private static void ProcessProject(Compilation compilation, ProjectDescriptor projectDescriptor, IDictionary<string, string> files)
     {
         foreach (ITypeSymbol typeSymbol in compilation.GetTypes())
@@ -302,6 +332,7 @@ public static class Program
 
             classDescriptor.ClassName = typeSymbol.Name;
             classDescriptor.Namespace = typeSymbol.ContainingNamespace.ToDisplayString();
+            classDescriptor.DotNetType = GetTypeFromTypeSymbol(typeSymbol);
 
             classDescriptor.Accept(docsClassVisitor);
             classDescriptor.Accept(memberVisitor);

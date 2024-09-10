@@ -81,7 +81,7 @@ public class WebBrowserPackage : IPackage
     private static async Task<WebBrowserConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = WebBrowserConfigV1.CreateDefault();
-        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        await packageConfiguration.PersistConfigurationAsync(config, WebBrowserConfigV1.VERSION).ConfigureAwait(false);
         return config;
     }
     
@@ -94,8 +94,8 @@ public class WebBrowserPackage : IPackage
             {
                 Browsers = new Dictionary<string, string>
                     {
-                        { "Edge", "C:\\PathTo\\msedge.exe" },
-                        { "FireFox", "C:\\PathTo\\Mozilla\\firefox.exe" },
+                        { "Edge", @"C:\PathTo\msedge.exe" },
+                        { "FireFox", @"C:\PathTo\Mozilla\firefox.exe" },
                     },
                 Profiles = new Dictionary<string, ProfileConfig>
                     {
@@ -105,7 +105,7 @@ public class WebBrowserPackage : IPackage
                     },
             };
 
-        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        await packageConfiguration.PersistConfigurationAsync(config, WebBrowserConfigV1.VERSION).ConfigureAwait(false);
         return config;
     }
 }

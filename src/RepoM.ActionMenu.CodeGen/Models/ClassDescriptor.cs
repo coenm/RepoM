@@ -60,6 +60,8 @@ public class ClassDescriptor : IXmlDocsExtended
 
     List<ParamDescriptor> IXmlDocsExtended.Params => throw new NotSupportedException("no params for class.");
 
+    public Type? DotNetType { get; set; }
+
     public virtual void Accept(IClassDescriptorVisitor visitor)
     {
         visitor.Visit(this);

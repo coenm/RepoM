@@ -57,7 +57,7 @@ public class SonarCloudPackage : IPackage
     private static async Task<SonarCloudConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = SonarCloudConfigV1.CreateDefault();
-        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        await packageConfiguration.PersistConfigurationAsync(config, SonarCloudConfigV1.VERSION).ConfigureAwait(false);
         return config;
     }
 }

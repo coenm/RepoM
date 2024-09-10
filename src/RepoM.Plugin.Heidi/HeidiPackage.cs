@@ -69,7 +69,7 @@ public class HeidiPackage : IPackage
     private static async Task<HeidiConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
         var config = HeidiConfigV1.CreateDefault();
-        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        await packageConfiguration.PersistConfigurationAsync(config, HeidiConfigV1.VERSION).ConfigureAwait(false);
         return config;
     }
 }

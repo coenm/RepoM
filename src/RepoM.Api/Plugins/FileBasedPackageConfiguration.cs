@@ -51,8 +51,8 @@ internal class FileBasedPackageConfiguration : IPackageConfiguration
             return;
         }
 
-        var json = JsonConvert.SerializeObject(new ConfigEnvelope<T> { Version = version, Settings = configuration, }, Formatting.Indented);
-
+        var json = SerializeConfiguration(configuration, version);
+        
         try
         {
             await _fileSystem.File.WriteAllTextAsync(filename, json).ConfigureAwait(false);
@@ -121,6 +121,17 @@ internal class FileBasedPackageConfiguration : IPackageConfiguration
     private string GetFilename()
     {
         return Path.Combine(_appDataPathProvider.AppDataPath, "Module", _filename + ".json");
+    }
+
+    internal static string SerializeConfiguration<T>(T configuration, int version)
+    {
+        return JsonConvert.SerializeObject(
+            new ConfigEnvelope<T>
+                {
+                    Version = version,
+                    Settings = configuration,
+                },
+            Formatting.Indented);
     }
 
     private sealed class ConfigEnvelope<T>

@@ -22,10 +22,9 @@ public class ActionMenuClassDescriptor : ClassDescriptor
 [DebuggerDisplay($"{{{nameof(ClassName)},nq}}")]
 public class ModuleConfigurationClassDescriptor : ClassDescriptor
 {
-    /// <summary>
-    /// Properties
-    /// </summary>
-    //public List<ActionMenuMemberDescriptor> ActionMenuProperties { get; } = [];
+    public string? DefaultValueJson { get; set; }
+
+    public List<PluginConfigurationMemberDescriptor> Properties { get; } = [];
     
     public bool IsObsolete { get; set; }
 

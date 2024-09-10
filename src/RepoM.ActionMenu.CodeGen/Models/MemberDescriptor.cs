@@ -132,3 +132,7 @@ public class ActionMenuContextMemberDescriptor : MemberDescriptor
 {
     public string ActionMenuContextMemberName => Name;
 }
+
+public class PluginConfigurationMemberDescriptor : MemberDescriptor
+{
+}
