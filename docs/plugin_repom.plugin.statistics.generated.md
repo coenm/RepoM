@@ -6,5 +6,16 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 
 ## Configuration
 
-The configuration. TODO
+Default configuration:
+
+```json
+{
+  "Version": 1,
+  "Settings": {
+    "PersistenceBuffer": "00:05:00",
+    "RetentionDays": 30
+  }
+}
+```
+
 
