@@ -2,18 +2,11 @@ namespace RepoM.Plugin.AzureDevOps.Internal;
 
 using System;
 
-internal class PullRequest
+internal class PullRequest(Guid repositoryId, string name, string url)
 {
-    public PullRequest(Guid repositoryId, string name, string url)
-    {
-        RepositoryId = repositoryId;
-        Name = name;
-        Url = url;
-    }
+    public Guid RepositoryId { get; } = repositoryId;
 
-    public Guid RepositoryId { get; }
+    public string Name { get; } = name;
 
-    public string Name { get; }
-
-    public string Url { get; }
+    public string Url { get; } = url;
 }

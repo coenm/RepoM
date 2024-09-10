@@ -8,14 +8,9 @@ using RepoM.Plugin.Clipboard.RepositoryAction.Actions;
 using TextCopy;
 
 [UsedImplicitly]
-internal class CopyToClipboardRepositoryCommandExecutor : ICommandExecutor<CopyToClipboardRepositoryCommand>
+internal class CopyToClipboardRepositoryCommandExecutor(IClipboard clipboard) : ICommandExecutor<CopyToClipboardRepositoryCommand>
 {
-    private readonly IClipboard _clipboard;
-
-    public CopyToClipboardRepositoryCommandExecutor(IClipboard clipboard)
-    {
-        _clipboard = clipboard ?? throw new ArgumentNullException(nameof(clipboard));
-    }
+    private readonly IClipboard _clipboard = clipboard ?? throw new ArgumentNullException(nameof(clipboard));
 
     public void Execute(IRepository repository, CopyToClipboardRepositoryCommand repositoryCommand)
     {

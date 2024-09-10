@@ -36,7 +36,7 @@ internal sealed class RepositoryActionClipboardCopyV1 : IMenuAction, IContext
     [Required]
     [Text]
     public Text Text { get; set; } = null!;
-    
+
     /// <inheritdoc cref="IContext.Context"/>
     public Context? Context { get; set; }
 

@@ -25,7 +25,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
     private readonly ILogger _logger;
     private readonly VssConnection? _connection;
     private GitHttpClient? _azureDevopsGitClient;
-    private readonly List<PullRequest> _emptyList = new(0);
+    private readonly List<PullRequest> _emptyList = [];
 
     private Timer? _updateTimer1;
     private Timer? _updateTimer2;
@@ -36,7 +36,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
     public AzureDevOpsPullRequestService(IAzureDevopsConfiguration configuration, ILogger logger)
     {
-        _httpClient = new();
+        _httpClient = new HttpClient();
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -53,8 +53,8 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                     _configuration.AzureDevOpsBaseUrl,
                     new VssBasicCredential(string.Empty, _configuration.AzureDevOpsPersonalAccessToken));
                 _httpClient.BaseAddress = _configuration.AzureDevOpsBaseUrl;
-                _httpClient.DefaultRequestHeaders.Accept.Add(new("application/json"));
-                _httpClient.DefaultRequestHeaders.Authorization = new("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($":{_configuration.AzureDevOpsPersonalAccessToken}")));
+                _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($":{_configuration.AzureDevOpsPersonalAccessToken}")));
             }
 
         }
