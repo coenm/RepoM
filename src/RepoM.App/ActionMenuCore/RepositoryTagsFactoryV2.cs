@@ -21,11 +21,11 @@ public class RepositoryTagsFactoryV2 : IRepositoryTagsFactory
         IAppDataPathProvider appDataPathProvider)
     {
         _ = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        this._newStyleActionMenuFactory = newStyleActionMenuFactory ?? throw new ArgumentNullException(nameof(newStyleActionMenuFactory));
+        _newStyleActionMenuFactory = newStyleActionMenuFactory ?? throw new ArgumentNullException(nameof(newStyleActionMenuFactory));
         _ = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
 
-        this._filename = fileSystem.Path.Combine(appDataPathProvider.AppDataPath, "TagsV2.yaml");
+        _filename = fileSystem.Path.Combine(appDataPathProvider.AppDataPath, "TagsV2.yaml");
     }
 
-    public Task<IEnumerable<string>> GetTagsAsync(Repository repository) => this._newStyleActionMenuFactory.GetTagsAsync(repository, this._filename);
+    public Task<IEnumerable<string>> GetTagsAsync(Repository repository) => _newStyleActionMenuFactory.GetTagsAsync(repository,_filename);
 }

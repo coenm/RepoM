@@ -14,12 +14,12 @@ public class AcrylicMenuItem : MenuItem
     {
         base.OnSubmenuOpened(e);
 
-        this.Dispatcher.BeginInvoke((Action)this.BlurSubMenu);
+        Dispatcher.BeginInvoke((Action)BlurSubMenu);
     }
 
     private void BlurSubMenu()
     {
-        DependencyObject firstSubItem = this.ItemContainerGenerator.ContainerFromIndex(0);
+        DependencyObject firstSubItem = ItemContainerGenerator.ContainerFromIndex(0);
 
         if (firstSubItem == null)
         {

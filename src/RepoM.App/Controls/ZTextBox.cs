@@ -25,12 +25,12 @@ public class ZTextBox : TextBox
 
         if (e.Key == Key.Escape)
         {
-            this.Clear();
+            Clear();
         }
 
         if (FinisherKeys.Contains(e.Key))
         {
-            this.Finish?.Invoke(this, EventArgs.Empty);
+            Finish?.Invoke(this, EventArgs.Empty);
         }
     }
 

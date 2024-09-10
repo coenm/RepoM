@@ -68,7 +68,7 @@ public partial class App : Application
             new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
         Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
-        this._notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
+        _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
 
         var fileSystem = new FileSystem();
 
@@ -95,16 +95,16 @@ public partial class App : Application
 
         UseRepositoryMonitor(Bootstrapper.Container);
 
-        this._moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
-        this._hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
-        this._windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
+        _moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
+        _hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
+        _windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
 
-        this._hotKeyService.Register();
-        this._windowSizeService.Register();
+        _hotKeyService.Register();
+        _windowSizeService.Register();
 
         try
         {
-            await this._moduleService.StartAsync().ConfigureAwait(false); // don't care about ui thread
+            await _moduleService.StartAsync().ConfigureAwait(false); // don't care about ui thread
         }
         catch (Exception exception)
         {
@@ -118,14 +118,14 @@ public partial class App : Application
     /// <param name="e"></param>
     protected override void OnExit(ExitEventArgs e)
     {
-        this._windowSizeService?.Unregister();
+        _windowSizeService?.Unregister();
 
-        this._moduleService?.StopAsync().GetAwaiter().GetResult();
+        _moduleService?.StopAsync().GetAwaiter().GetResult();
 
-        this._hotKeyService?.Unregister();
+        _hotKeyService?.Unregister();
 
         // #pragma warning disable CA1416 // Validate platform compatibility
-        this._notifyIcon?.Dispose();
+        _notifyIcon?.Dispose();
         // #pragma warning restore CA1416 // Validate platform compatibility
 
         ReleaseAndDisposeMutex();
