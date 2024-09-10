@@ -1,8 +1,12 @@
-context:
+﻿context:
 - type: evaluate-script@1
   content: |-
     func is_null(input)
       ret input == null
+    end
+
+    func is_not_null(input)
+      ret input != null
     end
 
     func get_filename(path)
@@ -47,6 +51,17 @@ context:
       ret repository.branch | string.replace "feature/" "" | string.strip
     end
 
+    func shorten_github_link(github_url)
+      ret github_url | string.replace "https://github.com/" "" | string.replace ".git" "" | string.strip
+    end
+
+    func get_remote_name()
+      if is_null(repository.remotes) || array.size(repository.remotes) == 0
+        ret repository.name
+      end
+      ret shorten_github_link(repository.remotes[0].url) 
+    end
+
     remote_name_origin = get_remote_origin_name();
     is_work_repository = remotes_contain("My-Work");
     is_github_repository = remotes_contain("github.com");
@@ -54,7 +69,17 @@ context:
     solution_files = file.find_files(repository.linux_path, "*.sln");
     solution_file = array.first(solution_files);
     
+    dir_visual_studio = env.ProgramW6432 + "/Microsoft Visual Studio/";
+    dir_windows_terminal_Store = env.LocalAppData + "/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/";
+    dir_windows_terminal_Preview = env.LocalAppData + "/Packages/Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe/";
+    dir_windows_terminal_Unpackaged = env.LocalAppData + "/Packages/Microsoft/WindowsTerminal/";
+
     exe_vs_code = env.LocalAppData + "/Programs/Microsoft VS Code/code.exe";
+    exe_sourcetree = env.LocalAppData + "/SourceTree/SourceTree.exe";
+    exe_gitkraken = env.LocalAppData + "/GitKraken/GitKraken.exe";
+    exe_everything = env.ProgramW6432 + "/Everything/Everything.exe";
+    exe_terminal_commander = env.ProgramW6432 + "/totalcmd/TOTALCMD64.EXE";
+
     
 # Specific var files
 - type: render-variable@1
@@ -91,29 +116,19 @@ context:
 action-menu:
 
 - type: command@1
-  name: Open in Windows File Explorer
+  name: 📂 Open in Windows File Explorer
   command: '"{{ repository.path }}"'
-
-- type: command@1
-  name: Open in Windows Terminal
-  command: wt
-  arguments: -d "{{ repository.linux_path }}"
-
-- type: executable@1
-  name: 'Open in Windows PowerShell'
-  executable: '{{ env.WINDIR }}/System32/WindowsPowerShell/v1.0/powershell.exe'
-  arguments: -executionpolicy bypass -noexit -command "Set-Location '{{ repository.linux_path }}'"
 
 # Open in visual studio when exactly one '.sln' file was found:
 - type: command@1
-  name: Open in Visual Studio
+  name: 🗃️ Open in Visual Studio
   command: '{{ solution_file }}'
-  active: array.size(solution_files) == 1
+  active: array.size(solution_files) == 1 && file.dir_exists(dir_visual_studio)
 
 # Otherwise, Visual studio folder with all '.sln' files when multiple sln files were found:
 - type: folder@1
-  name: Open in Visual Studio
-  active: array.size(solution_files) > 1
+  name: 🗃️ Open in Visual Studio
+  active: array.size(solution_files) > 1 && file.dir_exists(dir_visual_studio)
   actions:
   - type: foreach@1
     enumerable: solution_files
@@ -123,57 +138,114 @@ action-menu:
       name: '{{ get_filename(sln) }}'
       command: '{{ sln }}'
   
-- type: executable@1
-  name: Open in Visual Studio Code
-  executable: '{{ exe_vs_code }}'
-  arguments: '"{{ repository.linux_path }}"'
+- type: command@1
+  name: 📝 Open in Visual Studio Code
+  command: code
+  arguments: '"{{ repository.path }}"'
+  active: file.file_exists(exe_vs_code)
 
 - type: executable@1
   name: Open in Sourcetree
-  executable: '{{ env.LocalAppData }}/SourceTree/SourceTree.exe'
+  executable: '{{ exe_sourcetree }}'
   arguments: -f "{{ repository.windows_path }}"
+  active: file.file_exists(exe_sourcetree)
 
 - type: executable@1
-  name: Open in Everything
-  executable: '{{ env.ProgramW6432 }}/Everything/Everything.exe'
+  name: 📊 Open in GitKraken 🦑
+  executable: '{{ exe_gitkraken }}'
+  arguments: --path "{{ repository.path }}"
+
+- type: command@1
+  name: 🧾 Open in Windows Terminal
+  command: wt
+  arguments: -d "{{ repository.path }}"
+  active: file.dir_exists(dir_windows_terminal_Store) || file.dir_exists(dir_windows_terminal_Preview) || file.dir_exists(dir_windows_terminal_Unpackaged)
+
+- type: executable@1
+  name: 🔍 Open in Everything
+  executable: '{{ exe_everything }}'
   arguments: -s """"{{ repository.path }}""" "
+  active: file.file_exists(exe_everything)
 
 - type: executable@1
   name: Open in TotalCommander
-  executable: '{{ env.ProgramW6432 }}/totalcmd/TOTALCMD64.EXE'
+  executable: '{{ exe_terminal_commander }}'
   arguments: /O /T /L="{{ repository.linux_path }}"
+  active: file.file_exists(exe_terminal_commander)
+
+# - type: executable@1
+#   name: 'Open in Windows PowerShell'
+#   executable: '{{ env.WINDIR }}/System32/WindowsPowerShell/v1.0/powershell.exe'
+#   arguments: -executionpolicy bypass -noexit -command "Set-Location '{{ repository.linux_path }}'"
+
+# - type: executable@1
+#   name: 'Open in Windows Command Prompt'
+#   executable: '{{ env.WINDIR }}/System32/cmd.exe'
+#   arguments: /k cd "{{ repository.linux_path }}"
+
+- type: separator@1
+
+- type: just-text@1
+  name: 'Warning: No GitHub remotes to browse to'
+  active: array.size(repository.remotes) == 0
+
+# single remote, create url menu item
+- type: url@1
+  name: '🔗 GitHub: {{ get_remote_name() }}'
+  url: '{{ repository.remotes[0].url }}'
+  active: array.size(repository.remotes) == 1
+
+# Multiple remotes, create folder with multiple menu items
+- type: folder@1
+  name: 🔗 GitHub remote repositories
+  active: array.size(repository.remotes) > 1
+  actions:
+  - type: foreach@1
+    enumerable: repository.remotes
+    variable: remote
+    actions:
+    - type: url@1
+      name: '[{{ remote.key}}] {{ shorten_github_link(remote.url) }}'
+      url: '{{ remote.url }}'
 
 - type: separator@1
 
 - type: folder@1
-  name: Git
+  name: 📦 Git
   actions:
-  - type: browse-repository@1
+  # - type: browse-repository@1
+  # - type: pin-repository@1
   - type: git-fetch@1
   - type: git-pull@1
   - type: git-push@1
   - type: git-checkout@1
 
 - type: separator@1
-
-- type: ignore-repository@1
-
-- type: separator@1
-  active: is_work_repository
+  # active: is_work_repository
 
 - type: folder@1
-  name: '-- Examples --'
+  name: ❓ About {{get_remote_name()}}
   context:
   - type: render-variable@1
     name: repo_docs_directory
     value: 'C:\docs\{{ repository.name }}\' 
   actions:
   
-  - type: just-text@1
+  - type: clipboard-copy@1
     name: 'Current branch is {{ repository.branch }}'
+    text: '{{ repository.branch }}'
 
-  - type: command@1
-    name: 'Create Directory {{ repo_docs_directory }}'
-    command: cmd
-    arguments: /k mkdir "{{ repo_docs_directory }}"
-    active: '!file.dir_exists(repo_docs_directory)'
+  - type: clipboard-copy@1
+    name: 'Local path is {{ repository.windows_path }}'
+    text: '{{ repository.windows_path }}'
+
+  - type: separator@1
+
+  - type: ignore-repository@1
+    name: ❌ Ignore Repository
+
+  # - type: command@1
+  #   name: 'Create Directory {{ repo_docs_directory }}'
+  #   command: cmd
+  #   arguments: /k mkdir "{{ repo_docs_directory }}"
+  #   active: '!file.dir_exists(repo_docs_directory)'
