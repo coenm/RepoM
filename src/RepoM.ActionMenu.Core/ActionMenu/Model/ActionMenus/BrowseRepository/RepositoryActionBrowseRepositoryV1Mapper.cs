@@ -31,7 +31,7 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
 
         if (repository.Remotes.Count == 1 || forceSingle)
         {
-            menuTitle = "🔗Github: " + shorten_github_link(repository.Remotes[0].Url);
+            menuTitle = "🔗 " + try_get_remote_repo_long_name(repository.Remotes[0].Url);
             yield return new UserInterfaceRepositoryAction(menuTitle, repository)
             {
                 RepositoryCommand = new BrowseRepositoryCommand(repository.Remotes[0].Url),
@@ -39,7 +39,7 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
         }
         else
         {
-            menuTitle = "🔗GitHub remote repositories";  //🔗
+            menuTitle = "🔗 Remote repos";  //🔗
             yield return new DeferredSubActionsUserInterfaceRepositoryAction(
                 menuTitle,
                 repository,
@@ -52,16 +52,24 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
         }
     }
 
-    private static string shorten_github_link(string remoteUrl)
+    private static string try_get_remote_repo_long_name(string remoteUrl)
     {
-        return remoteUrl.Replace("https://github.com/", "").Replace(".git", "").Trim();
+        var splitString = remoteUrl.Trim().Split('/');
+        if (splitString.Length < 2)
+        {
+            return remoteUrl;
+        }
+
+        var name = splitString.Last().Replace(".git", "");
+        var author = splitString[^2];
+        return $"{author}/{name}";
     }
 
     private static Task<UserInterfaceRepositoryActionBase[]> EnumerateRemotes(IRepository repository)
     {
         return Task.FromResult(repository.Remotes
             .Take(50)
-            .Select(remote => new UserInterfaceRepositoryAction(shorten_github_link(remote.Url), repository)
+            .Select(remote => new UserInterfaceRepositoryAction(try_get_remote_repo_long_name(remote.Url), repository)
             {
                 RepositoryCommand = new BrowseRepositoryCommand(remote.Url),
             })
