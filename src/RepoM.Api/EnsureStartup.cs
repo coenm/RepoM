@@ -7,16 +7,10 @@ using System.Threading.Tasks;
 using RepoM.Api.Resources;
 using RepoM.Core.Plugin.Common;
 
-public class EnsureStartup
+public class EnsureStartup(IFileSystem fileSystem, IAppDataPathProvider appDataProvider)
 {
-    private readonly IFileSystem _fileSystem;
-    private readonly IAppDataPathProvider _appDataProvider;
-
-    public EnsureStartup(IFileSystem fileSystem, IAppDataPathProvider appDataProvider)
-    {
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _appDataProvider = appDataProvider ?? throw new ArgumentNullException(nameof(appDataProvider));
-    }
+    private readonly IFileSystem _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+    private readonly IAppDataPathProvider _appDataProvider = appDataProvider ?? throw new ArgumentNullException(nameof(appDataProvider));
 
     public async Task EnsureFilesAsync()
     {
