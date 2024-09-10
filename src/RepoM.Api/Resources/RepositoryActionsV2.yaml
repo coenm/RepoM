@@ -223,6 +223,8 @@ action-menu:
   # active: is_work_repository
 
 - type: pin-repository@1
+  name: "📌 Pin / Unpin Repo"
+  mode: toggle
 
 - type: folder@1
   name: ❓ About {{get_remote_name()}}
