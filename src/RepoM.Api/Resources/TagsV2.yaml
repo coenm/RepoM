@@ -36,11 +36,12 @@ context:
     
 tags:
 
-- tag: work
-  when: is_work_repository
+- tag: github
+  when: 'remotes_contain("github.com")'
 
 - tag: private
   when: '!is_work_repository && repository_path_contains("Projects/Private")'
 
-- tag: github
-  when: 'remotes_contain("github.com")'
+- tag: work
+  when: is_work_repository
+
