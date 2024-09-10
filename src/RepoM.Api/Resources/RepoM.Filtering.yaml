@@ -1,12 +1,3 @@
-All:
-  name: All
-  description: Private repositories
-  always-visible:
-    kind: query@1
-    query: RepoM OR is:pinned
-  filter:
-    kind: query@1
-    query:
 Private:
   name: Private
   description: Private repositories

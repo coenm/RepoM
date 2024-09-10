@@ -27,5 +27,5 @@ public interface IRepositoryFilteringManager
 
     bool SetQueryParser(string key);
 
-    bool SetFilter(string key);
+    bool SetFilter(string filterName);
 }
