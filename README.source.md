@@ -75,7 +75,7 @@ RepoM uses plugins to extend functionality. At this moment, when a plugin is ava
   - [LuceneQueryParser](docs_old/RepoM.Plugin.LuceneQueryParser.md)
   - [SonarCloud](docs_old/RepoM.Plugin.SonarCloud.md)
   - [Statistics](docs_old/RepoM.Plugin.Statistics.md)
-  - [WebBrowser](docs_old/RepoM.Plugin.WebBrowser.md)
+  - [WebBrowser](docs/plugin_repom.plugin.webbrowser.generated.md)
   - [WindowsExplorerGitInfo](docs_old/RepoM.Plugin.WindowsExplorerGitInfo.md)
   
 ## Credits
