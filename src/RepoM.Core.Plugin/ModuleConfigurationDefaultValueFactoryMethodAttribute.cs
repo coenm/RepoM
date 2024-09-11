@@ -10,3 +10,8 @@ using System;
 public sealed class ModuleConfigurationDefaultValueFactoryMethodAttribute : Attribute
 {
 }
+
+[AttributeUsage(AttributeTargets.Method)]
+public sealed class ModuleConfigurationExampleValueFactoryMethodAttribute : Attribute
+{
+}

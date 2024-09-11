@@ -293,13 +293,29 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
         }
 
         var defaultValueResult = descriptor.DotNetType.InvokeMember(
-            "CreateDefault",
+            methodSymbol.Name,
             BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic,
             null,
             null,
             null);
 
         descriptor.DefaultValueJson = FileBasedPackageConfiguration.SerializeConfiguration(defaultValueResult, version);
+
+        // 
+        ISymbol? exampleFactoryMethodSymbol = _typeSymbol.GetMembers().SingleOrDefault(symbol => symbol.FindAttribute<ModuleConfigurationExampleValueFactoryMethodAttribute>() != null);
+        if (!(exampleFactoryMethodSymbol is IMethodSymbol methodSymbolExample))
+        {
+            return;
+        }
+
+        var exampleValueResult = descriptor.DotNetType.InvokeMember(
+            methodSymbolExample.Name,
+            BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic,
+            null,
+            null,
+            null);
+
+        descriptor.ExampleValueJson = FileBasedPackageConfiguration.SerializeConfiguration(exampleValueResult, version);
     }
 
     public void Visit(ClassDescriptor descriptor)

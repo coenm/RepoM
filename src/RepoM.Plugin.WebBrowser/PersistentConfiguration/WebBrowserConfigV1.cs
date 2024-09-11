@@ -29,4 +29,23 @@ public class WebBrowserConfigV1
             Profiles = null,
         };
     }
+
+    [ModuleConfigurationExampleValueFactoryMethod]
+    internal static WebBrowserConfigV1 CreateExample()
+    {
+        return new WebBrowserConfigV1
+        {
+            Browsers = new Dictionary<string, string>
+            {
+                { "Edge", @"C:\PathTo\msedge.exe" },
+                { "FireFox", @"C:\PathTo\Mozilla\firefox.exe" },
+            },
+            Profiles = new Dictionary<string, ProfileConfig>
+            {
+                { "Work", new ProfileConfig { BrowserName = "Edge", CommandLineArguments = "\"--profile-directory=Profile 4\" {url}", } },
+                { "Incognito", new ProfileConfig { BrowserName = "Edge", CommandLineArguments = "-inprivate", } },
+                { "Incognito2", new ProfileConfig { BrowserName = "FireFox", CommandLineArguments = "-inprivate {url}", } },
+            },
+        };
+    }
 }

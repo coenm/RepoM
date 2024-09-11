@@ -24,6 +24,8 @@ public class ModuleConfigurationClassDescriptor : ClassDescriptor
 {
     public string? DefaultValueJson { get; set; }
 
+    public string? ExampleValueJson { get; set; }
+
     public List<PluginConfigurationMemberDescriptor> Properties { get; } = [];
     
     public bool IsObsolete { get; set; }

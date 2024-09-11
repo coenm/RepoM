@@ -20,6 +20,33 @@ The following default configuration is used:
 }
 ```
 
+Example configuration:
+
+```json
+{
+  "Version": 1,
+  "Settings": {
+    "Browsers": {
+      "Edge": "C:\\PathTo\\msedge.exe",
+      "FireFox": "C:\\PathTo\\Mozilla\\firefox.exe"
+    },
+    "Profiles": {
+      "Work": {
+        "BrowserName": "Edge",
+        "CommandLineArguments": "\"--profile-directory=Profile 4\" {url}"
+      },
+      "Incognito": {
+        "BrowserName": "Edge",
+        "CommandLineArguments": "-inprivate"
+      },
+      "Incognito2": {
+        "BrowserName": "FireFox",
+        "CommandLineArguments": "-inprivate {url}"
+      }
+    }
+  }
+}
+```
 
 This module contains the following methods, variables and/or constants:
 

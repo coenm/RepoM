@@ -57,6 +57,13 @@ The following default configuration is used:
 Could not find the default configuration.
 {{~ end ~}}
 
+{{~ if !string.empty plugin.ConfigurationClasses[0].ExampleValueJson ~}}
+Example configuration:
+
+```json
+{{ plugin.ConfigurationClasses[0].ExampleValueJson | string.rstrip }}
+```
+{{~ end ~}}
 {{ else }}
 This plugin has no configuration.
 {{~ end ~}}
