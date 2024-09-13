@@ -29,4 +29,15 @@ public class HeidiConfigV1
     {
         return new HeidiConfigV1();
     }
+
+    [ModuleConfigurationExampleValueFactoryMethod]
+    internal static HeidiConfigV1 CreateExample()
+    {
+        return new HeidiConfigV1
+        {
+            ConfigPath = @"C:\StandAloneProgramFiles\HeidiSQL_12.3_64_Portable",
+            ConfigFilename = "portable_settings.txt",
+            ExecutableFilename = @"C:\StandAloneProgramFiles\HeidiSQL_12.3_64_Portable\heidisql.exe",
+        };
+    }
 }

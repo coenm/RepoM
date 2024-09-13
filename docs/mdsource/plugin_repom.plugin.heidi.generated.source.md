@@ -21,4 +21,22 @@ The following default configuration is used:
 }
 ```
 
+Example configuration:
+
+```json
+{
+  "Version": 1,
+  "Settings": {
+    "ConfigPath": "C:\\StandAloneProgramFiles\\HeidiSQL_12.3_64_Portable",
+    "ConfigFilename": "portable_settings.txt",
+    "ExecutableFilename": "C:\\StandAloneProgramFiles\\HeidiSQL_12.3_64_Portable\\heidisql.exe"
+  }
+}
+```
+
+### Properties
+
+- `ConfigPath`: The full directory where the portable configuration file is stored.
+- `ConfigFilename`: The portable-configurration filename (without path). Most likely `portable_settings.txt`
+- `ExecutableFilename`: The full executable of Heidi.
 

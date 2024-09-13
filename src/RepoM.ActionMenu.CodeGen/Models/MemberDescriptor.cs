@@ -1,6 +1,7 @@
 namespace RepoM.ActionMenu.CodeGen.Models;
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 
 public static class TypeInfoDescriptorFactory
@@ -19,6 +20,7 @@ public static class TypeInfoDescriptorFactory
     }
 }
 
+[DebuggerDisplay($"{{{nameof(Name)},nq}}")]
 public class TypeInfoDescriptor
 {
     public TypeInfoDescriptor(ITypeSymbol typeSymbol)
@@ -72,6 +74,7 @@ public class TypeInfoDescriptor
 /// <summary>
 /// Property, Function, field etc. etc.
 /// </summary>
+[DebuggerDisplay($"{{{nameof(CSharpName)},nq}}")]
 public class MemberDescriptor : IXmlDocsExtended
 {
     /// <summary>
@@ -111,6 +114,7 @@ public class MemberDescriptor : IXmlDocsExtended
     public List<ParamDescriptor> Params { get; } = [];
 }
 
+[DebuggerDisplay($"{{{nameof(CSharpName)},nq}}")]
 public class ActionMenuMemberDescriptor : MemberDescriptor
 {
     // public RepositoryActionAttribute RepositoryActionAttribute { get; init; }
@@ -128,11 +132,13 @@ public class ActionMenuMemberDescriptor : MemberDescriptor
     public string? RefType { get; set; }
 }
 
+[DebuggerDisplay($"{{{nameof(CSharpName)},nq}}")]
 public class ActionMenuContextMemberDescriptor : MemberDescriptor
 {
     public string ActionMenuContextMemberName => Name;
 }
 
+[DebuggerDisplay($"{{{nameof(CSharpName)},nq}}")]
 public class PluginConfigurationMemberDescriptor : MemberDescriptor
 {
 }

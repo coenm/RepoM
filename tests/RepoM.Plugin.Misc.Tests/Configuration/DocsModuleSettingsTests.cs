@@ -38,6 +38,12 @@ public class DocsModuleSettingsTests
 
     public static IEnumerable<object[]> PackagesTestData => PluginStore.Packages.Select(package => new object[] { package, }).ToArray();
 
+    public static IEnumerable<object[]> PackagesDocumentationTestData =>
+        PluginStore.Packages
+           .Where(x => !new[] { "AzureDevOpsPackage", "ClipboardPackage", "StatisticsPackage", "WebBrowserPackage", }.Contains(x.Name))
+           .Select(package => new object[] { package, })
+           .ToArray();
+
     [Fact]
     public async Task VerifyChanges()
     {
@@ -62,7 +68,7 @@ public class DocsModuleSettingsTests
     }
 
     [Theory]
-    [MemberData(nameof(PackagesTestData))]
+    [MemberData(nameof(PackagesDocumentationTestData))]
     public async Task DocsModuleSettings(IPackage package)
     {
         // arrange
@@ -72,7 +78,7 @@ public class DocsModuleSettingsTests
         (object? config, string? persistedConfig) = await PersistDefaultConfigAsync(package);
 
         // assert
-        _verifySettings.UseTextForParameters(package.GetType().Name);
+        _verifySettings.UseTextForParameters(packageName);
         if (config == null && persistedConfig == null)
         {
             _verifySettings.AppendContentAsFile(CreateConfigWithoutSnippetDocumentationMarkdown(), "md", "desc");
@@ -80,26 +86,26 @@ public class DocsModuleSettingsTests
         }
         else
         {
-            (_,  string? examplePersistedConfig) = await PersistExampleConfigAsync(package);
+            (_, string? examplePersistedConfig) = await PersistExampleConfigAsync(package);
 
             var builtinClassNames = new Dictionary<string, string>
-                {
-                    [config!.GetType().Name] = "config",
-                };
+            {
+                [config!.GetType().Name] = "config",
+            };
 
 #if DEBUG
             var options = new NuDoq.ReaderOptions
-                {
-                    KeepNewLinesInText = true,
-                };
+            {
+                KeepNewLinesInText = true,
+            };
             AssemblyMembers members = DocReader.Read(config.GetType().Assembly, options);
 #else
             var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
 #endif
-            
+
             var visitor = new PluginConfigurationMarkdownVisitor(builtinClassNames);
             members.Accept(visitor);
-            
+
             var sb = new StringBuilder();
             foreach (ClassWriter classWriter in visitor.ClassWriters.OrderBy(c => c.Key).Select(c => c.Value))
             {

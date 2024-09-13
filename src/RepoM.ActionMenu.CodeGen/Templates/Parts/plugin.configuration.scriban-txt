@@ -1,0 +1,25 @@
+{{~ if !string.empty plugin.ConfigurationClasses[0].DefaultValueJson }}
+This plugin has specific configuration stored in the following directory `%APPDATA%/RepoM/Module/`. This configuration file should be edit manually. The safest way to do this is, is when RepoM is not running.
+
+The following default configuration is used:
+
+```json
+{{ plugin.ConfigurationClasses[0].DefaultValueJson | string.rstrip }}
+```
+{{ else }}
+Could not find the default configuration.
+{{~ end ~}}
+{{~ if !string.empty plugin.ConfigurationClasses[0].ExampleValueJson }}
+Example configuration:
+
+```json
+{{ plugin.ConfigurationClasses[0].ExampleValueJson | string.rstrip }}
+```
+{{~ end ~}}
+{{~ if array.size(plugin.ConfigurationClasses[0].Members) > 0  }}
+### Properties
+
+    {{~ for member in plugin.ConfigurationClasses[0].Members ~}}
+- `{{ member.Name ?? member.CSharpName }}`: {{ member.Description }}
+    {{~ end ~}}
+{{~ end ~}}
