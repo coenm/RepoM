@@ -1,9 +1,3 @@
-# Lucene Query Parser
-
-include: _plugin_enable
-
-include: DocsModuleSettingsTests.DocsModuleSettings_LuceneQueryParserPackage#desc.verified.md
-
 To search for repositories, you can use a repom-dialect of Lucene query syntax.
 
 > ## Terms

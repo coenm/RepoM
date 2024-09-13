@@ -28,6 +28,15 @@ public class DocsModuleSettingsTests
     private readonly FileBasedPackageConfiguration _fileBasedPackageConfiguration;
     private readonly MockFileSystem _fileSystem;
 
+    private static readonly string[] _excludes =
+    [
+        "AzureDevOpsPackage",
+        "ClipboardPackage",
+        "StatisticsPackage",
+        "WebBrowserPackage",
+        "LuceneQueryParserPackage",
+    ];
+
     public DocsModuleSettingsTests()
     {
         _fileSystem = MockFileSystemFactory.CreateDefaultFileSystem();
@@ -40,7 +49,7 @@ public class DocsModuleSettingsTests
 
     public static IEnumerable<object[]> PackagesDocumentationTestData =>
         PluginStore.Packages
-           .Where(x => !new[] { "AzureDevOpsPackage", "ClipboardPackage", "StatisticsPackage", "WebBrowserPackage", }.Contains(x.Name))
+           .Where(x => !_excludes.Contains(x.Name))
            .Select(package => new object[] { package, })
            .ToArray();
 

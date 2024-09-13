@@ -119,7 +119,7 @@ public static class Program
             {
                 var name = project.ProjectName.ToLowerInvariant();
                 var fileName = Path.Combine(RepoMFolders.DocumentationMarkDownSource, $"plugin_{name}.generated.source.md");
-                var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
+                var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs, $"plugin_{name}").ConfigureAwait(false);
                 await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
 
                 fileName = Path.Combine(RepoMFolders.Documentation, $"plugin_{name}.generated.md");
@@ -132,7 +132,7 @@ public static class Program
             {
                 // core
                 var fileName = Path.Combine(RepoMFolders.DocumentationMarkDownSource, "repom.generated.source.md");
-                var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs).ConfigureAwait(false);
+                var content = await DocumentationGenerator.GetPluginDocsContentAsync(project, templatePluginDocs, "repom").ConfigureAwait(false);
                 await File.WriteAllTextAsync(fileName, content).ConfigureAwait(false);
 
                 fileName = Path.Combine(RepoMFolders.Documentation, "repom.generated.md");

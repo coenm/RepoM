@@ -12,23 +12,21 @@ using Scriban.Runtime;
 
 internal static class DocumentationGenerator
 {
-    private static readonly FileSystemTemplateLoader _templateLoader = new("Templates/Parts");
-
-    public static async Task<string> GetPluginDocsContentAsync(ProjectDescriptor plugin, Template template)
+    public static async Task<string> GetPluginDocsContentAsync(ProjectDescriptor plugin, Template template, string name)
     {
         plugin.ActionMenus.Sort((left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal));
 
         var context = new TemplateContext
-            {
-                LoopLimit = 0,
-                MemberRenamer = x => x.Name,
-                TemplateLoader = _templateLoader,
+        {
+            LoopLimit = 0,
+            MemberRenamer = x => x.Name,
+            TemplateLoader = new FileSystemTemplateLoader(name, "Templates/Parts", RepoMFolders.DocumentationMarkDownSource),
         };
 
-        var scriptObject = new ScriptObject()
-            {
-                { "plugin", plugin },
-            };
+        var scriptObject = new ScriptObject
+        {
+            { "plugin", plugin },
+        };
         scriptObject.Import(typeof(MyStringFunctions));
 
         context.PushGlobal(scriptObject);
@@ -41,16 +39,16 @@ internal static class DocumentationGenerator
         module.Members.Sort((left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal));
 
         var context = new TemplateContext
-            {
-                LoopLimit = 0,
-                MemberRenamer = x => x.Name,
-                TemplateLoader = _templateLoader,
+        {
+            LoopLimit = 0,
+            MemberRenamer = x => x.Name,
+            TemplateLoader = new FileSystemTemplateLoader(string.Empty, "Templates/Parts", RepoMFolders.DocumentationMarkDownSource),
         };
 
-        var scriptObject = new ScriptObject()
-            {
-                { "module", module },
-            };
+        var scriptObject = new ScriptObject
+        {
+            { "module", module },
+        };
         scriptObject.Import(typeof(MyStringFunctions));
 
         context.PushGlobal(scriptObject);
@@ -63,17 +61,17 @@ internal static class DocumentationGenerator
         var modules = actionContextMenus.OrderBy(x => x.ClassName).ToList();
 
         var context = new TemplateContext
-            {
-                LoopLimit = 0,
-                MemberRenamer = x => x.Name,
-                EnableRelaxedMemberAccess = false,
-                TemplateLoader = _templateLoader,
+        {
+            LoopLimit = 0,
+            MemberRenamer = x => x.Name,
+            EnableRelaxedMemberAccess = false,
+            TemplateLoader = new FileSystemTemplateLoader(string.Empty, "Templates/Parts", RepoMFolders.DocumentationMarkDownSource),
         };
 
-        var scriptObject = new ScriptObject()
-            {
-                { "modules", modules },
-            };
+        var scriptObject = new ScriptObject
+        {
+            { "modules", modules },
+        };
         scriptObject.Import(typeof(MyStringFunctions));
 
         context.PushGlobal(scriptObject);
@@ -84,21 +82,45 @@ internal static class DocumentationGenerator
 
 internal class FileSystemTemplateLoader : ITemplateLoader
 {
-    private readonly string _basePath;
+    private readonly string _prefix;
+    private readonly string _scribanTemplatesPathBase;
+    private readonly string _docsIncludeSourceFullPath;
 
-    public FileSystemTemplateLoader(string basePath)
+    public FileSystemTemplateLoader(string prefix, string scribanTemplatesPath, string docsIncludeSourceFullPath)
     {
-        _basePath = basePath ?? throw new ArgumentNullException(nameof(basePath));
+        _prefix = prefix;
+        _scribanTemplatesPathBase = scribanTemplatesPath ?? throw new ArgumentNullException(nameof(scribanTemplatesPath));
+        _docsIncludeSourceFullPath = docsIncludeSourceFullPath ?? throw new ArgumentNullException(nameof(docsIncludeSourceFullPath));
     }
 
     public string GetPath(TemplateContext context, SourceSpan callerSpan, string templateName)
     {
-        var result = Path.Combine(_basePath, templateName);
+        if (!string.IsNullOrWhiteSpace(_prefix) && templateName.Length == 2)
+        {
+            if (int.TryParse(templateName, out int _))
+            {
+                var prefix = Path.Combine(_docsIncludeSourceFullPath, $"{_prefix}." + templateName);
+                var path = $"{prefix}.md";
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+                
+                return string.Empty;
+            }
+        }
+
+        var result = Path.Combine(_scribanTemplatesPathBase, templateName);
         return result;
     }
 
     public string Load(TemplateContext context, SourceSpan callerSpan, string templatePath)
     {
+        if (string.IsNullOrEmpty(templatePath))
+        {
+            return string.Empty;
+        }
+
         try
         {
             var result = File.ReadAllText(templatePath);
@@ -113,6 +135,11 @@ internal class FileSystemTemplateLoader : ITemplateLoader
 
     public async ValueTask<string> LoadAsync(TemplateContext context, SourceSpan callerSpan, string templatePath)
     {
+        if (string.IsNullOrEmpty(templatePath))
+        {
+            return string.Empty;
+        }
+
         try
         {
             var result = await File.ReadAllTextAsync(templatePath);
