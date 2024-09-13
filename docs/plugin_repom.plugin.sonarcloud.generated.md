@@ -20,6 +20,10 @@ The following default configuration is used:
 }
 ```
 
+### Properties
+
+- `PersonalAccessToken`: Personal Access Token to access SonarCloud.
+- `BaseUrl`: SonarCloud url. Most likely `https//sonarcloud.io`.
 
 This module contains the following methods, variables and/or constants:
 

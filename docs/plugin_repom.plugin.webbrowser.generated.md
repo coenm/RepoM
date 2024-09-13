@@ -48,6 +48,11 @@ Example configuration:
 }
 ```
 
+### Properties
+
+- `Browsers`: Dictionary of known browsers and their path to use for opening urls.
+- `Profiles`: Profiles to use.
+
 This module contains the following methods, variables and/or constants:
 
 ## browser@1

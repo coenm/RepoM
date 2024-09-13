@@ -69,12 +69,12 @@ When RepoM starts for the first time, a configuration file wil be created. Most 
 RepoM uses plugins to extend functionality. At this moment, when a plugin is available in the installed directory, it will be found and can be enabled or disabled. This is done in the hamburger menu of RepoM. Enabling or disabling requires a restart of RepoM.
 
 - [Plugins](docs_old/Plugins.md)
-  - [AzureDevOps](docs_old/RepoM.Plugin.AzureDevOps.md)
-  - [Clipboard](docs_old/RepoM.Plugin.Clipboard.md)
+  - [AzureDevOps](docs/plugin_repom.plugin.azuredevops.generated.md)
+  - [Clipboard](docs/plugin_repom.plugin.clipboard.generated.md)
   - [Heidi](docs_old/RepoM.Plugin.Heidi.md)
   - [LuceneQueryParser](docs_old/RepoM.Plugin.LuceneQueryParser.md)
   - [SonarCloud](docs_old/RepoM.Plugin.SonarCloud.md)
-  - [Statistics](docs_old/RepoM.Plugin.Statistics.md)
+  - [Statistics](docs/plugin_repom.plugin.statistics.generated.md)
   - [WebBrowser](docs/plugin_repom.plugin.webbrowser.generated.md)
   - [WindowsExplorerGitInfo](docs_old/RepoM.Plugin.WindowsExplorerGitInfo.md)
   
