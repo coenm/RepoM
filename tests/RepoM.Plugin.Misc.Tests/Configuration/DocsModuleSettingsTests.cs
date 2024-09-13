@@ -35,6 +35,7 @@ public class DocsModuleSettingsTests
         "StatisticsPackage",
         "WebBrowserPackage",
         "LuceneQueryParserPackage",
+        "SonarCloudPackage",
     ];
 
     public DocsModuleSettingsTests()
