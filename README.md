@@ -42,7 +42,7 @@ The main functionality of RepoM are the quick actions to execute per repository.
 
 To read more about the context menu, click here.
 
-These actions are defined in the `RepositoryActions.yaml` located in your `%APPDATA%\RepoM\` folder. More information can be found [here](docs_old/RepositoryActions.md).
+These actions are defined in the `RepositoryActionsV2.yaml` located in your `%APPDATA%\RepoM\` folder. More information can be found in the docs folder.
 
 ## Tagging
 
