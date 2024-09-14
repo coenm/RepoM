@@ -91,7 +91,7 @@
 action-menu:
 
 - type          : command@1
-  name          : 📂 Open in Windows File Explorer
+  name          : Open in Windows File Explorer
   command       : explorer
   arguments     : '{{ repository.path }}'
 
@@ -125,7 +125,7 @@ action-menu:
       command: '{{ sln }}'
   
 - type          : command@1
-  name          : 📝 Open in Visual Studio Code
+  name          : Open in Visual Studio Code
   command       : '{{ exe_vs_code }}'
   arguments     : '"{{ repository.path }}"'
   active        : file.file_exists(exe_vs_code)
