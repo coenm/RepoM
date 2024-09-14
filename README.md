@@ -68,7 +68,7 @@ When RepoM starts for the first time, a configuration file wil be created. Most 
 
 RepoM uses plugins to extend functionality. At this moment, when a plugin is available in the installed directory, it will be found and can be enabled or disabled. This is done in the hamburger menu of RepoM. Enabling or disabling requires a restart of RepoM.
 
-- [Plugins](docs_old/Plugins.md)
+- [Plugins](docs/Plugins.md)
   - [AzureDevOps](docs/plugin_repom.plugin.azuredevops.generated.md)
   - [Clipboard](docs/plugin_repom.plugin.clipboard.generated.md)
   - [Heidi](docs_old/RepoM.Plugin.Heidi.md)
