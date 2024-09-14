@@ -1,4 +1,4 @@
-﻿context: 
+context: 
 - type   : evaluate-script@1
   content: |-
     func is_null(input)
@@ -123,7 +123,8 @@ action-menu     :
 
 - type          : command@1
   name          : 📂 Open in Windows File Explorer
-  command       : '"{{ repository.path }}"'
+  command       : explorer
+  arguments     : '{{ repository.path }}'
 
 # Open in visual studio when exactly one '.sln' file was found: 
 - type          : command@1
@@ -146,7 +147,7 @@ action-menu     :
   
 - type          : command@1
   name          : 📝 Open in Visual Studio Code
-  command       : code
+  command       : '{{ exe_vs_code }}'
   arguments     : '"{{ repository.path }}"'
   active        : file.file_exists(exe_vs_code)
 
@@ -195,26 +196,26 @@ action-menu     :
   name          : 'Warning: No remote repos to browse to'
   active        : array.size(repository.remotes) == 0
 
-# #single remote, create url menu item
-# - type          : url@1
-#   name          : '🔗 {{ try_get_remote_origin_long_name() }}'
-#   url           : '{{ repository.remotes[0].url }}'
-#   active        : array.size(repository.remotes) == 1
+# single remote, create url menu item
+- type          : url@1
+  name          : '🔗 {{ try_get_remote_origin_long_name() }}'
+  url           : '{{ repository.remotes[0].url }}'
+  active        : array.size(repository.remotes) == 1
 
-# #Multiple remotes, create folder with multiple menu items
-# - type          : folder@1
-#   name          : 🔗 Remote repos
-#   active        : array.size(repository.remotes) > 1
-#   actions       : 
-#   - type        : foreach@1
-#     enumerable  : repository.remotes
-#     variable    : remote
-#     actions     : 
-#     - type      : url@1
-#       name      : '{{ try_get_remote_repo_long_name(remote.url) }} [{{ remote.key }}] '
-#       url       : '{{ remote.url }}'
+# Multiple remotes, create folder with multiple menu items
+- type          : folder@1
+  name          : 🔗 Remote repos
+  active        : array.size(repository.remotes) > 1
+  actions       : 
+  - type        : foreach@1
+    enumerable  : repository.remotes
+    variable    : remote
+    actions     : 
+    - type      : url@1
+      name      : '{{ try_get_remote_repo_long_name(remote.url) }} [{{ remote.key }}] '
+      url       : '{{ remote.url }}'
 
-- type          : browse-repository@1
+# - type          : browse-repository@1
 - type          : folder@1
   name          : 📦 Git
   actions       : 
