@@ -76,7 +76,7 @@ RepoM uses plugins to extend functionality. At this moment, when a plugin is ava
   - [SonarCloud](docs/plugin_repom.plugin.sonarcloud.generated.md)
   - [Statistics](docs/plugin_repom.plugin.statistics.generated.md)
   - [WebBrowser](docs/plugin_repom.plugin.webbrowser.generated.md)
-  - [WindowsExplorerGitInfo](docs_old/RepoM.Plugin.WindowsExplorerGitInfo.md)
+  - [WindowsExplorerGitInfo](docs/plugin_repom.plugin.windowsexplorergitinfo.generated.md)
   
 ## Credits
 
