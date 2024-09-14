@@ -36,6 +36,7 @@ public class DocsModuleSettingsTests
         "WebBrowserPackage",
         "LuceneQueryParserPackage",
         "SonarCloudPackage",
+        "HeidiPackage",
     ];
 
     public DocsModuleSettingsTests()

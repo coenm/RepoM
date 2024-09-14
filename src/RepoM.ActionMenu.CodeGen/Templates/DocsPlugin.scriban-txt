@@ -48,8 +48,8 @@ To use this module, make sure it is enabled in RepoM by opening the menu and nav
 {{~ include 'plugin.configuration.scriban-txt' ~}}
 {{ else }}
 This plugin has no configuration.
-{{~ end ~}}
-
+{{ end ~}}
+{{~ include '30' }}
 {{~ if array.size(plugin.ActionMenus) > 0  ~}}
 This module contains the following methods, variables and/or constants:
   {{~ for member in plugin.ActionMenus ~}}
