@@ -18,8 +18,8 @@ internal class RepositoryActionCommandV1Mapper : ActionToRepositoryActionMapperB
         var arguments = await action.Arguments.RenderAsync(context).ConfigureAwait(false);
 
         yield return new UserInterfaceRepositoryAction(name, repository)
-            {
-                RepositoryCommand = new StartProcessRepositoryCommand(command, arguments),
-            };
+        {
+            RepositoryCommand = new StartProcessRepositoryCommand(command, arguments),
+        };
     }
 }

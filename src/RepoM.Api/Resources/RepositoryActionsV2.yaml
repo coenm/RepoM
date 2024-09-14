@@ -1,4 +1,4 @@
-context:
+﻿context:
 - type: evaluate-script@1
   content: |-
     func is_null(input)
@@ -90,9 +90,10 @@ context:
 
 action-menu:
 
-- type: command@1
-  name: Open in Windows File Explorer
-  command: '"{{ repository.path }}"'
+- type          : command@1
+  name          : 📂 Open in Windows File Explorer
+  command       : explorer
+  arguments     : '{{ repository.path }}'
 
 - type: command@1
   name: Open in Windows Terminal
@@ -123,10 +124,11 @@ action-menu:
       name: '{{ get_filename(sln) }}'
       command: '{{ sln }}'
   
-- type: executable@1
-  name: Open in Visual Studio Code
-  executable: '{{ exe_vs_code }}'
-  arguments: '"{{ repository.linux_path }}"'
+- type          : command@1
+  name          : 📝 Open in Visual Studio Code
+  command       : '{{ exe_vs_code }}'
+  arguments     : '"{{ repository.path }}"'
+  active        : file.file_exists(exe_vs_code)
 
 - type: executable@1
   name: Open in Sourcetree
