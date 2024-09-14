@@ -73,7 +73,7 @@ RepoM uses plugins to extend functionality. At this moment, when a plugin is ava
   - [Clipboard](docs/plugin_repom.plugin.clipboard.generated.md)
   - [Heidi](docs_old/RepoM.Plugin.Heidi.md)
   - [LuceneQueryParser](docs/plugin_repom.plugin.lucenequeryparser.generated.md)
-  - [SonarCloud](docs_old/RepoM.Plugin.SonarCloud.md)
+  - [SonarCloud](docs/plugin_repom.plugin.sonarcloud.generated.md)
   - [Statistics](docs/plugin_repom.plugin.statistics.generated.md)
   - [WebBrowser](docs/plugin_repom.plugin.webbrowser.generated.md)
   - [WindowsExplorerGitInfo](docs_old/RepoM.Plugin.WindowsExplorerGitInfo.md)
