@@ -68,8 +68,8 @@ public class HeidiPackage : IPackage
     /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<HeidiConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
-        var config = new HeidiConfigV1();
-        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        var config = HeidiConfigV1.CreateDefault();
+        await packageConfiguration.PersistConfigurationAsync(config, HeidiConfigV1.VERSION).ConfigureAwait(false);
         return config;
     }
 }

@@ -32,16 +32,24 @@ end
 {{~ end ~}}
 
 {{~ ##  include: _plugin_enable  ## ~}}
-To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. When enabling or disabling a plugin, you should restart RepoM.
-
-- ProjectName: {{ write_default_when_null plugin.ProjectName }}
-- PluginName: {{ write_default_when_null plugin.PluginName }}
-- PluginDescription: {{ write_default_when_null plugin.PluginDescription }}
-- PluginMarkdownDescription: {{ write_default_when_null plugin.PluginMarkdownDescription }}
+To use this module, make sure it is enabled in RepoM by opening the menu and navigate to 'Plugins'. After enabling or disabling a plugin, you should restart RepoM.
+{{~ ##
+- ProjectName: { { write_default_when_null plugin.ProjectName } }
+- PluginName: { { write_default_when_null plugin.PluginName } }
+- PluginDescription: { { write_default_when_null plugin.PluginDescription } }
+- PluginMarkdownDescription: { { write_default_when_null plugin.PluginMarkdownDescription } }
+## ~}}
 {{~ else ~}}
 # {{ plugin.IsPlugin ? plugin.PluginName : "RepoM Core Repository Actions" }}
 {{~ end ~}}
 
+## Configuration
+{{~ if plugin.HasConfiguration ~}}
+{{~ include 'plugin.configuration.scriban-txt' ~}}
+{{ else }}
+This plugin has no configuration.
+{{ end ~}}
+{{~ include '30' }}
 {{~ if array.size(plugin.ActionMenus) > 0  ~}}
 This module contains the following methods, variables and/or constants:
   {{~ for member in plugin.ActionMenus ~}}
@@ -90,3 +98,4 @@ Properties:
     {{~ end ~}}  
   {{~ end ~}}
 {{~ end ~}}
+{{ include '99' ~}}

@@ -59,8 +59,8 @@ public class AzureDevOpsPackage : IPackage
     /// <remarks>This method is used by reflection to generate documentation file</remarks>
     private static async Task<AzureDevopsConfigV1> PersistDefaultConfigAsync(IPackageConfiguration packageConfiguration)
     {
-        var config = new AzureDevopsConfigV1();
-        await packageConfiguration.PersistConfigurationAsync(config, CurrentConfigVersion.VERSION).ConfigureAwait(false);
+        var config = AzureDevopsConfigV1.CreateDefault();
+        await packageConfiguration.PersistConfigurationAsync(config, AzureDevopsConfigV1.VERSION).ConfigureAwait(false);
         return config;
     }
 }

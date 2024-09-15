@@ -9,4 +9,6 @@ public interface IClassDescriptorVisitor
     void Visit(ActionMenuClassDescriptor descriptor);
 
     void Visit(ClassDescriptor descriptor);
+
+    void Visit(ModuleConfigurationClassDescriptor descriptor);
 }
