@@ -107,6 +107,7 @@ internal class WindowSizeService : IDisposable
             .Throttle(ThrottleWindowSizeChanged)
             .Subscribe(sizeChangedEvent =>
                 {
+               
                     _appSettings.UpdateMenuSize(
                         _currentResolution, // Yes, This possibliy can go wrong
                         new MenuSize

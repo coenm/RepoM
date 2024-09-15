@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Wpf.Ui.Controls;
 
 /// <summary>
 /// The ZTextBox class is a custom control that extends the TextBox class in WPF. It adds additional functionality to handle specific key events. Here's a brief explanation:
@@ -15,7 +16,7 @@ using System.Windows.Input;
 /// •	Triggers the Finish event when any of the keys in the FinisherKeys list are pressed.
 /// This custom control can be useful in scenarios where you need to perform specific actions based on key presses within a text box.
 /// </summary>
-public class ZTextBox : TextBox
+public class ZTextBox : Wpf.Ui.Controls.TextBox
 {
     public event EventHandler? Finish;
 

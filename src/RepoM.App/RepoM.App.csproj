@@ -34,6 +34,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="App.ico" />
+    <Resource Include="Resources\Fonts\FluentSystemIcons-Filled.ttf" />
+    <Resource Include="Resources\Fonts\FluentSystemIcons-Regular.ttf" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
@@ -50,11 +52,15 @@
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.8" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
-    <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
-    <PackageReference Include="MaterialDesignThemes.MahApps" Version="3.1.1-ci753" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+    <PackageReference Include="WPF-UI" Version="3.0.5" />
+    <PackageReference Include="WPF-UI.Tray" Version="3.0.5" />
+    <PackageReference Include="WpfAnalyzers" Version="4.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

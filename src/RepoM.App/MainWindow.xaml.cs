@@ -28,14 +28,14 @@ using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
-using SourceChord.FluentWPF;
+using Wpf.Ui;
 using Control = System.Windows.Controls.Control;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow
+public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 {
     private volatile bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
@@ -50,6 +50,8 @@ public partial class MainWindow
     private readonly ILogger _logger;
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
+
+    public MainWindowViewModel? ViewModel { get; }
 
     public MainWindow(
         IRepositoryInformationAggregator aggregator,
@@ -68,6 +70,9 @@ public partial class MainWindow
         ILogger logger,
         IUserMenuActionMenuFactory userMenuActionFactory)
     {
+
+        Loaded += OnLoaded;
+
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
         _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -80,7 +85,7 @@ public partial class MainWindow
 
         InitializeComponent();
 
-        SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
+        //SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
@@ -95,6 +100,8 @@ public partial class MainWindow
             pluginsViewModel,
             new HelpViewModel(_translationService));
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
+        ViewModel = (MainWindowViewModel)DataContext;
+
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;
         if (_monitor != null)
@@ -113,7 +120,18 @@ public partial class MainWindow
         repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
 
+     
+
         PlaceFormByTaskBarLocation();
+        
+    }
+
+    void OnLoaded(object sender, RoutedEventArgs args)
+    {
+        Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this, // Window class
+            Wpf.Ui.Controls.WindowBackdropType.Mica, // Background type
+            true // Whether to change accents automatically
+        );
     }
 
     private void View_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -125,6 +143,7 @@ public partial class MainWindow
 
     protected override void OnActivated(EventArgs e)
     {
+
         base.OnActivated(e);
         ShowUpdateIfAvailable();
         txtFilter.Focus();
@@ -137,13 +156,17 @@ public partial class MainWindow
 
         if (_closeOnDeactivate)
         {
+
             Hide();
+
         }
     }
 
     protected override void OnClosing(CancelEventArgs e)
     {
+
         e.Cancel = true;
+
         Hide();
     }
 
@@ -159,7 +182,9 @@ public partial class MainWindow
         var isFilterActive = txtFilter.IsFocused && !string.IsNullOrEmpty(txtFilter.Text);
         if (!isFilterActive)
         {
+
             Hide();
+
         }
     }
 
@@ -231,12 +256,12 @@ public partial class MainWindow
             _logger.LogError(e, "Could not create menu.");
 
             ctxMenu.Items.Clear();
-            ctxMenu.Items.Add(new AcrylicMenuItem
+            ctxMenu.Items.Add(new Wpf.Ui.Controls.MenuItem
             {
                 Header = "Error",
                 IsEnabled = false,
             });
-            ctxMenu.Items.Add(new AcrylicMenuItem
+            ctxMenu.Items.Add(new Wpf.Ui.Controls.MenuItem
             {
                 Header = e.Message,
                 IsEnabled = false,
@@ -267,7 +292,7 @@ public partial class MainWindow
         // }
 
         ctxMenu.Items.Clear();
-        ctxMenu.Items.Add(new AcrylicMenuItem
+        ctxMenu.Items.Add(new Wpf.Ui.Controls.MenuItem
         {
             Header = "Loading ..",
             IsEnabled = true,
@@ -390,7 +415,17 @@ public partial class MainWindow
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        transitionerMain.SelectedIndex = transitionerMain.SelectedIndex == 0 ? 1 : 0;
+        //transitionerMain.SelectedIndex = transitionerMain.SelectedIndex == 0 ? 1 : 0;
+        if (RepoGrid.Visibility == Visibility.Visible)
+        {
+            RepoGrid.Visibility = Visibility.Collapsed;
+            HelpScrollViewer.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            RepoGrid.Visibility = Visibility.Visible;
+            HelpScrollViewer.Visibility = Visibility.Collapsed;
+        }
     }
 
     private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -462,17 +497,17 @@ public partial class MainWindow
     }
 
     private void PlaceFormByTaskBarLocation()
-    {
+    { 
         Point position = GetTopLeftPlaceFormByTaskBarLocation(
             SystemParameters.WorkArea,
-            Height,
-            Width,
+            ActualHeight,
+            ActualWidth,
             Screen.PrimaryScreen);
         Left = position.X;
         Top = position.Y;
     }
 
-    private static Point GetTopLeftPlaceFormByTaskBarLocation(Rect workArea, double height, double width, Screen? primaryScreen)
+    private Point GetTopLeftPlaceFormByTaskBarLocation(Rect workArea, double height, double width, Screen? primaryScreen)
     {
         var topY = workArea.Top;
         var bottomY = workArea.Height - height;
@@ -533,7 +568,7 @@ public partial class MainWindow
                 }
             };
 
-        var item = new AcrylicMenuItem
+        var item = new Wpf.Ui.Controls.MenuItem
         {
             Header = repositoryAction.Name,
             IsEnabled = repositoryAction.CanExecute,
@@ -617,7 +652,7 @@ public partial class MainWindow
             }
         };
 
-        var item = new AcrylicMenuItem
+        var item = new Wpf.Ui.Controls.MenuItem
         {
             Header = repositoryAction.Name,
             IsEnabled = repositoryAction.CanExecute,
@@ -743,14 +778,14 @@ public partial class MainWindow
         }
 
         // show/hide the titlebar to move the window for screenshots, for example
-        if (e.Key == Key.F11)
-        {
-            AcrylicWindowStyle currentStyle = GetAcrylicWindowStyle(this);
-            AcrylicWindowStyle newStyle = currentStyle == AcrylicWindowStyle.None
-                ? AcrylicWindowStyle.Normal
-                : AcrylicWindowStyle.None;
-            SetAcrylicWindowStyle(this, newStyle);
-        }
+        //if (e.Key == Key.F11)
+        //{
+        //    AcrylicWindowStyle currentStyle = GetAcrylicWindowStyle(this);
+        //    AcrylicWindowStyle newStyle = currentStyle == AcrylicWindowStyle.None
+        //        ? AcrylicWindowStyle.Normal
+        //        : AcrylicWindowStyle.None;
+        //    SetAcrylicWindowStyle(this, newStyle);
+        //}
 
         // keep window open on deactivate to make screenshots, for example
         if (e.Key == Key.F12)
@@ -862,5 +897,16 @@ public partial class MainWindow
         item?.Focus();
     }
 
-    public bool IsShown => Visibility == Visibility.Visible && IsActive;
+    public bool IsShown
+    {
+        get
+        {
+            return Visibility == Visibility.Visible && IsActive;
+        }
+    }
+
+    private void FluentWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        PlaceFormByTaskBarLocation();
+    }
 }
