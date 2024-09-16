@@ -282,15 +282,7 @@ public partial class MainWindow
                     items.Add(new Separator());
                 }
             }
-            else if (action is DeferredSubActionsUserInterfaceRepositoryAction deferredAction)
-            {
-                Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
-                if (controlItem != null)
-                {
-                    items.Add(controlItem);
-                }
-            }
-            else if (action is UserInterfaceRepositoryAction uiAction)
+            else if (action is DeferredSubActionsUserInterfaceRepositoryAction or UserInterfaceRepositoryAction)
             {
                 Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
                 if (controlItem != null)

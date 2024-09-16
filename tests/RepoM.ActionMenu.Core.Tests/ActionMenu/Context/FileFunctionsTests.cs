@@ -35,21 +35,18 @@ public class FileFunctionsTests
     public void FindFiles_ShouldReturnEmpty_WhenNoFilesFound()
     {
         // arrange
-        var path = "my-path";
-        var search = "my-search";
-        var files = Array.Empty<IFileSystemInfo>();
-        IDirectoryInfo di = A.Fake<IDirectoryInfo>();
-        A.CallTo(() => _fileSystem.DirectoryInfo.New(path)).Returns(di);
-        A.CallTo(() => di.EnumerateFileSystemInfos(search, SearchOption.AllDirectories))
-         .Returns(files);
+        const string PATH = "my-path";
+        const string SEARCH = "my-search";
+        A.CallTo(() => _fileSystem.Directory.EnumerateFileSystemEntries(PATH, SEARCH, A<EnumerationOptions>._))
+         .Returns(Array.Empty<string>());
 
         // act
-        IEnumerable result = Sut.FindFilesInner(_context, _span, path, search);
+        IEnumerable result = Sut.FindFilesInner(_context, _span, PATH, SEARCH);
 
         // assert
         result.Should().BeEquivalentTo(Array.Empty<string>());
-        A.CallTo(() => _fileSystem.DirectoryInfo.New(path)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => di.EnumerateFileSystemInfos(search, SearchOption.AllDirectories)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _fileSystem.Directory.EnumerateFileSystemEntries(PATH, SEARCH, A<EnumerationOptions>._))
+         .MustHaveHappenedOnceExactly();
     }
     
     [Theory]
