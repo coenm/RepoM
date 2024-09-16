@@ -2,6 +2,7 @@ namespace RepoM.App;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -35,12 +36,13 @@ using Control = System.Windows.Controls.Control;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MenuItem = Wpf.Ui.Controls.MenuItem;
 using TextBlock = System.Windows.Controls.TextBlock;
+using TextBox = Wpf.Ui.Controls.TextBox;
 
 public partial class MainWindow : FluentWindow
 {
     private volatile bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
-    private bool _closeOnDeactivate = true;
+    private bool _closeOnDeactivate     = true;
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly DefaultRepositoryMonitor? _monitor;
     private readonly ITranslationService _translationService;
@@ -51,6 +53,8 @@ public partial class MainWindow : FluentWindow
     private readonly ILogger _logger;
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
+
+    private static readonly ImmutableArray<Key> FinisherKeys = new[] { Key.Return, Key.Enter, }.ToImmutableArray();
 
     public MainWindow(
         IRepositoryInformationAggregator aggregator,
@@ -71,14 +75,14 @@ public partial class MainWindow : FluentWindow
     {
 
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
-        _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _userMenuActionFactory = userMenuActionFactory ?? throw new ArgumentNullException(nameof(userMenuActionFactory));
-        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
-        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _executor = executor ?? throw new ArgumentNullException(nameof(executor));
+        _repositoryMatcher          = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
+        _logger                     = logger ?? throw new ArgumentNullException(nameof(logger));
+        _userMenuActionFactory      = userMenuActionFactory ?? throw new ArgumentNullException(nameof(userMenuActionFactory));
+        _translationService         = translationService ?? throw new ArgumentNullException(nameof(translationService));
+        _repositoryIgnoreStore      = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
+        _appDataPathProvider        = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        _fileSystem                 = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _executor                   = executor ?? throw new ArgumentNullException(nameof(executor));
 
         InitializeComponent();
 
@@ -112,9 +116,7 @@ public partial class MainWindow : FluentWindow
         repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
-
         
-
         ApplicationThemeManager.ApplySystemTheme(true); // Applies the system theme for Apps, not for 
         ApplicationAccentColorManager.ApplySystemAccent();
         WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Mica);
@@ -122,8 +124,8 @@ public partial class MainWindow : FluentWindow
 
         //Loaded += OnLoaded;
 
-        // TODO: DELETE THIS LINE
-         //ApplicationThemeManager.Apply(ApplicationTheme.Light);
+        // TODO: DELETE THIS LINE , IT IS JUST FOR TESTING
+        //ApplicationThemeManager.Apply(ApplicationTheme.Light);
 
         ApplicationThemeManager.Changed += OnAppThemeChange;
 
@@ -156,11 +158,10 @@ public partial class MainWindow : FluentWindow
 
     protected override void OnActivated(EventArgs e)
     {
-
         base.OnActivated(e);
         ShowUpdateIfAvailable();
-        TxtFilter.Focus();
-        TxtFilter.SelectAll();
+        SearchBar_TextBox.Focus();
+        SearchBar_TextBox.SelectAll();
     }
 
     protected override void OnDeactivated(EventArgs e)
@@ -188,7 +189,7 @@ public partial class MainWindow : FluentWindow
             return;
         }
 
-        var isFilterActive = TxtFilter.IsFocused && !string.IsNullOrEmpty(TxtFilter.Text);
+        var isFilterActive = SearchBar_TextBox.IsFocused && !string.IsNullOrEmpty(SearchBar_TextBox.Text);
         if (!isFilterActive)
         {
             Hide();
@@ -207,8 +208,8 @@ public partial class MainWindow : FluentWindow
                 }
 
                 Activate();
-                TxtFilter.Focus();
-                TxtFilter.SelectAll();
+                SearchBar_TextBox.Focus();
+                SearchBar_TextBox.SelectAll();
             });
     }
 
@@ -746,11 +747,11 @@ public partial class MainWindow : FluentWindow
 
         if (e.Key == Key.F && Keyboard.IsKeyDown(Key.LeftCtrl))
         {
-            TxtFilter.Focus();
-            TxtFilter.SelectAll();
+            SearchBar_TextBox.Focus();
+            SearchBar_TextBox.SelectAll();
         }
 
-        if (e.Key == Key.Down && TxtFilter.IsFocused)
+        if (e.Key == Key.Down && SearchBar_TextBox.IsFocused)
         {
             LstRepositories.Focus();
         }
@@ -762,39 +763,9 @@ public partial class MainWindow : FluentWindow
         }
     }
 
-    private void OnTxtFilterTextChanged(object? sender, TextChangedEventArgs e)
-    {
-        // Text has changed, capture the timestamp
-        if (sender != null)
-        {
-            _timeOfLastRefresh = DateTime.UtcNow;
-        }
-
-        // Spin while updates are in progress
-        if (DateTime.UtcNow - _timeOfLastRefresh < TimeSpan.FromMilliseconds(100))
-        {
-            if (!_refreshDelayed)
-            {
-                Dispatcher.InvokeAsync(async () =>
-                    {
-                        _refreshDelayed = true;
-                        await Task.Delay(200);
-                        _refreshDelayed = false;
-                        OnTxtFilterTextChanged(null, e);
-                    });
-            }
-
-            return;
-        }
-
-        // Refresh the view
-        ICollectionView view = CollectionViewSource.GetDefaultView(LstRepositories.ItemsSource);
-        view.Refresh();
-    }
-
     private bool FilterRepositories(object item)
     {
-        var query = TxtFilter.Text.Trim();
+        var query = SearchBar_TextBox.Text.Trim();
 
         if (_refreshDelayed)
         {
@@ -852,18 +823,6 @@ public partial class MainWindow : FluentWindow
         }
     }
 
-    private void TxtFilter_Finish(object sender, EventArgs e)
-    {
-        LstRepositories.Focus();
-        if (LstRepositories.Items.Count <= 0)
-        {
-            return;
-        }
-
-        LstRepositories.SetCurrentValue(Selector.SelectedIndexProperty, 0);
-        var item = (ListBoxItem)LstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
-        item?.Focus();
-    }
 
     public bool IsShown
     {
@@ -873,4 +832,55 @@ public partial class MainWindow : FluentWindow
         }
     }
 
+    private void OnSearchBar_TextBoxTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        // Text has changed, capture the timestamp
+        if (sender != null)
+        {
+            _timeOfLastRefresh = DateTime.UtcNow;
+        }
+
+        // Spin while updates are in progress
+        if (DateTime.UtcNow - _timeOfLastRefresh < TimeSpan.FromMilliseconds(100))
+        {
+            if (!_refreshDelayed)
+            {
+                Dispatcher.InvokeAsync(async () =>
+                    {
+                        _refreshDelayed = true;
+                        await Task.Delay(200);
+                        _refreshDelayed = false;
+                        OnSearchBar_TextBoxTextChanged(null, e);
+                    });
+            }
+
+            return;
+        }
+
+        // Refresh the view
+        ICollectionView view = CollectionViewSource.GetDefaultView(LstRepositories.ItemsSource);
+        view.Refresh();
+    }
+
+    private void SearchBar_TextBox_OnKeyDown(object sender, KeyEventArgs e)
+    {
+        var senderTextBox = (TextBox)sender;
+
+        if (e.Key == Key.Escape)
+        {
+            senderTextBox.Clear();
+        } else if (FinisherKeys.Contains(e.Key) && !string.IsNullOrEmpty(senderTextBox.Text))
+        {
+            SearchBar_RaiseSearchEvent();
+        }
+    }
+    private void SearchBar_RaiseSearchEvent()
+    {
+        LstRepositories.Focus();
+        if (LstRepositories.Items.IsEmpty) { return; }
+
+        LstRepositories.SetCurrentValue(Selector.SelectedIndexProperty, 0);
+        var item = (ListBoxItem)LstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
+        item?.Focus();
+    }
 }
