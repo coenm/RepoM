@@ -18,6 +18,15 @@ using Scriban.Syntax;
 [ActionMenuContext("file")]
 internal partial class FileFunctions : ScribanModuleWithFunctions
 {
+    private static readonly EnumerationOptions _findFilesOptions = new()
+    {
+        RecurseSubdirectories = true,
+        AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Device | FileAttributes.Directory,
+        IgnoreInaccessible = true,
+        MatchType = MatchType.Simple,
+        ReturnSpecialDirectories = false,
+    };
+
     public FileFunctions()
     {
         RegisterFunctions();
@@ -87,7 +96,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     internal static bool FileExistsInner(IMenuContext context, string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        return context.FileSystem.FileInfo.New(path).Exists;
+        return context.FileSystem.File.Exists(path);
     }
 
     /// <summary>
@@ -117,23 +126,12 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     internal static bool DirectoryExistsInner(IMenuContext context, string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        return context.FileSystem.DirectoryInfo.New(path).Exists;
+        return context.FileSystem.Directory.Exists(path);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IEnumerable<string> GetFileEnumerator(IFileSystem fileSystem, string path, string searchPattern)
     {
-        // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
-        // .app or .xcodeproj on macOS
-        return fileSystem.DirectoryInfo.New(path)
-             .EnumerateFileSystemInfos(searchPattern, new EnumerationOptions()
-             {
-                 RecurseSubdirectories = true,
-                 AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Device | FileAttributes.Directory,
-                 IgnoreInaccessible = true,
-                 MatchType = MatchType.Simple,
-                 ReturnSpecialDirectories = false,
-             })
-             .Select(f => f.FullName);
+        return fileSystem.Directory.EnumerateFileSystemEntries(path, searchPattern, _findFilesOptions);
     }
 }
