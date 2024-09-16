@@ -2,6 +2,7 @@ namespace RepoM.App;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Abstractions;
@@ -13,12 +14,12 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.RepositoryActions;
-using RepoM.App.Controls;
 using RepoM.App.Plugins;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryFiltering;
@@ -28,14 +29,14 @@ using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
-using Wpf.Ui;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 using Control = System.Windows.Controls.Control;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MenuItem = Wpf.Ui.Controls.MenuItem;
+using TextBlock = System.Windows.Controls.TextBlock;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
+public partial class MainWindow : FluentWindow
 {
     private volatile bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
@@ -50,8 +51,6 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
     private readonly ILogger _logger;
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
-
-    public MainWindowViewModel? ViewModel { get; }
 
     public MainWindow(
         IRepositoryInformationAggregator aggregator,
@@ -71,8 +70,6 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
         IUserMenuActionMenuFactory userMenuActionFactory)
     {
 
-        Loaded += OnLoaded;
-
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
         _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -84,8 +81,6 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
         _executor = executor ?? throw new ArgumentNullException(nameof(executor));
 
         InitializeComponent();
-
-        //SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
@@ -100,8 +95,6 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
             pluginsViewModel,
             new HelpViewModel(_translationService));
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
-        ViewModel = (MainWindowViewModel)DataContext;
-
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;
         if (_monitor != null)
@@ -110,7 +103,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
             ShowScanningState(_monitor.Scanning);
         }
 
-        lstRepositories.ItemsSource = aggregator.Repositories;
+        LstRepositories.ItemsSource = aggregator.Repositories;
 
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
         ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
@@ -120,25 +113,45 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
         repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
 
-     
+        
+
+        ApplicationThemeManager.ApplySystemTheme(true); // Applies the system theme for Apps, not for 
+        ApplicationAccentColorManager.ApplySystemAccent();
+        WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Mica);
+        SystemThemeWatcher.Watch(this);
+
+        //Loaded += OnLoaded;
+
+        // TODO: DELETE THIS LINE
+         //ApplicationThemeManager.Apply(ApplicationTheme.Light);
+
+        ApplicationThemeManager.Changed += OnAppThemeChange;
 
         PlaceFormByTaskBarLocation();
-        
+
+    }
+
+    private void OnAppThemeChange(ApplicationTheme currentapplicationtheme, Color systemaccent)
+    {
+        // TODO: IMPLEMENT FUNCTION TO CHANGE SETTINGS
+        //throw new NotImplementedException();
+    }
+
+    private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        PlaceFormByTaskBarLocation();
     }
 
     void OnLoaded(object sender, RoutedEventArgs args)
     {
-        Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this, // Window class
-            Wpf.Ui.Controls.WindowBackdropType.Mica, // Background type
-            true // Whether to change accents automatically
-        );
+        
     }
 
-    private void View_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void View_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        // use the list's itemsource directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
-        var hasRepositories = lstRepositories.ItemsSource.OfType<RepositoryViewModel>().Any();
-        tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible;
+        // use the list's items source directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
+        var hasRepositories = LstRepositories.ItemsSource.OfType<RepositoryViewModel>().Any();
+        TbNoRepositories.SetCurrentValue(VisibilityProperty, hasRepositories ? Visibility.Hidden : Visibility.Visible);
     }
 
     protected override void OnActivated(EventArgs e)
@@ -146,8 +159,8 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 
         base.OnActivated(e);
         ShowUpdateIfAvailable();
-        txtFilter.Focus();
-        txtFilter.SelectAll();
+        TxtFilter.Focus();
+        TxtFilter.SelectAll();
     }
 
     protected override void OnDeactivated(EventArgs e)
@@ -156,17 +169,13 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 
         if (_closeOnDeactivate)
         {
-
             Hide();
-
         }
     }
 
     protected override void OnClosing(CancelEventArgs e)
     {
-
         e.Cancel = true;
-
         Hide();
     }
 
@@ -179,12 +188,10 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
             return;
         }
 
-        var isFilterActive = txtFilter.IsFocused && !string.IsNullOrEmpty(txtFilter.Text);
+        var isFilterActive = TxtFilter.IsFocused && !string.IsNullOrEmpty(TxtFilter.Text);
         if (!isFilterActive)
         {
-
             Hide();
-
         }
     }
 
@@ -200,8 +207,8 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
                 }
 
                 Activate();
-                txtFilter.Focus();
-                txtFilter.SelectAll();
+                TxtFilter.Focus();
+                TxtFilter.SelectAll();
             });
     }
 
@@ -212,7 +219,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 
     private async void LstRepositories_MouseDoubleClick(object? sender, MouseButtonEventArgs e)
     {
-        // prevent doubleclicks from scrollbars and other non-data areas
+        // prevent double clicks from scrollbars and other non-data areas
         if (e.OriginalSource is not (Grid or TextBlock))
         {
             return;
@@ -256,12 +263,12 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
             _logger.LogError(e, "Could not create menu.");
 
             ctxMenu.Items.Clear();
-            ctxMenu.Items.Add(new Wpf.Ui.Controls.MenuItem
+            ctxMenu.Items.Add(new MenuItem
             {
                 Header = "Error",
                 IsEnabled = false,
             });
-            ctxMenu.Items.Add(new Wpf.Ui.Controls.MenuItem
+            ctxMenu.Items.Add(new MenuItem
             {
                 Header = e.Message,
                 IsEnabled = false,
@@ -273,26 +280,15 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 
     private async Task<bool> LstRepositoriesContextMenuOpeningAsync(ContextMenu ctxMenu)
     {
-        if (lstRepositories.SelectedItem is not RepositoryViewModel vm)
+        if (LstRepositories.SelectedItem is not RepositoryViewModel vm)
         {
             return false;
         }
 
         var items = new List<Control>();
-        // ItemCollection items = ctxMenu.Items;
-        // ItemCollection items = new ItemCollection();
-        //items.Clear();
-
-        // foreach (var item in ctxMenu.Items)
-        // {
-        //     if (item is Control c)
-        //     {
-        //         c.IsEnabled = false;
-        //     }
-        // }
 
         ctxMenu.Items.Clear();
-        ctxMenu.Items.Add(new Wpf.Ui.Controls.MenuItem
+        ctxMenu.Items.Add(new MenuItem
         {
             Header = "Loading ..",
             IsEnabled = true,
@@ -307,7 +303,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
                     items.Add(new Separator());
                 }
             }
-            else if (action is DeferredSubActionsUserInterfaceRepositoryAction deferredAction)
+            else if (action is DeferredSubActionsUserInterfaceRepositoryAction)
             {
                 Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
                 if (controlItem != null)
@@ -315,7 +311,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
                     items.Add(controlItem);
                 }
             }
-            else if (action is UserInterfaceRepositoryAction uiAction)
+            else if (action is UserInterfaceRepositoryAction)
             {
                 Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
                 if (controlItem != null)
@@ -378,7 +374,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 
     private async Task InvokeActionOnCurrentRepositoryAsync()
     {
-        if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
+        if (LstRepositories.SelectedItem is not RepositoryViewModel selectedView)
         {
             return;
         }
@@ -415,25 +411,21 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
-        //transitionerMain.SelectedIndex = transitionerMain.SelectedIndex == 0 ? 1 : 0;
         if (RepoGrid.Visibility == Visibility.Visible)
         {
-            RepoGrid.Visibility = Visibility.Collapsed;
-            HelpScrollViewer.Visibility = Visibility.Visible;
+            RepoGrid.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
+            HelpScrollViewer.SetCurrentValue(VisibilityProperty, Visibility.Visible);
         }
         else
         {
-            RepoGrid.Visibility = Visibility.Visible;
-            HelpScrollViewer.Visibility = Visibility.Collapsed;
+            RepoGrid.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+            HelpScrollViewer.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
         }
     }
 
     private void MenuButton_Click(object sender, RoutedEventArgs e)
     {
-        if (MenuButton.ContextMenu != null)
-        {
-            MenuButton.ContextMenu.IsOpen = true;
-        }
+        MenuButton.ContextMenu?.SetCurrentValue(ContextMenu.IsOpenProperty, true);
     }
 
     private void ScanButton_Click(object sender, RoutedEventArgs e)
@@ -497,42 +489,28 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
     }
 
     private void PlaceFormByTaskBarLocation()
-    { 
-        Point position = GetTopLeftPlaceFormByTaskBarLocation(
+    {
+        Point position = TaskBar.GetWindowPlacement(
             SystemParameters.WorkArea,
             ActualHeight,
             ActualWidth,
             Screen.PrimaryScreen);
-        Left = position.X;
-        Top = position.Y;
+
+        SetCurrentValue(LeftProperty, position.X);
+        SetCurrentValue(TopProperty, position.Y);
     }
 
-    private Point GetTopLeftPlaceFormByTaskBarLocation(Rect workArea, double height, double width, Screen? primaryScreen)
-    {
-        var topY = workArea.Top;
-        var bottomY = workArea.Height - height;
-        var leftX = workArea.Left;
-        var rightX = workArea.Width - width;
-
-        return TaskBarLocator.GetTaskBarLocation(primaryScreen) switch
-        {
-            TaskBarLocator.TaskBarLocation.Top => new Point(rightX, topY),
-            TaskBarLocator.TaskBarLocation.Left => new Point(leftX, bottomY),
-            TaskBarLocator.TaskBarLocation.Bottom or TaskBarLocator.TaskBarLocation.Right => new Point(rightX, bottomY),
-            _ => new Point(rightX, bottomY),
-        };
-    }
 
     private void ShowUpdateIfAvailable()
     {
         var updateHint = _translationService.Translate("Update hint", App.AvailableUpdate ?? "?.?");
 
-        UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
-        UpdateButton.ToolTip = App.AvailableUpdate == null ? "" : updateHint;
-        UpdateButton.Tag = App.AvailableUpdate;
+        UpdateButton.SetCurrentValue(VisibilityProperty, App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible);
+        UpdateButton.SetCurrentValue(ToolTipProperty, App.AvailableUpdate == null ? "" : updateHint);
+        UpdateButton.SetCurrentValue(TagProperty, App.AvailableUpdate);
 
         var parent = (Grid)UpdateButton.Parent;
-        parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
+        parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].SetCurrentValue(ColumnDefinition.WidthProperty, App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto);
     }
 
     private Control? /*MenuItem*/ CreateMenuItem(RepositoryActionBase action, RepositoryViewModel? affectedViews = null)
@@ -548,7 +526,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
             return null;
         }
 
-        Action<object, object> clickAction = (object clickSender, object clickArgs) =>
+        Action<object, object> clickAction = (clickSender, clickArgs) =>
             {
                 if (repositoryAction?.Action is null or NullRepositoryCommand)
                 {
@@ -568,7 +546,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
                 }
             };
 
-        var item = new Wpf.Ui.Controls.MenuItem
+        var item = new MenuItem
         {
             Header = repositoryAction.Name,
             IsEnabled = repositoryAction.CanExecute,
@@ -632,7 +610,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
             return null;
         }
 
-        Action<object, object> clickAction = (object clickSender, object clickArgs) =>
+        Action<object, object> clickAction = (clickSender, clickArgs) =>
         {
             if (repositoryAction.RepositoryCommand is null or NullRepositoryCommand)
             {
@@ -652,7 +630,7 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
             }
         };
 
-        var item = new Wpf.Ui.Controls.MenuItem
+        var item = new MenuItem
         {
             Header = repositoryAction.Name,
             IsEnabled = repositoryAction.CanExecute,
@@ -756,10 +734,10 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 
     private void ShowScanningState(bool isScanning)
     {
-        ScanMenuItem.IsEnabled = !isScanning;
-        ScanMenuItem.Header = isScanning
+        ScanMenuItem.SetCurrentValue(MenuItem.IsEnabledProperty, !isScanning);
+        ScanMenuItem.SetCurrentValue(HeaderedItemsControl.HeaderProperty, isScanning
             ? _translationService.Translate("Scanning")
-            : _translationService.Translate("ScanComputer");
+            : _translationService.Translate("ScanComputer"));
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -768,24 +746,14 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 
         if (e.Key == Key.F && Keyboard.IsKeyDown(Key.LeftCtrl))
         {
-            txtFilter.Focus();
-            txtFilter.SelectAll();
+            TxtFilter.Focus();
+            TxtFilter.SelectAll();
         }
 
-        if (e.Key == Key.Down && txtFilter.IsFocused)
+        if (e.Key == Key.Down && TxtFilter.IsFocused)
         {
-            lstRepositories.Focus();
+            LstRepositories.Focus();
         }
-
-        // show/hide the titlebar to move the window for screenshots, for example
-        //if (e.Key == Key.F11)
-        //{
-        //    AcrylicWindowStyle currentStyle = GetAcrylicWindowStyle(this);
-        //    AcrylicWindowStyle newStyle = currentStyle == AcrylicWindowStyle.None
-        //        ? AcrylicWindowStyle.Normal
-        //        : AcrylicWindowStyle.None;
-        //    SetAcrylicWindowStyle(this, newStyle);
-        //}
 
         // keep window open on deactivate to make screenshots, for example
         if (e.Key == Key.F12)
@@ -820,13 +788,13 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
         }
 
         // Refresh the view
-        ICollectionView view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
+        ICollectionView view = CollectionViewSource.GetDefaultView(LstRepositories.ItemsSource);
         view.Refresh();
     }
 
     private bool FilterRepositories(object item)
     {
-        var query = txtFilter.Text.Trim();
+        var query = TxtFilter.Text.Trim();
 
         if (_refreshDelayed)
         {
@@ -886,14 +854,14 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
 
     private void TxtFilter_Finish(object sender, EventArgs e)
     {
-        lstRepositories.Focus();
-        if (lstRepositories.Items.Count <= 0)
+        LstRepositories.Focus();
+        if (LstRepositories.Items.Count <= 0)
         {
             return;
         }
 
-        lstRepositories.SelectedIndex = 0;
-        var item = (ListBoxItem)lstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
+        LstRepositories.SetCurrentValue(Selector.SelectedIndexProperty, 0);
+        var item = (ListBoxItem)LstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
         item?.Focus();
     }
 
@@ -905,8 +873,4 @@ public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
         }
     }
 
-    private void FluentWindow_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        PlaceFormByTaskBarLocation();
-    }
 }

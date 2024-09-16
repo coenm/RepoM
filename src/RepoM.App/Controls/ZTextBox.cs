@@ -2,9 +2,7 @@ namespace RepoM.App.Controls;
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
 using System.Windows.Input;
-using Wpf.Ui.Controls;
 
 /// <summary>
 /// The ZTextBox class is a custom control that extends the TextBox class in WPF. It adds additional functionality to handle specific key events. Here's a brief explanation:

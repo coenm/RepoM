@@ -1,11 +1,5 @@
 namespace RepoM.App.Controls;
 
-using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using RepoM.App.Services;
-
 public class AcrylicMenuItem : Wpf.Ui.Controls.MenuItem
 {
     //private static readonly Brush _solidColorBrush = new SolidColorBrush(Color.FromArgb(80, 0, 0, 0));

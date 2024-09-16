@@ -11,17 +11,11 @@
     <Application.Resources>
 
         <!--
-        Note that this application does not have a StartupUri declared, so no Window is automatically loaded.
-        Also, the ShutdownMode was set to explicit, so we have to close the application programmatically
+            Note that this application does not have a StartupUri declared, so no Window is automatically loaded.
+            Also, the ShutdownMode was set to explicit, so we have to close the application programmatically
         -->
 
         <ResourceDictionary>
-
-            <FontFamily x:Key="SegoeFluentIcons">pack://application:,,,/;component/Fonts/#Segoe Fluent Icons</FontFamily>
-
-
-            <!--  Repo Name colour  -->
-            <SolidColorBrush x:Key="AccentColorBrush" Color="{DynamicResource Theme.PrimaryAccentColor}" />
 
             <ResourceDictionary.MergedDictionaries>
 
@@ -32,11 +26,16 @@
                 <ResourceDictionary Source="pack://application:,,,/RepoM;component/Resources/Accent.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/RepoM;component/Resources/Palette.xaml" />
 
-
+                <ResourceDictionary x:Name="Dark" Source="pack://application:,,,/RepoM;component/Resources/Theme/Dark.xaml" />
+                <ResourceDictionary x:Name="Light" Source="pack://application:,,,/RepoM;component/Resources/Theme/Light.xaml" />
+                <ResourceDictionary x:Name="HighContrastWhite" Source="pack://application:,,,/RepoM;component/Resources/Theme/HCWhite.xaml" />
+                <ResourceDictionary x:Name="HighContrastBlack" Source="pack://application:,,,/RepoM;component/Resources/Theme/HCBlack.xaml" />
+                <ResourceDictionary x:Name="HighContrastCustom1" Source="pack://application:,,,/RepoM;component/Resources/Theme/HC1.xaml" />
+                <ResourceDictionary x:Name="HighContrastCustom2" Source="pack://application:,,,/RepoM;component/Resources/Theme/HC2.xaml" />
 
                 <ui:ThemesDictionary Theme="Dark" />
-                <ui:ControlsDictionary />
 
+                <ui:ControlsDictionary />
 
                 <!--  merge NotifyIcon and related stuff into the application  -->
                 <ResourceDictionary Source="NotifyIconResources.xaml" />

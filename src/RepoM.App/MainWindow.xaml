@@ -23,7 +23,7 @@
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
-    SizeChanged="FluentWindow_SizeChanged"
+    SizeChanged="Window_SizeChanged"
     TextBlock.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     TextElement.FontSize="13"
     TextElement.FontWeight="Regular"
@@ -31,17 +31,18 @@
     TextOptions.TextRenderingMode="Auto"
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
+
     <Window.Resources>
         <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
     </Window.Resources>
-
 
     <Grid Margin="18,16,6,0">
 
         <Grid Name="RepoGrid">
             <ui:TextBlock
-                x:Name="tbNoRepositories"
+                x:Name="TbNoRepositories"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Focusable="False"
@@ -51,9 +52,10 @@
                 SnapsToDevicePixels="True"
                 Text="{DynamicResource EmptyHint}"
                 TextAlignment="Center"
-                TextWrapping="Wrap" />
+                TextWrapping="Wrap"
+                />
 
-            <DockPanel x:Name="dockMain" Focusable="False">
+            <DockPanel x:Name="DockMain" Focusable="False">
                 <Grid DockPanel.Dock="Top" Focusable="False">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
@@ -69,11 +71,12 @@
                         Grid.Column="0"
                         Margin="0,0,0,0"
                         HorizontalAlignment="Stretch"
-                        Focusable="False">
+                        Focusable="False"
+                        >
 
                         <!--  Actual search bar  -->
                         <ui:TextBox
-                            x:Name="txtFilter"
+                            x:Name="TxtFilter"
                             VerticalAlignment="Top"
                             BorderThickness="1"
                             FontFamily="Source Code Pro"
@@ -82,7 +85,8 @@
                             IconPlacement="Left"
                             SnapsToDevicePixels="True"
                             TextChanged="OnTxtFilterTextChanged"
-                            TextWrapping="Wrap" />
+                            TextWrapping="Wrap"
+                            />
 
                         <!--  Default text  -->
                         <ui:TextBlock
@@ -96,12 +100,13 @@
                             IsHitTestVisible="False"
                             SnapsToDevicePixels="True"
                             Text="{DynamicResource SearchWin}"
-                            TextWrapping="Wrap">
+                            TextWrapping="Wrap"
+                            >
                             <ui:TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Text, ElementName=txtFilter}" Value="">
+                                        <DataTrigger Binding="{Binding Text, ElementName=TxtFilter}" Value="">
                                             <Setter Property="Visibility" Value="Visible" />
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -125,7 +130,8 @@
                         Content="☰"
                         Cursor="Arrow"
                         FontFamily="Source Code Pro"
-                        FontSize="20">
+                        FontSize="20"
+                        >
                         <Button.Resources>
                             <Style x:Key="DatePickerStyle" TargetType="{x:Type ui:MenuItem}">
                                 <Setter Property="Header" Value="coen" />
@@ -142,12 +148,14 @@
                                     x:Name="ScanMenuItem"
                                     Click="ScanButton_Click"
                                     Header="{DynamicResource ScanComputer}"
-                                    Icon="{ui:SymbolIcon DocumentSplitHint20}" />
+                                    Icon="{ui:SymbolIcon DocumentSplitHint20}"
+                                    />
 
                                 <ui:MenuItem
                                     Click="ClearButton_Click"
                                     Header="{DynamicResource Clear}"
-                                    Icon="{ui:SymbolIcon DocumentSplitHint20}" />
+                                    Icon="{ui:SymbolIcon DocumentSplitHint20}"
+                                    />
 
                                 <Separator />
 
@@ -158,14 +166,6 @@
                                 <ui:MenuItem Click="ResetIgnoreRulesButton_Click" Header="{DynamicResource ResetIgnoreRules}" />
 
                                 <ui:MenuItem Header="Ordering" ItemsSource="{Binding Path=Orderings}">
-                                    <!-- <ui:MenuItem.Template> -->
-                                    <!-- <ControlTemplate TargetType      = "{x:Type MenuItem}"> -->
-                                    <!-- ~1~ <Separator Style             = "{DynamicResource {x:Static MenuItem.SeparatorStyleKey}}"/> @1@ -->
-                                    <!--  <ui:MenuItem Header = "xxxxxxx"  -->
-                                    <!--    -->
-                                    <!--  />  -->
-                                    <!--     </ControlTemplate> -->
-                                    <!-- </ui:MenuItem.Template> -->
                                     <ui:MenuItem.ItemContainerStyle>
                                         <Style>
                                             <Setter Property="ui:MenuItem.Template">
@@ -175,30 +175,13 @@
                                                         <ui:MenuItem
                                                             Header="{Binding Header}"
                                                             IsCheckable="{Binding IsCheckable}"
-                                                            IsChecked="{Binding IsChecked}" />
+                                                            IsChecked="{Binding IsChecked}"
+                                                            />
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
                                         </Style>
-                                        <!-- ~1~ <Style TargetType = "{x:Type MenuItem}"> @1@ -->
-                                        <!--  ~1~   @1@  -->
-                                        <!--     ~1~ </Style> @1@ -->
                                     </ui:MenuItem.ItemContainerStyle>
-                                    <!-- <ui:MenuItem.ItemTemplate> -->
-                                    <!--     <DataTemplate> -->
-                                    <!-- ~1~ <ui:MenuItem Header = "{Binding}" IsCheckable = "True" IsChecked = "{Binding AutoFetchAdequate}"/> @1@ -->
-                                    <!--    -->
-                                    <!-- ~1~ <ui:MenuItem Header = "{Binding}" Click = "ResetIgnoreRulesButton_Click" /> @1@ -->
-                                    <!-- ~1~ <ui:TextBlock Text                  = "{Binding }"></ui:TextBlock > @1@ -->
-                                    <!--     </DataTemplate> -->
-                                    <!-- </ui:MenuItem.ItemTemplate> -->
-
-                                    <!-- <ui:MenuItem Header = "{DynamicResource ScanComputer}" Click = "ScanButton_Click" x:Name = ""/> -->
-                                    <!-- <ui:MenuItem Header = "{DynamicResource Clear}" Click        = "ClearButton_Click"/> -->
-                                    <!-- <Separator/> -->
-                                    <!-- <ui:MenuItem Header = "{DynamicResource CustomizeRepositoryActions}" Click = "CustomizeContextMenu_Click" /> -->
-                                    <!-- <Separator/> -->
-                                    <!-- <ui:MenuItem Header="{DynamicResource ResetIgnoreRules}" Click="ResetIgnoreRulesButton_Click" /> -->
                                 </ui:MenuItem>
 
                                 <ui:MenuItem Header="Filters" ItemsSource="{Binding Path=Filters}">
@@ -210,7 +193,8 @@
                                                         <ui:MenuItem
                                                             Header="{Binding Header}"
                                                             IsCheckable="{Binding IsCheckable}"
-                                                            IsChecked="{Binding IsChecked}" />
+                                                            IsChecked="{Binding IsChecked}"
+                                                            />
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
@@ -227,7 +211,8 @@
                                                         <ui:MenuItem
                                                             Header="{Binding Header}"
                                                             IsCheckable="{Binding IsCheckable}"
-                                                            IsChecked="{Binding IsChecked}" />
+                                                            IsChecked="{Binding IsChecked}"
+                                                            />
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
@@ -239,27 +224,32 @@
                                     <ui:MenuItem
                                         Header="{DynamicResource Off}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding AutoFetchOff}" />
+                                        IsChecked="{Binding AutoFetchOff}"
+                                        />
                                     <Separator />
                                     <MenuItem
                                         Header="{DynamicResource Discretely}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding AutoFetchDiscretely}" />
+                                        IsChecked="{Binding AutoFetchDiscretely}"
+                                        />
                                     <ui:MenuItem
                                         Header="{DynamicResource Adequate}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding AutoFetchAdequate}" />
+                                        IsChecked="{Binding AutoFetchAdequate}"
+                                        />
                                     <ui:MenuItem
                                         Header="{DynamicResource Aggressive}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding AutoFetchAggressive}" />
+                                        IsChecked="{Binding AutoFetchAggressive}"
+                                        />
                                 </ui:MenuItem>
 
                                 <ui:MenuItem Header="{DynamicResource Advanced}">
                                     <ui:MenuItem
                                         Header="{DynamicResource PruneOnFetch}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding PruneOnFetch}" />
+                                        IsChecked="{Binding PruneOnFetch}"
+                                        />
 
                                     <ui:MenuItem Header="Query Parsers" ItemsSource="{Binding Path=QueryParsers}">
                                         <ui:MenuItem.ItemContainerStyle>
@@ -270,7 +260,8 @@
                                                             <ui:MenuItem
                                                                 Header="{Binding Header}"
                                                                 IsCheckable="{Binding IsCheckable}"
-                                                                IsChecked="{Binding IsChecked}" />
+                                                                IsChecked="{Binding IsChecked}"
+                                                                />
                                                         </ControlTemplate>
                                                     </Setter.Value>
                                                 </Setter>
@@ -312,11 +303,12 @@
                         Content="🡱"
                         Cursor="Arrow"
                         FontSize="17"
-                        Visibility="Visible" />
+                        Visibility="Visible"
+                        />
                 </Grid>
 
                 <ListBox
-                    Name="lstRepositories"
+                    Name="LstRepositories"
                     Margin="0,16,0,0"
                     Padding="0"
                     VerticalAlignment="Top"
@@ -334,7 +326,8 @@
                     SnapsToDevicePixels="True"
                     VirtualizingPanel.IsVirtualizing="True"
                     VirtualizingPanel.ScrollUnit="Item"
-                    VirtualizingPanel.VirtualizationMode="Recycling">
+                    VirtualizingPanel.VirtualizationMode="Recycling"
+                    >
 
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -355,7 +348,8 @@
                                             Background="Transparent"
                                             BorderThickness="1"
                                             CornerRadius="0"
-                                            SnapsToDevicePixels="True">
+                                            SnapsToDevicePixels="True"
+                                            >
 
                                             <ContentPresenter />
 
@@ -364,8 +358,8 @@
 
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="Border" Property="Background" Value="DimGray" />
                                                 <Setter Property="Foreground" Value="{DynamicResource ListBoxItemSelectedForegroundThemeBrush}" />
+                                                <Setter TargetName="Border" Property="Background" Value="DimGray" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -386,7 +380,8 @@
                                         SnapsToDevicePixels="True"
                                         Text="📌"
                                         TextElement.FontSize="14"
-                                        Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        />
                                     <!--  Repository Name Text Block  -->
                                     <ui:TextBlock
                                         Margin="8,3,8,3"
@@ -396,7 +391,8 @@
                                         Text="{Binding Name}"
                                         TextElement.FontSize="17"
                                         TextWrapping="Wrap"
-                                        ToolTip="{Binding Path}" />
+                                        ToolTip="{Binding Path}"
+                                        />
                                 </StackPanel>
 
                                 <!--  Repostiory Selected(Current) Branch  -->
@@ -408,7 +404,8 @@
                                     SnapsToDevicePixels="True"
                                     Text="{Binding CurrentBranch}"
                                     TextWrapping="Wrap"
-                                    Visibility="{Binding Path=IsNotBare, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    Visibility="{Binding Path=IsNotBare, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    />
 
                                 <StackPanel Orientation="Horizontal">
 
@@ -417,18 +414,21 @@
                                         Padding="6,2,6,2"
                                         HorizontalAlignment="Left"
                                         BorderThickness="0"
-                                        CornerRadius="5">
+                                        CornerRadius="5"
+                                        >
                                         <ui:TextBlock
                                             FontFamily="Source Code Pro"
                                             FontSize="13.5"
                                             Foreground="LimeGreen"
-                                            Text="{Binding Status}">
+                                            Text="{Binding Status}"
+                                            >
                                             <ui:TextBlock.ToolTip>
 
                                                 <ui:TextBlock
                                                     FontFamily="Source Code Pro"
                                                     Foreground="{DynamicResource TextControlForeground}"
-                                                    Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToHumanizedLocalDateTimeConverter}}" />
+                                                    Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToHumanizedLocalDateTimeConverter}}"
+                                                    />
                                             </ui:TextBlock.ToolTip>
                                         </ui:TextBlock>
                                     </Border>
@@ -448,14 +448,16 @@
                                                         Padding="6,2,6,2"
                                                         HorizontalAlignment="Left"
                                                         BorderThickness="0"
-                                                        CornerRadius="5">
+                                                        CornerRadius="5"
+                                                        >
                                                         <ui:TextBlock
                                                             FontFamily="Source Code Pro"
                                                             FontSize="13.5"
                                                             Foreground="DarkSalmon"
                                                             SnapsToDevicePixels="True"
                                                             Text="{Binding Tag}"
-                                                            TextWrapping="Wrap" />
+                                                            TextWrapping="Wrap"
+                                                            />
                                                     </Border>
 
                                                 </DataTemplate>
@@ -467,7 +469,7 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ContextMenu>
-                        <ContextMenu x:Name="mnuRepositoryContext">
+                        <ContextMenu x:Name="MnuRepositoryContext">
                             <!--<ContextMenu.ItemsPanel>
                             <ItemsPanelTemplate>
                             <VirtualizingStackPanel IsVirtualizing = "True" VirtualizationMode = "Recycling" />
@@ -487,11 +489,13 @@
                     Text="{Binding Header}"
                     TextElement.FontSize="12"
                     TextElement.FontWeight="Bold"
-                    TextWrapping="Wrap" />
+                    TextWrapping="Wrap"
+                    />
                 <ui:TextBlock
                     Text="{Binding Description}"
                     TextElement.FontSize="12"
-                    TextWrapping="Wrap" />
+                    TextWrapping="Wrap"
+                    />
 
             </StackPanel>
         </ScrollViewer>

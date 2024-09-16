@@ -1,20 +1,4 @@
-<!--
-    This Source Code Form is subject to the terms of the MIT License.
-    If a copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
-    Copyright (C) Leszek Pomianowski and WPF UI Contributors.
-    All Rights Reserved.
-    
-    Based on Microsoft XAML for Win UI
-    Copyright (c) Microsoft Corporation. All Rights Reserved.
--->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
-    <!--
-        Microsoft UI XAML
-        
-        2.5 controls should not depends on brushes
-        https://github.com/microsoft/microsoft-ui-xaml/blob/main/dev/CommonStyles/Common_themeresources_any.xaml
-    -->
 
     <!--  Colors depending on the theme should be changed by the Manager  -->
     <Color x:Key="SystemAccentColor">#4cc2ff</Color>
@@ -167,7 +151,8 @@
         Stretch="UniformToFill"
         TileMode="Tile"
         Viewport="0,0,10,10"
-        ViewportUnits="Absolute">
+        ViewportUnits="Absolute"
+        >
         <DrawingBrush.Drawing>
             <DrawingGroup>
                 <DrawingGroup.Children>
@@ -302,7 +287,8 @@
     <SolidColorBrush
         x:Key="ContentDialogSmokeFill"
         Opacity="0.8"
-        Color="{StaticResource SystemColorWindowColor}" />
+        Color="{StaticResource SystemColorWindowColor}"
+        />
     <SolidColorBrush x:Key="ContentDialogBackground" Color="{StaticResource SystemColorWindowColor}" />
     <SolidColorBrush x:Key="ContentDialogTopOverlay" Color="Transparent" />
     <SolidColorBrush x:Key="ContentDialogBorderBrush" Color="{StaticResource SystemColorWindowTextColor}" />

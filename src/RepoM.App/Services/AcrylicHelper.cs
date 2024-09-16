@@ -1,7 +1,5 @@
 namespace RepoM.App.Services;
 
-using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Media;
 
 public static class AcrylicHelper

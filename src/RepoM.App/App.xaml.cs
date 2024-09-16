@@ -20,6 +20,7 @@ using RepoM.App.Services;
 using RepoM.App.Services.HotKey;
 using Serilog;
 using Serilog.Core;
+using Application = System.Windows.Application;
 using Container = SimpleInjector.Container;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -35,6 +36,26 @@ public partial class App : Application
     private HotKeyService? _hotKeyService;
     private WindowSizeService? _windowSizeService;
 
+    //private static UiApplication? _uiApplication;
+
+    private static App? _app;
+
+    private Window? _mainWindow;
+    public Window? MainWindowInstance
+    {
+        get => _app?.MainWindow ?? _mainWindow;
+        set
+        {
+            if (_app != null)
+            {
+                _app.MainWindow = value;
+            }
+
+            _mainWindow = value;
+        }
+    }
+
+
     /// <summary>
     /// Main program start point
     /// </summary>
@@ -47,9 +68,9 @@ public partial class App : Application
         }
 
         Thread.CurrentThread.Name ??= "UI";
-        var app = new App();
-        app.InitializeComponent();
-        app.Run();
+        _app = new App();
+        _app.InitializeComponent();
+        _app.Run();
     }
 
     /// <summary>
