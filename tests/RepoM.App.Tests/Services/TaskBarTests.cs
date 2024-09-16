@@ -4,7 +4,7 @@ using FluentAssertions;
 using RepoM.App.Services;
 using Xunit;
 
-public class TaskBarLocatorTests
+public class TaskBarTests
 {
     [Fact]
     public void GetTaskBarLocation_ShouldReturnBottom_WhenNoScreenGiven()
@@ -12,9 +12,9 @@ public class TaskBarLocatorTests
         // arrange
 
         // act
-        TaskBarLocator.TaskBarLocation result = TaskBarLocator.GetTaskBarLocation(null);
+        TaskBar.TaskBarLocation result = TaskBar.GetTaskBarLocation(null);
 
         // assert
-        result.Should().Be(TaskBarLocator.TaskBarLocation.Bottom);
+        result.Should().Be(TaskBar.TaskBarLocation.Bottom);
     }
 }

@@ -15,10 +15,17 @@ public class UtcToHumanizedLocalDateTimeConverter : IValueConverter
 {
     private static readonly HardcodededMiniHumanizer _humanizer = new(SystemClock.Instance);
 
-    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var date = DateTime.SpecifyKind(DateTime.Parse(value?.ToString() ?? string.Empty, CultureInfo.InvariantCulture), DateTimeKind.Utc).ToLocalTime();
+        DateTime parse;
+        var ok = DateTime.TryParse(value?.ToString() ?? string.Empty, CultureInfo.InvariantCulture, out parse);
+        if (!ok)
+        {
+            return null;
+        }
+        var date = DateTime.SpecifyKind(parse, DateTimeKind.Utc).ToLocalTime();
         return _humanizer.HumanizeTimestamp(date);
+        
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotImplementedException();

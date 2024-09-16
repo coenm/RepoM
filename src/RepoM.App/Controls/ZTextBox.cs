@@ -2,7 +2,6 @@ namespace RepoM.App.Controls;
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 /// <summary>
@@ -15,7 +14,7 @@ using System.Windows.Input;
 /// •	Triggers the Finish event when any of the keys in the FinisherKeys list are pressed.
 /// This custom control can be useful in scenarios where you need to perform specific actions based on key presses within a text box.
 /// </summary>
-public class ZTextBox : TextBox
+public class ZTextBox : Wpf.Ui.Controls.TextBox
 {
     public event EventHandler? Finish;
 
