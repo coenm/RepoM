@@ -31,33 +31,12 @@
     WindowCornerPreference="Round"
     mc:Ignorable="d"
     >
-    <!--  xmlns:controls="clr-namespace:RepoM.App.Controls"  -->
 
     <Window.Resources>
         <ResourceDictionary>
             <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
-
-            <!--  Key bindings  -->
-            <!--
-            <RoutedUICommand x:Key="KB_DownArrow" />
-            -->
         </ResourceDictionary>
     </Window.Resources>
-
-    <!--  Command bindings  -->
-    <!--
-    <Window.CommandBindings>
-        <CommandBinding Command="{StaticResource KB_DownArrow}" Executed="OnKBPress_DownArrow" />
-    </Window.CommandBindings>
-    -->
-
-    <!--  Input bindings  -->
-    <!--
-    <Window.InputBindings>
-        <KeyBinding Key="Down" Command="{StaticResource KB_DownArrow}" />
-
-    </Window.InputBindings>
-    -->
 
 
     <Grid Margin="18,16,6,0">

@@ -30,6 +30,7 @@ using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
+using Sprache;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using Control = System.Windows.Controls.Control;
@@ -486,14 +487,8 @@ public partial class MainWindow : FluentWindow
 
     private void PlaceFormByTaskBarLocation()
     {
-        Point position = TaskBar.GetWindowPlacement(
-            SystemParameters.WorkArea,
-            ActualHeight,
-            ActualWidth,
-            Screen.PrimaryScreen);
-
-        SetCurrentValue(LeftProperty, position.X);
-        SetCurrentValue(TopProperty, position.Y);
+        SetCurrentValue(TopProperty, SystemParameters.WorkArea.BottomRight.Y - ActualHeight - 5);
+        SetCurrentValue(LeftProperty, SystemParameters.WorkArea.BottomRight.X - ActualWidth - 10);
     }
 
 
