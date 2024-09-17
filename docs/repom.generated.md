@@ -23,6 +23,27 @@ Properties:
 - `command`: The command to execute. ([Text](repository_action_types.md#text))
 - `arguments`: Arguments for the command. ([Text](repository_action_types.md#text))
 
+### Example
+
+<!-- snippet: command@1-scenario01 -->
+<a id='snippet-command@1-scenario01'></a>
+```yaml
+action-menu:
+
+- type: command@1
+  name: Open in Windows Terminal
+  command: wt
+  arguments: -d "{{ repository.linux_path }}"
+
+- type: command@1
+  name: Commit and Push
+  command: cmd
+  arguments: /k cd "{{ repository.path }}" & git add . & git commit -m "my fix" & git push & exit
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/CommandV1Tests.DocumentationScenario01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-command@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ## executable@1
 
 Action to excute an application with additional arguments. This action is almost identical to the `command@1` action. When no existing executables are provided, the action will not show.
