@@ -18,6 +18,7 @@
     BorderThickness="0"
     ExtendsContentIntoTitleBar="True"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    KeyDown="MainWindow_OnKeyDown"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     SizeChanged="Window_SizeChanged"
@@ -33,8 +34,31 @@
     <!--  xmlns:controls="clr-namespace:RepoM.App.Controls"  -->
 
     <Window.Resources>
-        <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
+        <ResourceDictionary>
+            <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
+
+            <!--  Key bindings  -->
+            <!--
+            <RoutedUICommand x:Key="KB_DownArrow" />
+            -->
+        </ResourceDictionary>
     </Window.Resources>
+
+    <!--  Command bindings  -->
+    <!--
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource KB_DownArrow}" Executed="OnKBPress_DownArrow" />
+    </Window.CommandBindings>
+    -->
+
+    <!--  Input bindings  -->
+    <!--
+    <Window.InputBindings>
+        <KeyBinding Key="Down" Command="{StaticResource KB_DownArrow}" />
+
+    </Window.InputBindings>
+    -->
+
 
     <Grid Margin="18,16,6,0">
 
@@ -308,17 +332,17 @@
                 </Grid>
 
                 <ListBox
-                    Name="LstRepositories"
+                    Name="ListBoxRepos"
                     Margin="0,16,0,0"
                     Padding="0"
                     VerticalAlignment="Top"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Top"
                     BorderThickness="0"
-                    ContextMenuOpening="LstRepositories_ContextMenuOpening"
+                    ContextMenuOpening="ListBoxRepos_ContextMenuOpening"
                     DockPanel.Dock="Top"
-                    KeyDown="LstRepositories_KeyDown"
-                    MouseDoubleClick="LstRepositories_MouseDoubleClick"
+                    KeyDown="ListBoxRepos_KeyDown"
+                    MouseDoubleClick="ListBoxRepos_MouseDoubleClick"
                     ScrollViewer.CanContentScroll="False"
                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -328,6 +352,14 @@
                     VirtualizingPanel.ScrollUnit="Item"
                     VirtualizingPanel.VirtualizationMode="Recycling"
                     >
+
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Empty" />
+                            <Separator />
+                            <MenuItem Header="Empty" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
 
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>

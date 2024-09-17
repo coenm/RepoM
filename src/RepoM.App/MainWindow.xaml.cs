@@ -54,7 +54,22 @@ public partial class MainWindow : FluentWindow
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
-    private static readonly ImmutableArray<Key> FinisherKeys = new[] { Key.Return, Key.Enter, }.ToImmutableArray();
+    private enum IndexNavigator
+    {
+        GoToNext,
+        GoToPrevious,
+        GoToFirst,
+        GoToLast,
+        StickToCurrent,
+    }
+    private static readonly ImmutableDictionary<Key, IndexNavigator> ListBoxRepos_NavigationKeys = new Dictionary<Key, IndexNavigator>
+    {
+        { Key.Up, IndexNavigator.GoToPrevious },
+        { Key.Down, IndexNavigator.GoToNext },
+        { Key.PageUp, IndexNavigator.GoToFirst },
+        { Key.PageDown, IndexNavigator.GoToLast },
+        { Key.Space, IndexNavigator.GoToNext },
+    }.ToImmutableDictionary();
 
     public MainWindow(
         IRepositoryInformationAggregator aggregator,
@@ -107,7 +122,7 @@ public partial class MainWindow : FluentWindow
             ShowScanningState(_monitor.Scanning);
         }
 
-        LstRepositories.ItemsSource = aggregator.Repositories;
+        ListBoxRepos.ItemsSource = aggregator.Repositories;
 
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
         ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
@@ -152,7 +167,7 @@ public partial class MainWindow : FluentWindow
     private void View_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         // use the list's items source directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
-        var hasRepositories = LstRepositories.ItemsSource.OfType<RepositoryViewModel>().Any();
+        var hasRepositories = ListBoxRepos.ItemsSource.OfType<RepositoryViewModel>().Any();
         TbNoRepositories.SetCurrentValue(VisibilityProperty, hasRepositories ? Visibility.Hidden : Visibility.Visible);
     }
 
@@ -218,7 +233,7 @@ public partial class MainWindow : FluentWindow
         Dispatcher.Invoke(() => ShowScanningState(isScanning));
     }
 
-    private async void LstRepositories_MouseDoubleClick(object? sender, MouseButtonEventArgs e)
+    private async void ListBoxRepos_MouseDoubleClick(object? sender, MouseButtonEventArgs e)
     {
         // prevent double clicks from scrollbars and other non-data areas
         if (e.OriginalSource is not (Grid or TextBlock))
@@ -236,28 +251,101 @@ public partial class MainWindow : FluentWindow
         }
     }
 
-    private async void LstRepositories_ContextMenuOpening(object? sender, ContextMenuEventArgs e)
+    private async void ListBoxRepos_ContextMenuOpening(object? sender, ContextMenuEventArgs e)
     {
+        // This triggers only when the Context Menu is opened via right click
+        // opening the context menu via Key.Left or Key.Right does not trigger this
         if (sender == null)
         {
             e.Handled = true;
             return;
         }
 
-        // var currentCursor = ((FrameworkElement)e.Source).Cursor;
-        // ((FrameworkElement)e.Source).Cursor = Cursors.AppStarting;
-        var lstRepositoriesContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(((FrameworkElement)e.Source).ContextMenu).ConfigureAwait(true);
-        if (!lstRepositoriesContextMenuOpening)
+        var listBoxReposContextMenuOpening = await ListBoxRepos_BuildContextMenuAsync(((FrameworkElement)e.Source).ContextMenu).ConfigureAwait(true);
+        if (!listBoxReposContextMenuOpening)
         {
             e.Handled = true;
         }
     }
 
-    private async Task<bool> LstRepositoriesContextMenuOpeningWrapperAsync(ContextMenu ctxMenu)
+    private async Task<bool> ListBoxRepos_BuildContextMenuAsync(ContextMenu? ctxMenu)
     {
+        if (ListBoxRepos.SelectedItem is not RepositoryViewModel vm)
+        {
+            return false;
+        }
+
+        if (null == ctxMenu)
+        {
+            ListBoxRepos.SetCurrentValue(ContextMenuProperty, new ContextMenu());
+            if (null != ListBoxRepos.ContextMenu)
+            {
+                ctxMenu = ListBoxRepos.ContextMenu;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            ctxMenu.Items.Clear();
+        }
+
         try
         {
-            return await LstRepositoriesContextMenuOpeningAsync(ctxMenu).ConfigureAwait(true);
+            var items = new List<Control>();
+
+            ctxMenu.Items.Add(new MenuItem
+                {
+                    Header = "Loading...",
+                    IsEnabled = true,
+                });
+
+
+            await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(true))
+            {
+                switch (action)
+                {
+                    case UserInterfaceSeparatorRepositoryAction:
+                        {
+                            if (items.Count > 0 && items[^1] is not Separator)
+                            {
+                                items.Add(new Separator());
+                            }
+
+                            break;
+                        }
+                    case DeferredSubActionsUserInterfaceRepositoryAction:
+                        {
+                            Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
+                            if (controlItem != null)
+                            {
+                                items.Add(controlItem);
+                            }
+
+                            break;
+                        }
+                    case UserInterfaceRepositoryAction:
+                        {
+                            Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
+                            if (controlItem != null)
+                            {
+                                items.Add(controlItem);
+                            }
+
+                            break;
+                        }
+                }
+            }
+
+            ctxMenu.Items.Clear();
+            foreach (Control item in items)
+            {
+                ctxMenu.Items.Add(item);
+            }
+
+            return true;
         }
         catch (Exception e)
         {
@@ -279,103 +367,10 @@ public partial class MainWindow : FluentWindow
         }
     }
 
-    private async Task<bool> LstRepositoriesContextMenuOpeningAsync(ContextMenu ctxMenu)
-    {
-        if (LstRepositories.SelectedItem is not RepositoryViewModel vm)
-        {
-            return false;
-        }
-
-        var items = new List<Control>();
-
-        ctxMenu.Items.Clear();
-        ctxMenu.Items.Add(new MenuItem
-        {
-            Header = "Loading ..",
-            IsEnabled = true,
-        });
-
-        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(true))
-        {
-            if (action is UserInterfaceSeparatorRepositoryAction)
-            {
-                if (items.Count > 0 && items[^1] is not Separator)
-                {
-                    items.Add(new Separator());
-                }
-            }
-            else if (action is DeferredSubActionsUserInterfaceRepositoryAction)
-            {
-                Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
-                if (controlItem != null)
-                {
-                    items.Add(controlItem);
-                }
-            }
-            else if (action is UserInterfaceRepositoryAction)
-            {
-                Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
-                if (controlItem != null)
-                {
-                    items.Add(controlItem);
-                }
-            }
-        }
-
-        ctxMenu.Items.Clear();
-        foreach (Control item in items)
-        {
-            ctxMenu.Items.Add(item);
-        }
-
-        return true;
-    }
-
-
-    private async void LstRepositories_KeyDown(object? sender, KeyEventArgs e)
-    {
-        if (e.Key is Key.Return or Key.Enter)
-        {
-            try
-            {
-                await InvokeActionOnCurrentRepositoryAsync().ConfigureAwait(false);
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-            }
-
-            return;
-        }
-
-        if (e.Key is Key.Left or Key.Right)
-        {
-            if (sender == null)
-            {
-                e.Handled = true;
-                return;
-            }
-
-            // try open context menu.
-            ContextMenu? ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
-            if (ctxMenu == null)
-            {
-                return;
-            }
-
-            var lstRepositoriesContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(ctxMenu).ConfigureAwait(true);
-            if (lstRepositoriesContextMenuOpening)
-            {
-                ctxMenu.Placement = PlacementMode.Left;
-                ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
-                ctxMenu.IsOpen = true;
-            }
-        }
-    }
 
     private async Task InvokeActionOnCurrentRepositoryAsync()
     {
-        if (LstRepositories.SelectedItem is not RepositoryViewModel selectedView)
+        if (ListBoxRepos.SelectedItem is not RepositoryViewModel selectedView)
         {
             return;
         }
@@ -735,32 +730,10 @@ public partial class MainWindow : FluentWindow
 
     private void ShowScanningState(bool isScanning)
     {
-        ScanMenuItem.SetCurrentValue(MenuItem.IsEnabledProperty, !isScanning);
+        ScanMenuItem.SetCurrentValue(IsEnabledProperty, !isScanning);
         ScanMenuItem.SetCurrentValue(HeaderedItemsControl.HeaderProperty, isScanning
             ? _translationService.Translate("Scanning")
             : _translationService.Translate("ScanComputer"));
-    }
-
-    protected override void OnKeyDown(KeyEventArgs e)
-    {
-        base.OnKeyDown(e);
-
-        if (e.Key == Key.F && Keyboard.IsKeyDown(Key.LeftCtrl))
-        {
-            SearchBar_TextBox.Focus();
-            SearchBar_TextBox.SelectAll();
-        }
-
-        if (e.Key == Key.Down && SearchBar_TextBox.IsFocused)
-        {
-            LstRepositories.Focus();
-        }
-
-        // keep window open on deactivate to make screenshots, for example
-        if (e.Key == Key.F12)
-        {
-            _closeOnDeactivate = !_closeOnDeactivate;
-        }
     }
 
     private bool FilterRepositories(object item)
@@ -858,29 +831,209 @@ public partial class MainWindow : FluentWindow
         }
 
         // Refresh the view
-        ICollectionView view = CollectionViewSource.GetDefaultView(LstRepositories.ItemsSource);
+        ICollectionView view = CollectionViewSource.GetDefaultView(ListBoxRepos.ItemsSource);
         view.Refresh();
     }
+
+    private void ListBoxRepos_ChangeCurrentItem(IndexNavigator navigator, bool focus)
+    {
+        if (ListBoxRepos.Items.IsEmpty) { return; }
+
+        if (focus && !ListBoxRepos.IsFocused)
+        {
+            ListBoxRepos.Focus();
+        }
+
+        var currentIndex = ListBoxRepos.SelectedIndex;
+        int newIndex;
+
+        switch (navigator)
+        {
+            case IndexNavigator.GoToNext:
+                {
+                    newIndex = currentIndex + 1;
+                    if (newIndex >= ListBoxRepos.Items.Count)
+                    {
+                        newIndex = 0;
+                    }
+
+                    break;
+                }
+            case IndexNavigator.GoToPrevious:
+                {
+                    newIndex = currentIndex - 1;
+                    if (newIndex < 0)
+                    {
+                        newIndex = ListBoxRepos.Items.Count - 1;
+                    }
+
+                    break;
+                }
+            case IndexNavigator.GoToFirst:
+                {
+                    newIndex = 0;
+                    //if (newIndex == currentIndex)
+                    //{
+                    //    return;
+                    //}
+
+                    break;
+                }
+            case IndexNavigator.GoToLast:
+                {
+                    newIndex = ListBoxRepos.Items.Count - 1;
+                    //if (newIndex == currentIndex)
+                    //{
+                    //    return;
+                    //}
+
+                    break;
+                }
+            case IndexNavigator.StickToCurrent:
+                {
+                    newIndex = currentIndex;
+                    break;
+                }
+            default:
+                {
+                    _logger.LogError(new ArgumentOutOfRangeException(nameof(navigator), navigator, null).ToString());
+                    throw new ArgumentOutOfRangeException(nameof(navigator), navigator, null);
+                }
+        }
+
+        ListBoxRepos.SetCurrentValue(Selector.SelectedIndexProperty, newIndex);
+        var item = (ListBoxItem)ListBoxRepos.ItemContainerGenerator.ContainerFromIndex(newIndex);
+
+        if (focus)
+        {
+            item?.Focus();
+        }
+        
+    }
+
+    //private void OnKBPress_DownArrow(Object sender, ExecutedRoutedEventArgs e)
+    //{
+    //    // Action
+    //    Debug.WriteLine("Down Arrow pressed!!!");
+    //}
 
     private void SearchBar_TextBox_OnKeyDown(object sender, KeyEventArgs e)
     {
         var senderTextBox = (TextBox)sender;
 
-        if (e.Key == Key.Escape)
+        switch (e.Key)
         {
-            senderTextBox.Clear();
-        } else if (FinisherKeys.Contains(e.Key) && !string.IsNullOrEmpty(senderTextBox.Text))
-        {
-            SearchBar_RaiseSearchEvent();
+            case Key.Escape or Key.Clear:
+                {
+                    senderTextBox.Clear();
+                    ListBoxRepos.UnselectAll();
+                    break;
+                }
+            case Key.Enter:
+                {
+                    ListBoxRepos_ChangeCurrentItem(IndexNavigator.GoToFirst, true);
+                    break;
+                }
+            case var _ when ListBoxRepos_NavigationKeys.TryGetValue(e.Key, out IndexNavigator kValue):
+                {
+                    ListBoxRepos_ChangeCurrentItem(kValue, false);
+                    break;
+                }
         }
     }
-    private void SearchBar_RaiseSearchEvent()
-    {
-        LstRepositories.Focus();
-        if (LstRepositories.Items.IsEmpty) { return; }
 
-        LstRepositories.SetCurrentValue(Selector.SelectedIndexProperty, 0);
-        var item = (ListBoxItem)LstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
-        item?.Focus();
+    private async void ListBoxRepos_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (null == sender || ListBoxRepos.Items.IsEmpty || (ListBoxRepos.SelectedIndex < 0) )
+        {
+            e.Handled = true;
+            return;
+        }
+
+        switch (e.Key)
+        {
+            case Key.Enter:
+                {
+                    try
+                    {
+                        ListBoxRepos_ChangeCurrentItem(IndexNavigator.StickToCurrent, true);
+                        InvokeActionOnCurrentRepositoryAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.LogError(exception, "Could not invoke action on current repository.");
+                    }
+
+                    break;
+                }
+            case var _ when ListBoxRepos_NavigationKeys.TryGetValue(e.Key, out IndexNavigator kValue):
+                {
+                    ListBoxRepos_ChangeCurrentItem(kValue, true);
+                    break;
+                }
+            case Key.Left or Key.Right:
+                {
+                    // try open context menu.
+                    ContextMenu? ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
+
+                    var ListBoxReposContextMenuOpening = await ListBoxRepos_BuildContextMenuAsync(ctxMenu).ConfigureAwait(true);
+                    if (ListBoxReposContextMenuOpening)
+                    {
+                        ctxMenu.Placement = PlacementMode.Left;
+                        ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
+                        ctxMenu.IsOpen = true;
+                    }
+
+                    break;
+                }
+        }
     }
+
+    private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+    {
+        // SearchBar_TextBox.IsFocused => We deal with this in the SearchBar_TextBox_OnKeyDown method, but they are caught here too
+        // ListBoxRepos.IsFocused => We deal with this in the ListBoxRepos_KeyDown method, but they are caught here too
+
+        switch (e.Key)
+        {
+            case var _ when ListBoxRepos_NavigationKeys.TryGetValue(e.Key, out IndexNavigator kValue):
+                {
+                    ListBoxRepos_ChangeCurrentItem(kValue, true);
+                    break;
+                }
+            case Key.Escape:
+                {
+                    if (!SearchBar_TextBox.IsFocused)
+                    {
+                        Hide();
+                    }
+
+                    break;
+                }
+            case Key.Clear:
+                {
+                    SearchBar_TextBox.Clear();
+                    ListBoxRepos.UnselectAll();
+                    SearchBar_TextBox.Focus();
+                    break;
+                }
+            case Key.F1:
+                HelpButton_Click(sender, e);
+                break;
+            case Key.F2:
+                MenuButton_Click(sender, e);
+                break;
+            case Key.F3:
+                ScanButton_Click(sender, e);
+                break;
+            case Key.F4:
+                ClearButton_Click(sender, e);
+                break;
+            case Key.F12:
+                // keep window open on deactivate to make screenshots, for example
+                _closeOnDeactivate = !_closeOnDeactivate;
+                break;
+        }
+    }
+
 }

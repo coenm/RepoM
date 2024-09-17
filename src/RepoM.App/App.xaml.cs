@@ -36,7 +36,7 @@ public partial class App : Application
     private HotKeyService? _hotKeyService;
     private WindowSizeService? _windowSizeService;
 
-    //private static UiApplication? _uiApplication;
+    public static string? AvailableUpdate { get; private set; }
 
     private static App? _app;
 
@@ -56,9 +56,6 @@ public partial class App : Application
     }
 
 
-    /// <summary>
-    /// Main program start point
-    /// </summary>
     [STAThread]
     public static void Main()
     {
@@ -73,10 +70,6 @@ public partial class App : Application
         _app.Run();
     }
 
-    /// <summary>
-    /// OnStartup event
-    /// </summary>
-    /// <param name="e"></param>
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -133,10 +126,6 @@ public partial class App : Application
         }
     }
 
-    /// <summary>
-    /// OnExit Event
-    /// </summary>
-    /// <param name="e"></param>
     protected override void OnExit(ExitEventArgs e)
     {
         _windowSizeService?.Unregister();
@@ -145,9 +134,7 @@ public partial class App : Application
 
         _hotKeyService?.Unregister();
 
-        // #pragma warning disable CA1416 // Validate platform compatibility
         _notifyIcon?.Dispose();
-        // #pragma warning restore CA1416 // Validate platform compatibility
 
         ReleaseAndDisposeMutex();
 
@@ -231,5 +218,4 @@ public partial class App : Application
         }
     }
 
-    public static string? AvailableUpdate { get; private set; }
 }
