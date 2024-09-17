@@ -118,6 +118,40 @@ Properties:
 - `enabled`: Show the menu as enabled (clickable) or disabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+<!-- snippet: just-text@1-scenario01 -->
+<a id='snippet-just-text@1-scenario01'></a>
+```yaml
+context:
+
+- type: evaluate-script@1
+  content: |-
+    now = date.parse '20/01/2022 08:32:48 +00:00' culture:'en-GB'
+
+action-menu:
+
+- type: just-text@1
+  name: Static text with conditional active
+  active: '1 < 10 && now.year == 2022' # true
+
+- type: just-text@1
+  name: Dynamic text {{ now | date.to_string "%Y-%m-%d"}}
+
+- type: just-text@1
+  name: Dynamic text with additional context {{ my_app_name }} - Year {{ now_year }}
+  context:
+  - type: evaluate-variable@1
+    name: now_year
+    value: now | date.to_string "%Y"
+  - type: set-variable@1
+    name: my_app_name
+    value: RepoM
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/JustTextV1Tests.DocumentationScenario01.testfile.yaml#L1-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-just-text@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ## pin-repository@1
 
 Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.
