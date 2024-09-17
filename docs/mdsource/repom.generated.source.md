@@ -149,6 +149,11 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+snippet: separator@1-scenario01
+
+
 ## url@1
 
 Action to open the url in the default browser.

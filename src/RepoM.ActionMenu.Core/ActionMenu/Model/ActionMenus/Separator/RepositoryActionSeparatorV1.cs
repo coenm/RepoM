@@ -8,6 +8,9 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Creates a visual separator in the action menu.
 /// </summary>
+/// <example>
+/// <snippet name='separator@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionSeparatorV1 : IMenuAction, IContext
 {

@@ -313,28 +313,6 @@ repository-actions:
 <sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/PinRepository01.testfile.yaml#L3-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionspinrepository01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-## separator@1
-
-Creates a visual separator in the action menu.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionSeparatorV1.verified.md -->
-
-This action does not have any specific properties.<!-- endInclude -->
-
-Example:
-
-<!-- snippet: RepositoryActionsSeparator01 -->
-<a id='snippet-repositoryactionsseparator01'></a>
-```yaml
-repository-actions:
-  actions:
-  - type: separator@1
-    active: true 
-    variables: [] # default property but doens't add anything to this action
-
-  - type: separator@1
-```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Separator01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsseparator01' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
 # Plugin actions
 
 These actions are available though the use of plugins.
