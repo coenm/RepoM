@@ -23,6 +23,11 @@ Properties:
 - `command`: The command to execute. ([Text](repository_action_types.md#text))
 - `arguments`: Arguments for the command. ([Text](repository_action_types.md#text))
 
+### Example
+
+snippet: command@1-scenario01
+
+
 ## executable@1
 
 Action to excute an application with additional arguments. This action is almost identical to the `command@1` action. When no existing executables are provided, the action will not show.
