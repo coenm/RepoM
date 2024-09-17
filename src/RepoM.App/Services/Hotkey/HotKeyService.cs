@@ -2,6 +2,7 @@ namespace RepoM.App.Services.HotKey;
 
 using System;
 using System.Windows;
+using System.Windows.Input;
 
 internal class HotKeyService
 {
@@ -20,7 +21,7 @@ internal class HotKeyService
         EnsureWindowHandle(_mainWindow);
 
         _hotKey = new HotKeyWindowsRegistration(47110815);
-        _hotKey.Register(_mainWindow, HotKeyWindowsRegistration.VK_R, HotKeyWindowsRegistration.MOD_ALT | HotKeyWindowsRegistration.MOD_CTRL, OnHotKeyPressed);
+        _hotKey.Register(_mainWindow, (uint)VirtualKeyCode.VK_R, (uint)(ModifierKeys.Shift | ModifierKeys.Control), OnHotKeyPressed);
     }
 
     public void Unregister()

@@ -21,16 +21,11 @@ internal partial class HotKeyWindowsRegistration
         IntPtr hWnd,
         int id);
 
-    public const uint VK_R = 0x52;
-    public const uint MOD_ALT = 0x0001;
-    public const uint MOD_CTRL = 0x0002;
-    public const uint MOD_SHIFT = 0x0004;
-    public const uint MOD_WIN = 0x0008;
-
     private IntPtr _handle;
     private Action? _hotKeyActionToCall;
     private readonly int _id;
 
+    // ReSharper disable once ConvertToPrimaryConstructor
     public HotKeyWindowsRegistration(int id)
     {
         _id = id;
@@ -45,7 +40,8 @@ internal partial class HotKeyWindowsRegistration
         var source = HwndSource.FromHwnd(_handle);
         source?.AddHook(HwndHook);
 
-        if (!RegisterHotKey(_handle, _id, modifiers, key))
+        var ok = RegisterHotKey(_handle, _id, modifiers, key);
+        if (!ok)
         {
             // handle error
         }
