@@ -1,6 +1,6 @@
 # `file`
 
-Provides file related action menu functions and variables accessable through `file`.
+Provides file related action menu functions and variables accessible through `file`.
 
 This module contains the following methods, variables and/or constants:
 

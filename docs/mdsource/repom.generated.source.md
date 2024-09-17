@@ -1,10 +1,6 @@
 # RepoM Core Repository Actions
 
-## Configuration
-
-This plugin has no configuration.
-
-This module contains the following methods, variables and/or constants:
+The following actions are part of the core of RepoM and can always be used in your RepositoryActions.
 
 ## browse-repository@1
 
