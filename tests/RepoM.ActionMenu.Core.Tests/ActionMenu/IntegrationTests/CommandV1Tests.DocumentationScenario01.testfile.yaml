@@ -1,0 +1,17 @@
+context:
+
+# begin-snippet: command@1-scenario01
+
+action-menu:
+
+- type: command@1
+  name: Open in Windows Terminal
+  command: wt
+  arguments: -d "{{ repository.linux_path }}"
+
+- type: command@1
+  name: Commit and Push
+  command: cmd
+  arguments: /k cd "{{ repository.path }}" & git add . & git commit -m "my fix" & git push & exit
+
+# end-snippet

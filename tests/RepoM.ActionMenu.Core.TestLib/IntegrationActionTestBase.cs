@@ -20,7 +20,7 @@ using Xunit;
 public abstract class IntegrationActionTestBase
 {
     private protected readonly TestBootstrapper Bootstrapper;
-    protected const string DEFAULT_PATH = "C:\\RepositoriesV2.yaml";
+    private const string DEFAULT_PATH = "C:\\RepositoriesV2.yaml";
     protected readonly EasyTestFileSettings TestFileSettings;
     protected readonly VerifySettings VerifySettings;
 

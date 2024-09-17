@@ -17,7 +17,7 @@ internal class TestBootstrapper
         IPackageConfiguration packageConfiguration)
     {
         _packageConfiguration = packageConfiguration ?? throw new ArgumentNullException(nameof(packageConfiguration));
-        FileSystem =new MockFileSystem();
+        FileSystem = new MockFileSystem();
         Container = new Container();
         Container.RegisterInstance<IFileSystem>(FileSystem);
         Container.RegisterInstance<ILogger>(NullLogger.Instance);

@@ -9,6 +9,9 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Action to excute a command (related to the repository)
 /// </summary>
+/// <example>
+/// <snippet name='command@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionCommandV1 : IMenuAction, IName
 {

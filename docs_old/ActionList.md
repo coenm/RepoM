@@ -11,62 +11,6 @@ Properties:<!-- include: DocsRepositoryActionsTests.RepositoryActionBaseDocument
 
 The following actions are part of the core of RepoM and can always be used in your RepositoryActions.
 
-## just-text@1
-
-Textual action to display some text in the action menu.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionJustTextV1.verified.md -->
-
-Action specific properties:
-
-- `enabled`: Show the menu as enabled (clickable) or disabled. (optional, evaluated, boolean, default: `true`)<!-- endInclude -->
-
-Example:
-
-<!-- snippet: RepositoryActionsJustText01 -->
-<a id='snippet-repositoryactionsjusttext01'></a>
-```yaml
-repository-actions:
-  actions:
-  - type: just-text@1
-    active: true 
-    variables: []
-    enabled: true
-    name: this is some text to display
-
-  - type: just-text@1
-    name: 'also text'
-```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/JustText01.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsjusttext01' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
-## associate-file@1
-
-Action menu for opening files with a given extension. If files within the repository are found matching the extension, a submenu will be created with all matched files.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionAssociateFileV1.verified.md -->
-
-Action specific properties:
-
-- `extension`: The file extension to look for. This parameter can contain a combination of valid literal path and wildcard (`*` and `?`) characters, but it doesnt support regular expressions.
-For example `*.sln`. (required, string)<!-- endInclude -->
-
-Example:
-
-<!-- snippet: RepositoryActionsAssociateFile01 -->
-<a id='snippet-repositoryactionsassociatefile01'></a>
-```yaml
-repository-actions:
-  actions:
-  - type: associate-file@1
-    active: true 
-    variables: []
-    name: 'Open in Visual Studio'
-    extension: '*.sln'
-    
-  - type: associate-file@1
-    name: 'Open in Visual Studio'
-    extension: '*.sln'
-```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/AssociateFile01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsassociatefile01' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
 ## browse-repository@1
 
 Action to open the default webbrowser and go to the origin remote webinterface. When multple remotes are available a sub menu is created for each remote.<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionBrowseRepositoryV1.verified.md -->
@@ -89,37 +33,6 @@ repository-actions:
   - type: browse-repository@1
 ```
 <sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/BrowseRepository01.testfile.yaml#L3-L13' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionsbrowserepository01' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
-## command@1
-
-Action to excute a command (related the the repository)<!-- include: DocsRepositoryActionsTests.DocsRepositoryActionsSettings_RepositoryActionCommandV1.verified.md -->
-
-Action specific properties:
-
-- `command`: The command to execute. (required, evaluated, string)
-- `arguments`: Arguments for the command. (optional, evaluated, string)<!-- endInclude -->
-
-Example:
-
-<!-- snippet: RepositoryActionsCommand01 -->
-<a id='snippet-repositoryactionscommand01'></a>
-```yaml
-repository-actions:
-  actions:
-  - type: command@1
-    active: true 
-    variables: []
-    name: Open in Terminal
-    command: wt
-    arguments: -d "{Repository.SafePath}"
-    
-  - type: command@1
-    name: Open in Terminal
-    command: wt
-    arguments: -d "{Repository.SafePath}"
-```
-<sup><a href='/tests/RepoM.Api.Tests/IO/ModuleBasedRepositoryActionProvider/DocumentationFiles/Command01.testfile.yaml#L3-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-repositoryactionscommand01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## executable@1
