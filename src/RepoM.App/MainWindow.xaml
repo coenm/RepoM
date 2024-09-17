@@ -19,7 +19,7 @@
     ExtendsContentIntoTitleBar="True"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     KeyDown="MainWindow_OnKeyDown"
-    ResizeMode="NoResize"
+    ResizeMode="CanResize"
     ShowInTaskbar="False"
     SizeChanged="Window_SizeChanged"
     TextBlock.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
