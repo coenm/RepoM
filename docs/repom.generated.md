@@ -67,6 +67,15 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+<!-- snippet: folder@1-scenario01 -->
+```
+** Could not find snippet 'folder@1-scenario01' **
+```
+<!-- endSnippet -->
+
+
 ## foreach@1
 
 Action to create repeated actions based on a variable.
@@ -136,6 +145,22 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
+### Example
+
+<!-- snippet: git-checkout@1-scenario01 -->
+<a id='snippet-git-checkout@1-scenario01'></a>
+```yaml
+action-menu:
+- type: git-checkout@1
+
+- type: git-checkout@1
+  name: Checkout!
+  active: true
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/GitCheckoutV1Tests.Documentation.git-checkout@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-checkout@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ## git-fetch@1
 
 Action to execute a `git fetch` command.
@@ -144,6 +169,22 @@ Properties:
 
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+
+### Example
+
+<!-- snippet: git-fetch@1-scenario01 -->
+<a id='snippet-git-fetch@1-scenario01'></a>
+```yaml
+action-menu:
+- type: git-fetch@1
+
+- type: git-fetch@1
+  name: Fetch!
+  active: true
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/GitFetchV1Tests.Documentation.git-fetch@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-fetch@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
 
 ## git-pull@1
 
@@ -154,6 +195,22 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
+### Example
+
+<!-- snippet: git-pull@1-scenario01 -->
+<a id='snippet-git-pull@1-scenario01'></a>
+```yaml
+action-menu:
+- type: git-pull@1
+
+- type: git-pull@1
+  name: Pull!
+  active: true
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/GitPullV1Tests.Documentation.git-pull@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-pull@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ## git-push@1
 
 Action to execute a `git push` command.
@@ -162,6 +219,22 @@ Properties:
 
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+
+### Example
+
+<!-- snippet: git-push@1-scenario01 -->
+<a id='snippet-git-push@1-scenario01'></a>
+```yaml
+action-menu:
+- type: git-push@1
+
+- type: git-push@1
+  name: Push!
+  active: true
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/GitPushV1Tests.Documentation.git-push@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-push@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
 
 ## ignore-repository@1
 
@@ -276,6 +349,23 @@ Properties:
 <!-- snippet: url@1-scenario01 -->
 <a id='snippet-url@1-scenario01'></a>
 ```yaml
+action-menu:
+
+- type: folder@1
+  name: Urls
+  active: true
+  actions:
+  - type: url@1
+    name: 'Browse to remote {{ repository.remotes[0].key }}'
+    url: '{{ repository.remotes[0].url }}'
+    active: repository.remotes[0].url | string.starts_with 'https'
+  - type: url@1
+    name: 'wiki'
+    url: '{{ repository.remotes[0].url }}/wiki'
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FolderV1Tests.Documentation.folder@1-scenario01.testfile.yaml#L3-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-url@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-url@1-scenario01-1'></a>
+```yaml
 context:
 
 - type: evaluate-script@1
@@ -301,20 +391,7 @@ action-menu:
       name: 'Browse to remote {{ remote.key}}'
       url: '{{ remote.url }}'
       active: remote.url | string.starts_with 'https'
-
-- type: folder@1
-  name: Link to all remotes of repo
-  active: array.size(repository.remotes) >= 1
-  actions:
-  - type: foreach@1
-    enumerable: repository.remotes
-    variable: remote
-    actions:
-    - type: url@1
-      name: 'Browse to remote {{ remote.key}}'
-      url: '{{ remote.url }}'
-      active: remote.url | string.starts_with 'https'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/UrlV1Tests.DocumentationScenario01.testfile.yaml#L1-L42' title='Snippet source file'>snippet source</a> | <a href='#snippet-url@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/UrlV1Tests.DocumentationScenario01.testfile.yaml#L1-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-url@1-scenario01-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
