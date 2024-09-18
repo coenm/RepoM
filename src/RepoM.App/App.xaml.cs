@@ -67,6 +67,13 @@ public partial class App: Application
         Thread.CurrentThread.Name ??= "UI";
         _app = new App();
         _app.InitializeComponent();
+
+        /*
+         * Run is called to start an application.
+         * Set properties and attach events before calling Run.
+         * Once run has been called - an application's OnStartup event
+         * is called immediately afterwards.
+         */
         _app.Run();
     }
 
@@ -217,5 +224,6 @@ public partial class App: Application
               // ignore
         }
     }
+
 
 }

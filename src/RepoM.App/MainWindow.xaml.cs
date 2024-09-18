@@ -44,7 +44,7 @@ public partial class MainWindow : FluentWindow
 {
     private volatile bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
-    private bool _keepMainWindowOpenWhenLosingFocus     = true;
+    private bool _keepMainWindowOpenWhenLosingFocus     = false;
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly DefaultRepositoryMonitor? _monitor;
     private readonly ITranslationService _translationService;
@@ -176,33 +176,35 @@ public partial class MainWindow : FluentWindow
     {
         // use the list's items source directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
         var hasRepositories = ListBoxRepos.ItemsSource.OfType<RepositoryViewModel>().Any();
-        TbNoRepositories.SetCurrentValue(VisibilityProperty, hasRepositories ? Visibility.Hidden : Visibility.Visible);
+        TbNoRepositories.SetCurrentValue(VisibilityProperty, hasRepositories ? Visibility.Collapsed : Visibility.Visible);
     }
 
-    protected override void OnActivated(EventArgs e)
-    {
-        base.OnActivated(e);
-        ShowUpdateIfAvailable();
-        SearchBar_TextBox.Focus();
-        SearchBar_TextBox.SelectAll();
-    }
 
-    protected override void OnDeactivated(EventArgs e)
-    {
-        base.OnDeactivated(e);
-
-        if (_keepMainWindowOpenWhenLosingFocus)
-        {
-            Hide();
-        }
-    }
-
+    /// <remarks>
+    ///     Window fires the Closing event before it closes. If the
+    ///     user cancels the closing event, the window is not closed.
+    ///     Otherwise, the window is closed and the Closed event is
+    ///     fired.
+    ///
+    ///     Callers must have UIPermission(UIPermissionWindow.AllWindows) to call this API.
+    /// </remarks>
     protected override void OnClosing(CancelEventArgs e)
     {
         e.Cancel = true;
         Hide();
     }
 
+    /// <summary>
+    ///     Show and activates the window
+    /// </summary>
+    /// <remarks>
+    ///     Calling Show() on window is the same as setting the
+    ///     Visibility property to Visibility.Visible.
+    /// 
+    ///     Calling Activate() calls SetForegroundWindow on the hWnd,
+    ///     thus the rules for SetForegroundWindow apply to this method.
+    ///     Activate() returns bool, indicating whether the window was activated or not
+    /// </remarks>
     public void ShowAndActivate()
     {
         Dispatcher.Invoke(() =>
@@ -1014,4 +1016,58 @@ public partial class MainWindow : FluentWindow
 
     }
 
+    /// <summary>
+    ///     This event is raised when the window is activated
+    /// </summary>
+    private void MainWindow_OnActivated(object? sender, EventArgs e)
+    {
+        ShowUpdateIfAvailable();
+        SearchBar_TextBox.Focus();
+        SearchBar_TextBox.SelectAll();
+    }
+
+    /// <summary>
+    ///     This event is raised when the window becomes a background window.
+    /// </summary>
+    /// <remarks>
+    ///     A window is deactivated (becomes a background window) when:
+    ///         * A user switches to another window in the current application.
+    ///         * A user switches to the window in another application by using ALT+TAB or by using Task Manager.
+    ///         * A user clicks the taskbar button for a window in another application.
+    /// </remarks>
+    /// <see cref="https://learn.microsoft.com/en-us/dotnet/api/system.windows.window.deactivated"/>
+    private void MainWindow_OnDeactivated(object? sender, EventArgs e)
+    {
+        if (_keepMainWindowOpenWhenLosingFocus)
+        {
+            return;
+        }
+
+        /*
+         * Calling Hide on window is the same as setting the
+         * Visibility property to Visibility.Hidden
+         */
+        Hide();
+
+    }
+
+    /// <summary>
+    ///     This event is raised when the window and its content is rendered.
+    /// </summary>
+    private void MainWindow_OnContentRendered(object? sender, EventArgs e)
+    {
+        // TODO
+    }
+
+    /// <summary>
+    ///     This even fires after the window source is created before it is shown.
+    /// </summary>
+    /// <remarks>
+    ///     It enables connection to the Win32 API.
+    /// </remarks>
+    /// <param name="e"></param>
+    private void MainWindow_OnSourceInitialized(object? sender, EventArgs e)
+    {
+        // TODO
+    }
 }
