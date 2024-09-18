@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Extensions.Logging;
@@ -30,7 +30,6 @@ using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
-using Sprache;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using Control = System.Windows.Controls.Control;
@@ -39,11 +38,13 @@ using MenuItem = Wpf.Ui.Controls.MenuItem;
 using TextBlock = System.Windows.Controls.TextBlock;
 using TextBox = Wpf.Ui.Controls.TextBox;
 
+[SuppressMessage("ReSharper", "ArrangeAccessorOwnerBody")]
+
 public partial class MainWindow : FluentWindow
 {
     private volatile bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
-    private bool _closeOnDeactivate     = true;
+    private bool _keepMainWindowOpenWhenLosingFocus     = true;
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly DefaultRepositoryMonitor? _monitor;
     private readonly ITranslationService _translationService;
@@ -63,6 +64,9 @@ public partial class MainWindow : FluentWindow
         GoToLast,
         StickToCurrent,
     }
+
+#pragma warning disable IDE1006
+    // ReSharper disable once InconsistentNaming
     private static readonly ImmutableDictionary<Key, IndexNavigator> ListBoxRepos_NavigationKeys = new Dictionary<Key, IndexNavigator>
     {
         { Key.Up, IndexNavigator.GoToPrevious },
@@ -71,6 +75,7 @@ public partial class MainWindow : FluentWindow
         { Key.PageDown, IndexNavigator.GoToLast },
         { Key.Space, IndexNavigator.GoToNext },
     }.ToImmutableDictionary();
+#pragma warning restore IDE1006
 
     public MainWindow(
         IRepositoryInformationAggregator aggregator,
@@ -132,8 +137,8 @@ public partial class MainWindow : FluentWindow
         repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
-        
-        ApplicationThemeManager.ApplySystemTheme(true); // Applies the system theme for Apps, not for 
+
+        ApplicationThemeManager.ApplySystemTheme(true); // Applies the system theme for Apps, not for
         ApplicationAccentColorManager.ApplySystemAccent();
         WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Mica);
         SystemThemeWatcher.Watch(this);
@@ -157,12 +162,14 @@ public partial class MainWindow : FluentWindow
 
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
+        // TODO: CONSIDER REMOVING THIS
+        // TODO: IMPLEMENT FUNCTION TO CHANGE SETTINGS
         PlaceFormByTaskBarLocation();
     }
 
     void OnLoaded(object sender, RoutedEventArgs args)
     {
-        
+        // TODO: move some things here from the constructor
     }
 
     private void View_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -184,7 +191,7 @@ public partial class MainWindow : FluentWindow
     {
         base.OnDeactivated(e);
 
-        if (_closeOnDeactivate)
+        if (_keepMainWindowOpenWhenLosingFocus)
         {
             Hide();
         }
@@ -194,22 +201,6 @@ public partial class MainWindow : FluentWindow
     {
         e.Cancel = true;
         Hide();
-    }
-
-    protected override void OnPreviewKeyDown(KeyEventArgs e)
-    {
-        base.OnPreviewKeyDown(e);
-
-        if (e.Key != Key.Escape)
-        {
-            return;
-        }
-
-        var isFilterActive = SearchBar_TextBox.IsFocused && !string.IsNullOrEmpty(SearchBar_TextBox.Text);
-        if (!isFilterActive)
-        {
-            Hide();
-        }
     }
 
     public void ShowAndActivate()
@@ -891,7 +882,9 @@ public partial class MainWindow : FluentWindow
                 }
             default:
                 {
+#pragma warning disable CA2254
                     _logger.LogError(new ArgumentOutOfRangeException(nameof(navigator), navigator, null).ToString());
+#pragma warning restore CA2254
                     throw new ArgumentOutOfRangeException(nameof(navigator), navigator, null);
                 }
         }
@@ -903,14 +896,8 @@ public partial class MainWindow : FluentWindow
         {
             item?.Focus();
         }
-        
-    }
 
-    //private void OnKBPress_DownArrow(Object sender, ExecutedRoutedEventArgs e)
-    //{
-    //    // Action
-    //    Debug.WriteLine("Down Arrow pressed!!!");
-    //}
+    }
 
     private void SearchBar_TextBox_OnKeyDown(object sender, KeyEventArgs e)
     {
@@ -918,12 +905,6 @@ public partial class MainWindow : FluentWindow
 
         switch (e.Key)
         {
-            case Key.Escape or Key.Clear:
-                {
-                    senderTextBox.Clear();
-                    ListBoxRepos.UnselectAll();
-                    break;
-                }
             case Key.Enter:
                 {
                     ListBoxRepos_ChangeCurrentItem(IndexNavigator.GoToFirst, true);
@@ -952,7 +933,7 @@ public partial class MainWindow : FluentWindow
                     try
                     {
                         ListBoxRepos_ChangeCurrentItem(IndexNavigator.StickToCurrent, true);
-                        InvokeActionOnCurrentRepositoryAsync().ConfigureAwait(false);
+                        _ = InvokeActionOnCurrentRepositoryAsync().ConfigureAwait(false);
                     }
                     catch (Exception exception)
                     {
@@ -971,9 +952,10 @@ public partial class MainWindow : FluentWindow
                     // try open context menu.
                     ContextMenu? ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
 
-                    var ListBoxReposContextMenuOpening = await ListBoxRepos_BuildContextMenuAsync(ctxMenu).ConfigureAwait(true);
-                    if (ListBoxReposContextMenuOpening)
+                    var listBoxReposContextMenuOpening = await ListBoxRepos_BuildContextMenuAsync(ctxMenu).ConfigureAwait(true);
+                    if (listBoxReposContextMenuOpening)
                     {
+                        // ReSharper disable once PossibleNullReferenceException
                         ctxMenu.Placement = PlacementMode.Left;
                         ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
                         ctxMenu.IsOpen = true;
@@ -996,22 +978,6 @@ public partial class MainWindow : FluentWindow
                     ListBoxRepos_ChangeCurrentItem(kValue, true);
                     break;
                 }
-            case Key.Escape:
-                {
-                    if (!SearchBar_TextBox.IsFocused)
-                    {
-                        Hide();
-                    }
-
-                    break;
-                }
-            case Key.Clear:
-                {
-                    SearchBar_TextBox.Clear();
-                    ListBoxRepos.UnselectAll();
-                    SearchBar_TextBox.Focus();
-                    break;
-                }
             case Key.F1:
                 HelpButton_Click(sender, e);
                 break;
@@ -1026,9 +992,26 @@ public partial class MainWindow : FluentWindow
                 break;
             case Key.F12:
                 // keep window open on deactivate to make screenshots, for example
-                _closeOnDeactivate = !_closeOnDeactivate;
+                _keepMainWindowOpenWhenLosingFocus = !_keepMainWindowOpenWhenLosingFocus;
                 break;
         }
+    }
+
+    private void OnKBPress_Escape(object sender, ExecutedRoutedEventArgs e)
+    {
+        // triggers as soon as the Key.Escape / Key.Clear / Key.Cancel is pressed, not when it is released. The equivalent of OnPreviewKeyDown.
+
+        if (string.IsNullOrEmpty(SearchBar_TextBox.Text))
+        {
+            Hide();
+        }
+        else
+        {
+            SearchBar_TextBox.Clear();
+            ListBoxRepos.UnselectAll();
+            SearchBar_TextBox.Focus();
+        }
+
     }
 
 }

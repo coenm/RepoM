@@ -35,8 +35,27 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
+
+            <!--  Key bindings  -->
+            <RoutedUICommand x:Key="KB_Escape" />
+
         </ResourceDictionary>
     </Window.Resources>
+
+    <!--  Command bindings  -->
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource KB_Escape}" Executed="OnKBPress_Escape" />
+    </Window.CommandBindings>
+
+    <!--  Input bindings  -->
+    <Window.InputBindings>
+        <!--  Escape key  -->
+        <KeyBinding Key="Escape" Command="{StaticResource KB_Escape}" />
+        <!--  Cancel key on numpad (0 when NumLock is off)  -->
+        <KeyBinding Key="Cancel" Command="{StaticResource KB_Escape}" />
+        <!--  Clear key on numpad (5 when NumLock is off)  -->
+        <KeyBinding Key="Clear" Command="{StaticResource KB_Escape}" />
+    </Window.InputBindings>
 
 
     <Grid Margin="18,16,6,0">

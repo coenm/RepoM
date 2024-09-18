@@ -11,9 +11,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using RepoM.Api.Common;
 
-internal class WindowSizeService : IDisposable
+internal class WindowSizeService: IDisposable
 {
-    private const string UNKNOWN_RESOLUTION = "unknown";
+    private const string UNKNOWN_RESOLUTION    = "unknown";
     private volatile string _currentResolution = UNKNOWN_RESOLUTION;
     private readonly Window _mainWindow;
     private readonly IAppSettingsService _appSettings;
@@ -21,14 +21,14 @@ internal class WindowSizeService : IDisposable
     private IDisposable? _registrationWindowSizeChanged;
     private IDisposable? _registrationDisplaySettingsChanged;
     private readonly SynchronizationContext _uiDispatcher;
-    protected static readonly TimeSpan ThrottleWindowSizeChanged = TimeSpan.FromSeconds(5);
+    protected static readonly TimeSpan ThrottleWindowSizeChanged      = TimeSpan.FromSeconds(5);
     protected static readonly TimeSpan ThrottleDisplaySettingsChanged = TimeSpan.FromSeconds(1);
 
     public WindowSizeService(Window mainWindow, IAppSettingsService appSettings, IThreadDispatcher threadDispatcher, ILogger logger)
     {
-        _mainWindow = mainWindow ?? throw new ArgumentNullException(nameof(mainWindow));
+        _mainWindow  = mainWindow ?? throw new ArgumentNullException(nameof(mainWindow));
         _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger      = logger ?? throw new ArgumentNullException(nameof(logger));
         ArgumentNullException.ThrowIfNull(threadDispatcher);
         _uiDispatcher = threadDispatcher.SynchronizationContext;
     }
@@ -36,10 +36,10 @@ internal class WindowSizeService : IDisposable
     public void Register()
     {
         _currentResolution = GetResolution();
-        
+
         if (_appSettings.TryGetMenuSize(_currentResolution, out MenuSize? size))
         {
-            _mainWindow.Width = size.Value.MenuWidth;
+            _mainWindow.Width  = size.Value.MenuWidth;
             _mainWindow.Height = size.Value.MenuHeight;
         }
         else
@@ -49,10 +49,10 @@ internal class WindowSizeService : IDisposable
                 new MenuSize
                     {
                         MenuHeight = _mainWindow.Height,
-                        MenuWidth = _mainWindow.Width,
+                        MenuWidth  = _mainWindow.Width,
                     });
         }
-        
+
         _registrationDisplaySettingsChanged = Observable
             .FromEventPattern<EventHandler, EventArgs>(
               handler => SystemEvents.DisplaySettingsChanged += handler,
@@ -63,7 +63,7 @@ internal class WindowSizeService : IDisposable
                 {
                     try
                     {
-                        // update resolution in select is not very nice.
+                          // update resolution in select is not very nice.
                         _currentResolution = GetResolution();
 
                         _ = _appSettings.TryGetMenuSize(_currentResolution, out MenuSize? menuSize);
@@ -77,7 +77,7 @@ internal class WindowSizeService : IDisposable
                 })
             .Where(menuSize => menuSize.HasValue)
             .Select(menuSize => menuSize!.Value)
-            .ObserveOn(_uiDispatcher) // Accessing the mainWindow should be done from UI thread.
+            .ObserveOn(_uiDispatcher)  // Accessing the mainWindow should be done from UI thread.
             .Where(menuSize =>
                 {
                     try
@@ -95,10 +95,10 @@ internal class WindowSizeService : IDisposable
                 })
             .Subscribe(menuSize =>
                 {
-                    _mainWindow.Width = menuSize!.MenuWidth;
+                    _mainWindow.Width  = menuSize!.MenuWidth;
                     _mainWindow.Height = menuSize!.MenuHeight;
                 });
-        
+
         _registrationWindowSizeChanged = Observable
             .FromEventPattern<SizeChangedEventHandler, SizeChangedEventArgs>(
                 handler => _mainWindow.SizeChanged += handler,
@@ -107,13 +107,13 @@ internal class WindowSizeService : IDisposable
             .Throttle(ThrottleWindowSizeChanged)
             .Subscribe(sizeChangedEvent =>
                 {
-               
+
                     _appSettings.UpdateMenuSize(
-                        _currentResolution, // Yes, This possibliy can go wrong
+                        _currentResolution,  // Yes, This possibliy can go wrong
                         new MenuSize
                         {
                             MenuHeight = sizeChangedEvent.EventArgs.NewSize.Height,
-                            MenuWidth = sizeChangedEvent.EventArgs.NewSize.Width,
+                            MenuWidth  = sizeChangedEvent.EventArgs.NewSize.Width,
                         });
                 });
 
@@ -136,7 +136,7 @@ internal class WindowSizeService : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected virtual string GetResolution()
     {
-        Screen? screen = Screen.PrimaryScreen;
-        return screen == null ? UNKNOWN_RESOLUTION : $"{screen.Bounds.Width}x{screen.Bounds.Height}";
+        Screen? screen  = Screen.PrimaryScreen;
+        return  screen == null ? UNKNOWN_RESOLUTION : $"{screen.Bounds.Width}x{screen.Bounds.Height}";
     }
 }

@@ -1,7 +1,5 @@
 namespace RepoM.App.Tests.Services;
 
-using FluentAssertions;
-using RepoM.App.Services;
 using Xunit;
 
 public class TaskBarTests

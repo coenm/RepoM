@@ -21,13 +21,13 @@ using RepoM.App.Services.HotKey;
 using Serilog;
 using Serilog.Core;
 using Application = System.Windows.Application;
-using Container = SimpleInjector.Container;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
+using Container   = SimpleInjector.Container;
+using ILogger     = Microsoft.Extensions.Logging.ILogger;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
-public partial class App : Application
+  /// <summary>
+  /// Interaction logic for App.xaml
+  /// </summary>
+public partial class App: Application
 {
     private static Mutex? _mutex;
     private static IRepositoryMonitor? _repositoryMonitor;
@@ -74,25 +74,25 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        // Ensure the current culture passed into bindings is the OS culture.
-        // By default, WPF uses en-US as the culture, regardless of the system settings.
-        // see: https://stackoverflow.com/a/520334/704281
+          // Ensure the current culture passed into bindings is the OS culture.
+          // By default, WPF uses en-US as the culture, regardless of the system settings.
+          // see: https://stackoverflow.com/a/520334/704281
         FrameworkElement.LanguageProperty.OverrideMetadata(
             typeof(FrameworkElement),
             new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
         Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
-        _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
+        _notifyIcon                                         = FindResource("NotifyIcon") as TaskbarIcon;
 
         var fileSystem = new FileSystem();
 
-        // Create instance without DI, because we need it before the last registration of services.
-        IHmacService hmacService = new HmacSha256Service();
+          // Create instance without DI, because we need it before the last registration of services.
+        IHmacService  hmacService  = new HmacSha256Service();
         IPluginFinder pluginFinder = new PluginFinder(fileSystem, hmacService);
 
-        IConfiguration config = SetupConfiguration();
+        IConfiguration config        = SetupConfiguration();
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
-        ILogger logger = loggerFactory.CreateLogger(nameof(App));
+        ILogger        logger        = loggerFactory.CreateLogger(nameof(App));
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
         Bootstrapper.RegisterServices(fileSystem);
@@ -109,8 +109,8 @@ public partial class App : Application
 
         UseRepositoryMonitor(Bootstrapper.Container);
 
-        _moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
-        _hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
+        _moduleService     = Bootstrapper.Container.GetInstance<ModuleService>();
+        _hotKeyService     = Bootstrapper.Container.GetInstance<HotKeyService>();
         _windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
 
         _hotKeyService.Register();
@@ -118,7 +118,7 @@ public partial class App : Application
 
         try
         {
-            await _moduleService.StartAsync().ConfigureAwait(false); // don't care about ui thread
+            await _moduleService.StartAsync().ConfigureAwait(false);  // don't care about ui thread
         }
         catch (Exception exception)
         {
@@ -144,7 +144,7 @@ public partial class App : Application
     private static IConfiguration SetupConfiguration()
     {
         const string FILENAME = "appsettings.serilog.json";
-        var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.AppDataPath, FILENAME);
+        var   fullFilename    = Path.Combine(DefaultAppDataPathProvider.Instance.AppDataPath, FILENAME);
 
         IConfigurationBuilder builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -205,7 +205,7 @@ public partial class App : Application
         }
         catch (Exception)
         {
-            // ignore
+              // ignore
         }
 
         try
@@ -214,7 +214,7 @@ public partial class App : Application
         }
         catch (Exception)
         {
-            // ignore
+              // ignore
         }
     }
 
