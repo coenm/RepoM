@@ -1,0 +1,12 @@
+context:
+
+# begin-snippet: git-fetch@1-scenario01
+
+action-menu:
+- type: git-fetch@1
+
+- type: git-fetch@1
+  name: Fetch!
+  active: true
+
+# end-snippet

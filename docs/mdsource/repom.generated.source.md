@@ -51,6 +51,11 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+snippet: folder@1-scenario01
+
+
 ## foreach@1
 
 Action to create repeated actions based on a variable.
@@ -81,6 +86,11 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
+### Example
+
+snippet: git-checkout@1-scenario01
+
+
 ## git-fetch@1
 
 Action to execute a `git fetch` command.
@@ -89,6 +99,11 @@ Properties:
 
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+
+### Example
+
+snippet: git-fetch@1-scenario01
+
 
 ## git-pull@1
 
@@ -99,6 +114,11 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
+### Example
+
+snippet: git-pull@1-scenario01
+
+
 ## git-push@1
 
 Action to execute a `git push` command.
@@ -107,6 +127,11 @@ Properties:
 
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+
+### Example
+
+snippet: git-push@1-scenario01
+
 
 ## ignore-repository@1
 

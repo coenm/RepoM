@@ -1,0 +1,22 @@
+﻿[
+  {
+    Name: Pull,
+    RepositoryCommand: {
+      GitAction: Pull,
+      Branch: 
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: true,
+    CanExecute: true
+  },
+  {
+    Name: Pull!,
+    RepositoryCommand: {
+      GitAction: Pull,
+      Branch: 
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: true,
+    CanExecute: true
+  }
+]
