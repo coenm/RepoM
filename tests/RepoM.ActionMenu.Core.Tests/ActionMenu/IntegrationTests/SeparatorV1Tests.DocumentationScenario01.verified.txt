@@ -4,11 +4,5 @@
     Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true
-  },
-  {
-    RepositoryCommand: {},
-    Repository: {Scrubbed},
-    ExecutionCausesSynchronizing: false,
-    CanExecute: true
   }
 ]

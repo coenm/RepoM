@@ -4,7 +4,7 @@
     RepositoryCommand: {
       Executable: {UserProfile}\AppData\Local/Programs/Microsoft VS Code/code.exe,
       Arguments: [
-        "C:/Repositories/work/RepoX/.editorconfig"
+        "C:/Repositories/work/RepoM/.editorconfig"
       ]
     },
     Repository: {Scrubbed},

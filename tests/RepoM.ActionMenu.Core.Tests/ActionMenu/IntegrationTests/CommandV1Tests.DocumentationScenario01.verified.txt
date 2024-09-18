@@ -4,7 +4,7 @@
     RepositoryCommand: {
       Executable: wt,
       Arguments: [
-        -d "C:/Repositories/work/RepoX"
+        -d "C:/Repositories/work/RepoM"
       ]
     },
     Repository: {Scrubbed},
@@ -16,7 +16,7 @@
     RepositoryCommand: {
       Executable: cmd,
       Arguments: [
-        /k cd "C:\Repositories\work\RepoX" & git add . & git commit -m "my fix" & git push & exit
+        /k cd "C:\Repositories\work\RepoM" & git add . & git commit -m "my fix" & git push & exit
       ]
     },
     Repository: {Scrubbed},

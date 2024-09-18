@@ -65,6 +65,13 @@ Properties:
 - `skip`: Predicate to skip the current item. ([Predicate](repository_action_types.md#predicate))
 - `actions`: List of repeated actions. (List)
 
+### Example
+
+snippet: foreach@1-scenario01
+
+snippet: foreach@1-scenario02
+
+
 ## git-checkout@1
 
 This action will create a menu and sub menus with all local and remote branches for an easy checkout.
@@ -164,3 +171,8 @@ Properties:
 - `url`: The URL to browse to. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+
+### Example
+
+snippet: url@1-scenario01
+

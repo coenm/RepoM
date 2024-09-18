@@ -11,10 +11,16 @@ using Variable = Interface.YamlModel.Templating.Variable;
 /// <summary>
 /// Action to create repeated actions based on a variable.
 /// </summary>
+/// <example>
+/// <snippet name='foreach@1-scenario01' mode='snippet' />
+/// <snippet name='foreach@1-scenario02' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionForEachV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "foreach@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
+    internal const string EXAMPLE_2 = TYPE_VALUE + "-scenario02";
 
     public string Type
     {

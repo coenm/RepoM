@@ -1,0 +1,38 @@
+﻿[
+  {
+    Name: execute dotnet test 'ProjA',
+    RepositoryCommand: {
+      Executable: cmd,
+      Arguments: [
+        /k dotnet test -c release "C:\Repositories\work\RepoM\tests\ProjA.Tests.csproj" --verbosity q
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: execute dotnet test 'ProjB',
+    RepositoryCommand: {
+      Executable: cmd,
+      Arguments: [
+        /k dotnet test -c release "C:\Repositories\work\RepoM\tests\ProjB.Tests.csproj" --verbosity q
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: execute dotnet test 'ProjC',
+    RepositoryCommand: {
+      Executable: cmd,
+      Arguments: [
+        /k dotnet test -c release "C:\Repositories\work\RepoM\tests\ProjC.Tests.csproj" --verbosity q
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]
