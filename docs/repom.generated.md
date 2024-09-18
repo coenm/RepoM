@@ -81,6 +81,52 @@ Properties:
 - `skip`: Predicate to skip the current item. ([Predicate](repository_action_types.md#predicate))
 - `actions`: List of repeated actions. (List)
 
+### Example
+
+<!-- snippet: foreach@1-scenario01 -->
+<a id='snippet-foreach@1-scenario01'></a>
+```yaml
+context:
+- type: evaluate-script@1
+  content: |-
+    func sanitize_filename_testproject(path)
+      ret path | string.split("\\") | array.last | string.replace(".Tests.csproj", "")
+    end
+
+    test_projects = file.find_files(repository.windows_path, "*.Tests.csproj");
+
+action-menu:
+
+- type: foreach@1
+  enumerable: test_projects
+  variable: test_project
+  actions:
+  - type: command@1
+    name: execute dotnet test '{{ sanitize_filename_testproject(test_project) }}'
+    command: cmd
+    arguments: /k dotnet test -c release "{{ test_project }}" --verbosity q
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/ForEachV1Tests.Documentation.foreach@1-scenario01.testfile.yaml#L1-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-foreach@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+<!-- snippet: foreach@1-scenario02 -->
+<a id='snippet-foreach@1-scenario02'></a>
+```yaml
+action-menu:
+
+- type: foreach@1
+  enumerable: repository.remotes
+  variable: remote
+  actions:
+  - type: url@1
+    name: 'Browse to remote {{ remote.key}}'
+    url: '{{ remote.url }}'
+    active: remote.url | string.starts_with 'https'
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/ForEachV1Tests.Documentation.foreach@1-scenario02.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-foreach@1-scenario02' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ## git-checkout@1
 
 This action will create a menu and sub menus with all local and remote branches for an easy checkout.
@@ -224,3 +270,51 @@ Properties:
 - `url`: The URL to browse to. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+
+### Example
+
+<!-- snippet: url@1-scenario01 -->
+<a id='snippet-url@1-scenario01'></a>
+```yaml
+context:
+
+- type: evaluate-script@1
+  content: |-
+    now = date.parse '20/01/2022 08:32:48 +00:00' culture:'en-GB'
+
+action-menu:
+
+- type: url@1
+  name: 'Wiki'
+  url: 'https://github.com/coenm/RepoM/wiki'
+  active: 'repository.path | string.contains RepoM'
+
+- type: folder@1
+  name: Link to all remotes of repo
+  active: array.size(repository.remotes) >= 1
+  actions:
+  - type: foreach@1
+    enumerable: repository.remotes
+    variable: remote
+    actions:
+    - type: url@1
+      name: 'Browse to remote {{ remote.key}}'
+      url: '{{ remote.url }}'
+      active: remote.url | string.starts_with 'https'
+
+- type: folder@1
+  name: Link to all remotes of repo
+  active: array.size(repository.remotes) >= 1
+  actions:
+  - type: foreach@1
+    enumerable: repository.remotes
+    variable: remote
+    actions:
+    - type: url@1
+      name: 'Browse to remote {{ remote.key}}'
+      url: '{{ remote.url }}'
+      active: remote.url | string.starts_with 'https'
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/UrlV1Tests.DocumentationScenario01.testfile.yaml#L1-L42' title='Snippet source file'>snippet source</a> | <a href='#snippet-url@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
