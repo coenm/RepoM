@@ -194,6 +194,26 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+<!-- snippet: separator@1-scenario01 -->
+<a id='snippet-separator@1-scenario01'></a>
+```yaml
+action-menu:
+
+- type: separator@1
+  active: 'string.size(my_app_name) == 5' # true
+  context:
+  - type: set-variable@1
+    name: my_app_name
+    value: RepoM
+
+- type: separator@1
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/SeparatorV1Tests.DocumentationScenario01.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-separator@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ## url@1
 
 Action to open the url in the default browser.
