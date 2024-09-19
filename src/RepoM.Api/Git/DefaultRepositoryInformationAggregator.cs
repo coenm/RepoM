@@ -28,6 +28,7 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
             throw new NotImplementedException("We expect a Repository object.");
         }
 
+        // TODO: crashes here
         _dispatcher.Invoke(() =>
             {
                 var view = new RepositoryViewModel(repo, repositoryMonitor);

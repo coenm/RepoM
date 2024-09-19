@@ -595,6 +595,7 @@ public partial class MainWindow : FluentWindow
                 }
             };
 
+        // TODO: URGENT: The calling thread must be STA, because many UI components require this.'
         var item = new MenuItem
             {
                 Header    = repositoryAction.Name,

@@ -61,6 +61,7 @@ internal class LastOpenedComparer : IRepositoryComparer
     {
         IReadOnlyList<DateTime> items = _service.GetRecordings(repository);
 
+        // TODO lots of crashes here
         return items.Count == 0
             ? DateTime.MinValue
             : items.MaxBy(x => x);
