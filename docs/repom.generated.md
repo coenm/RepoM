@@ -2,20 +2,20 @@
 
 The following actions are part of the core of RepoM and can always be used in your RepositoryActions.
 
-- [`browse-repository@1`](#browse-repository@1)
-- [`command@1`](#command@1)
-- [`executable@1`](#executable@1)
-- [`folder@1`](#folder@1)
-- [`foreach@1`](#foreach@1)
-- [`git-checkout@1`](#git-checkout@1)
-- [`git-fetch@1`](#git-fetch@1)
-- [`git-pull@1`](#git-pull@1)
-- [`git-push@1`](#git-push@1)
-- [`ignore-repository@1`](#ignore-repository@1)
-- [`just-text@1`](#just-text@1)
-- [`pin-repository@1`](#pin-repository@1)
-- [`separator@1`](#separator@1)
-- [`url@1`](#url@1)
+- [`browse-repository@1`](#browse-repository1)
+- [`command@1`](#command1)
+- [`executable@1`](#executable1)
+- [`folder@1`](#folder1)
+- [`foreach@1`](#foreach1)
+- [`git-checkout@1`](#git-checkout1)
+- [`git-fetch@1`](#git-fetch1)
+- [`git-pull@1`](#git-pull1)
+- [`git-push@1`](#git-push1)
+- [`ignore-repository@1`](#ignore-repository1)
+- [`just-text@1`](#just-text1)
+- [`pin-repository@1`](#pin-repository1)
+- [`separator@1`](#separator1)
+- [`url@1`](#url1)
 
 ## browse-repository@1
 
