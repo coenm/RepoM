@@ -39,7 +39,7 @@ action-menu:
   name: Browse remotes of this repo!
   active: true
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/BrowseRepositoryV1Tests.Documentation.browse-repository@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-browse-repository@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/browse-repository@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-browse-repository@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -71,7 +71,7 @@ action-menu:
   command: cmd
   arguments: /k cd "{{ repository.path }}" & git add . & git commit -m "my fix" & git push & exit
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/CommandV1Tests.DocumentationScenario01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-command@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/command@1-scenario01.testfile.yaml#L3-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-command@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -104,7 +104,7 @@ action-menu:
   executable: '{{ exe_vs_code }}'
   arguments: '"{{ repository.linux_path }}"'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/ExecutableV1Tests.Documentation.executable@1-scenario01.testfile.yaml#L1-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-executable@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/executable@1-scenario01.testfile.yaml#L1-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-executable@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -138,7 +138,7 @@ action-menu:
     name: 'wiki'
     url: '{{ repository.remotes[0].url }}/wiki'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FolderV1Tests.Documentation.folder@1-scenario01.testfile.yaml#L3-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-folder@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/folder@1-scenario01.testfile.yaml#L3-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-folder@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -181,7 +181,7 @@ action-menu:
     command: cmd
     arguments: /k dotnet test -c release "{{ test_project }}" --verbosity q
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/ForEachV1Tests.Documentation.foreach@1-scenario01.testfile.yaml#L1-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-foreach@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/foreach@1-scenario01.testfile.yaml#L1-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-foreach@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 <!-- snippet: foreach@1-scenario02 -->
@@ -198,7 +198,7 @@ action-menu:
     url: '{{ remote.url }}'
     active: remote.url | string.starts_with 'https'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/ForEachV1Tests.Documentation.foreach@1-scenario02.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-foreach@1-scenario02' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/foreach@1-scenario02.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-foreach@1-scenario02' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -223,7 +223,7 @@ action-menu:
   name: Checkout!
   active: true
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/GitCheckoutV1Tests.Documentation.git-checkout@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-checkout@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/git-checkout@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-checkout@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -248,7 +248,7 @@ action-menu:
   name: Fetch!
   active: true
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/GitFetchV1Tests.Documentation.git-fetch@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-fetch@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/git-fetch@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-fetch@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -273,7 +273,7 @@ action-menu:
   name: Pull!
   active: true
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/GitPullV1Tests.Documentation.git-pull@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-pull@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/git-pull@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-pull@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -298,7 +298,7 @@ action-menu:
   name: Push!
   active: true
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/GitPushV1Tests.Documentation.git-push@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-push@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/git-push@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-git-push@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -325,7 +325,7 @@ action-menu:
   name: Ignore this repo!
   active: true
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/IgnoreV1Tests.Documentation.ignore-repository@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-ignore-repository@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/ignore-repository@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-ignore-repository@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -370,7 +370,7 @@ action-menu:
     name: my_app_name
     value: RepoM
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/JustTextV1Tests.DocumentationScenario01.testfile.yaml#L1-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-just-text@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/just-text@1-scenario01.testfile.yaml#L1-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-just-text@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -406,7 +406,7 @@ action-menu:
   mode: pin
   active: '!repository.pinned'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/PinRepositoryV1Tests.Documentation.pin-repository@1-scenario01.testfile.yaml#L3-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-pin-repository@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/pin-repository@1-scenario01.testfile.yaml#L3-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-pin-repository@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -435,7 +435,7 @@ action-menu:
 
 - type: separator@1
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/SeparatorV1Tests.DocumentationScenario01.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-separator@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/separator@1-scenario01.testfile.yaml#L3-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-separator@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -477,6 +477,6 @@ action-menu:
     url: '{{ remote.url }}'
     active: remote.url | string.starts_with 'https'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/UrlV1Tests.DocumentationScenario01.testfile.yaml#L1-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-url@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/url@1-scenario01.testfile.yaml#L1-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-url@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
