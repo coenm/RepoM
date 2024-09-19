@@ -130,6 +130,7 @@ public partial class App : Application
         _hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
         _windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
 
+        // TODO : This causes screen flashing
         _hotKeyService.Register();
         _windowSizeService.Register();
 

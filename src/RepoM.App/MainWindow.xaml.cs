@@ -20,7 +20,6 @@ using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.Api.RepositoryActions;
 using RepoM.App.Plugins;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryFiltering;
@@ -145,12 +144,13 @@ public partial class MainWindow : FluentWindow
         WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Mica);
         SystemThemeWatcher.Watch(this);
 
-        //Loaded += OnLoaded;
+       
 
         // TODO: DELETE THIS LINE , IT IS JUST FOR TESTING
         //ApplicationThemeManager.Apply(ApplicationTheme.Light);
 
         ApplicationThemeManager.Changed += OnAppThemeChange;
+        Loaded += OnLoaded;
 
         PlaceFormByTaskBarLocation();
     }
@@ -495,86 +495,86 @@ public partial class MainWindow : FluentWindow
         parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].SetCurrentValue(ColumnDefinition.WidthProperty, App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto);
     }
 
-    private Control? /*MenuItem*/ CreateMenuItem(RepositoryActionBase action, RepositoryViewModel? affectedViews = null)
-    {
-        if (action is RepositorySeparatorAction)
-        {
-            return new Separator();
-        }
+    //private Control? /*MenuItem*/ CreateMenuItem(RepositoryActionBase action, RepositoryViewModel? affectedViews = null)
+    //{
+    //    if (action is RepositorySeparatorAction)
+    //    {
+    //        return new Separator();
+    //    }
 
-        if (action is not RepositoryAction repositoryAction)
-        {
-            // throw??
-            return null;
-        }
+    //    if (action is not RepositoryAction repositoryAction)
+    //    {
+    //        // throw??
+    //        return null;
+    //    }
 
-        Action<object, object> clickAction = (clickSender, clickArgs) =>
-            {
-                if (repositoryAction?.Action is null or NullRepositoryCommand)
-                {
-                    return;
-                }
+    //    Action<object, object> clickAction = (clickSender, clickArgs) =>
+    //        {
+    //            if (repositoryAction.Action is null or NullRepositoryCommand)
+    //            {
+    //                return;
+    //            }
 
-                // run actions in the UI async to not block it
-                if (repositoryAction.ExecutionCausesSynchronizing)
-                {
-                    Task.Run(() => SetVmSynchronizing(affectedViews, true))
-                        .ContinueWith(t => _executor.Execute(action.Repository, action.Action))
-                        .ContinueWith(t => SetVmSynchronizing(affectedViews, false));
-                }
-                else
-                {
-                    Task.Run(() => _executor.Execute(action.Repository, action.Action));
-                }
-            };
+    //            // run actions in the UI async to not block it
+    //            if (repositoryAction.ExecutionCausesSynchronizing)
+    //            {
+    //                Task.Run(() => SetVmSynchronizing(affectedViews, true))
+    //                    .ContinueWith(t => _executor.Execute(action.Repository, action.Action))
+    //                    .ContinueWith(t => SetVmSynchronizing(affectedViews, false));
+    //            }
+    //            else
+    //            {
+    //                Task.Run(() => _executor.Execute(action.Repository, action.Action));
+    //            }
+    //        };
 
-        var item = new MenuItem
-        {
-            Header = repositoryAction.Name,
-            IsEnabled = repositoryAction.CanExecute,
-        };
-        item.Click += new RoutedEventHandler(clickAction);
+    //    var item = new MenuItem
+    //    {
+    //        Header = repositoryAction.Name,
+    //        IsEnabled = repositoryAction.CanExecute,
+    //    };
+    //    item.Click += new RoutedEventHandler(clickAction);
 
-        // this is a deferred submenu. We want to make sure that the context menu can pop up
-        // fast, while submenus are not evaluated yet. We don't want to make the context menu
-        // itself slow because the creation of the submenu items takes some time.
-        if (repositoryAction is DeferredSubActionsRepositoryAction deferredRepositoryAction && deferredRepositoryAction.DeferredSubActionsEnumerator != null)
-        {
-            // this is a template submenu item to enable submenus under the current
-            // menu item. this item gets removed when the real subitems are created
-            item.Items.Add(string.Empty);
+    //    // this is a deferred submenu. We want to make sure that the context menu can pop up
+    //    // fast, while submenus are not evaluated yet. We don't want to make the context menu
+    //    // itself slow because the creation of the submenu items takes some time.
+    //    if (repositoryAction is DeferredSubActionsRepositoryAction deferredRepositoryAction && deferredRepositoryAction.DeferredSubActionsEnumerator != null)
+    //    {
+    //        // this is a template submenu item to enable submenus under the current
+    //        // menu item. this item gets removed when the real subitems are created
+    //        item.Items.Add(string.Empty);
 
-            void SelfDetachingEventHandler(object _, RoutedEventArgs evtArgs)
-            {
-                item.SubmenuOpened -= SelfDetachingEventHandler;
-                item.Items.Clear();
+    //        void SelfDetachingEventHandler(object _, RoutedEventArgs evtArgs)
+    //        {
+    //            item.SubmenuOpened -= SelfDetachingEventHandler;
+    //            item.Items.Clear();
 
-                foreach (RepositoryActionBase subAction in deferredRepositoryAction.DeferredSubActionsEnumerator())
-                {
-                    Control? controlItem = CreateMenuItem(subAction);
-                    if (controlItem != null)
-                    {
-                        item.Items.Add(controlItem);
-                    }
-                }
-            }
+    //            foreach (RepositoryActionBase subAction in deferredRepositoryAction.DeferredSubActionsEnumerator())
+    //            {
+    //                Control? controlItem = CreateMenuItem(subAction);
+    //                if (controlItem != null)
+    //                {
+    //                    item.Items.Add(controlItem);
+    //                }
+    //            }
+    //        }
 
-            item.SubmenuOpened += SelfDetachingEventHandler;
-        }
-        else if (repositoryAction.SubActions != null)
-        {
-            foreach (RepositoryActionBase subAction in repositoryAction.SubActions)
-            {
-                Control? controlItem = CreateMenuItem(subAction);
-                if (controlItem != null)
-                {
-                    item.Items.Add(controlItem);
-                }
-            }
-        }
+    //        item.SubmenuOpened += SelfDetachingEventHandler;
+    //    }
+    //    else if (repositoryAction.SubActions != null)
+    //    {
+    //        foreach (RepositoryActionBase subAction in repositoryAction.SubActions)
+    //        {
+    //            Control? controlItem = CreateMenuItem(subAction);
+    //            if (controlItem != null)
+    //            {
+    //                item.Items.Add(controlItem);
+    //            }
+    //        }
+    //    }
 
-        return item;
-    }
+    //    return item;
+    //}
 
     private Control? /*MenuItem*/ CreateMenuItemNewStyleAsync(UserInterfaceRepositoryActionBase action, RepositoryViewModel? affectedViews = null)
     {
@@ -592,7 +592,7 @@ public partial class MainWindow : FluentWindow
             return null;
         }
 
-        Action<object, object> clickAction = (clickSender, clickArgs) =>
+        Action<object, object> clickAction = (_, _) =>
             {
                 if (repositoryAction.RepositoryCommand is null or NullRepositoryCommand)
                 {
@@ -603,8 +603,8 @@ public partial class MainWindow : FluentWindow
                 if (repositoryAction.ExecutionCausesSynchronizing)
                 {
                     Task.Run(() => SetVmSynchronizing(affectedViews, true))
-                        .ContinueWith(t => _executor.Execute(action.Repository, action.RepositoryCommand))
-                        .ContinueWith(t => SetVmSynchronizing(affectedViews, false));
+                        .ContinueWith(_ => _executor.Execute(action.Repository, action.RepositoryCommand))
+                        .ContinueWith(_ => SetVmSynchronizing(affectedViews, false));
                 }
                 else
                 {
@@ -899,8 +899,6 @@ public partial class MainWindow : FluentWindow
 
     private void SearchBar_TextBox_OnKeyDown(object sender, KeyEventArgs e)
     {
-        var senderTextBox = (TextBox)sender;
-
         switch (e.Key)
         {
             case Key.Enter:
@@ -1061,9 +1059,6 @@ public partial class MainWindow : FluentWindow
     ///     This even fires after the window source is created before it is shown.
     /// </summary>
     /// <remarks> It enables connection to the Win32 API. </remarks>
-    /// <param name="e"> </param>
-    /// </remarks>
-    /// <param name="e"></param>
     private void MainWindow_OnSourceInitialized(object? sender, EventArgs e)
     {
         // TODO

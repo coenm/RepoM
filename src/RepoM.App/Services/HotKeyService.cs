@@ -39,7 +39,7 @@ internal partial class HotKeyService
         _hotKeyActionToCall = OnHotKeyPressed;  // This is the function that will ultimately be called when the hotkey is pressed
 
         var helper  = new WindowInteropHelper(_mainWindow); // This is the window that will receive the hotkey message
-        _hotKeyHook = helper.EnsureHandle();  // This is the handle of the window that will receive the hotkey message
+        _hotKeyHook = helper.EnsureHandle();                // This is the handle of the window that will receive the hotkey message
 
         var source = HwndSource.FromHwnd(_hotKeyHook);  // This is the source of the window that will receive the hotkey message
         source?.AddHook(HwndHook);  // This is the proxy function that will be called when the hotkey message is received

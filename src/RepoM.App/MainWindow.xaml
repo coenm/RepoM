@@ -44,6 +44,7 @@
             <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
 
             <!--  Key bindings  -->
+            <!--  ReSharper disable once InconsistentNaming  -->
             <RoutedUICommand x:Key="KB_Escape" />
 
         </ResourceDictionary>

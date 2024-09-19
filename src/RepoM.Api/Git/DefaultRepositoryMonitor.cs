@@ -255,6 +255,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
 
         if (!_repositoryObservers.TryAdd(path, observer))
         {
+            // TODO NOT THREAD SAFE
             observer.Dispose();
             return;
         }
