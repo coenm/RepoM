@@ -576,32 +576,31 @@ public partial class MainWindow : FluentWindow
             return null;
         }
 
-        Action<object, object> clickAction = (_, _) =>
+        Action<object, object> clickAction = (object clickSender, object clickArgs) =>
+        {
+            if (repositoryAction.RepositoryCommand is null or NullRepositoryCommand)
             {
-                if (repositoryAction.RepositoryCommand is null or NullRepositoryCommand)
-                {
-                    return;
-                }
+                return;
+            }
 
-                // run actions in the UI async to not block it
-                if (repositoryAction.ExecutionCausesSynchronizing)
-                {
-                    Task.Run(() => SetVmSynchronizing(affectedViews, true))
-                        .ContinueWith(_ => _executor.Execute(action.Repository, action.RepositoryCommand))
-                        .ContinueWith(_ => SetVmSynchronizing(affectedViews, false));
-                }
-                else
-                {
-                    Task.Run(() => _executor.Execute(action.Repository, action.RepositoryCommand));
-                }
-            };
+            // run actions in the UI async to not block it
+            if (repositoryAction.ExecutionCausesSynchronizing)
+            {
+                Task.Run(() => SetVmSynchronizing(affectedViews, true))
+                    .ContinueWith(t => _executor.Execute(action.Repository, action.RepositoryCommand))
+                    .ContinueWith(t => SetVmSynchronizing(affectedViews, false));
+            }
+            else
+            {
+                Task.Run(() => _executor.Execute(action.Repository, action.RepositoryCommand));
+            }
+        };
 
-        // TODO: URGENT: The calling thread must be STA, because many UI components require this.'
         var item = new MenuItem
-            {
-                Header    = repositoryAction.Name,
-                IsEnabled = repositoryAction.CanExecute,
-            };
+        {
+            Header = repositoryAction.Name,
+            IsEnabled = repositoryAction.CanExecute,
+        };
         item.Click += new RoutedEventHandler(clickAction);
 
         // this is a deferred submenu. We want to make sure that the context menu can pop up
@@ -663,34 +662,31 @@ public partial class MainWindow : FluentWindow
                 item.SubmenuOpened -= SelfDetachingEventHandler1;
                 item.Items.Clear();
 
-                await Task.Run(() =>
+                foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
+                {
+                    Control? controlItem = CreateMenuItemNewStyleAsync(subAction);
+                    if (controlItem == null)
                     {
-                        foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
-                        {
-                            Control? controlItem = CreateMenuItemNewStyleAsync(subAction);
-                            if (controlItem == null)
-                            {
-                                continue;
-                            }
+                        continue;
+                    }
 
-                            if (controlItem is not Separator)
-                            {
-                                item.Items.Add(controlItem);
-                                continue;
-                            }
+                    if (controlItem is not Separator)
+                    {
+                        item.Items.Add(controlItem);
+                        continue;
+                    }
 
-                            if (item.Items.Count > 0 && item.Items[^1] is not Separator)
-                            {
-                                item.Items.Add(controlItem);
-                            }
-                        }
+                    if (item.Items.Count > 0 && item.Items[^1] is not Separator)
+                    {
+                        item.Items.Add(controlItem);
+                    }
+                }
 
-                        var count = item.Items.Count;
-                        if (count > 0 && item.Items[^1] is Separator)
-                        {
-                            item.Items.RemoveAt(count - 1);
-                        }
-                    });
+                var count = item.Items.Count;
+                if (count > 0 && item.Items[^1] is Separator)
+                {
+                    item.Items.RemoveAt(count - 1);
+                }
             }
 
             item.SubmenuOpened += SelfDetachingEventHandler1;
