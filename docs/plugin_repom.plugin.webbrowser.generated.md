@@ -55,7 +55,7 @@ Example configuration:
 
 This module contains the following methods, variables and/or constants:
 
-- [`browser@1`](#browser@1)
+- [`browser@1`](#browser1)
 
 ## browser@1
 
