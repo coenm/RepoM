@@ -304,17 +304,11 @@
 
                                 <Separator />
 
-                                <ui:MenuItem Foreground="#FFED8888" Header="{DynamicResource PingBack}">
-                                    <ui:MenuItem Click="SponsorButton_Click" Header="{DynamicResource Donate}" />
-                                    <Separator />
-                                    <ui:MenuItem Click="FollowButton_Click" Header="{DynamicResource Follow}" />
+                                <ui:MenuItem Foreground="{DynamicResource InfoBadgeAttentionSeverityBackgroundBrush}" Header="{DynamicResource About}">
                                     <ui:MenuItem Click="StarButton_Click" Header="{DynamicResource Star}" />
+                                    <Separator />
+                                    <ui:MenuItem Click="HelpButton_Click" Header="{DynamicResource Help}" />
                                 </ui:MenuItem>
-
-                                <Separator />
-
-                                <ui:MenuItem Click="HelpButton_Click" Header="{DynamicResource Help}" />
-
 
 
                             </ContextMenu>

@@ -13,9 +13,11 @@ public class NotifyIconViewModel
 {
     private const string APP_NAME = "RepoM";
 
+#pragma warning disable CA1822
     /// <summary>
     ///     Shows a window, if none is already open.
     /// </summary>
+    // ReSharper disable once MemberCanBeMadeStatic.Global
     public ICommand OpenCommand =>
         new DelegateCommand
             {
@@ -40,9 +42,11 @@ public class NotifyIconViewModel
     /// <summary>
     ///     Shuts down the application.
     /// </summary>
+
     public ICommand ExitApplicationCommand =>
         new DelegateCommand
             {
                 CommandAction = () => Application.Current.Shutdown(),
             };
+#pragma warning restore CA1822
 }

@@ -48,6 +48,7 @@ public partial class MainWindow : FluentWindow
         StickToCurrent,
     }
 
+#pragma warning disable IDE1006
     // ReSharper disable once InconsistentNaming
     private static readonly ImmutableDictionary<Key, IndexNavigator> ListBoxRepos_NavigationKeys = new Dictionary<Key, IndexNavigator>
         {
@@ -57,6 +58,7 @@ public partial class MainWindow : FluentWindow
             { Key.PageDown, IndexNavigator.GoToLast },
             { Key.Space, IndexNavigator.GoToNext },
         }.ToImmutableDictionary();
+#pragma warning restore IDE1006
 
     private readonly IAppDataPathProvider        _appDataPathProvider;
     private readonly ActionExecutor              _executor;
@@ -645,46 +647,51 @@ public partial class MainWindow : FluentWindow
         }
         else
         {
-            if (repositoryAction.SubActions != null)
+            if (repositoryAction.SubActions == null)
             {
-                // this is a template submenu item to enable submenus under the current
-                // menu item. this item gets removed when the real subitems are created
-                item.Items.Add("Loading..");
-
-                async void SelfDetachingEventHandler1(object _, RoutedEventArgs evtArgs)
-                {
-                    item.SubmenuOpened -= SelfDetachingEventHandler1;
-                    item.Items.Clear();
-
-                    foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
-                    {
-                        Control? controlItem = CreateMenuItemNewStyleAsync(subAction);
-                        if (controlItem == null)
-                        {
-                            continue;
-                        }
-
-                        if (controlItem is not Separator)
-                        {
-                            item.Items.Add(controlItem);
-                            continue;
-                        }
-
-                        if (item.Items.Count > 0 && item.Items[^1] is not Separator)
-                        {
-                            item.Items.Add(controlItem);
-                        }
-                    }
-
-                    var count = item.Items.Count;
-                    if (count > 0 && item.Items[^1] is Separator)
-                    {
-                        item.Items.RemoveAt(count - 1);
-                    }
-                }
-
-                item.SubmenuOpened += SelfDetachingEventHandler1;
+                return item;
             }
+
+            // this is a template submenu item to enable submenus under the current
+            // menu item. this item gets removed when the real subitems are created
+            item.Items.Add("Loading..");
+
+            async void SelfDetachingEventHandler1(object _, RoutedEventArgs evtArgs)
+            {
+                item.SubmenuOpened -= SelfDetachingEventHandler1;
+                item.Items.Clear();
+
+                await Task.Run(() =>
+                    {
+                        foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
+                        {
+                            Control? controlItem = CreateMenuItemNewStyleAsync(subAction);
+                            if (controlItem == null)
+                            {
+                                continue;
+                            }
+
+                            if (controlItem is not Separator)
+                            {
+                                item.Items.Add(controlItem);
+                                continue;
+                            }
+
+                            if (item.Items.Count > 0 && item.Items[^1] is not Separator)
+                            {
+                                item.Items.Add(controlItem);
+                            }
+                        }
+
+                        var count = item.Items.Count;
+                        if (count > 0 && item.Items[^1] is Separator)
+                        {
+                            item.Items.RemoveAt(count - 1);
+                        }
+                    });
+            }
+
+            item.SubmenuOpened += SelfDetachingEventHandler1;
         }
 
         return item;
@@ -1018,7 +1025,7 @@ public partial class MainWindow : FluentWindow
     ///     * A user switches to the window in another application by using ALT+TAB or by using Task Manager.
     ///     * A user clicks the taskbar button for a window in another application.
     /// </remarks>
-    /// <see cref="https://learn.microsoft.com/en-us/dotnet/api/system.windows.window.deactivated" />
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.windows.window.deactivated" />
     private void MainWindow_OnDeactivated(object? sender, EventArgs e)
     {
         if (_keepMainWindowOpenWhenLosingFocus)

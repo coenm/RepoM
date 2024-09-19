@@ -97,7 +97,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
                 foreach (var head in _repositoryStore.Get())
                 {
                     _logger.LogDebug("{Method} - repo {Head}", nameof(ScanRepositoriesFromStoreAsync), head);
-                    OnCheckKnownRepository(head, KnownRepositoryNotifications.WhenFound);
+                    _ = OnCheckKnownRepository(head, KnownRepositoryNotifications.WhenFound);
                 }
             });
     }
@@ -299,7 +299,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
     private void OnRepositoryObserverChange(IRepository repository)
     {
         _logger.LogDebug("{Method} - repo {Path}", nameof(OnRepositoryObserverChange), repository.Path);
-        OnCheckKnownRepository(repository.Path, KnownRepositoryNotifications.WhenFound | KnownRepositoryNotifications.WhenNotFound);
+        _ = OnCheckKnownRepository(repository.Path, KnownRepositoryNotifications.WhenFound | KnownRepositoryNotifications.WhenNotFound);
     }
 
     private void DestroyRepositoryObserver(string path)

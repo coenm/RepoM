@@ -22,11 +22,10 @@ using RepoM.Api.Plugins;
 using RepoM.App.i18n;
 using RepoM.App.Plugins;
 using RepoM.App.Services;
-using RepoM.App.Services.HotKey;
 using Serilog;
 using Serilog.Core;
 using SimpleInjector;
-
+using HotKeyService = RepoM.App.Services.HotKeyService;
 
 /// <summary>
 ///     Interaction logic for App.xaml
