@@ -20,7 +20,7 @@ public class FilesContextTests : IntegrationActionTestBase
 
     public FilesContextTests()
     {
-        var rootPath = Path.Combine("C:", "Repositories", "work", "RepoX");
+        var rootPath = Path.Combine("C:", "Repositories", "work", "RepoM");
 
         FileSystem.AddDirectory(Path.Combine(rootPath, "src"));
         FileSystem.AddFile(Path.Combine(rootPath, "my-solution.sln"), new MockFileData("dummy"));
@@ -28,8 +28,7 @@ public class FilesContextTests : IntegrationActionTestBase
         FileSystem.AddFile(Path.Combine(rootPath, "src", "dummy.txt"), new MockFileData("dummy"));
         FileSystem.AddFile(Path.Combine(rootPath, ".editorconfig"), new MockFileData("dummy"));
 
-        _testFileSettings = new EasyTestFileSettings();
-        _testFileSettings.UseExtension("yaml");
+        _testFileSettings = new EasyTestFileSettings(TestFileSettings);
     }
     
     /// <summary>

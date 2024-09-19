@@ -1,0 +1,12 @@
+context:
+
+# begin-snippet: git-checkout@1-scenario01
+
+action-menu:
+- type: git-checkout@1
+
+- type: git-checkout@1
+  name: Checkout!
+  active: true
+
+# end-snippet

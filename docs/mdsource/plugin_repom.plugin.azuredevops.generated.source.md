@@ -28,6 +28,8 @@ To create a PAT, goto `https://dev.azure.com/[my-organisation]/_usersSettings/to
 
 This module contains the following methods, variables and/or constants:
 
+- [`azure-devops-create-pr@1`](#azure-devops-create-pr1)
+
 ## azure-devops-create-pr@1
 
 Action menu item to create a pull request in Azure Devops.

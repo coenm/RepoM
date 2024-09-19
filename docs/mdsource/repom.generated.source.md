@@ -1,10 +1,21 @@
 # RepoM Core Repository Actions
 
-## Configuration
+The following actions are part of the core of RepoM and can always be used in your RepositoryActions.
 
-This plugin has no configuration.
-
-This module contains the following methods, variables and/or constants:
+- [`browse-repository@1`](#browse-repository1)
+- [`command@1`](#command1)
+- [`executable@1`](#executable1)
+- [`folder@1`](#folder1)
+- [`foreach@1`](#foreach1)
+- [`git-checkout@1`](#git-checkout1)
+- [`git-fetch@1`](#git-fetch1)
+- [`git-pull@1`](#git-pull1)
+- [`git-push@1`](#git-push1)
+- [`ignore-repository@1`](#ignore-repository1)
+- [`just-text@1`](#just-text1)
+- [`pin-repository@1`](#pin-repository1)
+- [`separator@1`](#separator1)
+- [`url@1`](#url1)
 
 ## browse-repository@1
 
@@ -16,6 +27,11 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `first-only`: Single menu for the first remote. ([Predicate](repository_action_types.md#predicate))
 
+### Example
+
+snippet: browse-repository@1-scenario01
+
+
 ## command@1
 
 Action to excute a command (related to the repository)
@@ -26,6 +42,11 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `command`: The command to execute. ([Text](repository_action_types.md#text))
 - `arguments`: Arguments for the command. ([Text](repository_action_types.md#text))
+
+### Example
+
+snippet: command@1-scenario01
+
 
 ## executable@1
 
@@ -39,6 +60,11 @@ Properties:
 - `arguments`: Arguments for the executable. ([Text](repository_action_types.md#text))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+snippet: executable@1-scenario01
+
+
 ## folder@1
 
 Action to create a folder (sub menu) in the context menu of the repository allowing you to order actions.
@@ -49,6 +75,11 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+
+### Example
+
+snippet: folder@1-scenario01
+
 
 ## foreach@1
 
@@ -64,6 +95,13 @@ Properties:
 - `skip`: Predicate to skip the current item. ([Predicate](repository_action_types.md#predicate))
 - `actions`: List of repeated actions. (List)
 
+### Example
+
+snippet: foreach@1-scenario01
+
+snippet: foreach@1-scenario02
+
+
 ## git-checkout@1
 
 This action will create a menu and sub menus with all local and remote branches for an easy checkout.
@@ -72,6 +110,11 @@ Properties:
 
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+
+### Example
+
+snippet: git-checkout@1-scenario01
+
 
 ## git-fetch@1
 
@@ -82,6 +125,11 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
+### Example
+
+snippet: git-fetch@1-scenario01
+
+
 ## git-pull@1
 
 Action to execute a `git pull` command.
@@ -91,6 +139,11 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 
+### Example
+
+snippet: git-pull@1-scenario01
+
+
 ## git-push@1
 
 Action to execute a `git push` command.
@@ -99,6 +152,11 @@ Properties:
 
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
+
+### Example
+
+snippet: git-push@1-scenario01
+
 
 ## ignore-repository@1
 
@@ -111,6 +169,11 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+snippet: ignore-repository@1-scenario01
+
+
 ## just-text@1
 
 Textual action to display some text in the action menu.
@@ -121,6 +184,11 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `enabled`: Show the menu as enabled (clickable) or disabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+
+### Example
+
+snippet: just-text@1-scenario01
+
 
 ## pin-repository@1
 
@@ -134,6 +202,11 @@ Properties:
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 - `mode`: The pin mode `[Toggle, Pin, UnPin]`. (Nullable, optional)
 
+### Example
+
+snippet: pin-repository@1-scenario01
+
+
 ## separator@1
 
 Creates a visual separator in the action menu.
@@ -142,6 +215,11 @@ Properties:
 
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+
+### Example
+
+snippet: separator@1-scenario01
+
 
 ## url@1
 
@@ -153,3 +231,8 @@ Properties:
 - `url`: The URL to browse to. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+
+### Example
+
+snippet: url@1-scenario01
+

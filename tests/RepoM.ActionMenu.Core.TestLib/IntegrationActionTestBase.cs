@@ -20,17 +20,24 @@ using Xunit;
 public abstract class IntegrationActionTestBase
 {
     private protected readonly TestBootstrapper Bootstrapper;
-    protected const string DEFAULT_PATH = "C:\\RepositoriesV2.yaml";
+    private const string DEFAULT_PATH = "C:\\RepositoriesV2.yaml";
     protected readonly EasyTestFileSettings TestFileSettings;
     protected readonly VerifySettings VerifySettings;
 
     protected IntegrationActionTestBase()
     {
-        Repository = new Repository(@"C:\Repositories\work\RepoX")
+        Repository = new Repository(@"C:\Repositories\work\RepoM")
+        {
+            CurrentBranch = "feature/123-my-new-ui-with-multiple-new-screens-so-this-has-a-long-branch-name",
+            Branches = ["develop",],
+            Remotes =
             {
-                CurrentBranch = "feature/123-my-new-ui-with-multiple-new-screens-so-this-has-a-long-branch-name",
-                Branches = new string[1] { "develop", },
-            };
+                new Remote("origin", "https://www.github.com/coenm/RepoM/"),
+                new Remote("fork1", "https://www.github.com/coenm/RepoM-Fork1/"),
+                new Remote("fork2", "https://www.github.com/coenm/RepoM-Fork2/"),
+                new Remote("ssh-fork", "ssh://user@github.com/coenm/RepoM-Fork3/"),
+            },
+        };
 
         PackageConfiguration = A.Fake<IPackageConfiguration>();
         AppSettingsService = A.Fake<IAppSettingsService>();
@@ -83,7 +90,6 @@ public abstract class IntegrationActionTestBase
         return await factory.CreateMenuListAsync(Repository, DEFAULT_PATH);
     }
 }
-
 
 public abstract class IntegrationActionTestBase<T> : IntegrationActionTestBase where T : IPackage, new()
 {

@@ -27,6 +27,8 @@ The following default configuration is used:
 
 This module contains the following methods, variables and/or constants:
 
+- [`sonarcloud-set-favorite@1`](#sonarcloud-set-favorite1)
+
 ## sonarcloud-set-favorite@1
 
 Action to mark a repository as favorite within SonarCloud.

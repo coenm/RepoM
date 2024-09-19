@@ -1,0 +1,22 @@
+﻿[
+  {
+    Name: Push,
+    RepositoryCommand: {
+      GitAction: Push,
+      Branch: 
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: true,
+    CanExecute: true
+  },
+  {
+    Name: Push!,
+    RepositoryCommand: {
+      GitAction: Push,
+      Branch: 
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: true,
+    CanExecute: true
+  }
+]

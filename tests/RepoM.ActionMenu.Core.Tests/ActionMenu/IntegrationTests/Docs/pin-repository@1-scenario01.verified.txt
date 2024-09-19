@@ -1,0 +1,27 @@
+﻿[
+  {
+    Name: Pin repository,
+    RepositoryCommand: {
+      Type: Toggle
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Unpin repository,
+    RepositoryCommand: {
+      Type: UnPin
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Make repository favorite,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

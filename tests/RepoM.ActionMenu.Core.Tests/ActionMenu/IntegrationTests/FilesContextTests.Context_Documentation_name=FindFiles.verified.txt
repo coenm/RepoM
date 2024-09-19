@@ -9,7 +9,7 @@
       {
         Name: my-solution.sln,
         RepositoryCommand: {
-          Executable: C:\Repositories\work\RepoX\my-solution.sln,
+          Executable: C:\Repositories\work\RepoM\my-solution.sln,
           Arguments: [
             
           ]
@@ -21,7 +21,7 @@
       {
         Name: test solution.sln,
         RepositoryCommand: {
-          Executable: C:\Repositories\work\RepoX\src\test solution.sln,
+          Executable: C:\Repositories\work\RepoM\src\test solution.sln,
           Arguments: [
             
           ]

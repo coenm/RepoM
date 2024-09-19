@@ -1,0 +1,16 @@
+﻿[
+  {
+    Name: Ignore,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: true,
+    CanExecute: true
+  },
+  {
+    Name: Ignore this repo!,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: true,
+    CanExecute: true
+  }
+]

@@ -1,0 +1,12 @@
+context:
+
+# begin-snippet: git-push@1-scenario01
+
+action-menu:
+- type: git-push@1
+
+- type: git-push@1
+  name: Push!
+  active: true
+
+# end-snippet

@@ -1,0 +1,16 @@
+context:
+
+# begin-snippet: foreach@1-scenario02
+
+action-menu:
+
+- type: foreach@1
+  enumerable: repository.remotes
+  variable: remote
+  actions:
+  - type: url@1
+    name: 'Browse to remote {{ remote.key}}'
+    url: '{{ remote.url }}'
+    active: remote.url | string.starts_with 'https'
+
+# end-snippet

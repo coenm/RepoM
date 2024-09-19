@@ -8,10 +8,14 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Action to execute a `git push` command.
 /// </summary>
+/// <example>
+/// <snippet name='git-push@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionGitPushV1 : IMenuAction, IName
 {
     public const string TYPE_VALUE = "git-push@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
 
     public string Type
     {

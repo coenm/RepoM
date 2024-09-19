@@ -1,0 +1,23 @@
+# begin-snippet: foreach@1-scenario01
+
+context:
+- type: evaluate-script@1
+  content: |-
+    func sanitize_filename_testproject(path)
+      ret path | string.split("\\") | array.last | string.replace(".Tests.csproj", "")
+    end
+
+    test_projects = file.find_files(repository.windows_path, "*.Tests.csproj");
+
+action-menu:
+
+- type: foreach@1
+  enumerable: test_projects
+  variable: test_project
+  actions:
+  - type: command@1
+    name: execute dotnet test '{{ sanitize_filename_testproject(test_project) }}'
+    command: cmd
+    arguments: /k dotnet test -c release "{{ test_project }}" --verbosity q
+
+# end-snippet

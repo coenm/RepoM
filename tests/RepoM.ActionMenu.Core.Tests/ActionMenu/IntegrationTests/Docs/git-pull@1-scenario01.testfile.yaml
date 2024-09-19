@@ -1,0 +1,12 @@
+context:
+
+# begin-snippet: git-pull@1-scenario01
+
+action-menu:
+- type: git-pull@1
+
+- type: git-pull@1
+  name: Pull!
+  active: true
+
+# end-snippet

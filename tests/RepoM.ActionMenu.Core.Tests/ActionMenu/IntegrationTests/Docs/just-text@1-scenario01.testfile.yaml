@@ -1,0 +1,28 @@
+# begin-snippet: just-text@1-scenario01
+
+context:
+
+- type: evaluate-script@1
+  content: |-
+    now = date.parse '20/01/2022 08:32:48 +00:00' culture:'en-GB'
+
+action-menu:
+
+- type: just-text@1
+  name: Static text with conditional active
+  active: '1 < 10 && now.year == 2022' # true
+
+- type: just-text@1
+  name: Dynamic text {{ now | date.to_string "%Y-%m-%d"}}
+
+- type: just-text@1
+  name: Dynamic text with additional context {{ my_app_name }} - Year {{ now_year }}
+  context:
+  - type: evaluate-variable@1
+    name: now_year
+    value: now | date.to_string "%Y"
+  - type: set-variable@1
+    name: my_app_name
+    value: RepoM
+
+# end-snippet
