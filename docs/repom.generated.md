@@ -2,6 +2,21 @@
 
 The following actions are part of the core of RepoM and can always be used in your RepositoryActions.
 
+- [`browse-repository@1`](#browse-repository@1)
+- [`command@1`](#command@1)
+- [`executable@1`](#executable@1)
+- [`folder@1`](#folder@1)
+- [`foreach@1`](#foreach@1)
+- [`git-checkout@1`](#git-checkout@1)
+- [`git-fetch@1`](#git-fetch@1)
+- [`git-pull@1`](#git-pull@1)
+- [`git-push@1`](#git-push@1)
+- [`ignore-repository@1`](#ignore-repository@1)
+- [`just-text@1`](#just-text@1)
+- [`pin-repository@1`](#pin-repository@1)
+- [`separator@1`](#separator@1)
+- [`url@1`](#url@1)
+
 ## browse-repository@1
 
 Action to open the default webbrowser and go to the origin remote webinterface. When multiple remotes are available a sub menu is created for each remote.
@@ -11,6 +26,22 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `first-only`: Single menu for the first remote. ([Predicate](repository_action_types.md#predicate))
+
+### Example
+
+<!-- snippet: browse-repository@1-scenario01 -->
+<a id='snippet-browse-repository@1-scenario01'></a>
+```yaml
+action-menu:
+- type: browse-repository@1
+
+- type: browse-repository@1
+  name: Browse remotes of this repo!
+  active: true
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/BrowseRepositoryV1Tests.Documentation.browse-repository@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-browse-repository@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
 
 ## command@1
 
@@ -56,6 +87,27 @@ Properties:
 - `arguments`: Arguments for the executable. ([Text](repository_action_types.md#text))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+<!-- snippet: executable@1-scenario01 -->
+<a id='snippet-executable@1-scenario01'></a>
+```yaml
+context:
+- type: evaluate-script@1
+  content: |-
+    exe_vs_code = env.LocalAppData + "/Programs/Microsoft VS Code/code.exe";
+
+action-menu:
+
+- type: executable@1
+  name: Open in Visual Studio Code
+  executable: '{{ exe_vs_code }}'
+  arguments: '"{{ repository.linux_path }}"'
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/ExecutableV1Tests.Documentation.executable@1-scenario01.testfile.yaml#L1-L15' title='Snippet source file'>snippet source</a> | <a href='#snippet-executable@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ## folder@1
 
 Action to create a folder (sub menu) in the context menu of the repository allowing you to order actions.
@@ -70,9 +122,23 @@ Properties:
 ### Example
 
 <!-- snippet: folder@1-scenario01 -->
+<a id='snippet-folder@1-scenario01'></a>
+```yaml
+action-menu:
+
+- type: folder@1
+  name: My folder
+  active: true
+  actions:
+  - type: url@1
+    name: 'Browse to remote {{ repository.remotes[0].key }}'
+    url: '{{ repository.remotes[0].url }}'
+    active: repository.remotes[0].url | string.starts_with 'https'
+  - type: url@1
+    name: 'wiki'
+    url: '{{ repository.remotes[0].url }}/wiki'
 ```
-** Could not find snippet 'folder@1-scenario01' **
-```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FolderV1Tests.Documentation.folder@1-scenario01.testfile.yaml#L3-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-folder@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -247,6 +313,22 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+<!-- snippet: ignore-repository@1-scenario01 -->
+<a id='snippet-ignore-repository@1-scenario01'></a>
+```yaml
+action-menu:
+- type: ignore-repository@1
+
+- type: ignore-repository@1
+  name: Ignore this repo!
+  active: true
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/IgnoreV1Tests.Documentation.ignore-repository@1-scenario01.testfile.yaml#L3-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-ignore-repository@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ## just-text@1
 
 Textual action to display some text in the action menu.
@@ -304,6 +386,30 @@ Properties:
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 - `mode`: The pin mode `[Toggle, Pin, UnPin]`. (Nullable, optional)
 
+### Example
+
+<!-- snippet: pin-repository@1-scenario01 -->
+<a id='snippet-pin-repository@1-scenario01'></a>
+```yaml
+action-menu:
+- type: pin-repository@1
+  name: '{{ if repository.pinned }}Unpin{{ else }}Pin{{ end }} repository'
+  mode: toggle
+
+- type: pin-repository@1
+  name: Unpin repository
+  mode: unpin
+  active: repository.pinned
+
+- type: pin-repository@1
+  name: Make repository favorite
+  mode: pin
+  active: '!repository.pinned'
+```
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/PinRepositoryV1Tests.Documentation.pin-repository@1-scenario01.testfile.yaml#L3-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-pin-repository@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ## separator@1
 
 Creates a visual separator in the action menu.
@@ -349,23 +455,6 @@ Properties:
 <!-- snippet: url@1-scenario01 -->
 <a id='snippet-url@1-scenario01'></a>
 ```yaml
-action-menu:
-
-- type: folder@1
-  name: Urls
-  active: true
-  actions:
-  - type: url@1
-    name: 'Browse to remote {{ repository.remotes[0].key }}'
-    url: '{{ repository.remotes[0].url }}'
-    active: repository.remotes[0].url | string.starts_with 'https'
-  - type: url@1
-    name: 'wiki'
-    url: '{{ repository.remotes[0].url }}/wiki'
-```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/FolderV1Tests.Documentation.folder@1-scenario01.testfile.yaml#L3-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-url@1-scenario01' title='Start of snippet'>anchor</a></sup>
-<a id='snippet-url@1-scenario01-1'></a>
-```yaml
 context:
 
 - type: evaluate-script@1
@@ -379,19 +468,15 @@ action-menu:
   url: 'https://github.com/coenm/RepoM/wiki'
   active: 'repository.path | string.contains RepoM'
 
-- type: folder@1
-  name: Link to all remotes of repo
-  active: array.size(repository.remotes) >= 1
+- type: foreach@1
+  enumerable: repository.remotes
+  variable: remote
   actions:
-  - type: foreach@1
-    enumerable: repository.remotes
-    variable: remote
-    actions:
-    - type: url@1
-      name: 'Browse to remote {{ remote.key}}'
-      url: '{{ remote.url }}'
-      active: remote.url | string.starts_with 'https'
+  - type: url@1
+    name: 'Browse to remote {{ remote.key}}'
+    url: '{{ remote.url }}'
+    active: remote.url | string.starts_with 'https'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/UrlV1Tests.DocumentationScenario01.testfile.yaml#L1-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-url@1-scenario01-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/UrlV1Tests.DocumentationScenario01.testfile.yaml#L1-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-url@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
