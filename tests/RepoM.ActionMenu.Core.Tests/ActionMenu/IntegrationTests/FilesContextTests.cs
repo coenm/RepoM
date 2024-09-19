@@ -6,7 +6,6 @@ using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
-using FluentAssertions;
 using RepoM.ActionMenu.Core.ActionMenu.Context;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.UserInterface;

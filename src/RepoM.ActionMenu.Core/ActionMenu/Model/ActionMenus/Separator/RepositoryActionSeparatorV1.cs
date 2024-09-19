@@ -15,6 +15,7 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 internal sealed class RepositoryActionSeparatorV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "separator@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
 
     public string Type
     {
