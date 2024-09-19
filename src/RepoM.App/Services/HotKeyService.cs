@@ -1,4 +1,4 @@
-namespace RepoM.App.Services.HotKey;
+namespace RepoM.App.Services;
 
 using System;
 using System.Runtime.InteropServices;
@@ -10,40 +10,38 @@ using Key = System.Windows.Input.Key;
 
 internal partial class HotKeyService
 {
-
-    [LibraryImport("User32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool RegisterHotKey(
-        IntPtr hWnd,
-        int id,
-        uint fsModifiers,
-        uint vk);
-
-    [LibraryImport("User32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool UnregisterHotKey(
-        IntPtr hWnd,
-        int id);
-
     private const int HOT_KEY_ID = 47110815;
-    private readonly IntPtr _hotKeyHook;
-    private readonly Action? _hotKeyActionToCall;
-    private readonly MainWindow _mainWindow;
 
-    private readonly ILogger _logger;
+    private readonly Action?    _hotKeyActionToCall;
+    private readonly IntPtr     _hotKeyHook;
+    private readonly ILogger    _logger;
+    private readonly MainWindow _mainWindow;
 
     public HotKeyService(MainWindow mainWindow, ILogger logger)
     {
-        _mainWindow = mainWindow;
-        _logger = logger;
-        _hotKeyActionToCall = OnHotKeyPressed;  // This is the function that will ultimately be called when the hotkey is pressed
+        _mainWindow         = mainWindow;
+        _logger             = logger;
+        _hotKeyActionToCall = OnHotKeyPressed; // This is the function that will ultimately be called when the hotkey is pressed
 
-        var helper  = new WindowInteropHelper(_mainWindow); // This is the window that will receive the hotkey message
-        _hotKeyHook = helper.EnsureHandle();                // This is the handle of the window that will receive the hotkey message
+        var helper = new WindowInteropHelper(_mainWindow); // This is the window that will receive the hotkey message
+        _hotKeyHook = helper.EnsureHandle();               // This is the handle of the window that will receive the hotkey message
 
-        var source = HwndSource.FromHwnd(_hotKeyHook);  // This is the source of the window that will receive the hotkey message
-        source?.AddHook(HwndHook);  // This is the proxy function that will be called when the hotkey message is received
+        var source = HwndSource.FromHwnd(_hotKeyHook); // This is the source of the window that will receive the hotkey message
+        source?.AddHook(HwndHook);                     // This is the proxy function that will be called when the hotkey message is received
     }
+
+    [LibraryImport("User32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool RegisterHotKey(IntPtr hWnd,
+                                               int    id,
+                                               uint   fsModifiers,
+                                               uint   vk);
+
+    [LibraryImport("User32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool UnregisterHotKey(IntPtr hWnd,
+                                                 int    id);
+
     public void Register()
     {
         EnsureWindowHandle();

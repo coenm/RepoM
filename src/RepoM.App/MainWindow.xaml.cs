@@ -35,26 +35,10 @@ using Control = System.Windows.Controls.Control;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MenuItem = Wpf.Ui.Controls.MenuItem;
 using TextBlock = System.Windows.Controls.TextBlock;
-using TextBox = Wpf.Ui.Controls.TextBox;
 
 [SuppressMessage("ReSharper", "ArrangeAccessorOwnerBody")]
-
 public partial class MainWindow : FluentWindow
 {
-    private volatile bool _refreshDelayed;
-    private DateTime _timeOfLastRefresh = DateTime.MinValue;
-    private bool _keepMainWindowOpenWhenLosingFocus     = false;
-    private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
-    private readonly DefaultRepositoryMonitor? _monitor;
-    private readonly ITranslationService _translationService;
-    private readonly IFileSystem _fileSystem;
-    private readonly ActionExecutor _executor;
-    private readonly IRepositoryFilteringManager _repositoryFilteringManager;
-    private readonly IRepositoryMatcher _repositoryMatcher;
-    private readonly ILogger _logger;
-    private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
-    private readonly IAppDataPathProvider _appDataPathProvider;
-
     private enum IndexNavigator
     {
         GoToNext,
@@ -63,8 +47,6 @@ public partial class MainWindow : FluentWindow
         GoToLast,
         StickToCurrent,
     }
-
-#pragma warning disable IDE1006
 
     // ReSharper disable once InconsistentNaming
     private static readonly ImmutableDictionary<Key, IndexNavigator> ListBoxRepos_NavigationKeys = new Dictionary<Key, IndexNavigator>
@@ -76,50 +58,60 @@ public partial class MainWindow : FluentWindow
             { Key.Space, IndexNavigator.GoToNext },
         }.ToImmutableDictionary();
 
-#pragma warning restore IDE1006
+    private readonly IAppDataPathProvider        _appDataPathProvider;
+    private readonly ActionExecutor              _executor;
+    private readonly IFileSystem                 _fileSystem;
+    private readonly ILogger                     _logger;
+    private readonly DefaultRepositoryMonitor?   _monitor;
+    private readonly IRepositoryFilteringManager _repositoryFilteringManager;
+    private readonly IRepositoryIgnoreStore      _repositoryIgnoreStore;
+    private readonly IRepositoryMatcher          _repositoryMatcher;
+    private readonly ITranslationService         _translationService;
+    private readonly IUserMenuActionMenuFactory  _userMenuActionFactory;
+    private          bool                        _keepMainWindowOpenWhenLosingFocus;
+    private volatile bool                        _refreshDelayed;
+    private          DateTime                    _timeOfLastRefresh = DateTime.MinValue;
 
-    public MainWindow(
-        IRepositoryInformationAggregator aggregator,
-        IRepositoryMonitor repositoryMonitor,
-        IRepositoryIgnoreStore repositoryIgnoreStore,
-        IAppSettingsService appSettingsService,
-        ITranslationService translationService,
-        IAppDataPathProvider appDataPathProvider,
-        IFileSystem fileSystem,
-        ActionExecutor executor,
-        IRepositoryComparerManager repositoryComparerManager,
-        IThreadDispatcher threadDispatcher,
-        IRepositoryFilteringManager repositoryFilteringManager,
-        IRepositoryMatcher repositoryMatcher,
-        IModuleManager moduleManager,
-        ILogger logger,
-        IUserMenuActionMenuFactory userMenuActionFactory)
+    public MainWindow(IRepositoryInformationAggregator aggregator,
+                        IRepositoryMonitor               repositoryMonitor,
+                        IRepositoryIgnoreStore           repositoryIgnoreStore,
+                        IAppSettingsService              appSettingsService,
+                        ITranslationService              translationService,
+                        IAppDataPathProvider             appDataPathProvider,
+                        IFileSystem                      fileSystem,
+                        ActionExecutor                   executor,
+                        IRepositoryComparerManager       repositoryComparerManager,
+                        IThreadDispatcher                threadDispatcher,
+                        IRepositoryFilteringManager      repositoryFilteringManager,
+                        IRepositoryMatcher               repositoryMatcher,
+                        IModuleManager                   moduleManager,
+                        ILogger                          logger,
+                        IUserMenuActionMenuFactory       userMenuActionFactory)
     {
-
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
-        _repositoryMatcher          = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
-        _logger                     = logger ?? throw new ArgumentNullException(nameof(logger));
-        _userMenuActionFactory      = userMenuActionFactory ?? throw new ArgumentNullException(nameof(userMenuActionFactory));
-        _translationService         = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        _repositoryIgnoreStore      = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
-        _appDataPathProvider        = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-        _fileSystem                 = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _executor                   = executor ?? throw new ArgumentNullException(nameof(executor));
+        _repositoryMatcher          = repositoryMatcher          ?? throw new ArgumentNullException(nameof(repositoryMatcher));
+        _logger                     = logger                     ?? throw new ArgumentNullException(nameof(logger));
+        _userMenuActionFactory      = userMenuActionFactory      ?? throw new ArgumentNullException(nameof(userMenuActionFactory));
+        _translationService         = translationService         ?? throw new ArgumentNullException(nameof(translationService));
+        _repositoryIgnoreStore      = repositoryIgnoreStore      ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
+        _appDataPathProvider        = appDataPathProvider        ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        _fileSystem                 = fileSystem                 ?? throw new ArgumentNullException(nameof(fileSystem));
+        _executor                   = executor                   ?? throw new ArgumentNullException(nameof(executor));
 
         InitializeComponent();
 
-        var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
+        var orderingsViewModel    = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var pluginsViewModel = new PluginCollectionViewModel(moduleManager);
+        var filterViewModel       = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
+        var pluginsViewModel      = new PluginCollectionViewModel(moduleManager);
 
         DataContext = new MainWindowViewModel(
-            appSettingsService,
-            orderingsViewModel,
-            queryParsersViewModel,
-            filterViewModel,
-            pluginsViewModel,
-            new HelpViewModel(_translationService));
+                                                appSettingsService,
+                                                orderingsViewModel,
+                                                queryParsersViewModel,
+                                                filterViewModel,
+                                                pluginsViewModel,
+                                                new HelpViewModel(_translationService));
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
         _monitor = repositoryMonitor as DefaultRepositoryMonitor;
@@ -132,26 +124,32 @@ public partial class MainWindow : FluentWindow
         ListBoxRepos.ItemsSource = aggregator.Repositories;
 
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
-        ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
-        view.Filter = FilterRepositories;
-        view.CustomSort = repositoryComparerManager.Comparer;
+        ((ICollectionView)view).CollectionChanged                      += View_CollectionChanged;
+        view.Filter                                                    =  FilterRepositories;
+        view.CustomSort                                                =  repositoryComparerManager.Comparer;
         repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
-        repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
-        repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
+        repositoryFilteringManager.SelectedQueryParserChanged          += (_, _) => view.Refresh();
+        repositoryFilteringManager.SelectedFilterChanged               += (_, _) => view.Refresh();
 
         ApplicationThemeManager.ApplySystemTheme(true); // Applies the system theme for Apps, not for
         ApplicationAccentColorManager.ApplySystemAccent();
         WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Mica);
         SystemThemeWatcher.Watch(this);
 
-       
 
-        // TODO: DELETE THIS LINE , IT IS JUST FOR TESTING
         //ApplicationThemeManager.Apply(ApplicationTheme.Light);
 
         ApplicationThemeManager.Changed += OnAppThemeChange;
 
         PlaceFormByTaskBarLocation();
+    }
+
+    public bool IsShown
+    {
+        get
+        {
+            return Visibility == Visibility.Visible && IsActive;
+        }
     }
 
     private void OnAppThemeChange(ApplicationTheme currentapplicationtheme, Color systemaccent)
@@ -163,7 +161,6 @@ public partial class MainWindow : FluentWindow
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
         // TODO: Move tome things here from the constructor
-
     }
 
 
@@ -180,8 +177,7 @@ public partial class MainWindow : FluentWindow
     ///     user cancels the closing event, the window is not closed.
     ///     Otherwise, the window is closed and the Closed event is
     ///     fired.
-    ///
-    /// Callers must have UIPermission(UIPermissionWindow.AllWindows) to call this API.
+    ///     Callers must have UIPermission(UIPermissionWindow.AllWindows) to call this API.
     /// </remarks>
     protected override void OnClosing(CancelEventArgs e)
     {
@@ -195,7 +191,6 @@ public partial class MainWindow : FluentWindow
     /// <remarks>
     ///     Calling Show() on window is the same as setting the
     ///     Visibility property to Visibility.Visible.
-    ///
     ///     Calling Activate() calls SetForegroundWindow on the hWnd,
     ///     thus the rules for SetForegroundWindow apply to this method.
     ///     Activate() returns bool, indicating whether the window was activated or not
@@ -287,7 +282,7 @@ public partial class MainWindow : FluentWindow
 
             ctxMenu.Items.Add(new MenuItem
                 {
-                    Header = "Loading...",
+                    Header    = "Loading...",
                     IsEnabled = true,
                 });
 
@@ -304,6 +299,7 @@ public partial class MainWindow : FluentWindow
 
                             break;
                         }
+
                     case DeferredSubActionsUserInterfaceRepositoryAction:
                         {
                             Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
@@ -314,6 +310,7 @@ public partial class MainWindow : FluentWindow
 
                             break;
                         }
+
                     case UserInterfaceRepositoryAction:
                         {
                             Control? controlItem = CreateMenuItemNewStyleAsync(action, vm);
@@ -341,15 +338,15 @@ public partial class MainWindow : FluentWindow
 
             ctxMenu.Items.Clear();
             ctxMenu.Items.Add(new MenuItem
-            {
-                Header = "Error",
-                IsEnabled = false,
-            });
+                {
+                    Header    = "Error",
+                    IsEnabled = false,
+                });
             ctxMenu.Items.Add(new MenuItem
-            {
-                Header = e.Message,
-                IsEnabled = false,
-            });
+                {
+                    Header    = e.Message,
+                    IsEnabled = false,
+                });
 
             return false;
         }
@@ -374,10 +371,10 @@ public partial class MainWindow : FluentWindow
         }
 
         UserInterfaceRepositoryActionBase uiRepositoryAction = await _userMenuActionFactory
-            .CreateMenuAsync(selectedView.Repository)
-            .Skip(skip)
-            .FirstAsync()
-            .ConfigureAwait(false);
+                                                                    .CreateMenuAsync(selectedView.Repository)
+                                                                    .Skip(skip)
+                                                                    .FirstAsync()
+                                                                    .ConfigureAwait(false);
 
         if (uiRepositoryAction is not UserInterfaceRepositoryAction action)
         {
@@ -433,9 +430,9 @@ public partial class MainWindow : FluentWindow
         if (_fileSystem.Directory.Exists(directoryName))
         {
             Process.Start(new ProcessStartInfo(directoryName)
-            {
-                UseShellExecute = true,
-            });
+                {
+                    UseShellExecute = true,
+                });
         }
     }
 
@@ -453,28 +450,18 @@ public partial class MainWindow : FluentWindow
         Navigate("https://github.com/coenm/RepoM");
     }
 
-    private void FollowButton_Click(object sender, RoutedEventArgs e)
-    {
-        Navigate("https://twitter.com/Waescher");
-    }
-
-    private void SponsorButton_Click(object sender, RoutedEventArgs e)
-    {
-        Navigate("https://github.com/sponsors/awaescher");
-    }
-
     private static void Navigate(string url)
     {
         Process.Start(new ProcessStartInfo(url)
-        {
-            UseShellExecute = true,
-        });
+            {
+                UseShellExecute = true,
+            });
     }
 
     private void PlaceFormByTaskBarLocation()
     {
-        SetCurrentValue(TopProperty, SystemParameters.WorkArea.BottomRight.Y - ActualHeight - 5);
-        SetCurrentValue(LeftProperty, SystemParameters.WorkArea.BottomRight.X - ActualWidth - 10);
+        SetCurrentValue(TopProperty,  SystemParameters.WorkArea.BottomRight.Y - ActualHeight - 5);
+        SetCurrentValue(LeftProperty, SystemParameters.WorkArea.BottomRight.X - ActualWidth  - 10);
     }
 
     private void ShowUpdateIfAvailable()
@@ -482,8 +469,8 @@ public partial class MainWindow : FluentWindow
         var updateHint = _translationService.Translate("Update hint", App.AvailableUpdate ?? "?.?");
 
         UpdateButton.SetCurrentValue(VisibilityProperty, App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible);
-        UpdateButton.SetCurrentValue(ToolTipProperty, App.AvailableUpdate == null ? "" : updateHint);
-        UpdateButton.SetCurrentValue(TagProperty, App.AvailableUpdate);
+        UpdateButton.SetCurrentValue(ToolTipProperty,    App.AvailableUpdate == null ? "" : updateHint);
+        UpdateButton.SetCurrentValue(TagProperty,        App.AvailableUpdate);
 
         var parent = (Grid)UpdateButton.Parent;
         parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].SetCurrentValue(ColumnDefinition.WidthProperty, App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto);
@@ -607,10 +594,10 @@ public partial class MainWindow : FluentWindow
             };
 
         var item = new MenuItem
-        {
-            Header = repositoryAction.Name,
-            IsEnabled = repositoryAction.CanExecute,
-        };
+            {
+                Header    = repositoryAction.Name,
+                IsEnabled = repositoryAction.CanExecute,
+            };
         item.Click += new RoutedEventHandler(clickAction);
 
         // this is a deferred submenu. We want to make sure that the context menu can pop up
@@ -656,45 +643,48 @@ public partial class MainWindow : FluentWindow
 
             item.SubmenuOpened += SelfDetachingEventHandler;
         }
-        else if (repositoryAction.SubActions != null)
+        else
         {
-            // this is a template submenu item to enable submenus under the current
-            // menu item. this item gets removed when the real subitems are created
-            item.Items.Add("Loading..");
-
-            async void SelfDetachingEventHandler1(object _, RoutedEventArgs evtArgs)
+            if (repositoryAction.SubActions != null)
             {
-                item.SubmenuOpened -= SelfDetachingEventHandler1;
-                item.Items.Clear();
+                // this is a template submenu item to enable submenus under the current
+                // menu item. this item gets removed when the real subitems are created
+                item.Items.Add("Loading..");
 
-                foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
+                async void SelfDetachingEventHandler1(object _, RoutedEventArgs evtArgs)
                 {
-                    Control? controlItem = CreateMenuItemNewStyleAsync(subAction);
-                    if (controlItem == null)
+                    item.SubmenuOpened -= SelfDetachingEventHandler1;
+                    item.Items.Clear();
+
+                    foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
                     {
-                        continue;
+                        Control? controlItem = CreateMenuItemNewStyleAsync(subAction);
+                        if (controlItem == null)
+                        {
+                            continue;
+                        }
+
+                        if (controlItem is not Separator)
+                        {
+                            item.Items.Add(controlItem);
+                            continue;
+                        }
+
+                        if (item.Items.Count > 0 && item.Items[^1] is not Separator)
+                        {
+                            item.Items.Add(controlItem);
+                        }
                     }
 
-                    if (controlItem is not Separator)
+                    var count = item.Items.Count;
+                    if (count > 0 && item.Items[^1] is Separator)
                     {
-                        item.Items.Add(controlItem);
-                        continue;
-                    }
-
-                    if (item.Items.Count > 0 && item.Items[^1] is not Separator)
-                    {
-                        item.Items.Add(controlItem);
+                        item.Items.RemoveAt(count - 1);
                     }
                 }
 
-                var count = item.Items.Count;
-                if (count > 0 && item.Items[^1] is Separator)
-                {
-                    item.Items.RemoveAt(count - 1);
-                }
+                item.SubmenuOpened += SelfDetachingEventHandler1;
             }
-
-            item.SubmenuOpened += SelfDetachingEventHandler1;
         }
 
         return item;
@@ -711,9 +701,10 @@ public partial class MainWindow : FluentWindow
     private void ShowScanningState(bool isScanning)
     {
         ScanMenuItem.SetCurrentValue(IsEnabledProperty, !isScanning);
-        ScanMenuItem.SetCurrentValue(HeaderedItemsControl.HeaderProperty, isScanning
-            ? _translationService.Translate("Scanning")
-            : _translationService.Translate("ScanComputer"));
+        ScanMenuItem.SetCurrentValue(HeaderedItemsControl.HeaderProperty,
+                                        isScanning
+                                            ? _translationService.Translate("Scanning")
+                                            : _translationService.Translate("ScanComputer"));
     }
 
     private bool FilterRepositories(object item)
@@ -776,14 +767,6 @@ public partial class MainWindow : FluentWindow
         }
     }
 
-    public bool IsShown
-    {
-        get
-        {
-            return Visibility == Visibility.Visible && IsActive;
-        }
-    }
-
     private void OnSearchBar_TextBoxTextChanged(object? sender, TextChangedEventArgs e)
     {
         // Text has changed, capture the timestamp
@@ -838,6 +821,7 @@ public partial class MainWindow : FluentWindow
 
                     break;
                 }
+
             case IndexNavigator.GoToPrevious:
                 {
                     newIndex = currentIndex - 1;
@@ -848,6 +832,7 @@ public partial class MainWindow : FluentWindow
 
                     break;
                 }
+
             case IndexNavigator.GoToFirst:
                 {
                     newIndex = 0;
@@ -858,6 +843,7 @@ public partial class MainWindow : FluentWindow
 
                     break;
                 }
+
             case IndexNavigator.GoToLast:
                 {
                     newIndex = ListBoxRepos.Items.Count - 1;
@@ -868,16 +854,18 @@ public partial class MainWindow : FluentWindow
 
                     break;
                 }
+
             case IndexNavigator.StickToCurrent:
                 {
                     newIndex = currentIndex;
                     break;
                 }
+
             default:
                 {
-#pragma warning disable CA2254
+                #pragma warning disable CA2254
                     _logger.LogError(new ArgumentOutOfRangeException(nameof(navigator), navigator, null).ToString());
-#pragma warning restore CA2254
+                #pragma warning restore CA2254
                     throw new ArgumentOutOfRangeException(nameof(navigator), navigator, null);
                 }
         }
@@ -900,6 +888,7 @@ public partial class MainWindow : FluentWindow
                     ListBoxRepos_ChangeCurrentItem(IndexNavigator.GoToFirst, true);
                     break;
                 }
+
             case var _ when ListBoxRepos_NavigationKeys.TryGetValue(e.Key, out IndexNavigator kValue):
                 {
                     ListBoxRepos_ChangeCurrentItem(kValue, false);
@@ -910,7 +899,7 @@ public partial class MainWindow : FluentWindow
 
     private async void ListBoxRepos_KeyDown(object? sender, KeyEventArgs e)
     {
-        if (null == sender || ListBoxRepos.Items.IsEmpty || (ListBoxRepos.SelectedIndex < 0))
+        if (null == sender || ListBoxRepos.Items.IsEmpty || ListBoxRepos.SelectedIndex < 0)
         {
             e.Handled = true;
             return;
@@ -932,11 +921,13 @@ public partial class MainWindow : FluentWindow
 
                     break;
                 }
+
             case var _ when ListBoxRepos_NavigationKeys.TryGetValue(e.Key, out IndexNavigator kValue):
                 {
                     ListBoxRepos_ChangeCurrentItem(kValue, true);
                     break;
                 }
+
             case Key.Left or Key.Right:
                 {
                     // try open context menu.
@@ -946,9 +937,9 @@ public partial class MainWindow : FluentWindow
                     if (listBoxReposContextMenuOpening)
                     {
                         // ReSharper disable once PossibleNullReferenceException
-                        ctxMenu.Placement = PlacementMode.Left;
+                        ctxMenu.Placement       = PlacementMode.Left;
                         ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
-                        ctxMenu.IsOpen = true;
+                        ctxMenu.IsOpen          = true;
                     }
 
                     break;
@@ -968,6 +959,7 @@ public partial class MainWindow : FluentWindow
                     ListBoxRepos_ChangeCurrentItem(kValue, true);
                     break;
                 }
+
             case Key.F1:
                 HelpButton_Click(sender, e);
                 break;
@@ -1022,11 +1014,11 @@ public partial class MainWindow : FluentWindow
     /// </summary>
     /// <remarks>
     ///     A window is deactivated (becomes a background window) when:
-    ///         * A user switches to another window in the current application.
-    ///         * A user switches to the window in another application by using ALT+TAB or by using Task Manager.
-    ///         * A user clicks the taskbar button for a window in another application.
+    ///     * A user switches to another window in the current application.
+    ///     * A user switches to the window in another application by using ALT+TAB or by using Task Manager.
+    ///     * A user clicks the taskbar button for a window in another application.
     /// </remarks>
-    /// <see cref="https://learn.microsoft.com/en-us/dotnet/api/system.windows.window.deactivated"/>
+    /// <see cref="https://learn.microsoft.com/en-us/dotnet/api/system.windows.window.deactivated" />
     private void MainWindow_OnDeactivated(object? sender, EventArgs e)
     {
         if (_keepMainWindowOpenWhenLosingFocus)
@@ -1035,9 +1027,9 @@ public partial class MainWindow : FluentWindow
         }
 
         /*
-         * Calling Hide on window is the same as setting the
-         * Visibility property to Visibility.Hidden
-         */
+            * Calling Hide on window is the same as setting the
+            * Visibility property to Visibility.Hidden
+            */
         Hide();
     }
 
@@ -1058,5 +1050,5 @@ public partial class MainWindow : FluentWindow
         // TODO
     }
 
-
 }
+

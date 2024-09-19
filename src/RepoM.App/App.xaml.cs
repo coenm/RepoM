@@ -1,3 +1,5 @@
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
+
 namespace RepoM.App;
 
 using Application = System.Windows.Application;
