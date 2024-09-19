@@ -21,6 +21,10 @@ func write_default_when_null(s, default_value = "\\<empty\\>")
   end
 end
 
+func md_link(s)
+  ret s | string.replace " " "-" | string.replace "@" "";
+end
+
 ~}}
 {{~ if plugin.IsPlugin ~}}
 # {{ plugin.IsPlugin ? plugin.PluginName : "RepoM Core Repository Actions" }}
@@ -52,7 +56,7 @@ The following actions are part of the core of RepoM and can always be used in yo
 {{~ end ~}}
 
   {{~ for actionmenu_item in plugin.ActionMenus ~}}
-- [`{{ actionmenu_item.Name }}`](#{{ actionmenu_item.Name }})
+- [`{{ actionmenu_item.Name }}`](#{{ md_link(actionmenu_item.Name) }})
   {{~ end ~}}
   {{~ for actionmenu_item in plugin.ActionMenus }}
     {{~ include 'actionmenu.scriban-txt' ~}}
