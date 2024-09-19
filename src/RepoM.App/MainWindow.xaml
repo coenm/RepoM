@@ -38,7 +38,8 @@
     Topmost="True"
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
 
     <Window.Resources>
         <ResourceDictionary>
@@ -82,7 +83,8 @@
                 SnapsToDevicePixels="True"
                 Text="{DynamicResource EmptyHint}"
                 TextAlignment="Center"
-                TextWrapping="Wrap" />
+                TextWrapping="Wrap"
+                />
 
             <DockPanel x:Name="DockMain" Focusable="False">
                 <Grid DockPanel.Dock="Top" Focusable="False">
@@ -100,7 +102,8 @@
                         Grid.Column="0"
                         Margin="0,0,0,14"
                         HorizontalAlignment="Stretch"
-                        Focusable="False">
+                        Focusable="False"
+                        >
 
                         <!--  Actual search bar  -->
                         <ui:TextBox
@@ -115,7 +118,8 @@
                             KeyDown="SearchBar_TextBox_OnKeyDown"
                             SnapsToDevicePixels="True"
                             TextChanged="OnSearchBar_TextBoxTextChanged"
-                            TextWrapping="Wrap" />
+                            TextWrapping="Wrap"
+                            />
 
                         <!--  Default text  -->
                         <ui:TextBlock
@@ -129,7 +133,8 @@
                             IsHitTestVisible="False"
                             SnapsToDevicePixels="True"
                             Text="{DynamicResource SearchWin}"
-                            TextWrapping="Wrap">
+                            TextWrapping="Wrap"
+                            >
                             <ui:TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -158,7 +163,8 @@
                         Content="☰"
                         Cursor="Arrow"
                         FontFamily="Source Code Pro"
-                        FontSize="20">
+                        FontSize="20"
+                        >
                         <Button.Resources>
                             <Style x:Key="DatePickerStyle" TargetType="{x:Type ui:MenuItem}">
                                 <Setter Property="Header" Value="coen" />
@@ -175,12 +181,14 @@
                                     x:Name="ScanMenuItem"
                                     Click="ScanButton_Click"
                                     Header="{DynamicResource ScanComputer}"
-                                    Icon="{ui:SymbolIcon DocumentSplitHint20}" />
+                                    Icon="{ui:SymbolIcon DocumentSplitHint20}"
+                                    />
 
                                 <ui:MenuItem
                                     Click="ClearButton_Click"
                                     Header="{DynamicResource Clear}"
-                                    Icon="{ui:SymbolIcon DocumentSplitHint20}" />
+                                    Icon="{ui:SymbolIcon DocumentSplitHint20}"
+                                    />
 
                                 <Separator />
 
@@ -200,7 +208,8 @@
                                                         <ui:MenuItem
                                                             Header="{Binding Header}"
                                                             IsCheckable="{Binding IsCheckable}"
-                                                            IsChecked="{Binding IsChecked}" />
+                                                            IsChecked="{Binding IsChecked}"
+                                                            />
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
@@ -217,7 +226,8 @@
                                                         <ui:MenuItem
                                                             Header="{Binding Header}"
                                                             IsCheckable="{Binding IsCheckable}"
-                                                            IsChecked="{Binding IsChecked}" />
+                                                            IsChecked="{Binding IsChecked}"
+                                                            />
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
@@ -234,7 +244,8 @@
                                                         <ui:MenuItem
                                                             Header="{Binding Header}"
                                                             IsCheckable="{Binding IsCheckable}"
-                                                            IsChecked="{Binding IsChecked}" />
+                                                            IsChecked="{Binding IsChecked}"
+                                                            />
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
@@ -246,27 +257,32 @@
                                     <ui:MenuItem
                                         Header="{DynamicResource Off}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding AutoFetchOff}" />
+                                        IsChecked="{Binding AutoFetchOff}"
+                                        />
                                     <Separator />
                                     <MenuItem
                                         Header="{DynamicResource Discretely}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding AutoFetchDiscretely}" />
+                                        IsChecked="{Binding AutoFetchDiscretely}"
+                                        />
                                     <ui:MenuItem
                                         Header="{DynamicResource Adequate}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding AutoFetchAdequate}" />
+                                        IsChecked="{Binding AutoFetchAdequate}"
+                                        />
                                     <ui:MenuItem
                                         Header="{DynamicResource Aggressive}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding AutoFetchAggressive}" />
+                                        IsChecked="{Binding AutoFetchAggressive}"
+                                        />
                                 </ui:MenuItem>
 
                                 <ui:MenuItem Header="{DynamicResource Advanced}">
                                     <ui:MenuItem
                                         Header="{DynamicResource PruneOnFetch}"
                                         IsCheckable="True"
-                                        IsChecked="{Binding PruneOnFetch}" />
+                                        IsChecked="{Binding PruneOnFetch}"
+                                        />
 
                                     <ui:MenuItem Header="Query Parsers" ItemsSource="{Binding Path=QueryParsers}">
                                         <ui:MenuItem.ItemContainerStyle>
@@ -277,7 +293,8 @@
                                                             <ui:MenuItem
                                                                 Header="{Binding Header}"
                                                                 IsCheckable="{Binding IsCheckable}"
-                                                                IsChecked="{Binding IsChecked}" />
+                                                                IsChecked="{Binding IsChecked}"
+                                                                />
                                                         </ControlTemplate>
                                                     </Setter.Value>
                                                 </Setter>
@@ -313,7 +330,8 @@
                         Content="🡱"
                         Cursor="Arrow"
                         FontSize="17"
-                        Visibility="Visible" />
+                        Visibility="Visible"
+                        />
                 </Grid>
 
                 <ListBox
@@ -333,7 +351,8 @@
                     SnapsToDevicePixels="True"
                     VirtualizingPanel.IsVirtualizing="True"
                     VirtualizingPanel.ScrollUnit="Item"
-                    VirtualizingPanel.VirtualizationMode="Recycling">
+                    VirtualizingPanel.VirtualizationMode="Recycling"
+                    >
 
                     <ListBox.ContextMenu>
                         <ContextMenu>
@@ -357,12 +376,13 @@
                                         <!--  use this place to design how container normally looks like  -->
                                         <Border
                                             x:Name="Border"
-                                            Margin="0,4,20,0"
-                                            Padding="18,8,8,8"
+                                            Margin="0,4,14,0"
+                                            Padding="18,8,6,8"
                                             Background="Transparent"
                                             BorderThickness="1"
                                             CornerRadius="0"
-                                            SnapsToDevicePixels="True">
+                                            SnapsToDevicePixels="True"
+                                            >
 
                                             <ContentPresenter />
 
@@ -383,25 +403,26 @@
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Vertical">
-                                <StackPanel x:Name="b" Orientation="Horizontal">
-                                    <!--  Repository Pin icon  -->
-                                    <ui:TextBlock
-                                        Margin="0,0,8,0"
-                                        FontFamily="Source Code Pro"
-                                        Foreground="CornflowerBlue"
-                                        SnapsToDevicePixels="True"
-                                        Text="📌"
-                                        TextElement.FontSize="14"
-                                        Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.96*" />
+                                    <ColumnDefinition Width="0.04*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel
+                                    x:Name="RepoInfoStack"
+                                    Grid.Column="0"
+                                    Orientation="Vertical"
+                                    >
 
                                     <!--  Repository Name Text Block  -->
 
                                     <ui:TextBlock
+                                        x:Name="RepositoryName_TextBlock"
                                         MinWidth="200"
                                         MinHeight="21"
-                                        MaxWidth="{Binding ActualWidth, ElementName=b}"
-                                        MaxHeight="43"
+                                        MaxWidth="{Binding ActualWidth, ElementName=RepoInfoStack}"
+                                        MaxHeight="64"
                                         Margin="0"
                                         FontFamily="Source Code Pro"
                                         Foreground="CornflowerBlue"
@@ -409,75 +430,105 @@
                                         Text="{Binding Name}"
                                         TextElement.FontSize="17"
                                         TextWrapping="WrapWithOverflow"
-                                        ToolTip="{Binding Path}" />
+                                        ToolTip="{Binding Path}"
+                                        />
 
-                                </StackPanel>
 
-                                <!--  Repostiory Selected(Current) Branch  -->
-                                <ui:TextBlock
-                                    Margin="0,6,0,0"
-                                    FontFamily="Source Code Pro"
-                                    FontSize="14"
-                                    Foreground="{DynamicResource TextControlForeground}"
-                                    SnapsToDevicePixels="True"
-                                    Text="{Binding CurrentBranch}"
-                                    TextWrapping="Wrap"
-                                    Visibility="{Binding Path=IsNotBare, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                                <StackPanel Margin="0,3,0,0" Orientation="Horizontal">
+                                    <!--  Repostiory Selected(Current) Branch  -->
+                                    <ui:TextBlock
+                                        Margin="0,6,0,0"
+                                        FontFamily="Source Code Pro"
+                                        FontSize="14"
+                                        Foreground="{DynamicResource TextControlForeground}"
+                                        SnapsToDevicePixels="True"
+                                        Text="{Binding CurrentBranch}"
+                                        TextWrapping="Wrap"
+                                        Visibility="{Binding Path=IsNotBare, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        />
 
-                                    <Border
-                                        x:Name="StatusBorder"
-                                        Margin="0,0,12,0"
-                                        Padding="0,2.5,8,3"
-                                        HorizontalAlignment="Left"
-                                        BorderThickness="0"
-                                        CornerRadius="5">
-                                        <ui:TextBlock
-                                            FontFamily="Source Code Pro"
-                                            FontSize="14"
-                                            Foreground="LimeGreen"
-                                            Text="{Binding Status}">
-                                            <ui:TextBlock.ToolTip>
+                                    <StackPanel Margin="0,3,0,0" Orientation="Horizontal">
 
-                                                <ui:TextBlock
-                                                    FontFamily="Source Code Pro"
-                                                    Foreground="{DynamicResource TextControlForeground}"
-                                                    Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToHumanizedLocalDateTimeConverter}}" />
-                                            </ui:TextBlock.ToolTip>
-                                        </ui:TextBlock>
-                                    </Border>
+                                        <Border
+                                            x:Name="StatusBorder"
+                                            Margin="0,0,12,0"
+                                            Padding="0,2.5,8,3"
+                                            HorizontalAlignment="Left"
+                                            BorderThickness="0"
+                                            CornerRadius="5"
+                                            >
+                                            <ui:TextBlock
+                                                FontFamily="Source Code Pro"
+                                                FontSize="14"
+                                                Foreground="LimeGreen"
+                                                Text="{Binding Status}"
+                                                >
+                                                <ui:TextBlock.ToolTip>
 
-                                    <StackPanel Orientation="Horizontal">
-                                        <ItemsControl Grid.Column="0" ItemsSource="{Binding Tags}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <StackPanel Orientation="Horizontal" />
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
+                                                    <ui:TextBlock
+                                                        FontFamily="Source Code Pro"
+                                                        Foreground="{DynamicResource TextControlForeground}"
+                                                        Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToHumanizedLocalDateTimeConverter}}"
+                                                        />
+                                                </ui:TextBlock.ToolTip>
+                                            </ui:TextBlock>
+                                        </Border>
 
-                                                    <Border
-                                                        Padding="{Binding Pading, ElementName=StatusBorder}"
-                                                        HorizontalAlignment="Left"
-                                                        BorderThickness="0"
-                                                        CornerRadius="5">
-                                                        <ui:TextBlock
-                                                            FontFamily="Source Code Pro"
-                                                            FontSize="14"
-                                                            Foreground="DarkSalmon"
-                                                            SnapsToDevicePixels="True"
-                                                            Text="{Binding Tag}"
-                                                            TextWrapping="Wrap" />
-                                                    </Border>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ItemsControl Grid.Column="0" ItemsSource="{Binding Tags}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
 
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+                                                        <Border
+                                                            Padding="{Binding Pading, ElementName=StatusBorder}"
+                                                            HorizontalAlignment="Left"
+                                                            BorderThickness="0"
+                                                            CornerRadius="5"
+                                                            >
+                                                            <ui:TextBlock
+                                                                FontFamily="Source Code Pro"
+                                                                FontSize="14"
+                                                                Foreground="DarkSalmon"
+                                                                SnapsToDevicePixels="True"
+                                                                Text="{Binding Tag}"
+                                                                TextWrapping="Wrap"
+                                                                />
+                                                        </Border>
+
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
+
+                                <!--  Repository Pin icon  -->
+                                <ui:Button
+                                    Grid.Column="1"
+                                    BorderThickness="0"
+                                    Click="UnpinRepo_Click"
+                                    IsEnabled="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    >
+                                    <ui:Button.Template>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <ui:TextBlock
+                                                Margin="8,0,0,0"
+                                                FontFamily="Source Code Pro"
+                                                Foreground="CornflowerBlue"
+                                                SnapsToDevicePixels="True"
+                                                Text="📌"
+                                                TextElement.FontSize="46"
+                                                />
+                                        </ControlTemplate>
+                                    </ui:Button.Template>
+                                </ui:Button>
+                            </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
@@ -489,17 +540,20 @@
         <ScrollViewer
             Name="HelpScrollViewer"
             Margin="4,4,8,20"
-            Visibility="Collapsed">
+            Visibility="Collapsed"
+            >
             <StackPanel DataContext="{Binding Help}">
                 <ui:TextBlock
                     Text="{Binding Header}"
                     TextElement.FontSize="12"
                     TextElement.FontWeight="Bold"
-                    TextWrapping="Wrap" />
+                    TextWrapping="Wrap"
+                    />
                 <ui:TextBlock
                     Text="{Binding Description}"
                     TextElement.FontSize="12"
-                    TextWrapping="Wrap" />
+                    TextWrapping="Wrap"
+                    />
             </StackPanel>
         </ScrollViewer>
 
