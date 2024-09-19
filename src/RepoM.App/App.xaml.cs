@@ -1,12 +1,15 @@
-[assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
-
 namespace RepoM.App;
 
+using Application = System.Windows.Application;
+using Container = SimpleInjector.Container;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 using System;
+using System.Globalization;
 using System.IO;
 using System.IO.Abstractions;
 using System.Threading;
 using System.Windows;
+using System.Windows.Markup;
 using Hardcodet.Wpf.TaskbarNotification;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,36 +23,37 @@ using RepoM.App.Services;
 using RepoM.App.Services.HotKey;
 using Serilog;
 using Serilog.Core;
-using Application = System.Windows.Application;
-using Container = SimpleInjector.Container;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
+using SimpleInjector;
+
 
 /// <summary>
-/// Interaction logic for App.xaml
+///     Interaction logic for App.xaml
 /// </summary>
 public partial class App : Application
 {
-    private static Mutex? _mutex;
+    private static Mutex?              _mutex;
     private static IRepositoryMonitor? _repositoryMonitor;
-    private TaskbarIcon? _notifyIcon;
-    private ModuleService? _moduleService;
-    private HotKeyService? _hotKeyService;
+    private static App?                _app;
+
+    private HotKeyService?     _hotKeyService;
+    private Window?            _mainWindow;
+    private ModuleService?     _moduleService;
+    private TaskbarIcon?       _notifyIcon;
     private WindowSizeService? _windowSizeService;
 
     public static string? AvailableUpdate
     {
+        // TODO: This does nothing. Fix it.
         get;
-        private set;
     }
-
-    private static App? _app;
-
-    private Window? _mainWindow;
 
     public Window? MainWindowInstance
     {
-        get =>
-            _app?.MainWindow ?? _mainWindow;
+        get
+        {
+            return _app?.MainWindow ?? _mainWindow;
+        }
+
         set
         {
             if (_app != null)
@@ -70,7 +74,7 @@ public partial class App : Application
         }
 
         Thread.CurrentThread.Name ??= "UI";
-        _app = new App();
+        _app                      =   new App();
         _app.InitializeComponent();
 
         /*
@@ -90,45 +94,45 @@ public partial class App : Application
         // By default, WPF uses en-US as the culture, regardless of the system settings.
         // see: https://stackoverflow.com/a/520334/704281
         FrameworkElement.LanguageProperty.OverrideMetadata(
-            typeof(FrameworkElement),
-            new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
+                                                           typeof(FrameworkElement),
+                                                           new FrameworkPropertyMetadata(
+                                                                                         XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
-        Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
-        _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
+        Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
+        _notifyIcon                             = FindResource("NotifyIcon") as TaskbarIcon;
 
         var fileSystem = new FileSystem();
 
         // Create instance without DI, because we need it before the last registration of services.
         IHmacService hmacService = new HmacSha256Service();
         IPluginFinder pluginFinder = new PluginFinder(fileSystem,
-            hmacService);
+                                                      hmacService);
 
-        IConfiguration config = SetupConfiguration();
+        IConfiguration config        = SetupConfiguration();
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
-        ILogger logger = loggerFactory.CreateLogger(nameof(App));
+        ILogger        logger        = loggerFactory.CreateLogger(nameof(App));
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
         Bootstrapper.RegisterServices(fileSystem);
         await Bootstrapper.RegisterPlugins(pluginFinder,
-                              fileSystem,
-                              loggerFactory)
+                                           fileSystem,
+                                           loggerFactory)
                           .ConfigureAwait(true);
 
-#if DEBUG
-        Bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
-#else
-        Bootstrapper.Container.Options.EnableAutoVerification = false;
-#endif
+    #if DEBUG
+        Bootstrapper.Container.Verify(VerificationOption.VerifyAndDiagnose);
+    #else
+    Bootstrapper.Container.Options.EnableAutoVerification = false;
+    #endif
 
         EnsureStartup ensureStartup = Bootstrapper.Container.GetInstance<EnsureStartup>();
         await ensureStartup.EnsureFilesAsync()
-
                            .ConfigureAwait(true);
 
         UseRepositoryMonitor(Bootstrapper.Container);
 
-        _moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
-        _hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
+        _moduleService     = Bootstrapper.Container.GetInstance<ModuleService>();
+        _hotKeyService     = Bootstrapper.Container.GetInstance<HotKeyService>();
         _windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
 
         _hotKeyService.Register();
@@ -142,7 +146,7 @@ public partial class App : Application
         catch (Exception exception)
         {
             logger.LogError(exception,
-                "Could not start all modules.");
+                            "Could not start all modules.");
         }
     }
 
@@ -151,8 +155,8 @@ public partial class App : Application
         _windowSizeService?.Unregister();
 
         _moduleService?.StopAsync()
-                      .GetAwaiter()
-                      .GetResult();
+                       .GetAwaiter()
+                       .GetResult();
 
         _hotKeyService?.Unregister();
 
@@ -167,14 +171,14 @@ public partial class App : Application
     {
         const string FILENAME = "appsettings.serilog.json";
         var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.AppDataPath,
-            FILENAME);
+                                        FILENAME);
 
         IConfigurationBuilder builder = new ConfigurationBuilder()
-                                        .SetBasePath(Directory.GetCurrentDirectory())
-                                        .AddJsonFile(fullFilename,
-                                            optional: true,
-                                            reloadOnChange: false)
-                                        .AddEnvironmentVariables();
+                                       .SetBasePath(Directory.GetCurrentDirectory())
+                                       .AddJsonFile(fullFilename,
+                                                    true,
+                                                    false)
+                                       .AddEnvironmentVariables();
         return builder.Build();
     }
 
@@ -183,11 +187,11 @@ public partial class App : Application
         ILoggerFactory loggerFactory = new LoggerFactory();
 
         LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
-                                                  .Enrich.WithThreadId()
-                                                  .Enrich.WithThreadName()
-                                                  .Enrich.WithProperty("ThreadName",
-                                                      "BG")
-                                                  .ReadFrom.Configuration(config);
+                                                 .Enrich.WithThreadId()
+                                                 .Enrich.WithThreadName()
+                                                 .Enrich.WithProperty("ThreadName",
+                                                                      "BG")
+                                                 .ReadFrom.Configuration(config);
 
         Logger logger = loggerConfiguration.CreateLogger();
 
@@ -207,8 +211,8 @@ public partial class App : Application
         try
         {
             _mutex = new Mutex(true,
-                "Local\\github.com/coenm/RepoM",
-                out var createdNew);
+                               "Local\\github.com/coenm/RepoM",
+                               out var createdNew);
 
             if (createdNew)
             {
@@ -245,5 +249,5 @@ public partial class App : Application
             // ignore
         }
     }
-
 }
+
