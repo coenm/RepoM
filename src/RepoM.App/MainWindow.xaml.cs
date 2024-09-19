@@ -66,15 +66,17 @@ public partial class MainWindow : FluentWindow
     }
 
 #pragma warning disable IDE1006
+
     // ReSharper disable once InconsistentNaming
     private static readonly ImmutableDictionary<Key, IndexNavigator> ListBoxRepos_NavigationKeys = new Dictionary<Key, IndexNavigator>
-    {
-        { Key.Up, IndexNavigator.GoToPrevious },
-        { Key.Down, IndexNavigator.GoToNext },
-        { Key.PageUp, IndexNavigator.GoToFirst },
-        { Key.PageDown, IndexNavigator.GoToLast },
-        { Key.Space, IndexNavigator.GoToNext },
-    }.ToImmutableDictionary();
+        {
+            { Key.Up, IndexNavigator.GoToPrevious },
+            { Key.Down, IndexNavigator.GoToNext },
+            { Key.PageUp, IndexNavigator.GoToFirst },
+            { Key.PageDown, IndexNavigator.GoToLast },
+            { Key.Space, IndexNavigator.GoToNext },
+        }.ToImmutableDictionary();
+
 #pragma warning restore IDE1006
 
     public MainWindow(
@@ -151,7 +153,6 @@ public partial class MainWindow : FluentWindow
         ApplicationThemeManager.Changed += OnAppThemeChange;
 
         PlaceFormByTaskBarLocation();
-
     }
 
     private void OnAppThemeChange(ApplicationTheme currentapplicationtheme, Color systemaccent)
@@ -167,18 +168,18 @@ public partial class MainWindow : FluentWindow
         PlaceFormByTaskBarLocation();
     }
 
-    void OnLoaded(object sender, RoutedEventArgs args)
+    private void OnLoaded(object sender, RoutedEventArgs args)
     {
         // TODO: move some things here from the constructor
     }
 
     private void View_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        // use the list's items source directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
+        // use the list's items source directly, this one is not filtered (otherwise searching in
+        // the UI without matches could lead to the "no repositories yet"-screen)
         var hasRepositories = ListBoxRepos.ItemsSource.OfType<RepositoryViewModel>().Any();
         TbNoRepositories.SetCurrentValue(VisibilityProperty, hasRepositories ? Visibility.Collapsed : Visibility.Visible);
     }
-
 
     /// <remarks>
     ///     Window fires the Closing event before it closes. If the
@@ -186,7 +187,7 @@ public partial class MainWindow : FluentWindow
     ///     Otherwise, the window is closed and the Closed event is
     ///     fired.
     ///
-    ///     Callers must have UIPermission(UIPermissionWindow.AllWindows) to call this API.
+    /// Callers must have UIPermission(UIPermissionWindow.AllWindows) to call this API.
     /// </remarks>
     protected override void OnClosing(CancelEventArgs e)
     {
@@ -200,7 +201,7 @@ public partial class MainWindow : FluentWindow
     /// <remarks>
     ///     Calling Show() on window is the same as setting the
     ///     Visibility property to Visibility.Visible.
-    /// 
+    ///
     ///     Calling Activate() calls SetForegroundWindow on the hWnd,
     ///     thus the rules for SetForegroundWindow apply to this method.
     ///     Activate() returns bool, indicating whether the window was activated or not
@@ -296,7 +297,6 @@ public partial class MainWindow : FluentWindow
                     IsEnabled = true,
                 });
 
-
             await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(true))
             {
                 switch (action)
@@ -360,7 +360,6 @@ public partial class MainWindow : FluentWindow
             return false;
         }
     }
-
 
     private async Task InvokeActionOnCurrentRepositoryAsync()
     {
@@ -484,7 +483,6 @@ public partial class MainWindow : FluentWindow
         SetCurrentValue(LeftProperty, SystemParameters.WorkArea.BottomRight.X - ActualWidth - 10);
     }
 
-
     private void ShowUpdateIfAvailable()
     {
         var updateHint = _translationService.Translate("Update hint", App.AvailableUpdate ?? "?.?");
@@ -595,24 +593,24 @@ public partial class MainWindow : FluentWindow
         }
 
         Action<object, object> clickAction = (clickSender, clickArgs) =>
-        {
-            if (repositoryAction.RepositoryCommand is null or NullRepositoryCommand)
             {
-                return;
-            }
+                if (repositoryAction.RepositoryCommand is null or NullRepositoryCommand)
+                {
+                    return;
+                }
 
-            // run actions in the UI async to not block it
-            if (repositoryAction.ExecutionCausesSynchronizing)
-            {
-                Task.Run(() => SetVmSynchronizing(affectedViews, true))
-                    .ContinueWith(t => _executor.Execute(action.Repository, action.RepositoryCommand))
-                    .ContinueWith(t => SetVmSynchronizing(affectedViews, false));
-            }
-            else
-            {
-                Task.Run(() => _executor.Execute(action.Repository, action.RepositoryCommand));
-            }
-        };
+                // run actions in the UI async to not block it
+                if (repositoryAction.ExecutionCausesSynchronizing)
+                {
+                    Task.Run(() => SetVmSynchronizing(affectedViews, true))
+                        .ContinueWith(t => _executor.Execute(action.Repository, action.RepositoryCommand))
+                        .ContinueWith(t => SetVmSynchronizing(affectedViews, false));
+                }
+                else
+                {
+                    Task.Run(() => _executor.Execute(action.Repository, action.RepositoryCommand));
+                }
+            };
 
         var item = new MenuItem
         {
@@ -784,7 +782,6 @@ public partial class MainWindow : FluentWindow
         }
     }
 
-
     public bool IsShown
     {
         get
@@ -898,7 +895,6 @@ public partial class MainWindow : FluentWindow
         {
             item?.Focus();
         }
-
     }
 
     private void SearchBar_TextBox_OnKeyDown(object sender, KeyEventArgs e)
@@ -922,7 +918,7 @@ public partial class MainWindow : FluentWindow
 
     private async void ListBoxRepos_KeyDown(object? sender, KeyEventArgs e)
     {
-        if (null == sender || ListBoxRepos.Items.IsEmpty || (ListBoxRepos.SelectedIndex < 0) )
+        if (null == sender || ListBoxRepos.Items.IsEmpty || (ListBoxRepos.SelectedIndex < 0))
         {
             e.Handled = true;
             return;
@@ -983,15 +979,19 @@ public partial class MainWindow : FluentWindow
             case Key.F1:
                 HelpButton_Click(sender, e);
                 break;
+
             case Key.F2:
                 MenuButton_Click(sender, e);
                 break;
+
             case Key.F3:
                 ScanButton_Click(sender, e);
                 break;
+
             case Key.F4:
                 ClearButton_Click(sender, e);
                 break;
+
             case Key.F12:
                 // keep window open on deactivate to make screenshots, for example
                 _keepMainWindowOpenWhenLosingFocus = !_keepMainWindowOpenWhenLosingFocus;
@@ -1013,7 +1013,6 @@ public partial class MainWindow : FluentWindow
             ListBoxRepos.UnselectAll();
             SearchBar_TextBox.Focus();
         }
-
     }
 
     /// <summary>
@@ -1048,7 +1047,6 @@ public partial class MainWindow : FluentWindow
          * Visibility property to Visibility.Hidden
          */
         Hide();
-
     }
 
     /// <summary>
@@ -1062,8 +1060,8 @@ public partial class MainWindow : FluentWindow
     /// <summary>
     ///     This even fires after the window source is created before it is shown.
     /// </summary>
-    /// <remarks>
-    ///     It enables connection to the Win32 API.
+    /// <remarks> It enables connection to the Win32 API. </remarks>
+    /// <param name="e"> </param>
     /// </remarks>
     /// <param name="e"></param>
     private void MainWindow_OnSourceInitialized(object? sender, EventArgs e)
