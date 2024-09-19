@@ -39,8 +39,8 @@ internal class WindowSizeService: IDisposable
 
         if (_appSettings.TryGetMenuSize(_currentResolution, out MenuSize? size))
         {
-            _mainWindow.Width  = size.Value.MenuWidth;
-            _mainWindow.Height = size.Value.MenuHeight;
+            _mainWindow.SetCurrentValue(FrameworkElement.WidthProperty, size.Value.MenuWidth);
+            _mainWindow.SetCurrentValue(FrameworkElement.HeightProperty, size.Value.MenuHeight);
         }
         else
         {
@@ -95,8 +95,8 @@ internal class WindowSizeService: IDisposable
                 })
             .Subscribe(menuSize =>
                 {
-                    _mainWindow.Width  = menuSize!.MenuWidth;
-                    _mainWindow.Height = menuSize!.MenuHeight;
+                    _mainWindow.SetCurrentValue(FrameworkElement.WidthProperty,  menuSize!.MenuWidth);
+                    _mainWindow.SetCurrentValue(FrameworkElement.HeightProperty, menuSize!.MenuHeight);
                 });
 
         _registrationWindowSizeChanged = Observable
@@ -109,7 +109,7 @@ internal class WindowSizeService: IDisposable
                 {
 
                     _appSettings.UpdateMenuSize(
-                        _currentResolution,  // Yes, This possibliy can go wrong
+                        _currentResolution,  // Yes, This possibility can go wrong
                         new MenuSize
                         {
                             MenuHeight = sizeChangedEvent.EventArgs.NewSize.Height,

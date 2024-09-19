@@ -150,7 +150,6 @@ public partial class MainWindow : FluentWindow
         //ApplicationThemeManager.Apply(ApplicationTheme.Light);
 
         ApplicationThemeManager.Changed += OnAppThemeChange;
-        Loaded += OnLoaded;
 
         PlaceFormByTaskBarLocation();
     }
@@ -161,17 +160,12 @@ public partial class MainWindow : FluentWindow
         //throw new NotImplementedException();
     }
 
-    private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+    private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        // TODO: CONSIDER REMOVING THIS
-        // TODO: IMPLEMENT FUNCTION TO CHANGE SETTINGS
-        PlaceFormByTaskBarLocation();
+        // TODO: Move tome things here from the constructor
+
     }
 
-    private void OnLoaded(object sender, RoutedEventArgs args)
-    {
-        // TODO: move some things here from the constructor
-    }
 
     private void View_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
@@ -1063,4 +1057,6 @@ public partial class MainWindow : FluentWindow
     {
         // TODO
     }
+
+
 }

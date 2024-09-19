@@ -71,6 +71,7 @@ internal partial class HotKeyService
         _mainWindow.SetCurrentValue(Window.LeftProperty, -9999.0);
         _mainWindow.Show();
         _mainWindow.Hide();
+        // Make sure you run PlaceFormByTaskBarLocation() after the window is hidden again.
     }
 
     private void OnHotKeyPressed()
