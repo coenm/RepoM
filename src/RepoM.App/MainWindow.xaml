@@ -475,7 +475,7 @@
                                         </Border>
 
                                         <StackPanel Orientation="Horizontal">
-                                            <ItemsControl Grid.Column="0" ItemsSource="{Binding Tags}">
+                                            <ItemsControl ItemsSource="{Binding Tags}">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
                                                         <StackPanel Orientation="Horizontal" />
@@ -485,7 +485,7 @@
                                                     <DataTemplate>
 
                                                         <Border
-                                                            Padding="{Binding Pading, ElementName=StatusBorder}"
+                                                            Padding="{Binding Padding, ElementName=StatusBorder}"
                                                             HorizontalAlignment="Left"
                                                             BorderThickness="0"
                                                             CornerRadius="5"

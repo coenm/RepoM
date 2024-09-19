@@ -31,6 +31,7 @@ using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
+using Button = Wpf.Ui.Controls.Button;
 using Control = System.Windows.Controls.Control;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MenuItem = Wpf.Ui.Controls.MenuItem;
@@ -70,8 +71,8 @@ public partial class MainWindow : FluentWindow
     private readonly IRepositoryMatcher          _repositoryMatcher;
     private readonly ITranslationService         _translationService;
     private readonly IUserMenuActionMenuFactory  _userMenuActionFactory;
-    private          bool                        _keepMainWindowOpenWhenLosingFocus;
     private volatile bool                        _refreshDelayed;
+    private          bool                        _keepMainWindowOpenWhenLosingFocus;
     private          DateTime                    _timeOfLastRefresh = DateTime.MinValue;
 
     public MainWindow(IRepositoryInformationAggregator aggregator,
@@ -1058,5 +1059,22 @@ public partial class MainWindow : FluentWindow
         // TODO
     }
 
+    private async void UnpinRepo_Click(object sender, RoutedEventArgs e)
+    {
+        // prevent double clicks from scrollbars and other non-data areas
+        //if (e.OriginalSource is not (Button or TextBlock))
+        //{
+        //    return;
+        //}
+
+        try
+        {
+            // TODO Implement Unpinning CALL
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not invoke action on current repository.");
+        }
+    }
 }
 
