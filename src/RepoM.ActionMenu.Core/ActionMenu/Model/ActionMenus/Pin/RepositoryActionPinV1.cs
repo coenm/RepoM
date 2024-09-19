@@ -9,10 +9,14 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.
 /// Pinning a repository allowed custom filtering, ordering and searching.
 /// </summary>
+/// <example>
+/// <snippet name='pin-repository@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionPinV1 : IMenuAction, IContext, IName
 {
     public const string TYPE_VALUE = "pin-repository@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
 
     public string Type
     {

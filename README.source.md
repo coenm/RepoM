@@ -58,7 +58,7 @@ See the [Search](docs/search.md) for more information.
 
 The order of the repositories shown in RepoM is customizable. The default is alphabetical on the repository name. Read more about ordering [here](docs_old/Ordering.md).
 
-The repositories shown in RepoM are filtered using the search box in RepoM. But the default set can also be configured using different presets. [This page](docs_old/Filtering.md) describes how to create custom filter presets.
+The repositories shown in RepoM are filtered using the search box in RepoM. But the default set can also be configured using different presets.
 
 ## Global configuration
 

@@ -9,10 +9,14 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// Action to ignore the current repository. This repository will be added to the list of ignored repositories and will never show in RepoM.
 /// To undo this action, clear all ignored repositories or manually edit the ignored repositories file (when RepoM is not running).
 /// </summary>
+/// <example>
+/// <snippet name='ignore-repository@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionIgnoreV1 : IMenuAction, IContext, IName
 {
     public const string TYPE_VALUE = "ignore-repository@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
 
     public string Type
     {

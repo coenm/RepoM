@@ -1,27 +1,25 @@
 ﻿[
   {
-    Name: Browse to remote origin,
+    Name: Pin repository,
     RepositoryCommand: {
-      Url: https://www.github.com/coenm/RepoM/
+      Type: Toggle
     },
     Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true
   },
   {
-    Name: Browse to remote fork1,
+    Name: Unpin repository,
     RepositoryCommand: {
-      Url: https://www.github.com/coenm/RepoM-Fork1/
+      Type: UnPin
     },
     Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true
   },
   {
-    Name: Browse to remote fork2,
-    RepositoryCommand: {
-      Url: https://www.github.com/coenm/RepoM-Fork2/
-    },
+    Name: Make repository favorite,
+    RepositoryCommand: {},
     Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,
     CanExecute: true

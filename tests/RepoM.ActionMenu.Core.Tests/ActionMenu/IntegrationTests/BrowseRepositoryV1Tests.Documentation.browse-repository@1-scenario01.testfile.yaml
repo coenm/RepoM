@@ -1,0 +1,12 @@
+context:
+
+# begin-snippet: browse-repository@1-scenario01
+
+action-menu:
+- type: browse-repository@1
+
+- type: browse-repository@1
+  name: Browse remotes of this repo!
+  active: true
+
+# end-snippet

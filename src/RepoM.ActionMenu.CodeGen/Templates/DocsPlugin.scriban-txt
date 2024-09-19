@@ -50,6 +50,10 @@ This module contains the following methods, variables and/or constants:
 {{~ else ~}}
 The following actions are part of the core of RepoM and can always be used in your RepositoryActions.
 {{~ end ~}}
+
+  {{~ for actionmenu_item in plugin.ActionMenus ~}}
+- [`{{ actionmenu_item.Name }}`](#{{ actionmenu_item.Name }})
+  {{~ end ~}}
   {{~ for actionmenu_item in plugin.ActionMenus }}
     {{~ include 'actionmenu.scriban-txt' ~}}
   {{~ end ~}}

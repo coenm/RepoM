@@ -12,6 +12,7 @@ using VerifyXunit;
 using Xunit;
 using Xunit.Categories;
 using RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.ForEach;
+using FluentAssertions;
 
 public class ForEachV1Tests: IntegrationActionTestBase
 {
@@ -48,6 +49,8 @@ public class ForEachV1Tests: IntegrationActionTestBase
         IEnumerable<UserInterfaceRepositoryActionBase> result = await CreateMenuAsync();
 
         // assert
+        yaml.Should().Contain($"# begin-snippet: {name}");
+        yaml.Should().Contain($"# end-snippet");
         await Verifier.Verify(result, VerifySettings).UseParameters(name);
     }
 }

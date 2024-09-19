@@ -10,6 +10,8 @@ This plugin has no configuration.
 
 This module contains the following methods, variables and/or constants:
 
+- [`clipboard-copy@1`](#clipboard-copy@1)
+
 ## clipboard-copy@1
 
 This action makes it possible to copy text to the clipboard.

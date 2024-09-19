@@ -1,11 +1,11 @@
 context:
 
-# begin-snippet: url@1-scenario01
+# begin-snippet: folder@1-scenario01
 
 action-menu:
 
 - type: folder@1
-  name: Urls
+  name: My folder
   active: true
   actions:
   - type: url@1

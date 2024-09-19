@@ -13,17 +13,13 @@ action-menu:
   url: 'https://github.com/coenm/RepoM/wiki'
   active: 'repository.path | string.contains RepoM'
 
-- type: folder@1
-  name: Link to all remotes of repo
-  active: array.size(repository.remotes) >= 1
+- type: foreach@1
+  enumerable: repository.remotes
+  variable: remote
   actions:
-  - type: foreach@1
-    enumerable: repository.remotes
-    variable: remote
-    actions:
-    - type: url@1
-      name: 'Browse to remote {{ remote.key}}'
-      url: '{{ remote.url }}'
-      active: remote.url | string.starts_with 'https'
+  - type: url@1
+    name: 'Browse to remote {{ remote.key}}'
+    url: '{{ remote.url }}'
+    active: remote.url | string.starts_with 'https'
 
 # end-snippet

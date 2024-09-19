@@ -1,6 +1,6 @@
 ﻿[
   {
-    Name: Urls,
+    Name: My folder,
     RepositoryCommand: {},
     Repository: {Scrubbed},
     ExecutionCausesSynchronizing: false,

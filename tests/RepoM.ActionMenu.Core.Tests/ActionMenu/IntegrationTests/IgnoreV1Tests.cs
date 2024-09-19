@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EasyTestFileXunit;
 using FluentAssertions;
-using RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.Git.Fetch;
+using RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.Ignore;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.UserInterface;
 using VerifyXunit;
 using Xunit;
 using Xunit.Categories;
 
-public class GitFetchV1Tests : IntegrationActionTestBase
+public class IgnoreV1Tests : IntegrationActionTestBase
 {
     [Theory]
-    [InlineData(RepositoryActionGitFetchV1.EXAMPLE_1)]
+    [InlineData(RepositoryActionIgnoreV1.EXAMPLE_1)]
     [Documentation]
     public async Task Documentation(string name)
     {

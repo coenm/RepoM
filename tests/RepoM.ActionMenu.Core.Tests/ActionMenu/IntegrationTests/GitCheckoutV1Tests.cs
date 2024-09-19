@@ -3,6 +3,7 @@ namespace RepoM.ActionMenu.Core.Tests.ActionMenu.IntegrationTests;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EasyTestFileXunit;
+using FluentAssertions;
 using RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.Git.Checkout;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.UserInterface;
@@ -26,6 +27,8 @@ public class GitCheckoutV1Tests : IntegrationActionTestBase
         IEnumerable<UserInterfaceRepositoryActionBase> result = await CreateMenuAsync();
 
         // assert
+        yaml.Should().Contain($"# begin-snippet: {name}");
+        yaml.Should().Contain($"# end-snippet");
         await Verifier.Verify(result, VerifySettings).UseParameters(name);
     }
 }

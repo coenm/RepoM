@@ -2,6 +2,21 @@
 
 The following actions are part of the core of RepoM and can always be used in your RepositoryActions.
 
+- [`browse-repository@1`](#browse-repository@1)
+- [`command@1`](#command@1)
+- [`executable@1`](#executable@1)
+- [`folder@1`](#folder@1)
+- [`foreach@1`](#foreach@1)
+- [`git-checkout@1`](#git-checkout@1)
+- [`git-fetch@1`](#git-fetch@1)
+- [`git-pull@1`](#git-pull@1)
+- [`git-push@1`](#git-push@1)
+- [`ignore-repository@1`](#ignore-repository@1)
+- [`just-text@1`](#just-text@1)
+- [`pin-repository@1`](#pin-repository@1)
+- [`separator@1`](#separator@1)
+- [`url@1`](#url@1)
+
 ## browse-repository@1
 
 Action to open the default webbrowser and go to the origin remote webinterface. When multiple remotes are available a sub menu is created for each remote.
@@ -11,6 +26,11 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `first-only`: Single menu for the first remote. ([Predicate](repository_action_types.md#predicate))
+
+### Example
+
+snippet: browse-repository@1-scenario01
+
 
 ## command@1
 
@@ -39,6 +59,11 @@ Properties:
 - `executable`: The executable. ([Text](repository_action_types.md#text))
 - `arguments`: Arguments for the executable. ([Text](repository_action_types.md#text))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+
+### Example
+
+snippet: executable@1-scenario01
+
 
 ## folder@1
 
@@ -144,6 +169,11 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 
+### Example
+
+snippet: ignore-repository@1-scenario01
+
+
 ## just-text@1
 
 Textual action to display some text in the action menu.
@@ -171,6 +201,11 @@ Properties:
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 - `mode`: The pin mode `[Toggle, Pin, UnPin]`. (Nullable, optional)
+
+### Example
+
+snippet: pin-repository@1-scenario01
+
 
 ## separator@1
 

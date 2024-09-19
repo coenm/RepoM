@@ -1,0 +1,20 @@
+context:
+
+# begin-snippet: pin-repository@1-scenario01
+
+action-menu:
+- type: pin-repository@1
+  name: '{{ if repository.pinned }}Unpin{{ else }}Pin{{ end }} repository'
+  mode: toggle
+
+- type: pin-repository@1
+  name: Unpin repository
+  mode: unpin
+  active: repository.pinned
+
+- type: pin-repository@1
+  name: Make repository favorite
+  mode: pin
+  active: '!repository.pinned'
+
+# end-snippet
