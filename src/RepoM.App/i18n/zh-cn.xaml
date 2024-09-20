@@ -1,8 +1,8 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:String x:Key="Search">搜索</system:String>
-    <system:String x:Key="SearchWin">🔍 搜索</system:String>
+    <system:String x:Key="SearchWin">搜索</system:String>
     <system:String x:Key="EmptyHint" xml:space="preserve">还没有任何仓库记录😐
 		
 在计算机上的任何仓库中切换分支以使其显示在此处。
@@ -10,8 +10,8 @@
 或者，您可以手动扫描计算机中的仓库（右上角菜单）。</system:String>
     <system:String x:Key="Help">帮助</system:String>
     <system:String x:Key="Donate">捐赠</system:String>
-    <system:String x:Key="Follow">关注 @Waescher</system:String>
     <system:String x:Key="Star">在 GitHub 上 为RepoM 点赞</system:String>
+    <system:String x:Key="About">About</system:String>
     <system:String x:Key="PingBack">反馈 ♥︎</system:String>
     <system:String x:Key="Aggressive">积极</system:String>
     <system:String x:Key="Adequate">适中</system:String>

@@ -143,7 +143,7 @@ public class WindowSizeServiceTests : IDisposable
 
     }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         try
         {

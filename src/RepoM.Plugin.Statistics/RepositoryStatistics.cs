@@ -39,6 +39,7 @@ internal class RepositoryStatistics : IReadOnlyRepositoryStatistics
 
     int IReadOnlyRepositoryStatistics.GetRecordingCountFrom(DateTime from)
     {
+        // TODO consant errors from here.
         return Recordings.Count(recordingDate => recordingDate >= from);
     }
 

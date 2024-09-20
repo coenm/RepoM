@@ -6,7 +6,7 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("RepoM")]
-[assembly: AssemblyDescription("Git repository information aggregator with Windows Explorer- & CLI-enhancements")]
+[assembly: AssemblyDescription("Git repository information aggregator with Windows Explorer enhancements")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("RepoM")]

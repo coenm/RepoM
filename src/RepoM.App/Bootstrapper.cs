@@ -1,22 +1,32 @@
 namespace RepoM.App;
 
+using System;
+using System.IO.Abstractions;
+using System.Runtime.Caching;
+using System.Threading.Tasks;
+using System.Windows;
+using Microsoft.Extensions.Logging;
+using RepoM.Api;
 using RepoM.Api.Common;
+using RepoM.Api.Git;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.Git.ProcessExecution;
-using RepoM.Api.Git;
-using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.Ordering.Az;
 using RepoM.Api.Ordering.Composition;
 using RepoM.Api.Ordering.IsPinned;
 using RepoM.Api.Ordering.Label;
 using RepoM.Api.Ordering.Score;
 using RepoM.Api.Ordering.Sum;
+using RepoM.Api.Plugins;
 using RepoM.Api.RepositoryActions.Decorators;
+using RepoM.App.ActionMenuCore;
 using RepoM.App.i18n;
+using RepoM.App.Plugins;
 using RepoM.App.RepositoryActions;
-using RepoM.App.RepositoryFiltering.QueryMatchers;
 using RepoM.App.RepositoryFiltering;
+using RepoM.App.RepositoryFiltering.QueryMatchers;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
 using RepoM.Core.Plugin.Common;
@@ -24,18 +34,7 @@ using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.Core.Plugin.RepositoryOrdering;
-using System.IO.Abstractions;
-using System;
-using System.Threading.Tasks;
 using SimpleInjector;
-using Microsoft.Extensions.Logging;
-using RepoM.Api.Plugins;
-using RepoM.App.Plugins;
-using RepoM.App.Services.HotKey;
-using RepoM.Api;
-using System.Runtime.Caching;
-using System.Windows;
-using RepoM.App.ActionMenuCore;
 
 internal static class Bootstrapper
 {
@@ -82,22 +81,22 @@ internal static class Bootstrapper
         Container.Collection.Append<IQueryMatcher, TagMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, NameMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, HasUnPushedChangesMatcher>(Lifestyle.Singleton);
-        Container.Collection.Append<IQueryMatcher>(() => new FreeTextMatcher(ignoreCase: true, ignoreCaseTag: true), Lifestyle.Singleton);
+        Container.Collection.Append<IQueryMatcher>(() => new FreeTextMatcher(true, true), Lifestyle.Singleton);
 
         Container.Register<IModuleManager, ModuleManager>(Lifestyle.Singleton);
-        
+
         Container.Register<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
-        Container.RegisterInstance<IFileSystem>(fileSystem);
+        Container.RegisterInstance(fileSystem);
 
         ActionMenu.Core.Bootstrapper.RegisterServices(Container);
-        
+
         Container.RegisterSingleton<IRepositoryComparerFactory, RepositoryComparerCompositionFactory>();
         Container.RegisterSingleton<IRepositoryScoreCalculatorFactory, RepositoryScoreCalculatorFactory>();
 
         CoreBootstrapper.RegisterRepositoryComparerConfigurationsTypes(Container);
         CoreBootstrapper.RegisterRepositoryScorerConfigurationsTypes(Container);
-        
+
         Container.Register<IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>, IsPinnedScorerFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryScoreCalculatorFactory<TagScorerConfigurationV1>, TagScorerFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryComparerFactory<AlphabetComparerConfigurationV1>, AzRepositoryComparerFactory>(Lifestyle.Singleton);
@@ -108,9 +107,9 @@ internal static class Bootstrapper
         Container.RegisterSingleton<ActionExecutor>();
         Container.Register(typeof(ICommandExecutor<>), new[] { typeof(CoreBootstrapper).Assembly, }, Lifestyle.Singleton);
         Container.RegisterDecorator(
-            typeof(ICommandExecutor<>),
-            typeof(LoggerCommandExecutorDecorator<>),
-            Lifestyle.Singleton);
+                                    typeof(ICommandExecutor<>),
+                                    typeof(LoggerCommandExecutorDecorator<>),
+                                    Lifestyle.Singleton);
 
         Container.RegisterSingleton<HotKeyService>();
         Container.RegisterSingleton<WindowSizeService>();
@@ -118,16 +117,15 @@ internal static class Bootstrapper
         Container.RegisterSingleton<EnsureStartup>();
     }
 
-    public static async Task RegisterPlugins(
-        IPluginFinder pluginFinder,
-        IFileSystem fileSystem,
-        ILoggerFactory loggerFactory)
+    public static async Task RegisterPlugins(IPluginFinder  pluginFinder,
+                                             IFileSystem    fileSystem,
+                                             ILoggerFactory loggerFactory)
     {
         Container.Register<ModuleService>(Lifestyle.Singleton);
         Container.RegisterInstance(pluginFinder);
 
         var coreBootstrapper = new CoreBootstrapper(pluginFinder, fileSystem, DefaultAppDataPathProvider.Instance, loggerFactory);
-        var baseDirectory = fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
+        var baseDirectory    = fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
         await coreBootstrapper.LoadAndRegisterPluginsAsync(Container, baseDirectory).ConfigureAwait(false);
     }
 
@@ -135,15 +133,15 @@ internal static class Bootstrapper
     {
         // https://stackoverflow.com/questions/41243485/simple-injector-register-iloggert-by-using-iloggerfactory-createloggert
 
-        Container.RegisterInstance<ILoggerFactory>(loggerFactory);
+        Container.RegisterInstance(loggerFactory);
         Container.RegisterSingleton(typeof(ILogger<>), typeof(Logger<>));
 
         Container.RegisterConditional(
-            typeof(ILogger),
-            c => c.Consumer == null
-                ? typeof(Logger<object>)
-                : typeof(Logger<>).MakeGenericType(c.Consumer.ImplementationType),
-            Lifestyle.Singleton,
-            _ => true);
+                                      typeof(ILogger),
+                                      c => c.Consumer == null
+                                               ? typeof(Logger<object>)
+                                               : typeof(Logger<>).MakeGenericType(c.Consumer.ImplementationType),
+                                      Lifestyle.Singleton,
+                                      _ => true);
     }
 }

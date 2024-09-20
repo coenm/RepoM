@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-// https://stackoverflow.com/questions/5912687/styling-contextmenu-and-contextmenu-items
 // https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/contextmenu-styles-and-templates?view=netframeworkdesktop-4.8
-// https://itecnote.com/tecnote/wpf-how-to-bind-an-observablecollection-of-viewmodels-to-a-menuitem/
+
 public class MenuItemViewModel : INotifyPropertyChanged
 {
     public string Header { get; set; } = string.Empty;

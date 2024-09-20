@@ -1,375 +1,637 @@
-﻿<fw:AcrylicWindow x:Class="RepoM.App.MainWindow"
-          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-          xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
-          mc:Ignorable="d"
-          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-          xmlns:converters="clr-namespace:RepoM.App.Converters"
-          xmlns:controls="clr-namespace:RepoM.App.Controls"
-          xmlns:app="clr-namespace:RepoM.App"
-          xmlns:viewModels="clr-namespace:RepoM.App.ViewModels"
-          TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-          TextElement.FontWeight="Regular"
-          TextElement.FontSize="12"
-          TextOptions.TextFormattingMode="Ideal"
-          TextOptions.TextRenderingMode="Auto"
-          BorderThickness="0"
-          Title="RepoM"
-          Height="540"
-          Width="350"
-          ShowInTaskbar="False"
-          fw:AcrylicWindow.TintColor="#101010"
-          fw:AcrylicWindow.FallbackColor="#303030"
-          fw:AcrylicWindow.TintOpacity="0.7"
-          fw:AcrylicWindow.Enabled="True"
-          d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
-	<Window.Resources>
-		<converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
-	</Window.Resources>
-	<Grid Margin="12" 
-		  Focusable="False">
+<ui:FluentWindow
+    x:Class="RepoM.App.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:RepoM.App.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:git="clr-namespace:RepoM.Api.Git;assembly=RepoM.Api"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModels="clr-namespace:RepoM.App.ViewModels"
+    Title="RepoM"
+    Width="360"
+    Height="800"
+    MinWidth="260"
+    MinHeight="500"
+    d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
+    d:DesignHeight="800"
+    d:DesignWidth="360"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Activated="MainWindow_OnActivated"
+    BorderThickness="0"
+    ContentRendered="MainWindow_OnContentRendered"
+    Deactivated="MainWindow_OnDeactivated"
+    ExtendsContentIntoTitleBar="True"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    KeyDown="MainWindow_OnKeyDown"
+    Loaded="MainWindow_OnLoaded"
+    ResizeMode="CanResize"
+    ShowActivated="True"
+    ShowInTaskbar="False"
+    SizeToContent="Manual"
+    SourceInitialized="MainWindow_OnSourceInitialized"
+    TextBlock.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    TextElement.FontSize="13"
+    TextElement.FontWeight="Regular"
+    TextOptions.TextFormattingMode="Ideal"
+    TextOptions.TextRenderingMode="Auto"
+    Topmost="True"
+    WindowBackdropType="Mica"
+    WindowCornerPreference="Round"
+    mc:Ignorable="d"
+    >
 
-		<materialDesign:Transitioner Name="transitionerMain"
-									 SelectedIndex="0"
-									 Focusable="False">
+    <!--  Icons are available at: https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font  -->
 
-			<Grid>
-				<TextBlock x:Name="tbNoRepositories"
-						   Text="{DynamicResource EmptyHint}"
-						   TextWrapping="Wrap"
-						   FontSize="15"
-						   HorizontalAlignment="Center"
-						   VerticalAlignment="Center"
-						   TextAlignment="Center"
-						   Focusable="False"
-						   Foreground="Gray">
-				</TextBlock>
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
-				<DockPanel x:Name="dockMain"
-						   Focusable="False">
-					<Grid
-						Focusable="False"
-						DockPanel.Dock="Top">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="*" />
-						</Grid.RowDefinitions>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
-						<Grid 
-							HorizontalAlignment="Stretch"
-							Focusable="False" 
-							Grid.Column="0"
-							>
-							<controls:ZTextBox x:Name="txtFilter"
-										   TextChanged="OnTxtFilterTextChanged"
-										   FontSize="17"
-										   VerticalAlignment="Top"
-										   Finish="TxtFilter_Finish">
-							</controls:ZTextBox>
+            <!--  Key bindings  -->
+            <!--  ReSharper disable once InconsistentNaming  -->
+            <RoutedUICommand x:Key="KB_Escape" />
 
-							<TextBlock IsHitTestVisible="False"
-								   Text="{DynamicResource SearchWin}"
-								   VerticalAlignment="Center"
-								   FontSize="15"
-								   HorizontalAlignment="Left"
-								   Focusable="False"
-								   Foreground="Gray">
-								<TextBlock.Style>
-									<Style TargetType="{x:Type TextBlock}">
-										<Setter Property="Visibility"
-											Value="Collapsed" />
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding Text, ElementName=txtFilter}"
-													 Value="">
-												<Setter Property="Visibility"
-													Value="Visible" />
-											</DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</TextBlock.Style>
-							</TextBlock>
 
-						</Grid>
-						<Button 
-							Name="MenuButton" 
-							Click="MenuButton_Click"
-							Content="☰" 
-							HorizontalAlignment="Center"
-							Padding="0"
-							VerticalAlignment="Center" 
-							Width="32" 
-							Cursor="Arrow" 
-							FontSize="17"
-							Background="#00FFF0F0"
-							Margin="10,0,0,0"
-							Grid.Column="1"
-							Foreground="{DynamicResource MaterialDesignBody}"
-							Style="{DynamicResource MaterialDesignFlatButton}">
-							<Button.Resources>
-                                <Style x:Key="DatePickerStyle" TargetType="{x:Type controls:AcrylicMenuItem}">
-                                    <Setter Property="IsChecked" Value="{Binding Selected2}"/>
-                                    <Setter Property="Header" Value="coen"/>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <!--  Command bindings  -->
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource KB_Escape}" Executed="OnKBPress_Escape" />
+    </Window.CommandBindings>
+
+    <!--  Input bindings  -->
+    <Window.InputBindings>
+        <!--  Escape key  -->
+        <KeyBinding Key="Escape" Command="{StaticResource KB_Escape}" />
+        <!--  Cancel key on numpad (0 when NumLock is off)  -->
+        <KeyBinding Key="Cancel" Command="{StaticResource KB_Escape}" />
+        <!--  Clear key on numpad (5 when NumLock is off)  -->
+        <KeyBinding Key="Clear" Command="{StaticResource KB_Escape}" />
+    </Window.InputBindings>
+
+
+    <Grid Margin="14,16,6,6">
+
+        <Grid Name="RepoGrid">
+            <ui:TextBlock
+                x:Name="TbNoRepositories"
+                Margin="4,4,8,14"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Focusable="False"
+                FontFamily="Source Code Pro"
+                FontSize="15"
+                Foreground="{DynamicResource TextControlForeground}"
+                SnapsToDevicePixels="True"
+                Text="{DynamicResource EmptyHint}"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                />
+
+            <DockPanel Focusable="False">
+                <Grid
+                    Margin="0,0,8,14"
+                    DockPanel.Dock="Top"
+                    Focusable="False"
+                    >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+
+                    <Grid
+                        Grid.Column="0"
+                        HorizontalAlignment="Stretch"
+                        Focusable="False"
+                        >
+
+                        <!--  Actual search bar  -->
+                        <!--  ReSharper disable once InconsistentNaming  -->
+                        <ui:TextBox
+                            x:Name="SearchBar_TextBox"
+                            VerticalAlignment="Top"
+                            BorderThickness="1"
+                            Focusable="True"
+                            FontFamily="Source Code Pro"
+                            FontSize="17"
+                            Foreground="{DynamicResource TextControlForeground}"
+                            IconPlacement="Right"
+                            KeyDown="SearchBar_TextBox_OnKeyDown"
+                            SnapsToDevicePixels="True"
+                            TextChanged="OnSearchBar_TextBoxTextChanged"
+                            TextWrapping="Wrap"
+                            >
+                            <ui:TextBox.Icon>
+                                <ui:FontIcon
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xF78B;"
+                                    />
+                            </ui:TextBox.Icon>
+                        </ui:TextBox>
+
+                        <!--  Default text  -->
+                        <ui:TextBlock
+                            Padding="12,0,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Focusable="False"
+                            FontFamily="Source Code Pro"
+                            FontSize="16"
+                            Foreground="{DynamicResource TextControlForeground}"
+                            IsHitTestVisible="False"
+                            SnapsToDevicePixels="True"
+                            Text="{DynamicResource SearchWin}"
+                            TextWrapping="Wrap"
+                            >
+                            <ui:TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBar_TextBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
                                 </Style>
-                            </Button.Resources>
-                            <Button.ContextMenu>
-                                <controls:AcrylicContextMenu x:Name="SettingsMenu" >
-                                    <controls:AcrylicMenuItem Header="{DynamicResource ManageRepos}"  >
-										<controls:AcrylicMenuItem Header="{DynamicResource ScanComputer}" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
-										<controls:AcrylicMenuItem Header="{DynamicResource Clear}" Click="ClearButton_Click"/>
-										<Separator/>
-										<controls:AcrylicMenuItem Header="{DynamicResource CustomizeRepositoryActions}" Click="CustomizeContextMenu_Click" />
-										<Separator/>
-										<controls:AcrylicMenuItem Header="{DynamicResource ResetIgnoreRules}" Click="ResetIgnoreRulesButton_Click" />
-									</controls:AcrylicMenuItem>
+                            </ui:TextBlock.Style>
+                        </ui:TextBlock>
 
-                                    <controls:AcrylicMenuItem Header="Ordering"
-                                                              ItemsSource="{Binding Path=Orderings}"
-                                                              >
-                                        <!-- <controls:AcrylicMenuItem.Template> -->
-                                        <!--     <ControlTemplate TargetType="{x:Type MenuItem}"> -->
-                                        <!--         ~1~ <Separator Style="{DynamicResource {x:Static MenuItem.SeparatorStyleKey}}"/> @1@ -->
-                                        <!--         <controls:AcrylicMenuItem Header="xxxxxxx" -->
-                                        <!--                                    -->
-                                        <!--         /> -->
-                                        <!--     </ControlTemplate> -->
-                                        <!-- </controls:AcrylicMenuItem.Template> -->
-                                        <controls:AcrylicMenuItem.ItemContainerStyle>
+                    </Grid>
+
+
+                    <ui:Button
+                        Name="MenuButton"
+                        Grid.Column="1"
+                        Width="38"
+                        Height="38"
+                        Margin="10,0,0,0"
+                        Padding="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Click="MenuButton_Click"
+                        Cursor="Arrow"
+                        >
+
+                        <ui:FontIcon
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="25"
+                            Foreground="{DynamicResource TextControlForeground}"
+                            Glyph="&#xE713;"
+                            SnapsToDevicePixels="True"
+                            />
+
+                        <Button.ContextMenu>
+                            <ContextMenu x:Name="SettingsMenu" FontSize="17">
+
+                                <ui:MenuItem
+                                    x:Name="ScanMenuItem"
+                                    Click="ScanButton_Click"
+                                    Header="{DynamicResource ScanComputer}"
+                                    >
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE895;"
+                                            />
+                                    </MenuItem.Icon>
+                                </ui:MenuItem>
+
+                                <ui:MenuItem Click="ClearButton_Click" Header="{DynamicResource Clear}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE74D;"
+                                            />
+                                    </MenuItem.Icon>
+                                </ui:MenuItem>
+
+                                <Separator />
+
+                                <ui:MenuItem Header="Ordering" ItemsSource="{Binding Path=Orderings}">
+
+                                    <ui:MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE8CB;"
+                                            />
+                                    </ui:MenuItem.Icon>
+
+                                    <ui:MenuItem.ItemContainerStyle>
+                                        <Style>
+                                            <Setter Property="ui:MenuItem.Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                                                        <!-- <Separator/> -->
+                                                        <ui:MenuItem
+                                                            Header="{Binding Header}"
+                                                            IsCheckable="{Binding IsCheckable}"
+                                                            IsChecked="{Binding IsChecked}"
+                                                            />
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ui:MenuItem.ItemContainerStyle>
+                                </ui:MenuItem>
+
+                                <ui:MenuItem Header="Filters" ItemsSource="{Binding Path=Filters}">
+
+                                    <ui:MenuItem.Icon>
+                                        <ui:FontIcon
+                                            Margin="0,3,0,0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xF168;"
+                                            />
+                                    </ui:MenuItem.Icon>
+
+                                    <ui:MenuItem.ItemContainerStyle>
+                                        <Style>
+                                            <Setter Property="ui:MenuItem.Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                                                        <ui:MenuItem
+                                                            Header="{Binding Header}"
+                                                            IsCheckable="{Binding IsCheckable}"
+                                                            IsChecked="{Binding IsChecked}"
+                                                            />
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ui:MenuItem.ItemContainerStyle>
+                                </ui:MenuItem>
+
+                                <ui:MenuItem Header="Plugins" ItemsSource="{Binding Path=Plugins}">
+                                    <ui:MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE723;"
+                                            />
+                                    </ui:MenuItem.Icon>
+                                    <ui:MenuItem.ItemContainerStyle>
+                                        <Style>
+                                            <Setter Property="ui:MenuItem.Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                                                        <ui:MenuItem
+                                                            Header="{Binding Header}"
+                                                            IsCheckable="{Binding IsCheckable}"
+                                                            IsChecked="{Binding IsChecked}"
+                                                            />
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ui:MenuItem.ItemContainerStyle>
+                                </ui:MenuItem>
+
+                                <!--  ReSharper disable once UnusedMember.Global  -->
+                                <ui:MenuItem x:Name="AutoFetchMenuItem" Header="{DynamicResource AutoFetch}">
+
+                                    <ui:MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE896;"
+                                            />
+                                    </ui:MenuItem.Icon>
+
+                                    <ui:MenuItem
+                                        Header="{DynamicResource Off}"
+                                        IsCheckable="True"
+                                        IsChecked="{Binding AutoFetchOff}"
+                                        />
+                                    <Separator />
+                                    <MenuItem
+                                        Header="{DynamicResource Discretely}"
+                                        IsCheckable="True"
+                                        IsChecked="{Binding AutoFetchDiscretely}"
+                                        />
+                                    <ui:MenuItem
+                                        Header="{DynamicResource Adequate}"
+                                        IsCheckable="True"
+                                        IsChecked="{Binding AutoFetchAdequate}"
+                                        />
+                                    <ui:MenuItem
+                                        Header="{DynamicResource Aggressive}"
+                                        IsCheckable="True"
+                                        IsChecked="{Binding AutoFetchAggressive}"
+                                        />
+                                </ui:MenuItem>
+
+
+                                <Separator />
+
+                                <ui:MenuItem Click="CustomizeContextMenu_Click" Header="{DynamicResource CustomizeRepositoryActions}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xEC45;"
+                                            />
+                                    </MenuItem.Icon>
+                                </ui:MenuItem>
+
+
+                                <ui:MenuItem Click="ResetIgnoreRulesButton_Click" Header="{DynamicResource ResetIgnoreRules}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xEBC4;"
+                                            />
+                                    </MenuItem.Icon>
+                                </ui:MenuItem>
+
+                                <ui:MenuItem Header="{DynamicResource Advanced}">
+
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE814;"
+                                            />
+                                    </MenuItem.Icon>
+
+                                    <ui:MenuItem
+                                        Header="{DynamicResource PruneOnFetch}"
+                                        IsCheckable="True"
+                                        IsChecked="{Binding PruneOnFetch}"
+                                        />
+
+                                    <ui:MenuItem Header="Query Parsers" ItemsSource="{Binding Path=QueryParsers}">
+                                        <ui:MenuItem.ItemContainerStyle>
                                             <Style>
-                                                <Setter Property="controls:AcrylicMenuItem.Template">
+                                                <Setter Property="ui:MenuItem.Template">
                                                     <Setter.Value>
                                                         <ControlTemplate TargetType="{x:Type MenuItem}">
-                                                            <!-- <Separator/> -->
-                                                            <controls:AcrylicMenuItem 
+                                                            <ui:MenuItem
                                                                 Header="{Binding Header}"
                                                                 IsCheckable="{Binding IsCheckable}"
-																IsChecked="{Binding IsChecked}"
-                                                               
+                                                                IsChecked="{Binding IsChecked}"
                                                                 />
                                                         </ControlTemplate>
                                                     </Setter.Value>
                                                 </Setter>
                                             </Style>
-                                                    <!--     ~1~ <Style TargetType="{x:Type MenuItem}"> @1@ -->
-                                        <!--     ~1~   @1@ -->
-                                        <!--     ~1~ </Style> @1@ -->
-                                        </controls:AcrylicMenuItem.ItemContainerStyle>
-                                        <!-- <controls:AcrylicMenuItem.ItemTemplate> -->
-                                        <!--     <DataTemplate> -->
-                                        <!--         ~1~ <controls:AcrylicMenuItem Header="{Binding}" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/> @1@ -->
-                                        <!-- -->
-                                        <!--         ~1~ <controls:AcrylicMenuItem Header="{Binding}" Click="ResetIgnoreRulesButton_Click" /> @1@ -->
-                                        <!--         ~1~ <TextBlock Text="{Binding }"></TextBlock > @1@ -->
-                                        <!--     </DataTemplate> -->
-                                        <!-- </controls:AcrylicMenuItem.ItemTemplate> -->
-
-                                        <!-- <controls:AcrylicMenuItem Header="{DynamicResource ScanComputer}" Click="ScanButton_Click" x:Name=""/> -->
-                                        <!-- <controls:AcrylicMenuItem Header="{DynamicResource Clear}" Click="ClearButton_Click"/> -->
-                                        <!-- <Separator/> -->
-                                        <!-- <controls:AcrylicMenuItem Header="{DynamicResource CustomizeRepositoryActions}" Click="CustomizeContextMenu_Click" /> -->
-                                        <!-- <Separator/> -->
-                                        <!-- <controls:AcrylicMenuItem Header="{DynamicResource ResetIgnoreRules}" Click="ResetIgnoreRulesButton_Click" /> -->
-                                    </controls:AcrylicMenuItem>
-
-                                    <controls:AcrylicMenuItem Header="Filters" ItemsSource="{Binding Path=Filters}" >
-                                        <controls:AcrylicMenuItem.ItemContainerStyle>
-                                            <Style>
-                                                <Setter Property="controls:AcrylicMenuItem.Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="{x:Type MenuItem}">
-                                                            <controls:AcrylicMenuItem 
-                                                                Header="{Binding Header}"
-                                                                IsCheckable="{Binding IsCheckable}"
-																IsChecked="{Binding IsChecked}"/>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </controls:AcrylicMenuItem.ItemContainerStyle>
-                                    </controls:AcrylicMenuItem>
-
-                                    <controls:AcrylicMenuItem Header="Plugins" ItemsSource="{Binding Path=Plugins}" >
-                                        <controls:AcrylicMenuItem.ItemContainerStyle>
-                                            <Style>
-                                                <Setter Property="controls:AcrylicMenuItem.Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="{x:Type MenuItem}">
-                                                            <controls:AcrylicMenuItem 
-                                                                Header="{Binding Header}"
-                                                                IsCheckable="{Binding IsCheckable}"
-                                                                IsChecked="{Binding IsChecked}"/>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </controls:AcrylicMenuItem.ItemContainerStyle>
-                                    </controls:AcrylicMenuItem>
-
-                                    <controls:AcrylicMenuItem Header="{DynamicResource AutoFetch}" x:Name="AutoFetchMenuItem" >
-										<controls:AcrylicMenuItem Header="{DynamicResource Off}" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
-										<Separator/>
-										<MenuItem Header="{DynamicResource Discretely}" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
-										<controls:AcrylicMenuItem Header="{DynamicResource Adequate}" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
-										<controls:AcrylicMenuItem Header="{DynamicResource Aggressive}" IsCheckable="True" IsChecked="{Binding AutoFetchAggressive}"/>
-									</controls:AcrylicMenuItem>
-
-									<controls:AcrylicMenuItem Header="{DynamicResource Advanced}" >
-										<controls:AcrylicMenuItem Header="{DynamicResource PruneOnFetch}" IsCheckable="True" IsChecked="{Binding PruneOnFetch}" />
-                                        
-                                        <controls:AcrylicMenuItem Header="Query Parsers" ItemsSource="{Binding Path=QueryParsers}" >
-                                            <controls:AcrylicMenuItem.ItemContainerStyle>
-                                                <Style>
-                                                    <Setter Property="controls:AcrylicMenuItem.Template">
-                                                        <Setter.Value>
-                                                            <ControlTemplate TargetType="{x:Type MenuItem}">
-                                                                <controls:AcrylicMenuItem 
-                                                                    Header="{Binding Header}"
-                                                                    IsCheckable="{Binding IsCheckable}"
-                                                                    IsChecked="{Binding IsChecked}"
-                                                                />
-                                                            </ControlTemplate>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </Style>
-                                            </controls:AcrylicMenuItem.ItemContainerStyle>
-                                        </controls:AcrylicMenuItem>
+                                        </ui:MenuItem.ItemContainerStyle>
+                                    </ui:MenuItem>
 
 
-                                    </controls:AcrylicMenuItem>
+                                </ui:MenuItem>
 
-									<Separator/>
+                                <Separator />
 
-									<controls:AcrylicMenuItem Header="{DynamicResource PingBack}" Foreground="#FFED8888">
-										<controls:AcrylicMenuItem Header="{DynamicResource Donate}" Click="SponsorButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
-										<Separator/>
-										<controls:AcrylicMenuItem Header="{DynamicResource Follow}" Click="FollowButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
-										<controls:AcrylicMenuItem Header="{DynamicResource Star}" Click="StarButton_Click" Foreground="{DynamicResource MaterialDesignBody}" />
-									</controls:AcrylicMenuItem>
+                                <ui:MenuItem Foreground="{DynamicResource InfoBadgeAttentionSeverityBackgroundBrush}" Header="{DynamicResource About}">
 
-									<Separator/>
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE736;"
+                                            />
+                                    </MenuItem.Icon>
 
-									<controls:AcrylicMenuItem Header="{DynamicResource Help}" Click="HelpButton_Click"/>
+                                    <ui:MenuItem
+                                        Click="StarButton_Click"
+                                        Foreground="{DynamicResource TextControlForeground}"
+                                        Header="{DynamicResource Star}"
+                                        >
+                                        <MenuItem.Icon>
+                                            <ui:FontIcon
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                Glyph="&#xE734;"
+                                                />
+                                        </MenuItem.Icon>
+                                    </ui:MenuItem>
+                                    <Separator />
+                                    <ui:MenuItem
+                                        Click="HelpButton_Click"
+                                        Foreground="{DynamicResource TextControlForeground}"
+                                        Header="{DynamicResource Help}"
+                                        >
+                                        <MenuItem.Icon>
+                                            <ui:FontIcon
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                Glyph="&#xE897;"
+                                                />
+                                        </MenuItem.Icon>
+                                    </ui:MenuItem>
+                                </ui:MenuItem>
 
-								</controls:AcrylicContextMenu>
-							</Button.ContextMenu>
-						</Button>
-						<Button
-							Content="🡱"
-							HorizontalAlignment="Center"
-							Padding="0"
-							VerticalAlignment="Center" 
-							Width="32" 
-							Cursor="Arrow" 
-							FontSize="17"
-							Background="#3000ff00"
-							Margin="10,0,0,0"
-							x:Name="UpdateButton"
-							Visibility="Visible"
-							Grid.Column="2"
-							Foreground="{DynamicResource MaterialDesignBody}"
-							Style="{DynamicResource MaterialDesignFlatButton}"
-							Click="UpdateButton_Click" />
-					</Grid>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </ui:Button>
 
-					<ListBox Name="lstRepositories"
-							 DockPanel.Dock="Top"
-							 HorizontalContentAlignment="Stretch"
-							 MouseDoubleClick="LstRepositories_MouseDoubleClick"
-							 KeyDown="LstRepositories_KeyDown"
-							 ContextMenuOpening="LstRepositories_ContextMenuOpening"
-							 VerticalAlignment="Top"
-							 VerticalContentAlignment="Top"
-							 SelectionMode="Single"
-							 Margin="0,10,0,0"
-							 ScrollViewer.CanContentScroll="False"
-							 >
-						<ListBox.ItemsPanel>
-							<ItemsPanelTemplate>
-								<VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling" />
-							</ItemsPanelTemplate>
-						</ListBox.ItemsPanel>
-						<ListBox.ItemTemplate>
-							<DataTemplate>
-								<StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Margin="8,3,0,3" TextElement.FontSize="14" Text="📌" 
-                                                   Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                        <TextBlock Text="{Binding Name}"
-                                                   ToolTip="{Binding Path}"
-                                                   TextElement.FontSize="17"
-                                                   Foreground="{DynamicResource AccentColorBrush}"
-                                                   Margin="8, 3, 8, 3" />
-                                    </StackPanel>
-									<TextBlock Text="{Binding CurrentBranch}"
-                                               FontSize="13.5"
-                                               Margin="8, 3, 8, 3" 
-                                               Visibility="{Binding Path=IsNotBare, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                               />
-                                    <StackPanel Orientation="Horizontal">
+                    <ui:Button
+                        x:Name="UpdateButton"
+                        Grid.Column="2"
+                        Width="38"
+                        Height="38"
+                        Margin="10,0,0,0"
+                        Padding="0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Click="UpdateButton_Click"
+                        Content="🡱"
+                        Cursor="Arrow"
+                        FontSize="17"
+                        Visibility="Visible"
+                        />
+                </Grid>
 
-                                        <Border Margin="8, 5, 8, 3"
-                                                Padding="6, 2, 6, 2"
-                                                BorderThickness="0"
-                                                Background="#14FFFFFF"
-                                                CornerRadius="5"
-                                                HorizontalAlignment="Left" >
-										    <TextBlock Text="{Binding Status}"
-                                                   FontFamily="Consolas"   
-                                                   FontSize="13.5" >
-											    <TextBlock.ToolTip>
-												    <TextBlock Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToHumanizedLocalDateTimeConverter}}"/>
-											    </TextBlock.ToolTip>
-									    </TextBlock>
-									    </Border>
+                <ListBox
+                    Name="ListBoxRepos"
+                    VerticalAlignment="Top"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Top"
+                    BorderThickness="0"
+                    ContextMenuOpening="ListBoxRepos_ContextMenuOpening"
+                    DockPanel.Dock="Top"
+                    KeyDown="ListBoxRepos_KeyDown"
+                    MouseDoubleClick="ListBoxRepos_MouseDoubleClick"
+                    ScrollViewer.CanContentScroll="False"
+                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    SelectionMode="Single"
+                    SnapsToDevicePixels="True"
+                    VirtualizingPanel.IsVirtualizing="True"
+                    VirtualizingPanel.ScrollUnit="Item"
+                    VirtualizingPanel.VirtualizationMode="Recycling"
+                    >
+
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Empty" />
+                            <Separator />
+                            <MenuItem Header="Empty" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                        <!--  use this place to design how container normally looks like  -->
+                                        <Border
+                                            x:Name="Border"
+                                            Margin="0,4,14,0"
+                                            Padding="18,8,6,8"
+                                            Background="Transparent"
+                                            BorderThickness="1"
+                                            CornerRadius="0"
+                                            SnapsToDevicePixels="True"
+                                            >
+
+                                            <ContentPresenter />
+
+
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource ListBoxItemSelectedForegroundThemeBrush}" />
+                                                <Setter TargetName="Border" Property="Background" Value="DimGray" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="git:RepositoryViewModel">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel
+                                    x:Name="RepoInfoStack"
+                                    Grid.Column="0"
+                                    Orientation="Vertical"
+                                    >
+
+                                    <!--  Repository Name Text Block  -->
+
+                                    <ui:TextBlock
+                                        x:Name="RepositoryName_TextBlock"
+                                        MinWidth="200"
+                                        MinHeight="21"
+                                        MaxWidth="{Binding ActualWidth, ElementName=RepoInfoStack}"
+                                        MaxHeight="64"
+                                        Margin="0"
+                                        FontFamily="Source Code Pro"
+                                        Foreground="CornflowerBlue"
+                                        SnapsToDevicePixels="True"
+                                        Text="{Binding Name}"
+                                        TextElement.FontSize="17"
+                                        TextWrapping="WrapWithOverflow"
+                                        ToolTip="{Binding Path}"
+                                        />
+
+
+
+                                    <!--  Repository Selected(Current) Branch  -->
+                                    <ui:TextBlock
+                                        Margin="0,6,0,0"
+                                        FontFamily="Source Code Pro"
+                                        FontSize="14"
+                                        Foreground="{DynamicResource TextControlForeground}"
+                                        SnapsToDevicePixels="True"
+                                        Text="{Binding CurrentBranch}"
+                                        TextWrapping="Wrap"
+                                        Visibility="{Binding Path=IsNotBare, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        />
+
+                                    <StackPanel Margin="0,3,0,0" Orientation="Horizontal">
+
+                                        <Border
+                                            x:Name="StatusBorder"
+                                            Margin="0,0,12,0"
+                                            Padding="0,2.5,8,3"
+                                            HorizontalAlignment="Left"
+                                            BorderThickness="0"
+                                            CornerRadius="5"
+                                            >
+                                            <ui:TextBlock
+                                                FontFamily="Source Code Pro"
+                                                FontSize="14"
+                                                Foreground="LimeGreen"
+                                                Text="{Binding Status}"
+                                                >
+                                                <ui:TextBlock.ToolTip>
+
+                                                    <ui:TextBlock
+                                                        FontFamily="Source Code Pro"
+                                                        Foreground="{DynamicResource TextControlForeground}"
+                                                        Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToHumanizedLocalDateTimeConverter}}"
+                                                        />
+                                                </ui:TextBlock.ToolTip>
+                                            </ui:TextBlock>
+                                        </Border>
+
                                         <StackPanel Orientation="Horizontal">
-                                            <ItemsControl Grid.Column="0" ItemsSource="{Binding Tags}">
+                                            <ItemsControl ItemsSource="{Binding Tags}">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal"/>
+                                                        <StackPanel Orientation="Horizontal" />
                                                     </ItemsPanelTemplate>
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                       <!-- <Button Content="{Binding Tag}" /> -->
-                                                               <!-- screenshot 1 -->
-                                                       <!-- <Border Margin="8, 5, 8, 3" -->
-                                                       <!--         Padding="6, 2, 6, 2" -->
-                                                       <!--         BorderThickness="0" -->
-                                                       <!--         Background="#FFED8888" -->
-                                                       <!--         CornerRadius="5" -->
-                                                       <!--         HorizontalAlignment="Left" > -->
-                                                       <!--     <TextBlock Text="{Binding Tag}" -->
-                                                       <!--                FontFamily="Consolas"  -->
-                                                       <!--                FontSize="13.5" > -->
-                                                       <!--     </TextBlock> -->
-                                                       <!-- </Border> -->
 
-													   <!-- screenshot 2 -->
-                   <!--                                      <Border Margin="8, 5, 8, 3" -->
-                   <!--                                             Padding="6, 2, 6, 2" -->
-                   <!--                                             BorderThickness="0" -->
-                   <!--                                             Background="#14FFFFFF" -->
-                   <!--                                             CornerRadius="5" -->
-                   <!--                                             HorizontalAlignment="Left" > -->
-                   <!--                                         <TextBlock Text="{Binding Tag}" -->
-                   <!--                                                    FontFamily="Consolas"  -->
-																	  <!-- Foreground="#FFED8888" -->
-                   <!--                                                    FontSize="13.5" > -->
-                   <!--                                         </TextBlock> -->
-                   <!--                                     </Border> -->
-
-                                                            <Border Margin="8, 5, 8, 3"
-                                                                   Padding="6, 2, 6, 2"
-                                                                   BorderThickness="0"
-                                                                   Background="#14FFFFFF"
-                                                                   CornerRadius="5"
-                                                                   HorizontalAlignment="Left" >
-                                                               <TextBlock Text="{Binding Tag}" FontFamily="Consolas" Foreground="#FFED8888" FontSize="13.5" />
-                                                           </Border>
+                                                        <Border
+                                                            Padding="{Binding Padding, ElementName=StatusBorder}"
+                                                            HorizontalAlignment="Left"
+                                                            BorderThickness="0"
+                                                            CornerRadius="5"
+                                                            >
+                                                            <ui:TextBlock
+                                                                FontFamily="Source Code Pro"
+                                                                FontSize="14"
+                                                                Foreground="DarkSalmon"
+                                                                SnapsToDevicePixels="True"
+                                                                Text="{Binding Tag}"
+                                                                TextWrapping="Wrap"
+                                                                />
+                                                        </Border>
 
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -377,35 +639,113 @@
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
-							</DataTemplate>
-						</ListBox.ItemTemplate>
-						<ListBox.ContextMenu>
-							<controls:AcrylicContextMenu x:Name="mnuRepositoryContext" >
-                                <!--<controls:AcrylicContextMenu.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling" />
-                                    </ItemsPanelTemplate>
-                                </controls:AcrylicContextMenu.ItemsPanel>-->
-                            </controls:AcrylicContextMenu>
-						</ListBox.ContextMenu>
-					</ListBox>
-				</DockPanel>
-			</Grid>
-			<ScrollViewer>
-                <StackPanel DataContext="{Binding Help}">
-                    <TextBlock TextWrapping="Wrap"
-                               TextElement.FontWeight="Bold"
-                               TextElement.FontSize="12" 
-                               Text="{Binding Header}"/>
-					<TextBlock TextWrapping="Wrap"
-                               TextElement.FontSize="12" 
-                               Text="{Binding Description}" />
-					<Button Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-							Content="{DynamicResource GotIt}"></Button>
-				</StackPanel>
-			</ScrollViewer>
-		</materialDesign:Transitioner>
 
-	</Grid>
+                                <!--  Repository Pin icon  -->
+                                <ui:Button
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    BorderThickness="0"
+                                    Click="UnpinRepo_Click"
+                                    IsEnabled="{Binding Path=IsPinned}"
+                                    Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    >
+                                    <ui:Button.Template>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <ui:TextBlock
+                                                Margin="8,0,0,0"
+                                                FontFamily="Source Code Pro"
+                                                Foreground="CornflowerBlue"
+                                                SnapsToDevicePixels="True"
+                                                Text="📌"
+                                                TextElement.FontSize="40"
+                                                />
+                                            <!--
+                                                <ui:FontIcon
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                Foreground="CornflowerBlue"
+                                                Glyph="&#xE840;"
+                                                SnapsToDevicePixels="True"
+                                                TextElement.FontSize="40"
+                                                />
+                                            -->
+                                        </ControlTemplate>
+                                    </ui:Button.Template>
+                                </ui:Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Grid>
 
-</fw:AcrylicWindow>
+        <StackPanel
+            Name="HelpStackPanel"
+            Margin="10,20,14,20"
+            DataContext="{Binding Help}"
+            Visibility="Collapsed"
+            >
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ui:TextBlock
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource InfoBadgeAttentionSeverityBackgroundBrush}"
+                    Text="{Binding Header}"
+                    TextElement.FontSize="16"
+                    TextElement.FontWeight="Bold"
+                    TextWrapping="Wrap"
+                    />
+
+
+                <ui:Button
+                    Grid.Column="1"
+                    Width="38"
+                    Height="38"
+                    Margin="10,0,0,0"
+                    Padding="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Click="HelpButton_Click"
+                    Cursor="Arrow"
+                    >
+
+                    <ui:FontIcon
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="26"
+                        Foreground="{DynamicResource TextControlForeground}"
+                        Glyph="&#xE7A7;"
+                        SnapsToDevicePixels="True"
+                        />
+
+                </ui:Button>
+
+            </Grid>
+
+            <ScrollViewer>
+                <ui:TextBlock
+                    Foreground="{DynamicResource TextControlForeground}"
+                    Text="{Binding Description}"
+                    TextElement.FontSize="12"
+                    TextWrapping="Wrap"
+                    />
+            </ScrollViewer>
+        </StackPanel>
+
+    </Grid>
+
+</ui:FluentWindow>

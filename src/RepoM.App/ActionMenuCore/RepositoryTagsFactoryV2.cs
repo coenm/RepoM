@@ -27,8 +27,5 @@ public class RepositoryTagsFactoryV2 : IRepositoryTagsFactory
         _filename = fileSystem.Path.Combine(appDataPathProvider.AppDataPath, "TagsV2.yaml");
     }
 
-    public Task<IEnumerable<string>> GetTagsAsync(Repository repository)
-    {
-        return _newStyleActionMenuFactory.GetTagsAsync(repository, _filename);
-    }
+    public Task<IEnumerable<string>> GetTagsAsync(Repository repository) => _newStyleActionMenuFactory.GetTagsAsync(repository,_filename);
 }

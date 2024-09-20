@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:String x:Key="Search">Suche</system:String>
-    <system:String x:Key="SearchWin">🔍 Suche</system:String>
+    <system:String x:Key="SearchWin">Suche</system:String>
 	<system:String x:Key="EmptyHint" xml:space="preserve">Hier gibt es noch keine Repositories 😐
 
 Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere eine Datei. RepoM wird die Änderung erkennen und das Repository hier aufführen.
@@ -10,8 +10,8 @@ Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere 
 Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories durchsucht werden.</system:String>
 	<system:String x:Key="Help">Hilfe</system:String>
 	<system:String x:Key="Donate">Über GitHub sponsern</system:String>
-	<system:String x:Key="Follow">Twitter-Follower werden: @Waescher</system:String>
-	<system:String x:Key="Star">Einen GitHub-Stern spendieren</system:String>
+    <system:String x:Key="Star">Einen GitHub-Stern spendieren</system:String>
+    <system:String x:Key="About">About</system:String>
 	<system:String x:Key="PingBack">Danke sagen ♥︎</system:String>
 	<system:String x:Key="Aggressive">Aggresiv</system:String>
 	<system:String x:Key="Adequate">Adäquat</system:String>
