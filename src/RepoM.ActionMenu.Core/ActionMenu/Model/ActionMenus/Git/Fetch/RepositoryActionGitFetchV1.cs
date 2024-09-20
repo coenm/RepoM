@@ -20,7 +20,7 @@ internal sealed class RepositoryActionGitFetchV1 : IMenuAction, IName
     }
 
     /// <inheritdoc cref="IName.Name"/>
-    [Text("⏬ Fetch")]
+    [Text("Fetch")]
     public Text Name { get; set; } = null!;
 
     /// <inheritdoc cref="IMenuAction.Active"/>

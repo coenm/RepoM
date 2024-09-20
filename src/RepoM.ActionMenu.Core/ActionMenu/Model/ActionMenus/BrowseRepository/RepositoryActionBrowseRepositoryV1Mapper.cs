@@ -24,14 +24,14 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
         //var menuTitle = await context.RenderStringAsync(action.Name).ConfigureAwait(false);
         //if (string.IsNullOrWhiteSpace(menuTitle))
         //{
-        //    menuTitle = "🔗Github: ";
+        //    menuTitle = "Github: ";
         //}
 
         var forceSingle = await action.FirstOnly.EvaluateAsync(context).ConfigureAwait(false);
 
         if (repository.Remotes.Count == 1 || forceSingle)
         {
-            menuTitle = "🔗 " + try_get_remote_repo_long_name(repository.Remotes[0].Url);
+            menuTitle = TryGet_RemoteRepoLongName(repository.Remotes[0].Url);
             yield return new UserInterfaceRepositoryAction(menuTitle, repository)
             {
                 RepositoryCommand = new BrowseRepositoryCommand(repository.Remotes[0].Url),
@@ -39,7 +39,7 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
         }
         else
         {
-            menuTitle = "🔗 Remote repos";  //🔗
+            menuTitle = "Remote repos"; 
             yield return new DeferredSubActionsUserInterfaceRepositoryAction(
                 menuTitle,
                 repository,
@@ -52,7 +52,7 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
         }
     }
 
-    private static string try_get_remote_repo_long_name(string remoteUrl)
+    private static string TryGet_RemoteRepoLongName(string remoteUrl)
     {
         var splitString = remoteUrl.Trim().Split('/');
         if (splitString.Length < 2)
@@ -69,7 +69,7 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
     {
         return Task.FromResult(repository.Remotes
             .Take(50)
-            .Select(remote => new UserInterfaceRepositoryAction(try_get_remote_repo_long_name(remote.Url), repository)
+            .Select(remote => new UserInterfaceRepositoryAction(TryGet_RemoteRepoLongName(remote.Url), repository)
             {
                 RepositoryCommand = new BrowseRepositoryCommand(remote.Url),
             })

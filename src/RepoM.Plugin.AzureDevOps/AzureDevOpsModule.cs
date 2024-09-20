@@ -7,9 +7,14 @@ using RepoM.Core.Plugin;
 using RepoM.Plugin.AzureDevOps.Internal;
 
 [UsedImplicitly]
-internal class AzureDevOpsModule(IAzureDevOpsPullRequestService service) : IModule
+internal class AzureDevOpsModule : IModule
 {
-    private readonly IAzureDevOpsPullRequestService _service = service ?? throw new ArgumentNullException(nameof(service));
+    private readonly IAzureDevOpsPullRequestService _service;
+
+    public AzureDevOpsModule(IAzureDevOpsPullRequestService service)
+    {
+        _service = service ?? throw new ArgumentNullException(nameof(service));
+    }
 
     public Task StartAsync()
     {

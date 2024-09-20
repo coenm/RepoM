@@ -15,29 +15,37 @@ using RepoM.Core.Plugin.Common;
 using RepoM.Plugin.Statistics.Interface;
 
 [UsedImplicitly]
-internal class StatisticsModule(
-    IStatisticsService service,
-    IStatisticsConfiguration configuration,
-    IClock clock,
-    IAppDataPathProvider pathProvider,
-    IFileSystem fileSystem,
-    ILogger logger)
-    : IModule
+internal class StatisticsModule : IModule
 {
-    private readonly IStatisticsService _service = service ?? throw new ArgumentNullException(nameof(service));
-    private readonly IStatisticsConfiguration _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-    private readonly IClock _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-    private readonly IAppDataPathProvider _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
-    private readonly IFileSystem _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-    private readonly ILogger _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    private string _basePath = string.Empty;
-    private IDisposable? _disposable;
+    private readonly IStatisticsService       _service;
+    private readonly IStatisticsConfiguration _configuration;
+    private readonly IClock                   _clock;
+    private readonly IAppDataPathProvider     _pathProvider;
+    private readonly IFileSystem              _fileSystem;
+    private readonly ILogger                  _logger;
+    private          string                   _basePath = string.Empty;
+    private          IDisposable?             _disposable;
     private readonly JsonSerializerSettings _settings = new()
     {
         Formatting = Formatting.None,
         NullValueHandling = NullValueHandling.Ignore,
         TypeNameHandling = TypeNameHandling.All,
     };
+
+    public StatisticsModule(IStatisticsService       service,
+                            IStatisticsConfiguration configuration,
+                            IClock                   clock,
+                            IAppDataPathProvider     pathProvider,
+                            IFileSystem              fileSystem,
+                            ILogger                  logger)
+    {
+        _service       = service       ?? throw new ArgumentNullException(nameof(service));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _clock         = clock         ?? throw new ArgumentNullException(nameof(clock));
+        _pathProvider  = pathProvider  ?? throw new ArgumentNullException(nameof(pathProvider));
+        _fileSystem    = fileSystem    ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger        = logger        ?? throw new ArgumentNullException(nameof(logger));
+    }
 
     public async Task StartAsync()
     {

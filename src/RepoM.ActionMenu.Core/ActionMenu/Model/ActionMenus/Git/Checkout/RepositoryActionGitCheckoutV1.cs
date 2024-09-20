@@ -20,7 +20,7 @@ internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IName
     }
 
     /// <inheritdoc cref="IName.Name"/>
-    [Text("🗃️ Checkout")]
+    [Text("Checkout")]
     public Text Name { get; set; } = null!;
 
     /// <inheritdoc cref="IMenuAction.Active"/>

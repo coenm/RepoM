@@ -1,5 +1,5 @@
 context: 
-- type   : evaluate-script@1
+- type : evaluate-script@1
   content: |-
     func is_null(input)
       ret input == null
@@ -88,173 +88,173 @@ context:
 
     
 # Specific var files
-- type          : render-variable@1
-  name          : repo_docs_directory
-  value         : 'G:\\My Drive\\RepoDocs\\github.com\\{{ remote_name_origin }}'
-  enabled       : is_github_repository
+- type : render-variable@1
+  name : repo_docs_directory
+  value : 'G:\\My Drive\\RepoDocs\\github.com\\{{ remote_name_origin }}'
+  enabled : is_github_repository
 
 # Env files
-- type          : render-variable@1
-  name          : repo_environment_file_directory
-  value         : '{{ env.REPOZ_CONFIG_PATH }}\{{ remote_name_origin }}'
+- type : render-variable@1
+  name : repo_environment_file_directory
+  value : '{{ env.REPOZ_CONFIG_PATH }}\{{ remote_name_origin }}'
 
-- type          : render-variable@1
-  name          : repo_environment_file
-  value         : '{{ env.REPOZ_CONFIG_PATH }}\{{ remote_name_origin }}\RepoM.env'
+- type : render-variable@1
+  name : repo_environment_file
+  value : '{{ env.REPOZ_CONFIG_PATH }}\{{ remote_name_origin }}\RepoM.env'
 
-- type          : render-variable@1
-  name          : repo_yaml_file
-  value         : 'C:\\WorkCofigs\{{ remote_name_origin }}\RepoMV2.yaml'
+- type : render-variable@1
+  name : repo_yaml_file
+  value : 'C:\\WorkCofigs\{{ remote_name_origin }}\RepoMV2.yaml'
 
 # Runsettings
-- type          : load-file@1
-  filename      : '{{ repo_environment_file }}'
-  enabled       : is_work_repository
+- type : load-file@1
+  filename : '{{ repo_environment_file }}'
+  enabled : is_work_repository
 
-- type          : load-file@1
-  filename      : '{{ env.REPOZ_CONFIG_PATH }}\work.env'
-  enabled       : is_work_repository
+- type : load-file@1
+  filename : '{{ env.REPOZ_CONFIG_PATH }}\work.env'
+  enabled : is_work_repository
 
-- type          : load-file@1
-  filename      : '{{ repo_yaml_file }}'
-  enabled       : is_work_repository
+- type : load-file@1
+  filename : '{{ repo_yaml_file }}'
+  enabled : is_work_repository
 
-action-menu     : 
+action-menu : 
 
-- type          : command@1
-  name          : 📂 Open in Windows File Explorer
-  command       : explorer
-  arguments     : '{{ repository.path }}'
+- type : command@1
+  name : 📂 Open in Windows File Explorer
+  command : explorer
+  arguments : '{{ repository.path }}'
 
 # Open in visual studio when exactly one '.sln' file was found: 
-- type          : command@1
-  name          : 🗃️ Open in Visual Studio
-  command       : '{{ solution_file }}'
-  active        : array.size(solution_files) == 1 && file.dir_exists(dir_visual_studio)
+- type : command@1
+  name : 🗃️ Open in Visual Studio
+  command : '{{ solution_file }}'
+  active : array.size(solution_files) == 1 && file.dir_exists(dir_visual_studio)
 
 # Otherwise,  Visual studio folder with all '.sln' files when multiple sln files were found: 
-- type          : folder@1
-  name          : 🗃️ Open in Visual Studio
-  active        : array.size(solution_files) > 1 && file.dir_exists(dir_visual_studio)
-  actions       : 
-  - type        : foreach@1
-    enumerable  : solution_files
-    variable    : sln
-    actions     : 
-    - type      : command@1
-      name      : '{{ get_filename(sln) }}'
-      command   : '{{ sln }}'
+- type : folder@1
+  name : 🗃️ Open in Visual Studio
+  active : array.size(solution_files) > 1 && file.dir_exists(dir_visual_studio)
+  actions : 
+  - type : foreach@1
+    enumerable : solution_files
+    variable : sln
+    actions : 
+    - type : command@1
+      name : '{{ get_filename(sln) }}'
+      command : '{{ sln }}'
   
-- type          : command@1
-  name          : 📝 Open in Visual Studio Code
-  command       : '{{ exe_vs_code }}'
-  arguments     : '"{{ repository.path }}"'
-  active        : file.file_exists(exe_vs_code)
+- type : command@1
+  name : 📝 Open in Visual Studio Code
+  command : '{{ exe_vs_code }}'
+  arguments : '"{{ repository.path }}"'
+  active : file.file_exists(exe_vs_code)
 
-- type          : executable@1
-  name          : Open in Sourcetree
-  executable    : '{{ exe_sourcetree }}'
-  arguments     : -f "{{ repository.windows_path }}"
-  active        : file.file_exists(exe_sourcetree)
+- type : executable@1
+  name : Open in Sourcetree
+  executable : '{{ exe_sourcetree }}'
+  arguments : -f "{{ repository.windows_path }}"
+  active : file.file_exists(exe_sourcetree)
 
-- type          : executable@1
-  name          : 📊 Open in GitKraken 🦑
-  executable    : '{{ exe_gitkraken }}'
-  arguments     : --path "{{ repository.path }}"
+- type : executable@1
+  name : 📊 Open in GitKraken 🦑
+  executable : '{{ exe_gitkraken }}'
+  arguments : --path "{{ repository.path }}"
 
-- type          : command@1
-  name          : 🧾 Open in Windows Terminal
-  command       : wt
-  arguments     : -d "{{ repository.path }}"
-  active        : file.dir_exists(dir_windows_terminal_Store) || file.dir_exists(dir_windows_terminal_Preview) || file.dir_exists(dir_windows_terminal_Unpackaged)
+- type : command@1
+  name : 🧾 Open in Windows Terminal
+  command : wt
+  arguments : -d "{{ repository.path }}"
+  active : file.dir_exists(dir_windows_terminal_Store) || file.dir_exists(dir_windows_terminal_Preview) || file.dir_exists(dir_windows_terminal_Unpackaged)
 
-- type          : executable@1
-  name          : 🔍 Open in Everything
-  executable    : '{{ exe_everything }}'
-  arguments     : -s """"{{ repository.path }}""" "
-  active        : file.file_exists(exe_everything)
+- type : executable@1
+  name : 🔍 Open in Everything
+  executable : '{{ exe_everything }}'
+  arguments : -s """"{{ repository.path }}""" "
+  active : file.file_exists(exe_everything)
 
-- type          : executable@1
-  name          : Open in TotalCommander
-  executable    : '{{ exe_terminal_commander }}'
-  arguments     : /O /T /L="{{ repository.linux_path }}"
-  active        : file.file_exists(exe_terminal_commander)
+- type : executable@1
+  name : Open in TotalCommander
+  executable : '{{ exe_terminal_commander }}'
+  arguments : /O /T /L="{{ repository.linux_path }}"
+  active : file.file_exists(exe_terminal_commander)
 
-# - type        : executable@1
-# name          : 'Open in Windows PowerShell'
-# executable    : '{{ env.WINDIR }}/System32/WindowsPowerShell/v1.0/powershell.exe'
-# arguments     : -executionpolicy bypass -noexit -command "Set-Location '{{ repository.linux_path }}'"
+# - type : executable@1
+# name : 'Open in Windows PowerShell'
+# executable : '{{ env.WINDIR }}/System32/WindowsPowerShell/v1.0/powershell.exe'
+# arguments : -executionpolicy bypass -noexit -command "Set-Location '{{ repository.linux_path }}'"
 
-# - type        : executable@1
-# name          : 'Open in Windows Command Prompt'
-# executable    : '{{ env.WINDIR }}/System32/cmd.exe'
-# arguments     : /k cd "{{ repository.linux_path }}"
+# - type : executable@1
+# name : 'Open in Windows Command Prompt'
+# executable : '{{ env.WINDIR }}/System32/cmd.exe'
+# arguments : /k cd "{{ repository.linux_path }}"
 
-- type          : separator@1
+- type : separator@1
 
-- type          : just-text@1
-  name          : 'Warning: No remote repos to browse to'
-  active        : array.size(repository.remotes) == 0
+- type : just-text@1
+  name : 'Warning: No remote repos to browse to'
+  active : array.size(repository.remotes) == 0
 
 # single remote, create url menu item
-- type          : url@1
-  name          : '🔗 {{ try_get_remote_origin_long_name() }}'
-  url           : '{{ repository.remotes[0].url }}'
-  active        : array.size(repository.remotes) == 1
+- type : url@1
+  name : '🔗 {{ try_get_remote_origin_long_name() }}'
+  url : '{{ repository.remotes[0].url }}'
+  active : array.size(repository.remotes) == 1
 
 # Multiple remotes, create folder with multiple menu items
-- type          : folder@1
-  name          : 🔗 Remote repos
-  active        : array.size(repository.remotes) > 1
-  actions       : 
-  - type        : foreach@1
-    enumerable  : repository.remotes
-    variable    : remote
-    actions     : 
-    - type      : url@1
-      name      : '{{ try_get_remote_repo_long_name(remote.url) }} [{{ remote.key }}] '
-      url       : '{{ remote.url }}'
+- type : folder@1
+  name : 🔗 Remote repos
+  active : array.size(repository.remotes) > 1
+  actions : 
+  - type : foreach@1
+    enumerable : repository.remotes
+    variable : remote
+    actions : 
+    - type : url@1
+      name : '{{ try_get_remote_repo_long_name(remote.url) }} [{{ remote.key }}] '
+      url : '{{ remote.url }}'
 
-# - type          : browse-repository@1
-- type          : folder@1
-  name          : 📦 Git
-  actions       : 
-  - type        : git-fetch@1
-  - type        : git-pull@1
-  - type        : git-push@1
-  - type        : git-checkout@1
+# - type : browse-repository@1
+- type : folder@1
+  name : 📦 Git
+  actions : 
+  - type : git-fetch@1
+  - type : git-pull@1
+  - type : git-push@1
+  - type : git-checkout@1
 
-- type          : separator@1
+- type : separator@1
   # active: is_work_repository
 
-- type          : pin-repository@1
-  name          : "📌 Pin / Unpin Repo"
-  mode          : toggle
+- type : pin-repository@1
+  name : "📌 Pin / Unpin Repo"
+  mode : toggle
 
-- type          : folder@1
-  name          : ❓ About {{try_get_remote_origin_long_name()}}
-  actions       : 
+- type : folder@1
+  name : ❓ About {{try_get_remote_origin_long_name()}}
+  actions : 
   
-  - type        : clipboard-copy@1
-    name        : 'Current branch is {{ repository.branch }}'
-    text        : '{{ repository.branch }}'
+  - type : clipboard-copy@1
+    name : 'Current branch is {{ repository.branch }}'
+    text : '{{ repository.branch }}'
 
-  - type        : clipboard-copy@1
-    name        : 'Local path is {{ repository.windows_path }}'
-    text        : '{{ repository.windows_path }}'
+  - type : clipboard-copy@1
+    name : 'Local path is {{ repository.windows_path }}'
+    text : '{{ repository.windows_path }}'
 
-  - type        : separator@1
+  - type : separator@1
 
-  - type        : ignore-repository@1
-    name        : ❌ Ignore Repository
+  - type : ignore-repository@1
+    name : ❌ Ignore Repository
     
-  # context     : 
-  # - type      : render-variable@1
-  #   name      : repo_docs_directory
-  #   value     : 'C:\docs\{{ repository.name }}\' 
+  # context : 
+  # - type : render-variable@1
+  #   name : repo_docs_directory
+  #   value : 'C:\docs\{{ repository.name }}\' 
 
-  # - type      : command@1
-  # name        : 'Create Directory {{ repo_docs_directory }}'
-  # command     : cmd
-  # arguments   : /k mkdir "{{ repo_docs_directory }}"
-  # active      : '!file.dir_exists(repo_docs_directory)'
+  # - type : command@1
+  # name : 'Create Directory {{ repo_docs_directory }}'
+  # command : cmd
+  # arguments : /k mkdir "{{ repo_docs_directory }}"
+  # active : '!file.dir_exists(repo_docs_directory)'

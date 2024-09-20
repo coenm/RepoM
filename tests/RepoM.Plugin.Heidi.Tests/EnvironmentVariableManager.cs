@@ -18,16 +18,25 @@ internal static class EnvironmentVariableManager
         return new ReleaseDisposable(are, key, origValue);
     }
 
-    private sealed class ReleaseDisposable(AutoResetEvent are, string key, string? value) : IDisposable
+    private sealed class ReleaseDisposable : IDisposable
     {
-        private readonly object _lock = new();
-        private AutoResetEvent? _are = are;
+        private readonly object          _lock = new();
+        private          AutoResetEvent? _are;
+        private readonly string          _key;
+        private readonly string?         _value;
+
+        public ReleaseDisposable(AutoResetEvent are, string key, string? value)
+        {
+            _key   = key;
+            _value = value;
+            _are   = are;
+        }
 
         public void Dispose()
         {
             lock (_lock)
             {
-                Environment.SetEnvironmentVariable(key, value);
+                Environment.SetEnvironmentVariable(_key, _value);
                 _are?.Set();
                 _are = null;
             }

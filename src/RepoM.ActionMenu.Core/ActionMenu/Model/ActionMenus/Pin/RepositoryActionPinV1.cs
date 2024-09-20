@@ -21,7 +21,7 @@ internal sealed class RepositoryActionPinV1 : IMenuAction, IContext, IName
     }
 
     /// <inheritdoc cref="IName.Name"/>
-    [Text("📌 Pin / Unpin Repo")]
+    [Text("Pin / Unpin Repo")]
     public Text Name { get; set; } = null!;
 
     /// <inheritdoc cref="IMenuAction.Active"/>

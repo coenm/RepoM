@@ -16,15 +16,23 @@ using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using SimpleInjector;
 
-public class CoreBootstrapper(IPluginFinder pluginFinder, IFileSystem fileSystem, IAppDataPathProvider appDataProvider, ILoggerFactory loggerFactory)
+public class CoreBootstrapper
 {
-    private readonly IPluginFinder _pluginFinder = pluginFinder ?? throw new ArgumentNullException(nameof(pluginFinder));
-    private readonly IFileSystem _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-    private readonly IAppDataPathProvider _appDataProvider = appDataProvider ?? throw new ArgumentNullException(nameof(appDataProvider));
-    private readonly ILoggerFactory _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+    private readonly IPluginFinder        _pluginFinder;
+    private readonly IFileSystem          _fileSystem;
+    private readonly IAppDataPathProvider _appDataProvider;
+    private readonly ILoggerFactory       _loggerFactory;
 
     private static readonly Assembly _thisAssembly = typeof(CoreBootstrapper).Assembly;
 
+    public CoreBootstrapper(IPluginFinder pluginFinder, IFileSystem fileSystem, IAppDataPathProvider appDataProvider, ILoggerFactory loggerFactory)
+    {
+        _pluginFinder    = pluginFinder    ?? throw new ArgumentNullException(nameof(pluginFinder));
+        _fileSystem      = fileSystem      ?? throw new ArgumentNullException(nameof(fileSystem));
+        _appDataProvider = appDataProvider ?? throw new ArgumentNullException(nameof(appDataProvider));
+        _loggerFactory   = loggerFactory   ?? throw new ArgumentNullException(nameof(loggerFactory));
+    }
+    
     public static void RegisterRepositoryScorerConfigurationsTypes(Container container)
     {
         foreach (Type type in GetNonAbstractNonGenericInheritedExportedTypesFrom<IRepositoryScorerConfiguration>(_thisAssembly))
