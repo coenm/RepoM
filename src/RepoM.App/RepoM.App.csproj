@@ -35,20 +35,20 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include = "App.ico" />
-    <Resource Include = "Resources\Fonts\SourceCodePro-Black.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-BlackIt.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-Bold.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-BoldIt.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-ExtraLight.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-ExtraLightIt.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-It.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-Light.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-LightIt.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-Medium.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-MediumIt.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-Regular.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-SemiBold.otf"/>
-    <Resource Include = "Resources\Fonts\SourceCodePro-SemiBoldItalic.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-Black.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-BlackIt.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-Bold.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-BoldIt.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-ExtraLight.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-ExtraLightIt.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-It.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-Light.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-LightIt.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-Medium.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-MediumIt.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-Regular.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-SemiBold.otf"/>
+    <Resource Include = "Resources\Fonts\AdobeSourceCodePro\SourceCodePro-SemiBoldIt.otf"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include = "Microsoft.Extensions.Configuration.Binder" Version               = "8.0.2" />
