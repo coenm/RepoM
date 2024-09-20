@@ -1074,7 +1074,7 @@ public partial class MainWindow : FluentWindow
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Could not invoke action on current repository.");
+            //_logger.LogError(exception, "Could not invoke action on current repository.");
         }
     }
 }

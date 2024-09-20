@@ -198,6 +198,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
     {
         Stop();
 
+        // TODO: this is not thread safe. Needs urgent fixing
         foreach (IRepositoryObserver observer in _repositoryObservers.Values)
         {
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract

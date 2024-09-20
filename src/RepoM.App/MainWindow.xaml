@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:RepoM.App.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:git="clr-namespace:RepoM.Api.Git;assembly=RepoM.Api"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:RepoM.App.ViewModels"
@@ -46,10 +47,12 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
             <!--  Key bindings  -->
             <!--  ReSharper disable once InconsistentNaming  -->
             <RoutedUICommand x:Key="KB_Escape" />
+
 
         </ResourceDictionary>
     </Window.Resources>
@@ -88,7 +91,7 @@
                 TextWrapping="Wrap"
                 />
 
-            <DockPanel x:Name="DockMain" Focusable="False">
+            <DockPanel Focusable="False">
                 <Grid
                     Margin="0,0,8,14"
                     DockPanel.Dock="Top"
@@ -108,6 +111,7 @@
                         >
 
                         <!--  Actual search bar  -->
+                        <!--  ReSharper disable once InconsistentNaming  -->
                         <ui:TextBox
                             x:Name="SearchBar_TextBox"
                             VerticalAlignment="Top"
@@ -299,6 +303,7 @@
                                     </ui:MenuItem.ItemContainerStyle>
                                 </ui:MenuItem>
 
+                                <!--  ReSharper disable once UnusedMember.Global  -->
                                 <ui:MenuItem x:Name="AutoFetchMenuItem" Header="{DynamicResource AutoFetch}">
 
                                     <ui:MenuItem.Icon>
@@ -530,7 +535,7 @@
                     </ListBox.ItemContainerStyle>
 
                     <ListBox.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate DataType="git:RepositoryViewModel">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -563,7 +568,7 @@
 
 
 
-                                    <!--  Repostiory Selected(Current) Branch  -->
+                                    <!--  Repository Selected(Current) Branch  -->
                                     <ui:TextBlock
                                         Margin="0,6,0,0"
                                         FontFamily="Source Code Pro"
@@ -644,7 +649,7 @@
                                     VerticalContentAlignment="Center"
                                     BorderThickness="0"
                                     Click="UnpinRepo_Click"
-                                    IsEnabled="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    IsEnabled="{Binding Path=IsPinned}"
                                     Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     >
                                     <ui:Button.Template>
