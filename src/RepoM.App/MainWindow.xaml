@@ -41,6 +41,8 @@
     mc:Ignorable="d"
     >
 
+    <!--  Icons are available at: https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font  -->
+
     <Window.Resources>
         <ResourceDictionary>
             <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
@@ -87,10 +89,11 @@
                 />
 
             <DockPanel x:Name="DockMain" Focusable="False">
-                <Grid DockPanel.Dock="Top" Focusable="False">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+                <Grid
+                    Margin="0,0,8,14"
+                    DockPanel.Dock="Top"
+                    Focusable="False"
+                    >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -100,7 +103,6 @@
 
                     <Grid
                         Grid.Column="0"
-                        Margin="0,0,0,14"
                         HorizontalAlignment="Stretch"
                         Focusable="False"
                         >
@@ -114,12 +116,21 @@
                             FontFamily="Source Code Pro"
                             FontSize="17"
                             Foreground="{DynamicResource TextControlForeground}"
-                            IconPlacement="Left"
+                            IconPlacement="Right"
                             KeyDown="SearchBar_TextBox_OnKeyDown"
                             SnapsToDevicePixels="True"
                             TextChanged="OnSearchBar_TextBoxTextChanged"
                             TextWrapping="Wrap"
-                            />
+                            >
+                            <ui:TextBox.Icon>
+                                <ui:FontIcon
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xF78B;"
+                                    />
+                            </ui:TextBox.Icon>
+                        </ui:TextBox>
 
                         <!--  Default text  -->
                         <ui:TextBlock
@@ -128,7 +139,7 @@
                             VerticalAlignment="Center"
                             Focusable="False"
                             FontFamily="Source Code Pro"
-                            FontSize="15"
+                            FontSize="16"
                             Foreground="{DynamicResource TextControlForeground}"
                             IsHitTestVisible="False"
                             SnapsToDevicePixels="True"
@@ -155,50 +166,66 @@
                         Grid.Column="1"
                         Width="38"
                         Height="38"
-                        Margin="9,1,6,0"
+                        Margin="10,0,0,0"
                         Padding="0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Click="MenuButton_Click"
-                        Content="☰"
                         Cursor="Arrow"
-                        FontFamily="Source Code Pro"
-                        FontSize="20"
                         >
-                        <Button.Resources>
-                            <Style x:Key="DatePickerStyle" TargetType="{x:Type ui:MenuItem}">
-                                <Setter Property="Header" Value="coen" />
-                                <Setter Property="IsChecked" Value="{Binding Selected2}" />
-                            </Style>
 
-                        </Button.Resources>
+                        <ui:FontIcon
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="25"
+                            Foreground="{DynamicResource TextControlForeground}"
+                            Glyph="&#xE713;"
+                            SnapsToDevicePixels="True"
+                            />
 
                         <Button.ContextMenu>
                             <ContextMenu x:Name="SettingsMenu" FontSize="17">
-
 
                                 <ui:MenuItem
                                     x:Name="ScanMenuItem"
                                     Click="ScanButton_Click"
                                     Header="{DynamicResource ScanComputer}"
-                                    Icon="{ui:SymbolIcon DocumentSplitHint20}"
-                                    />
+                                    >
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE895;"
+                                            />
+                                    </MenuItem.Icon>
+                                </ui:MenuItem>
 
-                                <ui:MenuItem
-                                    Click="ClearButton_Click"
-                                    Header="{DynamicResource Clear}"
-                                    Icon="{ui:SymbolIcon DocumentSplitHint20}"
-                                    />
+                                <ui:MenuItem Click="ClearButton_Click" Header="{DynamicResource Clear}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE74D;"
+                                            />
+                                    </MenuItem.Icon>
+                                </ui:MenuItem>
 
                                 <Separator />
-
-                                <ui:MenuItem Click="CustomizeContextMenu_Click" Header="{DynamicResource CustomizeRepositoryActions}" />
-
-                                <Separator />
-
-                                <ui:MenuItem Click="ResetIgnoreRulesButton_Click" Header="{DynamicResource ResetIgnoreRules}" />
 
                                 <ui:MenuItem Header="Ordering" ItemsSource="{Binding Path=Orderings}">
+
+                                    <ui:MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE8CB;"
+                                            />
+                                    </ui:MenuItem.Icon>
+
                                     <ui:MenuItem.ItemContainerStyle>
                                         <Style>
                                             <Setter Property="ui:MenuItem.Template">
@@ -218,6 +245,17 @@
                                 </ui:MenuItem>
 
                                 <ui:MenuItem Header="Filters" ItemsSource="{Binding Path=Filters}">
+
+                                    <ui:MenuItem.Icon>
+                                        <ui:FontIcon
+                                            Margin="0,3,0,0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xF168;"
+                                            />
+                                    </ui:MenuItem.Icon>
+
                                     <ui:MenuItem.ItemContainerStyle>
                                         <Style>
                                             <Setter Property="ui:MenuItem.Template">
@@ -236,6 +274,14 @@
                                 </ui:MenuItem>
 
                                 <ui:MenuItem Header="Plugins" ItemsSource="{Binding Path=Plugins}">
+                                    <ui:MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE723;"
+                                            />
+                                    </ui:MenuItem.Icon>
                                     <ui:MenuItem.ItemContainerStyle>
                                         <Style>
                                             <Setter Property="ui:MenuItem.Template">
@@ -254,6 +300,16 @@
                                 </ui:MenuItem>
 
                                 <ui:MenuItem x:Name="AutoFetchMenuItem" Header="{DynamicResource AutoFetch}">
+
+                                    <ui:MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE896;"
+                                            />
+                                    </ui:MenuItem.Icon>
+
                                     <ui:MenuItem
                                         Header="{DynamicResource Off}"
                                         IsCheckable="True"
@@ -277,7 +333,43 @@
                                         />
                                 </ui:MenuItem>
 
+
+                                <Separator />
+
+                                <ui:MenuItem Click="CustomizeContextMenu_Click" Header="{DynamicResource CustomizeRepositoryActions}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xEC45;"
+                                            />
+                                    </MenuItem.Icon>
+                                </ui:MenuItem>
+
+
+                                <ui:MenuItem Click="ResetIgnoreRulesButton_Click" Header="{DynamicResource ResetIgnoreRules}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xEBC4;"
+                                            />
+                                    </MenuItem.Icon>
+                                </ui:MenuItem>
+
                                 <ui:MenuItem Header="{DynamicResource Advanced}">
+
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE814;"
+                                            />
+                                    </MenuItem.Icon>
+
                                     <ui:MenuItem
                                         Header="{DynamicResource PruneOnFetch}"
                                         IsCheckable="True"
@@ -308,11 +400,46 @@
                                 <Separator />
 
                                 <ui:MenuItem Foreground="{DynamicResource InfoBadgeAttentionSeverityBackgroundBrush}" Header="{DynamicResource About}">
-                                    <ui:MenuItem Click="StarButton_Click" Header="{DynamicResource Star}" />
-                                    <Separator />
-                                    <ui:MenuItem Click="HelpButton_Click" Header="{DynamicResource Help}" />
-                                </ui:MenuItem>
 
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE736;"
+                                            />
+                                    </MenuItem.Icon>
+
+                                    <ui:MenuItem
+                                        Click="StarButton_Click"
+                                        Foreground="{DynamicResource TextControlForeground}"
+                                        Header="{DynamicResource Star}"
+                                        >
+                                        <MenuItem.Icon>
+                                            <ui:FontIcon
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                Glyph="&#xE734;"
+                                                />
+                                        </MenuItem.Icon>
+                                    </ui:MenuItem>
+                                    <Separator />
+                                    <ui:MenuItem
+                                        Click="HelpButton_Click"
+                                        Foreground="{DynamicResource TextControlForeground}"
+                                        Header="{DynamicResource Help}"
+                                        >
+                                        <MenuItem.Icon>
+                                            <ui:FontIcon
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                Glyph="&#xE897;"
+                                                />
+                                        </MenuItem.Icon>
+                                    </ui:MenuItem>
+                                </ui:MenuItem>
 
                             </ContextMenu>
                         </Button.ContextMenu>
@@ -321,7 +448,8 @@
                     <ui:Button
                         x:Name="UpdateButton"
                         Grid.Column="2"
-                        Width="32"
+                        Width="38"
+                        Height="38"
                         Margin="10,0,0,0"
                         Padding="0"
                         HorizontalAlignment="Center"
@@ -405,8 +533,8 @@
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="0.96*" />
-                                    <ColumnDefinition Width="0.04*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel
@@ -510,6 +638,10 @@
                                 <!--  Repository Pin icon  -->
                                 <ui:Button
                                     Grid.Column="1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
                                     BorderThickness="0"
                                     Click="UnpinRepo_Click"
                                     IsEnabled="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -523,8 +655,19 @@
                                                 Foreground="CornflowerBlue"
                                                 SnapsToDevicePixels="True"
                                                 Text="📌"
-                                                TextElement.FontSize="46"
+                                                TextElement.FontSize="40"
                                                 />
+                                            <!--
+                                                <ui:FontIcon
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                Foreground="CornflowerBlue"
+                                                Glyph="&#xE840;"
+                                                SnapsToDevicePixels="True"
+                                                TextElement.FontSize="40"
+                                                />
+                                            -->
                                         </ControlTemplate>
                                     </ui:Button.Template>
                                 </ui:Button>
@@ -535,27 +678,68 @@
             </DockPanel>
         </Grid>
 
-
-
-        <ScrollViewer
-            Name="HelpScrollViewer"
-            Margin="4,4,8,20"
+        <StackPanel
+            Name="HelpStackPanel"
+            Margin="10,20,14,20"
+            DataContext="{Binding Help}"
             Visibility="Collapsed"
             >
-            <StackPanel DataContext="{Binding Help}">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
                 <ui:TextBlock
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource InfoBadgeAttentionSeverityBackgroundBrush}"
                     Text="{Binding Header}"
-                    TextElement.FontSize="12"
+                    TextElement.FontSize="16"
                     TextElement.FontWeight="Bold"
                     TextWrapping="Wrap"
                     />
+
+
+                <ui:Button
+                    Grid.Column="1"
+                    Width="38"
+                    Height="38"
+                    Margin="10,0,0,0"
+                    Padding="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Click="HelpButton_Click"
+                    Cursor="Arrow"
+                    >
+
+                    <ui:FontIcon
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="26"
+                        Foreground="{DynamicResource TextControlForeground}"
+                        Glyph="&#xE7A7;"
+                        SnapsToDevicePixels="True"
+                        />
+
+                </ui:Button>
+
+            </Grid>
+
+            <ScrollViewer>
                 <ui:TextBlock
+                    Foreground="{DynamicResource TextControlForeground}"
                     Text="{Binding Description}"
                     TextElement.FontSize="12"
                     TextWrapping="Wrap"
                     />
-            </StackPanel>
-        </ScrollViewer>
+            </ScrollViewer>
+        </StackPanel>
 
     </Grid>
 

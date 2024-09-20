@@ -15,6 +15,11 @@
 
         <ResourceDictionary>
 
+            <!--      <FontFamily x:Key="SegoeFluentIcons">pack://application:,,,/RepoM;component/Resources/Fonts/#Segoe Fluent Icons</FontFamily> -->
+
+            <!--  https://github.com/adobe-fonts/source-code-pro  -->
+
+
             <ResourceDictionary.MergedDictionaries>
 
                 <ResourceDictionary Source="pack://application:,,,/RepoM;component/Resources/Variables.xaml" />

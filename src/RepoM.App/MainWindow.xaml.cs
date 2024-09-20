@@ -394,15 +394,16 @@ public partial class MainWindow : FluentWindow
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)
     {
+        ListBoxRepos.UnselectAll();
         if (RepoGrid.Visibility == Visibility.Visible)
         {
             RepoGrid.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
-            HelpScrollViewer.SetCurrentValue(VisibilityProperty, Visibility.Visible);
+            HelpStackPanel.SetCurrentValue(VisibilityProperty, Visibility.Visible);
         }
         else
         {
             RepoGrid.SetCurrentValue(VisibilityProperty, Visibility.Visible);
-            HelpScrollViewer.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
+            HelpStackPanel.SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
         }
     }
 
@@ -413,16 +414,20 @@ public partial class MainWindow : FluentWindow
 
     private void ScanButton_Click(object sender, RoutedEventArgs e)
     {
+        ListBoxRepos.UnselectAll();
         _monitor?.ScanForLocalRepositoriesAsync();
     }
 
     private void ClearButton_Click(object sender, RoutedEventArgs e)
     {
+        ListBoxRepos.UnselectAll();
+        SearchBar_TextBox.Clear();
         _monitor?.Reset();
     }
 
     private void ResetIgnoreRulesButton_Click(object sender, RoutedEventArgs e)
     {
+        ListBoxRepos.UnselectAll();
         _repositoryIgnoreStore.Reset();
     }
 
