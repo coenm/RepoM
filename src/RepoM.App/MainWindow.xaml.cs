@@ -141,6 +141,7 @@ public partial class MainWindow : FluentWindow
 
 
         //ApplicationThemeManager.Apply(ApplicationTheme.Light);
+        //ApplicationThemeManager.Apply(ApplicationTheme.HighContrast);
 
         ApplicationThemeManager.Changed += OnAppThemeChange;
 
