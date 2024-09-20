@@ -8,10 +8,14 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Action to open the url in the default browser.
 /// </summary>
+/// <example>
+/// <snippet name='url@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionUrlV1 : IMenuAction, IName, IContext
 {
     public const string TYPE_VALUE = "url@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
 
     public string Type
     {

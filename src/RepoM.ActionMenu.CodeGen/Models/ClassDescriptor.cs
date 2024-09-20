@@ -20,7 +20,7 @@ public class ClassDescriptor : IXmlDocsExtended
     /// <summary>
     /// Properties, Functions, fields etc. etc.
     /// </summary>
-    public List<MemberDescriptor> Members { get; set; } = [];
+    public List<MemberDescriptor> Members { get; } = [];
 
     /// <summary>
     /// Friendly name
@@ -30,6 +30,8 @@ public class ClassDescriptor : IXmlDocsExtended
     public string ClassName { get; set; } = null!;
 
     public string Namespace { get; set; } = null!;
+
+    public string FullName => $"{Namespace}.{ClassName}";
 
     public bool IsEnum => _symbolType == SymbolType.Enum;
 
@@ -57,6 +59,8 @@ public class ClassDescriptor : IXmlDocsExtended
     public ExamplesDescriptor? Examples { get; set; }
 
     List<ParamDescriptor> IXmlDocsExtended.Params => throw new NotSupportedException("no params for class.");
+
+    public Type? DotNetType { get; set; }
 
     public virtual void Accept(IClassDescriptorVisitor visitor)
     {

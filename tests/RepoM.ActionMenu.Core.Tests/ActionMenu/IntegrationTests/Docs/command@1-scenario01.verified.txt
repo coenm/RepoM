@@ -1,0 +1,26 @@
+﻿[
+  {
+    Name: Open in Windows Terminal,
+    RepositoryCommand: {
+      Executable: wt,
+      Arguments: [
+        -d "C:/Repositories/work/RepoM"
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Commit and Push,
+    RepositoryCommand: {
+      Executable: cmd,
+      Arguments: [
+        /k cd "C:\Repositories\work\RepoM" & git add . & git commit -m "my fix" & git push & exit
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using RepoM.ActionMenu.CodeGen.Misc;
@@ -11,7 +12,9 @@ using RepoM.ActionMenu.CodeGen.Models;
 using RepoM.ActionMenu.Interface.Attributes;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
-using Text = RepoM.ActionMenu.Interface.YamlModel.Templating.Text;
+using RepoM.Api.Plugins;
+using RepoM.Core.Plugin;
+using Text = Interface.YamlModel.Templating.Text;
 
 public class ProcessMembersVisitor : IClassDescriptorVisitor
 {
@@ -20,11 +23,11 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
     // todo extend.
     private static readonly string[] _collectionTypes =
-        {
-            "System.Collections.Generic.List<T>",
-            "System.Collections.Generic.IList<T>",
-            "System.Collections.Generic.IEnumerable<T>",
-        };
+    [
+        "System.Collections.Generic.List<T>",
+        "System.Collections.Generic.IList<T>",
+        "System.Collections.Generic.IEnumerable<T>",
+    ];
 
     public ProcessMembersVisitor(ITypeSymbol typeSymbol, IDictionary<string, string> files)
     {
@@ -111,7 +114,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             descriptor.Members.Add(memberDescriptor);
 
-            Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 
@@ -265,6 +268,56 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
         }
     }
 
+    public void Visit(ModuleConfigurationClassDescriptor descriptor)
+    {
+        Visit(descriptor as ClassDescriptor);
+
+        AttributeData? moduleConfigurationAttribute = _typeSymbol.FindAttribute<ModuleConfigurationAttribute>();
+
+        if (moduleConfigurationAttribute == null)
+        {
+            return;
+        }
+
+        var version = (int)moduleConfigurationAttribute.ConstructorArguments[0].Value!;
+
+        ISymbol? defaultFactoryMethodSymbol = _typeSymbol.GetMembers().SingleOrDefault(symbol => symbol.FindAttribute<ModuleConfigurationDefaultValueFactoryMethodAttribute>() != null);
+        if (!(defaultFactoryMethodSymbol is IMethodSymbol methodSymbol))
+        {
+            return;
+        }
+
+        if (descriptor.DotNetType == null)
+        {
+            throw new Exception(descriptor.FullName + "  No type found for ModuleConfigurationDefaultValueFactoryMethodAttribute");
+        }
+
+        var defaultValueResult = descriptor.DotNetType.InvokeMember(
+            methodSymbol.Name,
+            BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic,
+            null,
+            null,
+            null);
+
+        descriptor.DefaultValueJson = FileBasedPackageConfiguration.SerializeConfiguration(defaultValueResult, version);
+
+        // 
+        ISymbol? exampleFactoryMethodSymbol = _typeSymbol.GetMembers().SingleOrDefault(symbol => symbol.FindAttribute<ModuleConfigurationExampleValueFactoryMethodAttribute>() != null);
+        if (!(exampleFactoryMethodSymbol is IMethodSymbol methodSymbolExample))
+        {
+            return;
+        }
+
+        var exampleValueResult = descriptor.DotNetType.InvokeMember(
+            methodSymbolExample.Name,
+            BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic,
+            null,
+            null,
+            null);
+
+        descriptor.ExampleValueJson = FileBasedPackageConfiguration.SerializeConfiguration(exampleValueResult, version);
+    }
+
     public void Visit(ClassDescriptor descriptor)
     {
         if (_typeSymbol is INamedTypeSymbol { TypeKind: TypeKind.Enum, } symbol)
@@ -288,7 +341,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
                         XmlId = member.GetDocumentationCommentId() ?? string.Empty,
                     };
 
-                Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+                XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
                 descriptor.Members.Add(memberDescriptor);
             }
 
@@ -384,7 +437,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
             descriptor.Members.Add(memberDescriptor);
 
-            Misc.XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
+            XmlDocsParser.ExtractDocumentation(member, memberDescriptor, _files);
         }
     }
 }

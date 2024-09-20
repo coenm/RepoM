@@ -1,0 +1,15 @@
+# begin-snippet: executable@1-scenario01
+
+context:
+- type: evaluate-script@1
+  content: |-
+    exe_vs_code = env.LocalAppData + "/Programs/Microsoft VS Code/code.exe";
+
+action-menu:
+
+- type: executable@1
+  name: Open in Visual Studio Code
+  executable: '{{ exe_vs_code }}'
+  arguments: '"{{ repository.linux_path }}"'
+
+# end-snippet

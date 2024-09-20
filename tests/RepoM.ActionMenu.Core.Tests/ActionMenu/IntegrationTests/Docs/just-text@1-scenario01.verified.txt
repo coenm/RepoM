@@ -1,0 +1,23 @@
+﻿[
+  {
+    Name: Static text with conditional active,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Dynamic text 2022-01-20,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Dynamic text with additional context RepoM - Year 2022,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

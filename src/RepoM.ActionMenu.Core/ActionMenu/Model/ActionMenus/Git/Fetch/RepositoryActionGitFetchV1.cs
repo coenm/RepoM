@@ -8,10 +8,14 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Action to execute a `git fetch` command.
 /// </summary>
+/// <example>
+/// <snippet name='git-fetch@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionGitFetchV1 : IMenuAction, IName
 {
     public const string TYPE_VALUE = "git-fetch@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
 
     public string Type
     {

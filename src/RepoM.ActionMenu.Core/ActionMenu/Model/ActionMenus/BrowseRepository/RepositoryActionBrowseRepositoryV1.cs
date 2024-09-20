@@ -8,10 +8,14 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Action to open the default webbrowser and go to the origin remote webinterface. When multiple remotes are available a sub menu is created for each remote.
 /// </summary>
+/// <example>
+/// <snippet name='browse-repository@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionBrowseRepositoryV1 : IMenuAction, IName
 {
     public const string TYPE_VALUE = "browse-repository@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
 
     public string Type
     {

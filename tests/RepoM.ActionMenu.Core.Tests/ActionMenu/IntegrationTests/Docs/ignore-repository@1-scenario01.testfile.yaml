@@ -1,0 +1,12 @@
+context:
+
+# begin-snippet: ignore-repository@1-scenario01
+
+action-menu:
+- type: ignore-repository@1
+
+- type: ignore-repository@1
+  name: Ignore this repo!
+  active: true
+
+# end-snippet

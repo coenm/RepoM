@@ -1,0 +1,16 @@
+﻿[
+  {
+    Name: Browse remote,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Browse remotes of this repo!,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

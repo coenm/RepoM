@@ -1,0 +1,16 @@
+﻿[
+  {
+    Name: Checkout,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Checkout!,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

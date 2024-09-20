@@ -8,10 +8,14 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// This action will create a menu and sub menus with all local and remote branches for an easy checkout.
 /// </summary>
+/// <example>
+/// <snippet name='git-checkout@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionGitCheckoutV1 : IMenuAction, IName
 {
     public const string TYPE_VALUE = "git-checkout@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
 
     public string Type
     {

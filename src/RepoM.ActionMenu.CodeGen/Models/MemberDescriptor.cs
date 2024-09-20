@@ -1,6 +1,7 @@
 namespace RepoM.ActionMenu.CodeGen.Models;
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 
 public static class TypeInfoDescriptorFactory
@@ -8,17 +9,18 @@ public static class TypeInfoDescriptorFactory
     public static TypeInfoDescriptor Create(ITypeSymbol typeSymbol)
     {
         var displayString = typeSymbol.ToDisplayString();
-        if (Program.TypeInfos.TryGetValue(displayString, out TypeInfoDescriptor? typeInfoDescriptor))
+        if (Constants.TypeInfos.TryGetValue(displayString, out TypeInfoDescriptor? typeInfoDescriptor))
         {
             return typeInfoDescriptor;
         }
 
         var result = new TypeInfoDescriptor(typeSymbol);
-        Program.TypeInfos.Add(displayString, result);
+        Constants.TypeInfos.Add(displayString, result);
         return result;
     }
 }
 
+[DebuggerDisplay($"{{{nameof(Name)},nq}}")]
 public class TypeInfoDescriptor
 {
     public TypeInfoDescriptor(ITypeSymbol typeSymbol)
@@ -72,6 +74,7 @@ public class TypeInfoDescriptor
 /// <summary>
 /// Property, Function, field etc. etc.
 /// </summary>
+[DebuggerDisplay($"{{{nameof(CSharpName)},nq}}")]
 public class MemberDescriptor : IXmlDocsExtended
 {
     /// <summary>
@@ -111,6 +114,7 @@ public class MemberDescriptor : IXmlDocsExtended
     public List<ParamDescriptor> Params { get; } = [];
 }
 
+[DebuggerDisplay($"{{{nameof(CSharpName)},nq}}")]
 public class ActionMenuMemberDescriptor : MemberDescriptor
 {
     // public RepositoryActionAttribute RepositoryActionAttribute { get; init; }
@@ -128,7 +132,13 @@ public class ActionMenuMemberDescriptor : MemberDescriptor
     public string? RefType { get; set; }
 }
 
+[DebuggerDisplay($"{{{nameof(CSharpName)},nq}}")]
 public class ActionMenuContextMemberDescriptor : MemberDescriptor
 {
     public string ActionMenuContextMemberName => Name;
+}
+
+[DebuggerDisplay($"{{{nameof(CSharpName)},nq}}")]
+public class PluginConfigurationMemberDescriptor : MemberDescriptor
+{
 }

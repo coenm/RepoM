@@ -1,0 +1,14 @@
+﻿[
+  {
+    Name: Open in Visual Studio Code,
+    RepositoryCommand: {
+      Executable: {UserProfile}\AppData\Local/Programs/Microsoft VS Code/code.exe,
+      Arguments: [
+        "C:/Repositories/work/RepoM"
+      ]
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

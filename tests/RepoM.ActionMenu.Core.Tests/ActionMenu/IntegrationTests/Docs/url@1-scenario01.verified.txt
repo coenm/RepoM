@@ -1,0 +1,29 @@
+﻿[
+  {
+    Name: Browse to remote origin,
+    RepositoryCommand: {
+      Url: https://www.github.com/coenm/RepoM/
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Browse to remote fork1,
+    RepositoryCommand: {
+      Url: https://www.github.com/coenm/RepoM-Fork1/
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  },
+  {
+    Name: Browse to remote fork2,
+    RepositoryCommand: {
+      Url: https://www.github.com/coenm/RepoM-Fork2/
+    },
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]

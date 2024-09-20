@@ -1,0 +1,19 @@
+context:
+
+# begin-snippet: folder@1-scenario01
+
+action-menu:
+
+- type: folder@1
+  name: My folder
+  active: true
+  actions:
+  - type: url@1
+    name: 'Browse to remote {{ repository.remotes[0].key }}'
+    url: '{{ repository.remotes[0].url }}'
+    active: repository.remotes[0].url | string.starts_with 'https'
+  - type: url@1
+    name: 'wiki'
+    url: '{{ repository.remotes[0].url }}/wiki'
+
+# end-snippet

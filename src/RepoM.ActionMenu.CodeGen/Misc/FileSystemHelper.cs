@@ -3,9 +3,9 @@ namespace RepoM.ActionMenu.CodeGen.Misc;
 using System;
 using System.IO;
 
-public static class FileSystemHelper
+internal static class FileSystemHelper
 {
-    public static void DeleteFileIsExist(string pathToGeneratedCode)
+    public static void DeleteFileIfExist(string pathToGeneratedCode)
     {
         if (!File.Exists(pathToGeneratedCode))
         {
@@ -23,7 +23,7 @@ public static class FileSystemHelper
         }
     }
 
-    public static void CheckDirectory(string path)
+    public static void CheckDirectoryExists(string path)
     {
         if (!Directory.Exists(path))
         {
@@ -31,7 +31,7 @@ public static class FileSystemHelper
         }
     }
 
-    public static void CheckFile(string path)
+    public static void CheckFileExists(string path)
     {
         if (!File.Exists(path))
         {

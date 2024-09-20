@@ -13,11 +13,20 @@ using Scriban.Parsing;
 using Scriban.Syntax;
 
 /// <summary>
-/// Provides file related action menu functions and variables accessable through `file`.
+/// Provides file related action menu functions and variables accessible through `file`.
 /// </summary>
 [ActionMenuContext("file")]
 internal partial class FileFunctions : ScribanModuleWithFunctions
 {
+    private static readonly EnumerationOptions _findFilesOptions = new()
+    {
+        RecurseSubdirectories = true,
+        AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Device | FileAttributes.Directory,
+        IgnoreInaccessible = true,
+        MatchType = MatchType.Simple,
+        ReturnSpecialDirectories = false,
+    };
+
     public FileFunctions()
     {
         RegisterFunctions();
@@ -46,7 +55,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     [ActionMenuContextMember("find_files")]
     public static string[] FindFiles(ActionMenuGenerationContext /*IMenuContext*/ context, SourceSpan span, string rootPath, string searchPattern)
     {
-        return FindFilesInner(context as IMenuContext, span, rootPath, searchPattern);
+        return FindFilesInner(context, span, rootPath, searchPattern);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -123,11 +132,6 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static IEnumerable<string> GetFileEnumerator(IFileSystem fileSystem, string path, string searchPattern)
     {
-        // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
-        // .app or .xcodeproj on macOS
-        return fileSystem.DirectoryInfo.New(path)
-             .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
-             .Select(f => f.FullName)
-             .Where(f => !f.StartsWith('.'));
+        return fileSystem.Directory.EnumerateFileSystemEntries(path, searchPattern, _findFilesOptions);
     }
 }

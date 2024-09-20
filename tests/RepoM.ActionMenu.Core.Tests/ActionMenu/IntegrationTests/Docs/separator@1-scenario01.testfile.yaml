@@ -1,0 +1,16 @@
+context:
+
+# begin-snippet: separator@1-scenario01
+
+action-menu:
+
+- type: separator@1
+  active: 'string.size(my_app_name) == 5' # true
+  context:
+  - type: set-variable@1
+    name: my_app_name
+    value: RepoM
+
+- type: separator@1
+
+# end-snippet

@@ -8,10 +8,14 @@ using RepoM.ActionMenu.Interface.YamlModel.Templating;
 /// <summary>
 /// Textual action to display some text in the action menu.
 /// </summary>
+/// <example>
+/// <snippet name='just-text@1-scenario01' mode='snippet' />
+/// </example>
 [RepositoryAction(TYPE_VALUE)]
 internal sealed class RepositoryActionJustTextV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "just-text@1";
+    internal const string EXAMPLE_1 = TYPE_VALUE + "-scenario01";
 
     public string Type
     {

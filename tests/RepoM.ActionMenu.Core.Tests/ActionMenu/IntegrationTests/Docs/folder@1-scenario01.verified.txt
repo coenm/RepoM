@@ -1,0 +1,29 @@
+﻿[
+  {
+    Name: My folder,
+    RepositoryCommand: {},
+    Repository: {Scrubbed},
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true,
+    SubActions: [
+      {
+        Name: Browse to remote origin,
+        RepositoryCommand: {
+          Url: https://www.github.com/coenm/RepoM/
+        },
+        Repository: {Scrubbed},
+        ExecutionCausesSynchronizing: false,
+        CanExecute: true
+      },
+      {
+        Name: wiki,
+        RepositoryCommand: {
+          Url: https://www.github.com/coenm/RepoM//wiki
+        },
+        Repository: {Scrubbed},
+        ExecutionCausesSynchronizing: false,
+        CanExecute: true
+      }
+    ]
+  }
+]

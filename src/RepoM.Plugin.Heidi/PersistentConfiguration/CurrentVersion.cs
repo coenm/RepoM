@@ -2,5 +2,5 @@ namespace RepoM.Plugin.Heidi.PersistentConfiguration;
 
 internal static class CurrentConfigVersion
 {
-    public const int VERSION = 1;
+    public const int VERSION = HeidiConfigV1.VERSION;
 }

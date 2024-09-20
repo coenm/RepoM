@@ -1,0 +1,25 @@
+# begin-snippet: url@1-scenario01
+
+context:
+
+- type: evaluate-script@1
+  content: |-
+    now = date.parse '20/01/2022 08:32:48 +00:00' culture:'en-GB'
+
+action-menu:
+
+- type: url@1
+  name: 'Wiki'
+  url: 'https://github.com/coenm/RepoM/wiki'
+  active: 'repository.path | string.contains RepoM'
+
+- type: foreach@1
+  enumerable: repository.remotes
+  variable: remote
+  actions:
+  - type: url@1
+    name: 'Browse to remote {{ remote.key}}'
+    url: '{{ remote.url }}'
+    active: remote.url | string.starts_with 'https'
+
+# end-snippet
