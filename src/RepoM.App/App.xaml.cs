@@ -8,20 +8,20 @@ using System.IO.Abstractions;
 using System.Threading;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
-using RepoM.Api.Git;
-using RepoM.Api.IO;
-using RepoM.App.i18n;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using RepoM.Api;
+using RepoM.Api.Git;
+using RepoM.Api.IO;
 using RepoM.Api.Plugins;
+using RepoM.App.i18n;
 using RepoM.App.Plugins;
+using RepoM.App.Services;
+using RepoM.App.Services.HotKey;
 using Serilog;
 using Serilog.Core;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-using RepoM.App.Services;
 using Container = SimpleInjector.Container;
-using RepoM.App.Services.HotKey;
-using RepoM.Api;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -35,6 +35,9 @@ public partial class App : Application
     private HotKeyService? _hotKeyService;
     private WindowSizeService? _windowSizeService;
 
+    /// <summary>
+    /// Main program start point
+    /// </summary>
     [STAThread]
     public static void Main()
     {
@@ -49,6 +52,10 @@ public partial class App : Application
         app.Run();
     }
 
+    /// <summary>
+    /// OnStartup event
+    /// </summary>
+    /// <param name="e"></param>
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -85,7 +92,7 @@ public partial class App : Application
 
         EnsureStartup ensureStartup = Bootstrapper.Container.GetInstance<EnsureStartup>();
         await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
-        
+
         UseRepositoryMonitor(Bootstrapper.Container);
 
         _moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
@@ -104,18 +111,22 @@ public partial class App : Application
             logger.LogError(exception, "Could not start all modules.");
         }
     }
-    
+
+    /// <summary>
+    /// OnExit Event
+    /// </summary>
+    /// <param name="e"></param>
     protected override void OnExit(ExitEventArgs e)
     {
         _windowSizeService?.Unregister();
-        
+
         _moduleService?.StopAsync().GetAwaiter().GetResult();
 
         _hotKeyService?.Unregister();
 
-// #pragma warning disable CA1416 // Validate platform compatibility
+        // #pragma warning disable CA1416 // Validate platform compatibility
         _notifyIcon?.Dispose();
-// #pragma warning restore CA1416 // Validate platform compatibility
+        // #pragma warning restore CA1416 // Validate platform compatibility
 
         ReleaseAndDisposeMutex();
 
@@ -199,5 +210,5 @@ public partial class App : Application
         }
     }
 
-    public static string? AvailableUpdate { get; private set; } = null;
+    public static string? AvailableUpdate { get; private set; }
 }

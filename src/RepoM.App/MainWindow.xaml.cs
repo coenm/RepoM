@@ -81,7 +81,7 @@ public partial class MainWindow
         InitializeComponent();
 
         SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
-        
+
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
         var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
@@ -102,7 +102,7 @@ public partial class MainWindow
             _monitor.OnScanStateChanged += OnScanStateChanged;
             ShowScanningState(_monitor.Scanning);
         }
-        
+
         lstRepositories.ItemsSource = aggregator.Repositories;
 
         var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
@@ -219,7 +219,7 @@ public partial class MainWindow
             e.Handled = true;
         }
     }
-    
+
     private async Task<bool> LstRepositoriesContextMenuOpeningWrapperAsync(ContextMenu ctxMenu)
     {
         try
@@ -232,15 +232,15 @@ public partial class MainWindow
 
             ctxMenu.Items.Clear();
             ctxMenu.Items.Add(new AcrylicMenuItem
-                {
-                    Header = "Error",
-                    IsEnabled = false,
-                });
+            {
+                Header = "Error",
+                IsEnabled = false,
+            });
             ctxMenu.Items.Add(new AcrylicMenuItem
-                {
-                    Header = e.Message,
-                    IsEnabled = false,
-                });
+            {
+                Header = e.Message,
+                IsEnabled = false,
+            });
 
             return false;
         }
@@ -268,10 +268,10 @@ public partial class MainWindow
 
         ctxMenu.Items.Clear();
         ctxMenu.Items.Add(new AcrylicMenuItem
-            {
-                Header = "Loading ..",
-                IsEnabled = true,
-            });
+        {
+            Header = "Loading ..",
+            IsEnabled = true,
+        });
 
         await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(true))
         {
@@ -300,7 +300,7 @@ public partial class MainWindow
 
         return true;
     }
-    
+
 
     private async void LstRepositories_KeyDown(object? sender, KeyEventArgs e)
     {
@@ -314,7 +314,7 @@ public partial class MainWindow
             {
                 Console.WriteLine(exception);
             }
-            
+
             return;
         }
 
@@ -342,7 +342,7 @@ public partial class MainWindow
             }
         }
     }
-   
+
     private async Task InvokeActionOnCurrentRepositoryAsync()
     {
         if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
@@ -415,9 +415,9 @@ public partial class MainWindow
         if (_fileSystem.Directory.Exists(directoryName))
         {
             Process.Start(new ProcessStartInfo(directoryName)
-                {
-                    UseShellExecute = true,
-                });
+            {
+                UseShellExecute = true,
+            });
         }
     }
 
@@ -448,9 +448,9 @@ public partial class MainWindow
     private static void Navigate(string url)
     {
         Process.Start(new ProcessStartInfo(url)
-            {
-                UseShellExecute = true,
-            });
+        {
+            UseShellExecute = true,
+        });
     }
 
     private void PlaceFormByTaskBarLocation()
@@ -472,12 +472,12 @@ public partial class MainWindow
         var rightX = workArea.Width - width;
 
         return TaskBarLocator.GetTaskBarLocation(primaryScreen) switch
-            {
-                TaskBarLocator.TaskBarLocation.Top => new Point(rightX, topY),
-                TaskBarLocator.TaskBarLocation.Left => new Point(leftX, bottomY),
-                TaskBarLocator.TaskBarLocation.Bottom or TaskBarLocator.TaskBarLocation.Right => new Point(rightX, bottomY),
-                _ => new Point(rightX, bottomY),
-            };
+        {
+            TaskBarLocator.TaskBarLocation.Top => new Point(rightX, topY),
+            TaskBarLocator.TaskBarLocation.Left => new Point(leftX, bottomY),
+            TaskBarLocator.TaskBarLocation.Bottom or TaskBarLocator.TaskBarLocation.Right => new Point(rightX, bottomY),
+            _ => new Point(rightX, bottomY),
+        };
     }
 
     private void ShowUpdateIfAvailable()
@@ -511,7 +511,7 @@ public partial class MainWindow
                 {
                     return;
                 }
-                
+
                 // run actions in the UI async to not block it
                 if (repositoryAction.ExecutionCausesSynchronizing)
                 {
@@ -526,10 +526,10 @@ public partial class MainWindow
             };
 
         var item = new AcrylicMenuItem
-            {
-                Header = repositoryAction.Name,
-                IsEnabled = repositoryAction.CanExecute,
-            };
+        {
+            Header = repositoryAction.Name,
+            IsEnabled = repositoryAction.CanExecute,
+        };
         item.Click += new RoutedEventHandler(clickAction);
 
         // this is a deferred submenu. We want to make sure that the context menu can pop up
@@ -629,7 +629,7 @@ public partial class MainWindow
             {
                 item.SubmenuOpened -= SelfDetachingEventHandler;
                 item.Items.Clear();
-                
+
                 foreach (UserInterfaceRepositoryActionBase subAction in await deferredRepositoryAction.GetAsync().ConfigureAwait(true))
                 {
                     Control? controlItem = CreateMenuItemNewStyleAsync(subAction);
@@ -664,7 +664,7 @@ public partial class MainWindow
             // this is a template submenu item to enable submenus under the current
             // menu item. this item gets removed when the real subitems are created
             item.Items.Add("Loading..");
-            
+
             async void SelfDetachingEventHandler1(object _, RoutedEventArgs evtArgs)
             {
                 item.SubmenuOpened -= SelfDetachingEventHandler1;
@@ -819,7 +819,7 @@ public partial class MainWindow
         {
             return false;
         }
-        
+
         if (string.IsNullOrWhiteSpace(query))
         {
             return true;
