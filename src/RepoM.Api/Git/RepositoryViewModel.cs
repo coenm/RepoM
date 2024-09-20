@@ -20,7 +20,6 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
     {
         _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        UpdateStampUtc = DateTime.UtcNow;
         Tags = Repository.Tags.Select(tag => new TagViewModel(tag)).ToArray();
     }
 
@@ -127,6 +126,4 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
     }
 
     private static string SyncAppendix => "  \u2191\u2193"; // up and down arrows
-
-    public DateTime UpdateStampUtc { get; private set; }
 }

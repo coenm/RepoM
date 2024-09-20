@@ -25,9 +25,6 @@
           fw:AcrylicWindow.TintOpacity="0.7"
           fw:AcrylicWindow.Enabled="True"
           d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
-	<Window.Resources>
-		<converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
-	</Window.Resources>
 	<Grid Margin="12" 
 		  Focusable="False">
 
@@ -319,11 +316,7 @@
                                                 HorizontalAlignment="Left" >
 										    <TextBlock Text="{Binding Status}"
                                                    FontFamily="Consolas"   
-                                                   FontSize="13.5" >
-											    <TextBlock.ToolTip>
-												    <TextBlock Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToHumanizedLocalDateTimeConverter}}"/>
-											    </TextBlock.ToolTip>
-									    </TextBlock>
+                                                   FontSize="13.5" />
 									    </Border>
                                         <StackPanel Orientation="Horizontal">
                                             <ItemsControl Grid.Column="0" ItemsSource="{Binding Tags}">
