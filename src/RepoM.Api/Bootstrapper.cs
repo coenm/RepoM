@@ -2,7 +2,6 @@ namespace RepoM.Api;
 
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
-using RepoM.Api.IO;
 using RepoM.Api.Plugins;
 using SimpleInjector;
 using System.Collections.Generic;
@@ -87,7 +86,7 @@ public class CoreBootstrapper
                 .RegisterPackagesAsync(
                     assemblies,
                     filename => new FileBasedPackageConfiguration(
-                        DefaultAppDataPathProvider.Instance,
+                        _appDataProvider,
                         _fileSystem,
                         _loggerFactory.CreateLogger<FileBasedPackageConfiguration>(),
                         filename))

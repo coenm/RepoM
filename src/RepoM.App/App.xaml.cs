@@ -22,6 +22,7 @@ using RepoM.App.Services;
 using Container = SimpleInjector.Container;
 using RepoM.App.Services.HotKey;
 using RepoM.Api;
+using RepoM.App.Configuration;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -60,7 +61,7 @@ public partial class App : Application
             typeof(FrameworkElement),
             new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
-        Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
+        Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
         _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
 
         var fileSystem = new FileSystem();
@@ -69,22 +70,32 @@ public partial class App : Application
         IHmacService hmacService = new HmacSha256Service();
         IPluginFinder pluginFinder = new PluginFinder(fileSystem, hmacService);
 
-        IConfiguration config = SetupConfiguration();
+        IConfiguration appDataPathConfiguration = SetupConfigurationX(e.Args);
+
+        var appConfig = new Config();
+        appDataPathConfiguration.Bind("App", appConfig);
+        var appDataPathConfig = new AppDataPathConfig
+        {
+            AppSettingsPath = appConfig.AppSettingsPath,
+        };
+        var appDataProvider = new AppDataPathProvider(appDataPathConfig);
+        
+        IConfiguration config = SetupConfiguration(appDataProvider);
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
-        Bootstrapper.RegisterServices(fileSystem);
-        await Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory).ConfigureAwait(true);
+        Bootstrapper.RegisterServices(fileSystem, appDataProvider);
+        await Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory, appDataProvider).ConfigureAwait(true);
+
+        var ensureStartup = new EnsureStartup(fileSystem, appDataProvider);
+        await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
 
 #if DEBUG
         Bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
 #else
         Bootstrapper.Container.Options.EnableAutoVerification = false;
 #endif
-
-        EnsureStartup ensureStartup = Bootstrapper.Container.GetInstance<EnsureStartup>();
-        await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
         
         UseRepositoryMonitor(Bootstrapper.Container);
 
@@ -104,7 +115,24 @@ public partial class App : Application
             logger.LogError(exception, "Could not start all modules.");
         }
     }
-    
+
+    private static IConfiguration SetupConfigurationX(string[] args)
+    {
+        IConfigurationBuilder builder = new ConfigurationBuilder()
+            //.SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+
+#if DEBUG
+        builder = builder.AddJsonFile("appsettings.Debug.json", optional: true, reloadOnChange: false);
+#endif
+
+        builder = builder
+            .AddEnvironmentVariables("REPOM_APP_")
+            .AddCommandLine(args);
+
+        return builder.Build();
+    }
+
     protected override void OnExit(ExitEventArgs e)
     {
         _windowSizeService?.Unregister();
@@ -113,19 +141,17 @@ public partial class App : Application
 
         _hotKeyService?.Unregister();
 
-// #pragma warning disable CA1416 // Validate platform compatibility
         _notifyIcon?.Dispose();
-// #pragma warning restore CA1416 // Validate platform compatibility
 
         ReleaseAndDisposeMutex();
 
         base.OnExit(e);
     }
 
-    private static IConfiguration SetupConfiguration()
+    private static IConfiguration SetupConfiguration(AppDataPathProvider appDataProvider)
     {
         const string FILENAME = "appsettings.serilog.json";
-        var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.AppDataPath, FILENAME);
+        var fullFilename = Path.Combine(appDataProvider.AppDataPath, FILENAME);
 
         IConfigurationBuilder builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())

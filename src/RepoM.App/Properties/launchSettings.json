@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "RepoM.App bin config": {
+      "commandName": "Project",
+      "commandLineArgs": "--App:AppSettingsPath RepoMConfig"
+    },
+    "RepoM.App": {
+      "commandName": "Project"
+    }
+  }
+}
