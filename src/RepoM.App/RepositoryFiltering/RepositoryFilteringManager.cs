@@ -16,7 +16,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
     private readonly QueryParserComposition _queryParser;
     private readonly List<string> _repositoryComparerKeys;
     private readonly List<string> _preFilterKeys;
-    private readonly List<RepositoryFilterConfiguration> _queryDictionary;
+    private readonly Dictionary<string, RepositoryFilterConfiguration> _queryDictionary;
 
     public RepositoryFilteringManager(
         IAppSettingsService appSettingsService,
@@ -38,28 +38,33 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         INamedQueryParser defaultParser = queryParsersArray.First(x => x.Name != "Lucene");
         INamedQueryParser queryParser = Array.Find(queryParsersArray, x => x.Name == "Lucene") ?? defaultParser;
 
-        _queryDictionary = filterSettingsService.Configuration
-                                                .Select(x => new RepositoryFilterConfiguration
-                                                    {
-                                                        AlwaysVisible = Map(x.Value.AlwaysVisible),
-                                                        Description = x.Value.Description,
-                                                        Filter = Map(x.Value.Filter),
-                                                        Name = x.Key,
-                                                    })
-                                                .ToList();
-
-        if (!_queryDictionary.Exists(x => x.Name.Equals("Default", StringComparison.CurrentCultureIgnoreCase)))
+        _queryDictionary = new Dictionary<string, RepositoryFilterConfiguration>((int)StringComparison.CurrentCultureIgnoreCase);
+        foreach (var (key, value) in filterSettingsService.Configuration)
         {
-            _queryDictionary.Add(new RepositoryFilterConfiguration
-                {
-                    AlwaysVisible = null,
-                    Description = "Default (no filtering)",
-                    Filter = null,
-                    Name = "Default",
-                });
+            _queryDictionary.Add(key, new RepositoryFilterConfiguration
+            {
+                AlwaysVisible = Map(value.AlwaysVisible),
+                Description = value.Description,
+                Filter = Map(value.Filter),
+                Name = key,
+            });
         }
-        
-        _preFilterKeys = _queryDictionary.Select(x => x.Name).ToList();
+
+        var allConfiguration = new RepositoryFilterConfiguration
+        {
+            Name = "All",
+            AlwaysVisible = null,
+            Description = "Show all (no filtering) [Default]",
+            Filter = null,
+        };
+
+        if (!_queryDictionary.TryAdd(allConfiguration.Name, allConfiguration))
+        {
+            _logger.LogWarning("Invalid filter config detected: {FilterName}. Overwriting element.", allConfiguration.Name);
+            _queryDictionary[allConfiguration.Name] = allConfiguration;
+        }
+
+        _preFilterKeys = _queryDictionary.Keys.ToList();
 
         _queryParser = new QueryParserComposition(queryParsersArray);
 
@@ -69,24 +74,22 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
         if (string.IsNullOrWhiteSpace(_appSettingsService.QueryParserKey))
         {
-            _logger.LogInformation("Query parser was not set. Pick first one.");
+            _logger.LogInformation("Query parser was not set. Pick default one one.");
             SetQueryParser(_repositoryComparerKeys[0]);
         }
         else if (!SetQueryParser(_appSettingsService.QueryParserKey))
         {
-            _logger.LogInformation("Could not set query parser '{Key}'. Falling back to first query parser.", _appSettingsService.QueryParserKey);
+            _logger.LogInformation("Could not set query parser '{Key}'. Falling back to default parser.", _appSettingsService.QueryParserKey);
             SetQueryParser(_repositoryComparerKeys[0]);
         }
 
-        RepositoryFilterConfiguration first = _queryDictionary[0];
-
-        if (string.IsNullOrWhiteSpace(_appSettingsService.SelectedFilter))
+        if (_queryDictionary.TryGetValue("Default", out RepositoryFilterConfiguration? defaultFilterConfig) && !string.IsNullOrWhiteSpace(_appSettingsService.SelectedFilter))
         {
-            SetFilter(first.Name);
+            SetFilter(defaultFilterConfig);
         }
-        else if (!SetFilter(_appSettingsService.SelectedFilter))
+        else
         {
-            SetFilter(first.Name);
+            SetFilter(allConfiguration);
         }
 
         return;
@@ -126,7 +129,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
     public IReadOnlyList<string> FilterKeys => _preFilterKeys;
 
     public bool SetQueryParser(string key)
-    {  
+    {
         if (!_queryParser.SetComparer(key))
         {
             _logger.LogWarning("Could not update/set the comparer key {Key}.", key);
@@ -139,20 +142,25 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         return true;
     }
 
-    public bool SetFilter(string key)
+    private void SetFilter(RepositoryFilterConfiguration filterConfig)
     {
-        RepositoryFilterConfiguration? value = _queryDictionary.Find(x => x.Name == key);
-        if (value == null)
+        PreFilter = filterConfig.Filter ?? TrueQuery.Instance;
+        AlwaysVisibleFilter = filterConfig.AlwaysVisible;
+        _appSettingsService.SelectedFilter = filterConfig.Name;
+        SelectedFilterKey = filterConfig.Name;
+        SelectedFilterChanged?.Invoke(this, filterConfig.Name);
+    }
+
+    public bool SetFilter(string filterName)
+    {
+        if (_queryDictionary.TryGetValue(filterName, out RepositoryFilterConfiguration? filterConfig))
         {
-            return false;
+            SetFilter(filterConfig);
+            return true;
         }
-        
-        PreFilter = value.Filter ?? TrueQuery.Instance;
-        AlwaysVisibleFilter = value.AlwaysVisible;
-        _appSettingsService.SelectedFilter = key;
-        SelectedFilterKey = key;
-        SelectedFilterChanged?.Invoke(this, key);
-        return true;
+
+        _logger.LogWarning("Could not find filter with filterName {Key}.", filterName);
+        return false;
     }
 
     private sealed class RepositoryFilterConfiguration

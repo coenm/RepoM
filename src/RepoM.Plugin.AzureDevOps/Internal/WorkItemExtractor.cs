@@ -10,9 +10,9 @@ internal static partial class WorkItemExtractor
 
     public static string[] GetDistinctWorkItemsFromCommitMessages(IEnumerable<string> commitMessages)
     {
-        List<string> results = new();
+        List<string> results = [];
 
-        foreach (string commitMessage in commitMessages)
+        foreach (var commitMessage in commitMessages)
         {
             MatchCollection matches = _workItemRegex.Matches(commitMessage);
             if (matches.Any(m => m.Success))

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using RepoM.ActionMenu.Core.Model;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
@@ -21,25 +20,28 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
             yield break;
         }
 
-        var name = await context.RenderStringAsync(action.Name).ConfigureAwait(false);
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            name = "Browse remote";
-        }
+        string menuTitle;
+        //var menuTitle = await context.RenderStringAsync(action.Name).ConfigureAwait(false);
+        //if (string.IsNullOrWhiteSpace(menuTitle))
+        //{
+        //    menuTitle = "Github: ";
+        //}
 
         var forceSingle = await action.FirstOnly.EvaluateAsync(context).ConfigureAwait(false);
 
         if (repository.Remotes.Count == 1 || forceSingle)
         {
-            yield return new UserInterfaceRepositoryAction(name, repository)
+            menuTitle = TryGet_RemoteRepoLongName(repository.Remotes[0].Url);
+            yield return new UserInterfaceRepositoryAction(menuTitle, repository)
             {
                 RepositoryCommand = new BrowseRepositoryCommand(repository.Remotes[0].Url),
             };
         }
         else
         {
+            menuTitle = "Remote repos"; 
             yield return new DeferredSubActionsUserInterfaceRepositoryAction(
-                name,
+                menuTitle,
                 repository,
                 context,
                 captureScope: false,
@@ -50,14 +52,27 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
         }
     }
 
+    private static string TryGet_RemoteRepoLongName(string remoteUrl)
+    {
+        var splitString = remoteUrl.Trim().Split('/');
+        if (splitString.Length < 2)
+        {
+            return remoteUrl;
+        }
+
+        var name = splitString.Last().Replace(".git", "");
+        var author = splitString[^2];
+        return $"{author}/{name}";
+    }
+
     private static Task<UserInterfaceRepositoryActionBase[]> EnumerateRemotes(IRepository repository)
     {
         return Task.FromResult(repository.Remotes
             .Take(50)
-            .Select(remote => new UserInterfaceRepositoryAction(remote.Name, repository)
-                {
-                    RepositoryCommand = new BrowseRepositoryCommand(remote.Url),
-                })
+            .Select(remote => new UserInterfaceRepositoryAction(TryGet_RemoteRepoLongName(remote.Url), repository)
+            {
+                RepositoryCommand = new BrowseRepositoryCommand(remote.Url),
+            })
             .Cast<UserInterfaceRepositoryActionBase>()
             .ToArray());
     }

@@ -17,43 +17,40 @@ using RepoM.Plugin.Statistics.Interface;
 [UsedImplicitly]
 internal class StatisticsModule : IModule
 {
-    private readonly IStatisticsService _service;
+    private readonly IStatisticsService       _service;
     private readonly IStatisticsConfiguration _configuration;
-    private readonly IClock _clock;
-    private readonly IAppDataPathProvider _pathProvider;
-    private readonly IFileSystem _fileSystem;
-    private readonly ILogger _logger;
-    private string _basePath = string.Empty;
-    private IDisposable? _disposable;
-    private readonly JsonSerializerSettings _settings;
-
-    public StatisticsModule(
-        IStatisticsService service,
-        IStatisticsConfiguration configuration,
-        IClock clock,
-        IAppDataPathProvider pathProvider,
-        IFileSystem fileSystem,
-        ILogger logger)
+    private readonly IClock                   _clock;
+    private readonly IAppDataPathProvider     _pathProvider;
+    private readonly IFileSystem              _fileSystem;
+    private readonly ILogger                  _logger;
+    private          string                   _basePath = string.Empty;
+    private          IDisposable?             _disposable;
+    private readonly JsonSerializerSettings _settings = new()
     {
-        _service = service ?? throw new ArgumentNullException(nameof(service));
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        Formatting = Formatting.None,
+        NullValueHandling = NullValueHandling.Ignore,
+        TypeNameHandling = TypeNameHandling.All,
+    };
 
-        _settings = new JsonSerializerSettings
-            {
-                Formatting = Formatting.None,
-                NullValueHandling = NullValueHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All,
-            };
+    public StatisticsModule(IStatisticsService       service,
+                            IStatisticsConfiguration configuration,
+                            IClock                   clock,
+                            IAppDataPathProvider     pathProvider,
+                            IFileSystem              fileSystem,
+                            ILogger                  logger)
+    {
+        _service       = service       ?? throw new ArgumentNullException(nameof(service));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _clock         = clock         ?? throw new ArgumentNullException(nameof(clock));
+        _pathProvider  = pathProvider  ?? throw new ArgumentNullException(nameof(pathProvider));
+        _fileSystem    = fileSystem    ?? throw new ArgumentNullException(nameof(fileSystem));
+        _logger        = logger        ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task StartAsync()
     {
         _basePath = _fileSystem.Path.Combine(_pathProvider.AppDataPath, "Module", "Statistics");
-        
+
         _disposable = WriteEventsToFile();
 
         await ProcessEventsFromFile().ConfigureAwait(false);
@@ -151,12 +148,12 @@ internal class StatisticsModule : IModule
                .Buffer(buffer)
                .Subscribe(data =>
                    {
-                       IEvent[] events = [.. data, ];
+                       IEvent[] events = [.. data,];
                        if (events.Length == 0)
                        {
                            return;
                        }
-                    
+
                        var json = JsonConvert.SerializeObject(events, _settings);
                        var filename = _fileSystem.Path.Combine(_basePath, $"statistics.v1.{_clock.Now:yyyy-MM-dd HH.mm.ss}.json");
 

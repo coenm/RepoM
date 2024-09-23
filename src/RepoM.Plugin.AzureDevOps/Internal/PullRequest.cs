@@ -7,8 +7,8 @@ internal class PullRequest
     public PullRequest(Guid repositoryId, string name, string url)
     {
         RepositoryId = repositoryId;
-        Name = name;
-        Url = url;
+        Name         = name;
+        Url          = url;
     }
 
     public Guid RepositoryId { get; }

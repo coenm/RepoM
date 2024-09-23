@@ -1,38 +1,38 @@
 namespace RepoM.Api;
 
-using Microsoft.Extensions.Logging;
-using RepoM.Api.Common;
-using RepoM.Api.IO;
-using RepoM.Api.Plugins;
-using SimpleInjector;
+using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System;
+using Microsoft.Extensions.Logging;
+using RepoM.Api.Common;
+using RepoM.Api.IO;
+using RepoM.Api.Plugins;
 using RepoM.Api.Plugins.SimpleInjector;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+using SimpleInjector;
 
 public class CoreBootstrapper
 {
-    private readonly IPluginFinder _pluginFinder;
-    private readonly IFileSystem _fileSystem;
+    private readonly IPluginFinder        _pluginFinder;
+    private readonly IFileSystem          _fileSystem;
     private readonly IAppDataPathProvider _appDataProvider;
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILoggerFactory       _loggerFactory;
 
     private static readonly Assembly _thisAssembly = typeof(CoreBootstrapper).Assembly;
 
     public CoreBootstrapper(IPluginFinder pluginFinder, IFileSystem fileSystem, IAppDataPathProvider appDataProvider, ILoggerFactory loggerFactory)
     {
-        _pluginFinder = pluginFinder ?? throw new ArgumentNullException(nameof(pluginFinder));
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _pluginFinder    = pluginFinder    ?? throw new ArgumentNullException(nameof(pluginFinder));
+        _fileSystem      = fileSystem      ?? throw new ArgumentNullException(nameof(fileSystem));
         _appDataProvider = appDataProvider ?? throw new ArgumentNullException(nameof(appDataProvider));
-        _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        _loggerFactory   = loggerFactory   ?? throw new ArgumentNullException(nameof(loggerFactory));
     }
-
+    
     public static void RegisterRepositoryScorerConfigurationsTypes(Container container)
     {
         foreach (Type type in GetNonAbstractNonGenericInheritedExportedTypesFrom<IRepositoryScorerConfiguration>(_thisAssembly))

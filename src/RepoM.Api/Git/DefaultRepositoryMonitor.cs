@@ -60,7 +60,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _autoFetchHandler = autoFetchHandler ?? throw new ArgumentNullException(nameof(autoFetchHandler));
-        _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
+        _repositoryObservers = [];
         _storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
     }
 
@@ -153,7 +153,7 @@ public class DefaultRepositoryMonitor : IRepositoryMonitor
     {
         _logger.LogTrace("ObserveRepositoryChanges start");
 
-        _detectors = new List<IRepositoryDetector>();
+        _detectors = [];
 
         foreach (var path in _pathProvider.GetPaths())
         {
