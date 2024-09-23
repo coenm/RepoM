@@ -70,18 +70,12 @@ public partial class App : Application
         IHmacService hmacService = new HmacSha256Service();
         IPluginFinder pluginFinder = new PluginFinder(fileSystem, hmacService);
 
-        IConfiguration appDataPathConfiguration = SetupConfigurationX(e.Args);
+        IConfiguration config = CreateConfigurationBase(e.Args);
+        AppDataPathProvider appDataProvider = CreateAppDataPathProvider(config);
 
-        var appConfig = new Config();
-        appDataPathConfiguration.Bind("App", appConfig);
-        var appDataPathConfig = new AppDataPathConfig
-        {
-            AppSettingsPath = appConfig.AppSettingsPath,
-        };
-        var appDataProvider = new AppDataPathProvider(appDataPathConfig);
-        
-        IConfiguration config = SetupConfiguration(appDataProvider);
+        config = CreateLoggerConfiguration(appDataProvider);
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
+
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
@@ -116,23 +110,6 @@ public partial class App : Application
         }
     }
 
-    private static IConfiguration SetupConfigurationX(string[] args)
-    {
-        IConfigurationBuilder builder = new ConfigurationBuilder()
-            //.SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
-
-#if DEBUG
-        builder = builder.AddJsonFile("appsettings.Debug.json", optional: true, reloadOnChange: false);
-#endif
-
-        builder = builder
-            .AddEnvironmentVariables("REPOM_APP_")
-            .AddCommandLine(args);
-
-        return builder.Build();
-    }
-
     protected override void OnExit(ExitEventArgs e)
     {
         _windowSizeService?.Unregister();
@@ -148,7 +125,23 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    private static IConfiguration SetupConfiguration(AppDataPathProvider appDataProvider)
+    private static IConfiguration CreateConfigurationBase(string[] args)
+    {
+        IConfigurationBuilder builder = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+
+#if DEBUG
+        builder = builder.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false);
+#endif
+
+        builder = builder
+                  .AddEnvironmentVariables("REPOM_APP_")
+                  .AddCommandLine(args);
+
+        return builder.Build();
+    }
+
+    private static IConfiguration CreateLoggerConfiguration(AppDataPathProvider appDataProvider)
     {
         const string FILENAME = "appsettings.serilog.json";
         var fullFilename = Path.Combine(appDataProvider.AppDataPath, FILENAME);
@@ -175,6 +168,17 @@ public partial class App : Application
         _ = loggerFactory.AddSerilog(logger);
 
         return loggerFactory;
+    }
+
+    private static AppDataPathProvider CreateAppDataPathProvider(IConfiguration appDataPathConfiguration)
+    {
+        var appConfig = new Config();
+        appDataPathConfiguration.Bind("App", appConfig);
+        var appDataPathConfig = new AppDataPathConfig
+            {
+                AppSettingsPath = appConfig.AppSettingsPath,
+            };
+        return new AppDataPathProvider(appDataPathConfig);
     }
 
     private static void UseRepositoryMonitor(Container container)
