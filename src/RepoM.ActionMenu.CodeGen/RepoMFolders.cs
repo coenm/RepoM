@@ -28,7 +28,7 @@ internal static class RepoMFolders
     /// <summary>
     /// Old Documentation folder (docs_old)
     /// </summary>
-    public static readonly string DocumentationOld = Path.Combine(Root, "docs_old");
+    public static readonly string DocumentationOld = Path.Combine(Documentation, "_old");
 
     /// <summary>
     /// Markdown source folder for documentation

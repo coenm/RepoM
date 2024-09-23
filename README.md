@@ -56,13 +56,13 @@ See the [Search](docs/search.md) for more information.
 
 ## Ordering and Filtering
 
-The order of the repositories shown in RepoM is customizable. The default is alphabetical on the repository name. Read more about ordering [here](docs_old/Ordering.md).
+The order of the repositories shown in RepoM is customizable. The default is alphabetical on the repository name. Read more about ordering [here](docs/_old/Ordering.md).
 
 The repositories shown in RepoM are filtered using the search box in RepoM. But the default set can also be configured using different presets.
 
 ## Global configuration
 
-When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but, at this moment, one property must be altered manually. Read more over [here](docs_old/Settings.md).
+When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but, at this moment, one property must be altered manually. Read more over [here](docs/_old/Settings.md).
 
 ## Plugins
 

@@ -17,7 +17,7 @@ steps:
 
 - pwsh: |
     nuget install NSIS -OutputDirectory ./packages
-    makensis.exe /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 _setup/RepoM.nsi 
+    makensis.exe /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 setup/RepoM.nsi 
   displayName: ⚙️ Create installer
 
 - task: DeleteFiles@1
