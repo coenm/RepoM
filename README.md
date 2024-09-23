@@ -70,12 +70,20 @@ By default, RepoM stores all configuration files in `%ADPPDATA%/RepoM`. As a use
 
 To change the app settings location, you can
 
-- alter the `appsettings.json` file located in the same directory where the RepoM executable lives
+- alter the `appsettings.json` file located in the same directory where the RepoM executable lives.
 
-<!-- snippet: appsettings-appsettingspath -->
+<!-- snippet: src/RepoM.App/appsettings.Development.json -->
+<a id='snippet-src/RepoM.App/appsettings.Development.json'></a>
+```json
+{
+  "App": {
+    // Absolute or relative path to the configuration directory.
+    // like: "AppSettingsPath": "C:/my-config/",
+    "AppSettingsPath": "MyConfig"
+  }
+}
 ```
-** Could not find snippet 'appsettings-appsettingspath' **
-```
+<sup><a href='/src/RepoM.App/appsettings.Development.json#L1-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-src/RepoM.App/appsettings.Development.json' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 - start RepoM using the commandline argument `--App:AppSettingsPath <absolute or relative path here>`.
