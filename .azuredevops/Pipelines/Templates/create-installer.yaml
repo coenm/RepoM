@@ -4,6 +4,7 @@ steps:
   displayName: Remove unneeded files
   inputs:
     contents: |
+      _output/**/appsettings.json
       _output/**/*.xlm
       _output/**/*.config
       _output/**/*.pdb
