@@ -22,6 +22,7 @@ using RepoM.App.Services;
 using Container = SimpleInjector.Container;
 using RepoM.App.Services.HotKey;
 using RepoM.Api;
+using RepoM.App.Configuration;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -69,22 +70,26 @@ public partial class App : Application
         IHmacService hmacService = new HmacSha256Service();
         IPluginFinder pluginFinder = new PluginFinder(fileSystem, hmacService);
 
-        IConfiguration config = SetupConfiguration();
+        var factory = new ConfigBasedAppDataPathProviderFactory(e.Args, fileSystem);
+        AppDataPathProvider appDataProvider = factory.Create();
+
+        IConfiguration config = CreateLoggerConfiguration(appDataProvider);
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
+
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
-        Bootstrapper.RegisterServices(fileSystem);
-        await Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory).ConfigureAwait(true);
+        Bootstrapper.RegisterServices(fileSystem, appDataProvider);
+        await Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory, appDataProvider).ConfigureAwait(true);
+
+        var ensureStartup = new EnsureStartup(fileSystem, appDataProvider);
+        await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
 
 #if DEBUG
         Bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
 #else
         Bootstrapper.Container.Options.EnableAutoVerification = false;
 #endif
-
-        EnsureStartup ensureStartup = Bootstrapper.Container.GetInstance<EnsureStartup>();
-        await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
         
         UseRepositoryMonitor(Bootstrapper.Container);
 
@@ -104,7 +109,7 @@ public partial class App : Application
             logger.LogError(exception, "Could not start all modules.");
         }
     }
-    
+
     protected override void OnExit(ExitEventArgs e)
     {
         _windowSizeService?.Unregister();
@@ -113,19 +118,17 @@ public partial class App : Application
 
         _hotKeyService?.Unregister();
 
-// #pragma warning disable CA1416 // Validate platform compatibility
         _notifyIcon?.Dispose();
-// #pragma warning restore CA1416 // Validate platform compatibility
 
         ReleaseAndDisposeMutex();
 
         base.OnExit(e);
     }
 
-    private static IConfiguration SetupConfiguration()
+    private static IConfiguration CreateLoggerConfiguration(AppDataPathProvider appDataProvider)
     {
         const string FILENAME = "appsettings.serilog.json";
-        var fullFilename = Path.Combine(DefaultAppDataPathProvider.Instance.AppDataPath, FILENAME);
+        var fullFilename = Path.Combine(appDataProvider.AppDataPath, FILENAME);
 
         IConfigurationBuilder builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -150,6 +153,8 @@ public partial class App : Application
 
         return loggerFactory;
     }
+
+    
 
     private static void UseRepositoryMonitor(Container container)
     {

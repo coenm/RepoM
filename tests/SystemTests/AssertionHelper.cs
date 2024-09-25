@@ -1,4 +1,3 @@
-
 namespace SystemTests;
 
 using System;

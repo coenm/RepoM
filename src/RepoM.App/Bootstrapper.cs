@@ -41,7 +41,7 @@ internal static class Bootstrapper
 {
     public static readonly Container Container = new();
 
-    public static void RegisterServices(IFileSystem fileSystem)
+    public static void RegisterServices(IFileSystem fileSystem, IAppDataPathProvider appDataProvider)
     {
         Container.RegisterInstance<ObjectCache>(MemoryCache.Default);
         Container.RegisterSingleton<Window>(() => Container.GetInstance<MainWindow>());
@@ -51,7 +51,7 @@ internal static class Bootstrapper
         Container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>(Lifestyle.Singleton);
         Container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>(Lifestyle.Singleton);
-        Container.RegisterInstance<IAppDataPathProvider>(DefaultAppDataPathProvider.Instance);
+        Container.RegisterInstance(appDataProvider);
         Container.Register<IRepositoryReader, DefaultRepositoryReader>(Lifestyle.Singleton);
         Container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);
         Container.Register<IRepositoryStore, DefaultRepositoryStore>(Lifestyle.Singleton);
@@ -106,7 +106,7 @@ internal static class Bootstrapper
         Container.Register<IRepositoryComparerFactory<SumComparerConfigurationV1>, SumRepositoryComparerFactory>(Lifestyle.Singleton);
 
         Container.RegisterSingleton<ActionExecutor>();
-        Container.Register(typeof(ICommandExecutor<>), new[] { typeof(CoreBootstrapper).Assembly, }, Lifestyle.Singleton);
+        Container.Register(typeof(ICommandExecutor<>), [typeof(CoreBootstrapper).Assembly,], Lifestyle.Singleton);
         Container.RegisterDecorator(
             typeof(ICommandExecutor<>),
             typeof(LoggerCommandExecutorDecorator<>),
@@ -114,19 +114,18 @@ internal static class Bootstrapper
 
         Container.RegisterSingleton<HotKeyService>();
         Container.RegisterSingleton<WindowSizeService>();
-
-        Container.RegisterSingleton<EnsureStartup>();
     }
 
     public static async Task RegisterPlugins(
         IPluginFinder pluginFinder,
         IFileSystem fileSystem,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        IAppDataPathProvider appDataPathProvider)
     {
         Container.Register<ModuleService>(Lifestyle.Singleton);
         Container.RegisterInstance(pluginFinder);
 
-        var coreBootstrapper = new CoreBootstrapper(pluginFinder, fileSystem, DefaultAppDataPathProvider.Instance, loggerFactory);
+        var coreBootstrapper = new CoreBootstrapper(pluginFinder, fileSystem, appDataPathProvider, loggerFactory);
         var baseDirectory = fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
         await coreBootstrapper.LoadAndRegisterPluginsAsync(Container, baseDirectory).ConfigureAwait(false);
     }

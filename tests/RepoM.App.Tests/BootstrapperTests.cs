@@ -5,6 +5,7 @@ using System.IO.Abstractions;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using RepoM.Core.Plugin.Common;
 using SimpleInjector;
 using Xunit;
 using Sut = RepoM.App.Bootstrapper;
@@ -30,7 +31,7 @@ public class BootstrapperTests
         // arrange
 
         // act
-        Action act = () => Sut.RegisterServices(A.Dummy<IFileSystem>());
+        Action act = () => Sut.RegisterServices(A.Dummy<IFileSystem>(), A.Dummy<IAppDataPathProvider>());
 
         // assert
         act.Should().NotThrow();
@@ -55,7 +56,7 @@ public class BootstrapperTests
         // arrange
         
         // act
-        Sut.RegisterServices(A.Dummy<IFileSystem>());
+        Sut.RegisterServices(A.Dummy<IFileSystem>(), A.Dummy<IAppDataPathProvider>());
         Sut.RegisterLogging(A.Fake<ILoggerFactory>());
     
         // assert

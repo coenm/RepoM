@@ -64,6 +64,31 @@ The repositories shown in RepoM are filtered using the search box in RepoM. But 
 
 When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but, at this moment, one property must be altered manually. Read more over [here](docs/_old/Settings.md).
 
+## Multi configuration
+
+By default, RepoM stores all configuration files in `%ADPPDATA%/RepoM`. As a user you can alter this location to support multi configurations which might be useful for different working environments. Also, for development or debug purposes, this might be very useful.
+
+To change the app settings location, you can
+
+- alter the `appsettings.json` file located in the same directory where the RepoM executable lives.
+
+<!-- snippet: appsettings_appsettings_path_relative -->
+<a id='snippet-appsettings_appsettings_path_relative'></a>
+```cs
+{
+  "App": {
+    "AppSettingsPath": "MyConfigJson"
+  }
+}
+```
+<sup><a href='/tests/RepoM.App.Tests/ConfigBasedAppDataPathProviderFactoryTest.cs#L20-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-appsettings_appsettings_path_relative' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+- start RepoM using the commandline argument `--App:AppSettingsPath '<absolute or relative path here>'`.
+- use environment variable `REPOM_App__AppSettingsPath`.
+
+If none is set, the default will be used.
+
 ## Plugins
 
 RepoM uses plugins to extend functionality. At this moment, when a plugin is available in the installed directory, it will be found and can be enabled or disabled. This is done in the hamburger menu of RepoM. Enabling or disabling requires a restart of RepoM.
