@@ -24,7 +24,7 @@ public class ConfigBasedAppDataPathProviderFactoryTest
         // arrange
         const string JSON =
             """
-            // begin-snippet: appsettings_appsettings_path_relative lang:json
+            // begin-snippet: appsettings_appsettings_path_relative
             {
               "App": {
                 "AppSettingsPath": "MyConfigJson"
