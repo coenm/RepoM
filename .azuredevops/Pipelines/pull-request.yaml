@@ -119,7 +119,7 @@ stages:
             projects: 'tests/**/SystemTests.csproj'
             arguments: >-
               --no-build --configuration $(buildConfiguration) 
-              --output Detailed 
+              -- --output Detailed 
               --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura --report-trx
               /p:ExcludeByAttribute=CompilerGenerated 
             publishTestResults: true
