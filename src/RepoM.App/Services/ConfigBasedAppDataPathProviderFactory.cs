@@ -39,13 +39,14 @@ internal class ConfigBasedAppDataPathProviderFactory
             builder.SetFileProvider(_fileProvider);
         }
 
+        builder.AddEnvironmentVariables("REPOM_");
+
         builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
 
 #if DEBUG
         builder.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false);
 #endif
-
-        builder.AddEnvironmentVariables("REPOM_");
+        
         builder.AddCommandLine(args);
 
         return builder.Build();

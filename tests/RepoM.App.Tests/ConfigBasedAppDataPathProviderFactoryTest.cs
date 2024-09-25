@@ -15,43 +15,54 @@ using IFileInfo = Microsoft.Extensions.FileProviders.IFileInfo;
 [DisableParallelization]    
 public class ConfigBasedAppDataPathProviderFactoryTest
 {
+    private const string JSON =
+        """
+        // begin-snippet: appsettings_appsettings_path_relative
+        {
+          "App": {
+            "AppSettingsPath": "MyConfigJson"
+          }
+        }
+        // end-snippet
+        """;
+
+    private const string JSON_EMPTY =
+        """
+        {
+          "App": null
+        }
+        """;
+
     private readonly IFileProvider _fileProvider = A.Dummy<IFileProvider>();
     private readonly IFileSystem _fileSystem = A.Dummy<IFileSystem>();
+
+    public ConfigBasedAppDataPathProviderFactoryTest()
+    {
+        SetupGetFullPath();
+    }
 
     [Fact]
     public void Create_ShouldSetPathToRelativeFolder_WhenAppSettingsJsonIsSet()
     {
         // arrange
-        const string JSON =
-            """
-            // begin-snippet: appsettings_appsettings_path_relative
-            {
-              "App": {
-                "AppSettingsPath": "MyConfigJson"
-              }
-            }
-            // end-snippet
-            """;
-        A.CallTo(() => _fileProvider.GetFileInfo("appsettings.json")).Returns(CreateFileInfo(JSON));
-        A.CallTo(() => _fileSystem.Path.GetFullPath(A<string>._))
-         .ReturnsLazily(call => $"C:\\PathX\\{call.Arguments[0]}");
+        AddFile("appsettings.json", JSON);
         var sut = new ConfigBasedAppDataPathProviderFactory([], _fileSystem, _fileProvider);
 
         // act
         AppDataPathProvider appDataPathProvider = sut.Create();
 
         appDataPathProvider.AppDataPath.Should().Be("C:\\PathX\\MyConfigJson");
-        A.CallTo(() => _fileSystem.Path.GetFullPath("MyConfigJson")).MustHaveHappenedOnceExactly();
+        AssertGetFullPathCalled("MyConfigJson");
     }
 
     [Theory]
     [InlineData("--App:AppSettingsPath", "Arg_Relative_RepoMConfigFolder")]
     [InlineData("--App:AppSettingsPath=Arg_Relative_RepoMConfigFolder")]
+    [InlineData("abc", "--App:AppSettingsPath", "Arg_Relative_RepoMConfigFolder")]
+    [InlineData("--App:AppSettingsPath", "Will_be_overridden", "--App:AppSettingsPath", "Arg_Relative_RepoMConfigFolder")]
     public void Create_ShouldSetPathToRelativeFolder_WhenArgumentsAreSet(params string[] args)
     {
         // arrange
-        A.CallTo(() => _fileSystem.Path.GetFullPath("Arg_Relative_RepoMConfigFolder"))
-         .Returns(Path.Combine("C:\\PathX\\Arg_Relative_RepoMConfigFolder"));
         var sut = new ConfigBasedAppDataPathProviderFactory(args, _fileSystem, _fileProvider);
 
         // act
@@ -59,7 +70,7 @@ public class ConfigBasedAppDataPathProviderFactoryTest
 
         // assert
         appDataPathProvider.AppDataPath.Should().Be("C:\\PathX\\Arg_Relative_RepoMConfigFolder");
-        A.CallTo(() => _fileSystem.Path.GetFullPath("Arg_Relative_RepoMConfigFolder")).MustHaveHappenedOnceExactly();
+        AssertGetFullPathCalled("Arg_Relative_RepoMConfigFolder");
     }
 
     [Fact]
@@ -67,9 +78,6 @@ public class ConfigBasedAppDataPathProviderFactoryTest
     {
         // arrange
         using IDisposable _ = SetEnvironmentVariable("REPOM_App__AppSettingsPath", "envVarX");
-        A.CallTo(() => _fileSystem.Path.GetFullPath("Arg_Relative_RepoMConfigFolder"))
-         .Returns(Path.Combine("C:\\PathX\\Arg_Relative_RepoMConfigFolder"));
-
         var sut = new ConfigBasedAppDataPathProviderFactory(["--App:AppSettingsPath=Arg_Relative_RepoMConfigFolder",], _fileSystem, _fileProvider);
 
         // act
@@ -77,7 +85,55 @@ public class ConfigBasedAppDataPathProviderFactoryTest
 
         // assert
         appDataPathProvider.AppDataPath.Should().Be("C:\\PathX\\Arg_Relative_RepoMConfigFolder");
-        A.CallTo(() => _fileSystem.Path.GetFullPath("Arg_Relative_RepoMConfigFolder")).MustHaveHappenedOnceExactly();
+        AssertGetFullPathCalled();
+    }
+
+    [Fact]
+    public void Create_ArgumentsPriority1()
+    {
+        // arrange
+        AddFile("appsettings.json", JSON);
+        using IDisposable _ = SetEnvironmentVariable("REPOM_App__AppSettingsPath", "envVarX");
+        var sut = new ConfigBasedAppDataPathProviderFactory(["--App:AppSettingsPath=Arg_Relative_RepoMConfigFolder",], _fileSystem, _fileProvider);
+
+        // act
+        AppDataPathProvider appDataPathProvider = sut.Create();
+
+        // assert
+        appDataPathProvider.AppDataPath.Should().Be("C:\\PathX\\Arg_Relative_RepoMConfigFolder");
+        AssertGetFullPathCalled();
+    }
+
+    [Fact]
+    public void Create_AppSettingsPriority2()
+    {
+        // arrange
+        AddFile("appsettings.json", JSON);
+        using IDisposable _ = SetEnvironmentVariable("REPOM_App__AppSettingsPath", "envVarX");
+        var sut = new ConfigBasedAppDataPathProviderFactory([], _fileSystem, _fileProvider);
+
+        // act
+        AppDataPathProvider appDataPathProvider = sut.Create();
+
+        // assert
+        appDataPathProvider.AppDataPath.Should().Be("C:\\PathX\\MyConfigJson");
+        AssertGetFullPathCalled();
+    }
+
+    [Fact]
+    public void Create_EnvironmentPriority3()
+    {
+        // arrange
+        AddFile("appsettings.json", JSON_EMPTY);
+        using IDisposable _ = SetEnvironmentVariable("REPOM_App__AppSettingsPath", "envVarX");
+        var sut = new ConfigBasedAppDataPathProviderFactory([], _fileSystem, _fileProvider);
+
+        // act
+        AppDataPathProvider appDataPathProvider = sut.Create();
+
+        // assert
+        appDataPathProvider.AppDataPath.Should().Be("C:\\PathX\\envVarX");
+        AssertGetFullPathCalled();
     }
 
     private static IFileInfo CreateFileInfo(string text)
@@ -95,6 +151,30 @@ public class ConfigBasedAppDataPathProviderFactoryTest
     {
         Environment.SetEnvironmentVariable(key, value);
         return new ClearEnvironmentVariable(key);
+    }
+
+    private void AddFile(string filename, string content)
+    {
+        A.CallTo(() => _fileProvider.GetFileInfo(filename))
+         .Returns(CreateFileInfo(content));
+    }
+
+    private void SetupGetFullPath()
+    {
+        A.CallTo(() => _fileSystem.Path.GetFullPath(A<string>._))
+         .ReturnsLazily(call => $"C:\\PathX\\{call.Arguments[0]}");
+    }
+
+    private void AssertGetFullPathCalled(string? file = null)
+    {
+        if (file is null)
+        {
+            A.CallTo(() => _fileSystem.Path.GetFullPath(A<string>._)).MustHaveHappenedOnceExactly();
+        }
+        else
+        {
+            A.CallTo(() => _fileSystem.Path.GetFullPath(file)).MustHaveHappenedOnceExactly();
+        }
     }
 }
 
