@@ -119,9 +119,8 @@ stages:
             projects: 'tests/**/SystemTests.csproj'
             arguments: >-
               --no-build --configuration $(buildConfiguration) 
-              --output Detailed --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
-              --collect:"XPlat Code Coverage;Format=cobertura,opencover" 
-              --logger trx 
+              --output Detailed 
+              --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura --report-trx
               /p:ExcludeByAttribute=CompilerGenerated 
             publishTestResults: true
 
