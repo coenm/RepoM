@@ -18,8 +18,8 @@ public class BootstrapperTests
         // arrange
 
         // act
-        Container result1 = Sut.Container;
-        Container result2 = Sut.Container;
+        var result1 = Sut.Container;
+        var result2 = Sut.Container;
 
         // assert
         result1.Should().NotBeNull().And.Subject.Should().BeSameAs(result2);

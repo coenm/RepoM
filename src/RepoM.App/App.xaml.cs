@@ -61,7 +61,7 @@ public partial class App : Application
             typeof(FrameworkElement),
             new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
-        Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
+        Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
         _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
 
         var fileSystem = new FileSystem();
@@ -70,10 +70,10 @@ public partial class App : Application
         IHmacService hmacService = new HmacSha256Service();
         IPluginFinder pluginFinder = new PluginFinder(fileSystem, hmacService);
 
-        IConfiguration config = CreateConfigurationBase(e.Args);
-        AppDataPathProvider appDataProvider = CreateAppDataPathProvider(config);
+        var factory = new ConfigBasedAppDataPathProviderFactory(e.Args, fileSystem);
+        AppDataPathProvider appDataProvider = factory.Create();
 
-        config = CreateLoggerConfiguration(appDataProvider);
+        IConfiguration config = CreateLoggerConfiguration(appDataProvider);
         ILoggerFactory loggerFactory = CreateLoggerFactory(config);
 
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
@@ -125,22 +125,6 @@ public partial class App : Application
         base.OnExit(e);
     }
 
-    private static IConfiguration CreateConfigurationBase(string[] args)
-    {
-        IConfigurationBuilder builder = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
-
-#if DEBUG
-        builder = builder.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false);
-#endif
-
-        builder = builder
-                  .AddEnvironmentVariables("REPOM_APP_")
-                  .AddCommandLine(args);
-
-        return builder.Build();
-    }
-
     private static IConfiguration CreateLoggerConfiguration(AppDataPathProvider appDataProvider)
     {
         const string FILENAME = "appsettings.serilog.json";
@@ -170,16 +154,7 @@ public partial class App : Application
         return loggerFactory;
     }
 
-    private static AppDataPathProvider CreateAppDataPathProvider(IConfiguration appDataPathConfiguration)
-    {
-        var appConfig = new Config();
-        appDataPathConfiguration.Bind("App", appConfig);
-        var appDataPathConfig = new AppDataPathConfig
-            {
-                AppSettingsPath = appConfig.AppSettingsPath,
-            };
-        return new AppDataPathProvider(appDataPathConfig);
-    }
+    
 
     private static void UseRepositoryMonitor(Container container)
     {

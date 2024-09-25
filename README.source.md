@@ -74,8 +74,10 @@ To change the app settings location, you can
 
 snippet: src/RepoM.App/appsettings.Development.json
 
-- start RepoM using the commandline argument `--App:AppSettingsPath <absolute or relative path here>`.
-- use environment variable `REPOM__APP_APPSETTINGSPATH`.
+snippet: appsettings_appsettings_path_relative
+
+- start RepoM using the commandline argument `--App:AppSettingsPath '<absolute or relative path here>'`.
+- use environment variable `REPOM_App__AppSettingsPath`.
 
 If none is set, the default will be used.
 
