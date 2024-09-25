@@ -8,10 +8,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="FakeItEasy" Version="8.3.0" />
     <PackageReference Include="FakeItEasy.Analyzer.CSharp" Version="6.1.1">
       <PrivateAssets>all</PrivateAssets>
@@ -24,6 +20,7 @@
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="17.12.4" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="21.0.29" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     <PackageReference Include="TUnit" Version="0.1.818" />
