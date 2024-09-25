@@ -81,7 +81,7 @@ To change the app settings location, you can
   }
 }
 ```
-<sup><a href='/tests/RepoM.App.Tests/ConfigBasedAppDataPathProviderFactoryTest.cs#L27-L33' title='Snippet source file'>snippet source</a> | <a href='#snippet-appsettings_appsettings_path_relative' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.App.Tests/ConfigBasedAppDataPathProviderFactoryTest.cs#L20-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-appsettings_appsettings_path_relative' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 - start RepoM using the commandline argument `--App:AppSettingsPath '<absolute or relative path here>'`.
