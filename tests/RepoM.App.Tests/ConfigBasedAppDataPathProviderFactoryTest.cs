@@ -42,6 +42,26 @@ public class ConfigBasedAppDataPathProviderFactoryTest
     }
 
     [Fact]
+    public void Ctor_ShouldThrow_WhenArgumentNull()
+    {
+        // arrange
+
+        // act
+        Func<ConfigBasedAppDataPathProviderFactory> act1 = () => new ConfigBasedAppDataPathProviderFactory([], null!);
+        Func<ConfigBasedAppDataPathProviderFactory> act2 = () => new ConfigBasedAppDataPathProviderFactory(null!, A.Dummy<IFileSystem>());
+        Func<ConfigBasedAppDataPathProviderFactory> act3 = () => new ConfigBasedAppDataPathProviderFactory([], A.Dummy<IFileSystem>(), null!);
+        Func<ConfigBasedAppDataPathProviderFactory> act4 = () => new ConfigBasedAppDataPathProviderFactory([], null!, A.Dummy<IFileProvider>());
+        Func<ConfigBasedAppDataPathProviderFactory> act5 = () => new ConfigBasedAppDataPathProviderFactory(null!, A.Dummy<IFileSystem>(), A.Dummy<IFileProvider>());
+
+        // assert
+        act1.Should().Throw<ArgumentNullException>();
+        act2.Should().Throw<ArgumentNullException>();
+        act3.Should().Throw<ArgumentNullException>();
+        act4.Should().Throw<ArgumentNullException>();
+        act5.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
     public void Create_ShouldSetPathToRelativeFolder_WhenAppSettingsJsonIsSet()
     {
         // arrange

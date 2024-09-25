@@ -22,7 +22,7 @@ internal class ConfigBasedAppDataPathProviderFactory
     public ConfigBasedAppDataPathProviderFactory(string[] args, IFileSystem fileSystem, IFileProvider fileProvider)
         :this(args, fileSystem)
     {
-        _fileProvider = fileProvider;
+        _fileProvider = fileProvider ?? throw new ArgumentNullException(nameof(fileProvider));
     }
 
     public AppDataPathProvider Create()
