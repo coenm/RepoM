@@ -7,10 +7,10 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
-using NUnit.Framework;
 using RepoM.Api.Git;
 using RepoM.Api.Git.AutoFetch;
 using RepoM.Api.IO;
@@ -20,16 +20,16 @@ using SystemTests.Mocks;
 
 public class DefaultRepositoryMonitorTests
 {
-    private readonly IFileSystem _fileSystem = new FileSystem();
-    private RepositoryWriter _origin = null!;
-    private RepositoryWriter _cloneA = null!;
-    private RepositoryWriter _cloneB = null!;
-    private DefaultRepositoryMonitor _monitor = null!;
-    private string _rootPath = string.Empty;
-    private string _defaultBranch = "master";
+    private static readonly IFileSystem _fileSystem = new FileSystem();
+    private static RepositoryWriter _origin = null!;
+    private static RepositoryWriter _cloneA = null!;
+    private static RepositoryWriter _cloneB = null!;
+    private static DefaultRepositoryMonitor _monitor = null!;
+    private static string _rootPath = string.Empty;
+    private static string _defaultBranch = "master";
 
-    [OneTimeSetUp]
-    public void OneTimeSetUp()
+    [Before(Class)]
+    public static void OneTimeSetUp()
     {
         var fileSystem = new FileSystem();
         _rootPath = Path.Combine(Path.GetTempPath(), "RepoM_Test_Repositories");
@@ -64,8 +64,8 @@ public class DefaultRepositoryMonitorTests
         _cloneB = new RepositoryWriter(Path.Combine(repoPath, "CloneB"), fileSystem);
     }
 
-    [OneTimeTearDown]
-    public void TearDown()
+    [After(Class)]
+    public static void TearDown()
     {
         _monitor.Stop();
         //_monitor.Dispose();
@@ -109,7 +109,6 @@ commit file             master   |  |       |                   |              v
      */
 
     [Test]
-    [Order(0)]
     public void T0A_Detects_Repository_Creation()
     {
         _monitor.Expect(() => _origin.InitBare(),
@@ -118,8 +117,8 @@ commit file             master   |  |       |                   |              v
     }
 
     [Test]
-    [Order(1)]
-    public void T1A_Detects_Repository_Clone()
+    [DependsOn(nameof(T0A_Detects_Repository_Creation))]
+    public async Task T1A_Detects_Repository_Clone()
     {
         _monitor.Expect(() =>
                 {
@@ -130,38 +129,38 @@ commit file             master   |  |       |                   |              v
             deletes => deletes == 0);
 
         _defaultBranch = _cloneA.CurrentBranch;
-        Assert.That(_cloneB.CurrentBranch, Is.EqualTo(_defaultBranch));
+        await Assert.That(_cloneB.CurrentBranch).IsEqualTo(_defaultBranch);
     }
-
+    
     [Test]
-    [Order(2)]
+    [DependsOn(nameof(T1A_Detects_Repository_Clone))]
     public void T2B_Detects_File_Creation()
     {
         _monitor.Expect(() => _cloneA.CreateFile("First.A", "First file on clone A"),
             changes => changes >= 0, /* TODO */
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(3)]
+    [DependsOn(nameof(T2B_Detects_File_Creation))]
     public void T2C_Detects_File_Staging()
     {
         _monitor.Expect(() => _cloneA.Stage("First.A"),
             changes => changes >= 0, /* TODO */
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(4)]
+    [DependsOn(nameof(T2C_Detects_File_Staging))]
     public void T2D_Detects_Repository_Commits()
     {
         _monitor.Expect(() => _cloneA.Commit("Commit #1 on A"),
             changes => changes >= 1,
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(5)]
+    [DependsOn(nameof(T2D_Detects_Repository_Commits))]
     public void T2E_Detects_Repository_Pushes()
     {
         _monitor.Expect(() =>
@@ -172,9 +171,9 @@ commit file             master   |  |       |                   |              v
             changes => changes >= 1,
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(6)]
+    [DependsOn(nameof(T2E_Detects_Repository_Pushes))]
     public void T3A_Detects_Repository_Pull()
     {
         _monitor.Expect(() =>
@@ -185,15 +184,15 @@ commit file             master   |  |       |                   |              v
             changes => changes >= 1,
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(7)]
+    [DependsOn(nameof(T3A_Detects_Repository_Pull))]
     public void T4A_Detects_Repository_Branch_And_Checkout()
     {
         _monitor.Expect(() =>
                 {
                         
-                    _cloneB.CurrentBranch.Should().Be(_defaultBranch);
+                    _cloneB.CurrentBranch.Should().BeOneOf(_defaultBranch);
                     _cloneB.Branch("develop");
                     _cloneB.Checkout("develop");
                     _cloneB.CurrentBranch.Should().Be("develop");
@@ -201,68 +200,64 @@ commit file             master   |  |       |                   |              v
             changes => changes >= 1,
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(8)]
+    [DependsOn(nameof(T4A_Detects_Repository_Branch_And_Checkout))]
     public void T4B_Preparation_Add_Changes_To_A_And_Push()
     {
         _cloneA.CreateFile("Second.A", "Second file on clone A");
         _cloneA.Stage("Second.A");
         _cloneA.Commit("Commit #2 on A");
         _cloneA.Push();
-
-        Assert.Pass("Pass because no exceptions are thrown");
     }
-
+    
     [Test]
-    [Order(9)]
+    [DependsOn(nameof(T4B_Preparation_Add_Changes_To_A_And_Push))]
     public void T4C_Preparation_Add_Changes_To_B()
     {
         _cloneB.CreateFile("First.B", "First file on clone B");
         _cloneB.Stage("First.B");
         _cloneB.Commit("Commit #1 on B");
-
-        Assert.Pass("Pass because no exceptions are thrown");
     }
-
+    
     [Test]
-    [Order(10)]
+    [DependsOn(nameof(T4C_Preparation_Add_Changes_To_B))]
     public void T5A_Preparation_Checkout_Master()
     {
         _cloneB.CurrentBranch.Should().Be("develop");
         _cloneB.Checkout(_defaultBranch);
         _cloneB.CurrentBranch.Should().Be(_defaultBranch);
     }
-
+    
     [Test]
-    [Order(11)]
+    [DependsOn(nameof(T5A_Preparation_Checkout_Master))]
     public void T5B_Detects_Repository_Fetch()
     {
         _monitor.Expect(() => _cloneB.Fetch(),
             changes => changes >= 1,
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(12)]
+    [DependsOn(nameof(T5B_Detects_Repository_Fetch))]
     public void T5C_Detects_Repository_Merge_Tracked_Branch()
     {
         _monitor.Expect(() => _cloneB.MergeWithTracked(),
             changes => changes >= 1,
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(13)]
+    [DependsOn(nameof(T5C_Detects_Repository_Merge_Tracked_Branch))]
     public void T6A_Preparation_Checkout_Develop()
     {
         _cloneB.CurrentBranch.Should().Be(_defaultBranch);
         _cloneB.Checkout("develop");
         _cloneB.CurrentBranch.Should().Be("develop");
     }
-
+    
     [Test]
-    [Order(14)]
+    [DependsOn(nameof(T6A_Preparation_Checkout_Develop))]
     public void T6B_Detects_Repository_Rebase()
     {
         _monitor.Expect(() =>
@@ -273,27 +268,27 @@ commit file             master   |  |       |                   |              v
             changes => changes >= 1,
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(15)]
+    [DependsOn(nameof(T6B_Detects_Repository_Rebase))]
     public void T7A_Preparation_Checkout_Master()
     {
         _cloneB.CurrentBranch.Should().Be("develop");
         _cloneB.Checkout(_defaultBranch);
         _cloneB.CurrentBranch.Should().Be(_defaultBranch);
     }
-
+    
     [Test]
-    [Order(16)]
+    [DependsOn(nameof(T7A_Preparation_Checkout_Master))]
     public void T7B_Detects_Repository_Merge_With_Other_Branch()
     {
         _monitor.Expect(() => _cloneB.Merge("develop"),
             changes => changes >= 1,
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(17)]
+    [DependsOn(nameof(T7B_Detects_Repository_Merge_With_Other_Branch))]
     public void T8A_Detects_Repository_Push_With_Upstream()
     {
         _monitor.Expect(
@@ -306,20 +301,20 @@ commit file             master   |  |       |                   |              v
             changes => changes >= 1,
             deletes => deletes == 0);
     }
-
+    
     [Test]
-    [Order(18)]
+    [DependsOn(nameof(T8A_Detects_Repository_Push_With_Upstream))]
     public void T9A_Detects_Repository_Deletion()
     {
         NormalizeReadOnlyFiles(_cloneA.Path);
-
+    
         _monitor.Expect(
             () => _fileSystem.Directory.Delete(_cloneA.Path, true),
             changes: 0,
             deletes: 1);
     }
 
-    private void TryDeleteRootPath(string rootPath)
+    private static void TryDeleteRootPath(string rootPath)
     {
         if (!_fileSystem.Directory.Exists(rootPath))
         {
@@ -343,7 +338,7 @@ commit file             master   |  |       |                   |              v
         WaitFileOperationDelay();
     }
 
-    private void NormalizeReadOnlyFiles(string rootPath)
+    private static void NormalizeReadOnlyFiles(string rootPath)
     {
         // set readonly git files to "normal" 
         // otherwise we get UnauthorizedAccessExceptions
@@ -357,7 +352,7 @@ commit file             master   |  |       |                   |              v
         }
     }
 
-    private void TryCreateRootPath(string rootPath)
+    private static void TryCreateRootPath(string rootPath)
     {
         TryDeleteRootPath(rootPath);
 
