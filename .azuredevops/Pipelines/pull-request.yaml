@@ -120,8 +120,23 @@ stages:
             arguments: >-
               --no-build --configuration $(buildConfiguration) 
               -- --output Detailed 
-              --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura --report-trx
+              --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
               /p:ExcludeByAttribute=CompilerGenerated 
             publishTestResults: true
+
+        - task: DotNetCoreCLI@2
+          displayName: 🧪 Dotnet Test SystemTest
+          inputs:
+            command: run
+            projects: 'tests/**/SystemTests.csproj'
+            arguments: >-
+              --no-build --configuration $(buildConfiguration) 
+              --output Detailed 
+              --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
+              /p:ExcludeByAttribute=CompilerGenerated
+ 
+        # - task: PublishTestResults@2
+        #   displayName: 🧪 Publish test result SystemTest
+        #   inputs:
 
         - template: Templates/publish-code-analysis.yaml
