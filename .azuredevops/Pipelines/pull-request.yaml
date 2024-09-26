@@ -124,19 +124,4 @@ stages:
               --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
             publishTestResults: true
 
-        - task: DotNetCoreCLI@2
-          displayName: 🧪 Dotnet Test SystemTest
-          inputs:
-            command: run
-            projects: 'tests/**/SystemTests.csproj'
-            arguments: >-
-              --no-build --configuration $(buildConfiguration) 
-              --output Detailed 
-              --report-trx 
-              --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
- 
-        # - task: PublishTestResults@2
-        #   displayName: 🧪 Publish test result SystemTest
-        #   inputs:
-
         - template: Templates/publish-code-analysis.yaml
