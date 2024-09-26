@@ -121,7 +121,6 @@ stages:
               --no-build --configuration $(buildConfiguration) 
               -- --output Detailed 
               --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
-              /p:ExcludeByAttribute=CompilerGenerated 
             publishTestResults: true
 
         - task: DotNetCoreCLI@2
@@ -133,7 +132,6 @@ stages:
               --no-build --configuration $(buildConfiguration) 
               --output Detailed 
               --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
-              /p:ExcludeByAttribute=CompilerGenerated
  
         # - task: PublishTestResults@2
         #   displayName: 🧪 Publish test result SystemTest
