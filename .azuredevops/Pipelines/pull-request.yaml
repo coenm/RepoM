@@ -120,6 +120,7 @@ stages:
             arguments: >-
               --no-build --configuration $(buildConfiguration) 
               -- --output Detailed 
+              --report-trx 
               --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
             publishTestResults: true
 
@@ -131,6 +132,7 @@ stages:
             arguments: >-
               --no-build --configuration $(buildConfiguration) 
               --output Detailed 
+              --report-trx 
               --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
  
         # - task: PublishTestResults@2
