@@ -117,12 +117,24 @@ stages:
           displayName: 🧪 Dotnet Test
           inputs:
             command: test
-            projects: 'tests/**/*.csproj'
+            projects: 'tests/**/*.Tests.csproj'
             arguments: >-
               --no-build --configuration $(buildConfiguration) 
               --collect:"XPlat Code Coverage;Format=cobertura,opencover" 
               --logger trx 
               /p:ExcludeByAttribute=CompilerGenerated 
+            publishTestResults: true
+
+        - task: DotNetCoreCLI@2
+          displayName: 🧪 Dotnet Test SystemTest
+          inputs:
+            command: test
+            projects: 'tests/**/SystemTests.csproj'
+            arguments: >-
+              --no-build --configuration $(buildConfiguration) 
+              -- --output Detailed 
+              --report-trx 
+              --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
             publishTestResults: true
 
         - template: Templates/publish-code-analysis.yaml
