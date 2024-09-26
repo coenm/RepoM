@@ -122,6 +122,7 @@ stages:
               -- --output Detailed 
               --report-trx 
               --coverage --coverage-output coverage.cobertura.xml --coverage-output-format cobertura
+              --results-directory $(Agent.TempDirectory)
             publishTestResults: true
 
         - template: Templates/publish-code-analysis.yaml
