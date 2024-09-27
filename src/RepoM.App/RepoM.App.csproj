@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>RepoM</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>True</UseWindowsForms>
+    <UseWindowsForms>false</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
