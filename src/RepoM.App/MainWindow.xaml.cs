@@ -52,7 +52,9 @@ public partial class MainWindow
     private readonly IAppDataPathProvider _appDataPathProvider;
 
     private readonly List<Separator> _separators = new();
+    private readonly List<AcrylicMenuItem> _menuItems = new();
     private int _separatorIndex = 0;
+    private int _menuItemIndex = 0;
 
     private readonly AcrylicMenuItem _loadingMenuItem = new()
         {
@@ -615,11 +617,10 @@ public partial class MainWindow
             }
         };
 
-        var item = new AcrylicMenuItem
-        {
-            Header = repositoryAction.Name,
-            IsEnabled = repositoryAction.CanExecute,
-        };
+        AcrylicMenuItem item = GetMenuItem();
+        item.Header = repositoryAction.Name;
+        item.IsEnabled = repositoryAction.CanExecute;
+        item.Items.Clear();
         item.Click += new RoutedEventHandler(clickAction);
 
         // this is a deferred submenu. We want to make sure that the context menu can pop up
@@ -863,6 +864,7 @@ public partial class MainWindow
     private void ResetIndex()
     {
         _separatorIndex = 0;
+        _menuItemIndex = 0;
     }
 
     private Separator GetSeparator()
@@ -873,6 +875,16 @@ public partial class MainWindow
         }
 
         return _separators[_separatorIndex++];
+    }
+
+    private AcrylicMenuItem GetMenuItem()
+    {
+        while (_menuItemIndex >= _menuItems.Count)
+        {
+            _menuItems.Add(new AcrylicMenuItem());
+        }
+
+        return _menuItems[_menuItemIndex++];
     }
 
     public bool IsShown => Visibility == Visibility.Visible && IsActive;
