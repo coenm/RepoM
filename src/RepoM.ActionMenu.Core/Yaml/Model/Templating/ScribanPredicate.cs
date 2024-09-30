@@ -1,5 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Model.Templating;
 
+using System;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
@@ -35,8 +36,15 @@ internal class ScribanPredicate : Predicate, ICreateTemplate
 
         if (instance is TemplateContext tc && _template != null)
         {
-            var result = await _template.EvaluateAsync(tc).ConfigureAwait(false);
-            return ToBool(result);
+            try
+            {
+                var result = await _template.EvaluateAsync(tc).ConfigureAwait(false);
+                return ToBool(result);
+            }
+            catch (Exception e)
+            {
+                throw new PredicateEvaluationException(Value, e);
+            }
         }
 
         return await base.EvaluateAsync(instance).ConfigureAwait(false);

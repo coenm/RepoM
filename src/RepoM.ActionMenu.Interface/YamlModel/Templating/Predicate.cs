@@ -38,6 +38,7 @@ public class Predicate : EvaluateObjectBase
         return $"{nameof(Predicate)} {base.ToString()} : {DefaultValue}";
     }
 
+    /// <exception cref="PredicateEvaluationException"></exception>
     public virtual async Task<bool> EvaluateAsync(ITemplateEvaluator instance)
     {
         if (StaticValue.HasValue)
