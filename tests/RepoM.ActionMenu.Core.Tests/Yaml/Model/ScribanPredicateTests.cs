@@ -28,7 +28,10 @@ public class ScribanPredicateTests
         Func<Task<bool>> act = async () => await sut.EvaluateAsync(templateEvaluator);
 
         // assert
-        await act.Should().ThrowAsync<PredicateEvaluationException>().WithMessage("Could not evaluate predicate 'file.exists x' because <input>(1,6) : error : Cannot get the member file.exists for a null object.");
+        (await act.Should().ThrowAsync<PredicateEvaluationException>())
+            .WithMessage("Could not evaluate predicate 'file.exists x' because <input>(1,6) : error : Cannot get the member file.exists for a null object.")
+            .And.PredicateText.Should().Be("file.exists x");
+
     }
 }
 
