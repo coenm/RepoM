@@ -51,6 +51,15 @@ public partial class MainWindow
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
+    private readonly List<Separator> _separators = new();
+    private int _separatorIndex = 0;
+
+    private readonly AcrylicMenuItem _loadingMenuItem = new()
+        {
+            Header = "Loading ..",
+            IsEnabled = true,
+        };
+
     public MainWindow(
         IRepositoryInformationAggregator aggregator,
         IRepositoryMonitor repositoryMonitor,
@@ -248,6 +257,7 @@ public partial class MainWindow
 
     private async Task<bool> LstRepositoriesContextMenuOpeningAsync(ContextMenu ctxMenu)
     {
+        ResetIndex();
         if (lstRepositories.SelectedItem is not RepositoryViewModel vm)
         {
             return false;
@@ -267,11 +277,7 @@ public partial class MainWindow
         // }
 
         ctxMenu.Items.Clear();
-        ctxMenu.Items.Add(new AcrylicMenuItem
-            {
-                Header = "Loading ..",
-                IsEnabled = true,
-            });
+        ctxMenu.Items.Add(_loadingMenuItem);
 
         await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(true))
         {
@@ -279,7 +285,7 @@ public partial class MainWindow
             {
                 if (items.Count > 0 && items[^1] is not Separator)
                 {
-                    items.Add(new Separator());
+                    items.Add(GetSeparator());
                 }
             }
             else if (action is DeferredSubActionsUserInterfaceRepositoryAction or UserInterfaceRepositoryAction)
@@ -496,7 +502,7 @@ public partial class MainWindow
     {
         if (action is RepositorySeparatorAction)
         {
-            return new Separator();
+            return GetSeparator();
         }
 
         if (action is not RepositoryAction repositoryAction)
@@ -577,7 +583,7 @@ public partial class MainWindow
     {
         if (action is UserInterfaceSeparatorRepositoryAction)
         {
-            return new Separator();
+            return GetSeparator();
         }
 
         // UserInterfaceRepositoryAction
@@ -852,6 +858,21 @@ public partial class MainWindow
         lstRepositories.SelectedIndex = 0;
         var item = (ListBoxItem)lstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
         item?.Focus();
+    }
+    
+    private void ResetIndex()
+    {
+        _separatorIndex = 0;
+    }
+
+    private Separator GetSeparator()
+    {
+        while (_separatorIndex >= _separators.Count)
+        {
+            _separators.Add(new Separator());
+        }
+
+        return _separators[_separatorIndex++];
     }
 
     public bool IsShown => Visibility == Visibility.Visible && IsActive;
