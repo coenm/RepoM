@@ -6,6 +6,10 @@
     },
     "RepoM.App": {
       "commandName": "Project"
+    },
+    "RepoM.App appdata": {
+      "commandName": "Project",
+      "commandLineArgs": "--App:AppSettingsPath \"%appdata%\\RepoM\""
     }
   }
 }
