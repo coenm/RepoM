@@ -533,12 +533,10 @@ public partial class MainWindow
                 }
             };
 
-        var item = new AcrylicMenuItem
-            {
-                Header = repositoryAction.Name,
-                IsEnabled = repositoryAction.CanExecute,
-            };
-        item.Click += new RoutedEventHandler(clickAction);
+        AcrylicMenuItem item = GetMenuItem();
+        item.Header = repositoryAction.Name;
+        item.IsEnabled = repositoryAction.CanExecute;
+        item.SetClick(new RoutedEventHandler(clickAction));
 
         // this is a deferred submenu. We want to make sure that the context menu can pop up
         // fast, while submenus are not evaluated yet. We don't want to make the context menu
@@ -620,8 +618,7 @@ public partial class MainWindow
         AcrylicMenuItem item = GetMenuItem();
         item.Header = repositoryAction.Name;
         item.IsEnabled = repositoryAction.CanExecute;
-        item.Items.Clear();
-        item.Click += new RoutedEventHandler(clickAction);
+        item.SetClick(new RoutedEventHandler(clickAction));
 
         // this is a deferred submenu. We want to make sure that the context menu can pop up
         // fast, while submenus are not evaluated yet. We don't want to make the context menu
@@ -884,7 +881,10 @@ public partial class MainWindow
             _menuItems.Add(new AcrylicMenuItem());
         }
 
-        return _menuItems[_menuItemIndex++];
+        AcrylicMenuItem result = _menuItems[_menuItemIndex++];
+        result.Items.Clear();
+        result.ClearClick();
+        return result;
     }
 
     public bool IsShown => Visibility == Visibility.Visible && IsActive;

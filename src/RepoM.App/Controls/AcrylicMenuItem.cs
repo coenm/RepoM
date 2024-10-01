@@ -8,6 +8,7 @@ using RepoM.App.Services;
 
 public class AcrylicMenuItem : MenuItem
 {
+    private RoutedEventHandler? _evt;
     private static readonly Brush _solidColorBrush = new SolidColorBrush(Color.FromArgb(80, 0, 0, 0));
 
     protected override void OnSubmenuOpened(RoutedEventArgs e)
@@ -31,7 +32,7 @@ public class AcrylicMenuItem : MenuItem
             return;
         }
 
-        DependencyObject parent = container;
+        DependencyObject? parent = container;
         var borderIndex = 0;
 
         while (parent != null)
@@ -50,5 +51,23 @@ public class AcrylicMenuItem : MenuItem
         }
 
         AcrylicHelper.EnableBlur(container);
+    }
+
+    public void SetClick(RoutedEventHandler routedEventHandler)
+    {
+        ClearClick();
+        Click += routedEventHandler;
+        _evt = routedEventHandler;
+    }
+
+    public void ClearClick()
+    {
+        if (_evt == null)
+        {
+            return;
+        }
+
+        Click -= _evt;
+        _evt = null;
     }
 }
