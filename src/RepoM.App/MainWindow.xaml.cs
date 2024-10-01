@@ -51,6 +51,17 @@ public partial class MainWindow
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
 
+    private readonly List<Separator> _separators = new();
+    private readonly List<AcrylicMenuItem> _menuItems = new();
+    private int _separatorIndex = 0;
+    private int _menuItemIndex = 0;
+
+    private readonly AcrylicMenuItem _loadingMenuItem = new()
+        {
+            Header = "Loading ..",
+            IsEnabled = true,
+        };
+
     public MainWindow(
         IRepositoryInformationAggregator aggregator,
         IRepositoryMonitor repositoryMonitor,
@@ -248,6 +259,7 @@ public partial class MainWindow
 
     private async Task<bool> LstRepositoriesContextMenuOpeningAsync(ContextMenu ctxMenu)
     {
+        ResetIndex();
         if (lstRepositories.SelectedItem is not RepositoryViewModel vm)
         {
             return false;
@@ -267,11 +279,7 @@ public partial class MainWindow
         // }
 
         ctxMenu.Items.Clear();
-        ctxMenu.Items.Add(new AcrylicMenuItem
-            {
-                Header = "Loading ..",
-                IsEnabled = true,
-            });
+        ctxMenu.Items.Add(_loadingMenuItem);
 
         await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(true))
         {
@@ -279,7 +287,7 @@ public partial class MainWindow
             {
                 if (items.Count > 0 && items[^1] is not Separator)
                 {
-                    items.Add(new Separator());
+                    items.Add(GetSeparator());
                 }
             }
             else if (action is DeferredSubActionsUserInterfaceRepositoryAction or UserInterfaceRepositoryAction)
@@ -496,7 +504,7 @@ public partial class MainWindow
     {
         if (action is RepositorySeparatorAction)
         {
-            return new Separator();
+            return GetSeparator();
         }
 
         if (action is not RepositoryAction repositoryAction)
@@ -525,12 +533,10 @@ public partial class MainWindow
                 }
             };
 
-        var item = new AcrylicMenuItem
-            {
-                Header = repositoryAction.Name,
-                IsEnabled = repositoryAction.CanExecute,
-            };
-        item.Click += new RoutedEventHandler(clickAction);
+        AcrylicMenuItem item = GetMenuItem();
+        item.Header = repositoryAction.Name;
+        item.IsEnabled = repositoryAction.CanExecute;
+        item.SetClick(new RoutedEventHandler(clickAction));
 
         // this is a deferred submenu. We want to make sure that the context menu can pop up
         // fast, while submenus are not evaluated yet. We don't want to make the context menu
@@ -577,7 +583,7 @@ public partial class MainWindow
     {
         if (action is UserInterfaceSeparatorRepositoryAction)
         {
-            return new Separator();
+            return GetSeparator();
         }
 
         // UserInterfaceRepositoryAction
@@ -609,12 +615,10 @@ public partial class MainWindow
             }
         };
 
-        var item = new AcrylicMenuItem
-        {
-            Header = repositoryAction.Name,
-            IsEnabled = repositoryAction.CanExecute,
-        };
-        item.Click += new RoutedEventHandler(clickAction);
+        AcrylicMenuItem item = GetMenuItem();
+        item.Header = repositoryAction.Name;
+        item.IsEnabled = repositoryAction.CanExecute;
+        item.SetClick(new RoutedEventHandler(clickAction));
 
         // this is a deferred submenu. We want to make sure that the context menu can pop up
         // fast, while submenus are not evaluated yet. We don't want to make the context menu
@@ -852,6 +856,35 @@ public partial class MainWindow
         lstRepositories.SelectedIndex = 0;
         var item = (ListBoxItem)lstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
         item?.Focus();
+    }
+    
+    private void ResetIndex()
+    {
+        _separatorIndex = 0;
+        _menuItemIndex = 0;
+    }
+
+    private Separator GetSeparator()
+    {
+        while (_separatorIndex >= _separators.Count)
+        {
+            _separators.Add(new Separator());
+        }
+
+        return _separators[_separatorIndex++];
+    }
+
+    private AcrylicMenuItem GetMenuItem()
+    {
+        while (_menuItemIndex >= _menuItems.Count)
+        {
+            _menuItems.Add(new AcrylicMenuItem());
+        }
+
+        AcrylicMenuItem result = _menuItems[_menuItemIndex++];
+        result.Items.Clear();
+        result.ClearClick();
+        return result;
     }
 
     public bool IsShown => Visibility == Visibility.Visible && IsActive;
