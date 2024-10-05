@@ -8,7 +8,8 @@ using RepoM.App.Services;
 
 public class AcrylicMenuItem : MenuItem
 {
-    private RoutedEventHandler? _evt;
+    private RoutedEventHandler? _clickEvtHandler;
+    private RoutedEventHandler? _subMenuOpenedEventHandler;
     private static readonly Brush _solidColorBrush = new SolidColorBrush(Color.FromArgb(80, 0, 0, 0));
 
     protected override void OnSubmenuOpened(RoutedEventArgs e)
@@ -53,21 +54,55 @@ public class AcrylicMenuItem : MenuItem
         AcrylicHelper.EnableBlur(container);
     }
 
+    public void SoftReset()
+    {
+        ClearClick();
+        ClearSubMenuOpened();
+    }
+
     public void SetClick(RoutedEventHandler routedEventHandler)
     {
         ClearClick();
         Click += routedEventHandler;
-        _evt = routedEventHandler;
+        _clickEvtHandler = routedEventHandler;
     }
 
     public void ClearClick()
     {
-        if (_evt == null)
+        if (_clickEvtHandler == null)
         {
             return;
         }
 
-        Click -= _evt;
-        _evt = null;
+        Click -= _clickEvtHandler;
+        _clickEvtHandler = null;
+    }
+
+    public void SetSubMenuOpened(RoutedEventHandler routedEventHandler)
+    {
+        ClearSubMenuOpened();
+        SubmenuOpened += routedEventHandler;
+        _subMenuOpenedEventHandler = routedEventHandler;
+    }
+    
+    public void ClearSubMenuOpened()
+    {
+        if (_subMenuOpenedEventHandler == null)
+        {
+            return;
+        }
+
+        SubmenuOpened -= _subMenuOpenedEventHandler;
+        _subMenuOpenedEventHandler = null;
+    }
+
+    public void ClearItems()
+    {
+        if (Items.Count == 0)
+        {
+            return;
+        }
+
+        Items.Clear();
     }
 }
