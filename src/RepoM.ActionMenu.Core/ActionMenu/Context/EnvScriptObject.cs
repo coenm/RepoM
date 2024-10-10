@@ -11,7 +11,7 @@ internal sealed class EnvScriptObject : IScriptObject
 {
     private readonly IDictionary<string, string> _env;
 
-    public static EnvScriptObject Create()
+    private static EnvScriptObject Create()
     {
         var env = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -32,6 +32,8 @@ internal sealed class EnvScriptObject : IScriptObject
 
         return new EnvScriptObject(env);
     }
+
+    public static EnvScriptObject Instance { get; } = Create();
 
     public EnvScriptObject(IDictionary<string, string> envVars)
     {
@@ -80,9 +82,14 @@ internal sealed class EnvScriptObject : IScriptObject
         // intentionally do nothing
     }
 
-    public IScriptObject Clone(bool deep)
+    public EnvScriptObject Clone()
     {
         return new EnvScriptObject(new Dictionary<string, string>(_env));
+    }
+
+    IScriptObject IScriptObject.Clone(bool deep)
+    {
+        return Clone();
     }
 
     public int Count => _env.Count;

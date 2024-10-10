@@ -26,7 +26,6 @@ internal class RepositoryActionGitCheckoutV1Mapper : ActionToRepositoryActionMap
             name,
             repository,
             context,
-            false,
             _ =>
                 Task.FromResult(repository.LocalBranches
                           .Take(50)
@@ -42,7 +41,6 @@ internal class RepositoryActionGitCheckoutV1Mapper : ActionToRepositoryActionMap
                                           remoteBranchesTranslated,
                                           repository,
                                           context,
-                                          false,
                                           _ =>
                                           {
                                               UserInterfaceRepositoryActionBase[] remoteBranches = repository

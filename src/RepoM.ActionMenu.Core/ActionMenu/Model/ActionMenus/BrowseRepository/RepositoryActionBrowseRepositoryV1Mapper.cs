@@ -42,7 +42,6 @@ internal class RepositoryActionBrowseRepositoryV1Mapper : ActionToRepositoryActi
                 name,
                 repository,
                 context,
-                captureScope: false,
                 async ctx => await EnumerateRemotes(ctx.Repository).ConfigureAwait(false))
             {
                 CanExecute = true,

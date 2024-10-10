@@ -74,10 +74,10 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
         // intentionally do nothing
     }
 
-    public IScriptObject Clone(bool deep)
+    public EnvSetScriptObject Clone()
     {
         EnvScriptObject[] items = _stack.Items;
-        var result = new EnvSetScriptObject((EnvScriptObject)items[0].Clone(true));
+        var result = new EnvSetScriptObject(items[0].Clone());
 
         if (items.Length <= 1)
         {
@@ -88,7 +88,7 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
         {
             if (items[i] != null)
             {
-                result.Push((EnvScriptObject)items[i].Clone(true));
+                result.Push(items[i].Clone());
             }
         }
 
@@ -121,5 +121,10 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
         }
 
         return null;
+    }
+
+    IScriptObject IScriptObject.Clone(bool deep)
+    {
+        return Clone();
     }
 }

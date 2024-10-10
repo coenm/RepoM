@@ -27,10 +27,6 @@ public class DisposableContextScriptObjectTests
     private readonly IActionToRepositoryActionMapper[] _mapper = [];
     private readonly IActionMenuDeserializer _deserializer = A.Fake<IActionMenuDeserializer>();
     private readonly ActionMenuGenerationContext _context;
-    private readonly EnvSetScriptObject _env = new(new EnvScriptObject(new Dictionary<string, string>()
-        {
-            { "x", "y" },
-        }));
     private readonly IContextActionProcessor[] _mappers;
     private readonly DisposableContextScriptObject _sut;
 
@@ -44,7 +40,7 @@ public class DisposableContextScriptObjectTests
         _context = new ActionMenuGenerationContext(_templateParser, _fileSystem, _functionsArray, _mapper, _deserializer, _mappers);
         _context.Initialize(_repository);
 
-        _sut = new DisposableContextScriptObject(_context, _env, _mappers);
+        _sut = new DisposableContextScriptObject(_context, _mappers);
     }
 
     [Fact]
@@ -53,14 +49,12 @@ public class DisposableContextScriptObjectTests
         // arrange
 
         // act
-        Func<DisposableContextScriptObject> act1 = () => new DisposableContextScriptObject(_context, _env, null!);
-        Func<DisposableContextScriptObject> act2 = () => new DisposableContextScriptObject(_context, null!, _mappers);
-        Func<DisposableContextScriptObject> act3 = () => new DisposableContextScriptObject(null!, _env, _mappers);
+        Func<DisposableContextScriptObject> act1 = () => new DisposableContextScriptObject(_context, null!);
+        Func<DisposableContextScriptObject> act2 = () => new DisposableContextScriptObject(null!, _mappers);
 
         // assert
         act1.Should().Throw<ArgumentNullException>();
         act2.Should().Throw<ArgumentNullException>();
-        act3.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -135,13 +129,13 @@ public class DisposableContextScriptObjectTests
     public void PushEnvironmentVariable_ShouldAddVariables()
     {
         // arrange
-        var env = new EnvSetScriptObject(
-            new EnvScriptObject(
-                new Dictionary<string, string>()
-                {
-                    { "x", "y" },
-                }));
-        var sut = new DisposableContextScriptObject(_context, env, _mappers);
+        var env = new EnvScriptObject(
+            new Dictionary<string, string>
+            {
+                { "x", "y" },
+            });
+        _context.Env.Push(env);
+        IScope sut = new DisposableContextScriptObject(_context, _mappers);
 
         // assume
         env.Count.Should().Be(1);
@@ -163,13 +157,13 @@ public class DisposableContextScriptObjectTests
     public void PushEnvironmentVariable_ShouldAddVariables_Distinct()
     {
         // arrange
-        var env = new EnvSetScriptObject(
-            new EnvScriptObject(
-                new Dictionary<string, string>()
-                    {
-                        { "x", "y" },
-                    }));
-        var sut = new DisposableContextScriptObject(_context, env, _mappers);
+        var env = new EnvScriptObject(
+            new Dictionary<string, string>
+                {
+                    { "x", "y" },
+                });
+        _context.Env.Push(env);
+        IScope sut = new DisposableContextScriptObject(_context, _mappers);
 
         // assume
         env.Count.Should().Be(1);
@@ -191,14 +185,14 @@ public class DisposableContextScriptObjectTests
     public void Dispose_ShouldPopAllPushedEnvironmentVariables()
     {
         // arrange
-        var env = new EnvSetScriptObject(
-            new EnvScriptObject(
-                new Dictionary<string, string>()
-                    {
-                        { "x1", "y" },
-                        { "x2", "yy" },
-                    }));
-        var sut = new DisposableContextScriptObject(_context, env, _mappers);
+        var env = new EnvScriptObject(
+            new Dictionary<string, string>
+                {
+                    { "x1", "y" },
+                    { "x2", "yy" },
+                });
+        _context.Env.Push(env);
+        IScope sut = new DisposableContextScriptObject(_context, _mappers);
         sut.PushEnvironmentVariable(
             new Dictionary<string, string>
                 {
