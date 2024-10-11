@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
+using RepoM.ActionMenu.Core.Abstractions;
 using RepoM.ActionMenu.Core.ConfigReader;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
@@ -25,6 +26,7 @@ using RepoM.Core.Plugin.Repository;
 internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 {
     private readonly IFileSystem _fileSystem;
+    private readonly IEnvironment _environment;
     private readonly ITemplateParser _templateParser;
     private readonly ITemplateContextRegistration[] _plugins;
     private readonly IActionToRepositoryActionMapper[] _mappers;
@@ -34,7 +36,8 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     private readonly IContextActionProcessor[] _contextActionMappers;
 
     public UserInterfaceActionMenuFactory(
-        IFileSystem fileSystem, 
+        IFileSystem fileSystem,
+        IEnvironment environment,
         ITemplateParser templateParser,
         IEnumerable<ITemplateContextRegistration> plugins,
         IEnumerable<IActionToRepositoryActionMapper> mappers,
@@ -43,6 +46,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         ILogger logger)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _environment = environment ?? throw new ArgumentNullException(nameof(environment));
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
         _plugins = plugins.ToArray();
         _mappers = mappers.ToArray();
@@ -101,7 +105,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         await Task.Yield();
         
         _logger.LogTrace("CreateActionMenuGenerationContext ActionMenuGenerationContext ctor");
-        var actionMenuGenerationContext = new ActionMenuGenerationContext(_templateParser, _fileSystem, _plugins, _mappers, _deserializer, _contextActionMappers);
+        var actionMenuGenerationContext = new ActionMenuGenerationContext(_templateParser, _fileSystem, _environment, _plugins, _mappers, _deserializer, _contextActionMappers);
         actionMenuGenerationContext.Initialize(repository);
         return actionMenuGenerationContext;
     }

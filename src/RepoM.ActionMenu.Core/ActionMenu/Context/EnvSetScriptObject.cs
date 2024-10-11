@@ -12,6 +12,10 @@ internal sealed class EnvSetScriptObject : IScriptObject, IDisposable
 {
     private FastStack<EnvScriptObject> _stack = new(10);
 
+    public EnvSetScriptObject(IDictionary<string, string> envVars) : this(new EnvScriptObject(envVars))
+    {
+    }
+
     public EnvSetScriptObject(EnvScriptObject @base)
     {
         _ = @base ?? throw new ArgumentNullException(nameof(@base));

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
+using RepoM.ActionMenu.Core.Abstractions;
 using RepoM.ActionMenu.Core.ActionMenu.Context;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
@@ -23,6 +24,7 @@ using RepositoryFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.RepositoryF
 internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerationContext, IContextMenuActionMenuGenerationContext
 {
     private readonly ITemplateParser _templateParser;
+    private readonly IEnvironment _environment;
     private readonly ITemplateContextRegistration[] _functionsArray;
     private readonly IActionMenuDeserializer _deserializer; 
     private readonly IActionToRepositoryActionMapper[] _repositoryActionMappers; 
@@ -35,12 +37,14 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     public ActionMenuGenerationContext(
         ITemplateParser templateParser, 
         IFileSystem fileSystem,
+        IEnvironment environment,
         ITemplateContextRegistration[] functionsArray,
         IActionToRepositoryActionMapper[] repositoryActionMappers,
         IActionMenuDeserializer deserializer,
         IContextActionProcessor[] contextActionMappers)
     {
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
+        _environment = environment ?? throw new ArgumentNullException(nameof(environment));
         _functionsArray = functionsArray ?? throw new ArgumentNullException(nameof(functionsArray));
         FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _repositoryActionMappers = repositoryActionMappers ?? throw new ArgumentNullException(nameof(repositoryActionMappers));
@@ -102,6 +106,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         var result = new ActionMenuGenerationContext(
             _templateParser,
             FileSystem,
+            _environment,
             _functionsArray,
             _repositoryActionMappers,
             _deserializer,
@@ -115,8 +120,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     {
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-        _rootScriptObject = CreateAndInitRepoMScriptObject(
-            new EnvSetScriptObject(EnvScriptObject.Instance));
+        _rootScriptObject = CreateAndInitRepoMScriptObject(new EnvSetScriptObject(_environment.GetEnvironmentVariables()));
 
         foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
         {

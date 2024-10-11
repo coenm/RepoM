@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using RepoM.ActionMenu.Core.Abstractions;
 using RepoM.ActionMenu.Core.ConfigReader;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
@@ -55,6 +56,9 @@ public static class Bootstrapper
 
         container.RegisterSingleton<IFileReader, FileReader>();
         container.RegisterDecorator<IFileReader, CacheFileReaderDecorator>(Lifestyle.Singleton);
+
+        container.RegisterInstance<IEnvironment>(SystemEnvironments.Instance);
+        container.RegisterDecorator<IEnvironment, EnvironmentsCacheDecorator>(Lifestyle.Singleton);
     }
 
     /// <summary>
