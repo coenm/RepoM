@@ -12,14 +12,13 @@ using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.App.Services;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
-using SimpleInjector.Diagnostics;
 using Xunit;
 
 public class UserMenuActionMenuFactoryTests
 {
-    private IUserInterfaceActionMenuFactory _factory;
-    private IAppDataPathProvider _appDataPathProvider;
-    private IFileSystem _fileSystem;
+    private readonly IUserInterfaceActionMenuFactory _factory;
+    private readonly IAppDataPathProvider _appDataPathProvider;
+    private readonly IFileSystem _fileSystem;
 
     public UserMenuActionMenuFactoryTests()
     {
@@ -59,5 +58,28 @@ public class UserMenuActionMenuFactoryTests
         // assert
         result.Should().HaveCount(3);
         A.CallTo(_factory).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public async Task CreateMenuAsync_ShouldReturnFactoryResult_WhenFileExists()
+    {
+        // arrange
+        var repository = A.Dummy<IRepository>();
+        var actions = new List<UserInterfaceRepositoryActionBase>()
+            {
+                new UserInterfaceRepositoryAction("test", repository),
+            };
+        A.CallTo(() => _fileSystem.File.Exists(A<string>._)).Returns(true);
+        A.CallTo(() => _appDataPathProvider.AppDataPath).Returns("C:\\AppData\\");
+        A.CallTo(() => _factory.CreateMenuAsync(repository, System.IO.Path.Combine("C:\\AppData\\", "RepositoryActionsV2.yaml"))).Returns(actions.ToAsyncEnumerable());
+
+        var sut = new UserMenuActionMenuFactory(_fileSystem, _appDataPathProvider, _factory);
+
+        // act
+        List<UserInterfaceRepositoryActionBase> result = await sut.CreateMenuAsync(repository).ToListAsync();
+
+        // assert
+        result.Should().BeEquivalentTo(actions);
+        A.CallTo(() => _factory.CreateMenuAsync(repository, System.IO.Path.Combine("C:\\AppData\\", "RepositoryActionsV2.yaml"))).MustHaveHappenedOnceExactly();
     }
 }
