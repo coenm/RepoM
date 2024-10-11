@@ -118,6 +118,7 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+- `is-deferred`: Whether the folder is deferred. ([Predicate](repository_action_types.md#predicate))
 
 ### Example
 
@@ -129,6 +130,7 @@ action-menu:
 - type: folder@1
   name: My folder
   active: true
+  is-deferred: false
   actions:
   - type: url@1
     name: 'Browse to remote {{ repository.remotes[0].key }}'
@@ -138,7 +140,7 @@ action-menu:
     name: 'wiki'
     url: '{{ repository.remotes[0].url }}/wiki'
 ```
-<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/folder@1-scenario01.testfile.yaml#L3-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-folder@1-scenario01' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/tests/RepoM.ActionMenu.Core.Tests/ActionMenu/IntegrationTests/Docs/folder@1-scenario01.testfile.yaml#L3-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-folder@1-scenario01' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
