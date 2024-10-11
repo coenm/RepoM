@@ -4,6 +4,8 @@ using FakeItEasy;
 using FluentAssertions;
 using System.IO.Abstractions;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.Abstractions;
 using RepoM.ActionMenu.Core.Misc;
 using Xunit;
@@ -34,5 +36,24 @@ public class ActionMenuGenerationContextTests
         act4.Should().Throw<ArgumentNullException>();
         act5.Should().Throw<ArgumentNullException>();
         act6.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public async Task AddActionMenusAsync_ShouldDoNothing_WhenArgumentIsNull()
+    {
+        // arrange
+        var sut = new ActionMenuGenerationContext(
+            A.Dummy<ITemplateParser>(),
+            A.Dummy<Core.Abstractions.OperatingSystem>(),
+            [],
+            [],
+            A.Dummy<IActionMenuDeserializer>(),
+            []);
+
+        // act
+        var result = await sut.AddActionMenusAsync(null!).ToListAsync();
+
+        // assert
+        result.Should().BeEmpty();
     }
 }
