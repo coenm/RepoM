@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
-using RepoM.ActionMenu.Core.Abstractions;
 using RepoM.ActionMenu.Core.ActionMenu.Context;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
@@ -19,15 +18,16 @@ using Scriban;
 using Scriban.Runtime;
 using FileFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.FileFunctions;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
+using OperatingSystem = RepoM.ActionMenu.Core.Abstractions.OperatingSystem;
 using RepositoryFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.RepositoryFunctions;
 
 internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerationContext, IContextMenuActionMenuGenerationContext
 {
     private readonly ITemplateParser _templateParser;
-    private readonly IEnvironment _environment;
+    private readonly OperatingSystem _operatingSystem;
     private readonly ITemplateContextRegistration[] _functionsArray;
-    private readonly IActionMenuDeserializer _deserializer; 
-    private readonly IActionToRepositoryActionMapper[] _repositoryActionMappers; 
+    private readonly IActionMenuDeserializer _deserializer;
+    private readonly IActionToRepositoryActionMapper[] _repositoryActionMappers;
     private readonly IContextActionProcessor[] _contextActionMappers;
     private RepoMScriptObject _rootScriptObject = null!;
     private EnvSetScriptObject? _env;
@@ -35,18 +35,16 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     private DisposableContextScriptObject _repositoryActionsScriptContext = null!;
 
     public ActionMenuGenerationContext(
-        ITemplateParser templateParser, 
-        IFileSystem fileSystem,
-        IEnvironment environment,
+        ITemplateParser templateParser,
+        OperatingSystem operatingSystem,
         ITemplateContextRegistration[] functionsArray,
         IActionToRepositoryActionMapper[] repositoryActionMappers,
         IActionMenuDeserializer deserializer,
         IContextActionProcessor[] contextActionMappers)
     {
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
-        _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+        _operatingSystem = operatingSystem ?? throw new ArgumentNullException(nameof(operatingSystem));
         _functionsArray = functionsArray ?? throw new ArgumentNullException(nameof(functionsArray));
-        FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _repositoryActionMappers = repositoryActionMappers ?? throw new ArgumentNullException(nameof(repositoryActionMappers));
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
         _contextActionMappers = contextActionMappers ?? throw new ArgumentNullException(nameof(contextActionMappers));
@@ -54,8 +52,8 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     public IRepository Repository { get; private set; } = null!;
 
-    public IFileSystem FileSystem { get; }
-    
+    public IFileSystem FileSystem => _operatingSystem.FileSystem;
+
     public EnvSetScriptObject Env => _env ??= (EnvSetScriptObject)_rootScriptObject["env"];
 
     public async Task AddRepositoryContextAsync(Context? reposContext)
@@ -105,8 +103,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     {
         var result = new ActionMenuGenerationContext(
             _templateParser,
-            FileSystem,
-            _environment,
+            _operatingSystem,
             _functionsArray,
             _repositoryActionMappers,
             _deserializer,
@@ -120,7 +117,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     {
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-        _rootScriptObject = CreateAndInitRepoMScriptObject(new EnvSetScriptObject(_environment.GetEnvironmentVariables()));
+        _rootScriptObject = CreateAndInitRepoMScriptObject(new EnvSetScriptObject(_operatingSystem.Environment.GetEnvironmentVariables()));
 
         foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
         {
@@ -144,10 +141,10 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         PushGlobal(_rootScriptObject);
 
-        // -2 because _rootScriptObject and RepositoryActionsScriptContext are already added
-        if (@this.GlobalCount -2 != @this._globals.Count)
+        const int OFFSET = 2; // Because _rootScriptObject and RepositoryActionsScriptContext are already added
+        if (@this.GlobalCount != @this._globals.Count + OFFSET)
         {
-            throw new Exception();
+            throw new InvalidOperationException($"Could not clone TemplateContext because of a mismatch between global counts. GlobalCount was {@this.GlobalCount} and expected was {@this._globals.Count + OFFSET}");
         }
 
         _repositoryActionsScriptContext = new DisposableContextScriptObject(this, _contextActionMappers);

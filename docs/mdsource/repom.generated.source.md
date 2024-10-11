@@ -75,6 +75,7 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
+- `is-deferred`: Whether the folder is deferred. ([Predicate](repository_action_types.md#predicate))
 
 ### Example
 

@@ -15,6 +15,7 @@ using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using SimpleInjector;
+using OperatingSystem = Abstractions.OperatingSystem;
 
 public static class Bootstrapper
 {
@@ -59,6 +60,8 @@ public static class Bootstrapper
 
         container.RegisterInstance<IEnvironment>(SystemEnvironments.Instance);
         container.RegisterDecorator<IEnvironment, EnvironmentsCacheDecorator>(Lifestyle.Singleton);
+
+        container.RegisterSingleton<OperatingSystem>();
     }
 
     /// <summary>

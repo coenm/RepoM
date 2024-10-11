@@ -320,7 +320,7 @@ public partial class MainWindow
             {
                 if (HasSubItems(uira))
                 {
-                    while (ctxMenuItemsCount > index && (ctxMenu.Items[index] is Separator s || (ctxMenu.Items[index] is AcrylicMenuItem ami1 && ami1.Tag ==  _singleItem)))
+                    while (ctxMenuItemsCount > index && (ctxMenu.Items[index] is Separator || (ctxMenu.Items[index] is AcrylicMenuItem ami1 && ami1.Tag ==  _singleItem)))
                     {
                         var ctrl = (Control)ctxMenu.Items[index]!;
                         if (ctrl.Visibility != Visibility.Collapsed)
@@ -350,7 +350,7 @@ public partial class MainWindow
                 }
                 else
                 {
-                    while (ctxMenuItemsCount > index && (ctxMenu.Items[index] is Separator s || (ctxMenu.Items[index] is AcrylicMenuItem ami1 && ami1.Tag == _menuItem)))
+                    while (ctxMenuItemsCount > index && (ctxMenu.Items[index] is Separator || (ctxMenu.Items[index] is AcrylicMenuItem ami1 && ami1.Tag == _menuItem)))
                     {
                         var ctrl = (Control)ctxMenu.Items[index]!;
                         if (ctrl.Visibility != Visibility.Collapsed)
@@ -640,7 +640,7 @@ public partial class MainWindow
         return item;
     }
 
-    private bool HasSubItems(UserInterfaceRepositoryAction repositoryAction)
+    private static bool HasSubItems(UserInterfaceRepositoryAction repositoryAction)
     {
         if (repositoryAction is DeferredSubActionsUserInterfaceRepositoryAction)
         {

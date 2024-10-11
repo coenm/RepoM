@@ -1,7 +1,6 @@
 namespace RepoM.ActionMenu.Core.ActionMenu.Context;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Scriban;
 using Scriban.Parsing;
@@ -11,33 +10,17 @@ internal sealed class EnvScriptObject : IScriptObject
 {
     private readonly IDictionary<string, string> _env;
 
-    private static EnvScriptObject Create()
-    {
-        var env = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (DictionaryEntry item in Environment.GetEnvironmentVariables()) // difficult to test.
-        {
-            if (item.Key is not string key || string.IsNullOrEmpty(key))
-            {
-                continue;
-            }
-
-            if (item.Value is not string value)
-            {
-                continue;
-            }
-
-            env.Add(key.Trim(), value);
-        }
-
-        return new EnvScriptObject(env);
-    }
-
-    public static EnvScriptObject Instance { get; } = Create();
-
     public EnvScriptObject(IDictionary<string, string> envVars)
     {
-        _env = envVars;
+        _env = envVars ?? throw new ArgumentNullException(nameof(envVars));
+    }
+
+    public int Count => _env.Count;
+
+    public bool IsReadOnly
+    {
+        get => true;
+        set => _ = value;
     }
 
     public IEnumerable<string> GetMembers()
@@ -90,13 +73,5 @@ internal sealed class EnvScriptObject : IScriptObject
     IScriptObject IScriptObject.Clone(bool deep)
     {
         return Clone();
-    }
-
-    public int Count => _env.Count;
-
-    public bool IsReadOnly
-    {
-        get => true;
-        set => _ = value;
     }
 }

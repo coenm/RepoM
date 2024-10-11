@@ -226,7 +226,13 @@ public class DisposableContextScriptObjectTests
 
     private ActionMenuGenerationContext CreateContext()
     {
-        var context = new ActionMenuGenerationContext(_templateParser, _fileSystem, _environment, _functionsArray, _mapper, _deserializer, _mappers);
+        var context = new ActionMenuGenerationContext(
+            _templateParser,
+            new Core.Abstractions.OperatingSystem(_fileSystem, _environment),
+            _functionsArray,
+            _mapper,
+            _deserializer,
+            _mappers);
         context.Initialize(_repository);
         return context;
     }
