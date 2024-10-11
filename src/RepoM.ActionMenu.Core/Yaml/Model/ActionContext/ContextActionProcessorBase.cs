@@ -6,7 +6,7 @@ using RepoM.ActionMenu.Interface.YamlModel;
 
 public abstract class ContextActionProcessorBase<T> : IContextActionProcessor where T : IContextAction
 {
-    public bool CanProcess(IContextAction action)
+    public bool CanProcess(in IContextAction action)
     {
         return action is T;
     }

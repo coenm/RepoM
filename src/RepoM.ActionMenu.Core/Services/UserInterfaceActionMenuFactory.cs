@@ -2,7 +2,6 @@ namespace RepoM.ActionMenu.Core.Services;
 
 using System;
 using System.Collections.Generic;
-using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -21,10 +20,11 @@ using RepoM.ActionMenu.Interface.Scriban;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;
+using OperatingSystem = RepoM.ActionMenu.Core.Abstractions.OperatingSystem;
 
 internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 {
-    private readonly IFileSystem _fileSystem;
+    private readonly OperatingSystem _operatingSystem;
     private readonly ITemplateParser _templateParser;
     private readonly ITemplateContextRegistration[] _plugins;
     private readonly IActionToRepositoryActionMapper[] _mappers;
@@ -34,7 +34,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     private readonly IContextActionProcessor[] _contextActionMappers;
 
     public UserInterfaceActionMenuFactory(
-        IFileSystem fileSystem, 
+        OperatingSystem operatingSystem,
         ITemplateParser templateParser,
         IEnumerable<ITemplateContextRegistration> plugins,
         IEnumerable<IActionToRepositoryActionMapper> mappers,
@@ -42,7 +42,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         IFileReader fileReader,
         ILogger logger)
     {
-        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _operatingSystem = operatingSystem ?? throw new ArgumentNullException(nameof(operatingSystem));
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
         _plugins = plugins.ToArray();
         _mappers = mappers.ToArray();
@@ -66,26 +66,18 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
 
         ActionMenuRoot actions = await LoadAsync(filename).ConfigureAwait(false);
 
-        // process context (vars + methods)
-        _logger.LogTrace("CreateActionMenuGenerationContext AddRepositoryContextAsync");
         await context.AddRepositoryContextAsync(actions.Context).ConfigureAwait(false);
 
-        // process actions
-        _logger.LogTrace("CreateActionMenuGenerationContext foreach AddActionMenusAsync");
         await foreach (UserInterfaceRepositoryActionBase item in context.AddActionMenusAsync(actions.ActionMenu).ConfigureAwait(false))
         {
-            _logger.LogTrace("CreateActionMenuGenerationContext foreach inner");
             yield return item;
         }
-
-        _logger.LogTrace("CreateMenuAsync Done");
     }
 
     public async Task<IEnumerable<string>> GetTagsAsync(IRepository repository, string filename)
     {
         ActionMenuGenerationContext context = await CreateActionMenuGenerationContext(repository).ConfigureAwait(false);
 
-        // load yaml
         TagsRoot actions = await LoadTagsAsync(filename).ConfigureAwait(false);
 
         if (actions.Tags == null)
@@ -93,10 +85,8 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
             return [];
         }
 
-        // process context (vars + methods)
         await context.AddRepositoryContextAsync(actions.Context).ConfigureAwait(false);
 
-        // process tags
         return await context.GetTagsAsync(actions.Tags).ConfigureAwait(false);
     }
 
@@ -106,7 +96,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         await Task.Yield();
         
         _logger.LogTrace("CreateActionMenuGenerationContext ActionMenuGenerationContext ctor");
-        var actionMenuGenerationContext = new ActionMenuGenerationContext(_templateParser, _fileSystem, _plugins, _mappers, _deserializer, _contextActionMappers);
+        var actionMenuGenerationContext = new ActionMenuGenerationContext(_templateParser, _operatingSystem, _plugins, _mappers, _deserializer, _contextActionMappers);
         actionMenuGenerationContext.Initialize(repository);
         return actionMenuGenerationContext;
     }

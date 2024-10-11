@@ -14,14 +14,10 @@ public sealed class DeferredSubActionsUserInterfaceRepositoryAction : UserInterf
         string name,
         IRepository repository,
         IActionMenuGenerationContext actionMenuGenerationContext,
-        bool captureScope,
         Func<IActionMenuGenerationContext, Task<UserInterfaceRepositoryActionBase[]>> resolveFunction)
         : base(name, repository)
     {
-        _context = captureScope
-            ? actionMenuGenerationContext.Clone()
-            : actionMenuGenerationContext;
-
+        _context = actionMenuGenerationContext.Clone();
         _getFunction = resolveFunction;
     }
 

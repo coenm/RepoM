@@ -7,7 +7,7 @@ using RepoM.Core.Plugin.Repository;
 
 public interface IActionToRepositoryActionMapper
 {
-    bool CanMap(IMenuAction action);
+    bool CanMap(in IMenuAction action);
 
-    IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(IMenuAction action, IActionMenuGenerationContext context, IRepository repository);
+    IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(in IMenuAction action, in IActionMenuGenerationContext context, in IRepository repository);
 }

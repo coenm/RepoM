@@ -10,19 +10,25 @@ using Scriban.Runtime;
 
 internal class RepoMScriptObject : ScriptObject, IContextRegistration
 {
-    public override IScriptObject Clone(bool deep)
+    private void RegisterCustomFunction(string name, IScriptCustomFunction func)
     {
-        // Not sure if this clone is okay.
-        // needs testing
-        IScriptObject result = base.Clone(deep);
-
-        if (result is RepoMScriptObject repoMScriptObject)
-        {
-            return repoMScriptObject;
-        }
-
-        throw new NotImplementedException("Could not clone");
+        RegisterVariableInner(name, func);
     }
+
+    private void RegisterVariableInner(string name, object value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(value);
+
+        var names = name.Split(',');
+
+        foreach (var subName in names)
+        {
+            SetValue(subName, value, true);
+        }
+    }
+
+    #region IContextRegistration
 
     IContextRegistration IContextRegistration.CreateOrGetSubRegistration(string key)
     {
@@ -55,7 +61,7 @@ internal class RepoMScriptObject : ScriptObject, IContextRegistration
     {
         return ContainsKey(key);
     }
-    
+
     void IContextRegistration.RegisterConstant(string name, object value)
     {
         RegisterVariableInner(name, value);
@@ -126,23 +132,7 @@ internal class RepoMScriptObject : ScriptObject, IContextRegistration
         RegisterVariableInner(name, value);
     }
 
-    private void RegisterCustomFunction(string name, IScriptCustomFunction func)
-    {
-        RegisterVariableInner(name, func);
-    }
-
-    private void RegisterVariableInner(string name, object value)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        ArgumentNullException.ThrowIfNull(value);
-
-        var names = name.Split(',');
-
-        foreach (var subName in names)
-        {
-            SetValue(subName, value, true);
-        }
-    }
+    #endregion
 }
 
 #pragma warning restore S2436

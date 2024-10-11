@@ -18,40 +18,41 @@ using Scriban;
 using Scriban.Runtime;
 using FileFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.FileFunctions;
 using IRepository = RepoM.Core.Plugin.Repository.IRepository;
+using OperatingSystem = RepoM.ActionMenu.Core.Abstractions.OperatingSystem;
 using RepositoryFunctions = RepoM.ActionMenu.Core.ActionMenu.Context.RepositoryFunctions;
 
 internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerationContext, IContextMenuActionMenuGenerationContext
 {
     private readonly ITemplateParser _templateParser;
+    private readonly OperatingSystem _operatingSystem;
     private readonly ITemplateContextRegistration[] _functionsArray;
     private readonly IActionMenuDeserializer _deserializer;
     private readonly IActionToRepositoryActionMapper[] _repositoryActionMappers;
     private readonly IContextActionProcessor[] _contextActionMappers;
-    private RepoMScriptObject _rootScriptObject = null!; // used for cloning.
+    private RepoMScriptObject _rootScriptObject = null!;
+    private EnvSetScriptObject? _env;
+    private FastStack<DisposableContextScriptObject> _globals = new(4);
+    private DisposableContextScriptObject _repositoryActionsScriptContext = null!;
 
     public ActionMenuGenerationContext(
-        ITemplateParser templateParser, 
-        IFileSystem fileSystem,
+        ITemplateParser templateParser,
+        OperatingSystem operatingSystem,
         ITemplateContextRegistration[] functionsArray,
         IActionToRepositoryActionMapper[] repositoryActionMappers,
         IActionMenuDeserializer deserializer,
         IContextActionProcessor[] contextActionMappers)
     {
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
+        _operatingSystem = operatingSystem ?? throw new ArgumentNullException(nameof(operatingSystem));
         _functionsArray = functionsArray ?? throw new ArgumentNullException(nameof(functionsArray));
-        FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _repositoryActionMappers = repositoryActionMappers ?? throw new ArgumentNullException(nameof(repositoryActionMappers));
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
         _contextActionMappers = contextActionMappers ?? throw new ArgumentNullException(nameof(contextActionMappers));
     }
-    
-    public IFileSystem FileSystem { get; }
 
-    public DisposableContextScriptObject RepositoryActionsScriptContext { get; private set; } = null!;
+    public IRepository Repository { get; private set; } = null!;
 
-    public IRepository Repository { get; private set;  } = null!;
-
-    private EnvSetScriptObject? _env;
+    public IFileSystem FileSystem => _operatingSystem.FileSystem;
 
     public EnvSetScriptObject Env => _env ??= (EnvSetScriptObject)_rootScriptObject["env"];
 
@@ -64,7 +65,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
         foreach (IContextAction contextAction in reposContext)
         {
-            await RepositoryActionsScriptContext.AddContextActionAsync(contextAction).ConfigureAwait(false);
+            await _repositoryActionsScriptContext.AddContextActionAsync(contextAction).ConfigureAwait(false);
         }
     }
 
@@ -86,29 +87,29 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         }
     }
 
+    public void PushGlobal(DisposableContextScriptObject scriptObject)
+    {
+        base.PushGlobal(scriptObject);
+        _globals.Push(scriptObject);
+    }
+
+    public new void PopGlobal()
+    {
+        _globals.Pop();
+        base.PopGlobal();
+    }
+
     public IActionMenuGenerationContext Clone()
     {
-#pragma warning disable S125
-        // this method doesn't work yet. Cloning the full Template context is not possible.
-        // to be implemented (https://github.com/coenm/RepoM/issues/85)
-        /*
-        var repoMScriptObject = (RepoMScriptObject)_rootScriptObject.Clone(true);
-
-        IScriptObject e = ((EnvSetScriptObject)_rootScriptObject["env"]).Clone(true);
-        repoMScriptObject.SetValue("env", e, false);
-        */
-#pragma warning restore S125
-
         var result = new ActionMenuGenerationContext(
             _templateParser,
-            FileSystem,
+            _operatingSystem,
             _functionsArray,
             _repositoryActionMappers,
             _deserializer,
             _contextActionMappers);
 
-        result.Initialize(Repository);
-
+        result.InitializeFrom(this);
         return result;
     }
 
@@ -116,28 +117,55 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     {
         Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-        _rootScriptObject = CreateAndInitRepoMScriptObject(Repository);
-        
+        _rootScriptObject = CreateAndInitRepoMScriptObject(new EnvSetScriptObject(_operatingSystem.Environment.GetEnvironmentVariables()));
+
         foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
         {
             contextRegistration.RegisterFunctions(Decorate<ActionMenuGenerationContext>(_rootScriptObject));
         }
 
         PushGlobal(_rootScriptObject);
-        RepositoryActionsScriptContext = new DisposableContextScriptObject(this, Env, _contextActionMappers);
-        PushGlobal(RepositoryActionsScriptContext);
+        _repositoryActionsScriptContext = new DisposableContextScriptObject(this, _contextActionMappers);
+        PushGlobal(_repositoryActionsScriptContext);
     }
 
-    private static RepoMScriptObject CreateAndInitRepoMScriptObject(IRepository repository)
+    private void InitializeFrom(ActionMenuGenerationContext @this)
+    {
+        Repository = @this.Repository;
+
+        _rootScriptObject = CreateAndInitRepoMScriptObject(@this.Env.Clone());
+        foreach (ITemplateContextRegistration contextRegistration in _functionsArray)
+        {
+            contextRegistration.RegisterFunctions(Decorate<ActionMenuGenerationContext>(_rootScriptObject));
+        }
+
+        PushGlobal(_rootScriptObject);
+
+        const int OFFSET = 2; // Because _rootScriptObject and RepositoryActionsScriptContext are already added
+        if (@this.GlobalCount != @this._globals.Count + OFFSET)
+        {
+            throw new InvalidOperationException($"Could not clone TemplateContext because of a mismatch between global counts. GlobalCount was {@this.GlobalCount} and expected was {@this._globals.Count + OFFSET}");
+        }
+
+        _repositoryActionsScriptContext = new DisposableContextScriptObject(this, _contextActionMappers);
+        PushGlobal(_repositoryActionsScriptContext);
+
+        for (var index = 0; index < @this._globals.Count; index++)
+        {
+            @this._globals.Items[index].CloneUsingNewContext(this);
+        }
+    }
+
+    private RepoMScriptObject CreateAndInitRepoMScriptObject(EnvSetScriptObject env)
     {
         var scriptObj = new RepoMScriptObject();
 
         scriptObj.Import(typeof(InitialFunctions));
 
         scriptObj.SetValue("file", new FileFunctions(), true);
-        scriptObj.SetValue("repository", new RepositoryFunctions(repository), true);
+        scriptObj.SetValue("repository", new RepositoryFunctions(Repository), true);
 
-        scriptObj.Add("env", new EnvSetScriptObject(EnvScriptObject.Create()));
+        scriptObj.Add("env", env);
         scriptObj.SetReadOnly("env", false); // this is not what we want, but it's the only way to make it work
 
         return scriptObj;
@@ -168,7 +196,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         }
 
         var items = new List<UserInterfaceRepositoryActionBase>();
-        await foreach (UserInterfaceRepositoryActionBase item in mapper.MapAsync(menuAction, this, Repository).ConfigureAwait(false))
+        await foreach (UserInterfaceRepositoryActionBase item in mapper.MapAsync(in menuAction, this, Repository).ConfigureAwait(false))
         {
             items.Add(item);
         }
@@ -184,7 +212,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
 
     private DisposableContextScriptObject PushNewContext()
     {
-        return new DisposableContextScriptObject(this, Env, _contextActionMappers);
+        return new DisposableContextScriptObject(this, _contextActionMappers);
     }
 
     public async Task<object> EvaluateAsync(string? text)

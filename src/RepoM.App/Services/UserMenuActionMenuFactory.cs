@@ -17,6 +17,7 @@ internal class UserMenuActionMenuFactory : IUserMenuActionMenuFactory
     private readonly IFileSystem _fileSystem;
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly IUserInterfaceActionMenuFactory _factory;
+    private readonly string _fullFilename;
 
     public UserMenuActionMenuFactory(
         IFileSystem fileSystem,
@@ -26,12 +27,13 @@ internal class UserMenuActionMenuFactory : IUserMenuActionMenuFactory
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _factory = userInterfaceActionMenuFactory ?? throw new ArgumentNullException(nameof(userInterfaceActionMenuFactory));
+
+        _fullFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, FILENAME);
     }
 
     public async IAsyncEnumerable<UserInterfaceRepositoryActionBase> CreateMenuAsync(IRepository repository)
     {
-        var fullFilename = System.IO.Path.Combine(_appDataPathProvider.AppDataPath, FILENAME);
-        var fileExists = _fileSystem.File.Exists(fullFilename);
+        var fileExists = _fileSystem.File.Exists(_fullFilename);
 
         if (!fileExists)
         {
@@ -54,7 +56,7 @@ internal class UserMenuActionMenuFactory : IUserMenuActionMenuFactory
             yield break;
         }
 
-        await foreach (UserInterfaceRepositoryActionBase item in _factory.CreateMenuAsync(repository, fullFilename).ConfigureAwait(false))
+        await foreach (UserInterfaceRepositoryActionBase item in _factory.CreateMenuAsync(repository, _fullFilename).ConfigureAwait(false))
         {
             yield return item;
         }
