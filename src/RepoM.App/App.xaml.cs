@@ -3,6 +3,7 @@
 namespace RepoM.App;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Threading;
@@ -22,7 +23,6 @@ using RepoM.App.Services;
 using Container = SimpleInjector.Container;
 using RepoM.App.Services.HotKey;
 using RepoM.Api;
-using RepoM.App.Configuration;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -35,6 +35,11 @@ public partial class App : Application
     private ModuleService? _moduleService;
     private HotKeyService? _hotKeyService;
     private WindowSizeService? _windowSizeService;
+#if DEBUG
+    private const bool CHECK_SINGLE_INSTANCE = false;
+#else
+    private const bool CHECK_SINGLE_INSTANCE = true;
+#endif
 
     [STAThread]
     public static void Main()
@@ -162,8 +167,15 @@ public partial class App : Application
         _repositoryMonitor.Observe();
     }
 
+    [SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "Compiler condition")]
+    [SuppressMessage("ReSharper", "HeuristicUnreachableCode", Justification = "Compiler condition")]
     private static bool IsAlreadyRunning()
     {
+        if (!CHECK_SINGLE_INSTANCE)
+        {
+            return false;
+        }
+
         try
         {
             _mutex = new Mutex(true, "Local\\github.com/coenm/RepoM", out var createdNew);
