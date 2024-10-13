@@ -77,7 +77,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
         return true;
     }
 
-    private static ReadOnlySpan<char> HandleHashTag(ReadOnlySpan<char> comment, ICollection<string> tags)
+    private static ReadOnlySpan<char> HandleHashTag(ReadOnlySpan<char> comment, List<string> tags)
     {
         comment = comment["#".Length..];
 
@@ -91,7 +91,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
         return comment;
     }
 
-    private static ReadOnlySpan<char> HandleHashTagName(ReadOnlySpan<char> comment, ICollection<string> names)
+    private static ReadOnlySpan<char> HandleHashTagName(ReadOnlySpan<char> comment, List<string> names)
     {
         comment = comment[HASH_TAG_NAME.Length..];
 
@@ -124,7 +124,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
         return comment;
     }
 
-    private static ReadOnlySpan<char> HandleHashTagOrder(ReadOnlySpan<char> comment, ICollection<int> orders)
+    private static ReadOnlySpan<char> HandleHashTagOrder(ReadOnlySpan<char> comment, List<int> orders)
     {
         comment = comment[HASH_TAG_ORDER.Length..];
 
@@ -150,7 +150,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
         return comment;
     }
 
-    private static ReadOnlySpan<char> HandleHashTagRepo(ReadOnlySpan<char> comment, ICollection<string> repos)
+    private static ReadOnlySpan<char> HandleHashTagRepo(ReadOnlySpan<char> comment, List<string> repos)
     {
         comment = comment[HASH_TAG_REPO.Length..];
 

@@ -4,6 +4,7 @@ using System;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 using FakeItEasy;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
@@ -75,9 +76,10 @@ public class StatisticsPackageTest
 
         // act
         await sut.RegisterServicesAsync(_container, _packageConfiguration);
+        Action act = () => _container.Verify(VerificationOption.VerifyAndDiagnose);
 
         // assert
-        Assert.Throws<InvalidOperationException>(() => _container.Verify(VerificationOption.VerifyAndDiagnose));
+        act.Should().ThrowExactly<InvalidOperationException>();
     }
 
     private static void RegisterExternals(Container container)

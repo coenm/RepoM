@@ -57,9 +57,10 @@ public class LuceneQueryParserPackageTest
 
         // act
         sut.RegisterServices(_container);
+        Action act = () => _container.Verify(VerificationOption.VerifyAndDiagnose);
 
         // assert
-        Assert.Throws<InvalidOperationException>(() => _container.Verify(VerificationOption.VerifyAndDiagnose));
+        act.Should().ThrowExactly<InvalidOperationException>();
     }
 
     private static void RegisterExternals(Container container)

@@ -16,21 +16,21 @@ public class NotifyIconViewModel
     /// <summary>
     /// Shows a window, if none is already open.
     /// </summary>
-    public ICommand OpenCommand =>
+    public static ICommand OpenCommand =>
         new DelegateCommand
             {
                 CanExecuteFunc = () => (Application.Current.MainWindow as MainWindow)?.IsShown == false,
                 CommandAction = () => (Application.Current.MainWindow as MainWindow)?.ShowAndActivate(),
             };
 
-    public ICommand StartWithWindows =>
+    public static ICommand StartWithWindows =>
         new DelegateCommand
             {
                 CanExecuteFunc = () => !AutoStart.IsStartup(APP_NAME),
                 CommandAction = () => AutoStart.SetStartup(APP_NAME, true),
             };
 
-    public ICommand DoNotStartWithWindows =>
+    public static ICommand DoNotStartWithWindows =>
         new DelegateCommand
             {
                 CanExecuteFunc = () => AutoStart.IsStartup(APP_NAME),
@@ -40,7 +40,7 @@ public class NotifyIconViewModel
     /// <summary>
     /// Shuts down the application.
     /// </summary>
-    public ICommand ExitApplicationCommand =>
+    public static ICommand ExitApplicationCommand =>
         new DelegateCommand
             {
                 CommandAction = () => Application.Current.Shutdown(),
