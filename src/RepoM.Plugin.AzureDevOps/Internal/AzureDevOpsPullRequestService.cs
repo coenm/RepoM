@@ -44,8 +44,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         {
             if (string.IsNullOrEmpty(configuration.AzureDevOpsPersonalAccessToken))
             {
-                //throw new ArgumentNullException(nameof(configuration.AzureDevOpsPersonalAccessToken));
-                _logger.LogInformation("No Azure configuration present");
+                _logger.LogInformation("No Azure configuration present. Module will not be enabled.");
             }
             else
             {
@@ -56,7 +55,6 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                 _httpClient.DefaultRequestHeaders.Accept.Add(new("application/json"));
                 _httpClient.DefaultRequestHeaders.Authorization = new("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($":{_configuration.AzureDevOpsPersonalAccessToken}")));
             }
-
         }
         catch (Exception e)
         {
@@ -124,7 +122,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
         if (!response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync(CancellationToken.None);
             _logger.LogError("PR creation went wrong with following response: {Message}", content);
             throw new HttpRequestException(content, null, response.StatusCode);
         }

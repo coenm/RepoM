@@ -10,7 +10,10 @@
         reuse the same context menu (which is a resource) again (which will have its DataContext set to the old TaskbarIcon)
   -->
 	<controls:AcrylicContextMenu x:Shared="false" x:Key="SysTrayMenu">
-		<controls:AcrylicMenuItem Header="{DynamicResource Open}" Command="{Binding OpenCommand}" />
+        <controls:AcrylicContextMenu.DataContext>
+            <app:NotifyIconViewModel/>
+        </controls:AcrylicContextMenu.DataContext>
+        <controls:AcrylicMenuItem Header="{DynamicResource Open}" Command="{Binding OpenCommand}" />
         <controls:AcrylicMenuItem Header="{DynamicResource StartWithWindows}" 
                   Command="{Binding StartWithWindows}"
                   Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"

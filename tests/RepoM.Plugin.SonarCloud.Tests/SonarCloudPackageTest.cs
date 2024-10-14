@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
+using FluentAssertions;
 
 public class SonarCloudPackageTest
 {
@@ -76,9 +77,10 @@ public class SonarCloudPackageTest
 
         // act
         await sut.RegisterServicesAsync(_container, _packageConfiguration);
+        Action act = () => _container.Verify(VerificationOption.VerifyAndDiagnose);
 
         // assert
-        Assert.Throws<InvalidOperationException>(() => _container.Verify(VerificationOption.VerifyAndDiagnose));
+        act.Should().ThrowExactly<InvalidOperationException>();
     }
 
     private void RegisterExternals(Container container)

@@ -21,8 +21,8 @@ public class PluginInformationTests
         PackageAttribute? result = assembly.GetCustomAttribute<PackageAttribute>();
 
         // assert
-        Assert.NotNull(result);
-        result.Name.Should().NotBeNullOrWhiteSpace();
+        result.Should().NotBeNull();
+        result!.Name.Should().NotBeNullOrWhiteSpace();
         result.ToolTip.Should().NotBeNullOrWhiteSpace();
     }
 
@@ -53,7 +53,7 @@ public class PluginInformationTests
     private static PackageAttribute GetFromAssembly(Assembly assembly)
     {
         PackageAttribute? result = assembly.GetCustomAttribute<PackageAttribute>();
-        Assert.NotNull(result);
-        return result;
+        result.Should().NotBeNull();
+        return result!;
     }
 }

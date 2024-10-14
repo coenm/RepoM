@@ -1,3 +1,5 @@
+using FluentAssertions;
+
 namespace RepoM.Plugin.AzureDevOps.Tests;
 
 using System;
@@ -76,9 +78,10 @@ public class AzureDevOpsPackageTests
 
         // act
         await sut.RegisterServicesAsync(_container, _packageConfiguration);
+        Action act = () => _container.Verify(VerificationOption.VerifyAndDiagnose);
 
         // assert
-        Assert.Throws<InvalidOperationException>(() => _container.Verify(VerificationOption.VerifyAndDiagnose));
+        act.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Theory]
