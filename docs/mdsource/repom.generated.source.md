@@ -193,7 +193,7 @@ snippet: just-text@1-scenario01
 
 ## pin-repository@1
 
-Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.
+Action to pin (or unpin) the current repository. Pinning is not persistent and all pinned repositories will be cleared when RepoM exits.
 Pinning a repository allowed custom filtering, ordering and searching.
 
 Properties:
@@ -201,7 +201,7 @@ Properties:
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
-- `mode`: The pin mode `[Toggle, Pin, UnPin]`. (Nullable, optional)
+- `mode`: The pin mode. Should be `toggle`, `pin`, or `un-pin`. Default value is `toggle`. 
 
 ### Example
 

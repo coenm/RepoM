@@ -33,6 +33,11 @@ public class TypeInfoDescriptor
         {
             SkipForDocumentGeneration = true;
         }
+
+        if (Name.Contains("PinMode"))
+        {
+            SkipForDocumentGeneration = true;
+        }
     }
 
     public TypeInfoDescriptor(string name, string csharpTypeName)
