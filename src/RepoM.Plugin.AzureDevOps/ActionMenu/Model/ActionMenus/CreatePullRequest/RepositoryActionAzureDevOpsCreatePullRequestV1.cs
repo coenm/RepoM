@@ -88,7 +88,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     public Predicate Active { get; set; } = true;
 
     /// <summary>
-    /// Auto complete options.
+    /// Auto complete options. If not provided, auto complete will not be set.
     /// </summary>
     public AutoCompleteOptionsV1? AutoComplete { get; set; }
     
