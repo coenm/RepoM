@@ -114,7 +114,7 @@ Action to create a folder (sub menu) in the context menu of the repository allow
 
 Properties:
 
-- `actions`: List of actions. (ActionMenu, optional)
+- `actions`: List of actions. ([ActionMenu](repository_action_types.md#actions))
 - `name`: Name of the menu item. ([Text](repository_action_types.md#text))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
@@ -156,7 +156,7 @@ Properties:
 - `enumerable`: The list of items to enumerate on. (Variable)
 - `variable`: The name of the variable to access to current enumeration of the  items. For each iteration, the variable `{var.name}` has the value of the current iteration. (string?, optional)
 - `skip`: Predicate to skip the current item. ([Predicate](repository_action_types.md#predicate))
-- `actions`: List of repeated actions. (List)
+- `actions`: List of repeated actions. ([ActionMenu](repository_action_types.md#actions))
 
 ### Example
 
