@@ -1,5 +1,22 @@
 # Repository Action types
 
+## Actions
+
+Actions are a list of actions. This can be used in a sub menu.
+
+### Example
+
+```yaml
+action-menu:
+- type: folder@1
+  actions:
+  - type: just-text@1
+    name: x
+  - type: url@1
+    name: x
+  # etc. etc.
+```
+
 ## Context
 
 The context type enables you to create or load variables and add some custom scriban methods in order to render [Text](#text) or calculate [Predicats](#predicate).
