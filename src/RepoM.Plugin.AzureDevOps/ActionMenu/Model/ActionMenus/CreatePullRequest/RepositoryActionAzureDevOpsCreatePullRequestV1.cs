@@ -69,7 +69,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     public Predicate DraftPr { get; set; } = false;
 
     /// <summary>
-    /// Boolean specifying if workitems should be included in the PR. RepoM will try to resolve the workitems by looping through the commit messages.
+    /// Boolean specifying if work items should be included in the PR. RepoM will try to resolve the work items by looping through the commit messages.
     /// </summary>
     [Predicate(true)]
     public Predicate IncludeWorkItems { get; set; } = true;
@@ -88,7 +88,7 @@ internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuActi
     public Predicate Active { get; set; } = true;
 
     /// <summary>
-    /// Auto complete options. Please take a look at the same for more information
+    /// Auto complete options. If not provided, auto complete will not be set.
     /// </summary>
     public AutoCompleteOptionsV1? AutoComplete { get; set; }
     

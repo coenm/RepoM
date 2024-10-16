@@ -20,14 +20,14 @@ internal class AutoCompleteOptionsV1
     public MergeStrategyV1 MergeStrategy { get; set; } = MergeStrategyV1.NoFastForward; // GitHub issue: https://github.com/coenm/RepoM/issues/87
 
     /// <summary>
-    /// Boolean specifying if the source branche should be deleted afer completion.
+    /// Boolean specifying if the source branch should be deleted after completion.
     /// </summary>
     [Required]
     [Predicate(true)]
     public Predicate DeleteSourceBranch { get; set; } = true;
 
     /// <summary>
-    /// Boolean specifying if related workitems should be transitioned to the next state.
+    /// Boolean specifying if related work items should be transitioned to the next state.
     /// </summary>
     [Required]
     [Predicate(true)]

@@ -1,5 +1,16 @@
 {{~
+func write_parenthesis_when_not_empty(s)
+  if !string.empty s
+    ret "(" + s + ")"
+  end
+  ret ""
+end
+
 func write_type_with_link(t)
+  if t.SkipForDocumentGeneration
+    ret "";
+  end
+
   result = t.Name;
 
   if !string.empty t.Link

@@ -4,9 +4,10 @@ using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 using RepoM.ActionMenu.Interface.YamlModel.Templating;
+using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 
 /// <summary>
-/// Action to pin (or unpin) the current repository. Pinning is not persistant and all pinned repositories will be cleared when RepoM exits.
+/// Action to pin (or unpin) the current repository. Pinning is not persistent and all pinned repositories will be cleared when RepoM exits.
 /// Pinning a repository allowed custom filtering, ordering and searching.
 /// </summary>
 /// <example>
@@ -36,9 +37,10 @@ internal sealed class RepositoryActionPinV1 : IMenuAction, IContext, IName
     public Context? Context { get; set; }
 
     /// <summary>
-    /// The pin mode `[Toggle, Pin, UnPin]`.
+    /// The pin mode. Should be `toggle`, `pin`, or `un-pin`. Default value is `toggle`.
     /// </summary>
-    public PinMode? Mode { get; set; } // GitHub issue: https://github.com/coenm/RepoM/issues/87
+    [PropertyDefaultTypedValue<PinMode>(PinMode.Toggle)]
+    public PinMode Mode { get; set; } = PinMode.Toggle; // GitHub issue: https://github.com/coenm/RepoM/issues/87
 
     public override string ToString()
     {

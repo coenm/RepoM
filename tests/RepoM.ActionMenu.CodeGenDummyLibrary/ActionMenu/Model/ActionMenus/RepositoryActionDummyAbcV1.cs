@@ -48,7 +48,7 @@ internal sealed class RepositoryActionDummyAbcV1 : IMenuAction, IContext
 
     /// <summary>
     /// Pull Request title. When not provided, the title will be defined based on the branch name.
-    /// Title will be the last part of the branchname split on `/`, so `feature/123-testBranch` will result in title `123-testBranch`
+    /// Title will be the last part of the branch name split on `/`, so `feature/123-testBranch` will result in title `123-testBranch`
     /// </summary>
     /// <example>
     /// `{{ repository.branch | string.replace "feature/" "" | string.truncate 16 "..." }}`

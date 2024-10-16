@@ -5,7 +5,12 @@
 Properties:
 
     {{~ for p in actionmenu_item.ActionMenuProperties ~}}
-- `{{ hyphenated p.CSharpName }}`: {{ p.Description }} ({{ write_type_with_link p.ReturnType }})
+- `{{ hyphenated p.CSharpName }}`: {{ p.Description }} {{ write_parenthesis_when_not_empty (write_type_with_link (p.ReturnType)) }}
+{{~ if hyphenated(p.CSharpName) == 'auto-complete' ~}}
+  - `merge-strategy`: The merge strategy. Possible values are `no-fast-forward`, `squash`, `rebase`, and `rebase-merge`.
+  - `delete-source-branch`: Boolean specifying if the source branch should be deleted after completion. ([Predicate](repository_action_types.md#predicate))
+  - `transition-work-items`: Boolean specifying if related work items should be transitioned to the next state. ([Predicate](repository_action_types.md#predicate))
+{{~ end ~}}
     {{~ end ~}}
     {{~ if actionmenu_item.Examples ~}}
 
@@ -36,7 +41,7 @@ Properties:
     
 {{ example_item.Text }}
         {{~ else ~}}
-    NAME NOT FOUND!! {{ example_item.TypeName }}.      
+    NAME NOT FOUND!! {{ example_item.TypeName }}.
         {{~ end ~}}
       {{~ end ~}}
     {{~ end ~}}  
