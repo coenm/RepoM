@@ -47,7 +47,7 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 - `open-in-browser`: Boolean specifying if the Pull request should be opened in the browser after creation. ([Predicate](repository_action_types.md#predicate))
 - `context`: The context in which the action is available. ([Context](repository_action_types.md#context))
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
-- `auto-complete`: Auto complete options. 
+- `auto-complete`: Auto complete options. If not provided, auto complete will not be set. 
   - `merge-strategy`: The merge strategy. Possible values are `no-fast-forward`, `squash`, `rebase`, and `rebase-merge`.
   - `delete-source-branch`: Boolean specifying if the source branch should be deleted after completion. ([Predicate](repository_action_types.md#predicate))
   - `transition-work-items`: Boolean specifying if related work items should be transitioned to the next state. ([Predicate](repository_action_types.md#predicate))
