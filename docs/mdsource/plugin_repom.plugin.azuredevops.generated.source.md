@@ -49,8 +49,8 @@ Title will be the last part of the branchname split on `/`, so `feature/123-test
 - `active`: Whether the menu item is enabled. ([Predicate](repository_action_types.md#predicate))
 - `auto-complete`: Auto complete options. 
   - `merge-strategy`: The merge strategy. Possible values are `no-fast-forward`, `squash`, `rebase`, and `rebase-merge`.
-  - `delete-source-branch`: Boolean specifying if the source branch should be deleted after completion. ([Predicate](repository_action_types.md#predicate)
-  - `transition-work-items`: Boolean specifying if related work items should be transitioned to the next state. ([Predicate](repository_action_types.md#predicate)
+  - `delete-source-branch`: Boolean specifying if the source branch should be deleted after completion. ([Predicate](repository_action_types.md#predicate))
+  - `transition-work-items`: Boolean specifying if related work items should be transitioned to the next state. ([Predicate](repository_action_types.md#predicate))
 
 ### Example
 
