@@ -1,7 +1,7 @@
 namespace RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.ForEach;
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
@@ -59,12 +59,13 @@ internal sealed class RepositoryActionForEachV1 : IMenuAction, IContext
     [Predicate(false)]
     public Predicate Skip { get; init; } = new ScribanPredicate();
 
+    // <inheritdoc cref="IMenuActions.Actions"/>
     /// <summary>
     /// List of repeated actions.
     /// </summary>
     [Required]
-    public List<IMenuAction> Actions { get; init; } = new();
-    
+    public ActionMenu Actions { get; set; } = [];
+
     public override string ToString()
     {
         return $"({TYPE_VALUE})";

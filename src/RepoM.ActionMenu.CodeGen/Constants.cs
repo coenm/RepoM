@@ -8,8 +8,15 @@ internal static class Constants
     internal static readonly Dictionary<string, TypeInfoDescriptor> TypeInfos = new()
     {
         {
+            typeof(RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ActionMenu).FullName!,
+            new TypeInfoDescriptor(nameof(RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ActionMenu), typeof(RepoM.ActionMenu.Core.Yaml.Model.ActionMenus.ActionMenu).FullName!)
+                {
+                    Link = "repository_action_types.md#actions",
+                }
+        },
+        {
             typeof(Interface.YamlModel.Templating.Text).FullName!,
-            new TypeInfoDescriptor(nameof(Text), typeof(Interface.YamlModel.Templating.Text).FullName!)
+            new TypeInfoDescriptor(nameof(Interface.YamlModel.Templating.Text), typeof(Interface.YamlModel.Templating.Text).FullName!)
                 {
                     Link = "repository_action_types.md#text",
                 }

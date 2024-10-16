@@ -25,7 +25,7 @@ internal sealed class RepositoryActionFolderV1 : IMenuAction, IName, IMenuAction
     }
 
     /// <inheritdoc cref="IMenuActions.Actions"/>
-    public ActionMenu? Actions { get; set; }
+    public ActionMenu Actions { get; set; } = [];
 
     /// <inheritdoc cref="IName.Name"/>
     [Text]
