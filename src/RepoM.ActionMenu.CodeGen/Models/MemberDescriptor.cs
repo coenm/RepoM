@@ -28,9 +28,10 @@ public class TypeInfoDescriptor
     {
         Nullable = IsNullableType(typeSymbol);
 
+        // hack
         if (Name.Contains("AutoCompleteOptionsV1"))
         {
-            // do nothing intentionally, just for debugging coenm
+            SkipForDocumentGeneration = true;
         }
     }
 
@@ -64,6 +65,11 @@ public class TypeInfoDescriptor
     public string? Link { get; init; }
 
     public bool Nullable { get; set; }
+
+    /// <summary>
+    /// Skip this type for document generation.
+    /// </summary>
+    public bool SkipForDocumentGeneration { get; set; } = false;
 
     private static bool IsNullableType(ITypeSymbol typeSymbol)
     {
