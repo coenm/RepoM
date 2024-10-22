@@ -55,19 +55,6 @@ public class RepositoryActionAzureDevOpsCreatePullRequestV1MapperTests
     }
 
     [Fact]
-    public async Task Map_ShouldReturnEmpty_WhenRepositoryHasLocalChanges()
-    {
-        // arrange
-        A.CallTo(() => _repository.HasLocalChanges).Returns(true);
-
-        // act
-        List<UserInterfaceRepositoryActionBase> result = await _sut.MapAsync(_action, _context, _repository).ToListAsync();
-
-        // assert
-        result.Should().BeEmpty();
-    }
-
-    [Fact]
     public async Task Map_ShouldReturnEmpty_WhenToBranchIsEmpty()
     {
         // arrange

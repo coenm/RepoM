@@ -31,6 +31,7 @@ namespace RepoM.ActionMenu.Core.ActionMenu.Context
         {
             RegisterConstant("branch", CurrentBranch);
             RegisterConstant("branches", Branches);
+            RegisterConstant("has_local_changes", HasLocalChanges);
             RegisterConstant("is_bare", IsBare);
             RegisterConstant("linux_path", LinuxPath);
             RegisterConstant("local_branches", LocalBranches);

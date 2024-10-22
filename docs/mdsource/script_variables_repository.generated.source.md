@@ -6,6 +6,7 @@ This module contains the following methods, variables and/or constants:
 
 - [`repository.branch`](#branch)
 - [`repository.branches`](#branches)
+- [`repository.has_local_changes`](#has_local_changes)
 - [`repository.is_bare`](#is_bare)
 - [`repository.linux_path`](#linux_path)
 - [`repository.local_branches`](#local_branches)
@@ -34,6 +35,16 @@ Gets the current branch of the repository
 ### Returns
 
 The name of the current branch.
+
+## has_local_changes
+
+`repository.has_local_changes`
+
+Gets if there are local changes
+
+### Returns
+
+True when there are local changes.
 
 ## is_bare
 
