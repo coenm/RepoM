@@ -4,6 +4,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
     <ProjectReference Include="..\..\src\RepoM.Api\RepoM.Api.csproj" />
   </ItemGroup>
 
@@ -25,5 +26,9 @@
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="21.0.29" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     <PackageReference Include="TUnit" Version="0.1.818" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
 </Project>

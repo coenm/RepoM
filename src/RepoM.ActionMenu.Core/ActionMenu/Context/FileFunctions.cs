@@ -21,7 +21,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     private static readonly EnumerationOptions _findFilesOptions = new()
     {
         RecurseSubdirectories = true,
-        AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Device | FileAttributes.Directory,
+        AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.Device,
         IgnoreInaccessible = true,
         MatchType = MatchType.Simple,
         ReturnSpecialDirectories = false,
@@ -47,7 +47,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// solution_files = file.find_files('C:\Project\', '*.sln');
     /// </code>
     /// <result/>
-    /// As a result, the variable `solution_files` is an enumerable of strings, for example:
+    /// As a result, the variable `solution_files` is an ennumerable of strings, for example:
     /// <code-file language='yaml' filename='file.find_files.verified.yaml' />
     /// <repository-action-sample/>
     /// <snippet name='find_files@actionmenu01' mode='snippet' />
