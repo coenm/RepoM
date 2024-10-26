@@ -11,6 +11,7 @@ using UiTests.Extensions;
 using UiTests.Framework;
 using UiTests.RepoM;
 using UiTests.Utils;
+using UiTests.VisualStudioCode;
 using Xunit;
 using Xunit.Abstractions;
 

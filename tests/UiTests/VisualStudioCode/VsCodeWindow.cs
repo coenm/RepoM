@@ -1,4 +1,4 @@
-namespace UiTests.RepoM;
+namespace UiTests.VisualStudioCode;
 
 using System;
 using System.Text.RegularExpressions;
@@ -14,8 +14,6 @@ using Xunit.Abstractions;
 using AutomationElement = FlaUI.Core.AutomationElements.AutomationElement;
 using NotSupportedException = FlaUI.Core.Exceptions.NotSupportedException;
 
-public record Position(int Line, int Column);
-
 public class VsCodeWindow : Window
 {
     private readonly ITestOutputHelper _outputHelper;
@@ -26,7 +24,7 @@ public class VsCodeWindow : Window
         _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
     }
 
-    public Position CurrentCursorPosition
+    public VisualStudioPositionElement PositionElement
     {
         get
         {
@@ -35,28 +33,12 @@ public class VsCodeWindow : Window
 
             var children = selection.FindAllChildren();
             children.Should().HaveCount(1);
-            
-            var text = children[0].Name.Trim();
 
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                throw new NotSupportedException("Could not find line and column from empty text");
-            }
-
-            // todo, also other type Ln 3, Col 4 (3, 4) stuf.
-            var regex = new Regex("Ln\\s([0-9]+),\\sCol\\s([0-9]+)", RegexOptions.Compiled | RegexOptions.Singleline);
-            Match result = regex.Match(text);
-            if (result.Success)
-            {
-                return new Position(
-                    int.Parse(result.Groups[1].Value),
-                    int.Parse(result.Groups[2].Value));
-            }
-
-            throw new NotSupportedException("Could not find line and column from " + text);
+            return new VisualStudioPositionElement(children[0], _outputHelper);
         }
     }
 
+   
     public Button NotificationButton
     {
         get
@@ -89,16 +71,17 @@ public class VsCodeWindow : Window
             // only one child should be present
             item.FindAllChildren().Should().HaveCount(1);
             var text = item.FindAllChildren()[0].Name.Trim();
-    
+
             _outputHelper.WriteLine("Indentation: " + text);
-    
+
             return text.Length; //todo
         }
     }
-    
+
     public async Task<Position> GetCurrentCursorPositionAsync(Predicate<Position>? untilCheck = null)
     {
-        Position result = CurrentCursorPosition;
+        VisualStudioPositionElement positionElement = PositionElement;
+        Position result = positionElement.Position;
 
         if (untilCheck == null)
         {
@@ -113,7 +96,7 @@ public class VsCodeWindow : Window
             counter++;
             try
             {
-                result = CurrentCursorPosition;
+                result = positionElement.Position;
             }
             catch (Exception e)
             {
@@ -123,7 +106,7 @@ public class VsCodeWindow : Window
 
         return result;
     }
-    
+
     public async Task FocusActiveEditorGroupAsync()
     {
         await VsCodeOpenCommandPalletAsync();
@@ -134,7 +117,7 @@ public class VsCodeWindow : Window
         await Task.Delay(100);
     }
 
-    private  Task VsCodeOpenCommandPalletAsync()
+    private Task VsCodeOpenCommandPalletAsync()
     {
         Keyboard.TypeSimultaneously(
             VirtualKeyShort.CONTROL,
@@ -147,7 +130,7 @@ public class VsCodeWindow : Window
     {
         this.WaitUntilClickable(TimeSpan.FromSeconds(5));
 
-        if (!this.TryGetClickablePoint(out var p))
+        if (!TryGetClickablePoint(out var p))
         {
             throw new InvalidOperationException("Could not get clickable point");
         }
@@ -161,7 +144,7 @@ public class VsCodeWindow : Window
 
     public Task GoToLineAsync(int lineNumber)
     {
-        var pos = CurrentCursorPosition;
+        Position pos = PositionElement.Position;
         if (pos.Line == lineNumber)
         {
             return Task.CompletedTask;
@@ -173,7 +156,7 @@ public class VsCodeWindow : Window
         }
 
         return GoToLineUsingCtrlGAsync(lineNumber);
-        
+
     }
 
     private async Task GoToLineUsingCtrlGAsync(int lineNumber)
@@ -198,7 +181,7 @@ public class VsCodeWindow : Window
 
             if (currentPos.Line < lineNumber)
             {
-                for (int i = 0; i < delta; i++)
+                for (var i = 0; i < delta; i++)
                 {
                     Keyboard.Type(VirtualKeyShort.DOWN);
                     await Task.Delay(20);
@@ -206,13 +189,13 @@ public class VsCodeWindow : Window
             }
             else
             {
-                for (int i = 0; i < delta; i++)
+                for (var i = 0; i < delta; i++)
                 {
                     Keyboard.Type(VirtualKeyShort.UP);
                     await Task.Delay(20);
                 }
             }
-            
+
             currentPos = await GetCurrentCursorPositionAsync(c => c.Line == lineNumber);
         }
     }
