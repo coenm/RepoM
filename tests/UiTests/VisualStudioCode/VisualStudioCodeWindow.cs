@@ -1,65 +1,32 @@
 namespace UiTests.VisualStudioCode;
 
 using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FlaUI.Core;
 using FlaUI.Core.AutomationElements;
-using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
 using FluentAssertions;
 using UiTests.Utils;
 using Xunit.Abstractions;
 using AutomationElement = FlaUI.Core.AutomationElements.AutomationElement;
-using NotSupportedException = FlaUI.Core.Exceptions.NotSupportedException;
 
-public class VsCodeWindow : Window
+public class VisualStudioCodeWindow : Window
 {
     private readonly ITestOutputHelper _outputHelper;
 
-    public VsCodeWindow(FrameworkAutomationElementBase frameworkAutomationElement, ITestOutputHelper outputHelper)
+    public VisualStudioCodeWindow(FrameworkAutomationElementBase frameworkAutomationElement, ITestOutputHelper outputHelper)
         : base(frameworkAutomationElement)
     {
         _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
     }
 
-    public VisualStudioPositionElement PositionElement
+    public StatusBar StatusBar
     {
         get
         {
-            var selection = StatusBar.FindFirstDescendant("status.editor.selection");
-            selection.Should().NotBeNull();
-
-            var children = selection.FindAllChildren();
-            children.Should().HaveCount(1);
-
-            return new VisualStudioPositionElement(children[0], _outputHelper);
-        }
-    }
-
-   
-    public Button NotificationButton
-    {
-        get
-        {
-            AutomationElement selection = StatusBar.FindFirstDescendant("status.notifications");
-            selection.Should().NotBeNull();
-
-            Button btn = selection.FindFirstChild(cf => cf.ByControlType(ControlType.Button)).AsButton();
-            btn.Should().NotBeNull();
-
-            return btn;
-        }
-    }
-
-    public AutomationElement StatusBar
-    {
-        get
-        {
-            AutomationElement? result = FindFirstDescendant("workbench.parts.statusbar"); // StatusBar
-            result.Should().NotBeNull();
-            return result;
+            AutomationElement result = FindFirstDescendant("workbench.parts.statusbar");
+            return new StatusBar(result, _outputHelper);
         }
     }
 
@@ -80,7 +47,7 @@ public class VsCodeWindow : Window
 
     public async Task<Position> GetCurrentCursorPositionAsync(Predicate<Position>? untilCheck = null)
     {
-        VisualStudioPositionElement positionElement = PositionElement;
+        PositionElement positionElement = StatusBar.PositionElement;
         Position result = positionElement.Position;
 
         if (untilCheck == null)
@@ -144,7 +111,7 @@ public class VsCodeWindow : Window
 
     public Task GoToLineAsync(int lineNumber)
     {
-        Position pos = PositionElement.Position;
+        Position pos = StatusBar.PositionElement.Position;
         if (pos.Line == lineNumber)
         {
             return Task.CompletedTask;
@@ -156,7 +123,6 @@ public class VsCodeWindow : Window
         }
 
         return GoToLineUsingCtrlGAsync(lineNumber);
-
     }
 
     private async Task GoToLineUsingCtrlGAsync(int lineNumber)

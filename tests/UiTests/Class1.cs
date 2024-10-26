@@ -44,8 +44,8 @@ public class NotePadTest
             appVsCode.WaitWhileMainHandleIsMissing(TimeSpan.FromSeconds(20));
             appVsCode.WaitWhileBusy(TimeSpan.FromSeconds(20));
 
-            VsCodeWindow vsCodeWindow = appVsCode.GetMainWindow(automationVsCode).As<VsCodeWindow>(_outputHelper);
-            vsCodeWindow.Should().NotBeNull();
+            VisualStudioCodeWindow visualStudioCodeWindow = appVsCode.GetMainWindow(automationVsCode).As<VisualStudioCodeWindow>(_outputHelper);
+            visualStudioCodeWindow.Should().NotBeNull();
 
             await RepoMWindow.ShowRepoM();
             await Task.Delay(100);
@@ -62,27 +62,27 @@ public class NotePadTest
 
             await Task.Delay(100);
 
-            await vsCodeWindow.FocusUsingMouseAsync();
+            await visualStudioCodeWindow.FocusUsingMouseAsync();
 
-            vsCodeWindow.NotificationButton.Click();
+            visualStudioCodeWindow.StatusBar.NotificationButton.Click();
             await Task.Delay(100);
-            vsCodeWindow.NotificationButton.Click();
+            visualStudioCodeWindow.StatusBar.NotificationButton.Click();
 
-            await vsCodeWindow.FocusActiveEditorGroupAsync();
-            await vsCodeWindow.GoToLineAsync(6);
+            await visualStudioCodeWindow.FocusActiveEditorGroupAsync();
+            await visualStudioCodeWindow.GoToLineAsync(6);
 
-            Position pos = await vsCodeWindow.GetCurrentCursorPositionAsync(p => p.Line == 6);
+            Position pos = await visualStudioCodeWindow.GetCurrentCursorPositionAsync(p => p.Line == 6);
             _outputHelper.WriteLine($"L{pos.Line} C{pos.Column}");
             pos.Line.Should().Be(6);
 
             
-            await vsCodeWindow.SelectLineAsync();
+            await visualStudioCodeWindow.SelectLineAsync();
             await Task.Delay(1000);
             Keyboard.Type(VirtualKeyShort.DELETE);
             await Task.Delay(1000);
             Keyboard.Type("end");
             await Task.Delay(1000);
-            await vsCodeWindow.GoToStartOfLineAsync();
+            await visualStudioCodeWindow.GoToStartOfLineAsync();
             await Task.Delay(1000);
             // await vsCodeWindow.GoToEndOfLineAsync();
             // Keyboard.Type("Hello World");

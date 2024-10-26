@@ -6,15 +6,15 @@ using FlaUI.Core;
 using FlaUI.Core.AutomationElements;
 using Xunit.Abstractions;
 
-public partial class VisualStudioPositionElement : AutomationElement
+public partial class PositionElement : AutomationElement
 {
     private readonly ITestOutputHelper? _outputHelper;
 
-    public VisualStudioPositionElement(FrameworkAutomationElementBase frameworkAutomationElement) : base(frameworkAutomationElement)
+    public PositionElement(FrameworkAutomationElementBase frameworkAutomationElement) : base(frameworkAutomationElement)
     {
     }
 
-    public VisualStudioPositionElement(AutomationElement automationElement, ITestOutputHelper outputHelper)
+    public PositionElement(AutomationElement automationElement, ITestOutputHelper outputHelper)
         : base(automationElement)
     {
         _outputHelper = outputHelper;
