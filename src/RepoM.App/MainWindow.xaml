@@ -33,7 +33,7 @@
 									 Focusable="False">
 
 			<Grid>
-				<TextBlock x:Name="tbNoRepositories"
+				<TextBlock Name="tbNoRepositories"
 						   Text="{DynamicResource EmptyHint}"
 						   TextWrapping="Wrap"
 						   FontSize="15"
@@ -272,8 +272,9 @@
 							Click="UpdateButton_Click" />
 					</Grid>
 
-					<ListBox Name="lstRepositories"
-							 DockPanel.Dock="Top"
+					<ListBox x:Name="lstRepositories"
+                             AutomationProperties.Name="lstRepositories"
+                             DockPanel.Dock="Top"
 							 HorizontalContentAlignment="Stretch"
 							 MouseDoubleClick="LstRepositories_MouseDoubleClick"
 							 KeyDown="LstRepositories_KeyDown"
@@ -373,7 +374,7 @@
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>
-							<controls:AcrylicContextMenu x:Name="mnuRepositoryContext" >
+                            <controls:AcrylicContextMenu x:Name="mnuRepositoryContext" >
                                 <!--<controls:AcrylicContextMenu.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling" />

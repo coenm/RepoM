@@ -176,6 +176,7 @@ public partial class App : Application
             return false;
         }
 
+#pragma warning disable CS0162 // Unreachable code detected
         try
         {
             _mutex = new Mutex(true, "Local\\github.com/coenm/RepoM", out var createdNew);
@@ -193,6 +194,7 @@ public partial class App : Application
         _mutex.Dispose();
         _mutex = null;
         return true;
+#pragma warning restore CS0162 // Unreachable code detected
     }
 
     private static void ReleaseAndDisposeMutex()
