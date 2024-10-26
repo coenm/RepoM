@@ -41,4 +41,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.App\RepoM.App.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Configs\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configs\Module\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

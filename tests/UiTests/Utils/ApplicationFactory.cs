@@ -20,8 +20,15 @@ public static class ApplicationFactory
             "--new-window  --disable-extensions" + filename);
     }
 
-    public static Application LaunchRepoM()
+    public static Application LaunchRepoM(string configPath)
     {
-        return Application.Launch(@"C:\Projects\Private\git\RepoM\src\RepoM.App\bin\Release\net8.0-windows\RepoM.exe");
+        if (!configPath.EndsWith('\\'))
+        {
+            configPath += '\\';
+        }
+        return Application.Launch(
+            @"C:\Projects\Private\git\RepoM\src\RepoM.App\bin\Release\net8.0-windows\RepoM.exe",
+            $"--App:AppSettingsPath {configPath}");
+            // $"--App:AppSettingsPath '{configPath}");
     }
 }
