@@ -10,6 +10,7 @@ using System.Net.WebSockets;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -28,6 +29,7 @@ using UiTests.Framework;
 using UiTests.RepoM;
 using UiTests.Utils;
 using UiTests.VisualStudioCode;
+using UiTests.VisualStudioCode.WebSockets;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -55,56 +57,28 @@ public class NotePadTest
 
     // make sure no vs code instance is running.
 
-    private async Task WebsocketCommand()
+    [Fact]
+    public void Des()
     {
-        // https://marketplace.visualstudio.com/items?itemName=pascaldiehm.commandsocket
-        // https://marketplace.visualstudio.com/items?itemName=VscodePlugins-CmdKeys.vscode-plugins-websocket-commands
-        using (var client = new ClientWebSocket())
-        {
-            // client.Options.RemoteCertificateValidationCallback = RemoteCertificateValidationCallback;
-            var uri = new Uri("ws://localhost:6783");
-            await client.ConnectAsync(uri, CancellationToken.None);
-
-            
-
-            // Send a message
-            var message = new ArraySegment<byte>("{ \"id\": 233, \"type\": \"command\", \"command\": \"workbench.action.gotoLine\"  }"u8.ToArray());
-            await client.SendAsync(message, WebSocketMessageType.Text, true, CancellationToken.None);
-
-            // Receive a message
-            var buffer = new byte[1024];
-            var result = await client.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-            var receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
-            Console.WriteLine($"Received message: {receivedMessage}");
-
-            await client.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-        }
+        var s = "{\"id\":23553,\"type\":\"ok\"}";
+        // var doc = System.Text.Json.JsonDocument.Parse(s);
+        var xx = System.Text.Json.JsonSerializer.Deserialize<CommandResponse>(s, new JsonSerializerOptions(JsonSerializerDefaults.Web));
     }
 
-    private bool RemoteCertificateValidationCallback(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslpolicyerrors)
-    {
-        return true;
-    }
 
     [Fact]
     public async Task OpenWindowInVsCode()
     {
-        await Task.Delay(1000);
         var ct = CancellationToken.None;
 
         using var ws = new VisualStudioWebSocketAutomation(6783, _outputHelper);
         await ws.ConnectAsync(ct);
         ws.StartProcessing(ct);
 
-        await Task.Delay(5_000);
-
         var result = await ws.ExecuteCommandAsync(23553, "{ \"id\": 23553, \"type\": \"command\", \"command\": \"workbench.action.gotoLine\"  }");
-
         _outputHelper.WriteLine($"-----> {result}");
-
+        await Task.Delay(1_000, ct);
         await ws.CloseAsync(ct);
-
-        // await WebsocketCommand();
     }
 
     private static void CopyDirectory(string sourceDirPath, string destDirPath)
