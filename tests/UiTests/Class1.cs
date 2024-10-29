@@ -2,8 +2,15 @@ namespace UiTests;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Abstractions;
+using System.Net.Security;
+using System.Net.WebSockets;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FlaUI.Core;
@@ -14,11 +21,8 @@ using FlaUI.UIA3;
 using FluentAssertions;
 using global::RepoM.Api.Common;
 using global::RepoM.Api.Git;
-using global::RepoM.Api.IO;
 using global::RepoM.Core.Plugin.Common;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Newtonsoft.Json;
 using UiTests.Extensions;
 using UiTests.Framework;
 using UiTests.RepoM;
@@ -29,38 +33,98 @@ using Xunit.Abstractions;
 
 //C:\Projects\RepoM-Git-repos
 
-
 [SetTestName]
 public class NotePadTest
 {
     private readonly ITestOutputHelper _outputHelper;
 
+    private readonly VisualStudioCodeApp _vsCodeApp;
+    private readonly UIA3Automation _automation;
+
     public NotePadTest(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
+
+        _automation = new UIA3Automation();
+        var vsCodeAppLauncher = new VisualStudioCodeAppLauncher(
+            ApplicationFactory.VS_CODE_EXE,
+            _automation,
+            _outputHelper);
+        // _vsCodeApp = vsCodeAppLauncher.Launch();
     }
 
     // make sure no vs code instance is running.
 
+    private async Task WebsocketCommand()
+    {
+        // https://marketplace.visualstudio.com/items?itemName=pascaldiehm.commandsocket
+        // https://marketplace.visualstudio.com/items?itemName=VscodePlugins-CmdKeys.vscode-plugins-websocket-commands
+        using (var client = new ClientWebSocket())
+        {
+            // client.Options.RemoteCertificateValidationCallback = RemoteCertificateValidationCallback;
+            var uri = new Uri("ws://localhost:6783");
+            await client.ConnectAsync(uri, CancellationToken.None);
 
-    public static void CopyDirectory(string sourceDirPath, string destDirPath)
+            
+
+            // Send a message
+            var message = new ArraySegment<byte>("{ \"id\": 233, \"type\": \"command\", \"command\": \"workbench.action.gotoLine\"  }"u8.ToArray());
+            await client.SendAsync(message, WebSocketMessageType.Text, true, CancellationToken.None);
+
+            // Receive a message
+            var buffer = new byte[1024];
+            var result = await client.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            var receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
+            Console.WriteLine($"Received message: {receivedMessage}");
+
+            await client.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+        }
+    }
+
+    private bool RemoteCertificateValidationCallback(object sender, X509Certificate? certificate, X509Chain? chain, SslPolicyErrors sslpolicyerrors)
+    {
+        return true;
+    }
+
+    [Fact]
+    public async Task OpenWindowInVsCode()
+    {
+        await Task.Delay(1000);
+        var ct = CancellationToken.None;
+
+        using var ws = new VisualStudioWebSocketAutomation(6783, _outputHelper);
+        await ws.ConnectAsync(ct);
+        ws.StartProcessing(ct);
+
+        await Task.Delay(5_000);
+
+        var result = await ws.ExecuteCommandAsync(23553, "{ \"id\": 23553, \"type\": \"command\", \"command\": \"workbench.action.gotoLine\"  }");
+
+        _outputHelper.WriteLine($"-----> {result}");
+
+        await ws.CloseAsync(ct);
+
+        // await WebsocketCommand();
+    }
+
+    private static void CopyDirectory(string sourceDirPath, string destDirPath)
     {
         if (!Directory.Exists(destDirPath))
         {
             Directory.CreateDirectory(destDirPath);
         }
 
-        foreach (string filePath in Directory.GetFiles(sourceDirPath))
+        foreach (var filePath in Directory.GetFiles(sourceDirPath))
         {
-            string fileName = Path.GetFileName(filePath);
-            string destFilePath = Path.Combine(destDirPath, fileName);
+            var fileName = Path.GetFileName(filePath);
+            var destFilePath = Path.Combine(destDirPath, fileName);
             File.Copy(filePath, destFilePath, true);
         }
 
-        foreach (string dirPath in Directory.GetDirectories(sourceDirPath))
+        foreach (var dirPath in Directory.GetDirectories(sourceDirPath))
         {
-            string dirName = Path.GetFileName(dirPath);
-            string destDirFullPath = Path.Combine(destDirPath, dirName);
+            var dirName = Path.GetFileName(dirPath);
+            var destDirFullPath = Path.Combine(destDirPath, dirName);
             CopyDirectory(dirPath, destDirFullPath);
         }
     }
@@ -96,27 +160,27 @@ public class NotePadTest
     [Fact]
     public async Task NotepadLaunchTest()
     {
+        _vsCodeApp.WaitForWindow();
+
+        await Task.Delay(15000);
+
         var basePath = Path.GetTempPath();
-        basePath = Path.Combine("C:", "tmp");
         var path = Path.Combine(basePath, "RepoM-UI-testing", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
         InitRepoM(path);
         using var clearDirectory = ClearDirectoryOnDisposal(path);
-        using var appVsCode = ApplicationFactory.LaunchVsCode(@"C:\Users\Munckhof CJJ\AppData\Roaming\RepoM\RepositoryActionsV2.yaml");
+        // using var appVsCode = ApplicationFactory.LaunchVsCode(System.IO.Path.Combine(path, "RepositoryActionsV2.yaml"));
         using var appRepoM = ApplicationFactory.LaunchRepoM(path);
 
-        using (var automationRepoM = new UIA3Automation())
-        // using (var automationVsCode = new UIA3Automation())
-        {
-            var automationVsCode = automationRepoM;
+        // using var appVsCode = _vsCode;
 
+        using var x = ApplicationFactory.OpenFileInVsCode(Path.Combine(path, "RepositoryActionsV2.yaml"));
+
+        {
             await Task.Delay(10_000);
             appRepoM.WaitWhileMainHandleIsMissing(TimeSpan.FromSeconds(5));
             appRepoM.WaitWhileBusy(TimeSpan.FromSeconds(5));
-            appVsCode.WaitWhileMainHandleIsMissing(TimeSpan.FromSeconds(20));
-            appVsCode.WaitWhileBusy(TimeSpan.FromSeconds(20));
 
-            VisualStudioCodeWindow visualStudioCodeWindow = appVsCode.GetMainWindow(automationVsCode).As<VisualStudioCodeWindow>(_outputHelper);
-            visualStudioCodeWindow.Should().NotBeNull();
+            VisualStudioCodeWindow visualStudioCodeWindow = _vsCodeApp.Window;
 
             await RepoMWindow.ShowRepoM();
             await Task.Delay(100);
@@ -124,7 +188,7 @@ public class NotePadTest
             await RepoMWindow.KeepRepoMOpenAsync();
             await Task.Delay(100);
 
-            RepoMWindow repoM = await RepoMWindow.GetRepoMWindowAsync(appRepoM, automationRepoM, _outputHelper);
+            RepoMWindow repoM = await RepoMWindow.GetRepoMWindowAsync(appRepoM, _automation, _outputHelper);
 
             // undo keep open
             await RepoMWindow.KeepRepoMOpenAsync();
@@ -183,7 +247,7 @@ public class NotePadTest
 
         await Task.Delay(1000);
         appRepoM.Close();
-        appVsCode.Close();
+        // appVsCode.Close();
     }
 
     private IDisposable ClearDirectoryOnDisposal(string path)
