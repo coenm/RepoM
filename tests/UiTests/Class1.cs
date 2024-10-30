@@ -65,7 +65,7 @@ public class NotePadTest
             Command = Commands.WorkBench.Action.GoToLine,
         };
 
-        var json = JsonSerializer.Serialize(cmd, VisualStudioWebSocketAutomation._serializeOptions);
+        var json = JsonSerializer.Serialize(cmd, VisualStudioWebSocketAutomation.SerializeOptions);
     }
 
 
@@ -74,7 +74,7 @@ public class NotePadTest
     {
         var ct = CancellationToken.None;
 
-        using var ws = new VisualStudioWebSocketAutomation(6783, _outputHelper);
+        using var ws = new VisualStudioWebSocketAutomation(new Uri("ws://localhost:6783"), _outputHelper);
         await ws.ConnectAsync(ct);
         ws.StartProcessing(ct);
 
