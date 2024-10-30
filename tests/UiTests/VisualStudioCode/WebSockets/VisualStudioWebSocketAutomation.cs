@@ -1,6 +1,7 @@
 namespace UiTests.VisualStudioCode.WebSockets;
 
 using System;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -9,6 +10,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using UiTests.VisualStudioCode.WebSockets.Commands;
+using UiTests.VisualStudioCode.WebSockets.Events;
 using Xunit.Abstractions;
 
 // https://marketplace.visualstudio.com/items?itemName=pascaldiehm.commandsocket
@@ -30,7 +33,7 @@ public class VisualStudioWebSocketAutomation : IDisposable
     private readonly ITestOutputHelper _outputHelper;
     private int _counter = 0;
     private readonly Uri _uri;
-    private string[] _availableCommands;
+    private string[] _availableCommands = [];
 
     public VisualStudioWebSocketAutomation(Uri wsUri, ITestOutputHelper outputHelper)
     {
@@ -70,46 +73,53 @@ public class VisualStudioWebSocketAutomation : IDisposable
                         {
                             continue;
                         }
-                        _outputHelper.WriteLine($"Received message: {json}");
-                        _subject.OnNext(json);
 
-                        string type = GetTypeFromBody(json);
+                        
+                        _outputHelper.WriteLine($"Received message: {json[..Math.Min(30, json.Length-1)]}");
+                        // _subject.OnNext(json);
+
+                        var type = GetTypeFromBody(json);
 
                         switch (type)
                         {
                             case "command_response":
-                                CommandResponse? commandResponse = JsonSerializer.Deserialize<CommandResponse>(json, DeserializeOptions);
+                                CommandResponse commandResponse = Deserialize<CommandResponse>(json);
+                                _subjectCommandResponse.OnNext(commandResponse);
+                                break;
 
-                                if (commandResponse != null)
-                                {
-                                    _outputHelper.WriteLine($">>>> RESPONSE FOUND message: {commandResponse.Id} - {commandResponse.Type}");
-                                    _subjectCommandResponse.OnNext(commandResponse);
-                                }
+                            case "focus":
+                                FocusEvent focusEvent = Deserialize<FocusEvent>(json);
+                                _focusSubject.OnNext(focusEvent.Focus);
+                                break;
+
+                            case "commands":
+                                AvailableCommandsEvent availableCommandsEvent = Deserialize<AvailableCommandsEvent>(json);
+                                _availableCommands = availableCommandsEvent.Commands;
+                                break;
+
+                            case "editor":
+                                EditorUpdateEvent editorUpdateEvent = Deserialize<EditorUpdateEvent>(json);
+                                _outputHelper.WriteLine($"Editor update:");
+                                _outputHelper.WriteLine($" -  Path {editorUpdateEvent.Path}");
+                                _outputHelper.WriteLine($" -  Name {editorUpdateEvent.Name}");
+                                _outputHelper.WriteLine($" -  Line {editorUpdateEvent.Line}");
+                                _outputHelper.WriteLine($" -  Lines {editorUpdateEvent.Lines}");
+                                _outputHelper.WriteLine($" -  Column {editorUpdateEvent.Column}");
+                                _outputHelper.WriteLine($" -  Indent {editorUpdateEvent.Indent}");
+                                _outputHelper.WriteLine($" -  Tabs {editorUpdateEvent.Tabs}");
+                                break;
+
+                            case "error":
+                                throw new Exception($"Could not pick type from {json}");
                                 break;
 
                             case "version":
                             case "debug":
                             case "git":
                             case "extensions":
-                                // don't care
-                                break;
-                            case "focus":
-                                FocusEvent focusEvent = Deserialize<FocusEvent>(json);
-                                _focusSubject.OnNext(focusEvent.Focus);
-                                break;
-                            case "commands":
-                                AvailableCommandsEvent availableCommandsEvent = Deserialize<AvailableCommandsEvent>(json);
-                                _availableCommands = availableCommandsEvent.Commands;
-                                break;
                             case "environment":
-                                break;
                             case "workspace":
-                                break;
-                            case "editor":
-                                EditorUpdateEvent editorUpdateEvent = Deserialize<EditorUpdateEvent>(json);
-                                // todo
-                                break;
-                            case "error":
+                                // don't care
                                 break;
                         }
                     }
@@ -123,38 +133,18 @@ public class VisualStudioWebSocketAutomation : IDisposable
             }, cancellationToken);
     }
 
-    private static T Deserialize<T>(string json)
+    public Task<string> ExecuteCommandAsync(string command)
     {
-        return JsonSerializer.Deserialize<T>(json, DeserializeOptions)!;
+        return ExecuteCommandAsync(new VscCommand(command));
     }
 
-    private static string GetTypeFromBody(string body)
+    public async Task<string> ExecuteCommandAsync<T>(T command) where T : VscCommand
     {
-        try
+        if (_availableCommands.Length > 0 && !_availableCommands.Contains(command.Command))
         {
-            var jsonDoc = JsonDocument.Parse(body);
-            JsonElement root = jsonDoc.RootElement;
-
-            if (root.TryGetProperty("id", out JsonElement idProperty))
-            {
-                if (idProperty.TryGetInt32(out var id))
-                {
-                    return "command_response";
-                }
-            }
-
-            string type = root.GetProperty("type").GetString();
-
-            return type;
+            throw new Exception($"Command {command.Command} is not available in the list of available commands.");
         }
-        catch (Exception)
-        {
-            return "error";
-        }
-    }
 
-    public async Task<string> ExecuteCommandAsync(MyCommand command)
-    {
         if (command.Id == 0)
         {
             command.Id = Interlocked.Increment(ref _counter);
@@ -169,6 +159,7 @@ public class VisualStudioWebSocketAutomation : IDisposable
         var tcs = new TaskCompletionSource<string>();
         using (IDisposable registration = _subjectCommandResponse.Where(x => x.Id == command.Id).Subscribe(x => tcs.TrySetResult(x.Type)))
         {
+            _outputHelper.WriteLine($"Sending {msg}");
             await _client.SendAsync(message, WebSocketMessageType.Text, true, CancellationToken.None);
             result = await tcs.Task;
         }
@@ -179,6 +170,31 @@ public class VisualStudioWebSocketAutomation : IDisposable
     public async Task CloseAsync(CancellationToken ct)
     {
         await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+    }
+
+    private static T Deserialize<T>(string json)
+    {
+        return JsonSerializer.Deserialize<T>(json, DeserializeOptions)!;
+    }
+
+    private static string GetTypeFromBody(string body)
+    {
+        try
+        {
+            var jsonDoc = JsonDocument.Parse(body);
+            JsonElement root = jsonDoc.RootElement;
+
+            if (root.TryGetProperty("id", out JsonElement idProperty) && idProperty.TryGetInt32(out var id))
+            {
+                return "command_response";
+            }
+
+            return root.GetProperty("type").GetString();
+        }
+        catch (Exception)
+        {
+            return "error";
+        }
     }
 
     public void Dispose()

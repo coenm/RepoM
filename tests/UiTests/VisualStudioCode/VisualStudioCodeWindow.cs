@@ -8,18 +8,28 @@ using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
 using FluentAssertions;
 using UiTests.Utils;
+using UiTests.VisualStudioCode.WebSockets;
 using Xunit.Abstractions;
 using AutomationElement = FlaUI.Core.AutomationElements.AutomationElement;
 
 public class VisualStudioCodeWindow : Window
 {
+    private readonly VisualStudioWebSocketAutomation _vscWebSocketAutomation;
     private readonly ITestOutputHelper _outputHelper;
 
-    public VisualStudioCodeWindow(FrameworkAutomationElementBase frameworkAutomationElement, ITestOutputHelper outputHelper)
+    public VisualStudioCodeWindow(
+        FrameworkAutomationElementBase frameworkAutomationElement,
+        VisualStudioWebSocketAutomation vscWebSocketAutomation,
+        ITestOutputHelper outputHelper)
         : base(frameworkAutomationElement)
     {
+        _vscWebSocketAutomation = vscWebSocketAutomation ?? throw new ArgumentNullException(nameof(vscWebSocketAutomation));
         _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
+
+        var dispoable = _vscWebSocketAutomation.FocusUpdated.Subscribe(focussed => HasFocus = focussed);
     }
+
+    public bool HasFocus { get; private set; }
 
     public StatusBar StatusBar
     {
@@ -30,20 +40,7 @@ public class VisualStudioCodeWindow : Window
         }
     }
 
-    public int Indentation
-    {
-        get
-        {
-            var item = StatusBar.FindFirstDescendant("status.editor.indentiation");
-            // only one child should be present
-            item.FindAllChildren().Should().HaveCount(1);
-            var text = item.FindAllChildren()[0].Name.Trim();
-
-            _outputHelper.WriteLine("Indentation: " + text);
-
-            return text.Length; //todo
-        }
-    }
+    public int Indentation { get; private set; }
 
     public async Task<Position> GetCurrentCursorPositionAsync(Predicate<Position>? untilCheck = null)
     {

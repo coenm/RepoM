@@ -23,6 +23,7 @@ using UiTests.RepoM;
 using UiTests.Utils;
 using UiTests.VisualStudioCode;
 using UiTests.VisualStudioCode.WebSockets;
+using UiTests.VisualStudioCode.WebSockets.Commands;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,6 +36,7 @@ public class NotePadTest
 
     private readonly VisualStudioCodeApp _vsCodeApp;
     private readonly UIA3Automation _automation;
+    private readonly Uri _visualStudioWS = new("ws://localhost:6783");
 
     public NotePadTest(ITestOutputHelper outputHelper)
     {
@@ -44,7 +46,8 @@ public class NotePadTest
         var vsCodeAppLauncher = new VisualStudioCodeAppLauncher(
             ApplicationFactory.VS_CODE_EXE,
             _automation,
-            _outputHelper);
+            _outputHelper,
+            _visualStudioWS);
         // _vsCodeApp = vsCodeAppLauncher.Launch();
     }
 
@@ -60,10 +63,7 @@ public class NotePadTest
     [Fact]
     public void SerializeCommand()
     {
-        var cmd = new MyCommand
-        {
-            Command = Commands.WorkBench.Action.GoToLine,
-        };
+        var cmd = new VscCommand(CommandTypes.WorkBench.Action.GO_TO_LINE);
 
         var json = JsonSerializer.Serialize(cmd, VisualStudioWebSocketAutomation.SerializeOptions);
     }
@@ -72,18 +72,31 @@ public class NotePadTest
     [Fact]
     public async Task OpenWindowInVsCode()
     {
-        var ct = CancellationToken.None;
+        CancellationToken ct = CancellationToken.None;
 
-        using var ws = new VisualStudioWebSocketAutomation(new Uri("ws://localhost:6783"), _outputHelper);
+        using var ws = new VisualStudioWebSocketAutomation(_visualStudioWS, _outputHelper);
         await ws.ConnectAsync(ct);
         ws.StartProcessing(ct);
 
-        var cmd = new MyCommand
-        {
-            Command = Commands.WorkBench.Action.GoToLine,
-        };
+        await Task.Delay(1000, ct);
+        var result = await ws.ExecuteCommandAsync(CommandTypes.WorkBench.Action.GO_TO_LINE);
 
-        var result = await ws.ExecuteCommandAsync(cmd);
+        await Task.Delay(5000, ct);
+
+        result = await ws.ExecuteCommandAsync(new InsertSnippetVscCommand("abc def"));
+
+        await Task.Delay(5000, ct);
+        _ = await ws.ExecuteCommandAsync(CommandTypes.WorkBench.Action.FOCUS_FIRST_EDITOR_GROUP);
+
+        // await Task.Delay(5000, ct);
+        // _ = await ws.ExecuteCommandAsync(Commands.WorkBench.Action.CLOSE_OTHER_EDITORS);
+
+        //   "command": "editor.action.insertSnippet",
+        //   "when": "editorTextFocus",
+        //   "args": {
+        //       "snippet": "\");\n$0"
+        //   }
+
         _outputHelper.WriteLine($"-----> {result}");
         await Task.Delay(6_000, ct);
         await ws.CloseAsync(ct);
