@@ -14,6 +14,7 @@ using UiTests.VisualStudioCode.WebSockets.Commands;
 using UiTests.VisualStudioCode.WebSockets.Events;
 using Xunit.Abstractions;
 
+// https://code.visualstudio.com/api
 // https://marketplace.visualstudio.com/items?itemName=pascaldiehm.commandsocket
 // https://marketplace.visualstudio.com/items?itemName=VscodePlugins-CmdKeys.vscode-plugins-websocket-commands
 public class VisualStudioWebSocketAutomation : IDisposable
