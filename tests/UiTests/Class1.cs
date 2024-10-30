@@ -2,19 +2,12 @@ namespace UiTests;
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.IO.Abstractions;
-using System.Net.Security;
-using System.Net.WebSockets;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FlaUI.Core;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
@@ -58,11 +51,21 @@ public class NotePadTest
     // make sure no vs code instance is running.
 
     [Fact]
-    public void Des()
+    public void DeserializeTest()
     {
-        var s = "{\"id\":23553,\"type\":\"ok\"}";
-        // var doc = System.Text.Json.JsonDocument.Parse(s);
-        var xx = System.Text.Json.JsonSerializer.Deserialize<CommandResponse>(s, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        var json = "{\"id\":23553,\"type\":\"ok\"}";
+        var commandResponse = JsonSerializer.Deserialize<CommandResponse>(json, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+    }
+
+    [Fact]
+    public void SerializeCommand()
+    {
+        var cmd = new MyCommand
+        {
+            Command = Commands.WorkBench.Action.GoToLine,
+        };
+
+        var json = JsonSerializer.Serialize(cmd, VisualStudioWebSocketAutomation._serializeOptions);
     }
 
 
@@ -75,9 +78,14 @@ public class NotePadTest
         await ws.ConnectAsync(ct);
         ws.StartProcessing(ct);
 
-        var result = await ws.ExecuteCommandAsync(23553, "{ \"id\": 23553, \"type\": \"command\", \"command\": \"workbench.action.gotoLine\"  }");
+        var cmd = new MyCommand
+        {
+            Command = Commands.WorkBench.Action.GoToLine,
+        };
+
+        var result = await ws.ExecuteCommandAsync(cmd);
         _outputHelper.WriteLine($"-----> {result}");
-        await Task.Delay(1_000, ct);
+        await Task.Delay(6_000, ct);
         await ws.CloseAsync(ct);
     }
 
