@@ -27,7 +27,6 @@ public class VisualStudioWebSocketAutomation : IDisposable
 
     private readonly ClientWebSocket _client;
     private Task _runningTask;
-    private readonly Subject<string> _subject = new();
     private readonly Subject<CommandResponse> _subjectCommandResponse = new();
     private readonly Subject<bool> _focusSubject = new();
     private readonly ITestOutputHelper _outputHelper;
@@ -76,8 +75,7 @@ public class VisualStudioWebSocketAutomation : IDisposable
 
                         
                         _outputHelper.WriteLine($"Received message: {json[..Math.Min(30, json.Length-1)]}");
-                        // _subject.OnNext(json);
-
+  
                         var type = GetTypeFromBody(json);
 
                         switch (type)
@@ -125,7 +123,6 @@ public class VisualStudioWebSocketAutomation : IDisposable
                     }
                     catch (Exception e)
                     {
-                        _subject.OnError(e);
                         _subjectCommandResponse.OnError(e);
                         stop = true;
                     }
