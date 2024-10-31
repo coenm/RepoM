@@ -1,21 +1,22 @@
 namespace UiTests.VisualStudioCode;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FlaUI.Core;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
-using FluentAssertions;
 using UiTests.Utils;
 using UiTests.VisualStudioCode.WebSockets;
 using Xunit.Abstractions;
 using AutomationElement = FlaUI.Core.AutomationElements.AutomationElement;
 
-public class VisualStudioCodeWindow : Window
+public class VisualStudioCodeWindow : Window, IDisposable
 {
     private readonly VisualStudioWebSocketAutomation _vscWebSocketAutomation;
     private readonly ITestOutputHelper _outputHelper;
+    private List<IDisposable> _disposables = new();
 
     public VisualStudioCodeWindow(
         FrameworkAutomationElementBase frameworkAutomationElement,
@@ -26,7 +27,7 @@ public class VisualStudioCodeWindow : Window
         _vscWebSocketAutomation = vscWebSocketAutomation ?? throw new ArgumentNullException(nameof(vscWebSocketAutomation));
         _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
 
-        var dispoable = _vscWebSocketAutomation.FocusUpdated.Subscribe(focussed => HasFocus = focussed);
+        _disposables.Add(_vscWebSocketAutomation.FocusUpdated.Subscribe(focussed => HasFocus = focussed));
     }
 
     public bool HasFocus { get; private set; }
@@ -182,5 +183,14 @@ public class VisualStudioCodeWindow : Window
         await Delays.DelaySmallAsync();
         Keyboard.TypeSimultaneously(VirtualKeyShort.SHIFT, VirtualKeyShort.END);
         await Delays.DelayMediumAsync();
+    }
+
+    public void Dispose()
+    {
+        _vscWebSocketAutomation.Dispose();
+        foreach (IDisposable d in _disposables)
+        {
+            d.Dispose();
+        }
     }
 }
