@@ -42,7 +42,7 @@ public class VisualStudioWebSocketAutomation : IDisposable
         _client = new ClientWebSocket();
     }
 
-    public ISubject<bool> FocusUpdated => _focusSubject;
+    public IObservable<bool> FocusUpdated => _focusSubject;
 
     public async Task ConnectAsync(CancellationToken cancellationToken)
     {
