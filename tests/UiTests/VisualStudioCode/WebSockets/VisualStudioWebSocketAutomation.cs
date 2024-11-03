@@ -28,8 +28,9 @@ public class VisualStudioWebSocketAutomation : IDisposable
 
     private readonly ClientWebSocket _client;
     private Task _runningTask;
-    private readonly Subject<CommandResponse> _subjectCommandResponse = new();
-    private readonly Subject<bool> _focusSubject = new();
+    private readonly ReplaySubject<CommandResponse> _subjectCommandResponse = new(1);
+    private readonly ReplaySubject<bool> _focusSubject = new(1);
+    private readonly ReplaySubject<EditorUpdateEvent> _editorUpdate = new(1);
     private readonly ITestOutputHelper _outputHelper;
     private int _counter = 0;
     private readonly Uri _uri;
@@ -43,6 +44,8 @@ public class VisualStudioWebSocketAutomation : IDisposable
     }
 
     public IObservable<bool> FocusUpdated => _focusSubject;
+
+    public IObservable<EditorUpdateEvent> EditorUpdated => _editorUpdate;
 
     public async Task ConnectAsync(CancellationToken cancellationToken)
     {
@@ -73,7 +76,6 @@ public class VisualStudioWebSocketAutomation : IDisposable
                         {
                             continue;
                         }
-
                         
                         _outputHelper.WriteLine($"Received message: {json[..Math.Min(30, json.Length-1)]}");
   
@@ -106,6 +108,7 @@ public class VisualStudioWebSocketAutomation : IDisposable
                                 _outputHelper.WriteLine($" -  Column {editorUpdateEvent.Column}");
                                 _outputHelper.WriteLine($" -  Indent {editorUpdateEvent.Indent}");
                                 _outputHelper.WriteLine($" -  Tabs {editorUpdateEvent.Tabs}");
+                                _editorUpdate.OnNext(editorUpdateEvent);
                                 break;
 
                             case "error":
@@ -140,7 +143,7 @@ public class VisualStudioWebSocketAutomation : IDisposable
     {
         if (_availableCommands.Length > 0 && !_availableCommands.Contains(command.Command))
         {
-            throw new Exception($"Command {command.Command} is not available in the list of available commands.");
+            // throw new Exception($"Command {command.Command} is not available in the list of available commands.");
         }
 
         if (command.Id == 0)

@@ -8,6 +8,7 @@ using FlaUI.Core;
 using FlaUI.UIA3;
 using FluentAssertions;
 using UiTests.VisualStudioCode.WebSockets;
+using UiTests.VisualStudioCode.WebSockets.Commands;
 using Xunit.Abstractions;
 
 public class VisualStudioCodeApp : IDisposable
@@ -27,6 +28,11 @@ public class VisualStudioCodeApp : IDisposable
     }
 
     public VisualStudioCodeWindow Window => _window ??= WaitForWindow();
+
+    public Task<string> ExecuteCommand<T>(T command) where T : VscCommand
+    {
+        return _vscWebSocketAutomation.ExecuteCommandAsync(command);
+    }
 
     public VisualStudioCodeWindow WaitForWindow()
     {
