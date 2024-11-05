@@ -56,9 +56,14 @@ public class AcrylicMenuItem : MenuItem
 
     public void ClearItems()
     {
-        if (Items.Count == 0)
+        foreach (var item in Items)
         {
-            return;
+            if (item is AcrylicMenuItem ami)
+            {
+                ami.ClearClick();
+                ami.ClearData();
+                ami.ClearItems();
+            }
         }
 
         Items.Clear();
