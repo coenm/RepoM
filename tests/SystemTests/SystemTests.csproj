@@ -27,8 +27,4 @@
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     <PackageReference Include="TUnit" Version="0.2.195" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
 </Project>
