@@ -41,6 +41,8 @@ public class VisualStudioWebSocketAutomation : IDisposable
         _uri = wsUri ?? throw new ArgumentNullException(nameof(wsUri));
         _outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
         _client = new ClientWebSocket();
+        _client.Options.KeepAliveInterval = TimeSpan.FromMinutes(10);
+
     }
 
     public IObservable<bool> FocusUpdated => _focusSubject;
@@ -49,7 +51,21 @@ public class VisualStudioWebSocketAutomation : IDisposable
 
     public async Task ConnectAsync(CancellationToken cancellationToken)
     {
-        await _client.ConnectAsync(_uri, cancellationToken);
+        var success = false;
+        while (!success)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            try
+            {
+                await _client.ConnectAsync(_uri, cancellationToken);
+                success = true;
+            }
+            catch (Exception e)
+            {
+                await Task.Delay(200, cancellationToken);
+            }
+        }
     }
 
     public void StartProcessing(CancellationToken cancellationToken)
@@ -131,6 +147,8 @@ public class VisualStudioWebSocketAutomation : IDisposable
                         stop = true;
                     }
                 }
+
+                var x = _client.State;
             }, cancellationToken);
     }
 
@@ -175,7 +193,16 @@ public class VisualStudioWebSocketAutomation : IDisposable
 
     private static T Deserialize<T>(string json)
     {
-        return JsonSerializer.Deserialize<T>(json, DeserializeOptions)!;
+        try
+        {
+            return JsonSerializer.Deserialize<T>(json, DeserializeOptions)!;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
     }
 
     private static string GetTypeFromBody(string body)

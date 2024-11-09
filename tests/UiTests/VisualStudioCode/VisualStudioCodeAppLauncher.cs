@@ -3,7 +3,6 @@ namespace UiTests.VisualStudioCode;
 using System;
 using FlaUI.Core;
 using FlaUI.UIA3;
-using UiTests.VisualStudioCode.WebSockets;
 using Xunit.Abstractions;
 
 public class VisualStudioCodeAppLauncher
@@ -25,7 +24,8 @@ public class VisualStudioCodeAppLauncher
     {
         var app = Application.Launch(
             @"""" + _exe + @"""",
-            "--new-window  --disable-extensions");
+            "--new-window ");
+            // "--new-window  --disable-extensions");
         return new VisualStudioCodeApp(app, _automation, _outputHelper, _ws);
     }
 }

@@ -3,10 +3,9 @@ namespace UiTests.VisualStudioCode;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Automation;
 using FlaUI.Core;
 using FlaUI.UIA3;
-using FluentAssertions;
+using UiTests.Utils;
 using UiTests.VisualStudioCode.WebSockets;
 using UiTests.VisualStudioCode.WebSockets.Commands;
 using Xunit.Abstractions;
@@ -29,6 +28,14 @@ public class VisualStudioCodeApp : IDisposable
 
     public VisualStudioCodeWindow Window => _window ??= WaitForWindow();
 
+    public void OpenFile(string filename)
+    {
+        ApplicationFactory.OpenFileInVsCode(filename);
+        // var app = Application.Launch(
+        //     @"""" + _exe + @"""",
+        //     "--reuse-window ");
+        // // "--new-window  --disable-extensions");
+    }
     public Task<string> ExecuteCommand<T>(T command) where T : VscCommand
     {
         return _vscWebSocketAutomation.ExecuteCommandAsync(command);
@@ -41,9 +48,10 @@ public class VisualStudioCodeApp : IDisposable
             return _window;
         }
 
+        CancellationToken ct = new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token;
         _app.WaitWhileMainHandleIsMissing(TimeSpan.FromSeconds(20));
         _app.WaitWhileBusy(TimeSpan.FromSeconds(20));
-        _vscWebSocketAutomation.ConnectAsync(CancellationToken.None).GetAwaiter().GetResult();
+        _vscWebSocketAutomation.ConnectAsync(ct).GetAwaiter().GetResult();
         _vscWebSocketAutomation.StartProcessing(CancellationToken.None);
         return new VisualStudioCodeWindow(
             _app.GetMainWindow(_automation).FrameworkAutomationElement,

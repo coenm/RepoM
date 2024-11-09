@@ -9,6 +9,7 @@ using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
 using UiTests.Utils;
 using UiTests.VisualStudioCode.WebSockets;
+using UiTests.VisualStudioCode.WebSockets.Commands;
 using Xunit.Abstractions;
 using AutomationElement = FlaUI.Core.AutomationElements.AutomationElement;
 
@@ -89,6 +90,24 @@ public class VisualStudioCodeWindow : Window, IDisposable
             VirtualKeyShort.SHIFT,
             VirtualKeyShort.KEY_P);
         return Task.CompletedTask;
+    }
+
+    public async Task SelectAllAsync()
+    {
+        var result = await _vscWebSocketAutomation.ExecuteCommandAsync(CommandTypes.Editor.Action.SELECT_ALL);
+        // Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.KEY_A);
+        await Task.Delay(100);
+    }
+
+    public async Task SaveFileAsync()
+    {
+        var result = await _vscWebSocketAutomation.ExecuteCommandAsync(CommandTypes.WorkBench.Action.Files.SAVE);
+    }
+
+    public async Task DeleteTextAsync()
+    {
+        Keyboard.Type(VirtualKeyShort.DELETE);
+        await Task.Delay(100);
     }
 
     public async Task FocusUsingMouseAsync()

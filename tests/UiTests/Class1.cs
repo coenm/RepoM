@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -22,10 +21,10 @@ using UiTests.Framework;
 using UiTests.RepoM;
 using UiTests.Utils;
 using UiTests.VisualStudioCode;
-using UiTests.VisualStudioCode.WebSockets;
 using UiTests.VisualStudioCode.WebSockets.Commands;
 using Xunit;
 using Xunit.Abstractions;
+using Path = System.IO.Path;
 
 //C:\Projects\RepoM-Git-repos
 
@@ -36,7 +35,7 @@ public class NotePadTest
 
     private readonly VisualStudioCodeApp _vsCodeApp;
     private readonly UIA3Automation _automation;
-    private readonly Uri _visualStudioWS = new("ws://localhost:6783");
+    private readonly Uri _visualStudioWebSocketAddress = new("ws://localhost:6783");
 
     public NotePadTest(ITestOutputHelper outputHelper)
     {
@@ -47,59 +46,60 @@ public class NotePadTest
             ApplicationFactory.VS_CODE_EXE,
             _automation,
             _outputHelper,
-            _visualStudioWS);
-        // _vsCodeApp = vsCodeAppLauncher.Launch();
+            _visualStudioWebSocketAddress);
+        _vsCodeApp = vsCodeAppLauncher.Launch();
     }
 
     // make sure no vs code instance is running.
-
-    [Fact]
-    public void DeserializeTest()
-    {
-        var json = "{\"id\":23553,\"type\":\"ok\"}";
-        var commandResponse = JsonSerializer.Deserialize<CommandResponse>(json, new JsonSerializerOptions(JsonSerializerDefaults.Web));
-    }
-
-    [Fact]
-    public void SerializeCommand()
-    {
-        var cmd = new VscCommand(CommandTypes.WorkBench.Action.GO_TO_LINE);
-
-        var json = JsonSerializer.Serialize(cmd, VisualStudioWebSocketAutomation.SerializeOptions);
-    }
 
 
     [Fact]
     public async Task OpenWindowInVsCode()
     {
         CancellationToken ct = CancellationToken.None;
+        await Task.Delay(10_000);
+        _vsCodeApp.WaitForWindow();
 
-        using var ws = new VisualStudioWebSocketAutomation(_visualStudioWS, _outputHelper);
-        await ws.ConnectAsync(ct);
-        ws.StartProcessing(ct);
+        // using var ws = new VisualStudioWebSocketAutomation(_visualStudioWS, _outputHelper);
+        // await ws.ConnectAsync(new CancellationTokenSource(TimeSpan.FromSeconds(20)).Token);
+        // ws.StartProcessing(ct);
 
         await Task.Delay(1000, ct);
-        var result = await ws.ExecuteCommandAsync(CommandTypes.WorkBench.Action.GO_TO_LINE);
+        var result = "";
 
-        await Task.Delay(5000, ct);
+        var basePath = Path.GetTempPath();
+        var path = Path.Combine(basePath, "RepoM-UI-testing", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
+        InitRepoM(path);
+        using var clearDirectory = ClearDirectoryOnDisposal(path);
+        _vsCodeApp.OpenFile(System.IO.Path.Combine(path, "RepositoryActionsV2.yaml"));
 
-        result = await ws.ExecuteCommandAsync(new InsertSnippetVscCommand("abc def"));
 
-        await Task.Delay(5000, ct);
-        _ = await ws.ExecuteCommandAsync(CommandTypes.WorkBench.Action.FOCUS_FIRST_EDITOR_GROUP);
 
+        // result = await ws.ExecuteCommandAsync(new OpenFileVscCommand("~\\OpenId.txt"));
+        // result = await _vsCodeApp.ExecuteCommand(new OpenFileVscCommand("cdtmp/gen.md"));
+        // await Task.Delay(4000, ct);
+
+        // result = await ws.ExecuteCommandAsync(CommandTypes.WorkBench.Action.GO_TO_LINE);
+        //
         // await Task.Delay(5000, ct);
-        // _ = await ws.ExecuteCommandAsync(Commands.WorkBench.Action.CLOSE_OTHER_EDITORS);
-
-        //   "command": "editor.action.insertSnippet",
-        //   "when": "editorTextFocus",
-        //   "args": {
-        //       "snippet": "\");\n$0"
-        //   }
-
-        _outputHelper.WriteLine($"-----> {result}");
-        await Task.Delay(6_000, ct);
-        await ws.CloseAsync(ct);
+        //
+        result = await _vsCodeApp.ExecuteCommand(new InsertSnippetVscCommand("abc def"));
+        //
+        // await Task.Delay(5000, ct);
+        // _ = await ws.ExecuteCommandAsync(CommandTypes.WorkBench.Action.FOCUS_FIRST_EDITOR_GROUP);
+        //
+        // // await Task.Delay(5000, ct);
+        // // _ = await ws.ExecuteCommandAsync(Commands.WorkBench.Action.CLOSE_OTHER_EDITORS);
+        //
+        // //   "command": "editor.action.insertSnippet",
+        // //   "when": "editorTextFocus",
+        // //   "args": {
+        // //       "snippet": "\");\n$0"
+        // //   }
+        //
+        // _outputHelper.WriteLine($"-----> {result}");
+        // await Task.Delay(6_000, ct);
+        // await ws.CloseAsync(ct);
     }
 
     private static void CopyDirectory(string sourceDirPath, string destDirPath)
@@ -153,29 +153,31 @@ public class NotePadTest
     }
 
     [Fact]
-    public async Task NotepadLaunchTest()
+    public async Task Scenario1()
     {
-        _vsCodeApp.WaitForWindow();
-
-        await Task.Delay(15000);
-
         var basePath = Path.GetTempPath();
         var path = Path.Combine(basePath, "RepoM-UI-testing", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss"));
         InitRepoM(path);
-        using var clearDirectory = ClearDirectoryOnDisposal(path);
-        // using var appVsCode = ApplicationFactory.LaunchVsCode(System.IO.Path.Combine(path, "RepositoryActionsV2.yaml"));
+        using IDisposable clearDirectory = ClearDirectoryOnDisposal(path);
+
         using var appRepoM = ApplicationFactory.LaunchRepoM(path);
+        
+        await Task.Delay(5_000);
+        VisualStudioCodeWindow visualStudioCodeWindow = _vsCodeApp.WaitForWindow();
+        _vsCodeApp.OpenFile(Path.Combine(path, "RepositoryActionsV2.yaml"));
+        // using var appVsCode = ApplicationFactory.LaunchVsCode(System.IO.Path.Combine(path, "RepositoryActionsV2.yaml"));
+        
 
         // using var appVsCode = _vsCode;
 
-        using var x = ApplicationFactory.OpenFileInVsCode(Path.Combine(path, "RepositoryActionsV2.yaml"));
+        // var result = await _vsCodeApp.ExecuteCommand(new OpenFileVscCommand(Path.Combine(path, "RepositoryActionsV2.yaml")));
+        // result.Should().Be("ok");
 
         {
             await Task.Delay(10_000);
+
             appRepoM.WaitWhileMainHandleIsMissing(TimeSpan.FromSeconds(5));
             appRepoM.WaitWhileBusy(TimeSpan.FromSeconds(5));
-
-            VisualStudioCodeWindow visualStudioCodeWindow = _vsCodeApp.Window;
 
             await RepoMWindow.ShowRepoM();
             await Task.Delay(100);
@@ -199,7 +201,27 @@ public class NotePadTest
             visualStudioCodeWindow.StatusBar.NotificationButton.Click();
 
             await visualStudioCodeWindow.FocusActiveEditorGroupAsync();
-            await visualStudioCodeWindow.GoToLineAsync(6);
+
+            await visualStudioCodeWindow.SelectAllAsync();
+            await Task.Delay(100);
+            await visualStudioCodeWindow.DeleteTextAsync();
+            await Task.Delay(100);
+            await visualStudioCodeWindow.SaveFileAsync();
+            await Task.Delay(100);
+            Keyboard.Type("action-menu:");
+            Keyboard.Type(VirtualKeyShort.ENTER);
+            await Task.Delay(100);
+            Keyboard.Type("""
+                          - type: browse-repository@1
+                          - type: git-fetch@1
+                          - type: git-pull@1
+                          - type: git-push@1
+                          - type: git-checkout@1
+                          """);
+            await Task.Delay(100);
+            await visualStudioCodeWindow.SaveFileAsync();
+            await Task.Delay(10_000);
+            // await visualStudioCodeWindow.GoToLineAsync(6);
 
             Position pos = await visualStudioCodeWindow.GetCurrentCursorPositionAsync(p => p.Line == 6);
             _outputHelper.WriteLine($"L{pos.Line} C{pos.Column}");
