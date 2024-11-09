@@ -36,7 +36,7 @@
     </PackageReference>
     <PackageReference Include="Scriban" Version="5.10.0" />
     <PackageReference Include="YamlDotNet" Version="16.1.3" />
-    <PackageReference Include="EasyTestFile.XUnit" Version="2.1.5-alpha" />
+    <PackageReference Include="EasyTestFile.XUnit" Version="2.1.10" />
   </ItemGroup>
 
   <ItemGroup>

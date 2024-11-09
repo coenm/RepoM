@@ -8,7 +8,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="EasyTestFile.XUnit" Version="2.1.5-alpha" />
+    <PackageReference Include="EasyTestFile.XUnit" Version="2.1.10" />
     <PackageReference Include="FakeItEasy" Version="8.3.0" />
     <PackageReference Include="FakeItEasy.Analyzer.CSharp" Version="6.1.1">
       <PrivateAssets>all</PrivateAssets>
