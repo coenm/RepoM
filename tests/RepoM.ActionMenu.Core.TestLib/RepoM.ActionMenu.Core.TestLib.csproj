@@ -9,13 +9,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="EasyTestFile.XUnit" Version="2.1.5-alpha" />
+    <PackageReference Include="EasyTestFile.XUnit" Version="2.1.10" />
     <PackageReference Include="FakeItEasy" Version="8.3.0" />
     <PackageReference Include="FakeItEasy.Analyzer.CSharp" Version="6.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentAssertions" Version="6.12.1" />
+    <PackageReference Include="FluentAssertions" Version="6.12.2" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="0.34.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,17 +23,17 @@
     <PackageReference Include="Meziantou.Xunit.ParallelTestFramework" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="System.IO.Abstractions" Version="21.0.29" />
-    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="21.0.29" />
-    <PackageReference Include="Verify.ClipboardAccept" Version="26.6.0" />
-    <PackageReference Include="Verify.Xunit" Version="26.6.0" />
+    <PackageReference Include="System.IO.Abstractions" Version="21.1.3" />
+    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="21.1.3" />
+    <PackageReference Include="Verify.ClipboardAccept" Version="28.1.3" />
+    <PackageReference Include="Verify.Xunit" Version="28.1.3" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="Xunit.EnumMemberData" Version="1.0.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Scriban" Version="5.10.0" />
+    <PackageReference Include="Scriban" Version="5.11.0" />
     <PackageReference Include="YamlDotNet" Version="16.1.3" />
   </ItemGroup>
 
