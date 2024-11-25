@@ -163,7 +163,6 @@ commit file             master   |  |       |                   |              v
     [DependsOn(nameof(T2D_Detects_Repository_Commits))]
     public void T2E_Detects_Repository_Pushes()
     {
-        
         _monitor.Expect(() =>
                 {
                     _cloneA.Push();
