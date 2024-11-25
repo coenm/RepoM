@@ -46,7 +46,6 @@ internal partial class RepositoryFunctions : ScribanModuleWithFunctions
     [ActionMenuContextMember("is_bare")]
     public bool IsBare => _repository.IsBare;
 
-
     /// <summary>
     /// Gets the path of the repository. The path is windows or linux based (depending on the running OS) and does NOT end with a (back)slash.
     /// </summary>
@@ -73,8 +72,8 @@ internal partial class RepositoryFunctions : ScribanModuleWithFunctions
     [ActionMenuContextMember("linux_path")]
     public string LinuxPath => _repository.LinuxPath;
     
-    /// <summary>   
-    /// Gets the Location of the repository. 
+    /// <summary>
+    /// Gets the Location of the repository.
     /// </summary>
     /// <returns>The path of the repository.</returns>
     [ActionMenuContextMember("location")]
@@ -100,7 +99,14 @@ internal partial class RepositoryFunctions : ScribanModuleWithFunctions
     /// <returns>All local branches.</returns>
     [ActionMenuContextMember("local_branches")]
     public IEnumerable LocalBranches => _repository.LocalBranches;
-    
+
+    /// <summary>
+    /// Gets if there are local changes
+    /// </summary>
+    /// <returns>True when there are local changes.</returns>
+    [ActionMenuContextMember("has_local_changes")]
+    public bool HasLocalChanges => _repository.HasLocalChanges;
+
     /// <summary>
     /// Gets the remotes.
     /// </summary>

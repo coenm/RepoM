@@ -24,10 +24,6 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
 
     protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionAzureDevOpsCreatePullRequestV1 action, IActionMenuGenerationContext context, IRepository repository)
     {
-        if (repository.HasLocalChanges)
-        {
-            yield break;
-        }
 
         var toBranch = await action.ToBranch.RenderAsync(context).ConfigureAwait(false);
 
