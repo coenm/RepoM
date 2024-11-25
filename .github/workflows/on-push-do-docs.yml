@@ -5,12 +5,12 @@ jobs:
   docs:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 9.0.x
+      uses: actions/setup-dotnet@v4
+#      with:
+#        dotnet-version: 9.0.x
 
     - name: Run MarkdownSnippets
       run: |
