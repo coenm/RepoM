@@ -18,6 +18,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using SystemTests.IO;
 using SystemTests.Mocks;
 
+[NotInParallel]
 public class DefaultRepositoryMonitorTests
 {
     private static readonly IFileSystem _fileSystem = new FileSystem();
