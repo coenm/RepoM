@@ -47,7 +47,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     /// solution_files = file.find_files('C:\Project\', '*.sln');
     /// </code>
     /// <result/>
-    /// As a result, the variable `solution_files` is an ennumerable of strings, for example:
+    /// As a result, the variable `solution_files` is an enumerable of strings, for example:
     /// <code-file language='yaml' filename='file.find_files.verified.yaml' />
     /// <repository-action-sample/>
     /// <snippet name='find_files@actionmenu01' mode='snippet' />
@@ -56,19 +56,6 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     public static string[] FindFiles(ActionMenuGenerationContext /*IMenuContext*/ context, SourceSpan span, string rootPath, string searchPattern)
     {
         return FindFilesInner(context, span, rootPath, searchPattern);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static string[] FindFilesInner(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
-    {
-        try
-        {
-            return GetFileEnumerator(context.FileSystem, rootPath, searchPattern).ToArray();
-        }
-        catch (Exception e)
-        {
-            throw new ScriptRuntimeException(span, "Could not get files.", e);
-        }
     }
 
     /// <summary>
@@ -89,14 +76,7 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     [ActionMenuContextMember("file_exists")]
     public static bool FileExists(ActionMenuGenerationContext context, string path)
     {
-        return FileExistsInner(context as IMenuContext, path);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool FileExistsInner(IMenuContext context, string path)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(path);
-        return context.FileSystem.File.Exists(path);
+        return FileExistsInner(context, path);
     }
 
     /// <summary>
@@ -123,7 +103,20 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool DirectoryExistsInner(IMenuContext context, string path)
+    internal static string[] FindFilesInner(IMenuContext context, SourceSpan span, string rootPath, string searchPattern)
+    {
+        try
+        {
+            return GetFileEnumerator(context.FileSystem, rootPath, searchPattern).ToArray();
+        }
+        catch (Exception e)
+        {
+            throw new ScriptRuntimeException(span, "Could not get files.", e);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool DirectoryExistsInner(IMenuContext context, string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         return context.FileSystem.Directory.Exists(path);
@@ -133,5 +126,12 @@ internal partial class FileFunctions : ScribanModuleWithFunctions
     private static IEnumerable<string> GetFileEnumerator(IFileSystem fileSystem, string path, string searchPattern)
     {
         return fileSystem.Directory.EnumerateFileSystemEntries(path, searchPattern, _findFilesOptions);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool FileExistsInner(IMenuContext context, string path)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        return context.FileSystem.File.Exists(path);
     }
 }
