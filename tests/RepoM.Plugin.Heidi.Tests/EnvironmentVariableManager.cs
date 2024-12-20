@@ -20,7 +20,7 @@ internal static class EnvironmentVariableManager
 
     private sealed class ReleaseDisposable : IDisposable
     {
-        private readonly object _lock = new();
+        private readonly Lock _lock = new();
         private AutoResetEvent? _are;
         private readonly string _key;
         private readonly string? _value;

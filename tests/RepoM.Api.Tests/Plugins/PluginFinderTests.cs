@@ -22,7 +22,7 @@ public class PluginFinderTests
         _fileSystem = new MockFileSystem(
             new Dictionary<string, MockFileData>
             {
-                { "d:\\dummy\\bin\\net6\\release\\abc.dll", new MockFileData("bla") },
+                { @"d:\dummy\bin\net6\release\abc.dll", new MockFileData("bla") },
             });
             
         _hmacService = A.Fake<IHmacService>();
@@ -49,7 +49,7 @@ public class PluginFinderTests
         var sut = new PluginFinder(_fileSystem, _hmacService);
 
         // act
-        IEnumerable<PluginInfo> result = sut.FindPlugins("d:\\dummy\\");
+        IEnumerable<PluginInfo> result = sut.FindPlugins(@"d:\dummy\");
 
         // assert
         _ = result.Should().BeEmpty();
@@ -59,12 +59,12 @@ public class PluginFinderTests
     public async Task FindPlugins_ShouldReturnPluginData_WhenPluginAvailable()
     {
         // arrange
-        A.CallTo(() => _hmacService.GetHmac(A<Stream>._)).Returns(new byte[] { 0x01, 0x02, });
-        _fileSystem.AddFile("d:\\dummy\\RepoM.Plugin.Abc.dll", new MockFileData(Array.Empty<byte>()));
+        A.CallTo(() => _hmacService.GetHmac(A<Stream>._)).Returns([0x01, 0x02,]);
+        _fileSystem.AddFile(@"d:\dummy\RepoM.Plugin.Abc.dll", new MockFileData([]));
         var sut = new PluginFinder(_fileSystem, _hmacService);
     
         // act
-        IEnumerable<PluginInfo> result = sut.FindPlugins("d:\\dummy\\");
+        IEnumerable<PluginInfo> result = sut.FindPlugins(@"d:\dummy\");
     
         // assert
         await Verifier.Verify(result);

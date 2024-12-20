@@ -49,7 +49,7 @@ public class DefaultRepositoryWriter : IRepositoryWriter
     public void Fetch(IRepository repository)
     {
         var arguments = _appSettingsService.PruneOnFetch
-            ? new[] { "fetch", "--all", "--prune", }
+            ? ["fetch", "--all", "--prune",]
             : new[] { "fetch", "--all", };
 
         _gitCommander.Command(repository, arguments);
@@ -58,7 +58,7 @@ public class DefaultRepositoryWriter : IRepositoryWriter
     public void Pull(IRepository repository)
     {
         var arguments = _appSettingsService.PruneOnFetch
-            ? new[] { "pull", "--prune", }
+            ? ["pull", "--prune",]
             : new[] { "pull", };
 
         _gitCommander.Command(repository, arguments);

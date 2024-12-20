@@ -13,7 +13,7 @@ public class PluginInfoTests
         // arrange
 
         // act
-        var sut = new PluginInfo("C:\\path\\abc.dll", new PackageAttribute("my test package", "tooltip of test package", "desc"), new byte[] { 0x12, });
+        var sut = new PluginInfo("C:\\path\\abc.dll", new PackageAttribute("my test package", "tooltip of test package", "desc"), [0x12,]);
 
         // assert
         sut.Name.Should().Be("my test package");

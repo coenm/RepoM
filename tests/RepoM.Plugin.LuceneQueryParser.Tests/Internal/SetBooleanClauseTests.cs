@@ -101,10 +101,10 @@ public class SetBooleanClauseTests
         var sut = new SetBooleanClause(wrappedBooleanClause);
 
         // act
-        WrappedBooleanClause[] result = sut.Items.ToArray();
+        WrappedBooleanClause[] result = [.. sut.Items,];
 
         // assert
-        result.Should().BeEquivalentTo(new[] { wrappedBooleanClause, });
+        result.Should().BeEquivalentTo([wrappedBooleanClause,]);
     }
 
     [Fact]
@@ -116,9 +116,9 @@ public class SetBooleanClauseTests
         var sut = new SetBooleanClause(wrappedBooleanClause1, wrappedBooleanClause2);
 
         // act
-        WrappedBooleanClause[] result = sut.Items.ToArray();
+        WrappedBooleanClause[] result = [.. sut.Items, ];
 
         // assert
-        result.Should().BeEquivalentTo(new[] { wrappedBooleanClause1, wrappedBooleanClause2, });
+        result.Should().BeEquivalentTo([wrappedBooleanClause1, wrappedBooleanClause2,]);
     }
 }

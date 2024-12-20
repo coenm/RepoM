@@ -324,7 +324,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
                 }
 
                 _logger.LogInformation("Updating repositories {Count}", projectId.Length);
-                _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => repositories.ToArray(), (_, _) => repositories.ToArray());
+                _gitRepositoriesPerProject.AddOrUpdate(projectId, _ => [.. repositories,], (_, _) => [.. repositories,]);
             }
             catch (Exception e)
             {

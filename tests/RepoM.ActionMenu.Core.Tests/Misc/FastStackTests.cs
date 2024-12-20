@@ -18,7 +18,7 @@ public class FastStackTests
         _sut.Push(42);
 
         // assert
-        _sut.Items.Should().BeEquivalentTo(new[] { 42, default, default, default, default, });
+        _sut.Items.Should().BeEquivalentTo([42, default, default, default, default,]);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class FastStackTests
         _sut.Push(44);
 
         // assert
-        _sut.Items.Should().BeEquivalentTo(new[] { 42, 44, default, default, default, });
+        _sut.Items.Should().BeEquivalentTo([42, 44, default, default, default,]);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class FastStackTests
         _sut.Push(42);
 
         // assert
-        _sut.Items.Should().BeEquivalentTo(new[] { 1, 2, 3, 4, 5, 42, default, default, default, default, });
+        _sut.Items.Should().BeEquivalentTo([1, 2, 3, 4, 5, 42, default, default, default, default,]);
     }
 
     [Fact]

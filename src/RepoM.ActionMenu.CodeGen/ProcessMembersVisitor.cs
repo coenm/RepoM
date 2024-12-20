@@ -282,7 +282,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
         var version = (int)moduleConfigurationAttribute.ConstructorArguments[0].Value!;
 
         ISymbol? defaultFactoryMethodSymbol = _typeSymbol.GetMembers().SingleOrDefault(symbol => symbol.FindAttribute<ModuleConfigurationDefaultValueFactoryMethodAttribute>() != null);
-        if (!(defaultFactoryMethodSymbol is IMethodSymbol methodSymbol))
+        if (defaultFactoryMethodSymbol is not IMethodSymbol methodSymbol)
         {
             return;
         }
@@ -303,7 +303,7 @@ public class ProcessMembersVisitor : IClassDescriptorVisitor
 
         // 
         ISymbol? exampleFactoryMethodSymbol = _typeSymbol.GetMembers().SingleOrDefault(symbol => symbol.FindAttribute<ModuleConfigurationExampleValueFactoryMethodAttribute>() != null);
-        if (!(exampleFactoryMethodSymbol is IMethodSymbol methodSymbolExample))
+        if (exampleFactoryMethodSymbol is not IMethodSymbol methodSymbolExample)
         {
             return;
         }

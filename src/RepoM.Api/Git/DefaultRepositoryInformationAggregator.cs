@@ -66,7 +66,7 @@ public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggr
         List<RepositoryViewModel>? views = null;
         try
         {
-            views = Repositories.ToList();
+            views = [.. Repositories, ];
         }
         catch (ArgumentException)
         {
