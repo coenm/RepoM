@@ -69,6 +69,6 @@ public class DefaultDriveEnumerator : IPathProvider
             return [];
         }
 
-        return paths.ToArray();
+        return [.. paths,];
     }
 }

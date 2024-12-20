@@ -15,8 +15,8 @@ public class HmacSha256ServiceTests
     public HmacSha256ServiceTests()
     {
         _sut = new HmacSha256Service();
-        _stream1 = new MemoryStream(new byte[] { 0x00, });
-        _stream2 = new MemoryStream(new byte[] { 0x01, });
+        _stream1 = new MemoryStream([0x00,]);
+        _stream2 = new MemoryStream([0x01,]);
     }
     
     [Fact]
@@ -96,7 +96,7 @@ public class HmacSha256ServiceTests
         _stream1.Position = 0;
 
         // act
-        var result = _sut.ValidateHmac(_stream1, hmacValue.Concat(new byte[1]).ToArray());
+        var result = _sut.ValidateHmac(_stream1, [.. hmacValue, .. new byte[1], ]);
 
         // assert
         result.Should().BeFalse();

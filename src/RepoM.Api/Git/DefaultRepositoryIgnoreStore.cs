@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Threading;
 using RepoM.Core.Plugin.Common;
 
 public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgnoreStore
 {
     private List<string>? _ignores;
     private IEnumerable<IgnoreRule>? _rules;
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
     private readonly string _fullFilename;
 
     public DefaultRepositoryIgnoreStore(

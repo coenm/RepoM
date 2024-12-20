@@ -20,7 +20,7 @@ public class QueryParserCompositionTests
 
     public QueryParserCompositionTests()
     {
-        _sut = new QueryParserComposition(new[] { _qp1, _qp2, _qp3, });
+        _sut = new QueryParserComposition([_qp1, _qp2, _qp3,]);
 
         A.CallTo(() => _qp1.Name).Returns("key1");
         A.CallTo(() => _qp2.Name).Returns("key2");
