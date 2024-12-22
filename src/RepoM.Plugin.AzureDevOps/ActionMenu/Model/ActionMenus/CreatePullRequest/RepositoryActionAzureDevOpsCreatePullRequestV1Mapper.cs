@@ -96,23 +96,11 @@ internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRe
                         draft,
                         includeWorkItems,
                         openInBrowser,
-                        ConvertMergeStrategy(action.AutoComplete.MergeStrategy),
+                        action.AutoComplete.MergeStrategy.MapToDomain(),
                         deleteSourceBranch,
                         transitionWorkItems),
                     ExecutionCausesSynchronizing = false,
                 };
         }
-    }
-
-    private static CreatePullRequestRepositoryCommand.MergeStrategy ConvertMergeStrategy(MergeStrategyV1 input)
-    {
-        return input switch
-            {
-                MergeStrategyV1.NoFastForward => CreatePullRequestRepositoryCommand.MergeStrategy.NoFastForward,
-                MergeStrategyV1.Squash => CreatePullRequestRepositoryCommand.MergeStrategy.Squash,
-                MergeStrategyV1.Rebase => CreatePullRequestRepositoryCommand.MergeStrategy.Rebase,
-                MergeStrategyV1.RebaseMerge => CreatePullRequestRepositoryCommand.MergeStrategy.RebaseMerge,
-                _ => throw new ArgumentOutOfRangeException(nameof(input), input, null),
-            };
     }
 }
