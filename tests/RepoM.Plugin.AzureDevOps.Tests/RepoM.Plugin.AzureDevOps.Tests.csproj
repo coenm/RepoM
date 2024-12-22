@@ -43,6 +43,18 @@
     <ProjectReference Include="..\RepoM.Api.Tests\RepoM.Api.Tests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ActionMenu\IntegrationTests\AzureDevopsCreatePrV2Tests.CreatePullRequestScenario01.verified.txt">
+      <DependentUpon>AzureDevopsCreatePrV2Tests.cs</DependentUpon>
+    </None>
+    <None Update="ActionMenu\Model\ActionMenus\CreatePullRequest\RepositoryActionAzureDevOpsCreatePullRequestV2MapperTests.Map_ShouldReturnResult_WhenAllOkayWithoutAutoComplete.verified.txt">
+      <DependentUpon>RepositoryActionAzureDevOpsCreatePullRequestV2MapperTests.cs</DependentUpon>
+    </None>
+    <None Update="ActionMenu\Model\ActionMenus\CreatePullRequest\RepositoryActionAzureDevOpsCreatePullRequestV2MapperTests.Map_ShouldReturnResult_WhenAllOkayWithAutoComplete.verified.txt">
+      <DependentUpon>RepositoryActionAzureDevOpsCreatePullRequestV2MapperTests.cs</DependentUpon>
+    </None>
+  </ItemGroup>
+
   <PropertyGroup>
     <!-- Embed;CopyAlways;CopyPreserveNewest;None -->
     <EasyTestFileMode>None</EasyTestFileMode>
