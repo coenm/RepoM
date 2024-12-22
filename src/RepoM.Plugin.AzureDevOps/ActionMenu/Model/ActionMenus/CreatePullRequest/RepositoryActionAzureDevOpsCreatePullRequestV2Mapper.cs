@@ -13,22 +13,17 @@ using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.RepositoryCommands;
 
 [UsedImplicitly]
-internal class RepositoryActionAzureDevOpsCreatePullRequestV1Mapper : ActionToRepositoryActionMapperBase<RepositoryActionAzureDevOpsCreatePullRequestV1>
+internal class RepositoryActionAzureDevOpsCreatePullRequestV2Mapper : ActionToRepositoryActionMapperBase<RepositoryActionAzureDevOpsCreatePullRequestV2>
 {
     private readonly ILogger _logger;
 
-    public RepositoryActionAzureDevOpsCreatePullRequestV1Mapper(ILogger logger)
+    public RepositoryActionAzureDevOpsCreatePullRequestV2Mapper(ILogger logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionAzureDevOpsCreatePullRequestV1 action, IActionMenuGenerationContext context, IRepository repository)
+    protected override async IAsyncEnumerable<UserInterfaceRepositoryActionBase> MapAsync(RepositoryActionAzureDevOpsCreatePullRequestV2 action, IActionMenuGenerationContext context, IRepository repository)
     {
-        if (repository.HasLocalChanges)
-        {
-            yield break;
-        }
-
         var toBranch = await action.ToBranch.RenderAsync(context).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(toBranch))

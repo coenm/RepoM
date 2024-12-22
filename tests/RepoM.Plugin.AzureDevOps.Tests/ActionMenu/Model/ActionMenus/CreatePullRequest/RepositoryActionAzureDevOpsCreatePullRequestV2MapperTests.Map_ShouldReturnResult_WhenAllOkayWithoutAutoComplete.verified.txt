@@ -1,0 +1,21 @@
+﻿[
+  {
+    $type: UserInterfaceRepositoryAction,
+    Name: evaluated: pr name,
+    RepositoryCommand: {
+      $type: CreatePullRequestRepositoryCommand,
+      ProjectId: evaluated: projId123,
+      ReviewerIds: [
+        evaluated: def,
+        evaluated: abc
+      ],
+      ToBranch: main,
+      PullRequestTitle: evaluated: pr title,
+      Draft: false,
+      IncludeWorkItems: false,
+      OpenInBrowser: true
+    },
+    ExecutionCausesSynchronizing: false,
+    CanExecute: true
+  }
+]
