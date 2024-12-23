@@ -119,6 +119,6 @@ public class StatisticsModuleTest
         await sut.StartAsync();
 
         // assert
-        statisticsService.GetRepositories().Should().BeEquivalentTo(new[] { "C:/Projects/git/E-Accounting/E-Accounting", });
+        statisticsService.GetRepositories().Should().BeEquivalentTo("C:/Projects/git/E-Accounting/E-Accounting");
     }
 }

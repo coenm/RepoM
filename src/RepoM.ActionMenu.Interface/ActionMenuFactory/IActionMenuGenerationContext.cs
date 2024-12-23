@@ -28,6 +28,6 @@ public static class ActionMenuGenerationContextExtensions
             list.Add(item);
         }
 
-        return list.ToArray();
+        return [.. list,];
     }
 }

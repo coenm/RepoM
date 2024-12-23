@@ -19,7 +19,7 @@ internal class UsageScoreCalculator : IRepositoryScoreCalculator
         _service = service ?? throw new ArgumentNullException(nameof(service));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _config = config ?? throw new ArgumentNullException(nameof(config));
-        _ranges = config.Ranges.OrderBy(x => x.MaxAge).ToList();
+        _ranges = [.. config.Ranges.OrderBy(x => x.MaxAge), ];
     }
 
     public int Score(IRepository repository)

@@ -95,7 +95,7 @@ public static class PackageExtensions
         {
             // A type load exception would typically happen on an Anonymously Hosted DynamicMethods
             // Assembly and it would be safe to skip this exception.
-            return Enumerable.Empty<Type>();
+            return [];
         }
     }
 

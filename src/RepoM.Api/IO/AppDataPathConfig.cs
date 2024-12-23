@@ -1,6 +1,6 @@
 namespace RepoM.Api.IO;
 
-public record struct AppDataPathConfig
+public readonly record struct AppDataPathConfig
 {
     public string? AppSettingsPath { get; init; }
 }

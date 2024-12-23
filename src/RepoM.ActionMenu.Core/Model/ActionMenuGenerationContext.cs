@@ -175,7 +175,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     {
         if (!await IsMenuItemActiveAsync(menuAction).ConfigureAwait(false))
         {
-            return Array.Empty<UserInterfaceRepositoryActionBase>();
+            return [];
         }
 
         using DisposableContextScriptObject variableContext = PushNewContext();
@@ -192,7 +192,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
         if (mapper == null)
         {
             // throw?
-            return Array.Empty<UserInterfaceRepositoryActionBase>();
+            return [];
         }
 
         var items = new List<UserInterfaceRepositoryActionBase>();

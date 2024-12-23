@@ -13,7 +13,7 @@ public class WorkItemExtractorTests
         // arrange
 
         // act
-        var result = Sut.GetDistinctWorkItemsFromCommitMessages(Array.Empty<string>());
+        var result = Sut.GetDistinctWorkItemsFromCommitMessages([]);
 
         // assert
         result.Should().BeEmpty();
@@ -27,7 +27,7 @@ public class WorkItemExtractorTests
         // arrange
 
         // act
-        var result = Sut.GetDistinctWorkItemsFromCommitMessages(new[] { input, });
+        var result = Sut.GetDistinctWorkItemsFromCommitMessages([input,]);
 
         // assert
         result.Should().BeEmpty();
@@ -46,7 +46,7 @@ public class WorkItemExtractorTests
         // arrange
 
         // act
-        var result = Sut.GetDistinctWorkItemsFromCommitMessages(new[] { input, });
+        var result = Sut.GetDistinctWorkItemsFromCommitMessages([input,]);
 
         // assert
         result.Should().BeEquivalentTo(expectedOutput);

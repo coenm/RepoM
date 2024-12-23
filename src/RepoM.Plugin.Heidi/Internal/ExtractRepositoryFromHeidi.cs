@@ -185,7 +185,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
 
     private static int FindEndCharIndex(ReadOnlySpan<char> comment)
     {
-        char[] allowedChars = { '.', '-', '_', };
+        char[] allowedChars = ['.', '-', '_',];
 
         var k = 0;
         var stop = false;

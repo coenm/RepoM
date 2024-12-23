@@ -1,5 +1,3 @@
-using FluentAssertions;
-
 namespace RepoM.Plugin.AzureDevOps.Tests;
 
 using System;
@@ -11,6 +9,7 @@ using RepoM.Core.Plugin;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
 using SimpleInjector;
 using Xunit;
+using FluentAssertions;
 
 public class AzureDevOpsPackageTests
 {

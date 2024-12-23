@@ -22,7 +22,7 @@ public class FileFunctionsTests
         _context = A.Fake<IMenuContext>();
         A.CallTo(() => _context.FileSystem).Returns(_fileSystem);
         _span =  new SourceSpan("fileName", new TextPosition(1, 1, 1), new TextPosition(1, 1, 1));
-        _rootPath = Path.Combine(Path.GetTempPath(), $"RepoM_Test_Repositories_{Guid.NewGuid().ToString()}");
+        _rootPath = Path.Combine(Path.GetTempPath(), $"RepoM_Test_Repositories_{Guid.NewGuid()}");
         _rootPathSubDir = Path.Combine(_rootPath, "subDir");
     }
 

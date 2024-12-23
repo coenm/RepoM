@@ -12,7 +12,7 @@ public class HmacSha256Service : IHmacService
     {
         var key = RandomNumberGenerator.GetBytes(KEY_LENGTH);
         using var calculator = new HMACSHA256(key);
-        return key.Concat(calculator.ComputeHash(input)).ToArray(); // yes, it is what it is, oops :-)
+        return [.. key, .. calculator.ComputeHash(input), ]; // yes, it is what it is, oops :-)
     }
 
     public bool ValidateHmac(Stream input, in byte[] hmac)
@@ -22,7 +22,7 @@ public class HmacSha256Service : IHmacService
             return false;
         }
         
-        using var calculator = new HMACSHA256(hmac[..KEY_LENGTH].ToArray());
+        using var calculator = new HMACSHA256([.. hmac[..KEY_LENGTH],]);
         var computedHash = calculator.ComputeHash(input);
         return computedHash.SequenceEqual(hmac[KEY_LENGTH..]);
     }

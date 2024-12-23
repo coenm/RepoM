@@ -42,7 +42,7 @@ public class PluginFinder : IPluginFinder
 
         if (!_fileSystem.Directory.Exists(pluginBaseDirectory))
         {
-            return Enumerable.Empty<string>();
+            return [];
         }
 
         return _fileSystem.Directory.EnumerateDirectories(pluginBaseDirectory);

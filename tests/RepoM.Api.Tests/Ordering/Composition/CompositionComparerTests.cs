@@ -24,7 +24,7 @@ public class CompositionComparerTests
         _comparer1 = A.Fake<IRepositoryComparer>();
         _comparer2 = A.Fake<IRepositoryComparer>();
         _comparer3 = A.Fake<IRepositoryComparer>();
-        _sut = new CompositionComparer(new[] { _comparer1, _comparer2, _comparer3, });
+        _sut = new CompositionComparer([_comparer1, _comparer2, _comparer3,]);
     }
 
     [Fact]

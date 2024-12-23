@@ -10,7 +10,7 @@ public class RepositoryHeidiConfiguration
     : this(
         singleDatabaseConfiguration.Name,
         singleDatabaseConfiguration.Order,
-        singleDatabaseConfiguration.Tags.ToArray(),
+        [.. singleDatabaseConfiguration.Tags,],
         heidiFilename,
         new HeidiDbConfig
             {
@@ -22,7 +22,7 @@ public class RepositoryHeidiConfiguration
                 NetType = heidiSingleDatabaseConfiguration.NetType,
                 Library = heidiSingleDatabaseConfiguration.Library,
                 Comment = heidiSingleDatabaseConfiguration.Comment,
-                Databases = heidiSingleDatabaseConfiguration.Databases.ToArray(),
+                Databases = [.. heidiSingleDatabaseConfiguration.Databases, ],
                 Host = heidiSingleDatabaseConfiguration.Host,
             })
     {

@@ -54,7 +54,7 @@ public class RepositoryStatisticsTest
             });
 
         // assert
-        sut.Recordings.Should().BeEquivalentTo(new[] { now, });
+        sut.Recordings.Should().BeEquivalentTo([now,]);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class RepositoryStatisticsTest
             });
 
         // assert
-        sut.Recordings.Should().BeEquivalentTo(new[] { now1, now2, });
+        sut.Recordings.Should().BeEquivalentTo([now1, now2,]);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class RepositoryStatisticsTest
         _ = sut.Record();
 
         // assert
-        sut.Recordings.Should().BeEquivalentTo(new[] { now, });
+        sut.Recordings.Should().BeEquivalentTo([now,]);
     }
 
     [Fact]

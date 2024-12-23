@@ -97,7 +97,7 @@ public class HeidiPackageTest
         Action act = () => _container.Verify(VerificationOption.VerifyAndDiagnose);
 
         // assert
-        act.Should().ThrowExactly<InvalidOperationException>(); ;
+        act.Should().ThrowExactly<InvalidOperationException>();
     }
 
     private static void RegisterExternals(Container container)

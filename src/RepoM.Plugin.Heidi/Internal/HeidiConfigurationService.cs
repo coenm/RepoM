@@ -80,7 +80,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
 
         if (origin == null)
         {
-            return Array.Empty<RepositoryHeidiConfiguration>();
+            return [];
         }
 
         return GetByKey(origin.Name);
@@ -90,15 +90,15 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
     {
         if (string.IsNullOrWhiteSpace(key))
         {
-            return Array.Empty<RepositoryHeidiConfiguration>();
+            return [];
         }
 
         if (_repositoryHeidiConfigs.TryGetValue(key, out List<RepositoryHeidiConfiguration>? configs))
         {
-            return configs.OrderBy(x => x.Order).ToArray();
+            return [.. configs.OrderBy(x => x.Order), ];
         }
 
-        return Array.Empty<RepositoryHeidiConfiguration>();
+        return [];
     }
 
     public void Dispose()

@@ -97,7 +97,7 @@ internal class FileSystemTemplateLoader : ITemplateLoader
     {
         if (!string.IsNullOrWhiteSpace(_prefix) && templateName.Length == 2)
         {
-            if (int.TryParse(templateName, out int _))
+            if (int.TryParse(templateName, out _))
             {
                 var prefix = Path.Combine(_docsIncludeSourceFullPath, $"{_prefix}." + templateName);
                 var path = $"{prefix}.md";

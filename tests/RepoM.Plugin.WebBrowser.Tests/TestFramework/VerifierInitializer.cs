@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.Statistics.Tests.TestFramework;
+namespace RepoM.Plugin.WebBrowser.Tests.TestFramework;
 
 using System.Runtime.CompilerServices;
 using Argon;

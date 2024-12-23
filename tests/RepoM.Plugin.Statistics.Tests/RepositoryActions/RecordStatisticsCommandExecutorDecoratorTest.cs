@@ -86,7 +86,7 @@ public class RecordStatisticsCommandExecutorDecoratorTest
         sut.Execute(_repository, action);
 
         // assert
-        service.GetRecordings(_repository).Should().BeEquivalentTo(new[] { _now, });
+        service.GetRecordings(_repository).Should().BeEquivalentTo([_now,]);
     }
     
     [Fact]

@@ -156,7 +156,7 @@ public class RepositoriesScorerConfigurationTests
             };
         AssemblyMembers members = DocReader.Read(repositoryActionTestData.Assembly, options);
 #else
-        var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), Array.Empty<Member>());
+        var members = new DocumentMembers(System.Xml.Linq.XDocument.Parse("<root></root>"), []);
 #endif
 
         var visitor = new RepositoryComparerSettingMarkdownVisitor(builtinClassNames);

@@ -8,7 +8,6 @@ public sealed class AppDataPathProvider : IAppDataPathProvider
 { 
     public AppDataPathProvider(AppDataPathConfig config, IFileSystem fileSystem)
     {
-        ArgumentNullException.ThrowIfNull(config);
         ArgumentNullException.ThrowIfNull(fileSystem);
 
         if (!string.IsNullOrWhiteSpace(config.AppSettingsPath))

@@ -3,6 +3,7 @@ namespace RepoM.ActionMenu.Core.Yaml.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Model;
@@ -26,7 +27,7 @@ internal class ActionMenuDeserializer : IActionMenuDeserializer
 {
     private readonly IDeserializer _deserializer;
     private readonly ILogger _logger;
-    private readonly object _syncLock = new();
+    private readonly Lock _syncLock = new();
     private static readonly Dictionary<Type, Func<object>> _factoryMethods = new()
         {
             { typeof(Script), () => new ScribanScript() },

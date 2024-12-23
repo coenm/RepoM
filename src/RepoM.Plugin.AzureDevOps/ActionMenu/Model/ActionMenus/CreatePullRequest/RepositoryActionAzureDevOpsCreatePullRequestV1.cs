@@ -16,7 +16,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider.Data;
 /// <snippet name='azure-devops-create-pr@1-scenario03' mode='snippet' />
 /// </example>
 [RepositoryAction(TYPE_VALUE)]
-internal sealed class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuAction, IContext
+internal class RepositoryActionAzureDevOpsCreatePullRequestV1 : IMenuAction, IContext
 {
     public const string TYPE_VALUE = "azure-devops-create-pr@1";
 
