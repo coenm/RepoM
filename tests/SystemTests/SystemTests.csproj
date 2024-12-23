@@ -2,11 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Helpers\**" />
-    <EmbeddedResource Remove="Helpers\**" />
-    <None Remove="Helpers\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
