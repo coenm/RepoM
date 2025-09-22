@@ -352,3 +352,6 @@ MigrationBackup/
 ## CUSTOM
 # https://github.com/VerifyTests/Verify
 *.received.*
+
+# Jetbrains Rider
+.idea/
