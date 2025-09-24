@@ -1,6 +1,6 @@
 steps:
 
-- task: SonarCloudPrepare@4
+- task: SonarCloudPrepare@3
   displayName: Prepare analysis on SonarCloud
   inputs:
     SonarQube: SonarCloudGithub
