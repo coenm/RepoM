@@ -1,9 +1,11 @@
 steps:
 
-- task: SonarCloudPrepare@3
+- task: SonarCloudPrepare@7
   displayName: Prepare analysis on SonarCloud
   inputs:
-    SonarCloud: SonarCloudGithub
+    SonarQube: SonarCloudGithub
+    scannerMode: cli
+    #SonarCloud: SonarCloudGithub
     organization: coenm-github
     projectKey: RepoM
     projectName: RepoM
