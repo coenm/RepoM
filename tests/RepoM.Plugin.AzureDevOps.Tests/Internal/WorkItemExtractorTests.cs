@@ -1,7 +1,7 @@
 namespace RepoM.Plugin.AzureDevOps.Tests.Internal;
 
 using System;
-using FluentAssertions;
+using AwesomeAssertions;
 using Xunit;
 using Sut = AzureDevOps.Internal.WorkItemExtractor;
 

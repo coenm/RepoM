@@ -2,7 +2,7 @@ namespace RepoM.Api.Tests.IO;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.IO;
 using RepoM.Core.Plugin.RepositoryFinder;
 using Xunit;

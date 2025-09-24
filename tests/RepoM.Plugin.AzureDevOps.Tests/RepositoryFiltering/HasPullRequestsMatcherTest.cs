@@ -3,7 +3,7 @@ namespace RepoM.Plugin.AzureDevOps.Tests.RepositoryFiltering;
 using System;
 using System.Collections.Generic;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Plugin.AzureDevOps.Internal;

@@ -1,7 +1,7 @@
 namespace RepoM.ActionMenu.Core.Tests.Misc;
 
 using System;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.Misc;
 using Xunit;
 

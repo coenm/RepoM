@@ -2,7 +2,7 @@ namespace RepoM.App.Tests.RepositoryFiltering;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.App.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;

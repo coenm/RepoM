@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Heidi.Tests.Interface;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Plugin.Heidi.Interface;
 using Xunit;
 

@@ -2,7 +2,7 @@ namespace RepoM.App.Tests.ViewModels;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.App.Plugins;
 using RepoM.App.ViewModels;
 using Xunit;

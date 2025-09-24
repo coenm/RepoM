@@ -1,7 +1,7 @@
 namespace RepoM.Plugin.Heidi.Tests.Internal;
 
 using System.Threading.Tasks;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Plugin.Heidi.Internal;
 using RepoM.Plugin.Heidi.Internal.Config;
 using VerifyTests;

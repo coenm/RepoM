@@ -1,6 +1,6 @@
 namespace RepoM.App.Tests.RepositoryFiltering;
 
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.App.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;

@@ -4,7 +4,7 @@ using System;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.Heidi.PersistentConfiguration;

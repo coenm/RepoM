@@ -8,7 +8,7 @@ using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.Core.Plugin.Repository;

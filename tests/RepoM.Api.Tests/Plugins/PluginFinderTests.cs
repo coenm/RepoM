@@ -7,7 +7,7 @@ using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Plugins;
 using VerifyXunit;
 using Xunit;

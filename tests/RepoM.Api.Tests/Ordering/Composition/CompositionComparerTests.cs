@@ -1,7 +1,7 @@
 namespace RepoM.Api.Tests.Ordering.Composition;
 
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Ordering.Composition;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;

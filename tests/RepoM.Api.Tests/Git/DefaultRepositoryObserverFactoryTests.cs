@@ -3,7 +3,7 @@ namespace RepoM.Api.Tests.Git;
 using System;
 using System.IO.Abstractions;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Git;
 using Xunit;

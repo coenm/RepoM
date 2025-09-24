@@ -1,6 +1,6 @@
 namespace RepoM.Api.Tests.Plugins;
 
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Plugins;
 using RepoM.Core.Plugin.AssemblyInformation;
 using Xunit;

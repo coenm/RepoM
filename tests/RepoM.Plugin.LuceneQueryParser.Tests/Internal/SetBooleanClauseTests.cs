@@ -1,6 +1,6 @@
 namespace RepoM.Plugin.LuceneQueryParser.Tests.Internal;
 
-using FluentAssertions;
+using AwesomeAssertions;
 using Lucene.Net.Search;
 using RepoM.Plugin.LuceneQueryParser.Internal;
 using Xunit;

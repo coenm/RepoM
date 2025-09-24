@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.App.Services;
@@ -138,7 +138,7 @@ public class WindowSizeServiceTests : IDisposable
                 MenuHeight = 40,
                 MenuWidth = 140,
             });
-        callingThreadIds.Should().HaveCountGreaterOrEqualTo(1);
+        callingThreadIds.Should().HaveCountGreaterThanOrEqualTo(1);
         callingThreadIds.Should().NotContain(currentThreadId);
 
     }

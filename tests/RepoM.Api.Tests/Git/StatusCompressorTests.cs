@@ -1,6 +1,6 @@
 namespace RepoM.Api.Tests.Git;
 
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Git;
 using Xunit;
 

@@ -3,7 +3,7 @@ namespace RepoM.Plugin.SonarCloud.Tests;
 using System;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Xunit;
 
 public class SonarCloudFavoriteServiceTest

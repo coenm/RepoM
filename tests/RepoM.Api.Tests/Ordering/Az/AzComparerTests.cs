@@ -1,7 +1,7 @@
 namespace RepoM.Api.Tests.Ordering.Az;
 
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Ordering.Az;
 using RepoM.Core.Plugin.Repository;
 using Xunit;

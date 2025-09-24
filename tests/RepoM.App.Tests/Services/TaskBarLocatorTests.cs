@@ -1,6 +1,6 @@
 namespace RepoM.App.Tests.Services;
 
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.App.Services;
 using Xunit;
 

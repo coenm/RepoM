@@ -3,7 +3,7 @@ namespace RepoM.Plugin.LuceneQueryParser.Tests;
 using System;
 using System.Linq;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.RepositoryFiltering;

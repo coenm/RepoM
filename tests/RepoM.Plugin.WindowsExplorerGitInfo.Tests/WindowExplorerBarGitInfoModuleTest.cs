@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 using Xunit;
 

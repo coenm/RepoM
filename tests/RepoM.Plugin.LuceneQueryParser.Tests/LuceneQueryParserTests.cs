@@ -3,7 +3,7 @@ namespace RepoM.Plugin.LuceneQueryParser.Tests;
 using System;
 using System.Threading.Tasks;
 using Argon;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Plugin.LuceneQueryParser;

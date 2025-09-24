@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Plugin.Heidi.Internal;
 using RepoM.Plugin.Heidi.Internal.Config;
 using VerifyTests;

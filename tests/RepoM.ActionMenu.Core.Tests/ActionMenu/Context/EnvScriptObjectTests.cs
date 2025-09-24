@@ -3,7 +3,7 @@ namespace RepoM.ActionMenu.Core.Tests.ActionMenu.Context;
 using System;
 using System.Collections.Generic;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.ActionMenu.Context;
 using Scriban.Parsing;
 using Scriban;

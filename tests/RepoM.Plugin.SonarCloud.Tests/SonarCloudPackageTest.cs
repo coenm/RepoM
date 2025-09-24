@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
 using RepoM.Plugin.SonarCloud.PersistentConfiguration;
-using FluentAssertions;
+using AwesomeAssertions;
 
 public class SonarCloudPackageTest
 {

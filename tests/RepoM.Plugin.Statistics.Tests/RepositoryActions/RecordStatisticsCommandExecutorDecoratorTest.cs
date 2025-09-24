@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Statistics.Tests.RepositoryActions;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;

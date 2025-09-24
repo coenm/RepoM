@@ -2,7 +2,7 @@ namespace RepoM.Api.Tests.Plugins;
 
 using System.IO;
 using System.Linq;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Plugins;
 using Xunit;
 

@@ -2,7 +2,7 @@ namespace RepoM.ActionMenu.Core.Tests;
 
 using System.IO.Abstractions;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Core;
 using SimpleInjector;

@@ -6,7 +6,7 @@ using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Core.Plugin.Common;
 using Xunit;
 

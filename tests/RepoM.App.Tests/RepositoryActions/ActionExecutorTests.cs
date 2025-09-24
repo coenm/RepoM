@@ -2,7 +2,7 @@ namespace RepoM.App.Tests.RepositoryActions;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.App.RepositoryActions;
 using RepoM.Core.Plugin.Repository;

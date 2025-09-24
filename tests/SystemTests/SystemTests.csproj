@@ -14,17 +14,17 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentAssertions" Version="7.0.0" />
-    <PackageReference Include="FluentAssertions.Analyzers" Version="0.34.1">
+    <PackageReference Include="AwesomeAssertions" Version="9.2.0" />
+    <PackageReference Include="AwesomeAssertions.Analyzers" Version="9.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="17.13.1" />
-    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="1.5.0" />
-    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="21.1.7" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.0" />
-    <PackageReference Include="TUnit" Version="0.5.22" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="17.14.2" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="1.8.4" />
+    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="22.0.16" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+    <PackageReference Include="TUnit" Version="0.61.25" />
   </ItemGroup>
 </Project>

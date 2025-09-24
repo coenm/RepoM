@@ -5,7 +5,7 @@ using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Plugins;
 using RepoM.Core.Plugin.Common;

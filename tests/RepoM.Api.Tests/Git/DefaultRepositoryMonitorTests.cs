@@ -5,7 +5,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Git;
 using RepoM.Api.Git.AutoFetch;
