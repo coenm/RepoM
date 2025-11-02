@@ -5,7 +5,7 @@ steps:
   inputs:
     SonarQube: SonarCloudGithub
     scannerMode: cli
-    #SonarCloud: SonarCloudGithub
+    SonarCloud: SonarCloudGithub
     organization: coenm-github
     projectKey: RepoM
     projectName: RepoM
