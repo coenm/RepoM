@@ -42,7 +42,8 @@ public class WindowExplorerBarGitInfoModuleTest
         // assert
         A.CallTo(() => _explorerHandler.CleanTitles()).MustHaveHappenedOnceExactly();
     }
-    
+
+    // fragile?
     [Fact]
     public async Task StartAsync_ShouldCallUpdateTitlesUntilStopped()
     {
