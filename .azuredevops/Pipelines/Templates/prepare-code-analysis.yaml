@@ -3,7 +3,6 @@ steps:
 - task: SonarCloudPrepare@3
   displayName: Prepare analysis on SonarCloud
   inputs:
-    SonarQube: SonarCloudGithub
     scannerMode: cli
     SonarCloud: SonarCloudGithub
     organization: coenm-github
