@@ -30,4 +30,7 @@ jobs:
       run: dotnet build -c debug --no-restore
 
     - name: Test
-      run: dotnet test -c debug --no-build --verbosity normal
+      run: dotnet test 'tests/**/*.Tests.csproj' -c debug --no-build --verbosity normal
+
+    # - name: Test
+    #   run: dotnet test -c debug --no-build --verbosity normal
