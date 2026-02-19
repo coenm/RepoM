@@ -2,7 +2,7 @@
   {
     Name: Edit .editorconfig in Visual Studio Code,
     RepositoryCommand: {
-      Executable: {UserProfile}\AppData\Local/Programs/Microsoft VS Code/code.exe,
+      Executable: {UserProfile}AppData\Local/Programs/Microsoft VS Code/code.exe,
       Arguments: [
         "C:/Repositories/work/RepoM/.editorconfig"
       ]
