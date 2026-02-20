@@ -9,8 +9,14 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
+; Add local plugin directory for build agents
+!addplugindir "plugins\x86-ansi"
+!addplugindir "plugins\x86-unicode"
+
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
+!include "FileFunc.nsh"
+!include "LogicLib.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -46,6 +52,21 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
+; Function to check if RepoM is running
+Function .onInit
+  CheckRunning:
+    ; Check if RepoM.exe is running
+    nsProcess::_FindProcess "${PRODUCT_NAME}.exe"
+    Pop $R0
+    ${If} $R0 == 0
+      ; Process found - ask user to close it
+      MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION \
+        "${PRODUCT_NAME} is currently running.$\n$\nPlease close ${PRODUCT_NAME} before continuing with the installation.$\n$\nClick 'Retry' after closing ${PRODUCT_NAME}, or 'Cancel' to exit the installer." \
+        /SD IDCANCEL IDRETRY CheckRunning
+      Abort
+    ${EndIf}
+FunctionEnd
+
 Section "RepoM"
   SetOutPath "$INSTDIR"
   SetOverwrite on
@@ -78,6 +99,19 @@ Function un.onUninstSuccess
 FunctionEnd
 
 Function un.onInit
+  ; Check if RepoM is running before uninstall
+  CheckRunningUninstall:
+    nsProcess::_FindProcess "${PRODUCT_NAME}.exe"
+    Pop $R0
+    ${If} $R0 == 0
+      ; Process found - ask user to close it
+      MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION \
+        "${PRODUCT_NAME} is currently running.$\n$\nPlease close ${PRODUCT_NAME} before continuing with the uninstallation.$\n$\nClick 'Retry' after closing ${PRODUCT_NAME}, or 'Cancel' to exit." \
+        /SD IDCANCEL IDRETRY CheckRunningUninstall
+      Abort
+    ${EndIf}
+
+  ; Ask for confirmation
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Do you really want to remove $(^Name) and all of its components?" IDYES +2
   Abort
 FunctionEnd
