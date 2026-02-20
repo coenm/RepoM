@@ -50,7 +50,7 @@ public static class Program
     }
 
     /// <summary>
-    /// Copy descriptions from if (string.IsNullOrWhiteSpace(memberDescriptor.Description) && string.IsNullOrWhiteSpace(memberDescriptor.InheritDocs))
+    /// Copy descriptions from if (string.IsNullOrWhiteSpace(memberDescriptor.Description) &amp;&amp; string.IsNullOrWhiteSpace(memberDescriptor.InheritDocs))
     /// </summary>
     private static void UpdateMemberTypeDescriptions(List<ProjectDescriptor> processedProjects, Dictionary<string, List<MemberDescriptor>> allMemberTypes)
     {
