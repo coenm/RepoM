@@ -3,7 +3,7 @@ namespace RepoM.Api.Tests.IO;
 using System;
 using System.IO.Abstractions;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.IO;
 using Xunit;
 

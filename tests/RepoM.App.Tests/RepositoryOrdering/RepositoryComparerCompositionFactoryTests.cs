@@ -2,7 +2,7 @@ namespace RepoM.App.Tests.RepositoryOrdering;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.App.RepositoryOrdering;
 using RepoM.Core.Plugin.RepositoryOrdering;

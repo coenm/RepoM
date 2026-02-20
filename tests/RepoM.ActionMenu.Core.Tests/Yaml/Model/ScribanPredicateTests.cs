@@ -2,7 +2,7 @@ namespace RepoM.ActionMenu.Core.Tests.Yaml.Model;
 
 using System;
 using System.Threading.Tasks;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.Misc;
 using RepoM.ActionMenu.Core.Yaml.Model.Templating;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;

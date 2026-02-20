@@ -9,7 +9,7 @@ using RepoM.Core.Plugin;
 using RepoM.Plugin.AzureDevOps.PersistentConfiguration;
 using SimpleInjector;
 using Xunit;
-using FluentAssertions;
+using AwesomeAssertions;
 
 public class AzureDevOpsPackageTests
 {

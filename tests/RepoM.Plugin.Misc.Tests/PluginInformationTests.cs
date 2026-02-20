@@ -3,7 +3,7 @@ namespace RepoM.Plugin.Misc.Tests;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Core.Plugin.AssemblyInformation;
 using Xunit;
 

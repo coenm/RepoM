@@ -3,7 +3,7 @@ namespace RepoM.Plugin.WebBrowser.Tests.ActionMenu.Model.ActionMenus.Browser;
 using System;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.YamlModel;
 using RepoM.Core.Plugin.Repository;

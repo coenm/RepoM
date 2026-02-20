@@ -3,7 +3,7 @@ namespace RepoM.App.Tests;
 using System;
 using System.IO.Abstractions;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Common;
 using SimpleInjector;

@@ -2,7 +2,7 @@ namespace RepoM.Plugin.WebBrowser.Tests;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Plugin.WebBrowser.Services;

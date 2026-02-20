@@ -3,7 +3,7 @@ namespace RepoM.Plugin.Statistics.Tests.ActionMenu.Context;
 using System;
 using FakeItEasy;
 using System.Collections.Generic;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Statistics;

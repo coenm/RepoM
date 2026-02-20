@@ -1,6 +1,6 @@
 namespace RepoM.App.Tests.ViewModels;
 
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Common;
 using RepoM.App.Plugins;
 using System;

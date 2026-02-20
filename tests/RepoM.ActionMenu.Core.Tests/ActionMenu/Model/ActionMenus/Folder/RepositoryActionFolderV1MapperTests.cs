@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.Folder;
 using RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.JustText;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionMenus;

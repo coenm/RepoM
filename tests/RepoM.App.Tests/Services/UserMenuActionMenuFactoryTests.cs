@@ -6,7 +6,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.App.Services;

@@ -14,7 +14,7 @@ using VerifyTests;
 using VerifyXunit;
 using Xunit;
 #if !DEBUG
-using FluentAssertions;
+using AwesomeAssertions;
 #endif
 
 public class RepositoriesScorerConfigurationTests

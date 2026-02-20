@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Statistics.Tests.Ordering;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Statistics.Ordering;
 using Xunit;

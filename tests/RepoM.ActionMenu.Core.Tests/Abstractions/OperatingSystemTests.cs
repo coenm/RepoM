@@ -3,7 +3,7 @@ namespace RepoM.ActionMenu.Core.Tests.Abstractions;
 using System;
 using System.IO.Abstractions;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.Abstractions;
 using Xunit;
 using OperatingSystem = RepoM.ActionMenu.Core.Abstractions.OperatingSystem;

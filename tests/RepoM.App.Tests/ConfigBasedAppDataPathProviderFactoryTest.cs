@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Meziantou.Xunit;
 using Microsoft.Extensions.FileProviders;
 using RepoM.Api.IO;

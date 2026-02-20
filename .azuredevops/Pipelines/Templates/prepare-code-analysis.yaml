@@ -3,6 +3,7 @@ steps:
 - task: SonarCloudPrepare@3
   displayName: Prepare analysis on SonarCloud
   inputs:
+    scannerMode: dotnet
     SonarCloud: SonarCloudGithub
     organization: coenm-github
     projectKey: RepoM

@@ -5,7 +5,7 @@ using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using EasyTestFileXunit;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.BrowseRepository;
 using RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.Command;
 using RepoM.ActionMenu.Core.ActionMenu.Model.ActionMenus.Executable;

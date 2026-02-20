@@ -1,7 +1,7 @@
 namespace RepoM.ActionMenu.Core.Tests.Abstractions;
 
 using System.Collections.Generic;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.Abstractions;
 using Xunit;
 

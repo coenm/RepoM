@@ -2,7 +2,7 @@ namespace RepoM.Plugin.SonarCloud.Tests.ActionMenu.Context;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Plugin.SonarCloud.ActionMenu.Context;
 using Xunit;
 

@@ -29,6 +29,7 @@ using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using SourceChord.FluentWPF;
 using Control = System.Windows.Controls.Control;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using WpfContextMenu = System.Windows.Controls.ContextMenu;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -212,7 +213,7 @@ public partial class MainWindow
             return;
         }
 
-        ContextMenu ctxMenu = ((FrameworkElement)e.Source).ContextMenu!;
+        WpfContextMenu ctxMenu = ((FrameworkElement)e.Source).ContextMenu!;
         var lstRepositoriesContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(ctxMenu).ConfigureAwait(true);
         if (!lstRepositoriesContextMenuOpening)
         {
@@ -220,7 +221,7 @@ public partial class MainWindow
         }
     }
 
-    private async Task<bool> LstRepositoriesContextMenuOpeningWrapperAsync(ContextMenu ctxMenu)
+    private async Task<bool> LstRepositoriesContextMenuOpeningWrapperAsync(WpfContextMenu ctxMenu)
     {
         try
         {
@@ -246,7 +247,7 @@ public partial class MainWindow
         }
     }
 
-    private async Task<bool> LstRepositoriesContextMenuOpeningAsync(ContextMenu ctxMenu)
+    private async Task<bool> LstRepositoriesContextMenuOpeningAsync(WpfContextMenu ctxMenu)
     {
         if (lstRepositories.SelectedItem is not RepositoryViewModel vm)
         {
@@ -451,7 +452,7 @@ public partial class MainWindow
             }
 
             // try open context menu.
-            ContextMenu? ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
+            WpfContextMenu? ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
             if (ctxMenu == null)
             {
                 e.Handled = true;

@@ -2,7 +2,7 @@ namespace RepoM.Plugin.AzureDevOps.Tests.Internal;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Plugin.AzureDevOps.Internal;
 using Xunit;

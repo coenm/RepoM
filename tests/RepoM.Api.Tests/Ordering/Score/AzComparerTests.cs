@@ -2,7 +2,7 @@ namespace RepoM.Api.Tests.Ordering.Score;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Ordering.Score;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;

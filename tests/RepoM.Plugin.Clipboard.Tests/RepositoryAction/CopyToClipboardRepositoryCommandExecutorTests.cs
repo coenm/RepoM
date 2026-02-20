@@ -2,7 +2,7 @@ namespace RepoM.Plugin.Clipboard.Tests.RepositoryAction;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Clipboard.RepositoryAction;
 using RepoM.Plugin.Clipboard.RepositoryAction.Actions;

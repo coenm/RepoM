@@ -18,7 +18,11 @@ steps:
 
 - pwsh: |
     nuget install NSIS -OutputDirectory ./packages
-    makensis.exe /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 setup/RepoM.nsi 
+    $nsis = Get-ChildItem -Path "./packages" -Filter "makensis.exe" -Recurse | Select-Object -First 1
+    if (-not $nsis) {
+      Write-Error "makensis.exe not found in ./packages after nuget install NSIS"
+    }
+    & $nsis.FullName /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 setup/RepoM.nsi
   displayName: ⚙️ Create installer
 
 - task: DeleteFiles@1

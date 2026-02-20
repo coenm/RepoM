@@ -1,7 +1,7 @@
 namespace RepoM.Plugin.Heidi.Tests.Internal;
 
 using System;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Plugin.Heidi.Internal;
 using Xunit;
 

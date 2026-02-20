@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.TestLib;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Plugin.AzureDevOps.Internal;

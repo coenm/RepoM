@@ -3,7 +3,7 @@ namespace RepoM.Plugin.Statistics.Tests;
 using System;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.Statistics.Interface;

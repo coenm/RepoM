@@ -2,7 +2,7 @@ namespace RepoM.Plugin.WebBrowser.Tests.RepositoryActions;
 
 using System;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.WebBrowser.RepositoryActions;
 using RepoM.Plugin.WebBrowser.RepositoryActions.Actions;

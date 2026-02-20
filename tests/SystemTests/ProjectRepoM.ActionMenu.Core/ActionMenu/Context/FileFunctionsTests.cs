@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Core.ActionMenu.Context;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using Scriban.Parsing;

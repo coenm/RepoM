@@ -3,7 +3,7 @@ namespace RepoM.Plugin.Heidi.Tests;
 using System;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Plugin.Heidi.Internal;
 using Xunit;
 

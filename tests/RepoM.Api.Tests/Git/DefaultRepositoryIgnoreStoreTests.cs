@@ -2,7 +2,7 @@ namespace RepoM.Api.Tests.Git;
 
 using System.IO.Abstractions.TestingHelpers;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Git;
 using RepoM.Core.Plugin.Common;
 using Xunit;

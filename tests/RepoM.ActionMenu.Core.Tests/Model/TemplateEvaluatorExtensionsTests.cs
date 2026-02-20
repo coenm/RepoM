@@ -3,7 +3,7 @@ namespace RepoM.ActionMenu.Core.Tests.Model;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using Xunit;
 using Sut = Core.Model.TemplateEvaluatorExtensions;

@@ -2,7 +2,7 @@ namespace RepoM.ActionMenu.Core.Tests.ConfigReader;
 
 using System;
 using System.Runtime.Caching;
-using FluentAssertions;
+using AwesomeAssertions;
 using JetBrains.Annotations;
 using RepoM.ActionMenu.Core.ConfigReader;
 using Xunit;

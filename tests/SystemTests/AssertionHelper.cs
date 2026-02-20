@@ -2,7 +2,7 @@ namespace SystemTests;
 
 using System;
 using System.Threading;
-using FluentAssertions;
+using AwesomeAssertions;
 using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
 

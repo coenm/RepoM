@@ -5,7 +5,7 @@ using RepoM.Api.Plugins;
 using System;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using SimpleInjector;
 using Xunit;

@@ -1,7 +1,7 @@
 namespace RepoM.ActionMenu.Core.Tests.Model;
 
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using System.IO.Abstractions;
 using System;
 using System.Linq;

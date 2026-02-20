@@ -3,7 +3,7 @@ namespace RepoM.ActionMenu.Core.Tests.Abstractions;
 using System;
 using System.Collections.Generic;
 using FakeItEasy;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
 using RepoM.ActionMenu.Core.Abstractions;
 using Xunit;

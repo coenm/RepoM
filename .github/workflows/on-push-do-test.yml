@@ -30,4 +30,8 @@ jobs:
       run: dotnet build -c debug --no-restore
 
     - name: Test
-      run: dotnet test -c debug --no-build --verbosity normal
+      shell: pwsh
+      run: |
+        Get-ChildItem -Path tests -Filter *.Tests.csproj -Recurse | ForEach-Object {
+          dotnet test $_.FullName -c debug --no-build --verbosity normal
+        }
