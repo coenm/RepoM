@@ -15,9 +15,9 @@ using RepoM.ActionMenu.Interface.YamlModel.ActionMenus;
 [RepositoryAction(TYPE_VALUE)]
 internal class RepositoryActionAzureDevOpsCreatePullRequestV2 : RepositoryActionAzureDevOpsCreatePullRequestV1, IMenuAction, IContext
 {
-    public const string TYPE_VALUE = "azure-devops-create-pr@2";
+    public new const string TYPE_VALUE = "azure-devops-create-pr@2";
 
-    public string Type
+    public new string Type
     {
         get => TYPE_VALUE;
         set => _ = value;

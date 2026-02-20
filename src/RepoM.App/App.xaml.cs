@@ -159,8 +159,6 @@ public partial class App : Application
         return loggerFactory;
     }
 
-    
-
     private static void UseRepositoryMonitor(Container container)
     {
         _repositoryMonitor = container.GetInstance<IRepositoryMonitor>();
@@ -176,6 +174,7 @@ public partial class App : Application
             return false;
         }
 
+#pragma warning disable CS0162 // Unreachable code detected - intentional in DEBUG mode
         try
         {
             _mutex = new Mutex(true, "Local\\github.com/coenm/RepoM", out var createdNew);
@@ -193,6 +192,7 @@ public partial class App : Application
         _mutex.Dispose();
         _mutex = null;
         return true;
+#pragma warning restore CS0162
     }
 
     private static void ReleaseAndDisposeMutex()

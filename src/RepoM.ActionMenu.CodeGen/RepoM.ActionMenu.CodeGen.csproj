@@ -11,6 +11,8 @@
     <PackageReference Include="MSBuild.StructuredLogger" Version="2.3.113" />
     <PackageReference Include="Scriban" Version="6.5.3" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
+    <!-- Fixing transitive System.Data.SqlClient security vulnerability from Microsoft.TeamFoundationServer.Client -->
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
   <ItemGroup>
