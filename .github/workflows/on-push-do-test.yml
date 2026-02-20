@@ -30,7 +30,8 @@ jobs:
       run: dotnet build -c debug --no-restore
 
     - name: Test
+      shell: pwsh
       run: |
-        for project in $(find tests -name "*.Tests.csproj"); do
-          dotnet test "$project" -c debug --no-build --verbosity normal
-        done
+        Get-ChildItem -Path tests -Filter *.Tests.csproj -Recurse | ForEach-Object {
+          dotnet test $_.FullName -c debug --no-build --verbosity normal
+        }
