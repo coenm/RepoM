@@ -103,7 +103,7 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
 
         void SignalIfDone()
         {
-            if (Volatile.Read(ref activeWorkers) == 0 && workQueue.IsEmpty)
+            if (Volatile.Read(ref activeWorkers) == 0 && (workQueue.IsEmpty || ct.IsCancellationRequested))
             {
                 completionSignal.TrySetResult();
             }
@@ -140,10 +140,13 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
                     else
                     {
                         // Queue is empty — check if all workers are idle
-                        if (Volatile.Read(ref activeWorkers) == 0 && workQueue.IsEmpty)
+                        if (Volatile.Read(ref activeWorkers) == 0)
                         {
-                            completionSignal.TrySetResult();
-                            return;
+                            if (workQueue.IsEmpty || ct.IsCancellationRequested)
+                            {
+                                completionSignal.TrySetResult();
+                                return;
+                            }
                         }
 
                         spinWait.SpinOnce();
@@ -173,6 +176,10 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
 
         // Wait for all workers to finish or cancellation
         await completionSignal.Task.ConfigureAwait(false);
+
+        // Clear any remaining work items
+        while (workQueue.TryDequeue(out _)) { }
+
         channel.Writer.Complete();
 
         // Wait for reader to drain
