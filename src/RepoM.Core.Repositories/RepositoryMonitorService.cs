@@ -24,6 +24,7 @@ public class RepositoryMonitorService : IModule, IDisposable
     private readonly Func<IEnumerable<string>> _pathProvider;
     private readonly TimeSpan _scanInterval;
     private CompositeDisposable? _subscriptions;
+    private CancellationTokenSource _scanCts = new();
     private bool _disposed;
 
     public RepositoryMonitorService(
@@ -62,7 +63,7 @@ public class RepositoryMonitorService : IModule, IDisposable
         _subscriptions.Add(watchSubscription);
 
         // Initial scan
-        var initialScanSubscription = CreateScanPipeline()
+        var initialScanSubscription = CreateScanPipeline(_scanCts.Token)
             .Subscribe(
                 _ => { },
                 ex => _logger.LogError(ex, "Error during initial scan"),
@@ -74,7 +75,7 @@ public class RepositoryMonitorService : IModule, IDisposable
         {
             var periodicSubscription = Observable
                 .Interval(_scanInterval)
-                .SelectMany(_ => CreateScanPipeline())
+                .SelectMany(_ => CreateScanPipeline(_scanCts.Token))
                 .Subscribe(
                     _ => { },
                     ex => _logger.LogError(ex, "Error during periodic scan"));
@@ -96,30 +97,41 @@ public class RepositoryMonitorService : IModule, IDisposable
         return Task.CompletedTask;
     }
 
+    public void CancelAllScans()
+    {
+        _logger.LogInformation("Cancelling all active scans");
+        _scanCts.Cancel();
+        _scanCts.Dispose();
+        _scanCts = new CancellationTokenSource();
+    }
+
     public Task ScanAsync(CancellationToken ct = default)
     {
         _logger.LogInformation("Manual scan triggered");
 
+        var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _scanCts.Token);
         var tcs = new TaskCompletionSource();
 
-        var subscription = CreateScanPipeline(ct)
+        var subscription = CreateScanPipeline(linkedCts.Token)
             .Subscribe(
                 _ => { },
                 ex =>
                 {
                     _logger.LogError(ex, "Error during manual scan");
                     tcs.TrySetException(ex);
+                    linkedCts.Dispose();
                 },
                 () =>
                 {
                     _logger.LogInformation("Manual scan completed");
                     tcs.TrySetResult();
+                    linkedCts.Dispose();
                 });
 
-        ct.Register(() =>
+        linkedCts.Token.Register(() =>
         {
             subscription.Dispose();
-            tcs.TrySetCanceled(ct);
+            tcs.TrySetCanceled(CancellationToken.None);
         });
 
         return tcs.Task;

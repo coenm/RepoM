@@ -8,7 +8,6 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -62,7 +61,6 @@ public partial class MainWindow
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly ReadOnlyObservableCollection<RepositoryViewModel> _repositories;
     private readonly CompositeDisposable _disposables = new();
-    private CancellationTokenSource? _scanCts;
     private bool _isScanning;
     private readonly object _separator = new();
     private readonly object _singleItem = new();
@@ -544,25 +542,21 @@ public partial class MainWindow
     {
         if (_isScanning)
         {
-            _scanCts?.Cancel();
+            _monitorService.CancelAllScans();
             ScanMenuItem.Header = _translationService.Translate("Stopping");
             ScanMenuItem.IsEnabled = false;
         }
         else
         {
-            _scanCts?.Dispose();
-            _scanCts = new CancellationTokenSource();
-            _ = _monitorService.ScanAsync(_scanCts.Token);
+            _ = _monitorService.ScanAsync();
         }
     }
 
     private void ClearButton_Click(object sender, RoutedEventArgs e)
     {
-        _scanCts?.Cancel();
+        _monitorService.CancelAllScans();
         _store.Clear();
-        _scanCts?.Dispose();
-        _scanCts = new CancellationTokenSource();
-        _ = _monitorService.ScanAsync(_scanCts.Token);
+        _ = _monitorService.ScanAsync();
     }
 
     private void ResetIgnoreRulesButton_Click(object sender, RoutedEventArgs e)
