@@ -1,12 +1,15 @@
 namespace RepoM.Core.Repositories.Scanning;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 public sealed class GitRepositoryScanner : IRepositoryScanner
@@ -14,6 +17,7 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
     private readonly BehaviorSubject<bool> _isScanning = new(false);
+    private readonly int _degreeOfParallelism;
     private int _activeScanCount;
     private bool _disposed;
 
@@ -21,6 +25,7 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _degreeOfParallelism = Math.Max(1, Environment.ProcessorCount);
     }
 
     public IObservable<bool> IsScanning => _isScanning.AsObservable().DistinctUntilChanged();
@@ -33,105 +38,192 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
         {
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-            IncrementScanCount();
-
-            try
+            // Run the parallel scan on a background thread
+            _ = Task.Run(async () =>
             {
-                foreach (var path in paths)
+                IncrementScanCount();
+                try
                 {
-                    if (cts.Token.IsCancellationRequested)
-                    {
-                        break;
-                    }
-
-                    ScanPath(path, observer, cts.Token);
+                    await ScanPathsParallelAsync(paths, observer, cts.Token).ConfigureAwait(false);
+                    observer.OnCompleted();
                 }
-
-                observer.OnCompleted();
-            }
-            catch (OperationCanceledException)
-            {
-                observer.OnCompleted();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during repository scan");
-                observer.OnError(ex);
-            }
-            finally
-            {
-                DecrementScanCount();
-            }
+                catch (OperationCanceledException)
+                {
+                    observer.OnCompleted();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error during repository scan");
+                    observer.OnError(ex);
+                }
+                finally
+                {
+                    DecrementScanCount();
+                }
+            }, cts.Token);
 
             return Disposable.Create(() => cts.Cancel());
-        }).SubscribeOn(System.Reactive.Concurrency.TaskPoolScheduler.Default);
+        });
     }
 
-    private void ScanPath(string root, IObserver<string> observer, CancellationToken ct)
+    private async Task ScanPathsParallelAsync(IEnumerable<string> roots, IObserver<string> observer, CancellationToken ct)
     {
-        if (!_fileSystem.Directory.Exists(root))
+        var channel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
         {
-            _logger.LogWarning("Scan path does not exist: {Path}", root);
-            return;
-        }
+            SingleReader = true,
+            SingleWriter = false,
+        });
 
-        _logger.LogDebug("Scanning for repositories in: {Path}", root);
-
-        var pending = new Queue<string>();
-        pending.Enqueue(root);
-
-        while (pending.Count > 0)
+        // Seed the work queue with all root paths
+        var workQueue = new ConcurrentQueue<string>();
+        foreach (var root in roots)
         {
             ct.ThrowIfCancellationRequested();
 
-            var current = pending.Dequeue();
-
-            if (IsGitRepository(current))
+            if (!_fileSystem.Directory.Exists(root))
             {
-                var headPath = _fileSystem.Path.Combine(current, ".git", "logs", "HEAD");
-                if (_fileSystem.File.Exists(headPath))
+                _logger.LogWarning("Scan path does not exist: {Path}", root);
+                continue;
+            }
+
+            _logger.LogDebug("Scanning for repositories in: {Path}", root);
+            workQueue.Enqueue(root);
+        }
+
+        if (workQueue.IsEmpty)
+        {
+            return;
+        }
+
+        // activeWorkers tracks how many workers are currently processing a directory.
+        // When a worker dequeues an item it increments; when done processing it decrements.
+        // Completion is detected when all workers are idle AND the queue is empty.
+        var activeWorkers = 0;
+        var completionSignal = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        void SignalIfDone()
+        {
+            if (Volatile.Read(ref activeWorkers) == 0 && workQueue.IsEmpty)
+            {
+                completionSignal.TrySetResult();
+            }
+        }
+
+        var workerCount = Math.Min(_degreeOfParallelism, Math.Max(1, workQueue.Count));
+        var workers = new Task[workerCount];
+
+        for (var i = 0; i < workerCount; i++)
+        {
+            workers[i] = Task.Run(() =>
+            {
+                var spinWait = new SpinWait();
+
+                while (!ct.IsCancellationRequested)
                 {
-                    observer.OnNext(headPath);
-                }
-                else
-                {
-                    var gitHeadPath = _fileSystem.Path.Combine(current, ".git", "HEAD");
-                    if (_fileSystem.File.Exists(gitHeadPath))
+                    if (workQueue.TryDequeue(out var current))
                     {
-                        observer.OnNext(gitHeadPath);
+                        Interlocked.Increment(ref activeWorkers);
+                        try
+                        {
+                            ProcessDirectory(current, workQueue, channel.Writer, ct);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // Expected on cancellation — exit gracefully
+                        }
+                        finally
+                        {
+                            Interlocked.Decrement(ref activeWorkers);
+                            SignalIfDone();
+                        }
+                    }
+                    else
+                    {
+                        // Queue is empty — check if all workers are idle
+                        if (Volatile.Read(ref activeWorkers) == 0 && workQueue.IsEmpty)
+                        {
+                            completionSignal.TrySetResult();
+                            return;
+                        }
+
+                        spinWait.SpinOnce();
                     }
                 }
 
-                // Don't descend into subdirectories of a git repo's .git folder,
-                // but do allow nested repos (e.g. submodules)
-            }
+                // Cancelled — signal completion so we don't hang
+                SignalIfDone();
+            }, CancellationToken.None);  // Don't pass ct here — we handle cancellation inside the loop
+        }
 
-            string[] subdirectories;
+        // Reader task: forward channel items to the observer (serialized)
+        var readerTask = Task.Run(async () =>
+        {
             try
             {
-                subdirectories = _fileSystem.Directory.GetDirectories(current);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                continue;
-            }
-            catch (System.IO.DirectoryNotFoundException)
-            {
-                continue;
-            }
-
-            foreach (var subdir in subdirectories)
-            {
-                var dirName = _fileSystem.Path.GetFileName(subdir);
-
-                // Skip common non-repository directories
-                if (ShouldSkipDirectory(dirName))
+                await foreach (var path in channel.Reader.ReadAllAsync(ct).ConfigureAwait(false))
                 {
-                    continue;
+                    observer.OnNext(path);
                 }
-
-                pending.Enqueue(subdir);
             }
+            catch (OperationCanceledException)
+            {
+                // Drain remaining items without forwarding
+            }
+        }, CancellationToken.None);
+
+        // Wait for all workers to finish or cancellation
+        await completionSignal.Task.ConfigureAwait(false);
+        channel.Writer.Complete();
+
+        // Wait for reader to drain
+        await readerTask.ConfigureAwait(false);
+    }
+
+    private void ProcessDirectory(string current, ConcurrentQueue<string> workQueue, ChannelWriter<string> writer, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        if (IsGitRepository(current))
+        {
+            var headPath = _fileSystem.Path.Combine(current, ".git", "logs", "HEAD");
+            if (_fileSystem.File.Exists(headPath))
+            {
+                writer.TryWrite(headPath);
+            }
+            else
+            {
+                var gitHeadPath = _fileSystem.Path.Combine(current, ".git", "HEAD");
+                if (_fileSystem.File.Exists(gitHeadPath))
+                {
+                    writer.TryWrite(gitHeadPath);
+                }
+            }
+        }
+
+        string[] subdirectories;
+        try
+        {
+            subdirectories = _fileSystem.Directory.GetDirectories(current);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return;
+        }
+        catch (System.IO.DirectoryNotFoundException)
+        {
+            return;
+        }
+
+        foreach (var subdir in subdirectories)
+        {
+            var dirName = _fileSystem.Path.GetFileName(subdir);
+
+            if (ShouldSkipDirectory(dirName))
+            {
+                continue;
+            }
+
+            workQueue.Enqueue(subdir);
         }
     }
 
