@@ -2,12 +2,13 @@ namespace RepoM.Api.Git;
 
 using System.Runtime.CompilerServices;
 using System.Text;
+using RepoM.Core.Repositories.Model;
 
 public static class StatusCompressor
 {
     private const int COMMIT_SHA_DISPLAY_CHARS = 7;
 
-    public static string Compress(Repository repository)
+    public static string Compress(RepositoryInfo repository)
     {
         if (string.IsNullOrEmpty(repository.CurrentBranch))
         {
@@ -19,7 +20,7 @@ public static class StatusCompressor
         var printStashCount = (repository.StashCount ?? 0) > 0;
 
         var builder = new StringBuilder();
-        
+
         if (repository.CurrentBranchHasUpstream)
         {
             AppendUpStream(repository, builder);
@@ -57,7 +58,7 @@ public static class StatusCompressor
         return builder.ToString().Trim();
     }
 
-    public static string CompressWithBranch(Repository repository)
+    public static string CompressWithBranch(RepositoryInfo repository)
     {
         var branch = repository.CurrentBranch;
 
@@ -88,7 +89,7 @@ public static class StatusCompressor
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AppendUpStream(Repository repository, StringBuilder builder)
+    private static void AppendUpStream(RepositoryInfo repository, StringBuilder builder)
     {
         var isAhead = (repository.AheadBy ?? 0) > 0;
         var isBehind = (repository.BehindBy ?? 0) > 0;

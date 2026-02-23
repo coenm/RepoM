@@ -1,28 +1,23 @@
 namespace RepoM.Api.Ordering.IsPinned;
 
 using System;
-using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
+using RepoM.Core.Repositories.Pinning;
 
 public class IsPinnedScoreCalculator : IRepositoryScoreCalculator
 {
-    private readonly IRepositoryMonitor _monitor;
+    private readonly IPinningService _pinningService;
     private readonly int _weight;
 
-    public IsPinnedScoreCalculator(IRepositoryMonitor monitor, int weight)
+    public IsPinnedScoreCalculator(IPinningService pinningService, int weight)
     {
-        _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+        _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
         _weight = weight;
     }
 
     public int Score(IRepository repository)
     {
-        if (repository is Repository r)
-        {
-            return _monitor.IsPinned(r) ? _weight : 0;
-        }
-
-        return 0;
+        return _pinningService.IsPinned(repository.SafePath) ? _weight : 0;
     }
 }

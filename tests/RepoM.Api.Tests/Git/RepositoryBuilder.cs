@@ -2,16 +2,17 @@ namespace RepoM.Api.Tests.Git;
 
 using System;
 using System.Collections.Generic;
-using RepoM.Api.Git;
+using RepoM.Core.Repositories.Model;
 
 internal class RepositoryBuilder
 {
-    private readonly List<Action<Repository>> _actions = new();
+    private readonly List<Action<RepositoryInfo>> _actions = new();
     private string _path = string.Empty;
+    private string _name = string.Empty;
 
     public RepositoryBuilder WithName(string name)
     {
-        _actions.Add(r => r.Name = name);
+        _name = name;
         return this;
     }
 
@@ -126,10 +127,16 @@ internal class RepositoryBuilder
         return this;
     }
 
-    public Repository Build()
+    public RepositoryInfo Build()
     {
-        var repo = new Repository(_path);
-        foreach (Action<Repository> action in _actions)
+        var safePath = _path.Replace('\\', '/').TrimEnd('/');
+        var repo = new RepositoryInfo
+            {
+                Path = _path,
+                SafePath = string.IsNullOrEmpty(safePath) ? "unknown" : safePath,
+                Name = _name,
+            };
+        foreach (Action<RepositoryInfo> action in _actions)
         {
             action.Invoke(repo);
         }
@@ -156,7 +163,7 @@ internal class RepositoryBuilder
         return this;
     }
 
-    public Repository BuildFullFeatured()
+    public RepositoryInfo BuildFullFeatured()
     {
         FullFeatured();
         return Build();

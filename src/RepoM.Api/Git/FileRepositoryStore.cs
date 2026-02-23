@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 
-public abstract class FileRepositoryStore : IRepositoryStore
+public abstract class FileRepositoryStore
 {
     private readonly IFileSystem _fileSystem;
 

@@ -1,20 +1,20 @@
 namespace RepoM.Api.Ordering.IsPinned;
 
 using System;
-using RepoM.Api.Git;
 using RepoM.Core.Plugin.RepositoryOrdering;
+using RepoM.Core.Repositories.Pinning;
 
 public class IsPinnedScorerFactory : IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>
 {
-    private readonly IRepositoryMonitor _monitor;
+    private readonly IPinningService _pinningService;
 
-    public IsPinnedScorerFactory(IRepositoryMonitor monitor)
+    public IsPinnedScorerFactory(IPinningService pinningService)
     {
-        _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+        _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
     }
 
     public IRepositoryScoreCalculator Create(IsPinnedScorerConfigurationV1 config)
     {
-        return new IsPinnedScoreCalculator(_monitor, config.Weight);
+        return new IsPinnedScoreCalculator(_pinningService, config.Weight);
     }
 }

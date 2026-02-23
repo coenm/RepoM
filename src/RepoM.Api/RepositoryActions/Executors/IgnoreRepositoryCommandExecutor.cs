@@ -10,18 +10,18 @@ using RepoM.Core.Plugin.RepositoryActions.Commands;
 [UsedImplicitly]
 public class IgnoreRepositoryCommandExecutor : ICommandExecutor<IgnoreRepositoryCommand>
 {
-    private readonly IRepositoryMonitor _repositoryMonitor;
+    private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
 
-    public IgnoreRepositoryCommandExecutor(IRepositoryMonitor repositoryMonitor)
+    public IgnoreRepositoryCommandExecutor(IRepositoryIgnoreStore repositoryIgnoreStore)
     {
-        _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
+        _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
     }
 
     public void Execute(IRepository repository, IgnoreRepositoryCommand repositoryCommand)
     {
         try
         {
-            _repositoryMonitor.IgnoreByPath(repository.Path);
+            _repositoryIgnoreStore.IgnoreByPath(repository.Path);
         }
         catch
         {

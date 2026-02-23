@@ -4,11 +4,17 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Repositories.Adapters;
+using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Pinning;
 
 [DebuggerDisplay("{Name} @{Path}")]
 public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 {
-    private readonly IRepositoryMonitor _monitor;
+    private readonly IPinningService _pinningService;
+    private readonly RepositoryInfo _info;
+    private readonly RepositoryInfoAdapter _adapter;
     private string? _cachedRepositoryStatusCode;
     private string? _cachedRepositoryStatus;
     private string? _cachedRepositoryStatusWithBranch;
@@ -16,18 +22,19 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public RepositoryViewModel(Repository repository, IRepositoryMonitor monitor)
+    public RepositoryViewModel(RepositoryInfo info, IPinningService pinningService)
     {
-        _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
-        Repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        Tags = Repository.Tags.Select(tag => new TagViewModel(tag)).ToArray();
+        _info = info ?? throw new ArgumentNullException(nameof(info));
+        _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
+        _adapter = new RepositoryInfoAdapter(info);
+        Tags = _info.Tags.Select(tag => new TagViewModel(tag)).ToArray();
     }
 
     public override bool Equals(object? obj)
     {
         if (obj is RepositoryViewModel other)
         {
-            return other.Repository.Equals(Repository);
+            return string.Equals(other._info.SafePath, _info.SafePath, StringComparison.OrdinalIgnoreCase);
         }
 
         return ReferenceEquals(this, obj);
@@ -35,7 +42,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     private void EnsureStatusCache()
     {
-        var repositoryStatusCode = Repository.GetStatusCode();
+        var repositoryStatusCode = _info.GetStatusCode();
 
         // compare the status code and not the full status string because the latter one is heavier to calculate
         var canTakeFromCache = string.Equals(_cachedRepositoryStatusCode, repositoryStatusCode, StringComparison.CurrentCulture);
@@ -45,57 +52,59 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
             return;
         }
 
-        _cachedRepositoryStatus = StatusCompressor.Compress(Repository);
-        _cachedRepositoryStatusWithBranch = StatusCompressor.CompressWithBranch(Repository);
+        _cachedRepositoryStatus = StatusCompressor.Compress(_info);
+        _cachedRepositoryStatusWithBranch = StatusCompressor.CompressWithBranch(_info);
         _cachedRepositoryStatusCode = repositoryStatusCode;
     }
 
-    public bool IsPinned => _monitor.IsPinned(Repository);
+    public bool IsPinned => _pinningService.IsPinned(_info.SafePath);
 
-    public bool IsNotBare => !Repository.IsBare;
+    public bool IsNotBare => !_info.IsBare;
 
-    public string Name => Repository.Name + (IsSynchronizing ? SyncAppendix : string.Empty);
+    public string Name => _info.Name + (IsSynchronizing ? SyncAppendix : string.Empty);
 
-    public string Path => Repository.Path;
+    public string Path => _info.Path;
 
-    public string Location => Repository.Location;
+    public string Location => _info.Location;
 
-    public string CurrentBranch => Repository.CurrentBranch;
+    public string CurrentBranch => _info.CurrentBranch;
 
-    public string AheadBy => Repository.AheadBy?.ToString() ?? string.Empty;
+    public string AheadBy => _info.AheadBy?.ToString() ?? string.Empty;
 
-    public string BehindBy => Repository.BehindBy?.ToString() ?? string.Empty;
+    public string BehindBy => _info.BehindBy?.ToString() ?? string.Empty;
 
-    public string[] Branches => Repository.Branches ?? [];
+    public string[] Branches => _info.Branches ?? [];
 
-    public string LocalUntracked => Repository.LocalUntracked?.ToString() ?? string.Empty;
+    public string LocalUntracked => _info.LocalUntracked?.ToString() ?? string.Empty;
 
-    public string LocalModified => Repository.LocalModified?.ToString() ?? string.Empty;
+    public string LocalModified => _info.LocalModified?.ToString() ?? string.Empty;
 
-    public string LocalMissing => Repository.LocalMissing?.ToString() ?? string.Empty;
+    public string LocalMissing => _info.LocalMissing?.ToString() ?? string.Empty;
 
-    public string LocalAdded => Repository.LocalAdded?.ToString() ?? string.Empty;
+    public string LocalAdded => _info.LocalAdded?.ToString() ?? string.Empty;
 
-    public string LocalStaged => Repository.LocalStaged?.ToString() ?? string.Empty;
+    public string LocalStaged => _info.LocalStaged?.ToString() ?? string.Empty;
 
-    public string LocalRemoved => Repository.LocalRemoved?.ToString() ?? string.Empty;
+    public string LocalRemoved => _info.LocalRemoved?.ToString() ?? string.Empty;
 
-    public string LocalIgnored => Repository.LocalIgnored?.ToString() ?? string.Empty;
+    public string LocalIgnored => _info.LocalIgnored?.ToString() ?? string.Empty;
 
-    public string StashCount => Repository.StashCount?.ToString() ?? string.Empty;
+    public string StashCount => _info.StashCount?.ToString() ?? string.Empty;
 
-    public bool WasFound => Repository.WasFound;
+    public bool WasFound => _info.WasFound;
 
-    public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
+    public bool HasUnpushedChanges => _info.HasUnpushedChanges;
 
     public TagViewModel[] Tags { get; }
 
     public override int GetHashCode()
     {
-        return Repository.GetHashCode();
+        return _info.SafePath.GetHashCode();
     }
 
-    public Repository Repository { get; }
+    public IRepository Repository => _adapter;
+
+    public RepositoryInfo RepositoryInfo => _info;
 
     public string Status
     {

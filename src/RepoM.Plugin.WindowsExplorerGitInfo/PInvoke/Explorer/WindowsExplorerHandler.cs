@@ -1,19 +1,19 @@
 namespace RepoM.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer;
 
-using RepoM.Api.Git;
+using RepoM.Core.Repositories.Store;
 
 internal class WindowsExplorerHandler : IWindowsExplorerHandler
 {
-    private readonly IRepositoryInformationAggregator _repositoryInfoAggregator;
+    private readonly IRepositoryStore _repositoryStore;
 
-    public WindowsExplorerHandler(IRepositoryInformationAggregator repositoryInfoAggregator)
+    public WindowsExplorerHandler(IRepositoryStore repositoryStore)
     {
-        _repositoryInfoAggregator = repositoryInfoAggregator;
+        _repositoryStore = repositoryStore;
     }
 
     public void UpdateTitles()
     {
-        var actor = new AppendRepositoryStatusTitleActor(_repositoryInfoAggregator);
+        var actor = new AppendRepositoryStatusTitleActor(_repositoryStore);
         actor.Pulse();
     }
 

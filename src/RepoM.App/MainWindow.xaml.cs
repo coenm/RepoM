@@ -1,10 +1,13 @@
 namespace RepoM.App;
 
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +15,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using DynamicData;
+using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
@@ -26,6 +31,9 @@ using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
+using RepoM.Core.Repositories;
+using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Store;
 using SourceChord.FluentWPF;
 using Control = System.Windows.Controls.Control;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -40,7 +48,9 @@ public partial class MainWindow
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
     private bool _closeOnDeactivate = true;
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
-    private readonly DefaultRepositoryMonitor? _monitor;
+    private readonly RepositoryMonitorService _monitorService;
+    private readonly IRepositoryStore _store;
+    private readonly IPinningService _pinningService;
     private readonly ITranslationService _translationService;
     private readonly IFileSystem _fileSystem;
     private readonly ActionExecutor _executor;
@@ -49,13 +59,16 @@ public partial class MainWindow
     private readonly ILogger _logger;
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
+    private readonly ReadOnlyObservableCollection<RepositoryViewModel> _repositories;
+    private readonly CompositeDisposable _disposables = new();
     private readonly object _separator = new();
     private readonly object _singleItem = new();
     private readonly object _menuItem = new();
 
     public MainWindow(
-        IRepositoryInformationAggregator aggregator,
-        IRepositoryMonitor repositoryMonitor,
+        RepositoryMonitorService monitorService,
+        IRepositoryStore store,
+        IPinningService pinningService,
         IRepositoryIgnoreStore repositoryIgnoreStore,
         IAppSettingsService appSettingsService,
         ITranslationService translationService,
@@ -70,6 +83,9 @@ public partial class MainWindow
         ILogger logger,
         IUserMenuActionMenuFactory userMenuActionFactory)
     {
+        _monitorService = monitorService ?? throw new ArgumentNullException(nameof(monitorService));
+        _store = store ?? throw new ArgumentNullException(nameof(store));
+        _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
         _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -83,7 +99,7 @@ public partial class MainWindow
         InitializeComponent();
 
         SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
-        
+
         var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
         var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
         var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
@@ -98,16 +114,23 @@ public partial class MainWindow
             new HelpViewModel(_translationService));
         SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
-        _monitor = repositoryMonitor as DefaultRepositoryMonitor;
-        if (_monitor != null)
-        {
-            _monitor.OnScanStateChanged += OnScanStateChanged;
-            ShowScanningState(_monitor.Scanning);
-        }
-        
-        lstRepositories.ItemsSource = aggregator.Repositories;
+        // Subscribe to scan state
+        var scanSubscription = _monitorService.IsScanning
+            .ObserveOn(new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!))
+            .Subscribe(isScanning => ShowScanningState(isScanning));
+        _disposables.Add(scanSubscription);
 
-        var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
+        // Bind store to ReadOnlyObservableCollection via DynamicData
+        var bindSubscription = _store.Connect()
+            .Transform(info => new RepositoryViewModel(info, _pinningService))
+            .ObserveOn(new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!))
+            .Bind(out _repositories)
+            .Subscribe();
+        _disposables.Add(bindSubscription);
+
+        lstRepositories.ItemsSource = _repositories;
+
+        var view = (ListCollectionView)CollectionViewSource.GetDefaultView(_repositories);
         ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
         view.Filter = FilterRepositories;
         view.CustomSort = repositoryComparerManager.Comparer;
@@ -180,11 +203,6 @@ public partial class MainWindow
                 txtFilter.Focus();
                 txtFilter.SelectAll();
             });
-    }
-
-    private void OnScanStateChanged(object? sender, bool isScanning)
-    {
-        Dispatcher.Invoke(() => ShowScanningState(isScanning));
     }
 
     private async void LstRepositories_MouseDoubleClick(object? sender, MouseButtonEventArgs e)
@@ -279,7 +297,7 @@ public partial class MainWindow
 
             return count + 3;
         }
-        
+
         var index = -1;
         var lastVisibleSeparator = false;
 
@@ -316,7 +334,7 @@ public partial class MainWindow
 
                 /* should never happen */
             }
-            
+
             if (action is /*DeferredSubActionsUserInterfaceRepositoryAction or */UserInterfaceRepositoryAction uira)
             {
                 if (HasSubItems(uira))
@@ -342,7 +360,7 @@ public partial class MainWindow
                     {
                         acrylicMenuItem.Visibility = Visibility.Visible;
                     }
-                    
+
                     lastVisibleSeparator = false;
 
                     acrylicMenuItem.SetHeader(uira.Name);
@@ -426,7 +444,7 @@ public partial class MainWindow
             acrylicMenuItem.SetClick(new RoutedEventHandler((Action<object, object>)ClickAction));
         }
     }
-    
+
     private async void LstRepositories_KeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key is Key.Return or Key.Enter)
@@ -439,7 +457,7 @@ public partial class MainWindow
             {
                 Console.WriteLine(exception);
             }
-            
+
             return;
         }
 
@@ -468,7 +486,7 @@ public partial class MainWindow
             }
         }
     }
-   
+
     private async Task InvokeActionOnCurrentRepositoryAsync()
     {
         if (lstRepositories.SelectedItem is not RepositoryViewModel selectedView)
@@ -521,12 +539,13 @@ public partial class MainWindow
 
     private void ScanButton_Click(object sender, RoutedEventArgs e)
     {
-        _monitor?.ScanForLocalRepositoriesAsync();
+        _ = _monitorService.ScanAsync();
     }
 
     private void ClearButton_Click(object sender, RoutedEventArgs e)
     {
-        _monitor?.Reset();
+        _store.Clear();
+        _ = _monitorService.ScanAsync();
     }
 
     private void ResetIgnoreRulesButton_Click(object sender, RoutedEventArgs e)
@@ -863,7 +882,7 @@ public partial class MainWindow
         {
             return false;
         }
-        
+
         if (string.IsNullOrWhiteSpace(query))
         {
             return true;
@@ -897,6 +916,6 @@ public partial class MainWindow
         var item = (ListBoxItem)lstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
         item?.Focus();
     }
-    
+
     public bool IsShown => Visibility == Visibility.Visible && IsActive;
 }

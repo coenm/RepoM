@@ -3,23 +3,26 @@ namespace RepoM.Api.Git;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LibGit2Sharp;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Reading;
 
-public class DefaultRepositoryReader : IRepositoryReader
+public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
 {
     private readonly IRepositoryTagsFactory _resolver;
     private readonly ILogger _logger;
 
-    public DefaultRepositoryReader(IRepositoryTagsFactory resolver, ILogger logger)
+    public LibGit2SharpRepositoryInfoReader(IRepositoryTagsFactory resolver, ILogger logger)
     {
         _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<Repository?> ReadRepositoryAsync(string path)
+    public async Task<RepositoryInfo?> ReadAsync(string path, CancellationToken ct = default)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -33,10 +36,13 @@ public class DefaultRepositoryReader : IRepositoryReader
             return null;
         }
 
-        Repository? result = await ReadRepositoryWithRetries(repoPath, 3).ConfigureAwait(false);
+        RepositoryInfo? result = await ReadWithRetries(repoPath, 3).ConfigureAwait(false);
         if (result != null)
         {
-            result.Tags = (await _resolver.GetTagsAsync(result).ConfigureAwait(false)).ToArray();
+            // Create a temporary adapter to pass to the tags resolver
+            var tempAdapter = new RepoM.Core.Repositories.Adapters.RepositoryInfoAdapter(result);
+            var tags = (await _resolver.GetTagsAsync(tempAdapter).ConfigureAwait(false)).ToArray();
+            result.Tags = tags;
         }
         else
         {
@@ -46,16 +52,16 @@ public class DefaultRepositoryReader : IRepositoryReader
         return result;
     }
 
-    private async Task<Repository?> ReadRepositoryWithRetries(string repoPath, int maxRetries)
+    private async Task<RepositoryInfo?> ReadWithRetries(string repoPath, int maxRetries)
     {
-        Repository? repository = null;
+        RepositoryInfo? info = null;
         var currentTry = 1;
 
-        while (repository == null && currentTry <= maxRetries)
+        while (info == null && currentTry <= maxRetries)
         {
             try
             {
-                repository = ReadRepositoryInternal(repoPath);
+                info = ReadInternal(repoPath);
             }
             catch (LockedFileException e)
             {
@@ -70,17 +76,17 @@ public class DefaultRepositoryReader : IRepositoryReader
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Unexpected exception hwn reading repo {Path}. {Message}", repoPath, e.Message);
+                _logger.LogError(e, "Unexpected exception when reading repo {Path}. {Message}", repoPath, e.Message);
                 throw;
             }
 
             currentTry++;
         }
 
-        return repository;
+        return info;
     }
 
-    private Repository? ReadRepositoryInternal(string repoPath)
+    private RepositoryInfo? ReadInternal(string repoPath)
     {
         try
         {
@@ -94,7 +100,7 @@ public class DefaultRepositoryReader : IRepositoryReader
                 status = repo.RetrieveStatus();
                 workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
             }
-            
+
             if (string.IsNullOrWhiteSpace(workingDirectory.Parent?.FullName))
             {
                 _logger.LogError("WorkingDirectory.Parent.Fullname was null or empty for repository found in '{Path}'. Return null", repoPath);
@@ -102,12 +108,17 @@ public class DefaultRepositoryReader : IRepositoryReader
             }
 
             HeadDetails headDetails = GetHeadDetails(repo);
+            var fullPath = workingDirectory.FullName;
 
-            var repository = new Repository(workingDirectory.FullName)
+            var info = new RepositoryInfo
                 {
-                    IsBare = repo.Info.IsBare,
+                    Path = fullPath,
+                    SafePath = GetSafePath(fullPath),
+                    WindowsPath = GetWindowsPath(fullPath),
+                    LinuxPath = GetSafePath(fullPath),
                     Name = workingDirectory.Name,
-                    Location = workingDirectory.Parent.FullName,
+                    Location = workingDirectory.Parent!.FullName,
+                    IsBare = repo.Info.IsBare,
                     Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
                     LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
                     AllBranchesReader = () => ReadAllBranches(repoPath),
@@ -131,13 +142,13 @@ public class DefaultRepositoryReader : IRepositoryReader
             RemoteCollection? remoteCollection = repo.Network?.Remotes;
             if (remoteCollection != null)
             {
-                foreach (Remote r in remoteCollection.Where(r => !string.IsNullOrWhiteSpace(r.Name) && !string.IsNullOrWhiteSpace(r.Url)))
+                foreach (LibGit2Sharp.Remote r in remoteCollection.Where(r => !string.IsNullOrWhiteSpace(r.Name) && !string.IsNullOrWhiteSpace(r.Url)))
                 {
-                    repository.Remotes.Add(new Core.Plugin.Repository.Remote(r.Name.Trim(), r.Url.Trim()));
+                    info.Remotes.Add(new Core.Plugin.Repository.Remote(r.Name.Trim(), r.Url.Trim()));
                 }
             }
 
-            return repository;
+            return info;
         }
         catch (Exception e)
         {
@@ -153,7 +164,6 @@ public class DefaultRepositoryReader : IRepositoryReader
             using var repo = new LibGit2Sharp.Repository(repoPath);
             var localBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToList();
 
-            // "origin/" is removed from remote branches name and HEAD branch is ignored
             return repo.Branches
                        .Where(branch =>
                            branch.IsRemote
@@ -172,7 +182,6 @@ public class DefaultRepositoryReader : IRepositoryReader
 
     private static HeadDetails GetHeadDetails(LibGit2Sharp.Repository repo)
     {
-        // unfortunately, type DetachedHead is internal ...
         var isDetached = repo.Head.GetType().Name.EndsWith("DetachedHead", StringComparison.OrdinalIgnoreCase);
 
         Tag? tag = null;
@@ -191,6 +200,28 @@ public class DefaultRepositoryReader : IRepositoryReader
                 IsDetached = isDetached,
                 IsOnTag = tag != null,
             };
+    }
+
+    private static string GetSafePath(string input)
+    {
+        var safePath = input.Replace('\\', '/');
+        if (safePath.EndsWith('/'))
+        {
+            safePath = safePath[..^1];
+        }
+
+        return safePath;
+    }
+
+    private static string GetWindowsPath(string input)
+    {
+        var safePath = input.Replace('/', '\\');
+        if (safePath.EndsWith('\\'))
+        {
+            safePath = safePath[..^1];
+        }
+
+        return safePath;
     }
 
     private readonly record struct HeadDetails
