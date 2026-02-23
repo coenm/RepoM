@@ -95,67 +95,57 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
             return;
         }
 
-        // activeWorkers tracks how many workers are currently processing a directory.
-        // When a worker dequeues an item it increments; when done processing it decrements.
-        // Completion is detected when all workers are idle AND the queue is empty.
-        var activeWorkers = 0;
-        var completionSignal = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        void SignalIfDone()
-        {
-            if (Volatile.Read(ref activeWorkers) == 0 && (workQueue.IsEmpty || ct.IsCancellationRequested))
-            {
-                completionSignal.TrySetResult();
-            }
-        }
-
+        // remainingWorkers tracks how many workers have not yet exited.
+        // Each worker decrements when it exits. When the last worker exits, it signals completion.
         var workerCount = Math.Min(_degreeOfParallelism, Math.Max(1, workQueue.Count));
+        var remainingWorkers = workerCount;
+        var completionSignal = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var workers = new Task[workerCount];
 
         for (var i = 0; i < workerCount; i++)
         {
             workers[i] = Task.Run(() =>
             {
-                var spinWait = new SpinWait();
-
-                while (!ct.IsCancellationRequested)
+                try
                 {
-                    if (workQueue.TryDequeue(out var current))
+                    var spinWait = new SpinWait();
+                    var idleSpins = 0;
+
+                    while (!ct.IsCancellationRequested)
                     {
-                        Interlocked.Increment(ref activeWorkers);
-                        try
+                        if (workQueue.TryDequeue(out var current))
                         {
-                            ProcessDirectory(current, workQueue, channel.Writer, ct);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            // Expected on cancellation — exit gracefully
-                        }
-                        finally
-                        {
-                            Interlocked.Decrement(ref activeWorkers);
-                            SignalIfDone();
-                        }
-                    }
-                    else
-                    {
-                        // Queue is empty — check if all workers are idle
-                        if (Volatile.Read(ref activeWorkers) == 0)
-                        {
-                            if (workQueue.IsEmpty || ct.IsCancellationRequested)
+                            idleSpins = 0;
+                            try
                             {
-                                completionSignal.TrySetResult();
+                                ProcessDirectory(current, workQueue, channel.Writer, ct);
+                            }
+                            catch (OperationCanceledException)
+                            {
                                 return;
                             }
                         }
+                        else
+                        {
+                            idleSpins++;
+                            if (idleSpins > 100)
+                            {
+                                // Queue has been empty for a while — exit this worker
+                                return;
+                            }
 
-                        spinWait.SpinOnce();
+                            spinWait.SpinOnce();
+                        }
                     }
                 }
-
-                // Cancelled — signal completion so we don't hang
-                SignalIfDone();
-            }, CancellationToken.None);  // Don't pass ct here — we handle cancellation inside the loop
+                finally
+                {
+                    if (Interlocked.Decrement(ref remainingWorkers) == 0)
+                    {
+                        completionSignal.TrySetResult();
+                    }
+                }
+            }, CancellationToken.None);
         }
 
         // Reader task: forward channel items to the observer (serialized)

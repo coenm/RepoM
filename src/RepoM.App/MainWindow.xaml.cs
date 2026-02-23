@@ -122,9 +122,10 @@ public partial class MainWindow
         _disposables.Add(scanSubscription);
 
         // Bind store to ReadOnlyObservableCollection via DynamicData
+        var uiScheduler = new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!);
         var bindSubscription = _store.Connect()
             .Transform(info => new RepositoryViewModel(info, _pinningService))
-            .ObserveOn(new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!))
+            .ObserveOn(uiScheduler)
             .Bind(out _repositories)
             .Subscribe();
         _disposables.Add(bindSubscription);
@@ -138,6 +139,14 @@ public partial class MainWindow
         repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
         repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
+
+        // Refresh the view when repository data is updated (e.g. branch switch)
+        var refreshSubscription = _store.Connect()
+            .WhereReasonsAre(DynamicData.ChangeReason.Update)
+            .Throttle(TimeSpan.FromMilliseconds(300))
+            .ObserveOn(uiScheduler)
+            .Subscribe(_ => view.Refresh());
+        _disposables.Add(refreshSubscription);
 
         PlaceFormByTaskBarLocation();
     }

@@ -23,6 +23,7 @@ public class RepositoryMonitorService : IModule, IDisposable
     private readonly ILogger _logger;
     private readonly Func<IEnumerable<string>> _pathProvider;
     private readonly TimeSpan _scanInterval;
+    private readonly Lock _scanLock = new();
     private CompositeDisposable? _subscriptions;
     private CancellationTokenSource _scanCts = new();
     private bool _disposed;
@@ -75,7 +76,16 @@ public class RepositoryMonitorService : IModule, IDisposable
         {
             var periodicSubscription = Observable
                 .Interval(_scanInterval)
-                .SelectMany(_ => CreateScanPipeline(_scanCts.Token))
+                .SelectMany(_ =>
+                {
+                    CancellationToken token;
+                    lock (_scanLock)
+                    {
+                        token = _scanCts.Token;
+                    }
+
+                    return CreateScanPipeline(token);
+                })
                 .Subscribe(
                     _ => { },
                     ex => _logger.LogError(ex, "Error during periodic scan"));
@@ -100,16 +110,24 @@ public class RepositoryMonitorService : IModule, IDisposable
     public void CancelAllScans()
     {
         _logger.LogInformation("Cancelling all active scans");
-        _scanCts.Cancel();
-        _scanCts.Dispose();
-        _scanCts = new CancellationTokenSource();
+        lock (_scanLock)
+        {
+            _scanCts.Cancel();
+            _scanCts.Dispose();
+            _scanCts = new CancellationTokenSource();
+        }
     }
 
     public Task ScanAsync(CancellationToken ct = default)
     {
         _logger.LogInformation("Manual scan triggered");
 
-        var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _scanCts.Token);
+        CancellationTokenSource linkedCts;
+        lock (_scanLock)
+        {
+            linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _scanCts.Token);
+        }
+
         var tcs = new TaskCompletionSource();
 
         var subscription = CreateScanPipeline(linkedCts.Token)
@@ -160,21 +178,36 @@ public class RepositoryMonitorService : IModule, IDisposable
                 _logger.LogDebug("Repository change detected: {ChangeType} at {Path}", changeEvent.ChangeType, changeEvent.Path);
                 Observable
                     .FromAsync(ct => _reader.ReadAsync(changeEvent.Path, ct))
+                    .Retry(3)
                     .Where(repo => repo != null)
-                    .Subscribe(repo =>
-                    {
-                        repo!.LastSeen = DateTimeOffset.UtcNow;
-                        repo.LastUpdated = DateTimeOffset.UtcNow;
-                        _store.AddOrUpdate(repo);
-                    });
+                    .Subscribe(
+                        repo =>
+                        {
+                            repo!.LastSeen = DateTimeOffset.UtcNow;
+                            repo.LastUpdated = DateTimeOffset.UtcNow;
+                            _store.AddOrUpdate(repo);
+                        },
+                        ex => _logger.LogWarning(ex, "Failed to read repository after change at {Path}", changeEvent.Path));
                 break;
 
             case RepositoryChangeType.Removed:
                 _logger.LogDebug("Repository removal detected at {Path}", changeEvent.Path);
-                var safePath = changeEvent.Path.Replace('\\', '/').TrimEnd('/');
+                var safePath = NormalizeToSafePath(changeEvent.Path);
                 _store.Remove(safePath);
                 break;
         }
+    }
+
+    private static string NormalizeToSafePath(string path)
+    {
+        // Extract repo root from paths like C:\repos\MyRepo\.git\HEAD
+        var gitIndex = path.IndexOf(".git", StringComparison.OrdinalIgnoreCase);
+        if (gitIndex > 0)
+        {
+            path = path[..gitIndex].TrimEnd('\\', '/');
+        }
+
+        return path.Replace('\\', '/').TrimEnd('/');
     }
 
     public void Dispose()
