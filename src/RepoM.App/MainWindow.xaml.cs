@@ -545,6 +545,8 @@ public partial class MainWindow
         if (_isScanning)
         {
             _scanCts?.Cancel();
+            ScanMenuItem.Header = _translationService.Translate("Stopping");
+            ScanMenuItem.IsEnabled = false;
         }
         else
         {
@@ -792,6 +794,7 @@ public partial class MainWindow
     private void ShowScanningState(bool isScanning)
     {
         _isScanning = isScanning;
+        ScanMenuItem.IsEnabled = true;
         ScanMenuItem.Header = isScanning
             ? _translationService.Translate("StopScanning")
             : _translationService.Translate("ScanComputer");

@@ -31,6 +31,7 @@ Alternatively, you can scan your computer manually for repositories in the setti
 	<system:String x:Key="NotStartWithWindows">Do not start with Windows</system:String>
 	<system:String x:Key="Scanning">Scanning ...</system:String>
 	<system:String x:Key="StopScanning">Stop scanning</system:String>
+	<system:String x:Key="Stopping">Stopping ...</system:String>
     <system:String x:Key="(Open)">Open {0}</system:String>
     <system:String x:Key="(OpenIn)">Open in {0}</system:String>
     <system:String x:Key="(OpenWith)">Open with {0}</system:String>
