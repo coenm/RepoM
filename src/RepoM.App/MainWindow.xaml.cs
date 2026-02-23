@@ -8,6 +8,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -61,6 +62,8 @@ public partial class MainWindow
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly ReadOnlyObservableCollection<RepositoryViewModel> _repositories;
     private readonly CompositeDisposable _disposables = new();
+    private CancellationTokenSource? _scanCts;
+    private bool _isScanning;
     private readonly object _separator = new();
     private readonly object _singleItem = new();
     private readonly object _menuItem = new();
@@ -539,13 +542,25 @@ public partial class MainWindow
 
     private void ScanButton_Click(object sender, RoutedEventArgs e)
     {
-        _ = _monitorService.ScanAsync();
+        if (_isScanning)
+        {
+            _scanCts?.Cancel();
+        }
+        else
+        {
+            _scanCts?.Dispose();
+            _scanCts = new CancellationTokenSource();
+            _ = _monitorService.ScanAsync(_scanCts.Token);
+        }
     }
 
     private void ClearButton_Click(object sender, RoutedEventArgs e)
     {
+        _scanCts?.Cancel();
         _store.Clear();
-        _ = _monitorService.ScanAsync();
+        _scanCts?.Dispose();
+        _scanCts = new CancellationTokenSource();
+        _ = _monitorService.ScanAsync(_scanCts.Token);
     }
 
     private void ResetIgnoreRulesButton_Click(object sender, RoutedEventArgs e)
@@ -776,9 +791,9 @@ public partial class MainWindow
 
     private void ShowScanningState(bool isScanning)
     {
-        ScanMenuItem.IsEnabled = !isScanning;
+        _isScanning = isScanning;
         ScanMenuItem.Header = isScanning
-            ? _translationService.Translate("Scanning")
+            ? _translationService.Translate("StopScanning")
             : _translationService.Translate("ScanComputer");
     }
 

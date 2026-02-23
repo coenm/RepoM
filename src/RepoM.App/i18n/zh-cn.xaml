@@ -29,6 +29,7 @@
     <system:String x:Key="Exit">退出</system:String>
     <system:String x:Key="NotStartWithWindows">不要随 Windows 启动</system:String>
     <system:String x:Key="Scanning">扫描中 ...</system:String>
+    <system:String x:Key="StopScanning">停止扫描</system:String>
     <system:String x:Key="(Open)">Open {0}</system:String>
     <system:String x:Key="(OpenIn)">Open in {0}</system:String>
     <system:String x:Key="(OpenWith)">Open with {0}</system:String>

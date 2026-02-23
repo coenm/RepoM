@@ -30,6 +30,7 @@ Handmatig zoeken naar Git repositories is ook mogelijk via het instellingen menu
 	<system:String x:Key="Exit">Sluiten</system:String>
 	<system:String x:Key="NotStartWithWindows">Niet automatisch starten met Windows</system:String>
 	<system:String x:Key="Scanning">Zoeken naar Git repositories ...</system:String>
+	<system:String x:Key="StopScanning">Stop met zoeken</system:String>
     <system:String x:Key="(Open)">Open {0}</system:String>
     <system:String x:Key="(OpenIn)">Open in {0}</system:String>
     <system:String x:Key="(OpenWith)">Open with {0}</system:String>
