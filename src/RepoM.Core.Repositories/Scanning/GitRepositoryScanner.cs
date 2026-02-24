@@ -69,7 +69,7 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
                     _logger.LogDebug("IsScanning = {IsScanning} (activeScanCount after decrement)", _isScanning.Value);
                     cts.Dispose();
                 }
-            }, cts.Token);
+            }, CancellationToken.None);
 
             return Disposable.Create(() => cts.Cancel()); // cts is disposed in the task's finally block
         });

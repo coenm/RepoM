@@ -1,8 +1,8 @@
 namespace RepoM.Core.Repositories.Tests.Watching;
 
 using System;
-using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
+using System.Threading;
 using System.Reactive.Linq;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -52,13 +52,18 @@ public class FileSystemRepositoryWatcherTests : IDisposable
     }
 
     [Fact]
-    public void Watch_ShouldCompleteEmpty_WhenPathDoesNotExist()
+    public void Watch_ShouldNotEmitEvents_WhenPathDoesNotExist()
     {
-        // Act
-        var events = _sut.Watch(["/nonexistent",]).ToList().Wait();
+        // Act - Watch is long-running (never completes), so use Take with timeout
+        var hasEvents = false;
+        using var subscription = _sut.Watch(["/nonexistent",])
+            .Take(TimeSpan.FromMilliseconds(200))
+            .Subscribe(_ => hasEvents = true);
+
+        Thread.Sleep(300);
 
         // Assert
-        events.Should().BeEmpty();
+        hasEvents.Should().BeFalse();
     }
 
     [Fact]

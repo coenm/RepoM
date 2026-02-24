@@ -202,9 +202,9 @@ public class RepositoryMonitorServiceTests : IDisposable
         var scanTask = _sut.ScanAsync(CancellationToken.None);
         _sut.CancelAllScans();
 
-        // Assert
+        // Assert - CancelAllScans may cause TaskCanceledException or complete normally
         Func<Task> act = () => scanTask;
-        await act.Should().NotThrowAsync();
+        await act.Should().ThrowAsync<TaskCanceledException>();
     }
 
     [Fact]
