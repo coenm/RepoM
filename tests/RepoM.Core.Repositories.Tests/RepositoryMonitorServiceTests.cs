@@ -139,6 +139,165 @@ public class RepositoryMonitorServiceTests : IDisposable
         act.Should().Throw<ArgumentNullException>();
     }
 
+    [Fact]
+    public void Constructor_ShouldThrow_WhenStoreIsNull()
+    {
+        var act = () => new RepositoryMonitorService(
+            _scanner, _watcher, _reader, null!, _fileSystem, () => [], NullLogger.Instance);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Constructor_ShouldThrow_WhenFileSystemIsNull()
+    {
+        var act = () => new RepositoryMonitorService(
+            _scanner, _watcher, _reader, _store, null!, () => [], NullLogger.Instance);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Constructor_ShouldThrow_WhenPathProviderIsNull()
+    {
+        var act = () => new RepositoryMonitorService(
+            _scanner, _watcher, _reader, _store, _fileSystem, null!, NullLogger.Instance);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Constructor_ShouldThrow_WhenLoggerIsNull()
+    {
+        var act = () => new RepositoryMonitorService(
+            _scanner, _watcher, _reader, _store, _fileSystem, () => [], null!);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelAllScans_ShouldNotThrow_WhenCalledBeforeStart()
+    {
+        var act = () => _sut.CancelAllScans();
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void CancelAllScans_ShouldNotThrow_WhenCalledMultipleTimes()
+    {
+        var act = () =>
+        {
+            _sut.CancelAllScans();
+            _sut.CancelAllScans();
+            _sut.CancelAllScans();
+        };
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public async Task ScanAsync_ShouldBeCancellable_ViaCancelAllScans()
+    {
+        // Arrange
+        var scanSubject = new Subject<string>();
+        A.CallTo(() => _scanner.Scan(A<IEnumerable<string>>._, A<CancellationToken>._))
+            .Returns(scanSubject.AsObservable());
+
+        // Act
+        var scanTask = _sut.ScanAsync(CancellationToken.None);
+        _sut.CancelAllScans();
+
+        // Assert
+        Func<Task> act = () => scanTask;
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public void RemoveStaleRepositories_ShouldRemoveNonExistentRepos()
+    {
+        // Arrange
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\deleted",
+            SafePath = "/repos/deleted",
+            Name = "deleted",
+        };
+        _store.AddOrUpdate(repoInfo);
+
+        A.CallTo(() => _fileSystem.Directory.Exists(@"c:\repos\deleted")).Returns(false);
+
+        // Act
+        _sut.RemoveStaleRepositories();
+
+        // Assert
+        _store.Count.Should().Be(0);
+    }
+
+    [Fact]
+    public void RemoveStaleRepositories_ShouldKeepExistingRepos()
+    {
+        // Arrange
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\existing",
+            SafePath = "/repos/existing",
+            Name = "existing",
+        };
+        _store.AddOrUpdate(repoInfo);
+
+        A.CallTo(() => _fileSystem.Directory.Exists(@"c:\repos\existing")).Returns(true);
+
+        // Act
+        _sut.RemoveStaleRepositories();
+
+        // Assert
+        _store.Count.Should().Be(1);
+    }
+
+    [Fact]
+    public void RemoveStaleRepositories_ShouldBeReentrantSafe()
+    {
+        // Act - calling twice should not throw
+        var act = () =>
+        {
+            _sut.RemoveStaleRepositories();
+            _sut.RemoveStaleRepositories();
+        };
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void IsStalenessCheckRunning_ShouldBeFalse_Initially()
+    {
+        _sut.IsStalenessCheckRunning.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsScanning_ShouldExposeScannersObservable()
+    {
+        // Arrange
+        var subject = new BehaviorSubject<bool>(true);
+        A.CallTo(() => _scanner.IsScanning).Returns(subject.AsObservable());
+
+        var sut = new RepositoryMonitorService(
+            _scanner, _watcher, _reader, _store, _fileSystem, () => ["/repos",], NullLogger.Instance);
+
+        // Act
+        var isScanning = sut.IsScanning.FirstAsync().Wait();
+
+        // Assert
+        isScanning.Should().BeTrue();
+
+        sut.Dispose();
+        subject.Dispose();
+    }
+
+    [Fact]
+    public void Dispose_ShouldBeIdempotent()
+    {
+        var act = () =>
+        {
+            _sut.Dispose();
+            _sut.Dispose();
+        };
+        act.Should().NotThrow();
+    }
+
     public void Dispose()
     {
         _sut.Dispose();
