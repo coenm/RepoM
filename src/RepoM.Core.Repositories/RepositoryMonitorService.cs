@@ -2,6 +2,8 @@ namespace RepoM.Core.Repositories;
 
 using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
@@ -20,6 +22,7 @@ public class RepositoryMonitorService : IModule, IDisposable
     private readonly IRepositoryWatcher _watcher;
     private readonly IRepositoryInfoReader _reader;
     private readonly IRepositoryStore _store;
+    private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
     private readonly Func<IEnumerable<string>> _pathProvider;
     private readonly TimeSpan _scanInterval;
@@ -33,6 +36,7 @@ public class RepositoryMonitorService : IModule, IDisposable
         IRepositoryWatcher watcher,
         IRepositoryInfoReader reader,
         IRepositoryStore store,
+        IFileSystem fileSystem,
         Func<IEnumerable<string>> pathProvider,
         ILogger logger)
     {
@@ -40,6 +44,7 @@ public class RepositoryMonitorService : IModule, IDisposable
         _watcher = watcher ?? throw new ArgumentNullException(nameof(watcher));
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _store = store ?? throw new ArgumentNullException(nameof(store));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _scanInterval = TimeSpan.FromMinutes(30);
@@ -91,6 +96,12 @@ public class RepositoryMonitorService : IModule, IDisposable
                     ex => _logger.LogError(ex, "Error during periodic scan"));
             _subscriptions.Add(periodicSubscription);
         }
+
+        // Periodic staleness check (every 60 seconds)
+        var stalenessSubscription = Observable
+            .Interval(TimeSpan.FromSeconds(60))
+            .Subscribe(_ => RemoveStaleRepositories());
+        _subscriptions.Add(stalenessSubscription);
 
         _logger.LogInformation("RepositoryMonitorService started");
         return Task.CompletedTask;
@@ -195,6 +206,36 @@ public class RepositoryMonitorService : IModule, IDisposable
                 var safePath = NormalizeToSafePath(changeEvent.Path);
                 _store.Remove(safePath);
                 break;
+        }
+    }
+
+    private int _stalenessCheckRunning;
+
+    public bool IsStalenessCheckRunning => Volatile.Read(ref _stalenessCheckRunning) != 0;
+
+    public void RemoveStaleRepositories()
+    {
+        if (Interlocked.CompareExchange(ref _stalenessCheckRunning, 1, 0) != 0)
+        {
+            return;
+        }
+
+        try
+        {
+            var staleKeys = _store.Items
+                .Where(repo => !_fileSystem.Directory.Exists(repo.Path))
+                .Select(repo => repo.SafePath)
+                .ToList();
+
+            foreach (var key in staleKeys)
+            {
+                _logger.LogInformation("Removing stale repository: {SafePath}", key);
+                _store.Remove(key);
+            }
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _stalenessCheckRunning, 0);
         }
     }
 

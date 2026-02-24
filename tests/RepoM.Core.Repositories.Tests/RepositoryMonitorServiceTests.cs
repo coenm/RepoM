@@ -2,6 +2,7 @@ namespace RepoM.Core.Repositories.Tests;
 
 using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -21,6 +22,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     private readonly IRepositoryScanner _scanner;
     private readonly IRepositoryWatcher _watcher;
     private readonly IRepositoryInfoReader _reader;
+    private readonly IFileSystem _fileSystem;
     private readonly RepositoryStore _store;
     private readonly RepositoryMonitorService _sut;
 
@@ -29,6 +31,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         _scanner = A.Fake<IRepositoryScanner>();
         _watcher = A.Fake<IRepositoryWatcher>();
         _reader = A.Fake<IRepositoryInfoReader>();
+        _fileSystem = A.Fake<IFileSystem>();
         _store = new RepositoryStore();
 
         A.CallTo(() => _scanner.IsScanning).Returns(Observable.Return(false));
@@ -40,6 +43,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             _watcher,
             _reader,
             _store,
+            _fileSystem,
             () => ["/repos",],
             NullLogger.Instance);
     }
@@ -114,7 +118,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenScannerIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            null!, _watcher, _reader, _store, () => [], NullLogger.Instance);
+            null!, _watcher, _reader, _store, _fileSystem, () => [], NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -122,7 +126,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenWatcherIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, null!, _reader, _store, () => [], NullLogger.Instance);
+            _scanner, null!, _reader, _store, _fileSystem, () => [], NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -130,7 +134,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenReaderIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, null!, _store, () => [], NullLogger.Instance);
+            _scanner, _watcher, null!, _store, _fileSystem, () => [], NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 

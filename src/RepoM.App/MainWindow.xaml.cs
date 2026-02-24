@@ -162,6 +162,10 @@ public partial class MainWindow
     {
         base.OnActivated(e);
         ShowUpdateIfAvailable();
+        if (!_monitorService.IsStalenessCheckRunning)
+        {
+            Task.Run(() => _monitorService.RemoveStaleRepositories());
+        }
         txtFilter.Focus();
         txtFilter.SelectAll();
     }
