@@ -41,24 +41,32 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
             // Run the parallel scan on a background thread
             _ = Task.Run(async () =>
             {
+                _logger.LogInformation("Scan started ({Workers} workers)", Math.Max(1, Environment.ProcessorCount));
+                var sw = System.Diagnostics.Stopwatch.StartNew();
                 IncrementScanCount();
                 try
                 {
                     await ScanPathsParallelAsync(paths, observer, cts.Token).ConfigureAwait(false);
+                    sw.Stop();
+                    _logger.LogInformation("Scan completed in {Elapsed}", sw.Elapsed);
                     observer.OnCompleted();
                 }
                 catch (OperationCanceledException)
                 {
+                    sw.Stop();
+                    _logger.LogInformation("Scan cancelled after {Elapsed}", sw.Elapsed);
                     observer.OnCompleted();
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error during repository scan");
+                    sw.Stop();
+                    _logger.LogError(ex, "Scan failed after {Elapsed}", sw.Elapsed);
                     observer.OnError(ex);
                 }
                 finally
                 {
                     DecrementScanCount();
+                    _logger.LogDebug("IsScanning = {IsScanning} (activeScanCount after decrement)", _isScanning.Value);
                 }
             }, cts.Token);
 
@@ -86,7 +94,7 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
                 continue;
             }
 
-            _logger.LogDebug("Scanning for repositories in: {Path}", root);
+            _logger.LogInformation("Scanning for repositories in: {Path}", root);
             workQueue.Enqueue(root);
         }
 

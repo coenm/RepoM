@@ -800,6 +800,7 @@ public partial class MainWindow
 
     private void ShowScanningState(bool isScanning)
     {
+        _logger.LogInformation("UI scan state changed: IsScanning = {IsScanning}", isScanning);
         _isScanning = isScanning;
         ScanMenuItem.IsEnabled = true;
         ScanMenuItem.Header = isScanning
