@@ -34,7 +34,7 @@ public class GitRepositoryScannerTests : IDisposable
         IList<string> foundPaths = _sut.Scan([@"c:\repos",]).ToList().Wait();
 
         // Assert
-        foundPaths.Should().HaveCount(1);
+        foundPaths.Should().ContainSingle();
         foundPaths[0].Should().Contain("HEAD");
     }
 

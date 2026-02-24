@@ -67,10 +67,11 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
                 {
                     DecrementScanCount();
                     _logger.LogDebug("IsScanning = {IsScanning} (activeScanCount after decrement)", _isScanning.Value);
+                    cts.Dispose();
                 }
             }, cts.Token);
 
-            return Disposable.Create(() => cts.Cancel());
+            return Disposable.Create(() => cts.Cancel()); // cts is disposed in the task's finally block
         });
     }
 
@@ -174,9 +175,11 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
 
         // Wait for all workers to finish or cancellation
         await completionSignal.Task.ConfigureAwait(false);
-
-        // Clear any remaining work items
-        while (workQueue.TryDequeue(out _)) { }
+        
+        while (workQueue.TryDequeue(out _))
+        {
+            // Clear any remaining work items. 
+        }
 
         channel.Writer.Complete();
 

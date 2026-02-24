@@ -81,9 +81,10 @@ public class RepositoryMonitorServiceTests : IDisposable
         await _sut.StartAsync();
 
         // Act
-        await _sut.StopAsync();
+        Func<Task> act = () => _sut.StopAsync();
 
-        // Assert - no exception means success, subscriptions are cleaned up
+        // Assert
+        await act.Should().NotThrowAsync();
     }
 
     [Fact]
