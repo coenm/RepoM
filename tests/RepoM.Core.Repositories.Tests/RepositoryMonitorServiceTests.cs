@@ -298,6 +298,162 @@ public class RepositoryMonitorServiceTests : IDisposable
         act.Should().NotThrow();
     }
 
+    [Fact]
+    public async Task OnRepositoryChangeDetected_ShouldAddRepository_WhenChangeTypeIsAdded()
+    {
+        // Arrange
+        var watchSubject = new Subject<RepositoryChangeEvent>();
+        A.CallTo(() => _watcher.Watch(A<IEnumerable<string>>._)).Returns(watchSubject.AsObservable());
+
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\newrepo",
+            SafePath = "c:/repos/newrepo",
+            Name = "newrepo",
+        };
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._))
+            .Returns(Task.FromResult<RepositoryInfo?>(repoInfo));
+
+        await _sut.StartAsync();
+
+        // Act
+        watchSubject.OnNext(new RepositoryChangeEvent(@"c:\repos\newrepo\.git\HEAD", RepositoryChangeType.Added));
+
+        // Assert - give async pipeline time to complete
+        await Task.Delay(500);
+        A.CallTo(() => _reader.ReadAsync(@"c:\repos\newrepo\.git\HEAD", A<CancellationToken>._)).MustHaveHappened();
+    }
+
+    [Fact]
+    public async Task OnRepositoryChangeDetected_ShouldAddRepository_WhenChangeTypeIsModified()
+    {
+        // Arrange
+        var watchSubject = new Subject<RepositoryChangeEvent>();
+        A.CallTo(() => _watcher.Watch(A<IEnumerable<string>>._)).Returns(watchSubject.AsObservable());
+
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\modifiedrepo",
+            SafePath = "c:/repos/modifiedrepo",
+            Name = "modifiedrepo",
+        };
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._))
+            .Returns(Task.FromResult<RepositoryInfo?>(repoInfo));
+
+        await _sut.StartAsync();
+
+        // Act
+        watchSubject.OnNext(new RepositoryChangeEvent(@"c:\repos\modifiedrepo\.git\HEAD", RepositoryChangeType.Modified));
+
+        // Assert
+        await Task.Delay(500);
+        A.CallTo(() => _reader.ReadAsync(@"c:\repos\modifiedrepo\.git\HEAD", A<CancellationToken>._)).MustHaveHappened();
+    }
+
+    [Fact]
+    public async Task OnRepositoryChangeDetected_ShouldRemoveRepository_WhenChangeTypeIsRemoved()
+    {
+        // Arrange
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\removedrepo",
+            SafePath = "c:/repos/removedrepo",
+            Name = "removedrepo",
+        };
+        _store.AddOrUpdate(repoInfo);
+        _store.Count.Should().Be(1);
+
+        var watchSubject = new Subject<RepositoryChangeEvent>();
+        A.CallTo(() => _watcher.Watch(A<IEnumerable<string>>._)).Returns(watchSubject.AsObservable());
+
+        await _sut.StartAsync();
+
+        // Act
+        watchSubject.OnNext(new RepositoryChangeEvent(@"c:\repos\removedrepo\.git\HEAD", RepositoryChangeType.Removed));
+
+        // Assert
+        await Task.Delay(100);
+        _store.Count.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ScanAsync_ShouldSkipNullResults()
+    {
+        // Arrange
+        var scanSubject = new Subject<string>();
+        A.CallTo(() => _scanner.Scan(A<IEnumerable<string>>._, A<CancellationToken>._))
+            .Returns(scanSubject.AsObservable());
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._))
+            .Returns(Task.FromResult<RepositoryInfo?>(null));
+
+        // Act
+        var scanTask = _sut.ScanAsync(CancellationToken.None);
+        scanSubject.OnNext("/repos/test/.git/HEAD");
+        scanSubject.OnCompleted();
+        await scanTask;
+
+        // Assert
+        _store.Count.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ScanAsync_ShouldBeCancellable_ViaExternalToken()
+    {
+        // Arrange
+        var scanSubject = new Subject<string>();
+        A.CallTo(() => _scanner.Scan(A<IEnumerable<string>>._, A<CancellationToken>._))
+            .Returns(scanSubject.AsObservable());
+
+        using var cts = new CancellationTokenSource();
+
+        // Act
+        var scanTask = _sut.ScanAsync(cts.Token);
+        cts.Cancel();
+
+        // Assert
+        Func<Task> act = () => scanTask;
+        await act.Should().ThrowAsync<TaskCanceledException>();
+    }
+
+    [Fact]
+    public async Task StopAsync_ShouldNotThrow_WhenCalledWithoutStart()
+    {
+        // Act
+        Func<Task> act = () => _sut.StopAsync();
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task ScanAsync_ShouldSetLastSeenOnRepository()
+    {
+        // Arrange
+        var scanSubject = new Subject<string>();
+        A.CallTo(() => _scanner.Scan(A<IEnumerable<string>>._, A<CancellationToken>._))
+            .Returns(scanSubject.AsObservable());
+
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"\repos\test",
+            SafePath = "/repos/test",
+            Name = "test",
+        };
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._))
+            .Returns(Task.FromResult<RepositoryInfo?>(repoInfo));
+
+        var beforeScan = DateTimeOffset.UtcNow;
+
+        // Act
+        var scanTask = _sut.ScanAsync(CancellationToken.None);
+        scanSubject.OnNext("/repos/test/.git/HEAD");
+        scanSubject.OnCompleted();
+        await scanTask;
+
+        // Assert
+        repoInfo.LastSeen.Should().BeOnOrAfter(beforeScan);
+    }
+
     public void Dispose()
     {
         _sut.Dispose();
