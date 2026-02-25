@@ -21,11 +21,12 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
     private int _activeScanCount;
     private bool _disposed;
 
-    public GitRepositoryScanner(IFileSystem fileSystem, ILogger logger)
+    public GitRepositoryScanner(IFileSystem fileSystem, ILogger logger, GitRepositoryScannerSettings settings)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _degreeOfParallelism = Math.Max(1, Environment.ProcessorCount);
+        ArgumentNullException.ThrowIfNull(settings);
+        _degreeOfParallelism = settings.DegreeOfParallelism;
     }
 
     public IObservable<bool> IsScanning => _isScanning.AsObservable().DistinctUntilChanged();
@@ -41,7 +42,7 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
             // Run the parallel scan on a background thread
             _ = Task.Run(async () =>
             {
-                _logger.LogInformation("Scan started ({Workers} workers)", Math.Max(1, Environment.ProcessorCount));
+                _logger.LogInformation("Scan started ({Workers} workers)", _degreeOfParallelism);
                 var sw = System.Diagnostics.Stopwatch.StartNew();
                 IncrementScanCount();
                 try

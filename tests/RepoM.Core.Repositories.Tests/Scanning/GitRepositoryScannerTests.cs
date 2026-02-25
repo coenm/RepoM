@@ -15,12 +15,14 @@ using Xunit;
 public class GitRepositoryScannerTests : IDisposable
 {
     private readonly MockFileSystem _fileSystem;
+    private readonly GitRepositoryScannerSettings _settings;
     private readonly GitRepositoryScanner _sut;
 
     public GitRepositoryScannerTests()
     {
         _fileSystem = new MockFileSystem();
-        _sut = new GitRepositoryScanner(_fileSystem, NullLogger.Instance);
+        _settings = new GitRepositoryScannerSettings(1);
+        _sut = new GitRepositoryScanner(_fileSystem, NullLogger.Instance, _settings);
     }
 
     [Fact]
@@ -228,14 +230,21 @@ public class GitRepositoryScannerTests : IDisposable
     [Fact]
     public void Constructor_ShouldThrow_WhenFileSystemIsNull()
     {
-        var act = () => new GitRepositoryScanner(null!, NullLogger.Instance);
+        var act = () => new GitRepositoryScanner(null!, NullLogger.Instance, _settings);
         act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
     public void Constructor_ShouldThrow_WhenLoggerIsNull()
     {
-        var act = () => new GitRepositoryScanner(_fileSystem, null!);
+        var act = () => new GitRepositoryScanner(_fileSystem, null!, _settings);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Constructor_ShouldThrow_WhenSettingsIsNull()
+    {
+        var act = () => new GitRepositoryScanner(_fileSystem, NullLogger.Instance, null!);
         act.Should().Throw<ArgumentNullException>();
     }
 
