@@ -95,7 +95,6 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         // force offloading to background thread (or use Task.Run(), or TaskFactory.....
         await Task.Yield();
         
-        _logger.LogTrace("CreateActionMenuGenerationContext ActionMenuGenerationContext ctor");
         var actionMenuGenerationContext = new ActionMenuGenerationContext(_templateParser, _operatingSystem, _plugins, _mappers, _deserializer, _contextActionMappers);
         actionMenuGenerationContext.Initialize(repository);
         return actionMenuGenerationContext;
