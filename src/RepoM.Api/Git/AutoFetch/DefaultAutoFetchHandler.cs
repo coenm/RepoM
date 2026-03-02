@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using RepoM.Api.Common;
+using RepoM.Core.Repositories.Adapters;
+using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Store;
 
 public class DefaultAutoFetchHandler : IAutoFetchHandler
 {
@@ -14,16 +17,16 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
     private readonly Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
     private int _lastFetchRepository = -1;
     private readonly IAppSettingsService _appSettingsService;
-    private readonly IRepositoryInformationAggregator _repositoryInformationAggregator;
+    private readonly IRepositoryStore _repositoryStore;
     private readonly IRepositoryWriter _repositoryWriter;
 
     public DefaultAutoFetchHandler(
         IAppSettingsService appSettingsService,
-        IRepositoryInformationAggregator repositoryInformationAggregator,
+        IRepositoryStore repositoryStore,
         IRepositoryWriter repositoryWriter)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-        _repositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
+        _repositoryStore = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
         _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
         _appSettingsService.RegisterInvalidationHandler(() => Mode = _appSettingsService.AutoFetchMode);
 
@@ -63,20 +66,15 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
     private void FetchNext(object? timerState)
     {
-        var hasAny = _repositoryInformationAggregator.Repositories?.Any() ?? false;
-        if (!hasAny)
+        IReadOnlyCollection<RepositoryInfo> items = _repositoryStore.Items;
+        if (items.Count == 0)
         {
             return;
         }
 
-        // sort the repository list alphabetically each time because  ...
-        // 1. it's most comprehensive for the user
-        // 2. makes sure that no repository is jumped over because the list
-        //    of repositories is constantly changed and not sorted in any way in memory.
-        //    So we cannot guarantee that each repository is fetched on each iteration if we do not sort.
-        var repositories = _repositoryInformationAggregator.Repositories?
+        var repositories = items
             .OrderBy(r => r.Name)
-            .ToArray() ?? [];
+            .ToArray();
 
         // temporarily disable the timer to prevent parallel fetch executions
         UpdateBehavior(AutoFetchMode.Off);
@@ -88,12 +86,12 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
             _lastFetchRepository = 0;
         }
 
-        RepositoryViewModel repositoryViewModel = repositories[_lastFetchRepository];
+        RepositoryInfo repoInfo = repositories[_lastFetchRepository];
+        var adapter = new RepositoryInfoAdapter(repoInfo);
 
-        repositoryViewModel.IsSynchronizing = true;
         try
         {
-            _repositoryWriter.Fetch(repositoryViewModel.Repository);
+            _repositoryWriter.Fetch(adapter);
         }
         catch
         {
@@ -103,8 +101,6 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         {
             // re-enable the timer to get to the next fetch
             UpdateBehavior();
-
-            repositoryViewModel.IsSynchronizing = false;
         }
     }
 

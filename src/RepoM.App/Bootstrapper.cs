@@ -19,13 +19,20 @@ using RepoM.App.RepositoryFiltering.QueryMatchers;
 using RepoM.App.RepositoryFiltering;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
+using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions;
-using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFinder;
+using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryOrdering;
+using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Reading;
+using RepoM.Core.Repositories.Scanning;
+using RepoM.Core.Repositories.Store;
+using RepoM.Core.Repositories.Watching;
 using System.IO.Abstractions;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SimpleInjector;
 using Microsoft.Extensions.Logging;
@@ -46,15 +53,21 @@ internal static class Bootstrapper
         Container.RegisterInstance<ObjectCache>(MemoryCache.Default);
         Container.RegisterSingleton<Window>(() => Container.GetInstance<MainWindow>());
         Container.Register<MainWindow>(Lifestyle.Singleton);
-        Container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>(Lifestyle.Singleton);
-        Container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>(Lifestyle.Singleton);
-        Container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>(Lifestyle.Singleton);
-        Container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>(Lifestyle.Singleton);
-        Container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>(Lifestyle.Singleton);
+
+        // New repository infrastructure
+        Container.Register<IRepositoryStore, RepositoryStore>(Lifestyle.Singleton);
+        Container.RegisterInstance(new GitRepositoryScannerSettings(Math.Max(1, Environment.ProcessorCount)));
+        Container.Register<IRepositoryScanner, GitRepositoryScanner>(Lifestyle.Singleton);
+        Container.Register<IRepositoryWatcher, FileSystemRepositoryWatcher>(Lifestyle.Singleton);
+        Container.Register<IRepositoryInfoReader, LibGit2SharpRepositoryInfoReader>(Lifestyle.Singleton);
+        Container.Register<IPinningService, PinningService>(Lifestyle.Singleton);
+        Container.Register<RepoM.Core.Repositories.RepositoryMonitorService>(Lifestyle.Singleton);
+
+        // Register RepositoryMonitorService as IModule
+        Container.Collection.Append<IModule, RepoM.Core.Repositories.RepositoryMonitorService>(Lifestyle.Singleton);
+
         Container.RegisterInstance(appDataProvider);
-        Container.Register<IRepositoryReader, DefaultRepositoryReader>(Lifestyle.Singleton);
         Container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);
-        Container.Register<IRepositoryStore, DefaultRepositoryStore>(Lifestyle.Singleton);
         Container.Register<IPathProvider, DefaultDriveEnumerator>(Lifestyle.Singleton);
         Container.Register<IPathSkipper, WindowsPathSkipper>(Lifestyle.Singleton);
         Container.Register<IThreadDispatcher, WpfThreadDispatcher>(Lifestyle.Singleton);
@@ -85,19 +98,20 @@ internal static class Bootstrapper
         Container.Collection.Append<IQueryMatcher>(() => new FreeTextMatcher(ignoreCase: true, ignoreCaseTag: true), Lifestyle.Singleton);
 
         Container.Register<IModuleManager, ModuleManager>(Lifestyle.Singleton);
-        
-        Container.Register<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
         Container.RegisterInstance<IFileSystem>(fileSystem);
 
+        // Register path provider function for RepositoryMonitorService
+        Container.RegisterInstance<Func<IEnumerable<string>>>(() => Container.GetInstance<IPathProvider>().GetPaths());
+
         ActionMenu.Core.Bootstrapper.RegisterServices(Container);
-        
+
         Container.RegisterSingleton<IRepositoryComparerFactory, RepositoryComparerCompositionFactory>();
         Container.RegisterSingleton<IRepositoryScoreCalculatorFactory, RepositoryScoreCalculatorFactory>();
 
         CoreBootstrapper.RegisterRepositoryComparerConfigurationsTypes(Container);
         CoreBootstrapper.RegisterRepositoryScorerConfigurationsTypes(Container);
-        
+
         Container.Register<IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>, IsPinnedScorerFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryScoreCalculatorFactory<TagScorerConfigurationV1>, TagScorerFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryComparerFactory<AlphabetComparerConfigurationV1>, AzRepositoryComparerFactory>(Lifestyle.Singleton);

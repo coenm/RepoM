@@ -1,5 +1,7 @@
 namespace RepoM.Api.Git;
 
+using RepoM.Core.Plugin.Repository;
+
 public interface IRepositoryView
 {
     string Name { get; }
@@ -14,5 +16,5 @@ public interface IRepositoryView
 
     bool HasUnpushedChanges { get; }
 
-    Repository Repository { get; }
+    IRepository Repository { get; }
 }

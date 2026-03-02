@@ -29,6 +29,8 @@ Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories
 	<system:String x:Key="Exit">Beenden</system:String>
 	<system:String x:Key="NotStartWithWindows">Nicht mehr mit Windows starten</system:String>
 	<system:String x:Key="Scanning">Suche nach Repositories ...</system:String>
+	<system:String x:Key="StopScanning">Suche stoppen</system:String>
+	<system:String x:Key="Stopping">Wird gestoppt ...</system:String>
     <system:String x:Key="(Open)">{0} öffnen</system:String>
     <system:String x:Key="(OpenIn)">In {0} öffnen</system:String>
     <system:String x:Key="(OpenWith)">Mit {0} öffnen</system:String>

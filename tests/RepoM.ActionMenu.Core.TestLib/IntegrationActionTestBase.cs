@@ -9,9 +9,10 @@ using FakeItEasy;
 using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
-using RepoM.Api.Git;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Repositories.Adapters;
+using RepoM.Core.Repositories.Model;
 using SimpleInjector;
 using VerifyTests;
 using Xunit;
@@ -26,8 +27,14 @@ public abstract class IntegrationActionTestBase
 
     protected IntegrationActionTestBase()
     {
-        Repository = new Repository(@"C:\Repositories\work\RepoM")
+        RepositoryInfo = new RepositoryInfo
         {
+            Path = @"C:\Repositories\work\RepoM",
+            SafePath = "C:/Repositories/work/RepoM",
+            WindowsPath = @"C:\Repositories\work\RepoM",
+            LinuxPath = "C:/Repositories/work/RepoM",
+            Location = "C:/Repositories/work/RepoM",
+            Name = "RepoM",
             CurrentBranch = "feature/123-my-new-ui-with-multiple-new-screens-so-this-has-a-long-branch-name",
             Branches = ["develop",],
             Remotes =
@@ -38,6 +45,7 @@ public abstract class IntegrationActionTestBase
                 new Remote("ssh-fork", "ssh://user@github.com/coenm/RepoM-Fork3/"),
             },
         };
+        Repository = new RepositoryInfoAdapter(RepositoryInfo);
 
         PackageConfiguration = A.Fake<IPackageConfiguration>();
         AppSettingsService = A.Fake<IAppSettingsService>();
@@ -60,7 +68,9 @@ public abstract class IntegrationActionTestBase
 
     protected IPackageConfiguration PackageConfiguration { get; }
 
-    protected Repository Repository { get; }
+    protected RepositoryInfo RepositoryInfo { get; }
+
+    protected IRepository Repository { get; }
 
     protected IAppSettingsService AppSettingsService { get; }
 

@@ -2,19 +2,19 @@ namespace RepoM.App.RepositoryFiltering.QueryMatchers;
 
 using System;
 using JetBrains.Annotations;
-using RepoM.Api.Git;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
+using RepoM.Core.Repositories.Pinning;
 
 [UsedImplicitly]
 public class IsPinnedMatcher : IQueryMatcher
 {
-    private readonly IRepositoryMonitor _monitor;
+    private readonly IPinningService _pinningService;
 
-    public IsPinnedMatcher(IRepositoryMonitor monitor)
+    public IsPinnedMatcher(IPinningService pinningService)
     {
-        _monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+        _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
     }
 
     public bool? IsMatch(in IRepository repository, in TermBase term)
@@ -31,12 +31,12 @@ public class IsPinnedMatcher : IQueryMatcher
 
         if ("pinned".Equals(st.Value, StringComparison.CurrentCulture))
         {
-            return _monitor.IsPinned(repository);
+            return _pinningService.IsPinned(repository.SafePath);
         }
 
         if ("unpinned".Equals(st.Value, StringComparison.CurrentCulture))
         {
-            return !_monitor.IsPinned(repository);
+            return !_pinningService.IsPinned(repository.SafePath);
         }
 
         return null;

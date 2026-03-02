@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
     <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
+    <ProjectReference Include="..\RepoM.Core.Repositories\RepoM.Core.Repositories.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.AzureDevOps\RepoM.Plugin.AzureDevOps.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.Clipboard\RepoM.Plugin.Clipboard.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />

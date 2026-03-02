@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Core;
-using RepoM.Api.Git;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin.Common;
+using RepoM.Core.Plugin.Repository;
 
 // todo move to beter location
 public class RepositoryTagsFactoryV2 : IRepositoryTagsFactory
@@ -27,7 +27,7 @@ public class RepositoryTagsFactoryV2 : IRepositoryTagsFactory
         _filename = fileSystem.Path.Combine(appDataPathProvider.AppDataPath, "TagsV2.yaml");
     }
 
-    public Task<IEnumerable<string>> GetTagsAsync(Repository repository)
+    public Task<IEnumerable<string>> GetTagsAsync(IRepository repository)
     {
         return _newStyleActionMenuFactory.GetTagsAsync(repository, _filename);
     }
