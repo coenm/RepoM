@@ -1,6 +1,7 @@
 namespace RepoM.App;
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -312,12 +313,32 @@ public partial class MainWindow
             return count + 3;
         }
 
+        // Phase 1: Collect all actions off the UI thread to avoid per-item
+        // dispatcher marshaling and intermediate layout passes.
+        var actions = new List<UserInterfaceRepositoryActionBase>();
+        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(false))
+        {
+            actions.Add(action);
+        }
+
+        // Phase 2: Marshal back to UI thread once and apply all changes
+        // in a single synchronous batch — no intermediate layout passes.
+        await Dispatcher.InvokeAsync(() => ApplyMenuActions(ctxMenu, actions, vm, AddItemMenuAndSeparator));
+
+        return true;
+    }
+
+    private void ApplyMenuActions(
+        WpfContextMenu ctxMenu,
+        List<UserInterfaceRepositoryActionBase> actions,
+        RepositoryViewModel vm,
+        Func<int, int> addItemMenuAndSeparator)
+    {
         var index = -1;
         var lastVisibleSeparator = false;
-
         var ctxMenuItemsCount = ctxMenu.Items.Count;
 
-        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(true))
+        foreach (UserInterfaceRepositoryActionBase action in actions)
         {
             index++;
             if (action is UserInterfaceSeparatorRepositoryAction)
@@ -333,7 +354,7 @@ public partial class MainWindow
 
                 if (ctxMenuItemsCount <= index)
                 {
-                    ctxMenuItemsCount = AddItemMenuAndSeparator(ctxMenuItemsCount);
+                    ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
                     index+=2;
                 }
 
@@ -365,7 +386,7 @@ public partial class MainWindow
 
                     if (ctxMenuItemsCount <= index)
                     {
-                        ctxMenuItemsCount = AddItemMenuAndSeparator(ctxMenuItemsCount);
+                        ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
                         index += 1;
                     }
 
@@ -395,7 +416,7 @@ public partial class MainWindow
 
                     if (ctxMenuItemsCount <= index)
                     {
-                        ctxMenuItemsCount = AddItemMenuAndSeparator(ctxMenuItemsCount);
+                        ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
                         index += 0;
                     }
 
@@ -428,8 +449,6 @@ public partial class MainWindow
 
             index++;
         }
-
-        return true;
     }
 
     private void SetClick(AcrylicMenuItem acrylicMenuItem, UserInterfaceRepositoryAction action, RepositoryViewModel? affectedViews)
@@ -792,10 +811,7 @@ public partial class MainWindow
 
     private static void SetVmSynchronizing(RepositoryViewModel? affectedVm, bool synchronizing)
     {
-        if (affectedVm != null)
-        {
-            affectedVm.IsSynchronizing = synchronizing;
-        }
+        affectedVm?.IsSynchronizing = synchronizing;
     }
 
     private void ShowScanningState(bool isScanning)
