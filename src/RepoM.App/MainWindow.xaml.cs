@@ -126,6 +126,9 @@ public partial class MainWindow
         {
             Task.Run(() => _monitorService.RemoveStaleRepositories());
         }
+
+        Task.Run(() => _monitorService.RefreshAllAsync());
+
         txtFilter.Focus();
         txtFilter.SelectAll();
     }
