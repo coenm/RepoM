@@ -215,8 +215,7 @@ public partial class MainWindow
 
             PlaceFormByTaskBarLocation();
 
-            tbLoading.Visibility = Visibility.Collapsed;
-            transitionerMain.Visibility = Visibility.Visible;
+            loadingOverlay.Visibility = Visibility.Collapsed;
         });
     }
 
