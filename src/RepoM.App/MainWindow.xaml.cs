@@ -203,6 +203,15 @@ public partial class MainWindow
         }
     }
 
+    public void SetReady()
+    {
+        Dispatcher.Invoke(() =>
+        {
+            tbLoading.Visibility = Visibility.Collapsed;
+            transitionerMain.Visibility = Visibility.Visible;
+        });
+    }
+
     public void ShowAndActivate()
     {
         Dispatcher.Invoke(() =>

@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
 using RepoM.App.i18n;
@@ -83,10 +84,16 @@ public partial class App : Application
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
         Bootstrapper.RegisterServices(fileSystem, appDataProvider);
-        await Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory, appDataProvider).ConfigureAwait(true);
 
-        var ensureStartup = new EnsureStartup(fileSystem, appDataProvider);
-        await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
+        // Move heavy I/O work (plugin discovery, assembly loading, file ensures) off the UI thread
+        // so the message pump stays responsive during startup.
+        await Task.Run(async () =>
+        {
+            await Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory, appDataProvider).ConfigureAwait(false);
+
+            var ensureStartup = new EnsureStartup(fileSystem, appDataProvider);
+            await ensureStartup.EnsureFilesAsync().ConfigureAwait(false);
+        }).ConfigureAwait(true);
 
 #if DEBUG
         Bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
@@ -101,6 +108,8 @@ public partial class App : Application
         _hotKeyService.Register();
         _windowSizeService.Register();
 
+        MainWindow mainWindow = Bootstrapper.Container.GetInstance<MainWindow>();
+
         try
         {
             await _moduleService.StartAsync().ConfigureAwait(false); // don't care about ui thread
@@ -109,6 +118,8 @@ public partial class App : Application
         {
             logger.LogError(exception, "Could not start all modules.");
         }
+
+        mainWindow.SetReady();
     }
 
     protected override void OnExit(ExitEventArgs e)
