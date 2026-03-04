@@ -239,39 +239,54 @@ public class RepositoryMonitorService : IModule, IDisposable
         }
     }
 
+    private int _refreshRunning;
+
     public async Task RefreshAllAsync(CancellationToken ct = default)
     {
-        _logger.LogInformation("Refreshing status of all known repositories");
-
-        RepositoryInfo[] repos = _store.Items.ToArray();
-        if (repos.Length == 0)
+        if (Interlocked.CompareExchange(ref _refreshRunning, 1, 0) != 0)
         {
+            _logger.LogDebug("RefreshAll skipped, already in progress");
             return;
         }
 
-        await Parallel.ForEachAsync(
-            repos,
-            ct,
-            async (repo, token) =>
-            {
-                try
-                {
-                    var headPath = System.IO.Path.Combine(repo.Path, ".git", "HEAD");
-                    RepositoryInfo? updated = await _reader.ReadAsync(headPath, token).ConfigureAwait(false);
-                    if (updated != null)
-                    {
-                        updated.LastSeen = DateTimeOffset.UtcNow;
-                        updated.LastUpdated = DateTimeOffset.UtcNow;
-                        _store.AddOrUpdate(updated);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogDebug(ex, "Failed to refresh repository {Path}", repo.Path);
-                }
-            }).ConfigureAwait(false);
+        try
+        {
+            _logger.LogInformation("Refreshing status of all known repositories");
 
-        _logger.LogInformation("Refreshed {Count} repositories", repos.Length);
+            RepositoryInfo[] repos = _store.Items.ToArray();
+            if (repos.Length == 0)
+            {
+                return;
+            }
+
+            await Parallel.ForEachAsync(
+                repos,
+                ct,
+                async (repo, token) =>
+                {
+                    try
+                    {
+                        var headPath = _fileSystem.Path.Combine(repo.Path, ".git", "HEAD");
+                        RepositoryInfo? updated = await _reader.ReadAsync(headPath, token).ConfigureAwait(false);
+                        if (updated != null)
+                        {
+                            updated.LastSeen = DateTimeOffset.UtcNow;
+                            updated.LastUpdated = DateTimeOffset.UtcNow;
+                            _store.AddOrUpdate(updated);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogDebug(ex, "Failed to refresh repository {Path}", repo.Path);
+                    }
+                }).ConfigureAwait(false);
+
+            _logger.LogInformation("Refreshed {Count} repositories", repos.Length);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _refreshRunning, 0);
+        }
     }
 
     private static string NormalizeToSafePath(string path)
