@@ -60,7 +60,11 @@ public partial class MainWindow
     private readonly ILogger _logger;
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
-    private readonly ReadOnlyObservableCollection<RepositoryViewModel> _repositories;
+    private readonly IRepositoryComparerManager _repositoryComparerManager;
+    private readonly IThreadDispatcher _threadDispatcher;
+    private readonly IAppSettingsService _appSettingsService;
+    private readonly IModuleManager _moduleManager;
+    private ReadOnlyObservableCollection<RepositoryViewModel> _repositories = null!;
     private readonly CompositeDisposable _disposables = new();
     private bool _isScanning;
     private readonly object _separator = new();
@@ -97,59 +101,14 @@ public partial class MainWindow
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _executor = executor ?? throw new ArgumentNullException(nameof(executor));
+        _repositoryComparerManager = repositoryComparerManager ?? throw new ArgumentNullException(nameof(repositoryComparerManager));
+        _threadDispatcher = threadDispatcher ?? throw new ArgumentNullException(nameof(threadDispatcher));
+        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        _moduleManager = moduleManager ?? throw new ArgumentNullException(nameof(moduleManager));
 
         InitializeComponent();
 
         SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
-
-        var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
-        var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var pluginsViewModel = new PluginCollectionViewModel(moduleManager);
-
-        DataContext = new MainWindowViewModel(
-            appSettingsService,
-            orderingsViewModel,
-            queryParsersViewModel,
-            filterViewModel,
-            pluginsViewModel,
-            new HelpViewModel(_translationService));
-        SettingsMenu.DataContext = DataContext; // this is out of the visual tree
-
-        // Subscribe to scan state
-        var scanSubscription = _monitorService.IsScanning
-            .ObserveOn(new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!))
-            .Subscribe(isScanning => ShowScanningState(isScanning));
-        _disposables.Add(scanSubscription);
-
-        // Bind store to ReadOnlyObservableCollection via DynamicData
-        var uiScheduler = new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!);
-        var bindSubscription = _store.Connect()
-            .Transform(info => new RepositoryViewModel(info, _pinningService))
-            .ObserveOn(uiScheduler)
-            .Bind(out _repositories)
-            .Subscribe();
-        _disposables.Add(bindSubscription);
-
-        lstRepositories.ItemsSource = _repositories;
-
-        var view = (ListCollectionView)CollectionViewSource.GetDefaultView(_repositories);
-        ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
-        view.Filter = FilterRepositories;
-        view.CustomSort = repositoryComparerManager.Comparer;
-        repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
-        repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
-        repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
-
-        // Refresh the view when repository data is updated (e.g. branch switch)
-        var refreshSubscription = _store.Connect()
-            .WhereReasonsAre(DynamicData.ChangeReason.Update)
-            .Throttle(TimeSpan.FromMilliseconds(300))
-            .ObserveOn(uiScheduler)
-            .Subscribe(_ => view.Refresh());
-        _disposables.Add(refreshSubscription);
-
-        PlaceFormByTaskBarLocation();
     }
 
     private void View_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -207,6 +166,55 @@ public partial class MainWindow
     {
         Dispatcher.Invoke(() =>
         {
+            var orderingsViewModel = new OrderingsViewModel(_repositoryComparerManager, _threadDispatcher);
+            var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, _threadDispatcher);
+            var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, _threadDispatcher);
+            var pluginsViewModel = new PluginCollectionViewModel(_moduleManager);
+
+            DataContext = new MainWindowViewModel(
+                _appSettingsService,
+                orderingsViewModel,
+                queryParsersViewModel,
+                filterViewModel,
+                pluginsViewModel,
+                new HelpViewModel(_translationService));
+            SettingsMenu.DataContext = DataContext; // this is out of the visual tree
+
+            // Subscribe to scan state
+            var scanSubscription = _monitorService.IsScanning
+                .ObserveOn(new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!))
+                .Subscribe(isScanning => ShowScanningState(isScanning));
+            _disposables.Add(scanSubscription);
+
+            // Bind store to ReadOnlyObservableCollection via DynamicData
+            var uiScheduler = new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!);
+            var bindSubscription = _store.Connect()
+                .Transform(info => new RepositoryViewModel(info, _pinningService))
+                .ObserveOn(uiScheduler)
+                .Bind(out _repositories)
+                .Subscribe();
+            _disposables.Add(bindSubscription);
+
+            lstRepositories.ItemsSource = _repositories;
+
+            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(_repositories);
+            ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
+            view.Filter = FilterRepositories;
+            view.CustomSort = _repositoryComparerManager.Comparer;
+            _repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
+            _repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
+            _repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
+
+            // Refresh the view when repository data is updated (e.g. branch switch)
+            var refreshSubscription = _store.Connect()
+                .WhereReasonsAre(DynamicData.ChangeReason.Update)
+                .Throttle(TimeSpan.FromMilliseconds(300))
+                .ObserveOn(uiScheduler)
+                .Subscribe(_ => view.Refresh());
+            _disposables.Add(refreshSubscription);
+
+            PlaceFormByTaskBarLocation();
+
             tbLoading.Visibility = Visibility.Collapsed;
             transitionerMain.Visibility = Visibility.Visible;
         });
