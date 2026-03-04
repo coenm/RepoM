@@ -105,10 +105,11 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
             return;
         }
 
-        // remainingWorkers tracks how many workers have not yet exited.
-        // Each worker decrements when it exits. When the last worker exits, it signals completion.
-        var workerCount = Math.Min(_degreeOfParallelism, Math.Max(1, workQueue.Count));
+        // All workers share a work queue. A worker exits only when the queue is empty
+        // AND no other worker is actively processing (i.e. no one can produce new work).
+        var workerCount = _degreeOfParallelism;
         var remainingWorkers = workerCount;
+        var activeWorkers = 0;
         var completionSignal = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var workers = new Task[workerCount];
 
@@ -119,13 +120,13 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
                 try
                 {
                     var spinWait = new SpinWait();
-                    var idleSpins = 0;
 
                     while (!ct.IsCancellationRequested)
                     {
                         if (workQueue.TryDequeue(out var current))
                         {
-                            idleSpins = 0;
+                            Interlocked.Increment(ref activeWorkers);
+                            spinWait.Reset();
                             try
                             {
                                 ProcessDirectory(current, workQueue, channel.Writer, ct);
@@ -134,13 +135,16 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
                             {
                                 return;
                             }
+                            finally
+                            {
+                                Interlocked.Decrement(ref activeWorkers);
+                            }
                         }
                         else
                         {
-                            idleSpins++;
-                            if (idleSpins > 100)
+                            // Queue is empty. If no workers are active, no new work can appear.
+                            if (Volatile.Read(ref activeWorkers) == 0 && workQueue.IsEmpty)
                             {
-                                // Queue has been empty for a while — exit this worker
                                 return;
                             }
 
