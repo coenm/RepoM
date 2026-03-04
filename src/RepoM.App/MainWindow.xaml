@@ -28,20 +28,11 @@
 	<Grid Margin="12"
 		  Focusable="False">
 
-		<TextBlock x:Name="tbLoading"
-				   Text="Loading..."
-				   FontSize="15"
-				   HorizontalAlignment="Center"
-				   VerticalAlignment="Center"
-				   Focusable="False"
-				   Foreground="Gray"
-				   Visibility="Visible"
-				   Panel.ZIndex="1" />
-
 		<materialDesign:Transitioner Name="transitionerMain"
 									 SelectedIndex="0"
-									 Focusable="False"
-									 Visibility="Collapsed">
+									 Focusable="False">
+
+
 
 			<Grid>
 				<TextBlock x:Name="tbNoRepositories"
@@ -409,6 +400,17 @@
 				</StackPanel>
 			</ScrollViewer>
 		</materialDesign:Transitioner>
+
+		<Border x:Name="loadingOverlay"
+				Background="#FF303030"
+				Visibility="Visible">
+			<TextBlock Text="Loading..."
+					   FontSize="15"
+					   HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
+					   Focusable="False"
+					   Foreground="Gray" />
+		</Border>
 
 	</Grid>
 
