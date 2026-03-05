@@ -272,12 +272,14 @@ public class RepositoryMonitorService : IModule, IDisposable
                     {
                         var headPath = _fileSystem.Path.Combine(repo.Path, ".git", "HEAD");
                         RepositoryInfo? updated = await _reader.ReadAsync(headPath, token).ConfigureAwait(false);
-                        if (updated != null)
+                        if (updated == null)
                         {
-                            updated.LastSeen = DateTimeOffset.UtcNow;
-                            updated.LastUpdated = DateTimeOffset.UtcNow;
-                            bag.Add(updated);
+                            return;
                         }
+
+                        updated.LastSeen = DateTimeOffset.UtcNow;
+                        updated.LastUpdated = DateTimeOffset.UtcNow;
+                        bag.Add(updated);
                     }
                     catch (Exception ex)
                     {

@@ -3,10 +3,11 @@ namespace RepoM.Core.Repositories.Model;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using RepoM.Core.Plugin.Repository;
 
 [DebuggerDisplay("{Name} @{Path}")]
-public sealed class RepositoryInfo
+public sealed class RepositoryInfo : IEquatable<RepositoryInfo>
 {
     public required string Path { get; init; }
 
@@ -98,5 +99,53 @@ public sealed class RepositoryInfo
             LocalRemoved ?? 0,
             LocalIgnored ?? 0,
             StashCount ?? 0);
+    }
+
+    /// <summary>
+    /// Compares observable repository state, intentionally excluding
+    /// <see cref="LastSeen"/>, <see cref="LastUpdated"/>, and <see cref="AllBranchesReader"/>
+    /// so that two snapshots of the same repo are considered equal when nothing the UI cares about has changed.
+    /// </summary>
+    public bool Equals(RepositoryInfo? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
+        return SafePath == other.SafePath
+            && CurrentBranch == other.CurrentBranch
+            && CurrentBranchHasUpstream == other.CurrentBranchHasUpstream
+            && CurrentBranchIsDetached == other.CurrentBranchIsDetached
+            && CurrentBranchIsOnTag == other.CurrentBranchIsOnTag
+            && AheadBy == other.AheadBy
+            && BehindBy == other.BehindBy
+            && LocalUntracked == other.LocalUntracked
+            && LocalModified == other.LocalModified
+            && LocalMissing == other.LocalMissing
+            && LocalAdded == other.LocalAdded
+            && LocalStaged == other.LocalStaged
+            && LocalRemoved == other.LocalRemoved
+            && LocalIgnored == other.LocalIgnored
+            && StashCount == other.StashCount
+            && WasFound == other.WasFound
+            && Tags.SequenceEqual(other.Tags)
+            && Branches.SequenceEqual(other.Branches)
+            && LocalBranches.SequenceEqual(other.LocalBranches);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as RepositoryInfo);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(SafePath, CurrentBranch, AheadBy, BehindBy, StashCount);
     }
 }

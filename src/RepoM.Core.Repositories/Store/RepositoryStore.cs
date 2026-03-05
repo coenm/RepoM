@@ -20,6 +20,13 @@ public sealed class RepositoryStore : IRepositoryStore
     public void AddOrUpdate(RepositoryInfo repository)
     {
         ArgumentNullException.ThrowIfNull(repository);
+
+        Optional<RepositoryInfo> existing = _cache.Lookup(repository.SafePath);
+        if (existing.HasValue && existing.Value.Equals(repository))
+        {
+            return;
+        }
+
         _cache.AddOrUpdate(repository);
     }
 
@@ -30,6 +37,12 @@ public sealed class RepositoryStore : IRepositoryStore
         {
             foreach (RepositoryInfo repo in repositories)
             {
+                Optional<RepositoryInfo> existing = updater.Lookup(repo.SafePath);
+                if (existing.HasValue && existing.Value.Equals(repo))
+                {
+                    continue;
+                }
+
                 updater.AddOrUpdate(repo);
             }
         });
