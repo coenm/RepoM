@@ -3,8 +3,10 @@ namespace RepoM.App.RepositoryFiltering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
+using RepoM.Api.Git;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Configuration;
@@ -12,6 +14,7 @@ using RepoM.Core.Plugin.RepositoryFiltering.Configuration;
 internal class RepositoryFilteringManager : IRepositoryFilteringManager
 {
     private readonly IAppSettingsService _appSettingsService;
+    private readonly IRepositoryMatcher _repositoryMatcher;
     private readonly ILogger _logger;
     private readonly QueryParserComposition _queryParser;
     private readonly List<string> _repositoryComparerKeys;
@@ -22,9 +25,11 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         IAppSettingsService appSettingsService,
         IFilterSettingsService filterSettingsService,
         IEnumerable<INamedQueryParser> queryParsers,
+        IRepositoryMatcher repositoryMatcher,
         ILogger logger)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
         _ = queryParsers ?? throw new ArgumentNullException(nameof(queryParsers));
         _ = filterSettingsService ?? throw new ArgumentNullException(nameof(filterSettingsService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -111,11 +116,11 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
 
     public event EventHandler<string>? SelectedFilterChanged;
 
-    public IQueryParser QueryParser => _queryParser;
+    private IQueryParser QueryParser => _queryParser;
 
-    public IQuery PreFilter { get; private set; }
+    private IQuery PreFilter { get; set; }
 
-    public IQuery? AlwaysVisibleFilter { get; private set; }
+    private IQuery? AlwaysVisibleFilter { get; set; }
 
     public string SelectedQueryParserKey { get; private set; } = string.Empty;
 
@@ -153,6 +158,75 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         SelectedFilterKey = key;
         SelectedFilterChanged?.Invoke(this, key);
         return true;
+    }
+
+    public IObservable<Func<RepositoryViewModel, bool>> CreateFilterObservable(IObservable<string> textInput)
+    {
+        ArgumentNullException.ThrowIfNull(textInput);
+
+        var settingsChanged = Observable.Merge(
+                Observable.FromEventPattern<EventHandler<string>, string>(
+                    h => SelectedFilterChanged += h,
+                    h => SelectedFilterChanged -= h),
+                Observable.FromEventPattern<EventHandler<string>, string>(
+                    h => SelectedQueryParserChanged += h,
+                    h => SelectedQueryParserChanged -= h))
+            .Select(_ => System.Reactive.Unit.Default)
+            .StartWith(System.Reactive.Unit.Default);
+
+        return textInput
+            .CombineLatest(settingsChanged, (query, _) => query)
+            .Select(CreateFilterPredicate);
+    }
+
+    private Func<RepositoryViewModel, bool> CreateFilterPredicate(string query)
+    {
+        // Capture current filter state so the predicate is self-contained and thread-safe.
+        IQuery preFilter = PreFilter;
+        IQuery? alwaysVisibleFilter = AlwaysVisibleFilter;
+        IQueryParser queryParser = QueryParser;
+        IQuery? parsedQuery = string.IsNullOrWhiteSpace(query) ? null : queryParser.Parse(query);
+
+        return vm =>
+        {
+            try
+            {
+                if (alwaysVisibleFilter != null && _repositoryMatcher.Matches(vm.Repository, alwaysVisibleFilter))
+                {
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            try
+            {
+                if (!_repositoryMatcher.Matches(vm.Repository, preFilter))
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            if (parsedQuery == null)
+            {
+                return true;
+            }
+
+            try
+            {
+                return _repositoryMatcher.Matches(vm.Repository, parsedQuery);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        };
     }
 
     private sealed class RepositoryFilterConfiguration

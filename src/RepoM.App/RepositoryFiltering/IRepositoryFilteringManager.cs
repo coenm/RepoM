@@ -2,20 +2,15 @@ namespace RepoM.App.RepositoryFiltering;
 
 using System;
 using System.Collections.Generic;
-using RepoM.Core.Plugin.RepositoryFiltering;
-using RepoM.Core.Plugin.RepositoryFiltering.Clause;
+using RepoM.Api.Git;
 
 public interface IRepositoryFilteringManager
 {
+    IObservable<Func<RepositoryViewModel, bool>> CreateFilterObservable(IObservable<string> textInput);
+
     event EventHandler<string>? SelectedQueryParserChanged;
 
     event EventHandler<string>? SelectedFilterChanged;
-
-    IQueryParser QueryParser { get; }
-
-    IQuery PreFilter { get; }
-
-    IQuery? AlwaysVisibleFilter { get; }
 
     IReadOnlyList<string> QueryParserKeys { get; }
 

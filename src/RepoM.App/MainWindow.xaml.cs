@@ -33,8 +33,6 @@ using RepoM.App.Services;
 using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
-using RepoM.Core.Plugin.RepositoryFiltering;
-using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Repositories;
 using RepoM.Core.Repositories.Pinning;
 using RepoM.Core.Repositories.Store;
@@ -59,7 +57,6 @@ public partial class MainWindow
     private readonly IFileSystem _fileSystem;
     private readonly ActionExecutor _executor;
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
-    private readonly IRepositoryMatcher _repositoryMatcher;
     private readonly ILogger _logger;
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
@@ -87,7 +84,6 @@ public partial class MainWindow
         IRepositoryComparerManager repositoryComparerManager,
         IThreadDispatcher threadDispatcher,
         IRepositoryFilteringManager repositoryFilteringManager,
-        IRepositoryMatcher repositoryMatcher,
         IModuleManager moduleManager,
         ILogger logger,
         IUserMenuActionMenuFactory userMenuActionFactory)
@@ -96,7 +92,6 @@ public partial class MainWindow
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
-        _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _userMenuActionFactory = userMenuActionFactory ?? throw new ArgumentNullException(nameof(userMenuActionFactory));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
@@ -213,43 +208,18 @@ public partial class MainWindow
                 .Subscribe(isScanning => ShowScanningState(isScanning));
             _disposables.Add(scanSubscription);
 
-            // --- Reactive filter observable ---
-            // Capture text changes on the UI thread, then build a predicate closure.
+            // --- DynamicData pipeline: filter & sort on background, bind on UI ---
             _filterTextSubject = new BehaviorSubject<string>(string.Empty);
 
-            var textChanged = _filterTextSubject
-                .Throttle(TimeSpan.FromMilliseconds(200))
-                .DistinctUntilChanged();
+            var filterObservable = _repositoryFilteringManager.CreateFilterObservable(
+                _filterTextSubject.Throttle(TimeSpan.FromMilliseconds(200)).DistinctUntilChanged());
 
-            var filterSettingsChanged = Observable.Merge(
-                    Observable.FromEventPattern<EventHandler<string>, string>(
-                        h => _repositoryFilteringManager.SelectedFilterChanged += h,
-                        h => _repositoryFilteringManager.SelectedFilterChanged -= h),
-                    Observable.FromEventPattern<EventHandler<string>, string>(
-                        h => _repositoryFilteringManager.SelectedQueryParserChanged += h,
-                        h => _repositoryFilteringManager.SelectedQueryParserChanged -= h))
-                .Select(_ => System.Reactive.Unit.Default)
-                .StartWith(System.Reactive.Unit.Default);
-
-            var filterObservable = textChanged
-                .CombineLatest(filterSettingsChanged, (query, _) => query)
-                .Select(query => CreateFilterPredicate(query));
-
-            // --- Reactive sort observable ---
-            var sortObservable = Observable
-                .FromEventPattern<EventHandler<string>, string>(
-                    h => _repositoryComparerManager.SelectedRepositoryComparerKeyChanged += h,
-                    h => _repositoryComparerManager.SelectedRepositoryComparerKeyChanged -= h)
-                .Select(_ => CreateSortComparer(_repositoryComparerManager))
-                .StartWith(CreateSortComparer(_repositoryComparerManager));
-
-            // --- DynamicData pipeline: filter & sort on background, bind on UI ---
             var bindSubscription = _store.Connect()
                 .Transform(info => new RepositoryViewModel(info, _pinningService))
                 .Filter(filterObservable)
                 .Batch(TimeSpan.FromMilliseconds(200))
                 .ObserveOn(uiScheduler)
-                .SortAndBind(out _repositories, sortObservable)
+                .SortAndBind(out _repositories, _repositoryComparerManager.SortObservable)
                 .Subscribe();
             _disposables.Add(bindSubscription);
 
@@ -267,63 +237,6 @@ public partial class MainWindow
     }
 
     private BehaviorSubject<string>? _filterTextSubject;
-
-    private Func<RepositoryViewModel, bool> CreateFilterPredicate(string query)
-    {
-        // Capture current filter state so the predicate is self-contained and thread-safe.
-        IQuery preFilter = _repositoryFilteringManager.PreFilter;
-        IQuery? alwaysVisibleFilter = _repositoryFilteringManager.AlwaysVisibleFilter;
-        IQueryParser queryParser = _repositoryFilteringManager.QueryParser;
-        IQuery? parsedQuery = string.IsNullOrWhiteSpace(query) ? null : queryParser.Parse(query);
-
-        return vm =>
-        {
-            try
-            {
-                if (alwaysVisibleFilter != null && _repositoryMatcher.Matches(vm.Repository, alwaysVisibleFilter))
-                {
-                    return true;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            try
-            {
-                if (!_repositoryMatcher.Matches(vm.Repository, preFilter))
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            if (parsedQuery == null)
-            {
-                return true;
-            }
-
-            try
-            {
-                return _repositoryMatcher.Matches(vm.Repository, parsedQuery);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        };
-    }
-
-    private static IComparer<RepositoryViewModel> CreateSortComparer(IRepositoryComparerManager comparerManager)
-    {
-        // Capture the current comparer reference so it's stable for the lifetime of this sort.
-        System.Collections.IComparer currentComparer = comparerManager.Comparer;
-        return Comparer<RepositoryViewModel>.Create((x, y) => currentComparer.Compare(x, y));
-    }
 
     public void ShowAndActivate()
     {

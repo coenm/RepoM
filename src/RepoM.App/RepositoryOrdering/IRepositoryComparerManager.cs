@@ -1,14 +1,14 @@
 namespace RepoM.App.RepositoryOrdering;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using RepoM.Api.Git;
 
 public interface IRepositoryComparerManager
 {
     event EventHandler<string>? SelectedRepositoryComparerKeyChanged;
 
-    IComparer Comparer { get; }
+    IObservable<IComparer<RepositoryViewModel>> SortObservable { get; }
 
     IReadOnlyList<string> RepositoryComparerKeys { get; }
 
