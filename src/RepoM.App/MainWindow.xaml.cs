@@ -48,6 +48,8 @@ public partial class MainWindow
     private volatile bool _refreshDelayed;
     private DateTime _timeOfLastRefresh = DateTime.MinValue;
     private bool _closeOnDeactivate = true;
+    private static readonly bool _useOffScreenHide =
+        string.Equals(Environment.GetEnvironmentVariable("REPOM_HIDE_OFFSCREEN"), "1", StringComparison.Ordinal);
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly RepositoryMonitorService _monitorService;
     private readonly IRepositoryStore _store;
@@ -139,14 +141,14 @@ public partial class MainWindow
 
         if (_closeOnDeactivate)
         {
-            Hide();
+            HideWindow();
         }
     }
 
     protected override void OnClosing(CancelEventArgs e)
     {
         e.Cancel = true;
-        Hide();
+        HideWindow();
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -160,6 +162,24 @@ public partial class MainWindow
 
         var isFilterActive = txtFilter.IsFocused && !string.IsNullOrEmpty(txtFilter.Text);
         if (!isFilterActive)
+        {
+            HideWindow();
+        }
+    }
+
+    /// <summary>
+    /// Hides the window. When REPOM_HIDE_OFFSCREEN=1, moves the window off-screen instead of
+    /// calling <see cref="Window.Hide"/> so the DWM acrylic composition stays alive and avoids
+    /// a white flash on re-show.
+    /// </summary>
+    private void HideWindow()
+    {
+        if (_useOffScreenHide)
+        {
+            Left = -99999;
+            Top = -99999;
+        }
+        else
         {
             Hide();
         }
@@ -231,7 +251,7 @@ public partial class MainWindow
             {
                 PlaceFormByTaskBarLocation();
 
-                if (!IsShown)
+                if (Visibility != Visibility.Visible)
                 {
                     Show();
                 }
@@ -981,5 +1001,5 @@ public partial class MainWindow
         item?.Focus();
     }
 
-    public bool IsShown => Visibility == Visibility.Visible && IsActive;
+    public bool IsShown => Visibility == Visibility.Visible && IsActive && (!_useOffScreenHide || Left > -99000);
 }

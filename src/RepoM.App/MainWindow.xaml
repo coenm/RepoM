@@ -20,6 +20,7 @@
           Height="540"
           Width="350"
           ShowInTaskbar="False"
+          Background="#FF303030"
           fw:AcrylicWindow.TintColor="#101010"
           fw:AcrylicWindow.FallbackColor="#303030"
           fw:AcrylicWindow.TintOpacity="0.7"
