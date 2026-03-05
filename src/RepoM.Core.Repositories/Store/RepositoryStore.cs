@@ -23,7 +23,7 @@ public sealed class RepositoryStore : IRepositoryStore
         _cache.AddOrUpdate(repository);
     }
 
-    public void AddOrUpdateRange(IReadOnlyList<RepositoryInfo> repositories)
+    public void AddOrUpdateRange(IEnumerable<RepositoryInfo> repositories)
     {
         ArgumentNullException.ThrowIfNull(repositories);
         _cache.Edit(updater =>

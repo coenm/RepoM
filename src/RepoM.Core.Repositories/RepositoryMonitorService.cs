@@ -173,11 +173,11 @@ public class RepositoryMonitorService : IModule, IDisposable
             .SelectMany(path => Observable.FromAsync(token => _reader.ReadAsync(path, token)))
             .Where(repo => repo != null)
             .Select(repo => repo!)
-            .Do(repo =>
-            {
-                repo.LastSeen = DateTimeOffset.UtcNow;
-                _store.AddOrUpdate(repo);
-            });
+            .Do(repo => repo.LastSeen = DateTimeOffset.UtcNow)
+            .Buffer(TimeSpan.FromMilliseconds(500))
+            .Where(batch => batch.Count > 0)
+            .Do(batch => _store.AddOrUpdateRange(batch))
+            .SelectMany(batch => batch);
     }
 
     private void OnRepositoryChangeDetected(RepositoryChangeEvent changeEvent)

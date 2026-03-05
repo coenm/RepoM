@@ -189,10 +189,13 @@ public partial class MainWindow
                 .Subscribe(isScanning => ShowScanningState(isScanning));
             _disposables.Add(scanSubscription);
 
-            // Bind store to ReadOnlyObservableCollection via DynamicData
+            // Bind store to ReadOnlyObservableCollection via DynamicData.
+            // Batch changesets over a 200ms window so rapid background updates
+            // (scanning, refresh) are coalesced into fewer UI thread dispatches.
             var uiScheduler = new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!);
             var bindSubscription = _store.Connect()
                 .Transform(info => new RepositoryViewModel(info, _pinningService))
+                .Batch(TimeSpan.FromMilliseconds(200))
                 .ObserveOn(uiScheduler)
                 .Bind(out _repositories)
                 .Subscribe();
