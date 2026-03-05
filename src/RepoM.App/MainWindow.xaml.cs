@@ -7,13 +7,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
 using DynamicData;
@@ -31,6 +33,7 @@ using RepoM.App.Services;
 using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
+using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Repositories;
 using RepoM.Core.Repositories.Pinning;
@@ -45,8 +48,6 @@ using WpfContextMenu = System.Windows.Controls.ContextMenu;
 /// </summary>
 public partial class MainWindow
 {
-    private volatile bool _refreshDelayed;
-    private DateTime _timeOfLastRefresh = DateTime.MinValue;
     private bool _closeOnDeactivate = true;
     private static readonly bool _useOffScreenHide =
         string.Equals(Environment.GetEnvironmentVariable("REPOM_HIDE_OFFSCREEN"), "1", StringComparison.Ordinal);
@@ -113,11 +114,12 @@ public partial class MainWindow
         SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
     }
 
-    private void View_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void UpdateNoRepositoriesVisibility()
     {
-        // use the list's itemsource directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
-        var hasRepositories = lstRepositories.ItemsSource.OfType<RepositoryViewModel>().Any();
-        tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible;
+        // Show "no repositories" only when the store is truly empty (not just filtered to zero results).
+        var hasRepositories = _store.Count > 0;
+        Dispatcher.InvokeAsync(() =>
+            tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible);
     }
 
     protected override void OnActivated(EventArgs e)
@@ -203,46 +205,124 @@ public partial class MainWindow
                 new HelpViewModel(_translationService));
             SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
+            var uiScheduler = new SynchronizationContextScheduler(SynchronizationContext.Current!);
+
             // Subscribe to scan state
             var scanSubscription = _monitorService.IsScanning
-                .ObserveOn(new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!))
+                .ObserveOn(uiScheduler)
                 .Subscribe(isScanning => ShowScanningState(isScanning));
             _disposables.Add(scanSubscription);
 
-            // Bind store to ReadOnlyObservableCollection via DynamicData.
-            // Batch changesets over a 200ms window so rapid background updates
-            // (scanning, refresh) are coalesced into fewer UI thread dispatches.
-            var uiScheduler = new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!);
+            // --- Reactive filter observable ---
+            // Capture text changes on the UI thread, then build a predicate closure.
+            _filterTextSubject = new BehaviorSubject<string>(string.Empty);
+
+            var textChanged = _filterTextSubject
+                .Throttle(TimeSpan.FromMilliseconds(200))
+                .DistinctUntilChanged();
+
+            var filterSettingsChanged = Observable.Merge(
+                    Observable.FromEventPattern<EventHandler<string>, string>(
+                        h => _repositoryFilteringManager.SelectedFilterChanged += h,
+                        h => _repositoryFilteringManager.SelectedFilterChanged -= h),
+                    Observable.FromEventPattern<EventHandler<string>, string>(
+                        h => _repositoryFilteringManager.SelectedQueryParserChanged += h,
+                        h => _repositoryFilteringManager.SelectedQueryParserChanged -= h))
+                .Select(_ => System.Reactive.Unit.Default)
+                .StartWith(System.Reactive.Unit.Default);
+
+            var filterObservable = textChanged
+                .CombineLatest(filterSettingsChanged, (query, _) => query)
+                .Select(query => CreateFilterPredicate(query));
+
+            // --- Reactive sort observable ---
+            var sortObservable = Observable
+                .FromEventPattern<EventHandler<string>, string>(
+                    h => _repositoryComparerManager.SelectedRepositoryComparerKeyChanged += h,
+                    h => _repositoryComparerManager.SelectedRepositoryComparerKeyChanged -= h)
+                .Select(_ => CreateSortComparer(_repositoryComparerManager))
+                .StartWith(CreateSortComparer(_repositoryComparerManager));
+
+            // --- DynamicData pipeline: filter & sort on background, bind on UI ---
             var bindSubscription = _store.Connect()
                 .Transform(info => new RepositoryViewModel(info, _pinningService))
+                .Filter(filterObservable)
                 .Batch(TimeSpan.FromMilliseconds(200))
                 .ObserveOn(uiScheduler)
-                .Bind(out _repositories)
+                .SortAndBind(out _repositories, sortObservable)
                 .Subscribe();
             _disposables.Add(bindSubscription);
 
             lstRepositories.ItemsSource = _repositories;
 
-            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(_repositories);
-            ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
-            view.Filter = FilterRepositories;
-            view.CustomSort = _repositoryComparerManager.Comparer;
-            _repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
-            _repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
-            _repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
-
-            // Refresh the view when repository data is updated (e.g. branch switch)
-            var refreshSubscription = _store.Connect()
-                .WhereReasonsAre(DynamicData.ChangeReason.Update)
-                .Throttle(TimeSpan.FromMilliseconds(300))
-                .ObserveOn(uiScheduler)
-                .Subscribe(_ => view.Refresh());
-            _disposables.Add(refreshSubscription);
+            // Track whether we have any repositories at all (unfiltered count)
+            var countSubscription = _store.Connect()
+                .Subscribe(_ => UpdateNoRepositoriesVisibility());
+            _disposables.Add(countSubscription);
 
             PlaceFormByTaskBarLocation();
 
             loadingOverlay.Visibility = Visibility.Collapsed;
         });
+    }
+
+    private BehaviorSubject<string>? _filterTextSubject;
+
+    private Func<RepositoryViewModel, bool> CreateFilterPredicate(string query)
+    {
+        // Capture current filter state so the predicate is self-contained and thread-safe.
+        IQuery preFilter = _repositoryFilteringManager.PreFilter;
+        IQuery? alwaysVisibleFilter = _repositoryFilteringManager.AlwaysVisibleFilter;
+        IQueryParser queryParser = _repositoryFilteringManager.QueryParser;
+        IQuery? parsedQuery = string.IsNullOrWhiteSpace(query) ? null : queryParser.Parse(query);
+
+        return vm =>
+        {
+            try
+            {
+                if (alwaysVisibleFilter != null && _repositoryMatcher.Matches(vm.Repository, alwaysVisibleFilter))
+                {
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            try
+            {
+                if (!_repositoryMatcher.Matches(vm.Repository, preFilter))
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            if (parsedQuery == null)
+            {
+                return true;
+            }
+
+            try
+            {
+                return _repositoryMatcher.Matches(vm.Repository, parsedQuery);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        };
+    }
+
+    private static IComparer<RepositoryViewModel> CreateSortComparer(IRepositoryComparerManager comparerManager)
+    {
+        // Capture the current comparer reference so it's stable for the lifetime of this sort.
+        System.Collections.IComparer currentComparer = comparerManager.Comparer;
+        return Comparer<RepositoryViewModel>.Create((x, y) => currentComparer.Compare(x, y));
     }
 
     public void ShowAndActivate()
@@ -900,92 +980,7 @@ public partial class MainWindow
 
     private void OnTxtFilterTextChanged(object? sender, TextChangedEventArgs e)
     {
-        // Text has changed, capture the timestamp
-        if (sender != null)
-        {
-            _timeOfLastRefresh = DateTime.UtcNow;
-        }
-
-        // Spin while updates are in progress
-        if (DateTime.UtcNow - _timeOfLastRefresh < TimeSpan.FromMilliseconds(100))
-        {
-            if (!_refreshDelayed)
-            {
-                Dispatcher.InvokeAsync(async () =>
-                    {
-                        _refreshDelayed = true;
-                        await Task.Delay(200);
-                        _refreshDelayed = false;
-                        OnTxtFilterTextChanged(null, e);
-                    });
-            }
-
-            return;
-        }
-
-        // Refresh the view
-        ICollectionView view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
-        view.Refresh();
-    }
-
-    private bool FilterRepositories(object item)
-    {
-        var query = txtFilter.Text.Trim();
-
-        if (_refreshDelayed)
-        {
-            return false;
-        }
-
-        if (item is not RepositoryViewModel viewModelItem)
-        {
-            return false;
-        }
-
-        try
-        {
-            IQuery? alwaysVisibleFilter = _repositoryFilteringManager.AlwaysVisibleFilter;
-            if (alwaysVisibleFilter != null && _repositoryMatcher.Matches(viewModelItem.Repository, alwaysVisibleFilter))
-            {
-                return true;
-            }
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-
-        try
-        {
-            if (!_repositoryMatcher.Matches(viewModelItem.Repository, _repositoryFilteringManager.PreFilter))
-            {
-                return false;
-            }
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            return true;
-        }
-
-        if (_refreshDelayed)
-        {
-            return false;
-        }
-
-        try
-        {
-            IQuery queryObject = _repositoryFilteringManager.QueryParser.Parse(query);
-            return _repositoryMatcher.Matches(viewModelItem.Repository, queryObject);
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        _filterTextSubject?.OnNext(txtFilter.Text.Trim());
     }
 
     private void TxtFilter_Finish(object sender, EventArgs e)
