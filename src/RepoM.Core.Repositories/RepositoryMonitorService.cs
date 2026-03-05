@@ -259,6 +259,10 @@ public class RepositoryMonitorService : IModule, IDisposable
                 return;
             }
 
+            // Collect all results first, then apply as a single batch to avoid
+            // flooding the UI thread with individual DynamicData change notifications.
+            var bag = new System.Collections.Concurrent.ConcurrentBag<RepositoryInfo>();
+
             await Parallel.ForEachAsync(
                 repos,
                 ct,
@@ -272,7 +276,7 @@ public class RepositoryMonitorService : IModule, IDisposable
                         {
                             updated.LastSeen = DateTimeOffset.UtcNow;
                             updated.LastUpdated = DateTimeOffset.UtcNow;
-                            _store.AddOrUpdate(updated);
+                            bag.Add(updated);
                         }
                     }
                     catch (Exception ex)
@@ -280,6 +284,11 @@ public class RepositoryMonitorService : IModule, IDisposable
                         _logger.LogDebug(ex, "Failed to refresh repository {Path}", repo.Path);
                     }
                 }).ConfigureAwait(false);
+
+            if (!bag.IsEmpty)
+            {
+                _store.AddOrUpdateRange(bag.ToList());
+            }
 
             _logger.LogInformation("Refreshed {Count} repositories", repos.Length);
         }

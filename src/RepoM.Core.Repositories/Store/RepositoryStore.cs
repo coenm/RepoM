@@ -23,6 +23,18 @@ public sealed class RepositoryStore : IRepositoryStore
         _cache.AddOrUpdate(repository);
     }
 
+    public void AddOrUpdateRange(IReadOnlyList<RepositoryInfo> repositories)
+    {
+        ArgumentNullException.ThrowIfNull(repositories);
+        _cache.Edit(updater =>
+        {
+            foreach (RepositoryInfo repo in repositories)
+            {
+                updater.AddOrUpdate(repo);
+            }
+        });
+    }
+
     public void Remove(string safePath)
     {
         ArgumentException.ThrowIfNullOrEmpty(safePath);
