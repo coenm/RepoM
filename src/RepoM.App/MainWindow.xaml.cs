@@ -243,12 +243,7 @@ public partial class MainWindow
         Dispatcher.Invoke(() =>
             {
                 PlaceFormByTaskBarLocation();
-
-                if (Visibility != Visibility.Visible)
-                {
-                    Show();
-                }
-
+                Show();
                 Activate();
                 txtFilter.Focus();
                 txtFilter.SelectAll();
