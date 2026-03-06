@@ -110,16 +110,13 @@ public partial class App : Application
 
         MainWindow mainWindow = Bootstrapper.Container.GetInstance<MainWindow>();
 
-        try
-        {
-            await _moduleService.StartAsync().ConfigureAwait(false); // don't care about ui thread
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not start all modules.");
-        }
-
+        // Make the UI interactive immediately — don't wait for modules to finish loading.
         mainWindow.SetReady();
+
+        // Start modules in the background; repository data will stream in via DynamicData subscriptions.
+        _ = _moduleService.StartAsync().ContinueWith(
+            t => logger.LogError(t.Exception, "Could not start all modules."),
+            TaskContinuationOptions.OnlyOnFaulted);
     }
 
     protected override void OnExit(ExitEventArgs e)
