@@ -18,6 +18,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
@@ -107,6 +108,32 @@ public partial class MainWindow
         InitializeComponent();
 
         SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
+
+        Loaded += (_, _) =>
+        {
+            if (PresentationSource.FromVisual(this) is HwndSource hwndSource)
+            {
+                hwndSource.AddHook(ResizeHook);
+            }
+        };
+    }
+
+    private const int WM_ENTERSIZEMOVE = 0x0231;
+    private const int WM_EXITSIZEMOVE = 0x0232;
+
+    private IntPtr ResizeHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        switch (msg)
+        {
+            case WM_ENTERSIZEMOVE:
+                AcrylicWindow.SetEnabled(this, false);
+                break;
+            case WM_EXITSIZEMOVE:
+                AcrylicWindow.SetEnabled(this, true);
+                break;
+        }
+
+        return IntPtr.Zero;
     }
 
     private void UpdateNoRepositoriesVisibility()
