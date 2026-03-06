@@ -187,4 +187,43 @@ public class RepositoryFilteringManagerTests
         // assert
         result.Should().BeFalse();
     }
+
+    [Fact]
+    public void CreateFilterObservable_PredicateShouldReturnFalse_WhenQueryParserThrows()
+    {
+        // arrange
+        RepositoryFilteringManager sut = CreateSut();
+        A.CallTo(() => _queryParser.Parse(A<string>._)).Throws<Exception>();
+
+        var textSubject = new BehaviorSubject<string>("RepoM OR");
+        Func<RepositoryViewModel, bool>? lastPredicate = null;
+        using IDisposable sub = sut.CreateFilterObservable(textSubject).Subscribe(p => lastPredicate = p);
+
+        // act
+        bool result = lastPredicate!(CreateVm());
+
+        // assert — invalid query should hide everything, not crash the pipeline
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CreateFilterObservable_ShouldContinueEmitting_AfterQueryParserThrows()
+    {
+        // arrange
+        RepositoryFilteringManager sut = CreateSut();
+        A.CallTo(() => _queryParser.Parse("invalid OR")).Throws<Exception>();
+        A.CallTo(() => _queryParser.Parse("valid")).Returns(A.Fake<IQuery>());
+        A.CallTo(() => _matcher.Matches(A<IRepository>._, A<IQuery>._)).Returns(true);
+
+        var textSubject = new BehaviorSubject<string>("invalid OR");
+        var predicates = new List<Func<RepositoryViewModel, bool>>();
+        using IDisposable sub = sut.CreateFilterObservable(textSubject).Subscribe(p => predicates.Add(p));
+
+        // act — fix the query
+        textSubject.OnNext("valid");
+
+        // assert — pipeline should still be alive and emitting new predicates
+        predicates.Count.Should().BeGreaterThanOrEqualTo(2);
+        predicates[^1](CreateVm()).Should().BeTrue();
+    }
 }

@@ -185,7 +185,21 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
         IQuery preFilter = PreFilter;
         IQuery? alwaysVisibleFilter = AlwaysVisibleFilter;
         IQueryParser queryParser = QueryParser;
-        IQuery? parsedQuery = string.IsNullOrWhiteSpace(query) ? null : queryParser.Parse(query);
+
+        IQuery? parsedQuery = null;
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            try
+            {
+                parsedQuery = queryParser.Parse(query);
+            }
+            catch (Exception)
+            {
+                // Invalid query syntax (e.g. incomplete Lucene expression like "RepoM OR").
+                // Return a predicate that hides everything so the user sees the input is invalid.
+                return _ => false;
+            }
+        }
 
         return vm =>
         {
