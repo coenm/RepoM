@@ -454,6 +454,183 @@ public class RepositoryMonitorServiceTests : IDisposable
         repoInfo.LastSeen.Should().BeOnOrAfter(beforeScan);
     }
 
+    [Fact]
+    public async Task RefreshAllAsync_ShouldReturnImmediately_WhenStoreIsEmpty()
+    {
+        // Act
+        Func<Task> act = () => _sut.RefreshAllAsync(CancellationToken.None);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task RefreshAllAsync_ShouldUpdateRepositoriesInStore()
+    {
+        // Arrange
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\myrepo",
+            SafePath = "c:/repos/myrepo",
+            Name = "myrepo",
+        };
+        _store.AddOrUpdate(repoInfo);
+
+        var updatedRepo = new RepositoryInfo
+        {
+            Path = @"c:\repos\myrepo",
+            SafePath = "c:/repos/myrepo",
+            Name = "myrepo",
+            CurrentBranch = "feature/xyz",
+        };
+
+        A.CallTo(() => _fileSystem.Path.Combine(@"c:\repos\myrepo", ".git", "HEAD"))
+            .Returns(@"c:\repos\myrepo\.git\HEAD");
+        A.CallTo(() => _reader.ReadAsync(@"c:\repos\myrepo\.git\HEAD", A<CancellationToken>._))
+            .Returns(Task.FromResult<RepositoryInfo?>(updatedRepo));
+
+        var beforeRefresh = DateTimeOffset.UtcNow;
+
+        // Act
+        await _sut.RefreshAllAsync(CancellationToken.None);
+
+        // Assert
+        _store.Count.Should().Be(1);
+        updatedRepo.LastSeen.Should().BeOnOrAfter(beforeRefresh);
+        updatedRepo.LastUpdated.Should().BeOnOrAfter(beforeRefresh);
+    }
+
+    [Fact]
+    public async Task RefreshAllAsync_ShouldSkipRepos_WhenReaderReturnsNull()
+    {
+        // Arrange
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\myrepo",
+            SafePath = "c:/repos/myrepo",
+            Name = "myrepo",
+        };
+        _store.AddOrUpdate(repoInfo);
+
+        A.CallTo(() => _fileSystem.Path.Combine(@"c:\repos\myrepo", ".git", "HEAD"))
+            .Returns(@"c:\repos\myrepo\.git\HEAD");
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._))
+            .Returns(Task.FromResult<RepositoryInfo?>(null));
+
+        // Act
+        await _sut.RefreshAllAsync(CancellationToken.None);
+
+        // Assert - original repo remains (no crash, no removal)
+        _store.Count.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task RefreshAllAsync_ShouldHandleExceptions_WhenReaderThrows()
+    {
+        // Arrange
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\myrepo",
+            SafePath = "c:/repos/myrepo",
+            Name = "myrepo",
+        };
+        _store.AddOrUpdate(repoInfo);
+
+        A.CallTo(() => _fileSystem.Path.Combine(@"c:\repos\myrepo", ".git", "HEAD"))
+            .Returns(@"c:\repos\myrepo\.git\HEAD");
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._))
+            .ThrowsAsync(new InvalidOperationException("read failed"));
+
+        // Act
+        Func<Task> act = () => _sut.RefreshAllAsync(CancellationToken.None);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task RefreshAllAsync_ShouldBeCancellable()
+    {
+        // Arrange
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\myrepo",
+            SafePath = "c:/repos/myrepo",
+            Name = "myrepo",
+        };
+        _store.AddOrUpdate(repoInfo);
+
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        A.CallTo(() => _fileSystem.Path.Combine(A<string>._, A<string>._, A<string>._))
+            .Returns(@"c:\repos\myrepo\.git\HEAD");
+
+        // Act
+        Func<Task> act = () => _sut.RefreshAllAsync(cts.Token);
+
+        // Assert - should throw or complete, but not hang
+        await act.Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    [Fact]
+    public void RemoveStaleRepositories_ShouldRemoveOnlyStaleRepos_WhenMixed()
+    {
+        // Arrange
+        var staleRepo = new RepositoryInfo
+        {
+            Path = @"c:\repos\stale",
+            SafePath = "c:/repos/stale",
+            Name = "stale",
+        };
+        var existingRepo = new RepositoryInfo
+        {
+            Path = @"c:\repos\existing2",
+            SafePath = "c:/repos/existing2",
+            Name = "existing2",
+        };
+        _store.AddOrUpdate(staleRepo);
+        _store.AddOrUpdate(existingRepo);
+
+        A.CallTo(() => _fileSystem.Directory.Exists(@"c:\repos\stale")).Returns(false);
+        A.CallTo(() => _fileSystem.Directory.Exists(@"c:\repos\existing2")).Returns(true);
+
+        // Act
+        _sut.RemoveStaleRepositories();
+
+        // Assert
+        _store.Count.Should().Be(1);
+        _store.Lookup("c:/repos/existing2").HasValue.Should().BeTrue();
+        _store.Lookup("c:/repos/stale").HasValue.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Dispose_ShouldNotThrow_AfterStartAsync()
+    {
+        // Arrange
+        await _sut.StartAsync();
+
+        // Act
+        Action act = () => _sut.Dispose();
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public async Task StopAsync_ThenStartAsync_ShouldWork()
+    {
+        // Arrange
+        await _sut.StartAsync();
+        await _sut.StopAsync();
+
+        // Act
+        Func<Task> act = () => _sut.StartAsync();
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
     public void Dispose()
     {
         _sut.Dispose();
