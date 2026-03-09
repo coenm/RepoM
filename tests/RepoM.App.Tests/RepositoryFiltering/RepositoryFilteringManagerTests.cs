@@ -223,7 +223,7 @@ public class RepositoryFilteringManagerTests
         textSubject.OnNext("valid");
 
         // assert — pipeline should still be alive and emitting new predicates
-        predicates.Count.Should().BeGreaterThanOrEqualTo(2);
+        predicates.Should().HaveCountGreaterThanOrEqualTo(2);
         predicates[^1](CreateVm()).Should().BeTrue();
     }
 }
