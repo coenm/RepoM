@@ -4,7 +4,6 @@ namespace RepoM.App;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.Abstractions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,8 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
-using Serilog;
-using Serilog.Core;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using RepoM.App.Services;
 using Container = SimpleInjector.Container;
@@ -77,8 +74,8 @@ public partial class App : Application
         var factory = new ConfigBasedAppDataPathProviderFactory(e.Args, fileSystem);
         AppDataPathProvider appDataProvider = factory.Create();
 
-        IConfiguration config = CreateLoggerConfiguration(appDataProvider);
-        ILoggerFactory loggerFactory = CreateLoggerFactory(config);
+        IConfiguration config = LoggingFactory.CreateLoggerConfiguration(appDataProvider.AppDataPath);
+        ILoggerFactory loggerFactory = LoggingFactory.CreateLoggerFactory(config);
 
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
         logger.LogInformation("Started");
@@ -132,35 +129,6 @@ public partial class App : Application
         ReleaseAndDisposeMutex();
 
         base.OnExit(e);
-    }
-
-    private static IConfiguration CreateLoggerConfiguration(AppDataPathProvider appDataProvider)
-    {
-        const string FILENAME = "appsettings.serilog.json";
-        var fullFilename = Path.Combine(appDataProvider.AppDataPath, FILENAME);
-
-        IConfigurationBuilder builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(fullFilename, optional: true, reloadOnChange: false)
-            .AddEnvironmentVariables();
-        return builder.Build();
-    }
-
-    private static ILoggerFactory CreateLoggerFactory(IConfiguration config)
-    {
-        ILoggerFactory loggerFactory = new LoggerFactory();
-
-        LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
-            .Enrich.WithThreadId()
-            .Enrich.WithThreadName()
-            .Enrich.WithProperty("ThreadName", "BG")
-            .ReadFrom.Configuration(config);
-
-        Logger logger = loggerConfiguration.CreateLogger();
-
-        _ = loggerFactory.AddSerilog(logger);
-
-        return loggerFactory;
     }
 
     [SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "Compiler condition")]

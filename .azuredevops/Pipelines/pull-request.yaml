@@ -106,10 +106,11 @@ stages:
             command: test
             projects: 'tests/**/*.Tests.csproj'
             arguments: >-
-              --no-build --configuration $(buildConfiguration) 
-              --collect:"XPlat Code Coverage;Format=cobertura,opencover" 
-              --logger trx 
-              /p:ExcludeByAttribute=CompilerGenerated 
+              --no-build --configuration $(buildConfiguration)
+              --collect:"XPlat Code Coverage;Format=cobertura,opencover"
+              --logger trx
+              /p:ExcludeByAttribute=CompilerGenerated
+              /p:ExcludeByFile="**/*.xaml.cs"
             publishTestResults: true
 
         # - task: DotNetCoreCLI@2
