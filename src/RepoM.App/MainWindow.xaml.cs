@@ -20,7 +20,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using DynamicData;
-using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
@@ -35,6 +34,7 @@ using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Repositories;
+using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Pinning;
 using RepoM.Core.Repositories.Store;
 using SourceChord.FluentWPF;
@@ -242,7 +242,9 @@ public partial class MainWindow
                 _filterTextSubject.Throttle(TimeSpan.FromMilliseconds(200)).DistinctUntilChanged());
 
             var bindSubscription = _store.Connect()
-                .Transform(info => new RepositoryViewModel(info, _pinningService))
+                .TransformWithInlineUpdate(
+                    info => new RepositoryViewModel(info, _pinningService),
+                    (existingVm, updatedInfo) => existingVm.Update(updatedInfo))
                 .Filter(filterObservable)
                 .Batch(TimeSpan.FromMilliseconds(200))
                 .ObserveOn(uiScheduler)

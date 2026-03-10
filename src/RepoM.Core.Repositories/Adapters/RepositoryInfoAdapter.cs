@@ -7,7 +7,7 @@ using RepoM.Core.Repositories.Model;
 
 public sealed class RepositoryInfoAdapter : IRepository
 {
-    private readonly RepositoryInfo _info;
+    private RepositoryInfo _info;
 
     public RepositoryInfoAdapter(RepositoryInfo info)
     {
@@ -15,6 +15,11 @@ public sealed class RepositoryInfoAdapter : IRepository
     }
 
     public RepositoryInfo RepositoryInfo => _info;
+
+    public void UpdateInfo(RepositoryInfo info)
+    {
+        _info = info ?? throw new ArgumentNullException(nameof(info));
+    }
 
     public string Name => _info.Name;
 
