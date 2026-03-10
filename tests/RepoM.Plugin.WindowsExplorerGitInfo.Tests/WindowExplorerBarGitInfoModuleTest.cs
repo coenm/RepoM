@@ -62,13 +62,15 @@ public class WindowExplorerBarGitInfoModuleTest
     
         // act
         await _sut.StartAsync();
-        _ = mre.WaitOne(TimeSpan.FromSeconds(5));
+        var set = mre.WaitOne(TimeSpan.FromSeconds(15));
     
         // assert
+        set.Should().BeTrue();
         A.CallTo(() => _explorerHandler.UpdateTitles()).MustHaveHappened(3, Times.Exactly);
         A.CallTo(() => _explorerHandler.CleanTitles()).MustNotHaveHappened();
     }
 
+    // fragile?
     [Fact]
     public async Task StopAsync_ShouldCancelTimerExecution_WhenStarted()
     {
@@ -93,13 +95,15 @@ public class WindowExplorerBarGitInfoModuleTest
               });
 
         await _sut.StartAsync();
-        _ = mreAfterStart.WaitOne(TimeSpan.FromSeconds(5));
+        var mreAfterStartSet = mreAfterStart.WaitOne(TimeSpan.FromSeconds(15));
 
         // act
         await _sut.StopAsync();
-        _ = mreAfterStop.WaitOne(TimeSpan.FromSeconds(5));
+        var mreAfterStopSet  = mreAfterStop.WaitOne(TimeSpan.FromSeconds(10));
 
         // assert
+        mreAfterStartSet.Should().BeTrue();
+        mreAfterStopSet.Should().BeFalse(); 
         A.CallTo(() => _explorerHandler.UpdateTitles()).MustHaveHappenedTwiceOrMore();
         A.CallTo(() => _explorerHandler.CleanTitles()).MustHaveHappenedOnceExactly();
     }
