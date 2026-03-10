@@ -55,9 +55,10 @@ public class AzureDevOpsPullRequestServiceTests
         using var sut = new AzureDevOpsPullRequestService(_configuration, _logger);
 
         // act
-        await sut.InitializeAsync();
+        Func<Task> act = async () => await sut.InitializeAsync();
 
-        // assert (no exception thrown, method returns)
+        // assert
+        await act.Should().NotThrowAsync();
     }
 
     [Fact]
