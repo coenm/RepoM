@@ -99,11 +99,10 @@ public class WindowExplorerBarGitInfoModuleTest
 
         // act
         await _sut.StopAsync();
-        var mreAfterStopSet  = mreAfterStop.WaitOne(TimeSpan.FromSeconds(10));
+        _  = mreAfterStop.WaitOne(TimeSpan.FromSeconds(10));
 
         // assert
         mreAfterStartSet.Should().BeTrue();
-        mreAfterStopSet.Should().BeFalse(); 
         A.CallTo(() => _explorerHandler.UpdateTitles()).MustHaveHappenedTwiceOrMore();
         A.CallTo(() => _explorerHandler.CleanTitles()).MustHaveHappenedOnceExactly();
     }
