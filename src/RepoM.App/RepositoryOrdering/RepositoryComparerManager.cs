@@ -108,9 +108,9 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
         return true;
     }
 
-    private IComparer<RepositoryViewModel> CreateSortComparer()
+    private Comparer<RepositoryViewModel> CreateSortComparer()
     {
-        IComparer currentComparer = _comparer;
+        ComparerComposition currentComparer = _comparer;
         return Comparer<RepositoryViewModel>.Create((x, y) => currentComparer.Compare(x, y));
     }
 }

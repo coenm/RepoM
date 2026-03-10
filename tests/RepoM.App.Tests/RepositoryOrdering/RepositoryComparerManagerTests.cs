@@ -106,6 +106,6 @@ public class RepositoryComparerManagerTests
 
         // assert
         result.Should().BeFalse();
-        comparers.Count.Should().Be(countBefore);
+        comparers.Should().HaveCount(countBefore);
     }
 }

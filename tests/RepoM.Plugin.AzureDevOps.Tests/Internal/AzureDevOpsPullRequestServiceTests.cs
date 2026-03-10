@@ -162,7 +162,10 @@ public class AzureDevOpsPullRequestServiceTests
         // act
         await sut.InitializeAsync();
 
-        // assert (no exception thrown, returns without initializing timers)
+        // assert - should log warning because no connection was established
+        A.CallTo(_logger)
+            .Where(call => call.Method.Name == "Log" && call.Arguments.Get<LogLevel>(0) == LogLevel.Warning)
+            .MustHaveHappened();
     }
 
     [Fact]
