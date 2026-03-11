@@ -25,14 +25,14 @@ public class RepositoryViewModelTests
         [Fact]
         public void Throws_When_Info_Is_Null()
         {
-            Action act = () => new RepositoryViewModel(null!, _pinningService);
+            Action act = () => _ = new RepositoryViewModel(null!, _pinningService);
             act.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
         public void Throws_When_PinningService_Is_Null()
         {
-            Action act = () => new RepositoryViewModel(_builder.BuildFullFeatured(), null!);
+            Action act = () => _ = new RepositoryViewModel(_builder.BuildFullFeatured(), null!);
             act.Should().Throw<ArgumentNullException>();
         }
     }
