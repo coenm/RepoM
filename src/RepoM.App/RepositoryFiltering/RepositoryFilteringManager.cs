@@ -201,46 +201,39 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
             }
         }
 
-        return vm =>
+        return vm => MatchesFilter(vm, alwaysVisibleFilter, preFilter, parsedQuery);
+    }
+
+    private bool MatchesFilter(RepositoryViewModel vm, IQuery? alwaysVisibleFilter, IQuery preFilter, IQuery? userQuery)
+    {
+        if (SafeMatches(vm, alwaysVisibleFilter) == true)
         {
-            try
-            {
-                if (alwaysVisibleFilter != null && _repositoryMatcher.Matches(vm.Repository, alwaysVisibleFilter))
-                {
-                    return true;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return true;
+        }
 
-            try
-            {
-                if (!_repositoryMatcher.Matches(vm.Repository, preFilter))
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+        if (SafeMatches(vm, preFilter) == false)
+        {
+            return false;
+        }
 
-            if (parsedQuery == null)
-            {
-                return true;
-            }
+        return userQuery == null || SafeMatches(vm, userQuery) != false;
+    }
 
-            try
-            {
-                return _repositoryMatcher.Matches(vm.Repository, parsedQuery);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        };
+    private bool? SafeMatches(RepositoryViewModel vm, IQuery? query)
+    {
+        if (query == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return _repositoryMatcher.Matches(vm.Repository, query);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     private sealed class RepositoryFilterConfiguration

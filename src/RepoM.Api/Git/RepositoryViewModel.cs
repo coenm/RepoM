@@ -64,89 +64,62 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
         // Invalidate status cache so next access recomputes
         _cachedRepositoryStatusCode = null;
 
+        NotifyScalarProperties(oldInfo, newInfo);
+        NotifyCollectionProperties(oldInfo, newInfo);
+        NotifyDerivedProperties(oldInfo, newInfo);
+    }
+
+    private void NotifyScalarProperties(RepositoryInfo oldInfo, RepositoryInfo newInfo)
+    {
         if (oldInfo.CurrentBranch != newInfo.CurrentBranch)
         {
             PropertyChanged?.Invoke(this, _currentBranchArgs);
             PropertyChanged?.Invoke(this, _nameArgs);
         }
 
-        if (oldInfo.AheadBy != newInfo.AheadBy)
-        {
-            PropertyChanged?.Invoke(this, _aheadByArgs);
-        }
+        NotifyIfChanged(oldInfo.AheadBy, newInfo.AheadBy, _aheadByArgs);
+        NotifyIfChanged(oldInfo.BehindBy, newInfo.BehindBy, _behindByArgs);
+        NotifyIfChanged(oldInfo.LocalUntracked, newInfo.LocalUntracked, _localUntrackedArgs);
+        NotifyIfChanged(oldInfo.LocalModified, newInfo.LocalModified, _localModifiedArgs);
+        NotifyIfChanged(oldInfo.LocalMissing, newInfo.LocalMissing, _localMissingArgs);
+        NotifyIfChanged(oldInfo.LocalAdded, newInfo.LocalAdded, _localAddedArgs);
+        NotifyIfChanged(oldInfo.LocalStaged, newInfo.LocalStaged, _localStagedArgs);
+        NotifyIfChanged(oldInfo.LocalRemoved, newInfo.LocalRemoved, _localRemovedArgs);
+        NotifyIfChanged(oldInfo.LocalIgnored, newInfo.LocalIgnored, _localIgnoredArgs);
+        NotifyIfChanged(oldInfo.StashCount, newInfo.StashCount, _stashCountArgs);
+        NotifyIfChanged(oldInfo.HasUnpushedChanges, newInfo.HasUnpushedChanges, _hasUnpushedChangesArgs);
+        NotifyIfChanged(oldInfo.WasFound, newInfo.WasFound, _wasFoundArgs);
+    }
 
-        if (oldInfo.BehindBy != newInfo.BehindBy)
-        {
-            PropertyChanged?.Invoke(this, _behindByArgs);
-        }
-
-        if (oldInfo.LocalUntracked != newInfo.LocalUntracked)
-        {
-            PropertyChanged?.Invoke(this, _localUntrackedArgs);
-        }
-
-        if (oldInfo.LocalModified != newInfo.LocalModified)
-        {
-            PropertyChanged?.Invoke(this, _localModifiedArgs);
-        }
-
-        if (oldInfo.LocalMissing != newInfo.LocalMissing)
-        {
-            PropertyChanged?.Invoke(this, _localMissingArgs);
-        }
-
-        if (oldInfo.LocalAdded != newInfo.LocalAdded)
-        {
-            PropertyChanged?.Invoke(this, _localAddedArgs);
-        }
-
-        if (oldInfo.LocalStaged != newInfo.LocalStaged)
-        {
-            PropertyChanged?.Invoke(this, _localStagedArgs);
-        }
-
-        if (oldInfo.LocalRemoved != newInfo.LocalRemoved)
-        {
-            PropertyChanged?.Invoke(this, _localRemovedArgs);
-        }
-
-        if (oldInfo.LocalIgnored != newInfo.LocalIgnored)
-        {
-            PropertyChanged?.Invoke(this, _localIgnoredArgs);
-        }
-
-        if (oldInfo.StashCount != newInfo.StashCount)
-        {
-            PropertyChanged?.Invoke(this, _stashCountArgs);
-        }
-
-        if (oldInfo.HasUnpushedChanges != newInfo.HasUnpushedChanges)
-        {
-            PropertyChanged?.Invoke(this, _hasUnpushedChangesArgs);
-        }
-
-        if (oldInfo.WasFound != newInfo.WasFound)
-        {
-            PropertyChanged?.Invoke(this, _wasFoundArgs);
-        }
-
+    private void NotifyCollectionProperties(RepositoryInfo oldInfo, RepositoryInfo newInfo)
+    {
         if (!oldInfo.Branches.SequenceEqual(newInfo.Branches))
         {
             PropertyChanged?.Invoke(this, _branchesArgs);
         }
 
+        if (!oldInfo.Tags.SequenceEqual(newInfo.Tags))
+        {
+            Tags = newInfo.Tags.Select(tag => new TagViewModel(tag)).ToArray();
+            PropertyChanged?.Invoke(this, _tagsArgs);
+        }
+    }
+
+    private void NotifyDerivedProperties(RepositoryInfo oldInfo, RepositoryInfo newInfo)
+    {
         // Status depends on multiple fields; always notify when the status code changed.
         if (oldInfo.GetStatusCode() != newInfo.GetStatusCode())
         {
             PropertyChanged?.Invoke(this, _statusArgs);
             PropertyChanged?.Invoke(this, _branchWithStatusArgs);
         }
+    }
 
-        // Only rebuild Tags array when tags actually changed.
-        if (!oldInfo.Tags.SequenceEqual(newInfo.Tags))
+    private void NotifyIfChanged<T>(T oldValue, T newValue, PropertyChangedEventArgs args)
+    {
+        if (!Equals(oldValue, newValue))
         {
-            Tags = newInfo.Tags.Select(tag => new TagViewModel(tag)).ToArray();
-            PropertyChanged?.Invoke(this, _tagsArgs);
+            PropertyChanged?.Invoke(this, args);
         }
     }
 
