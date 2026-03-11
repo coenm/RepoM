@@ -30,8 +30,6 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
     private static readonly PropertyChangedEventArgs _hasUnpushedChangesArgs = new(nameof(HasUnpushedChanges));
     private static readonly PropertyChangedEventArgs _wasFoundArgs = new(nameof(WasFound));
     private static readonly PropertyChangedEventArgs _tagsArgs = new(nameof(Tags));
-    private static readonly PropertyChangedEventArgs _isPinnedArgs = new(nameof(IsPinned));
-
     private readonly IPinningService _pinningService;
     private readonly RepositoryInfoAdapter _adapter;
     private RepositoryInfo _info;
