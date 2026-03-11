@@ -400,96 +400,15 @@ public partial class MainWindow
         foreach (UserInterfaceRepositoryActionBase action in actions)
         {
             index++;
+
             if (action is UserInterfaceSeparatorRepositoryAction)
             {
-                while (ctxMenuItemsCount > index && ctxMenu.Items[index] is AcrylicMenuItem ami)
-                {
-                    if (ami.Visibility != Visibility.Collapsed)
-                    {
-                        ami.Visibility = Visibility.Collapsed;
-                    }
-                    index++;
-                }
-
-                if (ctxMenuItemsCount <= index)
-                {
-                    ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
-                    index+=2;
-                }
-
-                if (ctxMenu.Items[index] is Separator s)
-                {
-                    s.Visibility = lastVisibleSeparator
-                        ? Visibility.Collapsed
-                        : Visibility.Visible;
-                    lastVisibleSeparator = true;
-                    continue;
-                }
-
-                /* should never happen */
+                lastVisibleSeparator = ApplySeparator(ctxMenu, ref index, ref ctxMenuItemsCount, lastVisibleSeparator, addItemMenuAndSeparator);
             }
-
-            if (action is /*DeferredSubActionsUserInterfaceRepositoryAction or */UserInterfaceRepositoryAction uira)
+            else if (action is UserInterfaceRepositoryAction uira)
             {
-                if (HasSubItems(uira))
-                {
-                    while (ctxMenuItemsCount > index && (ctxMenu.Items[index] is Separator || (ctxMenu.Items[index] is AcrylicMenuItem ami1 && ami1.Tag ==  _singleItem)))
-                    {
-                        var ctrl = (Control)ctxMenu.Items[index]!;
-                        if (ctrl.Visibility != Visibility.Collapsed)
-                        {
-                            ctrl.Visibility = Visibility.Collapsed;
-                        }
-                        index++;
-                    }
-
-                    if (ctxMenuItemsCount <= index)
-                    {
-                        ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
-                        index += 1;
-                    }
-
-                    var acrylicMenuItem = (AcrylicMenuItem)ctxMenu.Items[index]!;
-                    if (acrylicMenuItem.Visibility != Visibility.Visible)
-                    {
-                        acrylicMenuItem.Visibility = Visibility.Visible;
-                    }
-
-                    lastVisibleSeparator = false;
-
-                    acrylicMenuItem.SetHeader(uira.Name);
-                    acrylicMenuItem.SetEnabled(uira.CanExecute);
-                    SetSubMenu(acrylicMenuItem, uira);
-                }
-                else
-                {
-                    while (ctxMenuItemsCount > index && (ctxMenu.Items[index] is Separator || (ctxMenu.Items[index] is AcrylicMenuItem ami1 && ami1.Tag == _menuItem)))
-                    {
-                        var ctrl = (Control)ctxMenu.Items[index]!;
-                        if (ctrl.Visibility != Visibility.Collapsed)
-                        {
-                            ctrl.Visibility = Visibility.Collapsed;
-                        }
-                        index++;
-                    }
-
-                    if (ctxMenuItemsCount <= index)
-                    {
-                        ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
-                        index += 0;
-                    }
-
-                    var acrylicMenuItem = (AcrylicMenuItem)ctxMenu.Items[index]!;
-                    if (acrylicMenuItem.Visibility != Visibility.Visible)
-                    {
-                        acrylicMenuItem.Visibility = Visibility.Visible;
-                    }
-                    lastVisibleSeparator = false;
-
-                    acrylicMenuItem.SetHeader(uira.Name );
-                    acrylicMenuItem.SetEnabled(uira.CanExecute);
-                    SetClick(acrylicMenuItem, uira, vm);
-                }
+                lastVisibleSeparator = false;
+                ApplyMenuItem(ctxMenu, ref index, ref ctxMenuItemsCount, uira, vm, addItemMenuAndSeparator);
             }
         }
 
@@ -498,7 +417,73 @@ public partial class MainWindow
             index++;
         }
 
-        while (index < ctxMenuItemsCount)
+        CollapseItemsFrom(ctxMenu, index, ctxMenuItemsCount);
+    }
+
+    private static bool ApplySeparator(
+        WpfContextMenu ctxMenu,
+        ref int index,
+        ref int ctxMenuItemsCount,
+        bool lastVisibleSeparator,
+        Func<int, int> addItemMenuAndSeparator)
+    {
+        SkipAndCollapse(ctxMenu, ref index, ctxMenuItemsCount, item => item is AcrylicMenuItem);
+
+        if (ctxMenuItemsCount <= index)
+        {
+            ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
+            index += 2;
+        }
+
+        if (ctxMenu.Items[index] is Separator s)
+        {
+            s.Visibility = lastVisibleSeparator ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        return true;
+    }
+
+    private void ApplyMenuItem(
+        WpfContextMenu ctxMenu,
+        ref int index,
+        ref int ctxMenuItemsCount,
+        UserInterfaceRepositoryAction uira,
+        RepositoryViewModel vm,
+        Func<int, int> addItemMenuAndSeparator)
+    {
+        var hasSubItems = HasSubItems(uira);
+        var skipTag = hasSubItems ? _singleItem : _menuItem;
+
+        SkipAndCollapse(ctxMenu, ref index, ctxMenuItemsCount, item => item is Separator || (item is AcrylicMenuItem ami && ami.Tag == skipTag));
+
+        if (ctxMenuItemsCount <= index)
+        {
+            ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
+            index += hasSubItems ? 1 : 0;
+        }
+
+        var acrylicMenuItem = (AcrylicMenuItem)ctxMenu.Items[index]!;
+        if (acrylicMenuItem.Visibility != Visibility.Visible)
+        {
+            acrylicMenuItem.Visibility = Visibility.Visible;
+        }
+
+        acrylicMenuItem.SetHeader(uira.Name);
+        acrylicMenuItem.SetEnabled(uira.CanExecute);
+
+        if (hasSubItems)
+        {
+            SetSubMenu(acrylicMenuItem, uira);
+        }
+        else
+        {
+            SetClick(acrylicMenuItem, uira, vm);
+        }
+    }
+
+    private static void SkipAndCollapse(WpfContextMenu ctxMenu, ref int index, int itemsCount, Func<object, bool> shouldSkip)
+    {
+        while (itemsCount > index && shouldSkip(ctxMenu.Items[index]!))
         {
             var ctrl = (Control)ctxMenu.Items[index]!;
             if (ctrl.Visibility != Visibility.Collapsed)
@@ -507,6 +492,18 @@ public partial class MainWindow
             }
 
             index++;
+        }
+    }
+
+    private static void CollapseItemsFrom(WpfContextMenu ctxMenu, int startIndex, int itemsCount)
+    {
+        for (var i = startIndex; i < itemsCount; i++)
+        {
+            var ctrl = (Control)ctxMenu.Items[i]!;
+            if (ctrl.Visibility != Visibility.Collapsed)
+            {
+                ctrl.Visibility = Visibility.Collapsed;
+            }
         }
     }
 
@@ -774,97 +771,63 @@ public partial class MainWindow
 
     private void SetSubMenu(AcrylicMenuItem item, UserInterfaceRepositoryAction repositoryAction)
     {
-        // this is a deferred submenu. We want to make sure that the context menu can pop up
-        // fast, while submenus are not evaluated yet. We don't want to make the context menu
-        // itself slow because the creation of the submenu items takes some time.
         if (repositoryAction is DeferredSubActionsUserInterfaceRepositoryAction deferredRepositoryAction)
         {
-            if (item.Items.Count == 0)
-            {
-                // this is a template submenu item to enable submenus under the current
-                // menu item. this item gets removed when the real subitems are created
-                item.Items.Add(new Separator());
-            }
-
-            async void SelfDetachingEventHandler(object sender, RoutedEventArgs evtArgs)
+            EnsureTemplateSeparator(item);
+            item.LoadData(deferredRepositoryAction);
+            item.SetSubMenuOpened(async (_, _) =>
             {
                 item.ClearSubMenuOpened();
                 item.ClearItems();
-
-                foreach (UserInterfaceRepositoryActionBase subAction in await item.DataTask.ConfigureAwait(true))
-                {
-                    Control? controlItem = CreateMenuItemAsync(subAction);
-                    if (controlItem == null)
-                    {
-                        continue;
-                    }
-
-                    if (controlItem is not Separator)
-                    {
-                        item.Items.Add(controlItem);
-                        continue;
-                    }
-
-                    if (item.Items.Count > 0 && item.Items[^1] is not Separator)
-                    {
-                        item.Items.Add(controlItem);
-                    }
-                }
-
-                var count = item.Items.Count;
-                if (count > 0 && item.Items[^1] is Separator)
-                {
-                    item.Items.RemoveAt(count - 1);
-                }
-
+                PopulateSubMenuItems(item, await item.DataTask);
                 item.ClearData();
-            }
-
-            item.LoadData(deferredRepositoryAction);
-            item.SetSubMenuOpened(SelfDetachingEventHandler);
+            });
         }
         else if (repositoryAction.SubActions != null)
         {
-            async void SelfDetachingEventHandler1(object _, RoutedEventArgs evtArgs)
+            EnsureTemplateSeparator(item);
+            item.SetSubMenuOpened((_, _) =>
             {
                 item.ClearSubMenuOpened();
                 item.ClearItems();
+                PopulateSubMenuItems(item, repositoryAction.SubActions);
+            });
+        }
+    }
 
-                foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
-                {
-                    Control? controlItem = CreateMenuItemAsync(subAction);
-                    if (controlItem == null)
-                    {
-                        continue;
-                    }
+    private static void EnsureTemplateSeparator(AcrylicMenuItem item)
+    {
+        if (item.Items.Count == 0)
+        {
+            item.Items.Add(new Separator());
+        }
+    }
 
-                    if (controlItem is not Separator)
-                    {
-                        item.Items.Add(controlItem);
-                        continue;
-                    }
-
-                    if (item.Items.Count > 0 && item.Items[^1] is not Separator)
-                    {
-                        item.Items.Add(controlItem);
-                    }
-                }
-
-                var count = item.Items.Count;
-                if (count > 0 && item.Items[^1] is Separator)
-                {
-                    item.Items.RemoveAt(count - 1);
-                }
-            }
-
-            if (item.Items.Count == 0)
+    private void PopulateSubMenuItems(AcrylicMenuItem item, IEnumerable<UserInterfaceRepositoryActionBase> subActions)
+    {
+        foreach (UserInterfaceRepositoryActionBase subAction in subActions)
+        {
+            Control? controlItem = CreateMenuItemAsync(subAction);
+            if (controlItem == null)
             {
-                // this is a template submenu item to enable submenus under the current
-                // menu item. this item gets removed when the real subitems are created
-                item.Items.Add(new Separator());
+                continue;
             }
 
-            item.SetSubMenuOpened(SelfDetachingEventHandler1);
+            if (controlItem is not Separator)
+            {
+                item.Items.Add(controlItem);
+                continue;
+            }
+
+            if (item.Items.Count > 0 && item.Items[^1] is not Separator)
+            {
+                item.Items.Add(controlItem);
+            }
+        }
+
+        if (item.Items.Count > 0 && item.Items[^1] is Separator)
+        {
+            item.Items.RemoveAt(item.Items.Count - 1);
         }
     }
 
