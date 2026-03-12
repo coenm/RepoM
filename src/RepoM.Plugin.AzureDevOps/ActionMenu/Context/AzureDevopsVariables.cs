@@ -53,7 +53,7 @@ internal partial class AzureDevopsVariables : TemplateContextRegistrationBase
             yield break;
         }
         
-        List<PullRequest>? pullRequests;
+        IReadOnlyList<PullRequest>? pullRequests;
 
         try
         {

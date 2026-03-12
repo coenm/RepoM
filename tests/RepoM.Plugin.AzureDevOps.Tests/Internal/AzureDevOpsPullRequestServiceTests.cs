@@ -74,7 +74,7 @@ public class AzureDevOpsPullRequestServiceTests
         A.CallTo(() => repository.Remotes).Returns(new List<Remote>());
 
         // act
-        List<PullRequest> result = sut.GetPullRequests(repository, "myProject", null);
+        IReadOnlyList<PullRequest> result = sut.GetPullRequests(repository, "myProject", null);
 
         // assert
         result.Should().BeEmpty();
@@ -93,7 +93,7 @@ public class AzureDevOpsPullRequestServiceTests
         A.CallTo(() => repository.Remotes).Returns(new List<Remote>());
 
         // act
-        List<PullRequest> result = sut.GetPullRequests(repository, "myProject", Guid.NewGuid().ToString());
+        IReadOnlyList<PullRequest> result = sut.GetPullRequests(repository, "myProject", Guid.NewGuid().ToString());
 
         // assert
         result.Should().BeEmpty();
@@ -182,7 +182,7 @@ public class AzureDevOpsPullRequestServiceTests
         A.CallTo(() => repository.Remotes).Returns(new List<Remote>());
 
         // act
-        List<PullRequest> result = sut.GetPullRequests(repository, "myProject", "not-a-valid-guid");
+        IReadOnlyList<PullRequest> result = sut.GetPullRequests(repository, "myProject", "not-a-valid-guid");
 
         // assert
         result.Should().BeEmpty();
@@ -201,7 +201,7 @@ public class AzureDevOpsPullRequestServiceTests
         A.CallTo(() => repository.Remotes).Returns(new List<Remote>());
 
         // act
-        List<PullRequest> result = sut.GetPullRequests(repository, "myProject", Guid.Empty.ToString());
+        IReadOnlyList<PullRequest> result = sut.GetPullRequests(repository, "myProject", Guid.Empty.ToString());
 
         // assert
         result.Should().BeEmpty();
@@ -317,8 +317,8 @@ public class AzureDevOpsPullRequestServiceTests
         A.CallTo(() => repository.Remotes).Returns(new List<Remote>());
 
         // act
-        List<PullRequest> result1 = sut.GetPullRequests(repository, "myProject", null);
-        List<PullRequest> result2 = sut.GetPullRequests(repository, "myProject", null);
+        IReadOnlyList<PullRequest> result1 = sut.GetPullRequests(repository, "myProject", null);
+        IReadOnlyList<PullRequest> result2 = sut.GetPullRequests(repository, "myProject", null);
 
         // assert - should return same cached empty list instance
         result1.Should().BeEmpty();
@@ -339,7 +339,7 @@ public class AzureDevOpsPullRequestServiceTests
         A.CallTo(() => repository.Remotes).Returns(new List<Remote>());
 
         // act
-        List<PullRequest> result = sut.GetPullRequests(repository, "  ", null);
+        IReadOnlyList<PullRequest> result = sut.GetPullRequests(repository, "  ", null);
 
         // assert
         result.Should().BeEmpty();

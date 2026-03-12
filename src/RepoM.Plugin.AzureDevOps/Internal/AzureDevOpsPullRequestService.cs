@@ -25,7 +25,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
     private readonly ILogger _logger;
     private readonly VssConnection? _connection;
     private GitHttpClient? _azureDevopsGitClient;
-    private readonly List<PullRequest> _emptyList = new(0);
+    private static readonly IReadOnlyList<PullRequest> _emptyList = [];
 
     private Timer? _updateTimer1;
     private Timer? _updateTimer2;
@@ -242,7 +242,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         return _pullRequestsPerProject.Values.Sum(prs => prs.Count(x => x.RepositoryId.Equals(repoIdGuid)));
     }
 
-    public List<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
+    public IReadOnlyList<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
     {
         RegisterProjectId(projectId);
         if (_gitRepositoriesPerProject.IsEmpty)
@@ -265,7 +265,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         if (_pullRequestsPerProject.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Length > 0)
         {
             _logger.LogTrace("Returning pull requests from cache.");
-            return projectPrs.Where(x => x.RepositoryId.Equals(repoIdGuid)).ToList();
+            return projectPrs.Where(x => x.RepositoryId.Equals(repoIdGuid)).ToArray();
         }
 
         _logger.LogTrace("No cache available for PRs");
