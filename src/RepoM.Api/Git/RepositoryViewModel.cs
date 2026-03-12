@@ -159,27 +159,27 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     public string CurrentBranch => _info.CurrentBranch;
 
-    public string AheadBy => _info.AheadBy?.ToString() ?? string.Empty;
+    public string AheadBy => NullableIntToString(_info.AheadBy);
 
-    public string BehindBy => _info.BehindBy?.ToString() ?? string.Empty;
+    public string BehindBy => NullableIntToString(_info.BehindBy);
 
     public string[] Branches => _info.Branches ?? [];
 
-    public string LocalUntracked => _info.LocalUntracked?.ToString() ?? string.Empty;
+    public string LocalUntracked => NullableIntToString(_info.LocalUntracked);
 
-    public string LocalModified => _info.LocalModified?.ToString() ?? string.Empty;
+    public string LocalModified => NullableIntToString(_info.LocalModified);
 
-    public string LocalMissing => _info.LocalMissing?.ToString() ?? string.Empty;
+    public string LocalMissing => NullableIntToString(_info.LocalMissing);
 
-    public string LocalAdded => _info.LocalAdded?.ToString() ?? string.Empty;
+    public string LocalAdded => NullableIntToString(_info.LocalAdded);
 
-    public string LocalStaged => _info.LocalStaged?.ToString() ?? string.Empty;
+    public string LocalStaged => NullableIntToString(_info.LocalStaged);
 
-    public string LocalRemoved => _info.LocalRemoved?.ToString() ?? string.Empty;
+    public string LocalRemoved => NullableIntToString(_info.LocalRemoved);
 
-    public string LocalIgnored => _info.LocalIgnored?.ToString() ?? string.Empty;
+    public string LocalIgnored => NullableIntToString(_info.LocalIgnored);
 
-    public string StashCount => _info.StashCount?.ToString() ?? string.Empty;
+    public string StashCount => NullableIntToString(_info.StashCount);
 
     public bool WasFound => _info.WasFound;
 
@@ -222,6 +222,30 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
             _isSynchronizing = value;
             PropertyChanged?.Invoke(this, _nameArgs); // Name includes the activity icon
         }
+    }
+
+    private static readonly string[] _smallIntStrings = CreateSmallIntStrings();
+
+    private static string[] CreateSmallIntStrings()
+    {
+        var strings = new string[100];
+        for (var i = 0; i < strings.Length; i++)
+        {
+            strings[i] = i.ToString();
+        }
+
+        return strings;
+    }
+
+    private static string NullableIntToString(int? value)
+    {
+        if (!value.HasValue)
+        {
+            return string.Empty;
+        }
+
+        var v = value.GetValueOrDefault();
+        return (uint)v < (uint)_smallIntStrings.Length ? _smallIntStrings[v] : v.ToString();
     }
 
     private static string SyncAppendix => "  \u2191\u2193"; // up and down arrows

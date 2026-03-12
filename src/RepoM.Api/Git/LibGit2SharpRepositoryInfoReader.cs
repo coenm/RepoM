@@ -1,6 +1,7 @@
 namespace RepoM.Api.Git;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -110,6 +111,20 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
             HeadDetails headDetails = GetHeadDetails(repo);
             var fullPath = workingDirectory.FullName;
 
+            var allBranchList = new List<string>();
+            var localBranchList = new List<string>();
+            foreach (Branch branch in repo.Branches)
+            {
+                allBranchList.Add(branch.FriendlyName);
+                if (!branch.IsRemote)
+                {
+                    localBranchList.Add(branch.FriendlyName);
+                }
+            }
+
+            var allBranchNames = allBranchList.ToArray();
+            var localBranchNames = localBranchList.ToArray();
+
             var info = new RepositoryInfo
                 {
                     Path = fullPath,
@@ -119,8 +134,8 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
                     Name = workingDirectory.Name,
                     Location = workingDirectory.Parent!.FullName,
                     IsBare = repo.Info.IsBare,
-                    Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
-                    LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
+                    Branches = allBranchNames,
+                    LocalBranches = localBranchNames,
                     AllBranchesReader = () => ReadAllBranches(repoPath),
                     CurrentBranch = headDetails.Name,
                     CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),

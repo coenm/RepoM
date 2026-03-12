@@ -307,7 +307,7 @@ public class RepositoryMonitorService : IModule, IDisposable
 
             if (!bag.IsEmpty)
             {
-                _store.AddOrUpdateRange(bag.ToList());
+                _store.AddOrUpdateRange(bag);
             }
 
             _logger.LogInformation("Refreshed {Count} repositories", repos.Length);
