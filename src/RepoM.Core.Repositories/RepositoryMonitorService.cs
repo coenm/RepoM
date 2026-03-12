@@ -187,18 +187,7 @@ public class RepositoryMonitorService : IModule, IDisposable
             case RepositoryChangeType.Added:
             case RepositoryChangeType.Modified:
                 _logger.LogDebug("Repository change detected: {ChangeType} at {Path}", changeEvent.ChangeType, changeEvent.Path);
-                Observable
-                    .FromAsync(ct => _reader.ReadAsync(changeEvent.Path, ct))
-                    .Retry(3)
-                    .Where(repo => repo != null)
-                    .Subscribe(
-                        repo =>
-                        {
-                            repo!.LastSeen = DateTimeOffset.UtcNow;
-                            repo.LastUpdated = DateTimeOffset.UtcNow;
-                            _store.AddOrUpdate(repo);
-                        },
-                        ex => _logger.LogWarning(ex, "Failed to read repository after change at {Path}", changeEvent.Path));
+                _ = ReadAndUpdateRepositoryAsync(changeEvent.Path);
                 break;
 
             case RepositoryChangeType.Removed:
@@ -206,6 +195,35 @@ public class RepositoryMonitorService : IModule, IDisposable
                 var safePath = NormalizeToSafePath(changeEvent.Path);
                 _store.Remove(safePath);
                 break;
+        }
+    }
+
+    private async Task ReadAndUpdateRepositoryAsync(string path)
+    {
+        const int MAX_RETRIES = 3;
+
+        for (var attempt = 0; attempt < MAX_RETRIES; attempt++)
+        {
+            try
+            {
+                RepositoryInfo? repo = await _reader.ReadAsync(path, CancellationToken.None).ConfigureAwait(false);
+                if (repo != null)
+                {
+                    repo.LastSeen = DateTimeOffset.UtcNow;
+                    repo.LastUpdated = repo.LastSeen;
+                    _store.AddOrUpdate(repo);
+                }
+
+                return;
+            }
+            catch (Exception ex) when (attempt < MAX_RETRIES - 1)
+            {
+                _logger.LogDebug(ex, "Attempt {Attempt} failed to read repository at {Path}, retrying", attempt + 1, path);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to read repository after change at {Path}", path);
+            }
         }
     }
 
