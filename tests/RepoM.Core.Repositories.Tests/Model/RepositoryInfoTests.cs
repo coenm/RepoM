@@ -18,7 +18,7 @@ public class RepositoryInfoTests
     }
 
     [Fact]
-    public void GetStatusCode_ShouldReturnDashSeparatedValues()
+    public void GetStatusCode_ShouldBeConsistent()
     {
         // Arrange
         var sut = CreateDefault();
@@ -34,25 +34,48 @@ public class RepositoryInfoTests
         sut.LocalIgnored = 9;
         sut.StashCount = 10;
 
-        // Act
-        var result = sut.GetStatusCode();
+        // Act & Assert
+        sut.GetStatusCode().Should().Be(sut.GetStatusCode());
+    }
 
-        // Assert
-        result.Should().Be("main-1-2-3-4-5-6-7-8-9-10");
+    [Fact]
+    public void GetStatusCode_ShouldDiffer_WhenPropertiesDiffer()
+    {
+        // Arrange
+        var a = CreateDefault();
+        a.CurrentBranch = "main";
+        a.AheadBy = 1;
+
+        var b = CreateDefault();
+        b.CurrentBranch = "main";
+        b.AheadBy = 2;
+
+        // Act & Assert
+        a.GetStatusCode().Should().NotBe(b.GetStatusCode());
     }
 
     [Fact]
     public void GetStatusCode_ShouldTreatNullsAsZero()
     {
         // Arrange
-        var sut = CreateDefault();
-        sut.CurrentBranch = "develop";
+        var withNulls = CreateDefault();
+        withNulls.CurrentBranch = "develop";
 
-        // Act
-        var result = sut.GetStatusCode();
+        var withZeros = CreateDefault();
+        withZeros.CurrentBranch = "develop";
+        withZeros.AheadBy = 0;
+        withZeros.BehindBy = 0;
+        withZeros.LocalUntracked = 0;
+        withZeros.LocalModified = 0;
+        withZeros.LocalMissing = 0;
+        withZeros.LocalAdded = 0;
+        withZeros.LocalStaged = 0;
+        withZeros.LocalRemoved = 0;
+        withZeros.LocalIgnored = 0;
+        withZeros.StashCount = 0;
 
-        // Assert
-        result.Should().Be("develop-0-0-0-0-0-0-0-0-0-0");
+        // Act & Assert
+        withNulls.GetStatusCode().Should().Be(withZeros.GetStatusCode());
     }
 
     [Fact]

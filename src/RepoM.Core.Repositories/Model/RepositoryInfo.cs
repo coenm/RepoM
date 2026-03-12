@@ -85,20 +85,21 @@ public sealed class RepositoryInfo : IEquatable<RepositoryInfo>
 
     public DateTimeOffset LastUpdated { get; set; }
 
-    public string GetStatusCode()
+    public int GetStatusCode()
     {
-        return string.Join("-",
-            CurrentBranch,
-            AheadBy ?? 0,
-            BehindBy ?? 0,
-            LocalUntracked ?? 0,
-            LocalModified ?? 0,
-            LocalMissing ?? 0,
-            LocalAdded ?? 0,
-            LocalStaged ?? 0,
-            LocalRemoved ?? 0,
-            LocalIgnored ?? 0,
-            StashCount ?? 0);
+        var hash = new HashCode();
+        hash.Add(CurrentBranch);
+        hash.Add(AheadBy ?? 0);
+        hash.Add(BehindBy ?? 0);
+        hash.Add(LocalUntracked ?? 0);
+        hash.Add(LocalModified ?? 0);
+        hash.Add(LocalMissing ?? 0);
+        hash.Add(LocalAdded ?? 0);
+        hash.Add(LocalStaged ?? 0);
+        hash.Add(LocalRemoved ?? 0);
+        hash.Add(LocalIgnored ?? 0);
+        hash.Add(StashCount ?? 0);
+        return hash.ToHashCode();
     }
 
     /// <summary>

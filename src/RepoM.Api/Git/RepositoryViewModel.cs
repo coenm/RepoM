@@ -33,7 +33,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
     private readonly IPinningService _pinningService;
     private readonly RepositoryInfoAdapter _adapter;
     private RepositoryInfo _info;
-    private string? _cachedRepositoryStatusCode;
+    private int? _cachedRepositoryStatusCode;
     private string? _cachedRepositoryStatus;
     private string? _cachedRepositoryStatusWithBranch;
     private bool _isSynchronizing;
@@ -137,10 +137,7 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
     {
         var repositoryStatusCode = _info.GetStatusCode();
 
-        // compare the status code and not the full status string because the latter one is heavier to calculate
-        var canTakeFromCache = string.Equals(_cachedRepositoryStatusCode, repositoryStatusCode, StringComparison.CurrentCulture);
-
-        if (canTakeFromCache)
+        if (_cachedRepositoryStatusCode == repositoryStatusCode)
         {
             return;
         }
