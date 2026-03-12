@@ -71,36 +71,42 @@ internal class HeidiPortableConfigReader : IHeidiPortableConfigReader
 
     private static string GetStringValue(IEnumerable<HeidiSingleLineConfiguration> input, string key, string defaultValue = "")
     {
-        HeidiSingleLineConfiguration[] foundItems = input.Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+        HeidiSingleLineConfiguration? foundItem = input
+            .Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase))
+            .Cast<HeidiSingleLineConfiguration?>()
+            .FirstOrDefault();
 
-        if (foundItems.Length == 0)
+        if (foundItem == null)
         {
             return defaultValue;
         }
 
-        if (!"1".Equals(foundItems[0].ContentType, StringComparison.InvariantCulture))
+        if (!"1".Equals(foundItem.Value.ContentType, StringComparison.InvariantCulture))
         {
             return defaultValue;
         }
 
-        return foundItems[0].Content ?? defaultValue;
+        return foundItem.Value.Content ?? defaultValue;
     }
 
     private static int GetIntValue(IEnumerable<HeidiSingleLineConfiguration> input, string key, int defaultValue = -1)
     {
-        HeidiSingleLineConfiguration[] foundItems = input.Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+        HeidiSingleLineConfiguration? foundItem = input
+            .Where(x => key.Equals(x.Type, StringComparison.InvariantCultureIgnoreCase))
+            .Cast<HeidiSingleLineConfiguration?>()
+            .FirstOrDefault();
 
-        if (foundItems.Length == 0)
+        if (foundItem == null)
         {
             return defaultValue;
         }
 
-        if (!"3".Equals(foundItems[0].ContentType, StringComparison.InvariantCulture))
+        if (!"3".Equals(foundItem.Value.ContentType, StringComparison.InvariantCulture))
         {
             return defaultValue;
         }
 
-        var content = foundItems[0].Content ?? string.Empty;
+        var content = foundItem.Value.Content ?? string.Empty;
 
         if (!int.TryParse(content, out var result))
         {

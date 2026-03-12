@@ -237,6 +237,7 @@ public partial class MainWindow
 
             // --- DynamicData pipeline: filter & sort on background, bind on UI ---
             _filterTextSubject = new BehaviorSubject<string>(string.Empty);
+            _disposables.Add(_filterTextSubject);
 
             var filterObservable = _repositoryFilteringManager.CreateFilterObservable(
                 _filterTextSubject.Throttle(TimeSpan.FromMilliseconds(200)).DistinctUntilChanged());
