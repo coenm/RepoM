@@ -1,6 +1,7 @@
 namespace RepoM.App.RepositoryFiltering.QueryMatchers;
 
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
@@ -29,7 +30,7 @@ public class FreeTextMatcher : IQueryMatcher
             return null;
         }
 
-        if (Array.Exists(repository.Tags, x => x.Equals(st.Value, _stringComparisonTag)))
+        if (repository.Tags.Any(x => x.Equals(st.Value, _stringComparisonTag)))
         {
             return true;
         }

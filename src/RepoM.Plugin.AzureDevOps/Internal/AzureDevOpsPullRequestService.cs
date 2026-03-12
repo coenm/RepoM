@@ -474,7 +474,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         }
 
         GitRepository[] selectedRepos = _devOpsGitRepositories.Values
-            .Where(x => Array.Exists(x.ValidRemoteUrls, u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
+            .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
             .ToArray();
 
         if (selectedRepos.Length == 0)
