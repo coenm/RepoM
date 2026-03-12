@@ -124,7 +124,7 @@ public class LuceneQueryParser : INamedQueryParser
 
         // assume all same field
         var field = queryTerms.First().Field;
-        var s = queryTerms.Aggregate(string.Empty, (current, qt) => current + " " + qt.Text).Trim();
+        var s = string.Join(" ", queryTerms.Select(qt => qt.Text));
 
         if (KEY_FREE_TEXT.Equals(field, StringComparison.CurrentCulture))
         {
