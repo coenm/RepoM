@@ -2,7 +2,6 @@ namespace RepoM.Core.Repositories.Store;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DynamicData;
 using DynamicData.Kernel;
 using RepoM.Core.Repositories.Model;
@@ -77,7 +76,7 @@ public sealed class RepositoryStore : IRepositoryStore
 
     public int Count => _cache.Count;
 
-    public IReadOnlyCollection<RepositoryInfo> Items => _cache.Items.ToList().AsReadOnly();
+    public IEnumerable<RepositoryInfo> Items => _cache.Items;
 
     public void Dispose()
     {

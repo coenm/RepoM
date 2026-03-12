@@ -66,15 +66,14 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
     private void FetchNext(object? timerState)
     {
-        IReadOnlyCollection<RepositoryInfo> items = _repositoryStore.Items;
-        if (items.Count == 0)
+        var repositories = _repositoryStore.Items
+            .OrderBy(r => r.Name)
+            .ToArray();
+
+        if (repositories.Length == 0)
         {
             return;
         }
-
-        var repositories = items
-            .OrderBy(r => r.Name)
-            .ToArray();
 
         // temporarily disable the timer to prevent parallel fetch executions
         UpdateBehavior(AutoFetchMode.Off);

@@ -24,5 +24,5 @@ public interface IRepositoryStore : IDisposable
 
     int Count { get; }
 
-    IReadOnlyCollection<RepositoryInfo> Items { get; }
+    IEnumerable<RepositoryInfo> Items { get; }
 }
