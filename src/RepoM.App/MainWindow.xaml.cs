@@ -50,6 +50,27 @@ public partial class MainWindow
     private bool _closeOnDeactivate = true;
     private static readonly bool _useOffScreenHide =
         string.Equals(Environment.GetEnvironmentVariable("REPOM_HIDE_OFFSCREEN"), "1", StringComparison.Ordinal);
+
+    private enum AcrylicBehavior
+    {
+        /// <summary>
+        /// Current/legacy behavior: acrylic enabled, but temporarily disabled during resize.
+        /// </summary>
+        Legacy = 0,
+
+        /// <summary>
+        /// No acrylic effects at all.
+        /// </summary>
+        Disabled = 1,
+
+        /// <summary>
+        /// Acrylic always enabled and never disabled during resize.
+        /// </summary>
+        AlwaysOn = 2,
+    }
+
+    private static readonly AcrylicBehavior _acrylicBehavior = GetAcrylicBehavior();
+
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly RepositoryMonitorService _monitorService;
     private readonly IRepositoryStore _store;
@@ -109,8 +130,29 @@ public partial class MainWindow
 
         SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
+        // Configure acrylic behavior based on environment variable.
+        switch (_acrylicBehavior)
+        {
+            case AcrylicBehavior.Disabled:
+                AcrylicWindow.SetEnabled(this, false);
+                break;
+            case AcrylicBehavior.AlwaysOn:
+                AcrylicWindow.SetEnabled(this, true);
+                break;
+            case AcrylicBehavior.Legacy:
+            default:
+                // Keep existing behavior.
+                break;
+        }
+
         Loaded += (_, _) =>
         {
+            // In legacy mode we keep the old behavior: disable acrylic during resize.
+            if (_acrylicBehavior != AcrylicBehavior.Legacy)
+            {
+                return;
+            }
+
             if (PresentationSource.FromVisual(this) is HwndSource hwndSource)
             {
                 hwndSource.AddHook(ResizeHook);
@@ -123,6 +165,13 @@ public partial class MainWindow
 
     private IntPtr ResizeHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
+        // Only apply the resize behavior in legacy mode; in other modes we leave
+        // acrylic either always off or always on.
+        if (_acrylicBehavior != AcrylicBehavior.Legacy)
+        {
+            return IntPtr.Zero;
+        }
+
         switch (msg)
         {
             case WM_ENTERSIZEMOVE:
@@ -898,4 +947,16 @@ public partial class MainWindow
     }
 
     public bool IsShown => Visibility == Visibility.Visible && IsActive && (!_useOffScreenHide || Left > -99000);
+
+    private static AcrylicBehavior GetAcrylicBehavior()
+    {
+        string? value = Environment.GetEnvironmentVariable("REPOM_ACRYLIC_MODE");
+
+        return value switch
+        {
+            "0" => AcrylicBehavior.Disabled,
+            "1" => AcrylicBehavior.AlwaysOn,
+            _ => AcrylicBehavior.Legacy,
+        };
+    }
 }
