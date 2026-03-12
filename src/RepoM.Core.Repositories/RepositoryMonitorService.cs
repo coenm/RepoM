@@ -327,7 +327,15 @@ public class RepositoryMonitorService : IModule, IDisposable
             path = path[..gitIndex].TrimEnd('\\', '/');
         }
 
-        return path.Replace('\\', '/').TrimEnd('/');
+        // Single allocation: replace backslashes and trim trailing slash in one pass
+        ReadOnlySpan<char> span = path.AsSpan().TrimEnd('/');
+        return string.Create(span.Length, span, static (dest, src) =>
+        {
+            for (var i = 0; i < src.Length; i++)
+            {
+                dest[i] = src[i] == '\\' ? '/' : src[i];
+            }
+        });
     }
 
     public void Dispose()

@@ -62,22 +62,25 @@ public sealed class FileSystemRepositoryWatcher : IRepositoryWatcher
             watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.FileName;
 
             var created = Observable.FromEventPattern<FileSystemEventArgs>(watcher, nameof(watcher.Created))
+                .Where(e => IsRelevantGitPath(e.EventArgs.FullPath))
                 .Select(e => new RepositoryChangeEvent(e.EventArgs.FullPath, RepositoryChangeType.Added));
 
             var changed = Observable.FromEventPattern<FileSystemEventArgs>(watcher, nameof(watcher.Changed))
+                .Where(e => IsRelevantGitPath(e.EventArgs.FullPath))
                 .Select(e => new RepositoryChangeEvent(e.EventArgs.FullPath, RepositoryChangeType.Modified));
 
             var deleted = Observable.FromEventPattern<FileSystemEventArgs>(watcher, nameof(watcher.Deleted))
+                .Where(e => IsRelevantGitPath(e.EventArgs.FullPath))
                 .Select(e => new RepositoryChangeEvent(e.EventArgs.FullPath, RepositoryChangeType.Removed));
 
             var renamed = Observable.FromEventPattern<RenamedEventArgs>(watcher, nameof(watcher.Renamed))
+                .Where(e => IsRelevantGitPath(e.EventArgs.FullPath))
                 .Select(e => new RepositoryChangeEvent(e.EventArgs.FullPath, RepositoryChangeType.Modified));
 
             var subscription = created
                 .Merge(changed)
                 .Merge(deleted)
                 .Merge(renamed)
-                .Where(e => IsRelevantGitPath(e.Path))
                 .GroupBy(e => NormalizePath(e.Path))
                 .SelectMany(group => group.Throttle(_debounceInterval))
                 .Subscribe(observer);

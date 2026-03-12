@@ -55,7 +55,7 @@ public static class StatusCompressor
             builder.Append(repository.StashCount);
         }
 
-        return builder.ToString().Trim();
+        return builder.ToString();
     }
 
     public static string CompressWithBranch(RepositoryInfo repository)
