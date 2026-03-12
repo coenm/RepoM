@@ -14,6 +14,8 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
     private bool _active;
     private AutoFetchMode? _mode;
     private readonly Timer _timer;
+    private readonly object _sync = new();
+    private RepositoryInfo[] _sortedRepositories = Array.Empty<RepositoryInfo>();
     private readonly Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
     private int _lastFetchRepository = -1;
     private readonly IAppSettingsService _appSettingsService;
@@ -66,9 +68,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
     private void FetchNext(object? timerState)
     {
-        var repositories = _repositoryStore.Items
-            .OrderBy(r => r.Name)
-            .ToArray();
+        RepositoryInfo[] repositories = GetOrUpdateSortedRepositories();
 
         if (repositories.Length == 0)
         {
@@ -100,6 +100,33 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         {
             // re-enable the timer to get to the next fetch
             UpdateBehavior();
+        }
+    }
+
+    private RepositoryInfo[] GetOrUpdateSortedRepositories()
+    {
+        var currentItems = _repositoryStore.Items;
+
+        // fast path: if the length is the same and we already have a cache, reuse it
+        // (in the current implementation the set of repositories changes infrequently)
+        if (_sortedRepositories.Length == currentItems.Count)
+        {
+            return _sortedRepositories;
+        }
+
+        lock (_sync)
+        {
+            // double-check within the lock
+            if (_sortedRepositories.Length == currentItems.Count)
+            {
+                return _sortedRepositories;
+            }
+
+            _sortedRepositories = currentItems
+                .OrderBy(r => r.Name)
+                .ToArray();
+
+            return _sortedRepositories;
         }
     }
 
