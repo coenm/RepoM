@@ -162,7 +162,7 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
         try
         {
             using var repo = new LibGit2Sharp.Repository(repoPath);
-            var localBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToList();
+            var localBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName);
 
             return repo.Branches
                        .Where(branch =>
