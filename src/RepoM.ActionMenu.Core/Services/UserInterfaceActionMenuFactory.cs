@@ -30,7 +30,6 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
     private readonly IActionToRepositoryActionMapper[] _mappers;
     private readonly IActionMenuDeserializer _deserializer;
     private readonly IFileReader _fileReader;
-    private readonly ILogger _logger;
     private readonly IContextActionProcessor[] _contextActionMappers;
 
     public UserInterfaceActionMenuFactory(
@@ -39,8 +38,7 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         IEnumerable<ITemplateContextRegistration> plugins,
         IEnumerable<IActionToRepositoryActionMapper> mappers,
         IActionMenuDeserializer deserializer,
-        IFileReader fileReader,
-        ILogger logger)
+        IFileReader fileReader)
     {
         _operatingSystem = operatingSystem ?? throw new ArgumentNullException(nameof(operatingSystem));
         _templateParser = templateParser ?? throw new ArgumentNullException(nameof(templateParser));
@@ -48,7 +46,6 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         _mappers = mappers.ToArray();
         _deserializer = deserializer ?? throw new ArgumentNullException(nameof(deserializer));
         _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _contextActionMappers =
             [
