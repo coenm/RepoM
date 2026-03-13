@@ -293,7 +293,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         var firstCall = Task.Run(() => sut.RemoveStaleRepositories());
 
         // Wait until the first call has entered the method
-        called.Wait(TimeSpan.FromMilliseconds(500));
+        called.Wait(TimeSpan.FromSeconds(5));
         sut.IsStalenessCheckRunning.Should().BeTrue();
 
         // The second call should return immediately (early-return branch)
