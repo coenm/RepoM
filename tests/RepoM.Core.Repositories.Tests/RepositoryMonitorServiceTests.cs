@@ -262,6 +262,53 @@ public class RepositoryMonitorServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task RemoveStaleRepositories_ShouldSkipConcurrentCall()
+    {
+        // arrange
+        var fakeStore = A.Fake<IRepositoryStore>();
+        using var called = new ManualResetEventSlim(false);
+        using var gate = new ManualResetEventSlim(false);
+
+        var repoInfo = new RepositoryInfo
+        {
+            Path = @"c:\repos\blocking",
+            SafePath = "c:/repos/blocking",
+            Name = "blocking",
+        };
+
+        A.CallTo(() => fakeStore.Items).Returns([repoInfo,]);
+        A.CallTo(() => _fileSystem.Directory.Exists(@"c:\repos\blocking"))
+            .ReturnsLazily(call =>
+            {
+                called.Set();
+                gate.Wait(); // hold the first call inside RemoveStaleRepositories
+                return true;
+            });
+
+        using var sut = new RepositoryMonitorService(
+            _scanner, _watcher, _reader, fakeStore, _fileSystem, () => ["/repos",], NullLogger.Instance);
+
+        // act
+        // Start the first (blocking) call on a background thread
+        var firstCall = Task.Run(() => sut.RemoveStaleRepositories());
+
+        // Wait until the first call has entered the method
+        called.Wait(TimeSpan.FromMilliseconds(500));
+        sut.IsStalenessCheckRunning.Should().BeTrue();
+
+        // The second call should return immediately (early-return branch)
+        sut.RemoveStaleRepositories();
+
+        // Release the first call
+        gate.Set();
+        await firstCall;
+
+        // assert
+        sut.IsStalenessCheckRunning.Should().BeFalse();
+        A.CallTo(() => fakeStore.Items).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
     public void IsStalenessCheckRunning_ShouldBeFalse_Initially()
     {
         _sut.IsStalenessCheckRunning.Should().BeFalse();

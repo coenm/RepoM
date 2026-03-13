@@ -1,7 +1,9 @@
 namespace RepoM.App.Services.HotKey;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
+[ExcludeFromCodeCoverage]
 internal class HotKeyService
 {
     private readonly MainWindow _mainWindow;

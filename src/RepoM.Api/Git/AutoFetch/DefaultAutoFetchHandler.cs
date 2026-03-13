@@ -109,7 +109,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
         // fast path: if the length is the same and we already have a cache, reuse it
         // (in the current implementation the set of repositories changes infrequently)
-        if (_sortedRepositories.Length == currentItems.Count)
+        if (_sortedRepositories.Length == currentItems.Count())
         {
             return _sortedRepositories;
         }
@@ -117,7 +117,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         lock (_sync)
         {
             // double-check within the lock
-            if (_sortedRepositories.Length == currentItems.Count)
+            if (_sortedRepositories.Length == currentItems.Count())
             {
                 return _sortedRepositories;
             }

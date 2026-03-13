@@ -792,5 +792,65 @@ public class RepositoryViewModelTests
 
             raised.Should().BeEmpty();
         }
+
+        [Fact]
+        public void Update_Does_Not_Throw_When_No_Subscriber_And_Properties_Changed()
+        {
+            RepositoryInfo original = _builder.FullFeatured()
+                .WithCurrentBranch("main")
+                .WithBranches("main")
+                .Build();
+            original.Tags = ["v1.0",];
+            RepositoryViewModel sut = CreateSut(original);
+
+            // No PropertyChanged subscriber attached
+            var newBuilder = new RepositoryBuilder();
+            RepositoryInfo updated = newBuilder.FullFeatured()
+                .WithCurrentBranch("develop")
+                .WithBranches("main", "develop")
+                .Build();
+            updated.Tags = ["v1.0", "v2.0",];
+
+            Action act = () => sut.Update(updated);
+
+            act.Should().NotThrow();
+        }
+    }
+
+    public class LocationProperty : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Returns_Location_From_Info()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.Location.Should().Be(info.Location);
+        }
+    }
+
+    public class BranchesProperty : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Returns_Empty_Array_When_Branches_Is_Null()
+        {
+            RepositoryInfo info = _builder.WithName("R").Build();
+            info.Branches = null!;
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.Branches.Should().BeEmpty();
+        }
+    }
+
+    public class NullableIntToStringCoverage : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Returns_String_For_Value_Above_SmallIntCache()
+        {
+            RepositoryInfo info = _builder.FullFeatured().WithLocalModified(150).Build();
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.LocalModified.Should().Be("150");
+        }
     }
 }
