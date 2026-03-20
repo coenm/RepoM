@@ -288,8 +288,9 @@ public class RepositoryMonitorService : IModule, IDisposable
                 {
                     try
                     {
-                        var headPath = _fileSystem.Path.Combine(repo.Path, ".git", "HEAD");
-                        RepositoryInfo? updated = await _reader.ReadAsync(headPath, token).ConfigureAwait(false);
+                        // Use repo root path (not ".git/HEAD") so LibGit2Sharp can
+                        // correctly discover the gitdir (e.g. worktrees / bare repos).
+                        RepositoryInfo? updated = await _reader.ReadAsync(repo.Path, token).ConfigureAwait(false);
                         if (updated == null)
                         {
                             return;
@@ -315,6 +316,30 @@ public class RepositoryMonitorService : IModule, IDisposable
         finally
         {
             Interlocked.Exchange(ref _refreshRunning, 0);
+        }
+    }
+
+    public async Task<RepositoryInfo?> RefreshRepositoryAsync(string repositoryPath, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(repositoryPath);
+
+        try
+        {
+            RepositoryInfo? updated = await _reader.ReadAsync(repositoryPath, ct).ConfigureAwait(false);
+            if (updated == null)
+            {
+                return null;
+            }
+
+            updated.LastSeen = DateTimeOffset.UtcNow;
+            updated.LastUpdated = updated.LastSeen;
+            _store.AddOrUpdate(updated);
+            return updated;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Failed to refresh repository {Path}", repositoryPath);
+            return null;
         }
     }
 

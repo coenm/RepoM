@@ -32,8 +32,10 @@ using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
 using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Repositories;
+using RepoM.Core.Repositories.Adapters;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Pinning;
 using RepoM.Core.Repositories.Store;
@@ -193,7 +195,7 @@ public partial class MainWindow
             tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible);
     }
 
-    protected override void OnActivated(EventArgs e)
+    protected override async void OnActivated(EventArgs e)
     {
         base.OnActivated(e);
         ShowUpdateIfAvailable();
@@ -202,7 +204,8 @@ public partial class MainWindow
             Task.Run(() => _monitorService.RemoveStaleRepositories());
         }
 
-        Task.Run(() => _monitorService.RefreshAllAsync());
+        // Await so the UI (incl. context menu actions) is based on current git refs.
+        await _monitorService.RefreshAllAsync();
 
         txtFilter.Focus();
         txtFilter.SelectAll();
@@ -396,6 +399,11 @@ public partial class MainWindow
             return false;
         }
 
+        // The context menu is built from repo state, so ensure we have the latest
+        // branch/ref information before generating menu actions.
+        RepositoryInfo? updatedInfo = await _monitorService.RefreshRepositoryAsync(vm.Path, CancellationToken.None).ConfigureAwait(false);
+        IRepository repositoryForMenu = updatedInfo != null ? new RepositoryInfoAdapter(updatedInfo) : vm.Repository;
+
         int AddItemMenuAndSeparator(int count)
         {
             ctxMenu.Items.Add(new AcrylicMenuItem
@@ -425,7 +433,7 @@ public partial class MainWindow
         // Phase 1: Collect all actions off the UI thread to avoid per-item
         // dispatcher marshaling and intermediate layout passes.
         var actions = new List<UserInterfaceRepositoryActionBase>();
-        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(false))
+        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(repositoryForMenu).ConfigureAwait(false))
         {
             actions.Add(action);
         }
