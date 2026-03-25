@@ -266,8 +266,8 @@ public class RepositoryMonitorServiceTests : IDisposable
     {
         // arrange
         var fakeStore = A.Fake<IRepositoryStore>();
-        using var called = new ManualResetEventSlim(false);
-        using var gate = new ManualResetEventSlim(false);
+        using var called = new SemaphoreSlim(0, 1);
+        using var gate = new SemaphoreSlim(0, 1);
 
         var repoInfo = new RepositoryInfo
         {
@@ -280,7 +280,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         A.CallTo(() => _fileSystem.Directory.Exists(@"c:\repos\blocking"))
             .ReturnsLazily(call =>
             {
-                called.Set();
+                called.Release();
                 gate.Wait(); // hold the first call inside RemoveStaleRepositories
                 return true;
             });
@@ -293,14 +293,15 @@ public class RepositoryMonitorServiceTests : IDisposable
         var firstCall = Task.Run(() => sut.RemoveStaleRepositories());
 
         // Wait until the first call has entered the method
-        called.Wait(TimeSpan.FromSeconds(5));
+        var entered = await called.WaitAsync(TimeSpan.FromSeconds(30));
+        entered.Should().BeTrue("the first call should have entered RemoveStaleRepositories within the timeout");
         sut.IsStalenessCheckRunning.Should().BeTrue();
 
         // The second call should return immediately (early-return branch)
         sut.RemoveStaleRepositories();
 
         // Release the first call
-        gate.Set();
+        gate.Release();
         await firstCall;
 
         // assert
@@ -315,7 +316,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     }
 
     [Fact]
-    public void IsScanning_ShouldExposeScannersObservable()
+    public async Task IsScanning_ShouldExposeScannersObservable()
     {
         // Arrange
         var subject = new BehaviorSubject<bool>(true);
@@ -325,7 +326,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             _scanner, _watcher, _reader, _store, _fileSystem, () => ["/repos",], NullLogger.Instance);
 
         // Act
-        var isScanning = sut.IsScanning.FirstAsync().Wait();
+        var isScanning = await sut.IsScanning.FirstAsync();
 
         // Assert
         isScanning.Should().BeTrue();
