@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-public class CompositionRepositoryComparerFactory : IRepositoryComparerFactory<CompositionComparerConfigurationV1>
+public sealed class CompositionRepositoryComparerFactory : IRepositoryComparerFactory<CompositionComparerConfigurationV1>
 {
     private readonly IRepositoryComparerFactory _factory;
 

@@ -8,7 +8,7 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 [UsedImplicitly]
-public class FreeTextMatcher : IQueryMatcher
+public sealed class FreeTextMatcher : IQueryMatcher
 {
     private readonly StringComparison _stringComparisonFreeText;
     private readonly StringComparison _stringComparisonTag;

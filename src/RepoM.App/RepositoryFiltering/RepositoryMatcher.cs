@@ -9,7 +9,7 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
-internal class RepositoryMatcher : IRepositoryMatcher
+internal sealed class RepositoryMatcher : IRepositoryMatcher
 {
     private readonly IQueryMatcher[] _queryMatchers;
 

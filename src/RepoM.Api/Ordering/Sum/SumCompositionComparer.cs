@@ -5,7 +5,7 @@ using System.Linq;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-public class SumCompositionComparer : IRepositoryComparer
+public sealed class SumCompositionComparer : IRepositoryComparer
 {
     private readonly IRepositoryComparer[] _comparers;
 

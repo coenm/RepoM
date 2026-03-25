@@ -7,7 +7,7 @@ using System.Linq;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.Internal;
 
-internal class HasPullRequestsMatcher : IQueryMatcher
+internal sealed class HasPullRequestsMatcher : IQueryMatcher
 {
     private static readonly string[] _values =
         [

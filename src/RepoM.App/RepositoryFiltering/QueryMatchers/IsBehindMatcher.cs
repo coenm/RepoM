@@ -7,7 +7,7 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 [UsedImplicitly]
-public class IsBehindMatcher : IQueryMatcher
+public sealed class IsBehindMatcher : IQueryMatcher
 {
     public bool? IsMatch(in IRepository repository, in TermBase term)
     {

@@ -8,7 +8,7 @@ using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Core.Repositories.Pinning;
 
 [UsedImplicitly]
-public class IsPinnedMatcher : IQueryMatcher
+public sealed class IsPinnedMatcher : IQueryMatcher
 {
     private readonly IPinningService _pinningService;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-public class TagScoreCalculator : IRepositoryScoreCalculator
+public sealed class TagScoreCalculator : IRepositoryScoreCalculator
 {
     private readonly string _tag;
     private readonly int _weight;
