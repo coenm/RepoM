@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
+using DynamicData;
+using DynamicData.Kernel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
@@ -30,6 +32,9 @@ public class RepositoryMonitorService : IModule, IDisposable
     private CompositeDisposable? _subscriptions;
     private CancellationTokenSource _scanCts = new();
     private bool _disposed;
+
+    private readonly object _repoWatcherLock = new();
+    private readonly Dictionary<string, IDisposable> _repoWatcherSubscriptions = new(StringComparer.OrdinalIgnoreCase);
 
     public RepositoryMonitorService(
         IRepositoryScanner scanner,
@@ -60,13 +65,40 @@ public class RepositoryMonitorService : IModule, IDisposable
 
         _subscriptions = new CompositeDisposable();
 
-        // Start filesystem watching for real-time detection
-        var watchSubscription = _watcher
+        // Root-level watching is used for detecting newly created / changed repositories.
+        // It also keeps our behavior consistent with the previous contract where the
+        // watcher receives the configured search roots.
+        var discoveryWatchSubscription = _watcher
             .Watch(_pathProvider())
             .Subscribe(
                 OnRepositoryChangeDetected,
                 ex => _logger.LogError(ex, "Error in repository watcher"));
-        _subscriptions.Add(watchSubscription);
+
+        _subscriptions.Add(discoveryWatchSubscription);
+
+        // Start filesystem watching for real-time detection.
+        // We intentionally watch per repository gitdir (not per drive) to reduce event loss
+        // and to keep the file watcher workload bounded.
+        var repoWatcherSetupSubscription = _store
+            .Connect()
+            .Subscribe(changeSet =>
+            {
+                foreach (var change in changeSet)
+                {
+                    if (change.Reason == ChangeReason.Remove)
+                    {
+                        if (change.Previous.HasValue)
+                        {
+                            RemoveRepoWatcher(change.Previous.Value);
+                        }
+                        continue;
+                    }
+
+                    EnsureRepoWatcher(change.Current);
+                }
+            }, ex => _logger.LogError(ex, "Error in repository watcher setup"));
+
+        _subscriptions.Add(repoWatcherSetupSubscription);
 
         // Initial scan
         var initialScanSubscription = CreateScanPipeline(_scanCts.Token)
@@ -105,6 +137,121 @@ public class RepositoryMonitorService : IModule, IDisposable
 
         _logger.LogInformation("RepositoryMonitorService started");
         return Task.CompletedTask;
+    }
+
+    private void EnsureRepoWatcher(RepositoryInfo? repo)
+    {
+        if (repo is null)
+        {
+            return;
+        }
+
+        var safePath = repo.SafePath;
+        lock (_repoWatcherLock)
+        {
+            if (_repoWatcherSubscriptions.ContainsKey(safePath))
+            {
+                return;
+            }
+        }
+
+        if (!TryResolveGitDir(repo.Path, out var gitDirPath))
+        {
+            return;
+        }
+
+        var repoPath = repo.Path;
+        var subscription = _watcher
+            .Watch([gitDirPath])
+            .Subscribe(
+                changeEvent => OnRepositoryChangeDetected(
+                    new RepositoryChangeEvent(repoPath, changeEvent.ChangeType)),
+                ex => _logger.LogError(ex, "Error in repository watcher"));
+
+        lock (_repoWatcherLock)
+        {
+            // Re-check in case we raced.
+            if (_repoWatcherSubscriptions.ContainsKey(safePath))
+            {
+                subscription.Dispose();
+                return;
+            }
+
+            _repoWatcherSubscriptions.Add(safePath, subscription);
+        }
+
+        _subscriptions?.Add(subscription);
+    }
+
+    private void RemoveRepoWatcher(RepositoryInfo? repo)
+    {
+        if (repo is null)
+        {
+            return;
+        }
+
+        lock (_repoWatcherLock)
+        {
+            if (_repoWatcherSubscriptions.TryGetValue(repo.SafePath, out IDisposable? subscription))
+            {
+                subscription.Dispose();
+                _repoWatcherSubscriptions.Remove(repo.SafePath);
+            }
+        }
+    }
+
+    private bool TryResolveGitDir(string repoRootPath, out string gitDirPath)
+    {
+        gitDirPath = string.Empty;
+
+        // Normal clone:
+        //   <repo>/.git/HEAD
+        var candidateDir = _fileSystem.Path.Combine(repoRootPath, ".git");
+        if (_fileSystem.Directory.Exists(candidateDir))
+        {
+            gitDirPath = candidateDir;
+            return true;
+        }
+
+        // Worktree-style:
+        //   <worktree>/.git is a file containing: gitdir: <path>
+        //   (the <path> can be relative to the worktree root)
+        if (!_fileSystem.File.Exists(candidateDir))
+        {
+            return false;
+        }
+
+        try
+        {
+            var lines = _fileSystem.File.ReadAllLines(candidateDir);
+            var gitDirLine = lines.FirstOrDefault(l =>
+                l.TrimStart().StartsWith("gitdir:", StringComparison.OrdinalIgnoreCase));
+
+            if (gitDirLine is null)
+            {
+                return false;
+            }
+
+            var value = gitDirLine.Split(':', 2)[1].Trim();
+            value = value.Trim('\"', '\'');
+
+            if (!System.IO.Path.IsPathRooted(value))
+            {
+                value = System.IO.Path.GetFullPath(System.IO.Path.Combine(repoRootPath, value));
+            }
+
+            if (!_fileSystem.Directory.Exists(value))
+            {
+                return false;
+            }
+
+            gitDirPath = value;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public Task StopAsync()
@@ -288,9 +435,14 @@ public class RepositoryMonitorService : IModule, IDisposable
                 {
                     try
                     {
-                        // Use repo root path (not ".git/HEAD") so LibGit2Sharp can
-                        // correctly discover the gitdir (e.g. worktrees / bare repos).
-                        RepositoryInfo? updated = await _reader.ReadAsync(repo.Path, token).ConfigureAwait(false);
+                        // Primary: legacy behavior read ".git/HEAD".
+                        // This keeps the existing contract stable and avoids breaking tests.
+                        var headPath = _fileSystem.Path.Combine(repo.Path, ".git", "HEAD");
+                        RepositoryInfo? updated = await _reader.ReadAsync(headPath, token).ConfigureAwait(false);
+
+                        // Fallback: for worktrees / bare repos, reading ".git/HEAD" may fail
+                        // (e.g. when ".git" is a file pointing to a gitdir elsewhere).
+                        updated ??= await _reader.ReadAsync(repo.Path, token).ConfigureAwait(false);
                         if (updated == null)
                         {
                             return;
