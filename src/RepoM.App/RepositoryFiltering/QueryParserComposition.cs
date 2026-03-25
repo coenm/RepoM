@@ -21,7 +21,7 @@ internal class QueryParserComposition : IQueryParser
 
     public bool SetComparer(string key)
     {
-        INamedQueryParser? foundQueryParser = _namedQueryParsers.FirstOrDefault(item => item.Name.Equals(key, StringComparison.CurrentCultureIgnoreCase));
+        INamedQueryParser? foundQueryParser = _namedQueryParsers.FirstOrDefault(item => item.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
         
         if (foundQueryParser != null)
         {

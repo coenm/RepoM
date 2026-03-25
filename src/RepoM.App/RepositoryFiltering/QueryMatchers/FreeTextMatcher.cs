@@ -16,11 +16,11 @@ public class FreeTextMatcher : IQueryMatcher
     public FreeTextMatcher(bool ignoreCase, bool ignoreCaseTag)
     {
         _stringComparisonFreeText = ignoreCase
-            ? StringComparison.CurrentCultureIgnoreCase
-            : StringComparison.CurrentCulture;
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
         _stringComparisonTag = ignoreCaseTag
-            ? StringComparison.CurrentCultureIgnoreCase
-            : StringComparison.CurrentCulture;
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
     }
 
     public bool? IsMatch(in IRepository repository, in TermBase term)

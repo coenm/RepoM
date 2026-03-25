@@ -16,7 +16,7 @@ public class AcrylicMenuItem : MenuItem
     private static readonly Brush _solidColorBrush = new SolidColorBrush(Color.FromArgb(80, 0, 0, 0));
     private bool _isEnabled = default;
 
-    public Task<UserInterfaceRepositoryActionBase[]> DataTask { get; private set; } = Task.FromResult(Array.Empty<UserInterfaceRepositoryActionBase>());
+    public Task<UserInterfaceRepositoryActionBase[]> DataTask { get; private set; } = Task.FromResult<UserInterfaceRepositoryActionBase[]>([]);
 
     public void SetClick(RoutedEventHandler routedEventHandler)
     {
@@ -107,7 +107,7 @@ public class AcrylicMenuItem : MenuItem
             // swallow
         }
 
-        DataTask = Task.FromResult(Array.Empty<UserInterfaceRepositoryActionBase>());
+        DataTask = Task.FromResult<UserInterfaceRepositoryActionBase[]>([]);
     }
 
     protected override void OnSubmenuOpened(RoutedEventArgs e)

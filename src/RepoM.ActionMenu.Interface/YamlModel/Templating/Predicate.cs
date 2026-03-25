@@ -21,11 +21,11 @@ public class Predicate : EvaluateObjectBase
     {
         bool? staticValue = null;
 
-        if ("true".Equals(value, StringComparison.CurrentCultureIgnoreCase))
+        if ("true".Equals(value, StringComparison.OrdinalIgnoreCase))
         {
             staticValue = true;
         }
-        else if ("false".Equals(value, StringComparison.CurrentCultureIgnoreCase))
+        else if ("false".Equals(value, StringComparison.OrdinalIgnoreCase))
         {
             staticValue = false;
         }

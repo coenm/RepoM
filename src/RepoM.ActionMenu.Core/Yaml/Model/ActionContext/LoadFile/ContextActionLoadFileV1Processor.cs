@@ -25,8 +25,8 @@ internal class ContextActionLoadFileV1Processor : ContextActionProcessorBase<Con
             return;
         }
 
-        if (filename.EndsWith(".yml", StringComparison.CurrentCultureIgnoreCase) ||
-            filename.EndsWith(".yaml", StringComparison.CurrentCultureIgnoreCase))
+        if (filename.EndsWith(".yml", StringComparison.OrdinalIgnoreCase) ||
+            filename.EndsWith(".yaml", StringComparison.OrdinalIgnoreCase))
         {
             ContextRoot? contextRoot = await _fileReader.DeserializeContextRoot(filename).ConfigureAwait(false);
 
@@ -43,7 +43,7 @@ internal class ContextActionLoadFileV1Processor : ContextActionProcessorBase<Con
             return;
         }
 
-        if (filename.EndsWith(".env", StringComparison.CurrentCultureIgnoreCase))
+        if (filename.EndsWith(".env", StringComparison.OrdinalIgnoreCase))
         {
             IDictionary<string, string>? fileContents = await _fileReader.ReadEnvAsync(filename).ConfigureAwait(false);
 

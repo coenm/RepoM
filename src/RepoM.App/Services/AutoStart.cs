@@ -45,7 +45,7 @@ internal static class AutoStart
         var path = Assembly.GetEntryAssembly()!.Location;
 
         // Dirty hack. We need the exe instead of dll (this has probably something to do with the upgrade to net6)
-        if (path.EndsWith(".dll", StringComparison.CurrentCultureIgnoreCase))
+        if (path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
         {
             path = path[..^4] + ".exe";
         }

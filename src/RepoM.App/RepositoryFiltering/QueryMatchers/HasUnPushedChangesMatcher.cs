@@ -24,7 +24,7 @@ public class HasUnPushedChangesMatcher : IQueryMatcher
             return null;
         }
 
-        if (!"has".Equals(st.Term, StringComparison.CurrentCulture))
+        if (!"has".Equals(st.Term, StringComparison.Ordinal))
         {
             return null;
         }

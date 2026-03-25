@@ -33,7 +33,7 @@ public class RepositoryMonitorService : IModule, IDisposable
     private CancellationTokenSource _scanCts = new();
     private bool _disposed;
 
-    private readonly object _repoWatcherLock = new();
+    private readonly Lock _repoWatcherLock = new();
     private readonly Dictionary<string, IDisposable> _repoWatcherSubscriptions = new(StringComparer.OrdinalIgnoreCase);
 
     public RepositoryMonitorService(

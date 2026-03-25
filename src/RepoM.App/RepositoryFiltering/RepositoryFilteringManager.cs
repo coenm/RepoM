@@ -53,7 +53,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
                                                     })
                                                 .ToList();
 
-        if (!_queryDictionary.Exists(x => x.Name.Equals("Default", StringComparison.CurrentCultureIgnoreCase)))
+        if (!_queryDictionary.Exists(x => x.Name.Equals("Default", StringComparison.OrdinalIgnoreCase)))
         {
             _queryDictionary.Add(new RepositoryFilterConfiguration
                 {
@@ -103,7 +103,7 @@ internal class RepositoryFilteringManager : IRepositoryFilteringManager
                 return null;
             }
 
-            if ("query@1".Equals(input.Kind, StringComparison.CurrentCulture))
+            if ("query@1".Equals(input.Kind, StringComparison.Ordinal))
             {
                 return queryParser.Parse(input.Query);
             }

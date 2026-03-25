@@ -27,7 +27,7 @@ public class NameMatcher : IQueryMatcher
             return null;
         }
 
-        return repository.Name.StartsWith(term.Value, StringComparison.CurrentCulture);
+        return repository.Name.StartsWith(term.Value, StringComparison.Ordinal);
     }
 
     private static bool? IsMatch(in IRepository repository, in SimpleTerm term)
@@ -37,12 +37,12 @@ public class NameMatcher : IQueryMatcher
             return null;
         }
 
-        return repository.Name.Equals(term.Value, StringComparison.CurrentCulture);
+        return repository.Name.Equals(term.Value, StringComparison.Ordinal);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CheckTerm(in string term)
     {
-        return "name".Equals(term, StringComparison.CurrentCulture);
+        return "name".Equals(term, StringComparison.Ordinal);
     }
 }

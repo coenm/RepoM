@@ -16,12 +16,12 @@ public class IsBehindMatcher : IQueryMatcher
             return null;
         }
 
-        if (!"is".Equals(st.Term, StringComparison.CurrentCulture))
+        if (!"is".Equals(st.Term, StringComparison.Ordinal))
         {
             return null;
         }
 
-        if (!"behind".Equals(st.Value, StringComparison.CurrentCulture))
+        if (!"behind".Equals(st.Value, StringComparison.Ordinal))
         {
             return null;
         }

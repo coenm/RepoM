@@ -16,12 +16,12 @@ public class IsBareRepositoryMatcher : IQueryMatcher
             return null;
         }
 
-        if (!"is".Equals(st.Term, StringComparison.CurrentCulture))
+        if (!"is".Equals(st.Term, StringComparison.Ordinal))
         {
             return null;
         }
 
-        if (!"bare".Equals(st.Value, StringComparison.CurrentCulture))
+        if (!"bare".Equals(st.Value, StringComparison.Ordinal))
         {
             return null;
         }

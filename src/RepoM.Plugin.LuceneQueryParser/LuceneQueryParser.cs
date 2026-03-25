@@ -126,7 +126,7 @@ public class LuceneQueryParser : INamedQueryParser
         var field = queryTerms.First().Field;
         var s = string.Join(" ", queryTerms.Select(qt => qt.Text));
 
-        if (KEY_FREE_TEXT.Equals(field, StringComparison.CurrentCulture))
+        if (KEY_FREE_TEXT.Equals(field, StringComparison.Ordinal))
         {
             return new FreeText(s);
         }
@@ -144,7 +144,7 @@ public class LuceneQueryParser : INamedQueryParser
     private static IQuery ConvertFuzzyQuery(FuzzyQuery fq)
     {
         // do not support fuzzy query,
-        if (KEY_FREE_TEXT.Equals(fq.Term.Field, StringComparison.CurrentCulture))
+        if (KEY_FREE_TEXT.Equals(fq.Term.Field, StringComparison.Ordinal))
         {
             return new FreeText(fq.Term.Text);
         }
@@ -169,7 +169,7 @@ public class LuceneQueryParser : INamedQueryParser
 
     private static IQuery ConvertTermQuery(TermQuery tq)
     {
-        if (KEY_FREE_TEXT.Equals(tq.Term.Field, StringComparison.CurrentCulture))
+        if (KEY_FREE_TEXT.Equals(tq.Term.Field, StringComparison.Ordinal))
         {
             return new FreeText(tq.Term.Text);
         }

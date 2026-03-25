@@ -474,7 +474,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         }
 
         GitRepository[] selectedRepos = _devOpsGitRepositories.Values
-            .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
+            .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.OrdinalIgnoreCase)))
             .ToArray();
 
         if (selectedRepos.Length == 0)
@@ -505,7 +505,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
     private static string GetRepositorySearchUrl(IRepository repository)
     {
-        var urlString = repository.Remotes.SingleOrDefault(x => x.Key.Equals("Origin", StringComparison.CurrentCultureIgnoreCase))?.Url ?? string.Empty;
+        var urlString = repository.Remotes.SingleOrDefault(x => x.Key.Equals("Origin", StringComparison.OrdinalIgnoreCase))?.Url ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(urlString))
         {

@@ -27,8 +27,8 @@ internal class HasPullRequestsMatcher : IQueryMatcher
     {
         _azureDevOpsPullRequestService = azureDevOpsPullRequestService ?? throw new ArgumentNullException(nameof(azureDevOpsPullRequestService));
         _stringComparisonValue = ignoreCase
-            ? StringComparison.CurrentCultureIgnoreCase
-            : StringComparison.CurrentCulture;
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
     }
 
     public bool? IsMatch(in IRepository repository, in TermBase term)
@@ -38,7 +38,7 @@ internal class HasPullRequestsMatcher : IQueryMatcher
             return null;
         }
 
-        if (!"has".Equals(st.Term, StringComparison.CurrentCulture))
+        if (!"has".Equals(st.Term, StringComparison.Ordinal))
         {
             return null;
         }

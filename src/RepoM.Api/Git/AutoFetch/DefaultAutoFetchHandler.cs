@@ -1,6 +1,7 @@
 namespace RepoM.Api.Git.AutoFetch;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -14,9 +15,9 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
     private bool _active;
     private AutoFetchMode? _mode;
     private readonly Timer _timer;
-    private readonly object _sync = new();
-    private RepositoryInfo[] _sortedRepositories = Array.Empty<RepositoryInfo>();
-    private readonly Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
+    private readonly Lock _sync = new();
+    private RepositoryInfo[] _sortedRepositories = [];
+    private readonly FrozenDictionary<AutoFetchMode, AutoFetchProfile> _profiles;
     private int _lastFetchRepository = -1;
     private readonly IAppSettingsService _appSettingsService;
     private readonly IRepositoryStore _repositoryStore;
@@ -38,7 +39,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
                 { AutoFetchMode.Discretely, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromMinutes(5), } },
                 { AutoFetchMode.Adequate, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromMinutes(1), } },
                 { AutoFetchMode.Aggressive, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromSeconds(2), } },
-            };
+            }.ToFrozenDictionary();
 
         _timer = new Timer(FetchNext, null, Timeout.Infinite, Timeout.Infinite);
     }
@@ -105,11 +106,11 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
     private RepositoryInfo[] GetOrUpdateSortedRepositories()
     {
-        var currentItems = _repositoryStore.Items;
+        var currentItems = _repositoryStore.Items.ToList();
 
         // fast path: if the length is the same and we already have a cache, reuse it
         // (in the current implementation the set of repositories changes infrequently)
-        if (_sortedRepositories.Length == currentItems.Count())
+        if (_sortedRepositories.Length == currentItems.Count)
         {
             return _sortedRepositories;
         }
@@ -117,13 +118,13 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         lock (_sync)
         {
             // double-check within the lock
-            if (_sortedRepositories.Length == currentItems.Count())
+            if (_sortedRepositories.Length == currentItems.Count)
             {
                 return _sortedRepositories;
             }
 
             _sortedRepositories = currentItems
-                .OrderBy(r => r.Name)
+                .OrderBy(r => r.Name, StringComparer.Ordinal)
                 .ToArray();
 
             return _sortedRepositories;

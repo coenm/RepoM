@@ -240,7 +240,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     {
         if (tags == null)
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         var items = new List<string>(Tags.Count);

@@ -27,7 +27,7 @@ internal static class CommitMessageExtractor
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to get commit messages until branch {Branch}", toBranch);
-            return Array.Empty<string>();
+            return [];
         }
     }
 }
