@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
 using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Reading;
 using RepoM.Core.Repositories.Scanning;
 using RepoM.Core.Repositories.Store;
@@ -27,6 +28,8 @@ public class RepositoryMonitorService : IModule, IDisposable
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
     private readonly Func<IEnumerable<string>> _pathProvider;
+    private readonly IRepositoryMonitoringService _monitoringState;
+    private readonly IRepositoryMonitoringEvents _monitoringEvents;
     private readonly TimeSpan _scanInterval;
     private readonly Lock _scanLock = new();
     private CompositeDisposable? _subscriptions;
@@ -43,6 +46,8 @@ public class RepositoryMonitorService : IModule, IDisposable
         IRepositoryStore store,
         IFileSystem fileSystem,
         Func<IEnumerable<string>> pathProvider,
+        IRepositoryMonitoringService monitoringState,
+        IRepositoryMonitoringEvents monitoringEvents,
         ILogger logger)
     {
         _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
@@ -51,6 +56,8 @@ public class RepositoryMonitorService : IModule, IDisposable
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
+        _monitoringState = monitoringState ?? throw new ArgumentNullException(nameof(monitoringState));
+        _monitoringEvents = monitoringEvents ?? throw new ArgumentNullException(nameof(monitoringEvents));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _scanInterval = TimeSpan.FromMinutes(30);
     }
@@ -77,8 +84,7 @@ public class RepositoryMonitorService : IModule, IDisposable
         _subscriptions.Add(discoveryWatchSubscription);
 
         // Start filesystem watching for real-time detection.
-        // We intentionally watch per repository gitdir (not per drive) to reduce event loss
-        // and to keep the file watcher workload bounded.
+        // Only set up watchers for repositories that are actively monitored.
         var repoWatcherSetupSubscription = _store
             .Connect()
             .Subscribe(changeSet =>
@@ -94,11 +100,17 @@ public class RepositoryMonitorService : IModule, IDisposable
                         continue;
                     }
 
-                    EnsureRepoWatcher(change.Current);
+                    if (_monitoringState.IsMonitored(change.Current.SafePath))
+                    {
+                        EnsureRepoWatcher(change.Current);
+                    }
                 }
             }, ex => _logger.LogError(ex, "Error in repository watcher setup"));
 
         _subscriptions.Add(repoWatcherSetupSubscription);
+
+        // React to monitoring state changes: add/remove watchers dynamically.
+        _monitoringEvents.MonitoringChanged += OnMonitoringStateChanged;
 
         // Initial scan
         var initialScanSubscription = CreateScanPipeline(_scanCts.Token)
@@ -108,7 +120,7 @@ public class RepositoryMonitorService : IModule, IDisposable
                 () => _logger.LogInformation("Initial scan completed"));
         _subscriptions.Add(initialScanSubscription);
 
-        // Periodic scan
+        // Periodic scan — only refreshes actively monitored repositories.
         if (_scanInterval > TimeSpan.Zero)
         {
             var periodicSubscription = Observable
@@ -121,7 +133,7 @@ public class RepositoryMonitorService : IModule, IDisposable
                         token = _scanCts.Token;
                     }
 
-                    return CreateScanPipeline(token);
+                    return CreateMonitoredRefreshPipeline(token);
                 })
                 .Subscribe(
                     _ => { },
@@ -137,6 +149,41 @@ public class RepositoryMonitorService : IModule, IDisposable
 
         _logger.LogInformation("RepositoryMonitorService started");
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Activates monitoring for a repository. Sets it as monitored and ensures
+    /// a file system watcher is started.
+    /// </summary>
+    public void ActivateMonitoring(string safePath)
+    {
+        _monitoringState.SetMonitored(safePath, true);
+    }
+
+    /// <summary>
+    /// Deactivates monitoring for a repository. Removes the file system watcher.
+    /// </summary>
+    public void DeactivateMonitoring(string safePath)
+    {
+        _monitoringState.SetMonitored(safePath, false);
+    }
+
+    private void OnMonitoringStateChanged(string safePath, bool monitored)
+    {
+        var existing = _store.Lookup(safePath);
+        if (!existing.HasValue)
+        {
+            return;
+        }
+
+        if (monitored)
+        {
+            EnsureRepoWatcher(existing.Value);
+        }
+        else
+        {
+            RemoveRepoWatcher(existing.Value);
+        }
     }
 
     private void EnsureRepoWatcher(RepositoryInfo? repo)
@@ -258,6 +305,7 @@ public class RepositoryMonitorService : IModule, IDisposable
     {
         _logger.LogInformation("RepositoryMonitorService stopping");
 
+        _monitoringEvents.MonitoringChanged -= OnMonitoringStateChanged;
         _subscriptions?.Dispose();
         _subscriptions = null;
 
@@ -321,6 +369,43 @@ public class RepositoryMonitorService : IModule, IDisposable
             .Where(repo => repo != null)
             .Select(repo => repo!)
             .Do(repo => repo.LastSeen = DateTimeOffset.UtcNow)
+            .Buffer(TimeSpan.FromMilliseconds(500))
+            .Where(batch => batch.Count > 0)
+            .Do(batch => _store.AddOrUpdateRange(batch))
+            .SelectMany(batch => batch);
+    }
+
+    /// <summary>
+    /// Creates a pipeline that only re-reads actively monitored repositories
+    /// from the store rather than scanning the entire file system.
+    /// </summary>
+    private IObservable<RepositoryInfo> CreateMonitoredRefreshPipeline(CancellationToken ct = default)
+    {
+        var monitored = _store.Items
+            .Where(r => _monitoringState.IsMonitored(r.SafePath))
+            .ToList();
+
+        if (monitored.Count == 0)
+        {
+            return Observable.Empty<RepositoryInfo>();
+        }
+
+        return monitored
+            .ToObservable()
+            .SelectMany(repo => Observable.FromAsync(async token =>
+            {
+                var headPath = _fileSystem.Path.Combine(repo.Path, ".git", "HEAD");
+                RepositoryInfo? updated = await _reader.ReadAsync(headPath, token).ConfigureAwait(false);
+                updated ??= await _reader.ReadAsync(repo.Path, token).ConfigureAwait(false);
+                if (updated != null)
+                {
+                    updated.LastSeen = DateTimeOffset.UtcNow;
+                    updated.LastUpdated = DateTimeOffset.UtcNow;
+                }
+                return updated;
+            }))
+            .Where(repo => repo != null)
+            .Select(repo => repo!)
             .Buffer(TimeSpan.FromMilliseconds(500))
             .Where(batch => batch.Count > 0)
             .Do(batch => _store.AddOrUpdateRange(batch))
@@ -418,7 +503,9 @@ public class RepositoryMonitorService : IModule, IDisposable
         {
             _logger.LogInformation("Refreshing status of all known repositories");
 
-            RepositoryInfo[] repos = _store.Items.ToArray();
+            RepositoryInfo[] repos = _store.Items
+                .Where(r => _monitoringState.IsMonitored(r.SafePath))
+                .ToArray();
             if (repos.Length == 0)
             {
                 return;
