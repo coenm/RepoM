@@ -836,8 +836,9 @@ public partial class MainWindow
             item.SetSubMenuOpened(async (_, _) =>
             {
                 item.ClearSubMenuOpened();
+                var data = await item.DataTask;
                 item.ClearItems();
-                PopulateSubMenuItems(item, await item.DataTask);
+                PopulateSubMenuItems(item, data);
                 item.ClearData();
             });
         }
