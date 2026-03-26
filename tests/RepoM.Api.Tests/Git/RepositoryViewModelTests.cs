@@ -7,6 +7,7 @@ using AwesomeAssertions;
 using FakeItEasy;
 using RepoM.Api.Git;
 using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Pinning;
 using Xunit;
 
@@ -14,10 +15,12 @@ public class RepositoryViewModelTests
 {
     private readonly RepositoryBuilder _builder = new();
     private readonly IPinningService _pinningService = A.Fake<IPinningService>();
+    private readonly IRepositoryMonitoringService _monitoringService = A.Fake<IRepositoryMonitoringService>();
+    private readonly IRepositoryMonitoringEvents _monitoringEvents = A.Fake<IRepositoryMonitoringEvents>();
 
     private RepositoryViewModel CreateSut(RepositoryInfo? info = null)
     {
-        return new RepositoryViewModel(info ?? _builder.BuildFullFeatured(), _pinningService);
+        return new RepositoryViewModel(info ?? _builder.BuildFullFeatured(), _pinningService, _monitoringService, _monitoringEvents);
     }
 
     public class Ctor : RepositoryViewModelTests
@@ -25,14 +28,14 @@ public class RepositoryViewModelTests
         [Fact]
         public void Throws_When_Info_Is_Null()
         {
-            Action act = () => _ = new RepositoryViewModel(null!, _pinningService);
+            Action act = () => _ = new RepositoryViewModel(null!, _pinningService, _monitoringService, _monitoringEvents);
             act.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
         public void Throws_When_PinningService_Is_Null()
         {
-            Action act = () => _ = new RepositoryViewModel(_builder.BuildFullFeatured(), null!);
+            Action act = () => _ = new RepositoryViewModel(_builder.BuildFullFeatured(), null!, _monitoringService, _monitoringEvents);
             act.Should().Throw<ArgumentNullException>();
         }
     }
@@ -366,11 +369,11 @@ public class RepositoryViewModelTests
         public void Returns_True_For_Same_Path()
         {
             RepositoryInfo info1 = _builder.WithPath(@"C:\Repo\").WithName("R").Build();
-            var sut1 = new RepositoryViewModel(info1, _pinningService);
+            var sut1 = new RepositoryViewModel(info1, _pinningService, _monitoringService, _monitoringEvents);
 
             var builder2 = new RepositoryBuilder();
             RepositoryInfo info2 = builder2.WithPath(@"C:\Repo\").WithName("R").Build();
-            var sut2 = new RepositoryViewModel(info2, _pinningService);
+            var sut2 = new RepositoryViewModel(info2, _pinningService, _monitoringService, _monitoringEvents);
 
             sut1.Equals(sut2).Should().BeTrue();
         }
@@ -379,11 +382,11 @@ public class RepositoryViewModelTests
         public void Returns_True_For_Same_Path_Different_Case()
         {
             RepositoryInfo info1 = _builder.WithPath(@"C:\Repo\").WithName("R").Build();
-            var sut1 = new RepositoryViewModel(info1, _pinningService);
+            var sut1 = new RepositoryViewModel(info1, _pinningService, _monitoringService, _monitoringEvents);
 
             var builder2 = new RepositoryBuilder();
             RepositoryInfo info2 = builder2.WithPath(@"C:\REPO\").WithName("R").Build();
-            var sut2 = new RepositoryViewModel(info2, _pinningService);
+            var sut2 = new RepositoryViewModel(info2, _pinningService, _monitoringService, _monitoringEvents);
 
             sut1.Equals(sut2).Should().BeTrue();
         }
@@ -392,11 +395,11 @@ public class RepositoryViewModelTests
         public void Returns_False_For_Different_Path()
         {
             RepositoryInfo info1 = _builder.WithPath(@"C:\Repo1\").WithName("R").Build();
-            var sut1 = new RepositoryViewModel(info1, _pinningService);
+            var sut1 = new RepositoryViewModel(info1, _pinningService, _monitoringService, _monitoringEvents);
 
             var builder2 = new RepositoryBuilder();
             RepositoryInfo info2 = builder2.WithPath(@"C:\Repo2\").WithName("R").Build();
-            var sut2 = new RepositoryViewModel(info2, _pinningService);
+            var sut2 = new RepositoryViewModel(info2, _pinningService, _monitoringService, _monitoringEvents);
 
             sut1.Equals(sut2).Should().BeFalse();
         }
@@ -429,11 +432,11 @@ public class RepositoryViewModelTests
         public void Equal_ViewModels_Have_Same_HashCode()
         {
             RepositoryInfo info1 = _builder.WithPath(@"C:\Repo\").WithName("R").Build();
-            var sut1 = new RepositoryViewModel(info1, _pinningService);
+            var sut1 = new RepositoryViewModel(info1, _pinningService, _monitoringService, _monitoringEvents);
 
             var builder2 = new RepositoryBuilder();
             RepositoryInfo info2 = builder2.WithPath(@"C:\Repo\").WithName("R").Build();
-            var sut2 = new RepositoryViewModel(info2, _pinningService);
+            var sut2 = new RepositoryViewModel(info2, _pinningService, _monitoringService, _monitoringEvents);
 
             sut1.GetHashCode().Should().Be(sut2.GetHashCode());
         }

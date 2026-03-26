@@ -297,15 +297,37 @@
 						<ListBox.ItemTemplate>
 							<DataTemplate>
 								<StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Margin="8,3,0,3" TextElement.FontSize="14" Text="📌" 
-                                                   Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                        <TextBlock Text="{Binding Name}"
-                                                   ToolTip="{Binding Path}"
-                                                   TextElement.FontSize="17"
-                                                   Foreground="{DynamicResource AccentColorBrush}"
-                                                   Margin="8, 3, 8, 3" />
-                                    </StackPanel>
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right"
+                                                   Margin="4,3,8,3"
+                                                   TextElement.FontSize="14"
+                                                   Cursor="Hand"
+                                                   ToolTip="Toggle active monitoring"
+                                                   MouseLeftButtonUp="MonitoringToggle_Click">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="&#x1F441;"/>
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                    <Setter Property="Opacity" Value="0.3"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsMonitored}" Value="True">
+                                                            <Setter Property="Foreground" Value="#FF42A5F5"/>
+                                                            <Setter Property="Opacity" Value="1.0"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Margin="8,3,0,3" TextElement.FontSize="14" Text="📌" 
+                                                       Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <TextBlock Text="{Binding Name}"
+                                                       ToolTip="{Binding Path}"
+                                                       TextElement.FontSize="17"
+                                                       Foreground="{DynamicResource AccentColorBrush}"
+                                                       Margin="8, 3, 8, 3" />
+                                        </StackPanel>
+                                    </DockPanel>
 									<TextBlock Text="{Binding CurrentBranch}"
                                                FontSize="13.5"
                                                Margin="8, 3, 8, 3" 

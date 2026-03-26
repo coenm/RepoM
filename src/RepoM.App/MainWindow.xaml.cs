@@ -37,6 +37,7 @@ using RepoM.Core.Plugin.RepositoryActions.Commands;
 using RepoM.Core.Repositories;
 using RepoM.Core.Repositories.Adapters;
 using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Pinning;
 using RepoM.Core.Repositories.Store;
 using SourceChord.FluentWPF;
@@ -77,6 +78,8 @@ public partial class MainWindow
     private readonly RepositoryMonitorService _monitorService;
     private readonly IRepositoryStore _store;
     private readonly IPinningService _pinningService;
+    private readonly IRepositoryMonitoringService _monitoringService;
+    private readonly IRepositoryMonitoringEvents _monitoringEvents;
     private readonly ITranslationService _translationService;
     private readonly IFileSystem _fileSystem;
     private readonly ActionExecutor _executor;
@@ -99,6 +102,8 @@ public partial class MainWindow
         RepositoryMonitorService monitorService,
         IRepositoryStore store,
         IPinningService pinningService,
+        IRepositoryMonitoringService monitoringService,
+        IRepositoryMonitoringEvents monitoringEvents,
         IRepositoryIgnoreStore repositoryIgnoreStore,
         IAppSettingsService appSettingsService,
         ITranslationService translationService,
@@ -115,6 +120,8 @@ public partial class MainWindow
         _monitorService = monitorService ?? throw new ArgumentNullException(nameof(monitorService));
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
+        _monitoringService = monitoringService ?? throw new ArgumentNullException(nameof(monitoringService));
+        _monitoringEvents = monitoringEvents ?? throw new ArgumentNullException(nameof(monitoringEvents));
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _userMenuActionFactory = userMenuActionFactory ?? throw new ArgumentNullException(nameof(userMenuActionFactory));
@@ -296,8 +303,9 @@ public partial class MainWindow
 
             var bindSubscription = _store.Connect()
                 .TransformWithInlineUpdate(
-                    info => new RepositoryViewModel(info, _pinningService),
+                    info => new RepositoryViewModel(info, _pinningService, _monitoringService, _monitoringEvents),
                     (existingVm, updatedInfo) => existingVm.Update(updatedInfo))
+                .DisposeMany()
                 .Filter(filterObservable)
                 .Batch(TimeSpan.FromMilliseconds(200))
                 .ObserveOn(uiScheduler)
@@ -398,6 +406,9 @@ public partial class MainWindow
         {
             return false;
         }
+
+        // Auto-activate monitoring when the context menu is opened.
+        vm.EnableMonitoring();
 
         // The context menu is built from repo state, so ensure we have the latest
         // branch/ref information before generating menu actions.
@@ -681,6 +692,15 @@ public partial class MainWindow
         if (MenuButton.ContextMenu != null)
         {
             MenuButton.ContextMenu.IsOpen = true;
+        }
+    }
+
+    private void MonitoringToggle_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is RepositoryViewModel vm)
+        {
+            vm.ToggleMonitoring();
+            e.Handled = true;
         }
     }
 

@@ -8,6 +8,7 @@ using System.Threading;
 using RepoM.Api.Common;
 using RepoM.Core.Repositories.Adapters;
 using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Store;
 
 public class DefaultAutoFetchHandler : IAutoFetchHandler
@@ -22,15 +23,18 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
     private readonly IAppSettingsService _appSettingsService;
     private readonly IRepositoryStore _repositoryStore;
     private readonly IRepositoryWriter _repositoryWriter;
+    private readonly IRepositoryMonitoringService _monitoringService;
 
     public DefaultAutoFetchHandler(
         IAppSettingsService appSettingsService,
         IRepositoryStore repositoryStore,
-        IRepositoryWriter repositoryWriter)
+        IRepositoryWriter repositoryWriter,
+        IRepositoryMonitoringService monitoringService)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         _repositoryStore = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
         _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
+        _monitoringService = monitoringService ?? throw new ArgumentNullException(nameof(monitoringService));
         _appSettingsService.RegisterInvalidationHandler(() => Mode = _appSettingsService.AutoFetchMode);
 
         _profiles = new Dictionary<AutoFetchMode, AutoFetchProfile>
@@ -106,7 +110,9 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
     private RepositoryInfo[] GetOrUpdateSortedRepositories()
     {
-        var currentItems = _repositoryStore.Items.ToList();
+        var currentItems = _repositoryStore.Items
+            .Where(r => _monitoringService.IsMonitored(r.SafePath))
+            .ToList();
 
         // fast path: if the length is the same and we already have a cache, reuse it
         // (in the current implementation the set of repositories changes infrequently)

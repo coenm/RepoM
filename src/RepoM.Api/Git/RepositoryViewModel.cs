@@ -7,10 +7,11 @@ using System.Linq;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Repositories.Adapters;
 using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Pinning;
 
 [DebuggerDisplay("{Name} @{Path}")]
-public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
+public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged, IDisposable
 {
     private static readonly PropertyChangedEventArgs _nameArgs = new(nameof(Name));
     private static readonly PropertyChangedEventArgs _currentBranchArgs = new(nameof(CurrentBranch));
@@ -29,7 +30,10 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
     private static readonly PropertyChangedEventArgs _hasUnpushedChangesArgs = new(nameof(HasUnpushedChanges));
     private static readonly PropertyChangedEventArgs _wasFoundArgs = new(nameof(WasFound));
     private static readonly PropertyChangedEventArgs _tagsArgs = new(nameof(Tags));
+    private static readonly PropertyChangedEventArgs _isMonitoredArgs = new(nameof(IsMonitored));
     private readonly IPinningService _pinningService;
+    private readonly IRepositoryMonitoringService _monitoringService;
+    private readonly IRepositoryMonitoringEvents _monitoringEvents;
     private readonly RepositoryInfoAdapter _adapter;
     private RepositoryInfo _info;
     private int? _cachedRepositoryStatusCode;
@@ -39,12 +43,15 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public RepositoryViewModel(RepositoryInfo info, IPinningService pinningService)
+    public RepositoryViewModel(RepositoryInfo info, IPinningService pinningService, IRepositoryMonitoringService monitoringService, IRepositoryMonitoringEvents monitoringEvents)
     {
         _info = info ?? throw new ArgumentNullException(nameof(info));
         _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
+        _monitoringService = monitoringService ?? throw new ArgumentNullException(nameof(monitoringService));
+        _monitoringEvents = monitoringEvents ?? throw new ArgumentNullException(nameof(monitoringEvents));
         _adapter = new RepositoryInfoAdapter(info);
         Tags = _info.Tags.Select(tag => new TagViewModel(tag)).ToArray();
+        _monitoringEvents.MonitoringChanged += OnMonitoringChanged;
     }
 
     /// <summary>
@@ -147,6 +154,18 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
 
     public bool IsPinned => _pinningService.IsPinned(_info.SafePath);
 
+    public bool IsMonitored => _monitoringService.IsMonitored(_info.SafePath);
+
+    public void ToggleMonitoring()
+    {
+        _monitoringService.SetMonitored(_info.SafePath, !IsMonitored);
+    }
+
+    public void EnableMonitoring()
+    {
+        _monitoringService.EnableMonitoring(_info.SafePath);
+    }
+
     public bool IsNotBare => !_info.IsBare;
 
     public string Name => _info.Name + (IsSynchronizing ? SyncAppendix : string.Empty);
@@ -245,4 +264,17 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
     }
 
     private static string SyncAppendix => "  \u2191\u2193"; // up and down arrows
+
+    private void OnMonitoringChanged(string safePath, bool monitored)
+    {
+        if (string.Equals(safePath, _info.SafePath, StringComparison.OrdinalIgnoreCase))
+        {
+            PropertyChanged?.Invoke(this, _isMonitoredArgs);
+        }
+    }
+
+    public void Dispose()
+    {
+        _monitoringEvents.MonitoringChanged -= OnMonitoringChanged;
+    }
 }
