@@ -25,7 +25,6 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
     private static readonly PropertyChangedEventArgs _localAddedArgs = new(nameof(LocalAdded));
     private static readonly PropertyChangedEventArgs _localStagedArgs = new(nameof(LocalStaged));
     private static readonly PropertyChangedEventArgs _localRemovedArgs = new(nameof(LocalRemoved));
-    private static readonly PropertyChangedEventArgs _localIgnoredArgs = new(nameof(LocalIgnored));
     private static readonly PropertyChangedEventArgs _stashCountArgs = new(nameof(StashCount));
     private static readonly PropertyChangedEventArgs _hasUnpushedChangesArgs = new(nameof(HasUnpushedChanges));
     private static readonly PropertyChangedEventArgs _wasFoundArgs = new(nameof(WasFound));
@@ -85,7 +84,6 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
         NotifyIfChanged(oldInfo.LocalAdded, newInfo.LocalAdded, _localAddedArgs);
         NotifyIfChanged(oldInfo.LocalStaged, newInfo.LocalStaged, _localStagedArgs);
         NotifyIfChanged(oldInfo.LocalRemoved, newInfo.LocalRemoved, _localRemovedArgs);
-        NotifyIfChanged(oldInfo.LocalIgnored, newInfo.LocalIgnored, _localIgnoredArgs);
         NotifyIfChanged(oldInfo.StashCount, newInfo.StashCount, _stashCountArgs);
         NotifyIfChanged(oldInfo.HasUnpushedChanges, newInfo.HasUnpushedChanges, _hasUnpushedChangesArgs);
         NotifyIfChanged(oldInfo.WasFound, newInfo.WasFound, _wasFoundArgs);
@@ -176,8 +174,6 @@ public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged
     public string LocalStaged => NullableIntToString(_info.LocalStaged);
 
     public string LocalRemoved => NullableIntToString(_info.LocalRemoved);
-
-    public string LocalIgnored => NullableIntToString(_info.LocalIgnored);
 
     public string StashCount => NullableIntToString(_info.StashCount);
 

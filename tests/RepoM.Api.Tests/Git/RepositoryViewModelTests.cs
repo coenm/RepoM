@@ -184,15 +184,6 @@ public class RepositoryViewModelTests
         }
 
         [Fact]
-        public void LocalIgnored_Returns_Value_As_String()
-        {
-            RepositoryInfo info = _builder.FullFeatured().WithLocalIgnored(11).Build();
-            RepositoryViewModel sut = CreateSut(info);
-
-            sut.LocalIgnored.Should().Be("11");
-        }
-
-        [Fact]
         public void StashCount_Returns_Value_As_String()
         {
             RepositoryInfo info = _builder.FullFeatured().WithStashCount(2).Build();
@@ -620,21 +611,6 @@ public class RepositoryViewModelTests
             sut.Update(updated);
 
             raised.Should().Contain(nameof(RepositoryViewModel.LocalRemoved));
-        }
-
-        [Fact]
-        public void Raises_PropertyChanged_For_LocalIgnored_When_Changed()
-        {
-            RepositoryInfo original = _builder.FullFeatured().WithLocalIgnored(1).Build();
-            RepositoryViewModel sut = CreateSut(original);
-            var raised = new List<string>();
-            sut.PropertyChanged += (_, e) => raised.Add(e.PropertyName!);
-
-            var newBuilder = new RepositoryBuilder();
-            RepositoryInfo updated = newBuilder.FullFeatured().WithLocalIgnored(6).Build();
-            sut.Update(updated);
-
-            raised.Should().Contain(nameof(RepositoryViewModel.LocalIgnored));
         }
 
         [Fact]

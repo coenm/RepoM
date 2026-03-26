@@ -73,8 +73,6 @@ public sealed class RepositoryInfo : IEquatable<RepositoryInfo>
 
     public int? LocalRemoved { get; set; }
 
-    public int? LocalIgnored { get; set; }
-
     public int? StashCount { get; set; }
 
     public Func<string[]>? AllBranchesReader { get; init; }
@@ -97,7 +95,6 @@ public sealed class RepositoryInfo : IEquatable<RepositoryInfo>
         hash.Add(LocalAdded ?? 0);
         hash.Add(LocalStaged ?? 0);
         hash.Add(LocalRemoved ?? 0);
-        hash.Add(LocalIgnored ?? 0);
         hash.Add(StashCount ?? 0);
         return hash.ToHashCode();
     }
@@ -132,7 +129,6 @@ public sealed class RepositoryInfo : IEquatable<RepositoryInfo>
             && LocalAdded == other.LocalAdded
             && LocalStaged == other.LocalStaged
             && LocalRemoved == other.LocalRemoved
-            && LocalIgnored == other.LocalIgnored
             && StashCount == other.StashCount
             && WasFound == other.WasFound
             && Tags.SequenceEqual(other.Tags)

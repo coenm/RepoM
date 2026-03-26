@@ -98,7 +98,12 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
 
             if (!repo.Info.IsBare)
             {
-                status = repo.RetrieveStatus();
+                status = repo.RetrieveStatus(new StatusOptions
+                    {
+                        IncludeIgnored = false,
+                        DetectRenamesInIndex = false,
+                        DetectRenamesInWorkDir = false,
+                    });
                 workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
             }
 
@@ -131,7 +136,6 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
             int? localAdded = null;
             int? localStaged = null;
             int? localRemoved = null;
-            int? localIgnored = null;
 
             if (status is not null)
             {
@@ -141,7 +145,6 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
                 localAdded = status.Added.Count();
                 localStaged = status.Staged.Count();
                 localRemoved = status.Removed.Count();
-                localIgnored = status.Ignored.Count();
             }
 
             var info = new RepositoryInfo
@@ -168,7 +171,6 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
                     LocalAdded = localAdded,
                     LocalStaged = localStaged,
                     LocalRemoved = localRemoved,
-                    LocalIgnored = localIgnored,
                     StashCount = repo.Stashes?.Count() ?? 0,
                     Tags = [],
                 };

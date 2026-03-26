@@ -31,7 +31,6 @@ public class RepositoryInfoTests
         sut.LocalAdded = 6;
         sut.LocalStaged = 7;
         sut.LocalRemoved = 8;
-        sut.LocalIgnored = 9;
         sut.StashCount = 10;
 
         // Act & Assert
@@ -71,7 +70,6 @@ public class RepositoryInfoTests
         withZeros.LocalAdded = 0;
         withZeros.LocalStaged = 0;
         withZeros.LocalRemoved = 0;
-        withZeros.LocalIgnored = 0;
         withZeros.StashCount = 0;
 
         // Act & Assert
@@ -308,7 +306,6 @@ public class RepositoryInfoTests
     [InlineData(nameof(RepositoryInfo.LocalAdded))]
     [InlineData(nameof(RepositoryInfo.LocalStaged))]
     [InlineData(nameof(RepositoryInfo.LocalRemoved))]
-    [InlineData(nameof(RepositoryInfo.LocalIgnored))]
     [InlineData(nameof(RepositoryInfo.StashCount))]
     public void Equals_ShouldReturnFalse_WhenNullableIntPropertyDiffers(string propertyName)
     {
