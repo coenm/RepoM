@@ -206,6 +206,10 @@ public partial class MainWindow
     {
         base.OnActivated(e);
         ShowUpdateIfAvailable();
+
+        txtFilter.Focus();
+        txtFilter.SelectAll();
+
         if (!_monitorService.IsStalenessCheckRunning)
         {
             Task.Run(() => _monitorService.RemoveStaleRepositories());
@@ -213,9 +217,6 @@ public partial class MainWindow
 
         // Await so the UI (incl. context menu actions) is based on current git refs.
         await _monitorService.RefreshAllAsync();
-
-        txtFilter.Focus();
-        txtFilter.SelectAll();
     }
 
     protected override void OnDeactivated(EventArgs e)
