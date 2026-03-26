@@ -471,12 +471,25 @@ public class RepositoryMonitorService : IModule, IDisposable
         }
     }
 
+    private static readonly TimeSpan _refreshThreshold = TimeSpan.FromSeconds(2);
+
     public async Task<RepositoryInfo?> RefreshRepositoryAsync(string repositoryPath, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(repositoryPath);
 
         try
         {
+            // If the store already has a recent snapshot, skip the expensive
+            // LibGit2Sharp read entirely.  The file-system watcher keeps the
+            // store up-to-date in near real-time, so a short freshness window
+            // is safe and avoids RetrieveStatus() on every context-menu open.
+            var safePath = NormalizeToSafePath(repositoryPath);
+            var existing = _store.Lookup(safePath);
+            if (existing.HasValue && (DateTimeOffset.UtcNow - existing.Value.LastUpdated) < _refreshThreshold)
+            {
+                return existing.Value;
+            }
+
             RepositoryInfo? updated = await _reader.ReadAsync(repositoryPath, ct).ConfigureAwait(false);
             if (updated == null)
             {
