@@ -2,10 +2,12 @@ namespace RepoM.Plugin.AzureDevOps.Internal;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Repository;
 
+[ExcludeFromCodeCoverage]
 internal static class CommitMessageExtractor
 {
     public static IEnumerable<string> GetCommitMessagesUntilBranch(IRepository repository, string toBranch, ILogger logger)

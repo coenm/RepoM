@@ -2,6 +2,7 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -12,6 +13,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Reading;
 
+[ExcludeFromCodeCoverage]
 public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
 {
     private readonly IRepositoryTagsFactory _resolver;

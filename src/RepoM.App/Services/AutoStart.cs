@@ -1,9 +1,11 @@
 namespace RepoM.App.Services;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Win32;
 
+[ExcludeFromCodeCoverage]
 internal static class AutoStart
 {
     private const string REG_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
