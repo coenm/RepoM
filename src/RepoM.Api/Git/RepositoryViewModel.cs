@@ -11,7 +11,7 @@ using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Pinning;
 
 [DebuggerDisplay("{Name} @{Path}")]
-public class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged, IDisposable
+public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged, IDisposable
 {
     private static readonly PropertyChangedEventArgs _nameArgs = new(nameof(Name));
     private static readonly PropertyChangedEventArgs _currentBranchArgs = new(nameof(CurrentBranch));
