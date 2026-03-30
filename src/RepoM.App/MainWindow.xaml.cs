@@ -19,6 +19,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media.Animation;
 using DynamicData;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.UserInterface;
@@ -324,6 +325,7 @@ public partial class MainWindow
             PlaceFormByTaskBarLocation();
 
             loadingOverlay.Visibility = Visibility.Collapsed;
+            BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150)));
         });
     }
 
@@ -333,11 +335,13 @@ public partial class MainWindow
     {
         Dispatcher.Invoke(() =>
             {
+                Opacity = 0;
                 PlaceFormByTaskBarLocation();
                 Show();
                 Activate();
                 txtFilter.Focus();
                 txtFilter.SelectAll();
+                BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150)));
             });
     }
 
