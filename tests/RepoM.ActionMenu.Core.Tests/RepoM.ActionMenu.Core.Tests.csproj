@@ -34,7 +34,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Scriban" Version="6.5.3" />
+    <PackageReference Include="Scriban" Version="7.0.6" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 
