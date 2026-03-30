@@ -8,7 +8,7 @@ using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Core.Repositories.Pinning;
 
 [UsedImplicitly]
-public class IsPinnedMatcher : IQueryMatcher
+public sealed class IsPinnedMatcher : IQueryMatcher
 {
     private readonly IPinningService _pinningService;
 
@@ -24,17 +24,17 @@ public class IsPinnedMatcher : IQueryMatcher
             return null;
         }
 
-        if (!"is".Equals(st.Term, StringComparison.CurrentCulture))
+        if (!"is".Equals(st.Term, StringComparison.Ordinal))
         {
             return null;
         }
 
-        if ("pinned".Equals(st.Value, StringComparison.CurrentCulture))
+        if ("pinned".Equals(st.Value, StringComparison.Ordinal))
         {
             return _pinningService.IsPinned(repository.SafePath);
         }
 
-        if ("unpinned".Equals(st.Value, StringComparison.CurrentCulture))
+        if ("unpinned".Equals(st.Value, StringComparison.Ordinal))
         {
             return !_pinningService.IsPinned(repository.SafePath);
         }

@@ -1,13 +1,14 @@
 namespace RepoM.App.RepositoryFiltering.QueryMatchers;
 
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 [UsedImplicitly]
-public class FreeTextMatcher : IQueryMatcher
+public sealed class FreeTextMatcher : IQueryMatcher
 {
     private readonly StringComparison _stringComparisonFreeText;
     private readonly StringComparison _stringComparisonTag;
@@ -15,11 +16,11 @@ public class FreeTextMatcher : IQueryMatcher
     public FreeTextMatcher(bool ignoreCase, bool ignoreCaseTag)
     {
         _stringComparisonFreeText = ignoreCase
-            ? StringComparison.CurrentCultureIgnoreCase
-            : StringComparison.CurrentCulture;
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
         _stringComparisonTag = ignoreCaseTag
-            ? StringComparison.CurrentCultureIgnoreCase
-            : StringComparison.CurrentCulture;
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
     }
 
     public bool? IsMatch(in IRepository repository, in TermBase term)
@@ -29,7 +30,7 @@ public class FreeTextMatcher : IQueryMatcher
             return null;
         }
 
-        if (Array.Exists(repository.Tags, x => x.Equals(st.Value, _stringComparisonTag)))
+        if (repository.Tags.Any(x => x.Equals(st.Value, _stringComparisonTag)))
         {
             return true;
         }

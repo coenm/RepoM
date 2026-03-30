@@ -15,5 +15,5 @@ internal interface IAzureDevOpsPullRequestService
 
     Task CreatePullRequestAsync(IRepository repository, string projectId, List<string> reviewersIds, string toBranch, string? title = null, bool isDraft = false, bool includeWorkItems = true, bool openInBrowser = false, CancellationToken cancellationToken = default);
 
-    List<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId);
+    IReadOnlyList<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId);
 }

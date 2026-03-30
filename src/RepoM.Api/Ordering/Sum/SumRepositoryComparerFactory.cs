@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-public class SumRepositoryComparerFactory : IRepositoryComparerFactory<SumComparerConfigurationV1>
+public sealed class SumRepositoryComparerFactory : IRepositoryComparerFactory<SumComparerConfigurationV1>
 {
     private readonly IRepositoryComparerFactory _factory;
 

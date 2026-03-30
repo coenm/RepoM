@@ -9,7 +9,7 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
-internal class RepositoryMatcher : IRepositoryMatcher
+internal sealed class RepositoryMatcher : IRepositoryMatcher
 {
     private readonly IQueryMatcher[] _queryMatchers;
 
@@ -51,12 +51,12 @@ internal class RepositoryMatcher : IRepositoryMatcher
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool HandleAnd(IRepository repository, AndQuery and)
     {
-        return Array.TrueForAll(and.Items, query => Matches(repository, query));
+        return and.Items.All(query => Matches(repository, query));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool HandleOr(IRepository repository, OrQuery or)
     {
-        return Array.Exists(or.Items, query => Matches(repository, query));
+        return or.Items.Any(query => Matches(repository, query));
     }
 }

@@ -10,6 +10,8 @@ public interface IRepositoryStore : IDisposable
 {
     void AddOrUpdate(RepositoryInfo repository);
 
+    void AddOrUpdateRange(IEnumerable<RepositoryInfo> repositories);
+
     void Remove(string safePath);
 
     void Clear();
@@ -22,5 +24,5 @@ public interface IRepositoryStore : IDisposable
 
     int Count { get; }
 
-    IReadOnlyCollection<RepositoryInfo> Items { get; }
+    IEnumerable<RepositoryInfo> Items { get; }
 }

@@ -2,6 +2,7 @@ namespace RepoM.ActionMenu.Core.Model;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using RepoM.ActionMenu.Core.ActionMenu.Context;
 using RepoM.ActionMenu.Core.Yaml.Model.ActionContext;
@@ -72,7 +73,7 @@ internal sealed class DisposableContextScriptObject : IScriptObject, IScope
             return;
         }
 
-        IContextActionProcessor? mapper = Array.Find(_mappers, mapper => mapper.CanProcess(in contextItem));
+        IContextActionProcessor? mapper = _mappers.FirstOrDefault(mapper => mapper.CanProcess(in contextItem));
         if (mapper == null)
         {
             throw new Exception("Cannot find mapper");

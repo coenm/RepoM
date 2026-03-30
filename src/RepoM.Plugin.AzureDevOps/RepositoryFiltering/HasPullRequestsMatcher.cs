@@ -3,10 +3,11 @@ namespace RepoM.Plugin.AzureDevOps.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using System;
+using System.Linq;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Plugin.AzureDevOps.Internal;
 
-internal class HasPullRequestsMatcher : IQueryMatcher
+internal sealed class HasPullRequestsMatcher : IQueryMatcher
 {
     private static readonly string[] _values =
         [
@@ -26,8 +27,8 @@ internal class HasPullRequestsMatcher : IQueryMatcher
     {
         _azureDevOpsPullRequestService = azureDevOpsPullRequestService ?? throw new ArgumentNullException(nameof(azureDevOpsPullRequestService));
         _stringComparisonValue = ignoreCase
-            ? StringComparison.CurrentCultureIgnoreCase
-            : StringComparison.CurrentCulture;
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
     }
 
     public bool? IsMatch(in IRepository repository, in TermBase term)
@@ -37,12 +38,12 @@ internal class HasPullRequestsMatcher : IQueryMatcher
             return null;
         }
 
-        if (!"has".Equals(st.Term, StringComparison.CurrentCulture))
+        if (!"has".Equals(st.Term, StringComparison.Ordinal))
         {
             return null;
         }
 
-        if (Array.Exists(_values, x => x.Equals(st.Value, _stringComparisonValue)))
+        if (_values.Any(x => x.Equals(st.Value, _stringComparisonValue)))
         {
             return HasPullRequests(repository);
         }

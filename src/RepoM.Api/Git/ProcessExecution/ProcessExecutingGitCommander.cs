@@ -177,7 +177,7 @@ public partial class ProcessExecutingGitCommander : IGitCommander
 
     private static void SetArguments(ProcessStartInfo startInfo, params string[] args)
     {
-        startInfo.Arguments = string.Join(" ", args.Select(QuoteProcessArgument).ToArray());
+        startInfo.Arguments = string.Join(" ", args.Select(QuoteProcessArgument));
     }
 
     private static string QuoteProcessArgument(string arg)

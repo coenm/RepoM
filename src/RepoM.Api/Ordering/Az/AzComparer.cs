@@ -4,7 +4,7 @@ using System;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-public class AzComparer : IRepositoryComparer
+public sealed class AzComparer : IRepositoryComparer
 {
     private readonly int _weight;
     private readonly string? _property;

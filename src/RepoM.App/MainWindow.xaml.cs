@@ -1,22 +1,26 @@
 namespace RepoM.App;
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media.Animation;
 using DynamicData;
-using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Common;
@@ -29,9 +33,12 @@ using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
 using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
+using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
-using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Repositories;
+using RepoM.Core.Repositories.Adapters;
+using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Pinning;
 using RepoM.Core.Repositories.Store;
 using SourceChord.FluentWPF;
@@ -44,22 +51,48 @@ using WpfContextMenu = System.Windows.Controls.ContextMenu;
 /// </summary>
 public partial class MainWindow
 {
-    private volatile bool _refreshDelayed;
-    private DateTime _timeOfLastRefresh = DateTime.MinValue;
     private bool _closeOnDeactivate = true;
+    private static readonly bool _useOffScreenHide =
+        string.Equals(Environment.GetEnvironmentVariable("REPOM_HIDE_OFFSCREEN"), "1", StringComparison.Ordinal);
+
+    private enum AcrylicBehavior
+    {
+        /// <summary>
+        /// Current/legacy behavior: acrylic enabled, but temporarily disabled during resize.
+        /// </summary>
+        Legacy = 0,
+
+        /// <summary>
+        /// No acrylic effects at all.
+        /// </summary>
+        Disabled = 1,
+
+        /// <summary>
+        /// Acrylic always enabled and never disabled during resize.
+        /// </summary>
+        AlwaysOn = 2,
+    }
+
+    private static readonly AcrylicBehavior _acrylicBehavior = GetAcrylicBehavior();
+
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly RepositoryMonitorService _monitorService;
     private readonly IRepositoryStore _store;
     private readonly IPinningService _pinningService;
+    private readonly IRepositoryMonitoringService _monitoringService;
+    private readonly IRepositoryMonitoringEvents _monitoringEvents;
     private readonly ITranslationService _translationService;
     private readonly IFileSystem _fileSystem;
     private readonly ActionExecutor _executor;
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
-    private readonly IRepositoryMatcher _repositoryMatcher;
     private readonly ILogger _logger;
     private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private readonly IAppDataPathProvider _appDataPathProvider;
-    private readonly ReadOnlyObservableCollection<RepositoryViewModel> _repositories;
+    private readonly IRepositoryComparerManager _repositoryComparerManager;
+    private readonly IThreadDispatcher _threadDispatcher;
+    private readonly IAppSettingsService _appSettingsService;
+    private readonly IModuleManager _moduleManager;
+    private ReadOnlyObservableCollection<RepositoryViewModel> _repositories = null!;
     private readonly CompositeDisposable _disposables = new();
     private bool _isScanning;
     private readonly object _separator = new();
@@ -70,6 +103,8 @@ public partial class MainWindow
         RepositoryMonitorService monitorService,
         IRepositoryStore store,
         IPinningService pinningService,
+        IRepositoryMonitoringService monitoringService,
+        IRepositoryMonitoringEvents monitoringEvents,
         IRepositoryIgnoreStore repositoryIgnoreStore,
         IAppSettingsService appSettingsService,
         ITranslationService translationService,
@@ -79,7 +114,6 @@ public partial class MainWindow
         IRepositoryComparerManager repositoryComparerManager,
         IThreadDispatcher threadDispatcher,
         IRepositoryFilteringManager repositoryFilteringManager,
-        IRepositoryMatcher repositoryMatcher,
         IModuleManager moduleManager,
         ILogger logger,
         IUserMenuActionMenuFactory userMenuActionFactory)
@@ -87,8 +121,9 @@ public partial class MainWindow
         _monitorService = monitorService ?? throw new ArgumentNullException(nameof(monitorService));
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
+        _monitoringService = monitoringService ?? throw new ArgumentNullException(nameof(monitoringService));
+        _monitoringEvents = monitoringEvents ?? throw new ArgumentNullException(nameof(monitoringEvents));
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
-        _repositoryMatcher = repositoryMatcher ?? throw new ArgumentNullException(nameof(repositoryMatcher));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _userMenuActionFactory = userMenuActionFactory ?? throw new ArgumentNullException(nameof(userMenuActionFactory));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
@@ -96,78 +131,93 @@ public partial class MainWindow
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _executor = executor ?? throw new ArgumentNullException(nameof(executor));
+        _repositoryComparerManager = repositoryComparerManager ?? throw new ArgumentNullException(nameof(repositoryComparerManager));
+        _threadDispatcher = threadDispatcher ?? throw new ArgumentNullException(nameof(threadDispatcher));
+        _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+        _moduleManager = moduleManager ?? throw new ArgumentNullException(nameof(moduleManager));
 
         InitializeComponent();
 
         SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
-        var orderingsViewModel = new OrderingsViewModel(repositoryComparerManager, threadDispatcher);
-        var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, threadDispatcher);
-        var pluginsViewModel = new PluginCollectionViewModel(moduleManager);
+        // Configure acrylic behavior based on environment variable.
+        switch (_acrylicBehavior)
+        {
+            case AcrylicBehavior.Disabled:
+                AcrylicWindow.SetEnabled(this, false);
+                break;
+            case AcrylicBehavior.AlwaysOn:
+                AcrylicWindow.SetEnabled(this, true);
+                break;
+            case AcrylicBehavior.Legacy:
+            default:
+                // Keep existing behavior.
+                break;
+        }
 
-        DataContext = new MainWindowViewModel(
-            appSettingsService,
-            orderingsViewModel,
-            queryParsersViewModel,
-            filterViewModel,
-            pluginsViewModel,
-            new HelpViewModel(_translationService));
-        SettingsMenu.DataContext = DataContext; // this is out of the visual tree
+        Loaded += (_, _) =>
+        {
+            // In legacy mode we keep the old behavior: disable acrylic during resize.
+            if (_acrylicBehavior != AcrylicBehavior.Legacy)
+            {
+                return;
+            }
 
-        // Subscribe to scan state
-        var scanSubscription = _monitorService.IsScanning
-            .ObserveOn(new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!))
-            .Subscribe(isScanning => ShowScanningState(isScanning));
-        _disposables.Add(scanSubscription);
-
-        // Bind store to ReadOnlyObservableCollection via DynamicData
-        var uiScheduler = new System.Reactive.Concurrency.SynchronizationContextScheduler(System.Threading.SynchronizationContext.Current!);
-        var bindSubscription = _store.Connect()
-            .Transform(info => new RepositoryViewModel(info, _pinningService))
-            .ObserveOn(uiScheduler)
-            .Bind(out _repositories)
-            .Subscribe();
-        _disposables.Add(bindSubscription);
-
-        lstRepositories.ItemsSource = _repositories;
-
-        var view = (ListCollectionView)CollectionViewSource.GetDefaultView(_repositories);
-        ((ICollectionView)view).CollectionChanged += View_CollectionChanged;
-        view.Filter = FilterRepositories;
-        view.CustomSort = repositoryComparerManager.Comparer;
-        repositoryComparerManager.SelectedRepositoryComparerKeyChanged += (_, _) => view.Refresh();
-        repositoryFilteringManager.SelectedQueryParserChanged += (_, _) => view.Refresh();
-        repositoryFilteringManager.SelectedFilterChanged += (_, _) => view.Refresh();
-
-        // Refresh the view when repository data is updated (e.g. branch switch)
-        var refreshSubscription = _store.Connect()
-            .WhereReasonsAre(DynamicData.ChangeReason.Update)
-            .Throttle(TimeSpan.FromMilliseconds(300))
-            .ObserveOn(uiScheduler)
-            .Subscribe(_ => view.Refresh());
-        _disposables.Add(refreshSubscription);
-
-        PlaceFormByTaskBarLocation();
+            if (PresentationSource.FromVisual(this) is HwndSource hwndSource)
+            {
+                hwndSource.AddHook(ResizeHook);
+            }
+        };
     }
 
-    private void View_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private const int WM_ENTERSIZEMOVE = 0x0231;
+    private const int WM_EXITSIZEMOVE = 0x0232;
+
+    private IntPtr ResizeHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        // use the list's itemsource directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
-        var hasRepositories = lstRepositories.ItemsSource.OfType<RepositoryViewModel>().Any();
-        tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible;
+        // Only apply the resize behavior in legacy mode; in other modes we leave
+        // acrylic either always off or always on.
+        if (_acrylicBehavior != AcrylicBehavior.Legacy)
+        {
+            return IntPtr.Zero;
+        }
+
+        switch (msg)
+        {
+            case WM_ENTERSIZEMOVE:
+                AcrylicWindow.SetEnabled(this, false);
+                break;
+            case WM_EXITSIZEMOVE:
+                AcrylicWindow.SetEnabled(this, true);
+                break;
+        }
+
+        return IntPtr.Zero;
     }
 
-    protected override void OnActivated(EventArgs e)
+    private void UpdateNoRepositoriesVisibility()
+    {
+        // Show "no repositories" only when the store is truly empty (not just filtered to zero results).
+        var hasRepositories = _store.Count > 0;
+        Dispatcher.InvokeAsync(() =>
+            tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible);
+    }
+
+    protected override async void OnActivated(EventArgs e)
     {
         base.OnActivated(e);
         ShowUpdateIfAvailable();
+
+        txtFilter.Focus();
+        txtFilter.SelectAll();
+
         if (!_monitorService.IsStalenessCheckRunning)
         {
             Task.Run(() => _monitorService.RemoveStaleRepositories());
         }
-        txtFilter.Focus();
-        txtFilter.SelectAll();
+
+        // Await so the UI (incl. context menu actions) is based on current git refs.
+        await _monitorService.RefreshAllAsync();
     }
 
     protected override void OnDeactivated(EventArgs e)
@@ -176,14 +226,14 @@ public partial class MainWindow
 
         if (_closeOnDeactivate)
         {
-            Hide();
+            HideWindow();
         }
     }
 
     protected override void OnClosing(CancelEventArgs e)
     {
         e.Cancel = true;
-        Hide();
+        HideWindow();
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -198,24 +248,100 @@ public partial class MainWindow
         var isFilterActive = txtFilter.IsFocused && !string.IsNullOrEmpty(txtFilter.Text);
         if (!isFilterActive)
         {
+            HideWindow();
+        }
+    }
+
+    /// <summary>
+    /// Hides the window. When REPOM_HIDE_OFFSCREEN=1, moves the window off-screen instead of
+    /// calling <see cref="Window.Hide"/> so the DWM acrylic composition stays alive and avoids
+    /// a white flash on re-show.
+    /// </summary>
+    private void HideWindow()
+    {
+        if (_useOffScreenHide)
+        {
+            Left = -99999;
+            Top = -99999;
+        }
+        else
+        {
             Hide();
         }
     }
+
+    public void SetReady()
+    {
+        Dispatcher.Invoke(() =>
+        {
+            var orderingsViewModel = new OrderingsViewModel(_repositoryComparerManager, _threadDispatcher);
+            var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, _threadDispatcher);
+            var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, _threadDispatcher);
+            var pluginsViewModel = new PluginCollectionViewModel(_moduleManager);
+
+            DataContext = new MainWindowViewModel(
+                _appSettingsService,
+                orderingsViewModel,
+                queryParsersViewModel,
+                filterViewModel,
+                pluginsViewModel,
+                new HelpViewModel(_translationService));
+            SettingsMenu.DataContext = DataContext; // this is out of the visual tree
+
+            var uiScheduler = new SynchronizationContextScheduler(SynchronizationContext.Current!);
+
+            // Subscribe to scan state
+            var scanSubscription = _monitorService.IsScanning
+                .ObserveOn(uiScheduler)
+                .Subscribe(isScanning => ShowScanningState(isScanning));
+            _disposables.Add(scanSubscription);
+
+            // --- DynamicData pipeline: filter & sort on background, bind on UI ---
+            _filterTextSubject = new BehaviorSubject<string>(string.Empty);
+            _disposables.Add(_filterTextSubject);
+
+            var filterObservable = _repositoryFilteringManager.CreateFilterObservable(
+                _filterTextSubject.Throttle(TimeSpan.FromMilliseconds(200)).DistinctUntilChanged());
+
+            var bindSubscription = _store.Connect()
+                .TransformWithInlineUpdate(
+                    info => new RepositoryViewModel(info, _pinningService, _monitoringService, _monitoringEvents),
+                    (existingVm, updatedInfo) => existingVm.Update(updatedInfo))
+                .DisposeMany()
+                .Filter(filterObservable)
+                .Batch(TimeSpan.FromMilliseconds(200))
+                .ObserveOn(uiScheduler)
+                .SortAndBind(out _repositories, _repositoryComparerManager.SortObservable)
+                .Subscribe();
+            _disposables.Add(bindSubscription);
+
+            lstRepositories.ItemsSource = _repositories;
+
+            // Track whether we have any repositories at all (unfiltered count)
+            var countSubscription = _store.Connect()
+                .Subscribe(_ => UpdateNoRepositoriesVisibility());
+            _disposables.Add(countSubscription);
+
+            PlaceFormByTaskBarLocation();
+
+            loadingOverlay.Visibility = Visibility.Collapsed;
+            BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150)));
+        });
+    }
+
+    private BehaviorSubject<string>? _filterTextSubject;
 
     public void ShowAndActivate()
     {
         Dispatcher.Invoke(() =>
             {
+                Opacity = 0;
                 PlaceFormByTaskBarLocation();
-
-                if (!IsShown)
-                {
-                    Show();
-                }
-
+                Show();
                 Activate();
                 txtFilter.Focus();
                 txtFilter.SelectAll();
+                BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150)));
             });
     }
 
@@ -286,6 +412,14 @@ public partial class MainWindow
             return false;
         }
 
+        // Auto-activate monitoring when the context menu is opened.
+        vm.EnableMonitoring();
+
+        // The context menu is built from repo state, so ensure we have the latest
+        // branch/ref information before generating menu actions.
+        RepositoryInfo? updatedInfo = await _monitorService.RefreshRepositoryAsync(vm.Path, CancellationToken.None).ConfigureAwait(false);
+        IRepository repositoryForMenu = updatedInfo != null ? new RepositoryInfoAdapter(updatedInfo) : vm.Repository;
+
         int AddItemMenuAndSeparator(int count)
         {
             ctxMenu.Items.Add(new AcrylicMenuItem
@@ -312,104 +446,43 @@ public partial class MainWindow
             return count + 3;
         }
 
+        // Phase 1: Collect all actions off the UI thread to avoid per-item
+        // dispatcher marshaling and intermediate layout passes.
+        var actions = new List<UserInterfaceRepositoryActionBase>();
+        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(repositoryForMenu).ConfigureAwait(false))
+        {
+            actions.Add(action);
+        }
+
+        // Phase 2: Marshal back to UI thread once and apply all changes
+        // in a single synchronous batch — no intermediate layout passes.
+        await Dispatcher.InvokeAsync(() => ApplyMenuActions(ctxMenu, actions, vm, AddItemMenuAndSeparator));
+
+        return true;
+    }
+
+    private void ApplyMenuActions(
+        WpfContextMenu ctxMenu,
+        List<UserInterfaceRepositoryActionBase> actions,
+        RepositoryViewModel vm,
+        Func<int, int> addItemMenuAndSeparator)
+    {
         var index = -1;
         var lastVisibleSeparator = false;
-
         var ctxMenuItemsCount = ctxMenu.Items.Count;
 
-        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionFactory.CreateMenuAsync(vm.Repository).ConfigureAwait(true))
+        foreach (UserInterfaceRepositoryActionBase action in actions)
         {
             index++;
+
             if (action is UserInterfaceSeparatorRepositoryAction)
             {
-                while (ctxMenuItemsCount > index && ctxMenu.Items[index] is AcrylicMenuItem ami)
-                {
-                    if (ami.Visibility != Visibility.Collapsed)
-                    {
-                        ami.Visibility = Visibility.Collapsed;
-                    }
-                    index++;
-                }
-
-                if (ctxMenuItemsCount <= index)
-                {
-                    ctxMenuItemsCount = AddItemMenuAndSeparator(ctxMenuItemsCount);
-                    index+=2;
-                }
-
-                if (ctxMenu.Items[index] is Separator s)
-                {
-                    s.Visibility = lastVisibleSeparator
-                        ? Visibility.Collapsed
-                        : Visibility.Visible;
-                    lastVisibleSeparator = true;
-                    continue;
-                }
-
-                /* should never happen */
+                lastVisibleSeparator = ApplySeparator(ctxMenu, ref index, ref ctxMenuItemsCount, lastVisibleSeparator, addItemMenuAndSeparator);
             }
-
-            if (action is /*DeferredSubActionsUserInterfaceRepositoryAction or */UserInterfaceRepositoryAction uira)
+            else if (action is UserInterfaceRepositoryAction uira)
             {
-                if (HasSubItems(uira))
-                {
-                    while (ctxMenuItemsCount > index && (ctxMenu.Items[index] is Separator || (ctxMenu.Items[index] is AcrylicMenuItem ami1 && ami1.Tag ==  _singleItem)))
-                    {
-                        var ctrl = (Control)ctxMenu.Items[index]!;
-                        if (ctrl.Visibility != Visibility.Collapsed)
-                        {
-                            ctrl.Visibility = Visibility.Collapsed;
-                        }
-                        index++;
-                    }
-
-                    if (ctxMenuItemsCount <= index)
-                    {
-                        ctxMenuItemsCount = AddItemMenuAndSeparator(ctxMenuItemsCount);
-                        index += 1;
-                    }
-
-                    var acrylicMenuItem = (AcrylicMenuItem)ctxMenu.Items[index]!;
-                    if (acrylicMenuItem.Visibility != Visibility.Visible)
-                    {
-                        acrylicMenuItem.Visibility = Visibility.Visible;
-                    }
-
-                    lastVisibleSeparator = false;
-
-                    acrylicMenuItem.SetHeader(uira.Name);
-                    acrylicMenuItem.SetEnabled(uira.CanExecute);
-                    SetSubMenu(acrylicMenuItem, uira);
-                }
-                else
-                {
-                    while (ctxMenuItemsCount > index && (ctxMenu.Items[index] is Separator || (ctxMenu.Items[index] is AcrylicMenuItem ami1 && ami1.Tag == _menuItem)))
-                    {
-                        var ctrl = (Control)ctxMenu.Items[index]!;
-                        if (ctrl.Visibility != Visibility.Collapsed)
-                        {
-                            ctrl.Visibility = Visibility.Collapsed;
-                        }
-                        index++;
-                    }
-
-                    if (ctxMenuItemsCount <= index)
-                    {
-                        ctxMenuItemsCount = AddItemMenuAndSeparator(ctxMenuItemsCount);
-                        index += 0;
-                    }
-
-                    var acrylicMenuItem = (AcrylicMenuItem)ctxMenu.Items[index]!;
-                    if (acrylicMenuItem.Visibility != Visibility.Visible)
-                    {
-                        acrylicMenuItem.Visibility = Visibility.Visible;
-                    }
-                    lastVisibleSeparator = false;
-
-                    acrylicMenuItem.SetHeader(uira.Name );
-                    acrylicMenuItem.SetEnabled(uira.CanExecute);
-                    SetClick(acrylicMenuItem, uira, vm);
-                }
+                lastVisibleSeparator = false;
+                ApplyMenuItem(ctxMenu, ref index, ref ctxMenuItemsCount, uira, vm, addItemMenuAndSeparator);
             }
         }
 
@@ -418,7 +491,73 @@ public partial class MainWindow
             index++;
         }
 
-        while (index < ctxMenuItemsCount)
+        CollapseItemsFrom(ctxMenu, index, ctxMenuItemsCount);
+    }
+
+    private static bool ApplySeparator(
+        WpfContextMenu ctxMenu,
+        ref int index,
+        ref int ctxMenuItemsCount,
+        bool lastVisibleSeparator,
+        Func<int, int> addItemMenuAndSeparator)
+    {
+        SkipAndCollapse(ctxMenu, ref index, ctxMenuItemsCount, item => item is AcrylicMenuItem);
+
+        if (ctxMenuItemsCount <= index)
+        {
+            ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
+            index += 2;
+        }
+
+        if (ctxMenu.Items[index] is Separator s)
+        {
+            s.Visibility = lastVisibleSeparator ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        return true;
+    }
+
+    private void ApplyMenuItem(
+        WpfContextMenu ctxMenu,
+        ref int index,
+        ref int ctxMenuItemsCount,
+        UserInterfaceRepositoryAction uira,
+        RepositoryViewModel vm,
+        Func<int, int> addItemMenuAndSeparator)
+    {
+        var hasSubItems = HasSubItems(uira);
+        var skipTag = hasSubItems ? _singleItem : _menuItem;
+
+        SkipAndCollapse(ctxMenu, ref index, ctxMenuItemsCount, item => item is Separator || (item is AcrylicMenuItem ami && ami.Tag == skipTag));
+
+        if (ctxMenuItemsCount <= index)
+        {
+            ctxMenuItemsCount = addItemMenuAndSeparator(ctxMenuItemsCount);
+            index += hasSubItems ? 1 : 0;
+        }
+
+        var acrylicMenuItem = (AcrylicMenuItem)ctxMenu.Items[index]!;
+        if (acrylicMenuItem.Visibility != Visibility.Visible)
+        {
+            acrylicMenuItem.Visibility = Visibility.Visible;
+        }
+
+        acrylicMenuItem.SetHeader(uira.Name);
+        acrylicMenuItem.SetEnabled(uira.CanExecute);
+
+        if (hasSubItems)
+        {
+            SetSubMenu(acrylicMenuItem, uira);
+        }
+        else
+        {
+            SetClick(acrylicMenuItem, uira, vm);
+        }
+    }
+
+    private static void SkipAndCollapse(WpfContextMenu ctxMenu, ref int index, int itemsCount, Func<object, bool> shouldSkip)
+    {
+        while (itemsCount > index && shouldSkip(ctxMenu.Items[index]!))
         {
             var ctrl = (Control)ctxMenu.Items[index]!;
             if (ctrl.Visibility != Visibility.Collapsed)
@@ -428,8 +567,18 @@ public partial class MainWindow
 
             index++;
         }
+    }
 
-        return true;
+    private static void CollapseItemsFrom(WpfContextMenu ctxMenu, int startIndex, int itemsCount)
+    {
+        for (var i = startIndex; i < itemsCount; i++)
+        {
+            var ctrl = (Control)ctxMenu.Items[i]!;
+            if (ctrl.Visibility != Visibility.Collapsed)
+            {
+                ctrl.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 
     private void SetClick(AcrylicMenuItem acrylicMenuItem, UserInterfaceRepositoryAction action, RepositoryViewModel? affectedViews)
@@ -548,6 +697,15 @@ public partial class MainWindow
         if (MenuButton.ContextMenu != null)
         {
             MenuButton.ContextMenu.IsOpen = true;
+        }
+    }
+
+    private void MonitoringToggle_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is RepositoryViewModel vm)
+        {
+            vm.ToggleMonitoring();
+            e.Handled = true;
         }
     }
 
@@ -696,106 +854,70 @@ public partial class MainWindow
 
     private void SetSubMenu(AcrylicMenuItem item, UserInterfaceRepositoryAction repositoryAction)
     {
-        // this is a deferred submenu. We want to make sure that the context menu can pop up
-        // fast, while submenus are not evaluated yet. We don't want to make the context menu
-        // itself slow because the creation of the submenu items takes some time.
         if (repositoryAction is DeferredSubActionsUserInterfaceRepositoryAction deferredRepositoryAction)
         {
-            if (item.Items.Count == 0)
-            {
-                // this is a template submenu item to enable submenus under the current
-                // menu item. this item gets removed when the real subitems are created
-                item.Items.Add(new Separator());
-            }
-
-            async void SelfDetachingEventHandler(object sender, RoutedEventArgs evtArgs)
+            EnsureTemplateSeparator(item);
+            item.LoadData(deferredRepositoryAction);
+            item.SetSubMenuOpened(async (_, _) =>
             {
                 item.ClearSubMenuOpened();
+                var data = await item.DataTask;
                 item.ClearItems();
-
-                foreach (UserInterfaceRepositoryActionBase subAction in await item.DataTask.ConfigureAwait(true))
-                {
-                    Control? controlItem = CreateMenuItemAsync(subAction);
-                    if (controlItem == null)
-                    {
-                        continue;
-                    }
-
-                    if (controlItem is not Separator)
-                    {
-                        item.Items.Add(controlItem);
-                        continue;
-                    }
-
-                    if (item.Items.Count > 0 && item.Items[^1] is not Separator)
-                    {
-                        item.Items.Add(controlItem);
-                    }
-                }
-
-                var count = item.Items.Count;
-                if (count > 0 && item.Items[^1] is Separator)
-                {
-                    item.Items.RemoveAt(count - 1);
-                }
-
+                PopulateSubMenuItems(item, data);
                 item.ClearData();
-            }
-
-            item.LoadData(deferredRepositoryAction);
-            item.SetSubMenuOpened(SelfDetachingEventHandler);
+            });
         }
         else if (repositoryAction.SubActions != null)
         {
-            async void SelfDetachingEventHandler1(object _, RoutedEventArgs evtArgs)
+            EnsureTemplateSeparator(item);
+            item.SetSubMenuOpened((_, _) =>
             {
                 item.ClearSubMenuOpened();
                 item.ClearItems();
+                PopulateSubMenuItems(item, repositoryAction.SubActions);
+            });
+        }
+    }
 
-                foreach (UserInterfaceRepositoryActionBase subAction in repositoryAction.SubActions)
-                {
-                    Control? controlItem = CreateMenuItemAsync(subAction);
-                    if (controlItem == null)
-                    {
-                        continue;
-                    }
+    private static void EnsureTemplateSeparator(AcrylicMenuItem item)
+    {
+        if (item.Items.Count == 0)
+        {
+            item.Items.Add(new Separator());
+        }
+    }
 
-                    if (controlItem is not Separator)
-                    {
-                        item.Items.Add(controlItem);
-                        continue;
-                    }
-
-                    if (item.Items.Count > 0 && item.Items[^1] is not Separator)
-                    {
-                        item.Items.Add(controlItem);
-                    }
-                }
-
-                var count = item.Items.Count;
-                if (count > 0 && item.Items[^1] is Separator)
-                {
-                    item.Items.RemoveAt(count - 1);
-                }
-            }
-
-            if (item.Items.Count == 0)
+    private void PopulateSubMenuItems(AcrylicMenuItem item, IEnumerable<UserInterfaceRepositoryActionBase> subActions)
+    {
+        foreach (UserInterfaceRepositoryActionBase subAction in subActions)
+        {
+            Control? controlItem = CreateMenuItemAsync(subAction);
+            if (controlItem == null)
             {
-                // this is a template submenu item to enable submenus under the current
-                // menu item. this item gets removed when the real subitems are created
-                item.Items.Add(new Separator());
+                continue;
             }
 
-            item.SetSubMenuOpened(SelfDetachingEventHandler1);
+            if (controlItem is not Separator)
+            {
+                item.Items.Add(controlItem);
+                continue;
+            }
+
+            if (item.Items.Count > 0 && item.Items[^1] is not Separator)
+            {
+                item.Items.Add(controlItem);
+            }
+        }
+
+        if (item.Items.Count > 0 && item.Items[^1] is Separator)
+        {
+            item.Items.RemoveAt(item.Items.Count - 1);
         }
     }
 
     private static void SetVmSynchronizing(RepositoryViewModel? affectedVm, bool synchronizing)
     {
-        if (affectedVm != null)
-        {
-            affectedVm.IsSynchronizing = synchronizing;
-        }
+        affectedVm?.IsSynchronizing = synchronizing;
     }
 
     private void ShowScanningState(bool isScanning)
@@ -842,92 +964,7 @@ public partial class MainWindow
 
     private void OnTxtFilterTextChanged(object? sender, TextChangedEventArgs e)
     {
-        // Text has changed, capture the timestamp
-        if (sender != null)
-        {
-            _timeOfLastRefresh = DateTime.UtcNow;
-        }
-
-        // Spin while updates are in progress
-        if (DateTime.UtcNow - _timeOfLastRefresh < TimeSpan.FromMilliseconds(100))
-        {
-            if (!_refreshDelayed)
-            {
-                Dispatcher.InvokeAsync(async () =>
-                    {
-                        _refreshDelayed = true;
-                        await Task.Delay(200);
-                        _refreshDelayed = false;
-                        OnTxtFilterTextChanged(null, e);
-                    });
-            }
-
-            return;
-        }
-
-        // Refresh the view
-        ICollectionView view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
-        view.Refresh();
-    }
-
-    private bool FilterRepositories(object item)
-    {
-        var query = txtFilter.Text.Trim();
-
-        if (_refreshDelayed)
-        {
-            return false;
-        }
-
-        if (item is not RepositoryViewModel viewModelItem)
-        {
-            return false;
-        }
-
-        try
-        {
-            IQuery? alwaysVisibleFilter = _repositoryFilteringManager.AlwaysVisibleFilter;
-            if (alwaysVisibleFilter != null && _repositoryMatcher.Matches(viewModelItem.Repository, alwaysVisibleFilter))
-            {
-                return true;
-            }
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-
-        try
-        {
-            if (!_repositoryMatcher.Matches(viewModelItem.Repository, _repositoryFilteringManager.PreFilter))
-            {
-                return false;
-            }
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            return true;
-        }
-
-        if (_refreshDelayed)
-        {
-            return false;
-        }
-
-        try
-        {
-            IQuery queryObject = _repositoryFilteringManager.QueryParser.Parse(query);
-            return _repositoryMatcher.Matches(viewModelItem.Repository, queryObject);
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        _filterTextSubject?.OnNext(txtFilter.Text.Trim());
     }
 
     private void TxtFilter_Finish(object sender, EventArgs e)
@@ -943,5 +980,17 @@ public partial class MainWindow
         item?.Focus();
     }
 
-    public bool IsShown => Visibility == Visibility.Visible && IsActive;
+    public bool IsShown => Visibility == Visibility.Visible && IsActive && (!_useOffScreenHide || Left > -99000);
+
+    private static AcrylicBehavior GetAcrylicBehavior()
+    {
+        string? value = Environment.GetEnvironmentVariable("REPOM_ACRYLIC_MODE");
+
+        return value switch
+        {
+            "0" => AcrylicBehavior.Disabled,
+            "1" => AcrylicBehavior.AlwaysOn,
+            _ => AcrylicBehavior.Legacy,
+        };
+    }
 }

@@ -85,12 +85,6 @@ internal class RepositoryBuilder
         return this;
     }
 
-    public RepositoryBuilder WithLocalIgnored(int ignored)
-    {
-        _actions.Add(r => r.LocalIgnored = ignored);
-        return this;
-    }
-
     public RepositoryBuilder WithLocalMissing(int missing)
     {
         _actions.Add(r => r.LocalMissing = missing);
@@ -151,7 +145,6 @@ internal class RepositoryBuilder
         WithBranches("master", "feature-one", "feature-two");
         WithCurrentBranch("master");
         WithLocalAdded(3);
-        WithLocalIgnored(4);
         WithLocalMissing(5);
         WithLocalModified(6);
         WithLocalRemoved(7);

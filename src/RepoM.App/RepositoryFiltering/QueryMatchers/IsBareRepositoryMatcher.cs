@@ -7,7 +7,7 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 [UsedImplicitly]
-public class IsBareRepositoryMatcher : IQueryMatcher
+public sealed class IsBareRepositoryMatcher : IQueryMatcher
 {
     public bool? IsMatch(in IRepository repository, in TermBase term)
     {
@@ -16,12 +16,12 @@ public class IsBareRepositoryMatcher : IQueryMatcher
             return null;
         }
 
-        if (!"is".Equals(st.Term, StringComparison.CurrentCulture))
+        if (!"is".Equals(st.Term, StringComparison.Ordinal))
         {
             return null;
         }
 
-        if (!"bare".Equals(st.Value, StringComparison.CurrentCulture))
+        if (!"bare".Equals(st.Value, StringComparison.Ordinal))
         {
             return null;
         }

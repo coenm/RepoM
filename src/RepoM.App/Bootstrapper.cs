@@ -25,6 +25,7 @@ using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryOrdering;
+using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Pinning;
 using RepoM.Core.Repositories.Reading;
 using RepoM.Core.Repositories.Scanning;
@@ -56,11 +57,14 @@ internal static class Bootstrapper
 
         // New repository infrastructure
         Container.Register<IRepositoryStore, RepositoryStore>(Lifestyle.Singleton);
-        Container.RegisterInstance(new GitRepositoryScannerSettings(Math.Max(1, Environment.ProcessorCount)));
+        Container.RegisterInstance(new GitRepositoryScannerSettings(Math.Max(1, Environment.ProcessorCount / 2)));
         Container.Register<IRepositoryScanner, GitRepositoryScanner>(Lifestyle.Singleton);
         Container.Register<IRepositoryWatcher, FileSystemRepositoryWatcher>(Lifestyle.Singleton);
         Container.Register<IRepositoryInfoReader, LibGit2SharpRepositoryInfoReader>(Lifestyle.Singleton);
         Container.Register<IPinningService, PinningService>(Lifestyle.Singleton);
+        Container.Register<RepositoryMonitoringStateService>(Lifestyle.Singleton);
+        Container.Register<IRepositoryMonitoringService>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);
+        Container.Register<IRepositoryMonitoringEvents>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);
         Container.Register<RepoM.Core.Repositories.RepositoryMonitorService>(Lifestyle.Singleton);
 
         // Register RepositoryMonitorService as IModule
@@ -90,6 +94,7 @@ internal static class Bootstrapper
         Container.Collection.Append<INamedQueryParser, DefaultQueryParser>(Lifestyle.Singleton);
 
         Container.Collection.Append<IQueryMatcher, IsPinnedMatcher>(Lifestyle.Singleton);
+        Container.Collection.Append<IQueryMatcher, IsMonitoredMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, IsBehindMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, IsBareRepositoryMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, TagMatcher>(Lifestyle.Singleton);

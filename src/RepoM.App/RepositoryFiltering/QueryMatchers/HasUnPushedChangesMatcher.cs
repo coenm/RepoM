@@ -8,7 +8,7 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 [UsedImplicitly]
-public class HasUnPushedChangesMatcher : IQueryMatcher
+public sealed class HasUnPushedChangesMatcher : IQueryMatcher
 {
     private static readonly string[] _values =
         [
@@ -24,7 +24,7 @@ public class HasUnPushedChangesMatcher : IQueryMatcher
             return null;
         }
 
-        if (!"has".Equals(st.Term, StringComparison.CurrentCulture))
+        if (!"has".Equals(st.Term, StringComparison.Ordinal))
         {
             return null;
         }

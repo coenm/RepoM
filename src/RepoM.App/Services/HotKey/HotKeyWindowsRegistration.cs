@@ -1,10 +1,12 @@
 namespace RepoM.App.Services.HotKey;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
+[ExcludeFromCodeCoverage]
 internal partial class HotKeyWindowsRegistration
 {
     [LibraryImport("User32.dll")]

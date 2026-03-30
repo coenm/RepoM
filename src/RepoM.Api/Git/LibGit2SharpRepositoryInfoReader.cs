@@ -1,6 +1,8 @@
 namespace RepoM.Api.Git;
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -11,6 +13,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Reading;
 
+[ExcludeFromCodeCoverage]
 public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
 {
     private readonly IRepositoryTagsFactory _resolver;
@@ -97,7 +100,12 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
 
             if (!repo.Info.IsBare)
             {
-                status = repo.RetrieveStatus();
+                status = repo.RetrieveStatus(new StatusOptions
+                    {
+                        IncludeIgnored = false,
+                        DetectRenamesInIndex = false,
+                        DetectRenamesInWorkDir = false,
+                    });
                 workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
             }
 
@@ -110,6 +118,37 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
             HeadDetails headDetails = GetHeadDetails(repo);
             var fullPath = workingDirectory.FullName;
 
+            var allBranchList = new List<string>();
+            var localBranchList = new List<string>();
+            foreach (Branch branch in repo.Branches)
+            {
+                allBranchList.Add(branch.FriendlyName);
+                if (!branch.IsRemote)
+                {
+                    localBranchList.Add(branch.FriendlyName);
+                }
+            }
+
+            var allBranchNames = allBranchList.ToArray();
+            var localBranchNames = localBranchList.ToArray();
+
+            int? localUntracked = null;
+            int? localModified = null;
+            int? localMissing = null;
+            int? localAdded = null;
+            int? localStaged = null;
+            int? localRemoved = null;
+
+            if (status is not null)
+            {
+                localUntracked = status.Untracked.Count();
+                localModified = status.Modified.Count();
+                localMissing = status.Missing.Count();
+                localAdded = status.Added.Count();
+                localStaged = status.Staged.Count();
+                localRemoved = status.Removed.Count();
+            }
+
             var info = new RepositoryInfo
                 {
                     Path = fullPath,
@@ -119,8 +158,8 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
                     Name = workingDirectory.Name,
                     Location = workingDirectory.Parent!.FullName,
                     IsBare = repo.Info.IsBare,
-                    Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
-                    LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
+                    Branches = allBranchNames,
+                    LocalBranches = localBranchNames,
                     AllBranchesReader = () => ReadAllBranches(repoPath),
                     CurrentBranch = headDetails.Name,
                     CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
@@ -128,13 +167,12 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
                     CurrentBranchIsOnTag = headDetails.IsOnTag,
                     AheadBy = repo.Head.TrackingDetails?.AheadBy,
                     BehindBy = repo.Head.TrackingDetails?.BehindBy,
-                    LocalUntracked = status?.Untracked.Count(),
-                    LocalModified = status?.Modified.Count(),
-                    LocalMissing = status?.Missing.Count(),
-                    LocalAdded = status?.Added.Count(),
-                    LocalStaged = status?.Staged.Count(),
-                    LocalRemoved = status?.Removed.Count(),
-                    LocalIgnored = status?.Ignored.Count(),
+                    LocalUntracked = localUntracked,
+                    LocalModified = localModified,
+                    LocalMissing = localMissing,
+                    LocalAdded = localAdded,
+                    LocalStaged = localStaged,
+                    LocalRemoved = localRemoved,
                     StashCount = repo.Stashes?.Count() ?? 0,
                     Tags = [],
                 };
@@ -162,13 +200,13 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
         try
         {
             using var repo = new LibGit2Sharp.Repository(repoPath);
-            var localBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToList();
+            var localBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName);
 
             return repo.Branches
                        .Where(branch =>
                            branch.IsRemote
                            &&
-                           !branch.FriendlyName.Contains("HEAD", StringComparison.CurrentCultureIgnoreCase))
+                           !branch.FriendlyName.Contains("HEAD", StringComparison.OrdinalIgnoreCase))
                        .Select(branch => branch.FriendlyName.Replace("origin/", string.Empty))
                        .Except(localBranches)
                        .OrderBy(n => n)

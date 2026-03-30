@@ -4,8 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
+using RepoM.Api.Git;
 using RepoM.Api.Ordering.Az;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
@@ -75,11 +77,18 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
             _logger.LogInformation("Could not set comparer '{Key}'. Falling back to first comparer.", _appSettingsService.SortKey);
             SetRepositoryComparer(_repositoryComparerKeys[0]);
         }
+
+        SortObservable = Observable
+            .FromEventPattern<EventHandler<string>, string>(
+                h => SelectedRepositoryComparerKeyChanged += h,
+                h => SelectedRepositoryComparerKeyChanged -= h)
+            .Select(_ => CreateSortComparer())
+            .StartWith(CreateSortComparer());
     }
 
     public event EventHandler<string>? SelectedRepositoryComparerKeyChanged;
 
-    public IComparer Comparer => _comparer;
+    public IObservable<IComparer<RepositoryViewModel>> SortObservable { get; private set; } = null!;
 
     public string SelectedRepositoryComparerKey { get; private set; } = "Default";
 
@@ -97,5 +106,11 @@ internal class RepositoryComparerManager : IRepositoryComparerManager
         SelectedRepositoryComparerKey = key;
         SelectedRepositoryComparerKeyChanged?.Invoke(this, key);
         return true;
+    }
+
+    private Comparer<RepositoryViewModel> CreateSortComparer()
+    {
+        ComparerComposition currentComparer = _comparer;
+        return Comparer<RepositoryViewModel>.Create((x, y) => currentComparer.Compare(x, y));
     }
 }

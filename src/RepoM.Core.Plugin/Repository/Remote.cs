@@ -61,7 +61,7 @@ public sealed class Remote
     {
         var output = input;
 
-        if (output.EndsWith(".git", StringComparison.CurrentCultureIgnoreCase))
+        if (output.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
         {
             output = output[..^".git".Length];
         }

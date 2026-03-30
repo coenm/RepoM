@@ -92,7 +92,7 @@ internal class StatisticsModule : IModule
                 _logger.LogError(e, "Could not read or deserialize data from '{Filename}'. {Message}", file, e.Message);
             }
 
-            if (Array.TrueForAll(events, item => item.Timestamp <= threshold))
+            if (events.All(item => item.Timestamp <= threshold))
             {
                 try
                 {

@@ -5,7 +5,7 @@ using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 /// <summary>
 /// Compares two repositories by a repository score. The calculation of the repository score is defined in the score provider.
 /// </summary>
-public class ScoreComparerConfigurationV1 : IRepositoriesComparerConfiguration
+public sealed class ScoreComparerConfigurationV1 : IRepositoriesComparerConfiguration
 {
     public const string TYPE_VALUE = "score-comparer@1";
 

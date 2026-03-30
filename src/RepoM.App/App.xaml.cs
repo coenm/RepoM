@@ -4,9 +4,9 @@ namespace RepoM.App;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.Abstractions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
 using RepoM.App.i18n;
@@ -14,8 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
-using Serilog;
-using Serilog.Core;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using RepoM.App.Services;
 using Container = SimpleInjector.Container;
@@ -76,17 +74,23 @@ public partial class App : Application
         var factory = new ConfigBasedAppDataPathProviderFactory(e.Args, fileSystem);
         AppDataPathProvider appDataProvider = factory.Create();
 
-        IConfiguration config = CreateLoggerConfiguration(appDataProvider);
-        ILoggerFactory loggerFactory = CreateLoggerFactory(config);
+        IConfiguration config = LoggingFactory.CreateLoggerConfiguration(appDataProvider.AppDataPath);
+        ILoggerFactory loggerFactory = LoggingFactory.CreateLoggerFactory(config);
 
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
         Bootstrapper.RegisterServices(fileSystem, appDataProvider);
-        await Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory, appDataProvider).ConfigureAwait(true);
 
-        var ensureStartup = new EnsureStartup(fileSystem, appDataProvider);
-        await ensureStartup.EnsureFilesAsync().ConfigureAwait(true);
+        // Move heavy I/O work (plugin discovery, assembly loading, file ensures) off the UI thread
+        // so the message pump stays responsive during startup.
+        await Task.Run(async () =>
+        {
+            await Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory, appDataProvider).ConfigureAwait(false);
+
+            var ensureStartup = new EnsureStartup(fileSystem, appDataProvider);
+            await ensureStartup.EnsureFilesAsync().ConfigureAwait(false);
+        }).ConfigureAwait(true);
 
 #if DEBUG
         Bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
@@ -101,14 +105,15 @@ public partial class App : Application
         _hotKeyService.Register();
         _windowSizeService.Register();
 
-        try
-        {
-            await _moduleService.StartAsync().ConfigureAwait(false); // don't care about ui thread
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not start all modules.");
-        }
+        MainWindow mainWindow = Bootstrapper.Container.GetInstance<MainWindow>();
+
+        // Make the UI interactive immediately — don't wait for modules to finish loading.
+        mainWindow.SetReady();
+
+        // Start modules in the background; repository data will stream in via DynamicData subscriptions.
+        _ = _moduleService.StartAsync().ContinueWith(
+            t => logger.LogError(t.Exception, "Could not start all modules."),
+            TaskContinuationOptions.OnlyOnFaulted);
     }
 
     protected override void OnExit(ExitEventArgs e)
@@ -124,35 +129,6 @@ public partial class App : Application
         ReleaseAndDisposeMutex();
 
         base.OnExit(e);
-    }
-
-    private static IConfiguration CreateLoggerConfiguration(AppDataPathProvider appDataProvider)
-    {
-        const string FILENAME = "appsettings.serilog.json";
-        var fullFilename = Path.Combine(appDataProvider.AppDataPath, FILENAME);
-
-        IConfigurationBuilder builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(fullFilename, optional: true, reloadOnChange: false)
-            .AddEnvironmentVariables();
-        return builder.Build();
-    }
-
-    private static ILoggerFactory CreateLoggerFactory(IConfiguration config)
-    {
-        ILoggerFactory loggerFactory = new LoggerFactory();
-
-        LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
-            .Enrich.WithThreadId()
-            .Enrich.WithThreadName()
-            .Enrich.WithProperty("ThreadName", "BG")
-            .ReadFrom.Configuration(config);
-
-        Logger logger = loggerConfiguration.CreateLogger();
-
-        _ = loggerFactory.AddSerilog(logger);
-
-        return loggerFactory;
     }
 
     [SuppressMessage("Major Code Smell", "S2589:Boolean expressions should not be gratuitous", Justification = "Compiler condition")]

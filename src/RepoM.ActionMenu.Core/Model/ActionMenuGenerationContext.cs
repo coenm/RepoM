@@ -188,7 +188,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
             }
         }
 
-        IActionToRepositoryActionMapper? mapper = Array.Find(_repositoryActionMappers, mapper => mapper.CanMap(menuAction));
+        IActionToRepositoryActionMapper? mapper = _repositoryActionMappers.FirstOrDefault(mapper => mapper.CanMap(menuAction));
         if (mapper == null)
         {
             // throw?
@@ -240,7 +240,7 @@ internal class ActionMenuGenerationContext : TemplateContext, IActionMenuGenerat
     {
         if (tags == null)
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         var items = new List<string>(Tags.Count);

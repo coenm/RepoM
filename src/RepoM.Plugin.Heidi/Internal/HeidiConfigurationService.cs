@@ -76,7 +76,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
 
     public IEnumerable<RepositoryHeidiConfiguration> GetByRepository(IRepository repository)
     {
-        Remote? origin = repository.Remotes.Find(x => "Origin".Equals(x.Key, StringComparison.CurrentCultureIgnoreCase));
+        Remote? origin = repository.Remotes.Find(x => "Origin".Equals(x.Key, StringComparison.OrdinalIgnoreCase));
 
         if (origin == null)
         {
@@ -114,7 +114,7 @@ internal sealed class HeidiConfigurationService : IHeidiConfigurationService, ID
             _logger.LogDebug("Filename {Name} {Type} ({FullPath})", e.Name, e.ChangeType, e.FullPath);
 
             // for now, check exact path and file
-            if (!e.FullPath.Equals(_heidiConfigFile, StringComparison.CurrentCultureIgnoreCase))
+            if (!e.FullPath.Equals(_heidiConfigFile, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.LogWarning("Filename updated but wasn't configured file, '{Configured}', '{Updated}'", _heidiConfigFile, e.FullPath);
                 return;

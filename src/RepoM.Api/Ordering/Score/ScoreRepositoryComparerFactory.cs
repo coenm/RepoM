@@ -3,7 +3,7 @@ namespace RepoM.Api.Ordering.Score;
 using System;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-public class ScoreRepositoryComparerFactory : IRepositoryComparerFactory<ScoreComparerConfigurationV1>
+public sealed class ScoreRepositoryComparerFactory : IRepositoryComparerFactory<ScoreComparerConfigurationV1>
 {
     private readonly IRepositoryScoreCalculatorFactory _factory;
 

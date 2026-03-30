@@ -5,7 +5,7 @@ using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using RepoM.Core.Repositories.Pinning;
 
-public class IsPinnedScoreCalculator : IRepositoryScoreCalculator
+public sealed class IsPinnedScoreCalculator : IRepositoryScoreCalculator
 {
     private readonly IPinningService _pinningService;
     private readonly int _weight;

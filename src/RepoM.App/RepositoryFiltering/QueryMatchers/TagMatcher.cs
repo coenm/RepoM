@@ -9,7 +9,7 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 [UsedImplicitly]
-public class TagMatcher : IQueryMatcher
+public sealed class TagMatcher : IQueryMatcher
 {
     public bool? IsMatch(in IRepository repository, in TermBase term)
     {
@@ -29,10 +29,10 @@ public class TagMatcher : IQueryMatcher
         }
 
         var value = term.Value;
-        return Array.Exists(repository.Tags, tag =>
-            tag.Equals(value, StringComparison.CurrentCulture)
+        return repository.Tags.Any(tag =>
+            tag.Equals(value, StringComparison.Ordinal)
             ||
-            tag.StartsWith(value, StringComparison.CurrentCulture));
+            tag.StartsWith(value, StringComparison.Ordinal));
     }
 
     private static bool? IsMatch(in IRepository repository, in SimpleTerm term)
@@ -48,6 +48,6 @@ public class TagMatcher : IQueryMatcher
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CheckTerm(in string term)
     {
-        return "tag".Equals(term, StringComparison.CurrentCulture);
+        return "tag".Equals(term, StringComparison.Ordinal);
     }
 }

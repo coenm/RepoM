@@ -1,12 +1,14 @@
 namespace RepoM.Api.Git.AutoFetch;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using RepoM.Api.Common;
 using RepoM.Core.Repositories.Adapters;
 using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Store;
 
 public class DefaultAutoFetchHandler : IAutoFetchHandler
@@ -14,20 +16,25 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
     private bool _active;
     private AutoFetchMode? _mode;
     private readonly Timer _timer;
-    private readonly Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
+    private readonly Lock _sync = new();
+    private RepositoryInfo[] _sortedRepositories = [];
+    private readonly FrozenDictionary<AutoFetchMode, AutoFetchProfile> _profiles;
     private int _lastFetchRepository = -1;
     private readonly IAppSettingsService _appSettingsService;
     private readonly IRepositoryStore _repositoryStore;
     private readonly IRepositoryWriter _repositoryWriter;
+    private readonly IRepositoryMonitoringService _monitoringService;
 
     public DefaultAutoFetchHandler(
         IAppSettingsService appSettingsService,
         IRepositoryStore repositoryStore,
-        IRepositoryWriter repositoryWriter)
+        IRepositoryWriter repositoryWriter,
+        IRepositoryMonitoringService monitoringService)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         _repositoryStore = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
         _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
+        _monitoringService = monitoringService ?? throw new ArgumentNullException(nameof(monitoringService));
         _appSettingsService.RegisterInvalidationHandler(() => Mode = _appSettingsService.AutoFetchMode);
 
         _profiles = new Dictionary<AutoFetchMode, AutoFetchProfile>
@@ -36,7 +43,7 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
                 { AutoFetchMode.Discretely, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromMinutes(5), } },
                 { AutoFetchMode.Adequate, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromMinutes(1), } },
                 { AutoFetchMode.Aggressive, new AutoFetchProfile { PauseBetweenFetches = TimeSpan.FromSeconds(2), } },
-            };
+            }.ToFrozenDictionary();
 
         _timer = new Timer(FetchNext, null, Timeout.Infinite, Timeout.Infinite);
     }
@@ -66,15 +73,12 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
 
     private void FetchNext(object? timerState)
     {
-        IReadOnlyCollection<RepositoryInfo> items = _repositoryStore.Items;
-        if (items.Count == 0)
+        RepositoryInfo[] repositories = GetOrUpdateSortedRepositories();
+
+        if (repositories.Length == 0)
         {
             return;
         }
-
-        var repositories = items
-            .OrderBy(r => r.Name)
-            .ToArray();
 
         // temporarily disable the timer to prevent parallel fetch executions
         UpdateBehavior(AutoFetchMode.Off);
@@ -101,6 +105,35 @@ public class DefaultAutoFetchHandler : IAutoFetchHandler
         {
             // re-enable the timer to get to the next fetch
             UpdateBehavior();
+        }
+    }
+
+    private RepositoryInfo[] GetOrUpdateSortedRepositories()
+    {
+        var currentItems = _repositoryStore.Items
+            .Where(r => _monitoringService.IsMonitored(r.SafePath))
+            .ToList();
+
+        // fast path: if the length is the same and we already have a cache, reuse it
+        // (in the current implementation the set of repositories changes infrequently)
+        if (_sortedRepositories.Length == currentItems.Count)
+        {
+            return _sortedRepositories;
+        }
+
+        lock (_sync)
+        {
+            // double-check within the lock
+            if (_sortedRepositories.Length == currentItems.Count)
+            {
+                return _sortedRepositories;
+            }
+
+            _sortedRepositories = currentItems
+                .OrderBy(r => r.Name, StringComparer.Ordinal)
+                .ToArray();
+
+            return _sortedRepositories;
         }
     }
 

@@ -183,9 +183,10 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
         return comment;
     }
 
+    private static readonly char[] _allowedChars = ['.', '-', '_',];
+
     private static int FindEndCharIndex(ReadOnlySpan<char> comment)
     {
-        char[] allowedChars = ['.', '-', '_',];
 
         var k = 0;
         var stop = false;
@@ -197,7 +198,7 @@ internal class ExtractRepositoryFromHeidi : IHeidiRepositoryExtractor
                 continue;
             }
 
-            if (allowedChars.Contains(comment[k]))
+            if (_allowedChars.Contains(comment[k]))
             {
                 k++;
                 continue;

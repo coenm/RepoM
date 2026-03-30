@@ -4,7 +4,7 @@ using System;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryOrdering;
 
-public class ScoreComparer : IRepositoryComparer
+public sealed class ScoreComparer : IRepositoryComparer
 {
     private readonly IRepositoryScoreCalculator _calculator;
 

@@ -5,7 +5,7 @@ using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 /// <summary>
 /// Compares two repositories by a given property alphabetically in ascending order.
 /// </summary>
-public class AlphabetComparerConfigurationV1 : IRepositoriesComparerConfiguration
+public sealed class AlphabetComparerConfigurationV1 : IRepositoriesComparerConfiguration
 {
     public const string TYPE_VALUE = "az-comparer@1";
 

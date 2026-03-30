@@ -25,7 +25,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
     private readonly ILogger _logger;
     private readonly VssConnection? _connection;
     private GitHttpClient? _azureDevopsGitClient;
-    private readonly List<PullRequest> _emptyList = new(0);
+    private static readonly IReadOnlyList<PullRequest> _emptyList = [];
 
     private Timer? _updateTimer1;
     private Timer? _updateTimer2;
@@ -242,7 +242,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         return _pullRequestsPerProject.Values.Sum(prs => prs.Count(x => x.RepositoryId.Equals(repoIdGuid)));
     }
 
-    public List<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
+    public IReadOnlyList<PullRequest> GetPullRequests(IRepository repository, string projectId, string? repoId)
     {
         RegisterProjectId(projectId);
         if (_gitRepositoriesPerProject.IsEmpty)
@@ -250,7 +250,26 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
             _ = UpdateProjectsAsync(_azureDevopsGitClient);
         }
 
-        return Task.Run(() => GetPullRequestsTask(repository, projectId, repoId)).GetAwaiter().GetResult();
+        if (_azureDevopsGitClient == null)
+        {
+            return _emptyList;
+        }
+
+        Guid repoIdGuid = ResolveRepositoryGuidFromCache(repository, repoId);
+
+        if (repoIdGuid == Guid.Empty)
+        {
+            return _emptyList;
+        }
+
+        if (_pullRequestsPerProject.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Length > 0)
+        {
+            _logger.LogTrace("Returning pull requests from cache.");
+            return projectPrs.Where(x => x.RepositoryId.Equals(repoIdGuid)).ToArray();
+        }
+
+        _logger.LogTrace("No cache available for PRs");
+        return _emptyList;
     }
 
     public void Dispose()
@@ -390,58 +409,6 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         }
     }
 
-    private async Task<List<PullRequest>> GetPullRequestsTask(IRepository repository, string projectId, string? repoId)
-    {
-        if (_azureDevopsGitClient == null)
-        {
-            return _emptyList;
-        }
-
-        Guid repoIdGuid = Guid.Empty;
-
-        // first get repo id
-        if (!string.IsNullOrWhiteSpace(repoId))
-        {
-            _ = Guid.TryParse(repoId, out repoIdGuid);
-        }
-
-        if (repoIdGuid == Guid.Empty && !string.IsNullOrWhiteSpace(repoId))
-        {
-            _ = _repositoryDirectoryDevOpsRepoIdMapping.TryGetValue(repository.SafePath, out repoIdGuid);
-        }
-
-        if (repoIdGuid == Guid.Empty)
-        {
-            repoIdGuid = await FindRepositoryGuidByProjectId(repository, projectId);
-
-            if (repoIdGuid == Guid.Empty)
-            {
-                return _emptyList;
-            }
-
-            // update mapping.
-            _logger.LogTrace("Update mapping");
-            _repositoryDirectoryDevOpsRepoIdMapping.AddOrUpdate(repository.SafePath, _ => repoIdGuid, (_, _) => repoIdGuid);
-        }
-
-        // at this point, we should have a repoGuid
-        if (repoIdGuid == Guid.Empty)
-        {
-            return _emptyList;
-        }
-
-        _repositoryDirectoryDevOpsRepoIdMapping.AddOrUpdate(repository.SafePath, _ => repoIdGuid, (_, _) => repoIdGuid);
-
-        if (_pullRequestsPerProject.TryGetValue(projectId, out PullRequest[]? projectPrs) && projectPrs.Length > 0)
-        {
-            _logger.LogTrace("Returning pull requests from cache where repo id was given.");
-            return projectPrs.Where(x => x.RepositoryId.Equals(repoIdGuid)).ToList();
-        }
-
-        _logger.LogTrace("No cache available for PRs");
-        return _emptyList;
-    }
-
     private async Task<Guid> FindRepositoryGuidByProjectId(IRepository repository, string projectId)
     {
         try
@@ -470,6 +437,33 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         return FindRepositoryGuid(repository);
     }
 
+    private Guid ResolveRepositoryGuidFromCache(IRepository repository, string? repoId)
+    {
+        Guid repoIdGuid = Guid.Empty;
+
+        if (!string.IsNullOrWhiteSpace(repoId))
+        {
+            _ = Guid.TryParse(repoId, out repoIdGuid);
+        }
+
+        if (repoIdGuid == Guid.Empty)
+        {
+            _ = _repositoryDirectoryDevOpsRepoIdMapping.TryGetValue(repository.SafePath, out repoIdGuid);
+        }
+
+        if (repoIdGuid == Guid.Empty)
+        {
+            repoIdGuid = FindRepositoryGuid(repository);
+
+            if (repoIdGuid != Guid.Empty)
+            {
+                _repositoryDirectoryDevOpsRepoIdMapping.AddOrUpdate(repository.SafePath, _ => repoIdGuid, (_, _) => repoIdGuid);
+            }
+        }
+
+        return repoIdGuid;
+    }
+
     private Guid FindRepositoryGuid(IRepository repository)
     {
         var searchRepoUrl = GetRepositorySearchUrl(repository);
@@ -480,7 +474,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
         }
 
         GitRepository[] selectedRepos = _devOpsGitRepositories.Values
-            .Where(x => Array.Exists(x.ValidRemoteUrls, u => u.Equals(searchRepoUrl, StringComparison.CurrentCultureIgnoreCase)))
+            .Where(x => x.ValidRemoteUrls.Any(u => u.Equals(searchRepoUrl, StringComparison.OrdinalIgnoreCase)))
             .ToArray();
 
         if (selectedRepos.Length == 0)
@@ -511,7 +505,7 @@ internal sealed class AzureDevOpsPullRequestService : IAzureDevOpsPullRequestSer
 
     private static string GetRepositorySearchUrl(IRepository repository)
     {
-        var urlString = repository.Remotes.SingleOrDefault(x => x.Key.Equals("Origin", StringComparison.CurrentCultureIgnoreCase))?.Url ?? string.Empty;
+        var urlString = repository.Remotes.SingleOrDefault(x => x.Key.Equals("Origin", StringComparison.OrdinalIgnoreCase))?.Url ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(urlString))
         {
