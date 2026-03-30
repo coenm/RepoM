@@ -19,7 +19,7 @@ using RepoM.Core.Repositories.Scanning;
 using RepoM.Core.Repositories.Store;
 using RepoM.Core.Repositories.Watching;
 
-public class RepositoryMonitorService : IModule, IDisposable
+public sealed class RepositoryMonitorService : IModule, IDisposable
 {
     private readonly IRepositoryScanner _scanner;
     private readonly IRepositoryWatcher _watcher;
