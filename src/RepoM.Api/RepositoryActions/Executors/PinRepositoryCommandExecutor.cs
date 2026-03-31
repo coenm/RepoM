@@ -5,22 +5,22 @@ using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Plugin.RepositoryActions.Commands;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 
 [UsedImplicitly]
 public sealed class PinRepositoryCommandExecutor : ICommandExecutor<PinRepositoryCommand>
 {
-    private readonly IPinningService _pinningService;
+    private readonly IFavoriteService _favoriteService;
 
-    public PinRepositoryCommandExecutor(IPinningService pinningService)
+    public PinRepositoryCommandExecutor(IFavoriteService favoriteService)
     {
-        _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
+        _favoriteService = favoriteService ?? throw new ArgumentNullException(nameof(favoriteService));
     }
 
     public void Execute(IRepository repository, PinRepositoryCommand repositoryCommand)
     {
-        var newPinnedValue = repositoryCommand.Type == PinRepositoryCommand.PinRepositoryType.Pin;
-        newPinnedValue |= repositoryCommand.Type == PinRepositoryCommand.PinRepositoryType.Toggle && !_pinningService.IsPinned(repository.SafePath);
-        _pinningService.SetPinned(repository.SafePath, newPinnedValue);
+        var newFavoriteValue = repositoryCommand.Type == PinRepositoryCommand.PinRepositoryType.Pin;
+        newFavoriteValue |= repositoryCommand.Type == PinRepositoryCommand.PinRepositoryType.Toggle && !_favoriteService.IsFavorite(repository.SafePath);
+        _favoriteService.SetFavorite(repository.SafePath, newFavoriteValue);
     }
 }

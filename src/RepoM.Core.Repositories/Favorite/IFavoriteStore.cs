@@ -1,8 +1,8 @@
-namespace RepoM.Core.Repositories.Pinning;
+namespace RepoM.Core.Repositories.Favorite;
 
 using System.Collections.Generic;
 
-public interface IFavoritesStore
+public interface IFavoriteStore
 {
     IReadOnlyList<string> Load();
 

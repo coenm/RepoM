@@ -1,25 +1,25 @@
-namespace RepoM.Api.Tests.Ordering.IsPinned;
+namespace RepoM.Api.Tests.Ordering.IsFavorite;
 
 using System;
 using FakeItEasy;
 using AwesomeAssertions;
-using RepoM.Api.Ordering.IsPinned;
+using RepoM.Api.Ordering.IsFavorite;
 using RepoM.Core.Plugin.Repository;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 using Xunit;
 
-public class IsPinnedScoreCalculatorTests
+public class IsFavoriteScoreCalculatorTests
 {
     private readonly IRepository _repository = A.Fake<IRepository>();
-    private readonly IPinningService _pinningService = A.Fake<IPinningService>();
+    private readonly IFavoriteService _favoriteService = A.Fake<IFavoriteService>();
 
     [Fact]
-    public void Ctor_ShouldThrow_WhenPinningServiceIsNull()
+    public void Ctor_ShouldThrow_WhenFavoriteServiceIsNull()
     {
         // arrange
 
         // act
-        Func<IsPinnedScoreCalculator> act = () => new IsPinnedScoreCalculator(null!, 10);
+        Func<IsFavoriteScoreCalculator> act = () => new IsFavoriteScoreCalculator(null!, 10);
 
         // assert
         act.Should().Throw<ArgumentNullException>();
@@ -31,12 +31,12 @@ public class IsPinnedScoreCalculatorTests
     [InlineData(10)]
     [InlineData(-5)]
     [InlineData(100)]
-    public void Score_ShouldReturnWeight_WhenRepositoryIsPinned(int weight)
+    public void Score_ShouldReturnWeight_WhenRepositoryIsFavorite(int weight)
     {
         // arrange
         A.CallTo(() => _repository.SafePath).Returns("/safe/path");
-        A.CallTo(() => _pinningService.IsPinned("/safe/path")).Returns(true);
-        var sut = new IsPinnedScoreCalculator(_pinningService, weight);
+        A.CallTo(() => _favoriteService.IsFavorite("/safe/path")).Returns(true);
+        var sut = new IsFavoriteScoreCalculator(_favoriteService, weight);
 
         // act
         var result = sut.Score(_repository);
@@ -51,12 +51,12 @@ public class IsPinnedScoreCalculatorTests
     [InlineData(10)]
     [InlineData(-5)]
     [InlineData(100)]
-    public void Score_ShouldReturnZero_WhenRepositoryIsNotPinned(int weight)
+    public void Score_ShouldReturnZero_WhenRepositoryIsNotFavorite(int weight)
     {
         // arrange
         A.CallTo(() => _repository.SafePath).Returns("/safe/path");
-        A.CallTo(() => _pinningService.IsPinned("/safe/path")).Returns(false);
-        var sut = new IsPinnedScoreCalculator(_pinningService, weight);
+        A.CallTo(() => _favoriteService.IsFavorite("/safe/path")).Returns(false);
+        var sut = new IsFavoriteScoreCalculator(_favoriteService, weight);
 
         // act
         var result = sut.Score(_repository);
@@ -70,14 +70,14 @@ public class IsPinnedScoreCalculatorTests
     {
         // arrange
         A.CallTo(() => _repository.SafePath).Returns("/specific/repo/path");
-        A.CallTo(() => _pinningService.IsPinned(A<string>._)).Returns(false);
-        var sut = new IsPinnedScoreCalculator(_pinningService, 5);
+        A.CallTo(() => _favoriteService.IsFavorite(A<string>._)).Returns(false);
+        var sut = new IsFavoriteScoreCalculator(_favoriteService, 5);
 
         // act
         sut.Score(_repository);
 
         // assert
-        A.CallTo(() => _pinningService.IsPinned("/specific/repo/path")).MustHaveHappenedOnceExactly();
-        A.CallTo(_pinningService).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _favoriteService.IsFavorite("/specific/repo/path")).MustHaveHappenedOnceExactly();
+        A.CallTo(_favoriteService).MustHaveHappenedOnceExactly();
     }
 }

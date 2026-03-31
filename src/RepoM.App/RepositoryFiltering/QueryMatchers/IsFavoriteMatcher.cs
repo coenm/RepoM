@@ -5,16 +5,16 @@ using JetBrains.Annotations;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 
 [UsedImplicitly]
-public sealed class IsPinnedMatcher : IQueryMatcher
+public sealed class IsFavoriteMatcher : IQueryMatcher
 {
-    private readonly IPinningService _pinningService;
+    private readonly IFavoriteService _favoriteService;
 
-    public IsPinnedMatcher(IPinningService pinningService)
+    public IsFavoriteMatcher(IFavoriteService favoriteService)
     {
-        _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
+        _favoriteService = favoriteService ?? throw new ArgumentNullException(nameof(favoriteService));
     }
 
     public bool? IsMatch(in IRepository repository, in TermBase term)
@@ -33,14 +33,14 @@ public sealed class IsPinnedMatcher : IQueryMatcher
             || "starred".Equals(st.Value, StringComparison.Ordinal)
             || "favorite".Equals(st.Value, StringComparison.Ordinal))
         {
-            return _pinningService.IsPinned(repository.SafePath);
+            return _favoriteService.IsFavorite(repository.SafePath);
         }
 
         if ("unpinned".Equals(st.Value, StringComparison.Ordinal)
             || "unstarred".Equals(st.Value, StringComparison.Ordinal)
             || "unfavorite".Equals(st.Value, StringComparison.Ordinal))
         {
-            return !_pinningService.IsPinned(repository.SafePath);
+            return !_favoriteService.IsFavorite(repository.SafePath);
         }
 
         return null;

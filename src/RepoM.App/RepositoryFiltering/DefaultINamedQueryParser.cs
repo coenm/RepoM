@@ -12,10 +12,10 @@ internal class DefaultQueryParser : INamedQueryParser
 
     public IQuery Parse(string text)
     {
-        IQuery? isPinnedQuery = null;
+        IQuery? favoriteQuery = null;
         if (text.StartsWith("is:pinned") || text.StartsWith("is:starred") || text.StartsWith("is:favorite"))
         {
-            isPinnedQuery = new SimpleTerm("is", "pinned");
+            favoriteQuery = new SimpleTerm("is", "favorite");
             text = text
                 .Replace("is:pinned", string.Empty)
                 .Replace("is:starred", string.Empty)
@@ -23,22 +23,22 @@ internal class DefaultQueryParser : INamedQueryParser
         }
         else if(text.StartsWith("is:unpinned") || text.StartsWith("is:unstarred") || text.StartsWith("is:unfavorite"))
         {
-            isPinnedQuery = new SimpleTerm("is", "unpinned");
+            favoriteQuery = new SimpleTerm("is", "unfavorite");
             text = text
                 .Replace("is:unpinned", string.Empty)
                 .Replace("is:unstarred", string.Empty)
                 .Replace("is:unfavorite", string.Empty);
         }
 
-        if (isPinnedQuery != null && string.IsNullOrWhiteSpace(text))
+        if (favoriteQuery != null && string.IsNullOrWhiteSpace(text))
         {
-            return isPinnedQuery;
+            return favoriteQuery;
         }
 
         var freeTextQuery = new FreeText(text);
 
-        return isPinnedQuery == null
+        return favoriteQuery == null
             ? freeTextQuery
-            : new AndQuery(isPinnedQuery, freeTextQuery);
+            : new AndQuery(favoriteQuery, freeTextQuery);
     }
 }

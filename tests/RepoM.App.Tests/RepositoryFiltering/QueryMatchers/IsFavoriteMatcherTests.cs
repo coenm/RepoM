@@ -6,18 +6,18 @@ using AwesomeAssertions;
 using RepoM.App.RepositoryFiltering.QueryMatchers;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 using Xunit;
 
-public class IsPinnedMatcherTests
+public class IsFavoriteMatcherTests
 {
     private readonly IRepository _repository = A.Fake<IRepository>();
-    private readonly IPinningService _pinningService = A.Fake<IPinningService>();
-    private readonly IsPinnedMatcher _sut;
+    private readonly IFavoriteService _favoriteService = A.Fake<IFavoriteService>();
+    private readonly IsFavoriteMatcher _sut;
 
-    public IsPinnedMatcherTests()
+    public IsFavoriteMatcherTests()
     {
-        _sut = new IsPinnedMatcher(_pinningService);
+        _sut = new IsFavoriteMatcher(_favoriteService);
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class IsPinnedMatcherTests
         // arrange
 
         // act
-        Func<IsPinnedMatcher> act = () => new IsPinnedMatcher(null!);
+        Func<IsFavoriteMatcher> act = () => new IsFavoriteMatcher(null!);
 
         // assert
         act.Should().Throw<ArgumentNullException>();
@@ -43,7 +43,7 @@ public class IsPinnedMatcherTests
 
         // assert
         result.Should().BeNull();
-        A.CallTo(_pinningService).MustNotHaveHappened();
+        A.CallTo(_favoriteService).MustNotHaveHappened();
     }
 
     [Theory]
@@ -70,42 +70,42 @@ public class IsPinnedMatcherTests
 
         // assert
         result.Should().BeNull();
-        A.CallTo(_pinningService).MustNotHaveHappened();
+        A.CallTo(_favoriteService).MustNotHaveHappened();
     }
 
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void IsMatch_ShouldReturnIsPinnedValue_WhenTermIsPinned(bool isPinned)
+    public void IsMatch_ShouldReturnIsFavoriteValue_WhenTermIsFavorite(bool isFavorite)
     {
         // arrange
         A.CallTo(() => _repository.SafePath).Returns("/safe/path");
-        A.CallTo(() => _pinningService.IsPinned("/safe/path")).Returns(isPinned);
+        A.CallTo(() => _favoriteService.IsFavorite("/safe/path")).Returns(isFavorite);
         TermBase simpleTerm = new SimpleTerm("is", "pinned");
 
         // act
         var result = _sut.IsMatch(in _repository, in simpleTerm);
 
         // assert
-        result.Should().Be(isPinned);
-        A.CallTo(() => _pinningService.IsPinned("/safe/path")).MustHaveHappenedOnceExactly();
+        result.Should().Be(isFavorite);
+        A.CallTo(() => _favoriteService.IsFavorite("/safe/path")).MustHaveHappenedOnceExactly();
     }
 
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void IsMatch_ShouldReturnNegatedIsPinnedValue_WhenTermIsUnpinned(bool isPinned)
+    public void IsMatch_ShouldReturnNegatedIsFavoriteValue_WhenTermIsUnpinned(bool isFavorite)
     {
         // arrange
         A.CallTo(() => _repository.SafePath).Returns("/safe/path");
-        A.CallTo(() => _pinningService.IsPinned("/safe/path")).Returns(isPinned);
+        A.CallTo(() => _favoriteService.IsFavorite("/safe/path")).Returns(isFavorite);
         TermBase simpleTerm = new SimpleTerm("is", "unpinned");
 
         // act
         var result = _sut.IsMatch(in _repository, in simpleTerm);
 
         // assert
-        result.Should().Be(!isPinned);
-        A.CallTo(() => _pinningService.IsPinned("/safe/path")).MustHaveHappenedOnceExactly();
+        result.Should().Be(!isFavorite);
+        A.CallTo(() => _favoriteService.IsFavorite("/safe/path")).MustHaveHappenedOnceExactly();
     }
 }

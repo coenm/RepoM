@@ -40,10 +40,18 @@ public class DefaultQueryParserTests
     }
 
     [Theory]
-    [InlineData("is:pinned", "pinned")]
-    [InlineData("is:pinned  ", "pinned")]
-    [InlineData("is:unpinned", "unpinned")]
-    [InlineData("is:unpinned  ", "unpinned")]
+    [InlineData("is:pinned", "favorite")]
+    [InlineData("is:pinned  ", "favorite")]
+    [InlineData("is:unpinned", "unfavorite")]
+    [InlineData("is:unpinned  ", "unfavorite")]
+    [InlineData("is:starred", "favorite")]
+    [InlineData("is:starred  ", "favorite")]
+    [InlineData("is:unstarred", "unfavorite")]
+    [InlineData("is:unstarred  ", "unfavorite")]
+    [InlineData("is:favorite", "favorite")]
+    [InlineData("is:favorite  ", "favorite")]
+    [InlineData("is:unfavorite", "unfavorite")]
+    [InlineData("is:unfavorite  ", "unfavorite")]
     public void Parse_ShouldReturnSimpleTerm_WhenInputIsExactPinnedOrUnpinned(string input, string expectedValue)
     {
         // arrange

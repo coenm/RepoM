@@ -6,7 +6,7 @@ These scorers are available by using the corresponding plugin.
 
 ### `is-pinned-scorer@1`
 
-include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_IsPinnedScorerConfigurationV1.verified.md
+include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_IsFavoriteScorerConfigurationV1.verified.md
 
 ### `tag-scorer@1`
 

@@ -1,15 +1,15 @@
-namespace RepoM.Api.Pinning;
+namespace RepoM.Api.Favorite;
 
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Common;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-public sealed class FavoritesYamlStore : IFavoritesStore
+public sealed class FavoriteYamlStore : IFavoriteStore
 {
     private readonly string _filePath;
     private readonly IFileSystem _fileSystem;
@@ -17,7 +17,7 @@ public sealed class FavoritesYamlStore : IFavoritesStore
     private readonly ISerializer _serializer;
     private readonly IDeserializer _deserializer;
 
-    public FavoritesYamlStore(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, ILogger logger)
+    public FavoriteYamlStore(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, ILogger logger)
     {
         ArgumentNullException.ThrowIfNull(appDataPathProvider);
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));

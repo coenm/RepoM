@@ -15,7 +15,7 @@ using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Configuration;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -50,7 +50,7 @@ public class RepositoryFilteringManagerTests
             SafePath = path.Replace('\\', '/'),
             Name = name,
         };
-        return new RepositoryViewModel(info, A.Fake<IPinningService>(), A.Fake<IRepositoryMonitoringService>(), A.Fake<IRepositoryMonitoringEvents>());
+        return new RepositoryViewModel(info, A.Fake<IFavoriteService>(), A.Fake<IRepositoryMonitoringService>(), A.Fake<IRepositoryMonitoringEvents>());
     }
 
     [Fact]
