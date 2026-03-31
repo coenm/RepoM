@@ -300,8 +300,9 @@
 								<StackPanel>
                                     <DockPanel>
                                         <TextBlock DockPanel.Dock="Right"
-                                                   Margin="4,3,8,3"
+                                                   Margin="4,0,8,3"
                                                    TextElement.FontSize="20"
+                                                   VerticalAlignment="Center"
                                                    Cursor="Hand"
                                                    ToolTip="Toggle favorite"
                                                    MouseLeftButtonUp="FavoriteToggle_Click">
