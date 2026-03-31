@@ -832,4 +832,186 @@ public class RepositoryViewModelTests
             sut.LocalModified.Should().Be("150");
         }
     }
+
+    public class ToggleFavoriteMethod : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Should_Pin_When_Currently_Not_Favorite()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            A.CallTo(() => _favoriteService.IsFavorite(info.SafePath)).Returns(false);
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.ToggleFavorite();
+
+            A.CallTo(() => _favoriteService.SetFavorite(info.SafePath, true)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void Should_Unpin_When_Currently_Favorite()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            A.CallTo(() => _favoriteService.IsFavorite(info.SafePath)).Returns(true);
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.ToggleFavorite();
+
+            A.CallTo(() => _favoriteService.SetFavorite(info.SafePath, false)).MustHaveHappenedOnceExactly();
+        }
+    }
+
+    public class IsMonitoredProperty : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Returns_True_When_Monitored()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            A.CallTo(() => _monitoringService.IsMonitored(info.SafePath)).Returns(true);
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.IsMonitored.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Returns_False_When_Not_Monitored()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            A.CallTo(() => _monitoringService.IsMonitored(info.SafePath)).Returns(false);
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.IsMonitored.Should().BeFalse();
+        }
+    }
+
+    public class ToggleMonitoringMethod : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Should_Enable_When_Currently_Not_Monitored()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            A.CallTo(() => _monitoringService.IsMonitored(info.SafePath)).Returns(false);
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.ToggleMonitoring();
+
+            A.CallTo(() => _monitoringService.SetMonitored(info.SafePath, true)).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void Should_Disable_When_Currently_Monitored()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            A.CallTo(() => _monitoringService.IsMonitored(info.SafePath)).Returns(true);
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.ToggleMonitoring();
+
+            A.CallTo(() => _monitoringService.SetMonitored(info.SafePath, false)).MustHaveHappenedOnceExactly();
+        }
+    }
+
+    public class EnableMonitoringMethod : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Should_Call_EnableMonitoring_On_Service()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            RepositoryViewModel sut = CreateSut(info);
+
+            sut.EnableMonitoring();
+
+            A.CallTo(() => _monitoringService.EnableMonitoring(info.SafePath)).MustHaveHappenedOnceExactly();
+        }
+    }
+
+    public class FavoriteChangedEvent : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Raises_PropertyChanged_For_IsFavorite_When_Matching_Path()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            RepositoryViewModel sut = CreateSut(info);
+            var raised = new List<string>();
+            sut.PropertyChanged += (_, e) => raised.Add(e.PropertyName!);
+
+            _favoriteService.FavoriteChanged += Raise.FreeForm.With(info.SafePath, true);
+
+            raised.Should().Contain(nameof(RepositoryViewModel.IsFavorite));
+        }
+
+        [Fact]
+        public void Does_Not_Raise_PropertyChanged_For_IsFavorite_When_Different_Path()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            RepositoryViewModel sut = CreateSut(info);
+            var raised = new List<string>();
+            sut.PropertyChanged += (_, e) => raised.Add(e.PropertyName!);
+
+            _favoriteService.FavoriteChanged += Raise.FreeForm.With("/other/path", true);
+
+            raised.Should().NotContain(nameof(RepositoryViewModel.IsFavorite));
+        }
+    }
+
+    public class MonitoringChangedEvent : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Raises_PropertyChanged_For_IsMonitored_When_Matching_Path()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            RepositoryViewModel sut = CreateSut(info);
+            var raised = new List<string>();
+            sut.PropertyChanged += (_, e) => raised.Add(e.PropertyName!);
+
+            _monitoringEvents.MonitoringChanged += Raise.FreeForm.With(info.SafePath, true);
+
+            raised.Should().Contain(nameof(RepositoryViewModel.IsMonitored));
+        }
+
+        [Fact]
+        public void Does_Not_Raise_PropertyChanged_For_IsMonitored_When_Different_Path()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            RepositoryViewModel sut = CreateSut(info);
+            var raised = new List<string>();
+            sut.PropertyChanged += (_, e) => raised.Add(e.PropertyName!);
+
+            _monitoringEvents.MonitoringChanged += Raise.FreeForm.With("/other/path", true);
+
+            raised.Should().NotContain(nameof(RepositoryViewModel.IsMonitored));
+        }
+    }
+
+    public class DisposeMethod : RepositoryViewModelTests
+    {
+        [Fact]
+        public void Should_Unsubscribe_From_FavoriteChanged()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            RepositoryViewModel sut = CreateSut(info);
+            sut.Dispose();
+
+            var raised = new List<string>();
+            sut.PropertyChanged += (_, e) => raised.Add(e.PropertyName!);
+
+            _favoriteService.FavoriteChanged += Raise.FreeForm.With(info.SafePath, true);
+
+            raised.Should().NotContain(nameof(RepositoryViewModel.IsFavorite));
+        }
+
+        [Fact]
+        public void Should_Unsubscribe_From_MonitoringChanged()
+        {
+            RepositoryInfo info = _builder.BuildFullFeatured();
+            RepositoryViewModel sut = CreateSut(info);
+            sut.Dispose();
+
+            var raised = new List<string>();
+            sut.PropertyChanged += (_, e) => raised.Add(e.PropertyName!);
+
+            _monitoringEvents.MonitoringChanged += Raise.FreeForm.With(info.SafePath, true);
+
+            raised.Should().NotContain(nameof(RepositoryViewModel.IsMonitored));
+        }
+    }
 }

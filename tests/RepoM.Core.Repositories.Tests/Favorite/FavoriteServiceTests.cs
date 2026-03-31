@@ -1,6 +1,7 @@
 namespace RepoM.Core.Repositories.Tests.Favorite;
 
 using System;
+using System.Collections.Generic;
 using AwesomeAssertions;
 using FakeItEasy;
 using RepoM.Core.Repositories.Favorite;
@@ -111,5 +112,137 @@ public class FavoriteServiceTests
         _sut.IsFavorite("/repos/a").Should().BeTrue();
         _sut.IsFavorite("/repos/b").Should().BeTrue();
         _sut.IsFavorite("/repos/c").Should().BeFalse();
+    }
+
+    [Fact]
+    public void Ctor_ShouldThrow_WhenFavoriteStoreIsNull()
+    {
+        // act
+        Func<FavoriteService> act = () => new FavoriteService(null!);
+
+        // assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Ctor_ShouldLoadInitialFavoritesFromStore()
+    {
+        // arrange
+        var store = A.Fake<IFavoriteStore>();
+        A.CallTo(() => store.Load()).Returns(["/repos/preloaded",]);
+
+        // act
+        using var sut = new FavoriteService(store);
+
+        // assert
+        sut.IsFavorite("/repos/preloaded").Should().BeTrue();
+    }
+
+    [Fact]
+    public void GetAllFavorites_ShouldReturnEmpty_WhenNoneSet()
+    {
+        _sut.GetAllFavorites().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void GetAllFavorites_ShouldReturnAllFavorites()
+    {
+        // arrange
+        _sut.SetFavorite("/repos/a", true);
+        _sut.SetFavorite("/repos/b", true);
+
+        // act
+        var result = _sut.GetAllFavorites();
+
+        // assert
+        result.Should().HaveCount(2);
+        result.Should().Contain("/repos/a");
+        result.Should().Contain("/repos/b");
+    }
+
+    [Fact]
+    public void GetAllFavorites_ShouldNotContainUnfavorited()
+    {
+        // arrange
+        _sut.SetFavorite("/repos/a", true);
+        _sut.SetFavorite("/repos/b", true);
+        _sut.SetFavorite("/repos/a", false);
+
+        // act
+        var result = _sut.GetAllFavorites();
+
+        // assert
+        result.Should().HaveCount(1);
+        result.Should().Contain("/repos/b");
+    }
+
+    [Fact]
+    public void SetFavorite_ShouldRaiseFavoriteChanged_WhenFavorited()
+    {
+        // arrange
+        var events = new List<(string path, bool favorite)>();
+        _sut.FavoriteChanged += (path, fav) => events.Add((path, fav));
+
+        // act
+        _sut.SetFavorite("/repos/test", true);
+
+        // assert
+        events.Should().ContainSingle()
+            .Which.Should().Be(("/repos/test", true));
+    }
+
+    [Fact]
+    public void SetFavorite_ShouldRaiseFavoriteChanged_WhenUnfavorited()
+    {
+        // arrange
+        _sut.SetFavorite("/repos/test", true);
+        var events = new List<(string path, bool favorite)>();
+        _sut.FavoriteChanged += (path, fav) => events.Add((path, fav));
+
+        // act
+        _sut.SetFavorite("/repos/test", false);
+
+        // assert
+        events.Should().ContainSingle()
+            .Which.Should().Be(("/repos/test", false));
+    }
+
+    [Fact]
+    public void SetFavorite_ShouldNotRaiseFavoriteChanged_WhenAlreadyFavorite()
+    {
+        // arrange
+        _sut.SetFavorite("/repos/test", true);
+        var events = new List<(string path, bool favorite)>();
+        _sut.FavoriteChanged += (path, fav) => events.Add((path, fav));
+
+        // act
+        _sut.SetFavorite("/repos/test", true);
+
+        // assert
+        events.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void SetFavorite_ShouldNotRaiseFavoriteChanged_WhenUnfavoritingNonExistent()
+    {
+        // arrange
+        var events = new List<(string path, bool favorite)>();
+        _sut.FavoriteChanged += (path, fav) => events.Add((path, fav));
+
+        // act
+        _sut.SetFavorite("/repos/test", false);
+
+        // assert
+        events.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Dispose_ShouldNotThrow()
+    {
+        // act
+        var act = () => _sut.Dispose();
+
+        // assert
+        act.Should().NotThrow();
     }
 }
