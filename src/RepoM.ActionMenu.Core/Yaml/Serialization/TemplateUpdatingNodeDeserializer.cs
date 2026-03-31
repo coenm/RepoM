@@ -1,7 +1,6 @@
 namespace RepoM.ActionMenu.Core.Yaml.Serialization;
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -19,7 +18,6 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
 {
     private readonly INodeDeserializer _nodeDeserializer;
     private readonly ITemplateParser _templateParser;
-    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _propertyInfoCache = new();
 
     public TemplateUpdatingNodeDeserializer(INodeDeserializer nodeDeserializer, ITemplateParser templateParser)
     {
@@ -39,8 +37,8 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
             return true;
         }
 
-        PropertyInfo[] props = GetPropertyInfos(expectedType);
-        PropertyInfo[] props2 = GetPropertyInfos(value.GetType());
+        PropertyInfo[] props = PropertyInfoCache.GetPropertyInfos(expectedType);
+        PropertyInfo[] props2 = PropertyInfoCache.GetPropertyInfos(value.GetType());
 
         foreach (PropertyInfo prop in props.Concat(props2))
         {
@@ -211,17 +209,6 @@ internal class TemplateUpdatingNodeDeserializer<T> : INodeDeserializer where T :
         {
             prop.SetMethod!.Invoke(value, [new ScribanText(),]);
         }
-    }
-
-    private static PropertyInfo[] GetPropertyInfos(Type type)
-    {
-        return _propertyInfoCache.GetOrAdd(type, static t => t
-               .GetProperties(true)
-               .Where(propertyInfo =>
-                   propertyInfo is { CanWrite: true, CanRead: true, }
-                   &&
-                   typeof(EvaluateObjectBase).GetTypeInfo().IsAssignableFrom(propertyInfo.PropertyType.GetTypeInfo()))
-                .ToArray());
     }
 
     private static bool TryGetCustomAttributeData<TAttribute>(PropertyInfo propertyInfo, [NotNullWhen(true)] out CustomAttributeData? customAttributeData ) where TAttribute : Attribute
