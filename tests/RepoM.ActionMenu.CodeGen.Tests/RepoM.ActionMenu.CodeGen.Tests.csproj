@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="8.0.0">
+    <PackageReference Include="coverlet.collector" Version="8.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -21,8 +21,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Meziantou.Xunit.ParallelTestFramework" Version="2.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageReference Include="System.IO.Abstractions" Version="22.1.0" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="22.1.0" />
     <PackageReference Include="Verify.ClipboardAccept" Version="31.12.5" />
@@ -34,7 +34,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Scriban" Version="6.5.3" />
+    <PackageReference Include="Scriban" Version="7.0.6" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
     <PackageReference Include="EasyTestFile.XUnit" Version="2.1.10" />
   </ItemGroup>

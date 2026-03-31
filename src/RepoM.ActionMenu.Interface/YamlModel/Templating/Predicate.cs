@@ -50,7 +50,7 @@ public class Predicate : EvaluateObjectBase
         return ToBool(result);
     }
 
-    protected bool ToBool(object value)
+    protected bool ToBool(object? value)
     {
         if (value == null)
         {
@@ -74,7 +74,7 @@ public class Predicate : EvaluateObjectBase
                 return stringBoolValue;
             }
 
-            if (int.TryParse(stringValue, out int stringIntValue))
+            if (int.TryParse(stringValue, out var stringIntValue))
             {
                 return Convert.ToBoolean(stringIntValue);
             }
