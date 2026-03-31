@@ -31,6 +31,7 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
     private static readonly PropertyChangedEventArgs _wasFoundArgs = new(nameof(WasFound));
     private static readonly PropertyChangedEventArgs _tagsArgs = new(nameof(Tags));
     private static readonly PropertyChangedEventArgs _isMonitoredArgs = new(nameof(IsMonitored));
+    private static readonly PropertyChangedEventArgs _isPinnedArgs = new(nameof(IsPinned));
     private readonly IPinningService _pinningService;
     private readonly IRepositoryMonitoringService _monitoringService;
     private readonly IRepositoryMonitoringEvents _monitoringEvents;
@@ -52,6 +53,7 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
         _adapter = new RepositoryInfoAdapter(info);
         Tags = _info.Tags.Select(tag => new TagViewModel(tag)).ToArray();
         _monitoringEvents.MonitoringChanged += OnMonitoringChanged;
+        _pinningService.PinnedChanged += OnPinnedChanged;
     }
 
     /// <summary>
@@ -153,6 +155,11 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
     }
 
     public bool IsPinned => _pinningService.IsPinned(_info.SafePath);
+
+    public void TogglePinned()
+    {
+        _pinningService.SetPinned(_info.SafePath, !IsPinned);
+    }
 
     public bool IsMonitored => _monitoringService.IsMonitored(_info.SafePath);
 
@@ -273,8 +280,17 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
         }
     }
 
+    private void OnPinnedChanged(string safePath, bool pinned)
+    {
+        if (string.Equals(safePath, _info.SafePath, StringComparison.OrdinalIgnoreCase))
+        {
+            PropertyChanged?.Invoke(this, _isPinnedArgs);
+        }
+    }
+
     public void Dispose()
     {
         _monitoringEvents.MonitoringChanged -= OnMonitoringChanged;
+        _pinningService.PinnedChanged -= OnPinnedChanged;
     }
 }

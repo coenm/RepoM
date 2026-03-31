@@ -2,12 +2,20 @@ namespace RepoM.Core.Repositories.Tests.Pinning;
 
 using System;
 using AwesomeAssertions;
+using FakeItEasy;
 using RepoM.Core.Repositories.Pinning;
 using Xunit;
 
 public class PinningServiceTests
 {
-    private readonly PinningService _sut = new();
+    private readonly IFavoritesStore _favoritesStore = A.Fake<IFavoritesStore>();
+    private readonly PinningService _sut;
+
+    public PinningServiceTests()
+    {
+        A.CallTo(() => _favoritesStore.Load()).Returns([]);
+        _sut = new PinningService(_favoritesStore);
+    }
 
     [Fact]
     public void IsPinned_ShouldReturnFalse_WhenNotPinned()

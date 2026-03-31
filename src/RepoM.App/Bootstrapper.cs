@@ -61,7 +61,9 @@ internal static class Bootstrapper
         Container.Register<IRepositoryScanner, GitRepositoryScanner>(Lifestyle.Singleton);
         Container.Register<IRepositoryWatcher, FileSystemRepositoryWatcher>(Lifestyle.Singleton);
         Container.Register<IRepositoryInfoReader, LibGit2SharpRepositoryInfoReader>(Lifestyle.Singleton);
-        Container.Register<IPinningService, PinningService>(Lifestyle.Singleton);
+        Container.Register<IPinningService>(() => Container.GetInstance<PinningService>(), Lifestyle.Singleton);
+        Container.Register<PinningService>(() => new PinningService(Container.GetInstance<IFavoritesStore>()), Lifestyle.Singleton);
+        Container.Register<IFavoritesStore, RepoM.Api.Pinning.FavoritesYamlStore>(Lifestyle.Singleton);
         Container.Register<RepositoryMonitoringStateService>(Lifestyle.Singleton);
         Container.Register<IRepositoryMonitoringService>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);
         Container.Register<IRepositoryMonitoringEvents>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);

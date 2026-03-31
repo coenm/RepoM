@@ -709,6 +709,15 @@ public partial class MainWindow
         }
     }
 
+    private void FavoriteToggle_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is RepositoryViewModel vm)
+        {
+            vm.TogglePinned();
+            e.Handled = true;
+        }
+    }
+
     private void ScanButton_Click(object sender, RoutedEventArgs e)
     {
         if (_isScanning)

@@ -29,12 +29,16 @@ public sealed class IsPinnedMatcher : IQueryMatcher
             return null;
         }
 
-        if ("pinned".Equals(st.Value, StringComparison.Ordinal))
+        if ("pinned".Equals(st.Value, StringComparison.Ordinal)
+            || "starred".Equals(st.Value, StringComparison.Ordinal)
+            || "favorite".Equals(st.Value, StringComparison.Ordinal))
         {
             return _pinningService.IsPinned(repository.SafePath);
         }
 
-        if ("unpinned".Equals(st.Value, StringComparison.Ordinal))
+        if ("unpinned".Equals(st.Value, StringComparison.Ordinal)
+            || "unstarred".Equals(st.Value, StringComparison.Ordinal)
+            || "unfavorite".Equals(st.Value, StringComparison.Ordinal))
         {
             return !_pinningService.IsPinned(repository.SafePath);
         }
