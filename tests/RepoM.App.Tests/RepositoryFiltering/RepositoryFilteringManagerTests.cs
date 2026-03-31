@@ -238,7 +238,7 @@ public class RepositoryFilteringManagerTests
         A.CallTo(() => _queryParser.Name).Returns("Default");
         A.CallTo(() => _filterSettings.Configuration).Returns(new Dictionary<string, RepositoryFilterConfiguration>());
 
-        Action act = () => new RepositoryFilteringManager(null!, _filterSettings, [_queryParser,], _matcher, NullLogger.Instance);
+        Action act = () => _ = new RepositoryFilteringManager(null!, _filterSettings, [_queryParser,], _matcher, NullLogger.Instance);
 
         act.Should().Throw<ArgumentNullException>();
     }
@@ -248,7 +248,7 @@ public class RepositoryFilteringManagerTests
     {
         A.CallTo(() => _queryParser.Name).Returns("Default");
 
-        Action act = () => new RepositoryFilteringManager(_appSettings, null!, [_queryParser,], _matcher, NullLogger.Instance);
+        Action act = () => _ = new RepositoryFilteringManager(_appSettings, null!, [_queryParser,], _matcher, NullLogger.Instance);
 
         act.Should().Throw<ArgumentNullException>();
     }
@@ -258,7 +258,7 @@ public class RepositoryFilteringManagerTests
     {
         A.CallTo(() => _filterSettings.Configuration).Returns(new Dictionary<string, RepositoryFilterConfiguration>());
 
-        Action act = () => new RepositoryFilteringManager(_appSettings, _filterSettings, null!, _matcher, NullLogger.Instance);
+        Action act = () => _ = new RepositoryFilteringManager(_appSettings, _filterSettings, null!, _matcher, NullLogger.Instance);
 
         act.Should().Throw<ArgumentNullException>();
     }
@@ -269,7 +269,7 @@ public class RepositoryFilteringManagerTests
         A.CallTo(() => _queryParser.Name).Returns("Default");
         A.CallTo(() => _filterSettings.Configuration).Returns(new Dictionary<string, RepositoryFilterConfiguration>());
 
-        Action act = () => new RepositoryFilteringManager(_appSettings, _filterSettings, [_queryParser,], null!, NullLogger.Instance);
+        Action act = () => _ = new RepositoryFilteringManager(_appSettings, _filterSettings, [_queryParser,], null!, NullLogger.Instance);
 
         act.Should().Throw<ArgumentNullException>();
     }
@@ -280,7 +280,7 @@ public class RepositoryFilteringManagerTests
         A.CallTo(() => _queryParser.Name).Returns("Default");
         A.CallTo(() => _filterSettings.Configuration).Returns(new Dictionary<string, RepositoryFilterConfiguration>());
 
-        Action act = () => new RepositoryFilteringManager(_appSettings, _filterSettings, [_queryParser,], _matcher, null!);
+        Action act = () => _ = new RepositoryFilteringManager(_appSettings, _filterSettings, [_queryParser,], _matcher, null!);
 
         act.Should().Throw<ArgumentNullException>();
     }
@@ -290,7 +290,7 @@ public class RepositoryFilteringManagerTests
     {
         A.CallTo(() => _filterSettings.Configuration).Returns(new Dictionary<string, RepositoryFilterConfiguration>());
 
-        Action act = () => new RepositoryFilteringManager(_appSettings, _filterSettings, [], _matcher, NullLogger.Instance);
+        Action act = () => _ = new RepositoryFilteringManager(_appSettings, _filterSettings, [], _matcher, NullLogger.Instance);
 
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
