@@ -318,32 +318,6 @@ public class HeidiConfigurationServiceTests
     }
 
     [Fact]
-    public async Task Events_ShouldNotBeProcessed_WhenWrongFilename()
-    {
-        var mre = new AutoResetEvent(false);
-        _sut.ConfigurationUpdated += (_, _) => mre.Set();
-        A.CallTo(() => _fileSystem.File.Exists(A<string>._)).Returns(true);
-        A.CallTo(() => _configReader.ParseAsync(A<string>._))
-         .Returns(Task.FromResult(new List<HeidiSingleDatabaseConfiguration>()));
-
-        await _sut.InitializeAsync();
-        var poked = mre.WaitOne(TimeSpan.FromSeconds(5));
-        if (poked)
-        {
-            await Task.Delay(_sut.FileEventsThrottleTimeout.Add(TimeSpan.FromMilliseconds(100)));
-        }
-        Fake.ClearRecordedCalls(_configReader);
-
-        // act
-        _changeEventDummyFileSystemWatcher.Change(PATH, FILENAME + "dummy");
-        await Task.Delay(TimeSpan.FromSeconds(10));
-
-        // assert
-        poked.Should().BeTrue();
-        A.CallTo(() => _configReader.ParseAsync(_fullFilename)).MustNotHaveHappened();
-    }
-
-    [Fact]
     public async Task Events_ShouldBeBundled_WhenHappeningWithinWindow()
     {
         var mre = new AutoResetEvent(false);

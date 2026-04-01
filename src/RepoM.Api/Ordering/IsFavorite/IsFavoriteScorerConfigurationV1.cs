@@ -1,11 +1,11 @@
-namespace RepoM.Api.Ordering.IsPinned;
+namespace RepoM.Api.Ordering.IsFavorite;
 
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 
 /// <summary>
-/// Repository scorer based on the pinned state of a repository.
+/// Repository scorer based on the favorite state of a repository.
 /// </summary>
-public sealed class IsPinnedScorerConfigurationV1 : IRepositoryScorerConfiguration
+public sealed class IsFavoriteScorerConfigurationV1 : IRepositoryScorerConfiguration
 {
     public const string TYPE_VALUE = "is-pinned-scorer@1";
 

@@ -10,7 +10,7 @@ public interface IRepositoryView
 
     string Path { get; }
 
-    bool IsPinned { get; }
+    bool IsFavorite { get; }
 
     bool IsNotBare { get; }
 

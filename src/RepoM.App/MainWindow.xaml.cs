@@ -39,7 +39,7 @@ using RepoM.Core.Repositories;
 using RepoM.Core.Repositories.Adapters;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 using RepoM.Core.Repositories.Store;
 using SourceChord.FluentWPF;
 using Control = System.Windows.Controls.Control;
@@ -78,7 +78,7 @@ public partial class MainWindow
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
     private readonly RepositoryMonitorService _monitorService;
     private readonly IRepositoryStore _store;
-    private readonly IPinningService _pinningService;
+    private readonly IFavoriteService _favoriteService;
     private readonly IRepositoryMonitoringService _monitoringService;
     private readonly IRepositoryMonitoringEvents _monitoringEvents;
     private readonly ITranslationService _translationService;
@@ -102,7 +102,7 @@ public partial class MainWindow
     public MainWindow(
         RepositoryMonitorService monitorService,
         IRepositoryStore store,
-        IPinningService pinningService,
+        IFavoriteService favoriteService,
         IRepositoryMonitoringService monitoringService,
         IRepositoryMonitoringEvents monitoringEvents,
         IRepositoryIgnoreStore repositoryIgnoreStore,
@@ -120,7 +120,7 @@ public partial class MainWindow
     {
         _monitorService = monitorService ?? throw new ArgumentNullException(nameof(monitorService));
         _store = store ?? throw new ArgumentNullException(nameof(store));
-        _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
+        _favoriteService = favoriteService ?? throw new ArgumentNullException(nameof(favoriteService));
         _monitoringService = monitoringService ?? throw new ArgumentNullException(nameof(monitoringService));
         _monitoringEvents = monitoringEvents ?? throw new ArgumentNullException(nameof(monitoringEvents));
         _repositoryFilteringManager = repositoryFilteringManager ?? throw new ArgumentNullException(nameof(repositoryFilteringManager));
@@ -305,7 +305,7 @@ public partial class MainWindow
 
             var bindSubscription = _store.Connect()
                 .TransformWithInlineUpdate(
-                    info => new RepositoryViewModel(info, _pinningService, _monitoringService, _monitoringEvents),
+                    info => new RepositoryViewModel(info, _favoriteService, _monitoringService, _monitoringEvents),
                     (existingVm, updatedInfo) => existingVm.Update(updatedInfo))
                 .DisposeMany()
                 .Filter(filterObservable)
@@ -705,6 +705,15 @@ public partial class MainWindow
         if (sender is FrameworkElement fe && fe.DataContext is RepositoryViewModel vm)
         {
             vm.ToggleMonitoring();
+            e.Handled = true;
+        }
+    }
+
+    private void FavoriteToggle_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is RepositoryViewModel vm)
+        {
+            vm.ToggleFavorite();
             e.Handled = true;
         }
     }

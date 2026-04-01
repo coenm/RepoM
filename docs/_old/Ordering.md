@@ -72,7 +72,7 @@ These scorers are available by using the corresponding plugin.
 
 ### `is-pinned-scorer@1`
 
-Repository scorer based on the pinned state of a repository.<!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_IsPinnedScorerConfigurationV1.verified.md -->
+Repository scorer based on the favorite state of a repository.<!-- include: RepositoriesScorerConfigurationTests.DocsRepositoriesScorerConfiguration_IsFavoriteScorerConfigurationV1.verified.md -->
 
 Properties:
 

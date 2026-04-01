@@ -8,7 +8,7 @@ using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Api.IO;
 using RepoM.Api.Ordering.Az;
 using RepoM.Api.Ordering.Composition;
-using RepoM.Api.Ordering.IsPinned;
+using RepoM.Api.Ordering.IsFavorite;
 using RepoM.Api.Ordering.Label;
 using RepoM.Api.Ordering.Score;
 using RepoM.Api.Ordering.Sum;
@@ -26,7 +26,7 @@ using RepoM.Core.Plugin.RepositoryFinder;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using RepoM.Core.Repositories.Monitoring;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 using RepoM.Core.Repositories.Reading;
 using RepoM.Core.Repositories.Scanning;
 using RepoM.Core.Repositories.Store;
@@ -61,7 +61,9 @@ internal static class Bootstrapper
         Container.Register<IRepositoryScanner, GitRepositoryScanner>(Lifestyle.Singleton);
         Container.Register<IRepositoryWatcher, FileSystemRepositoryWatcher>(Lifestyle.Singleton);
         Container.Register<IRepositoryInfoReader, LibGit2SharpRepositoryInfoReader>(Lifestyle.Singleton);
-        Container.Register<IPinningService, PinningService>(Lifestyle.Singleton);
+        Container.Register<IFavoriteService>(() => Container.GetInstance<FavoriteService>(), Lifestyle.Singleton);
+        Container.Register<FavoriteService>(() => new FavoriteService(Container.GetInstance<IFavoriteStore>()), Lifestyle.Singleton);
+        Container.Register<IFavoriteStore, RepoM.Api.Favorite.FavoriteYamlStore>(Lifestyle.Singleton);
         Container.Register<RepositoryMonitoringStateService>(Lifestyle.Singleton);
         Container.Register<IRepositoryMonitoringService>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);
         Container.Register<IRepositoryMonitoringEvents>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);
@@ -93,7 +95,7 @@ internal static class Bootstrapper
         Container.Register<IRepositoryFilteringManager, RepositoryFilteringManager>(Lifestyle.Singleton);
         Container.Collection.Append<INamedQueryParser, DefaultQueryParser>(Lifestyle.Singleton);
 
-        Container.Collection.Append<IQueryMatcher, IsPinnedMatcher>(Lifestyle.Singleton);
+        Container.Collection.Append<IQueryMatcher, IsFavoriteMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, IsMonitoredMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, IsBehindMatcher>(Lifestyle.Singleton);
         Container.Collection.Append<IQueryMatcher, IsBareRepositoryMatcher>(Lifestyle.Singleton);
@@ -117,7 +119,7 @@ internal static class Bootstrapper
         CoreBootstrapper.RegisterRepositoryComparerConfigurationsTypes(Container);
         CoreBootstrapper.RegisterRepositoryScorerConfigurationsTypes(Container);
 
-        Container.Register<IRepositoryScoreCalculatorFactory<IsPinnedScorerConfigurationV1>, IsPinnedScorerFactory>(Lifestyle.Singleton);
+        Container.Register<IRepositoryScoreCalculatorFactory<IsFavoriteScorerConfigurationV1>, IsFavoriteScorerFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryScoreCalculatorFactory<TagScorerConfigurationV1>, TagScorerFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryComparerFactory<AlphabetComparerConfigurationV1>, AzRepositoryComparerFactory>(Lifestyle.Singleton);
         Container.Register<IRepositoryComparerFactory<CompositionComparerConfigurationV1>, CompositionRepositoryComparerFactory>(Lifestyle.Singleton);

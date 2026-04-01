@@ -300,6 +300,27 @@
 								<StackPanel>
                                     <DockPanel>
                                         <TextBlock DockPanel.Dock="Right"
+                                                   Margin="4,0,8,3"
+                                                   TextElement.FontSize="20"
+                                                   VerticalAlignment="Center"
+                                                   Cursor="Hand"
+                                                   ToolTip="Toggle favorite"
+                                                   MouseLeftButtonUp="FavoriteToggle_Click">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="&#x2605;"/>
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                    <Setter Property="Opacity" Value="0.2"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                            <Setter Property="Foreground" Value="#FFD700"/>
+                                                            <Setter Property="Opacity" Value="1.0"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock DockPanel.Dock="Right"
                                                    Margin="4,3,8,3"
                                                    TextElement.FontSize="14"
                                                    Cursor="Hand"
@@ -320,8 +341,6 @@
                                             </TextBlock.Style>
                                         </TextBlock>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Margin="8,3,0,3" TextElement.FontSize="14" Text="📌" 
-                                                       Visibility="{Binding Path=IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                             <TextBlock Text="{Binding Name}"
                                                        ToolTip="{Binding Path}"
                                                        TextElement.FontSize="17"

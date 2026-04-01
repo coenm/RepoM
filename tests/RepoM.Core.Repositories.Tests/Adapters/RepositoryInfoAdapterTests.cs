@@ -116,7 +116,7 @@ public class RepositoryInfoAdapterTests
     [Fact]
     public void Remotes_ShouldDelegateToInfo()
     {
-        _sut.Remotes.Should().HaveCount(1);
+        _sut.Remotes.Should().ContainSingle();
         _sut.Remotes[0].Key.Should().Be("origin");
     }
 

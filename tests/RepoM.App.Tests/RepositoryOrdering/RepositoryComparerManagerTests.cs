@@ -12,7 +12,7 @@ using RepoM.Core.Plugin.RepositoryOrdering;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
@@ -42,7 +42,7 @@ public class RepositoryComparerManagerTests
             SafePath = $"/repos/{name}",
             Name = name,
         };
-        return new RepositoryViewModel(info, A.Fake<IPinningService>(), A.Fake<IRepositoryMonitoringService>(), A.Fake<IRepositoryMonitoringEvents>());
+        return new RepositoryViewModel(info, A.Fake<IFavoriteService>(), A.Fake<IRepositoryMonitoringService>(), A.Fake<IRepositoryMonitoringEvents>());
     }
 
     [Fact]

@@ -8,7 +8,7 @@ using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Repositories.Adapters;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
-using RepoM.Core.Repositories.Pinning;
+using RepoM.Core.Repositories.Favorite;
 
 [DebuggerDisplay("{Name} @{Path}")]
 public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChanged, IDisposable
@@ -31,7 +31,8 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
     private static readonly PropertyChangedEventArgs _wasFoundArgs = new(nameof(WasFound));
     private static readonly PropertyChangedEventArgs _tagsArgs = new(nameof(Tags));
     private static readonly PropertyChangedEventArgs _isMonitoredArgs = new(nameof(IsMonitored));
-    private readonly IPinningService _pinningService;
+    private static readonly PropertyChangedEventArgs _isFavoriteArgs = new(nameof(IsFavorite));
+    private readonly IFavoriteService _favoriteService;
     private readonly IRepositoryMonitoringService _monitoringService;
     private readonly IRepositoryMonitoringEvents _monitoringEvents;
     private readonly RepositoryInfoAdapter _adapter;
@@ -43,15 +44,16 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public RepositoryViewModel(RepositoryInfo info, IPinningService pinningService, IRepositoryMonitoringService monitoringService, IRepositoryMonitoringEvents monitoringEvents)
+    public RepositoryViewModel(RepositoryInfo info, IFavoriteService favoriteService, IRepositoryMonitoringService monitoringService, IRepositoryMonitoringEvents monitoringEvents)
     {
         _info = info ?? throw new ArgumentNullException(nameof(info));
-        _pinningService = pinningService ?? throw new ArgumentNullException(nameof(pinningService));
+        _favoriteService = favoriteService ?? throw new ArgumentNullException(nameof(favoriteService));
         _monitoringService = monitoringService ?? throw new ArgumentNullException(nameof(monitoringService));
         _monitoringEvents = monitoringEvents ?? throw new ArgumentNullException(nameof(monitoringEvents));
         _adapter = new RepositoryInfoAdapter(info);
         Tags = _info.Tags.Select(tag => new TagViewModel(tag)).ToArray();
         _monitoringEvents.MonitoringChanged += OnMonitoringChanged;
+        _favoriteService.FavoriteChanged += OnFavoriteChanged;
     }
 
     /// <summary>
@@ -152,7 +154,12 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
         _cachedRepositoryStatusCode = repositoryStatusCode;
     }
 
-    public bool IsPinned => _pinningService.IsPinned(_info.SafePath);
+    public bool IsFavorite => _favoriteService.IsFavorite(_info.SafePath);
+
+    public void ToggleFavorite()
+    {
+        _favoriteService.SetFavorite(_info.SafePath, !IsFavorite);
+    }
 
     public bool IsMonitored => _monitoringService.IsMonitored(_info.SafePath);
 
@@ -273,8 +280,17 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
         }
     }
 
+    private void OnFavoriteChanged(string safePath, bool favorite)
+    {
+        if (string.Equals(safePath, _info.SafePath, StringComparison.OrdinalIgnoreCase))
+        {
+            PropertyChanged?.Invoke(this, _isFavoriteArgs);
+        }
+    }
+
     public void Dispose()
     {
         _monitoringEvents.MonitoringChanged -= OnMonitoringChanged;
+        _favoriteService.FavoriteChanged -= OnFavoriteChanged;
     }
 }
