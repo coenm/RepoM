@@ -32,7 +32,7 @@ public class FavoriteYamlStoreTests
     public void Ctor_ShouldThrow_WhenAppDataPathProviderIsNull()
     {
         // act
-        Action act = () => new FavoriteYamlStore(null!, _fileSystem, _logger);
+        Action act = () => _ = new FavoriteYamlStore(null!, _fileSystem, _logger);
 
         // assert
         act.Should().Throw<ArgumentNullException>();
@@ -42,7 +42,7 @@ public class FavoriteYamlStoreTests
     public void Ctor_ShouldThrow_WhenFileSystemIsNull()
     {
         // act
-        Action act = () => new FavoriteYamlStore(_appDataPathProvider, null!, _logger);
+        Action act = () => _ = new FavoriteYamlStore(_appDataPathProvider, null!, _logger);
 
         // assert
         act.Should().Throw<ArgumentNullException>();
@@ -52,7 +52,7 @@ public class FavoriteYamlStoreTests
     public void Ctor_ShouldThrow_WhenLoggerIsNull()
     {
         // act
-        Action act = () => new FavoriteYamlStore(_appDataPathProvider, _fileSystem, null!);
+        Action act = () => _ = new FavoriteYamlStore(_appDataPathProvider, _fileSystem, null!);
 
         // assert
         act.Should().Throw<ArgumentNullException>();

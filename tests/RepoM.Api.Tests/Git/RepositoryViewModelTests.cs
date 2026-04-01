@@ -2,7 +2,6 @@ namespace RepoM.Api.Tests.Git;
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using AwesomeAssertions;
 using FakeItEasy;
 using RepoM.Api.Git;
@@ -38,6 +37,21 @@ public class RepositoryViewModelTests
             Action act = () => _ = new RepositoryViewModel(_builder.BuildFullFeatured(), null!, _monitoringService, _monitoringEvents);
             act.Should().Throw<ArgumentNullException>();
         }
+
+
+        [Fact]
+        public void Throws_When_MonitoringService_Is_Null()
+        {
+            Action act = () => _ = new RepositoryViewModel(_builder.BuildFullFeatured(), _favoriteService, null!, _monitoringEvents);
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void Throws_When_MonitoringEvents_Is_Null()
+        {
+            Action act = () => _ = new RepositoryViewModel(_builder.BuildFullFeatured(), _favoriteService, _monitoringService, null!);
+            act.Should().Throw<ArgumentNullException>();
+        }        
     }
 
     public class Properties : RepositoryViewModelTests

@@ -172,7 +172,7 @@ public class FavoriteServiceTests
         var result = _sut.GetAllFavorites();
 
         // assert
-        result.Should().HaveCount(1);
+        result.Should().ContainSingle();
         result.Should().Contain("/repos/b");
     }
 
