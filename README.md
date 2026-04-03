@@ -52,17 +52,18 @@ How to define and use tags is described in the [Tags](docs/Tags.md) documentatio
 ## Search
 
 It is possible to filter or search for repositories using the search box at the top of RepoM.
+RepoM also supports quick filters, which let you save searches, re-use tag filters, and toggle built-in filters such as favorites and active repositories.
 See the [Search](docs/search.md) for more information.
 
 ## Ordering and Filtering
 
-The order of the repositories shown in RepoM is customizable. The default is alphabetical on the repository name. Read more about ordering [here](docs/_old/Ordering.md).
+The order of the repositories shown in RepoM is customizable. The default is alphabetical on the repository name. Read more in the [Ordering documentation](docs/_old/Ordering.md).
 
 The repositories shown in RepoM are filtered using the search box in RepoM. But the default set can also be configured using different presets.
 
 ## Global configuration
 
-When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but, at this moment, one property must be altered manually. Read more over [here](docs/_old/Settings.md).
+When RepoM starts for the first time, a configuration file wil be created. Most of the properties can be adjusted using the UI but, at this moment, one property must be altered manually. Read more in the [Settings documentation](docs/_old/Settings.md).
 
 ## Multi configuration
 
