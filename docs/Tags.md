@@ -7,7 +7,7 @@ Tags can be set to repositories and are used for searching, filtering, and order
 Tags can be defined in the `TagsV2.yaml` file located in `%APPDATA%\RepoM\` folder.
 The yaml consists of two parts. First an optional context section, and second the tags section.
 
-The context is the same context you use defining the action menu's. It allows you to add or define methods and variables. More information over the context can be found [here](Context.md)
+The context is the same context you use defining the action menus. It allows you to add or define methods and variables. See [Context](Context.md) for more information.
 
 The 'tags' section of the yaml is an array of tag specifications. The property `tag` is a string and represents the name of the tag. The optional property `when` is a predicate condition when to apply the tag. The predicate is evaluated using Scriban.
 
@@ -68,7 +68,9 @@ tags:
 
 First, after applying tags, you noticat that they become visible in the UI. Although this is nice, it doesn't do anything for you at the moment.
 
-The power of defining tags is currently the possiblility to search by a tag. For this to work, you need to have selected the 'Lucene query parser'. 
+The power of defining tags is currently the possibility to search by a tag. For this to work, you need to have selected the 'Lucene query parser'.
+
+Tags also integrate with quick filters in the UI. Clicking a tag on a repository row creates or activates a quick filter for that tag, so you can keep using that tag-based filter without retyping it.
 
 ### Search
 
@@ -84,8 +86,11 @@ For now, all regular text is also matched against tags.
 
 ### Filter
 
-TODO
-See filtering.
+Tags can also be used through quick filters.
+
+- Clicking a visible tag in the repository list creates or activates a quick filter for that tag.
+- That quick filter can then be toggled on, off, or inverse like any other quick filter.
+- Multiple tag-based quick filters can be combined with other quick filters and with the search box.
 
 ### Ordering
 
