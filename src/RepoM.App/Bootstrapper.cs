@@ -93,6 +93,7 @@ internal static class Bootstrapper
 
         Container.Register<IRepositoryMatcher, RepositoryMatcher>(Lifestyle.Singleton);
         Container.Register<IRepositoryFilteringManager, RepositoryFilteringManager>(Lifestyle.Singleton);
+        CoreBootstrapper.RegisterQuickFilterServices(Container);
         Container.Collection.Append<INamedQueryParser, DefaultQueryParser>(Lifestyle.Singleton);
 
         Container.Collection.Append<IQueryMatcher, IsFavoriteMatcher>(Lifestyle.Singleton);
