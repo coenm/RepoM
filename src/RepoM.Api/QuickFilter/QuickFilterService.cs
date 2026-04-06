@@ -17,6 +17,7 @@ internal sealed class QuickFilterService : IQuickFilterService
     private readonly ILogger _logger;
     private readonly string _filePath;
     private readonly List<QuickFilterModel> _filters;
+    private QuickFilterCombineMode _combineMode;
 
     private static readonly JsonSerializerSettings _jsonSettings = new()
     {
@@ -35,11 +36,27 @@ internal sealed class QuickFilterService : IQuickFilterService
         ArgumentNullException.ThrowIfNull(appDataPathProvider);
 
         _filePath = Path.Combine(appDataPathProvider.AppDataPath, "quickfilters.json");
-        _filters = Load();
+        (_filters, _combineMode) = Load();
         EnsureBuiltInFilters();
     }
 
     public event EventHandler? Changed;
+
+    public QuickFilterCombineMode CombineMode
+    {
+        get => _combineMode;
+        set
+        {
+            if (_combineMode == value)
+            {
+                return;
+            }
+
+            _combineMode = value;
+            Save();
+            Changed?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     public IReadOnlyList<QuickFilterModel> GetAll()
     {
@@ -154,25 +171,28 @@ internal sealed class QuickFilterService : IQuickFilterService
         return _filters.Find(f => string.Equals(f.Query.ToString(), queryString, StringComparison.OrdinalIgnoreCase));
     }
 
-    private List<QuickFilterModel> Load()
+    private (List<QuickFilterModel> filters, QuickFilterCombineMode combineMode) Load()
     {
         if (!_fileSystem.File.Exists(_filePath))
         {
-            return [];
+            return ([], QuickFilterCombineMode.And);
         }
 
         try
         {
             var json = _fileSystem.File.ReadAllText(_filePath);
-            var result = JsonConvert.DeserializeObject<List<QuickFilterModel>>(json, _jsonSettings);
-            return result ?? [];
+            var envelope = JsonConvert.DeserializeObject<QuickFilterFileEnvelope>(json, _jsonSettings);
+            if (envelope?.Filters != null)
+            {
+                return (envelope.Filters, envelope.CombineMode);
+            }
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Could not load quick filters from '{File}'.", _filePath);
         }
 
-        return [];
+        return ([], QuickFilterCombineMode.And);
     }
 
     private void Save()
@@ -186,7 +206,12 @@ internal sealed class QuickFilterService : IQuickFilterService
             }
 
             var userFilters = _filters.Where(f => !f.IsBuiltIn).OrderBy(f => f.Order).ToList();
-            var json = JsonConvert.SerializeObject(userFilters, _jsonSettings);
+            var envelope = new QuickFilterFileEnvelope
+            {
+                Filters = userFilters,
+                CombineMode = _combineMode,
+            };
+            var json = JsonConvert.SerializeObject(envelope, _jsonSettings);
             _fileSystem.File.WriteAllText(_filePath, json);
         }
         catch (Exception ex)
@@ -222,5 +247,12 @@ internal sealed class QuickFilterService : IQuickFilterService
                 IsBuiltIn = true,
             });
         }
+    }
+
+    private sealed class QuickFilterFileEnvelope
+    {
+        public List<QuickFilterModel>? Filters { get; set; }
+
+        public QuickFilterCombineMode CombineMode { get; set; }
     }
 }

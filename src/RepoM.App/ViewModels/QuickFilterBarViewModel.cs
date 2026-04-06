@@ -12,12 +12,6 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
-public enum QuickFilterCombineMode
-{
-    And,
-    Or,
-}
-
 public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
 {
     private static readonly PropertyChangedEventArgs _combineModeChangedArgs = new(nameof(CombineMode));
@@ -29,7 +23,6 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
     private readonly INamedQueryParser[] _queryParsers;
     private readonly ILogger _logger;
-    private QuickFilterCombineMode _combineMode = QuickFilterCombineMode.And;
 
     public QuickFilterBarViewModel(
         IQuickFilterService service,
@@ -87,15 +80,15 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
 
     public QuickFilterCombineMode CombineMode
     {
-        get => _combineMode;
+        get => _service.CombineMode;
         set
         {
-            if (_combineMode == value)
+            if (_service.CombineMode == value)
             {
                 return;
             }
 
-            _combineMode = value;
+            _service.CombineMode = value;
             PropertyChanged?.Invoke(this, _combineModeChangedArgs);
             PropertyChanged?.Invoke(this, _combineModeLabelChangedArgs);
             PropertyChanged?.Invoke(this, _combineModeToolTipChangedArgs);
@@ -103,9 +96,9 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
         }
     }
 
-    public string CombineModeLabel => _combineMode == QuickFilterCombineMode.And ? "AND" : "OR";
+    public string CombineModeLabel => _service.CombineMode == QuickFilterCombineMode.And ? "AND" : "OR";
 
-    public string CombineModeToolTip => _combineMode == QuickFilterCombineMode.And
+    public string CombineModeToolTip => _service.CombineMode == QuickFilterCombineMode.And
         ? "Filters combined with AND (all must match). Click to switch to OR."
         : "Filters combined with OR (any must match). Click to switch to AND.";
 
@@ -120,7 +113,7 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
         {
             0 => null,
             1 => activeQueries[0],
-            _ => _combineMode == QuickFilterCombineMode.Or
+            _ => _service.CombineMode == QuickFilterCombineMode.Or
                 ? new OrQuery(activeQueries)
                 : new AndQuery(activeQueries),
         };
@@ -128,7 +121,7 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
 
     public void ToggleCombineMode()
     {
-        CombineMode = _combineMode == QuickFilterCombineMode.And
+        CombineMode = _service.CombineMode == QuickFilterCombineMode.And
             ? QuickFilterCombineMode.Or
             : QuickFilterCombineMode.And;
     }

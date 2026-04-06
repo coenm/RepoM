@@ -351,6 +351,8 @@ public class QuickFilterBarViewModelTests
 
         public List<(Guid id, bool isActive)> SetActiveCalls { get; } = [];
 
+        public QuickFilterCombineMode CombineMode { get; set; }
+
         public event EventHandler? Changed;
 
         public IReadOnlyList<QuickFilterModel> GetAll() => Filters.ToArray();

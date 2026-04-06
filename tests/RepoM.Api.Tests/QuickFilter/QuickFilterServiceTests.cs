@@ -8,6 +8,7 @@ using AwesomeAssertions;
 using FakeItEasy;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RepoM.Api.QuickFilter;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
@@ -74,10 +75,11 @@ public class QuickFilterServiceTests
 
         fileSystem.FileExists($"{AppDataPath}\\quickfilters.json").Should().BeTrue();
         var json = fileSystem.File.ReadAllText($"{AppDataPath}\\quickfilters.json");
-        var persisted = JsonConvert.DeserializeObject<List<QuickFilterModel>>(json, new JsonSerializerSettings
+        var envelope = JObject.Parse(json);
+        var persisted = envelope["Filters"]!.ToObject<List<QuickFilterModel>>(JsonSerializer.Create(new JsonSerializerSettings
         {
             Converters = { new QueryJsonConverter(), },
-        });
+        }));
         persisted.Should().HaveCount(1);
         persisted![0].Label.Should().Be("Work");
         persisted[0].Query.ToString().Should().Be("tag:work");
@@ -345,18 +347,18 @@ public class QuickFilterServiceTests
     {
         // arrange
         var fileSystem = new MockFileSystem();
-        var json = JsonConvert.SerializeObject(
-            new List<QuickFilterModel>
+        var filters = new List<QuickFilterModel>
+        {
+            new()
             {
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    Label = "Persisted",
-                    Query = new SimpleTerm("tag", "persisted"),
-                    Order = 5,
-                },
+                Id = Guid.NewGuid(),
+                Label = "Persisted",
+                Query = new SimpleTerm("tag", "persisted"),
+                Order = 5,
             },
-            new JsonSerializerSettings { Converters = { new QueryJsonConverter(), }, });
+        };
+        var envelope = new { Filters = filters, CombineMode = "And" };
+        var json = JsonConvert.SerializeObject(envelope, new JsonSerializerSettings { Converters = { new QueryJsonConverter(), }, });
         fileSystem.AddFile($"{AppDataPath}\\quickfilters.json", new MockFileData(json));
 
         // act
@@ -365,6 +367,52 @@ public class QuickFilterServiceTests
         // assert
         sut.GetAll().Should().HaveCount(3); // 2 built-in + 1 persisted
         sut.GetAll().Should().Contain(f => f.Label == "Persisted");
+    }
+
+    [Fact]
+    public void CombineMode_ShouldDefaultToAnd()
+    {
+        // arrange & act
+        var sut = CreateSut();
+
+        // assert
+        sut.CombineMode.Should().Be(QuickFilterCombineMode.And);
+    }
+
+    [Fact]
+    public void CombineMode_Set_ShouldPersistAndRaiseChanged()
+    {
+        // arrange
+        var fileSystem = new MockFileSystem();
+        var sut = CreateSut(fileSystem: fileSystem);
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.CombineMode = QuickFilterCombineMode.Or;
+
+        // assert
+        sut.CombineMode.Should().Be(QuickFilterCombineMode.Or);
+        changedCount.Should().Be(1);
+
+        // Verify it was persisted by reloading
+        var sut2 = CreateSut(fileSystem: fileSystem);
+        sut2.CombineMode.Should().Be(QuickFilterCombineMode.Or);
+    }
+
+    [Fact]
+    public void CombineMode_SetSameValue_ShouldNotRaiseChanged()
+    {
+        // arrange
+        var sut = CreateSut();
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.CombineMode = QuickFilterCombineMode.And; // same as default
+
+        // assert
+        changedCount.Should().Be(0);
     }
 
     private static QuickFilterService CreateSut(MockFileSystem? fileSystem = null)

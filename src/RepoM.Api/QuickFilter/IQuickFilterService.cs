@@ -4,8 +4,16 @@ using System;
 using System.Collections.Generic;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 
+public enum QuickFilterCombineMode
+{
+    And,
+    Or,
+}
+
 public interface IQuickFilterService
 {
+    QuickFilterCombineMode CombineMode { get; set; }
+
     IReadOnlyList<QuickFilterModel> GetAll();
 
     QuickFilterModel Add(string label, IQuery query);
