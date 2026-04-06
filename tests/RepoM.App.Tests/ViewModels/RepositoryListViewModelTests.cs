@@ -186,6 +186,138 @@ public class RepositoryListViewModelTests
         A.CallTo(() => menuFactory.CreateMenuAsync(A<IRepository>._)).MustNotHaveHappened();
     }
 
+    [Fact]
+    public async Task InvokeDefaultActionOnSelectionAsync_ShouldDoNothing_WhenNoSelectedRepository()
+    {
+        // arrange
+        var menuFactory = A.Fake<IUserMenuActionMenuFactory>();
+        var sut = CreateSut(menuFactory: menuFactory);
+
+        // act
+        await sut.InvokeDefaultActionOnSelectionAsync();
+
+        // assert
+        A.CallTo(() => menuFactory.CreateMenuAsync(A<IRepository>._)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public void SettingItemsSource_SamReference_ShouldNotRaisePropertyChanged()
+    {
+        // arrange
+        var items = new[] { "a", "b" };
+        var sut = CreateSut();
+        sut.ItemsSource = items;
+        var propertyChangedCount = 0;
+        sut.PropertyChanged += (_, _) => propertyChangedCount++;
+
+        // act
+        sut.ItemsSource = items;
+
+        // assert
+        propertyChangedCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void SettingSelectedRepository_SameReference_ShouldNotRaisePropertyChanged()
+    {
+        // arrange
+        var repository = CreateRepositoryViewModel();
+        var sut = CreateSut();
+        sut.SelectedRepository = repository;
+        var propertyChangedCount = 0;
+        sut.PropertyChanged += (_, _) => propertyChangedCount++;
+
+        // act
+        sut.SelectedRepository = repository;
+
+        // assert
+        propertyChangedCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void SettingSelectedRepository_ToNull_ShouldRaisePropertyChanged()
+    {
+        // arrange
+        var repository = CreateRepositoryViewModel();
+        var sut = CreateSut();
+        sut.SelectedRepository = repository;
+        var propertyNames = new List<string?>();
+        sut.PropertyChanged += (_, e) => propertyNames.Add(e.PropertyName);
+
+        // act
+        sut.SelectedRepository = null;
+
+        // assert
+        propertyNames.Should().Contain(nameof(RepositoryListViewModel.SelectedRepository));
+        sut.SelectedRepository.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task CreateContextMenuEntriesAsync_ShouldSkipUnknownActionTypes()
+    {
+        // arrange
+        var repository = CreateRepositoryViewModel();
+        var menuFactory = A.Fake<IUserMenuActionMenuFactory>();
+        A.CallTo(() => menuFactory.CreateMenuAsync(A<IRepository>._))
+            .Returns(GetMenuActions(repository.Repository,
+            [
+                new UserInterfaceRepositoryAction("Open", repository.Repository) { RepositoryCommand = new TestRepositoryCommand() },
+                new UserInterfaceSeparatorRepositoryAction(repository.Repository),
+            ]));
+        var sut = CreateSut(menuFactory: menuFactory);
+        sut.SelectedRepository = repository;
+
+        // act
+        var result = await sut.CreateContextMenuEntriesAsync(default);
+
+        // assert
+        result.Should().HaveCount(2);
+        result[0].Should().BeOfType<RepositoryMenuItemViewModel>();
+        result[1].Should().BeSameAs(RepositoryMenuSeparatorViewModel.Instance);
+    }
+
+    [Fact]
+    public async Task CreateContextMenuEntriesAsync_ShouldMapDisabledAction()
+    {
+        // arrange
+        var repository = CreateRepositoryViewModel();
+        var menuFactory = A.Fake<IUserMenuActionMenuFactory>();
+        var disabledAction = new UserInterfaceRepositoryAction("Disabled", repository.Repository)
+        {
+            CanExecute = false,
+            RepositoryCommand = new TestRepositoryCommand(),
+        };
+        A.CallTo(() => menuFactory.CreateMenuAsync(A<IRepository>._))
+            .Returns(GetMenuActions(repository.Repository, [disabledAction]));
+        var sut = CreateSut(menuFactory: menuFactory);
+        sut.SelectedRepository = repository;
+
+        // act
+        var result = await sut.CreateContextMenuEntriesAsync(default);
+
+        // assert
+        result.Should().ContainSingle();
+        var entry = (RepositoryMenuItemViewModel)result[0];
+        entry.IsEnabled.Should().BeFalse();
+        entry.Header.Should().Be("Disabled");
+    }
+
+    [Fact]
+    public void AddQuickFilterTagCommand_ShouldBeExposed()
+    {
+        // arrange
+        var command = A.Fake<System.Windows.Input.ICommand>();
+        var sut = new RepositoryListViewModel(
+            CreateMonitorService(),
+            CreateActionExecutor(_ => { }),
+            A.Fake<IUserMenuActionMenuFactory>(),
+            NullLogger.Instance,
+            command);
+
+        // act & assert
+        sut.AddQuickFilterTagCommand.Should().BeSameAs(command);
+    }
+
     private static RepositoryListViewModel CreateSut(
         RepositoryMonitorService? monitorService = null,
         IUserMenuActionMenuFactory? menuFactory = null,

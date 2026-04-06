@@ -3,6 +3,7 @@ namespace RepoM.Api.Tests.QuickFilter;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
+using System.Linq;
 using AwesomeAssertions;
 using FakeItEasy;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -123,6 +124,247 @@ public class QuickFilterServiceTests
         // assert
         result.Should().NotBeNull();
         result!.Id.Should().Be(added.Id);
+    }
+
+    [Fact]
+    public void FindByQuery_ShouldReturnNull_WhenNoMatch()
+    {
+        // arrange
+        var sut = CreateSut();
+        sut.Add("Work", new SimpleTerm("tag", "work"));
+
+        // act
+        QuickFilterModel? result = sut.FindByQuery(new SimpleTerm("tag", "personal"));
+
+        // assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public void Remove_ShouldRemoveUserFilter_AndRaiseChanged()
+    {
+        // arrange
+        var sut = CreateSut();
+        QuickFilterModel added = sut.Add("Work", new SimpleTerm("tag", "work"));
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.Remove(added.Id);
+
+        // assert
+        sut.GetAll().Should().HaveCount(2); // only built-in remain
+        changedCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void Remove_ShouldDoNothing_WhenIdDoesNotExist()
+    {
+        // arrange
+        var sut = CreateSut();
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.Remove(Guid.NewGuid());
+
+        // assert
+        sut.GetAll().Should().HaveCount(2);
+        changedCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void SetActive_ShouldUpdateFilter_AndPersist()
+    {
+        // arrange
+        var fileSystem = new MockFileSystem();
+        var sut = CreateSut(fileSystem: fileSystem);
+        QuickFilterModel added = sut.Add("Work", new SimpleTerm("tag", "work"));
+        added.IsActive.Should().BeTrue();
+
+        // act
+        sut.SetActive(added.Id, false);
+
+        // assert
+        sut.GetAll().First(f => f.Id == added.Id).IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    public void SetActive_ShouldDoNothing_WhenValueIsSame()
+    {
+        // arrange
+        var sut = CreateSut();
+        QuickFilterModel added = sut.Add("Work", new SimpleTerm("tag", "work"));
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.SetActive(added.Id, true); // already true
+
+        // assert
+        changedCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void SetInverse_ShouldUpdateFilter_AndRaiseChanged()
+    {
+        // arrange
+        var sut = CreateSut();
+        QuickFilterModel added = sut.Add("Work", new SimpleTerm("tag", "work"));
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.SetInverse(added.Id, true);
+
+        // assert
+        sut.GetAll().First(f => f.Id == added.Id).IsInverse.Should().BeTrue();
+        changedCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void SetInverse_ShouldDoNothing_WhenValueIsSame()
+    {
+        // arrange
+        var sut = CreateSut();
+        QuickFilterModel added = sut.Add("Work", new SimpleTerm("tag", "work"));
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.SetInverse(added.Id, false); // already false
+
+        // assert
+        changedCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void UpdateLabel_ShouldUpdateUserFilter_AndRaiseChanged()
+    {
+        // arrange
+        var sut = CreateSut();
+        QuickFilterModel added = sut.Add("Work", new SimpleTerm("tag", "work"));
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.UpdateLabel(added.Id, "Personal");
+
+        // assert
+        sut.GetAll().First(f => f.Id == added.Id).Label.Should().Be("Personal");
+        changedCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void UpdateToolTip_ShouldUpdateUserFilter_AndRaiseChanged()
+    {
+        // arrange
+        var sut = CreateSut();
+        QuickFilterModel added = sut.Add("Work", new SimpleTerm("tag", "work"));
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.UpdateToolTip(added.Id, "Work repositories");
+
+        // assert
+        sut.GetAll().First(f => f.Id == added.Id).ToolTip.Should().Be("Work repositories");
+        changedCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void UpdateToolTip_ShouldIgnoreBuiltInFilter()
+    {
+        // arrange
+        var sut = CreateSut();
+        var builtIn = sut.GetAll()[0];
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.UpdateToolTip(builtIn.Id, "Changed");
+
+        // assert
+        changedCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void UpdateOrder_ShouldUpdateUserFilter_AndRaiseChanged()
+    {
+        // arrange
+        var sut = CreateSut();
+        QuickFilterModel added = sut.Add("Work", new SimpleTerm("tag", "work"));
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.UpdateOrder(added.Id, 42);
+
+        // assert
+        sut.GetAll().First(f => f.Id == added.Id).Order.Should().Be(42);
+        changedCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void UpdateOrder_ShouldIgnoreBuiltInFilter()
+    {
+        // arrange
+        var sut = CreateSut();
+        var builtIn = sut.GetAll()[0];
+        var changedCount = 0;
+        sut.Changed += (_, _) => changedCount++;
+
+        // act
+        sut.UpdateOrder(builtIn.Id, 99);
+
+        // assert
+        changedCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void GetAll_ShouldReturnOrderedByOrder()
+    {
+        // arrange
+        var sut = CreateSut();
+        var a = sut.Add("A", new SimpleTerm("tag", "a"));
+        var b = sut.Add("B", new SimpleTerm("tag", "b"));
+        sut.UpdateOrder(b.Id, -100);
+
+        // act
+        var result = sut.GetAll();
+
+        // assert - built-in (order -2, -1) come first, then B (-100 reordered), then A
+        // Actually, the built-in filters have order -2 and -1, B is -100, so B should be first
+        var userFilters = result.Where(f => !f.IsBuiltIn).ToList();
+        userFilters[0].Label.Should().Be("B");
+        userFilters[1].Label.Should().Be("A");
+    }
+
+    [Fact]
+    public void Ctor_ShouldLoadExistingFilters_FromFile()
+    {
+        // arrange
+        var fileSystem = new MockFileSystem();
+        var json = JsonConvert.SerializeObject(
+            new List<QuickFilterModel>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Label = "Persisted",
+                    Query = new SimpleTerm("tag", "persisted"),
+                    Order = 5,
+                },
+            },
+            new JsonSerializerSettings { Converters = { new QueryJsonConverter(), }, });
+        fileSystem.AddFile($"{AppDataPath}\\quickfilters.json", new MockFileData(json));
+
+        // act
+        var sut = CreateSut(fileSystem: fileSystem);
+
+        // assert
+        sut.GetAll().Should().HaveCount(3); // 2 built-in + 1 persisted
+        sut.GetAll().Should().Contain(f => f.Label == "Persisted");
     }
 
     private static QuickFilterService CreateSut(MockFileSystem? fileSystem = null)
