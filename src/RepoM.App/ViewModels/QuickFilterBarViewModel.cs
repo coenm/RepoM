@@ -12,12 +12,24 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
+public enum QuickFilterCombineMode
+{
+    And,
+    Or,
+}
+
 public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
 {
+    private static readonly PropertyChangedEventArgs _combineModeChangedArgs = new(nameof(CombineMode));
+    private static readonly PropertyChangedEventArgs _combineModeLabelChangedArgs = new(nameof(CombineModeLabel));
+    private static readonly PropertyChangedEventArgs _combineModeToolTipChangedArgs = new(nameof(CombineModeToolTip));
+    private static readonly PropertyChangedEventArgs _hasItemsChangedArgs = new(nameof(HasItems));
+
     private readonly IQuickFilterService _service;
     private readonly IRepositoryFilteringManager _repositoryFilteringManager;
     private readonly INamedQueryParser[] _queryParsers;
     private readonly ILogger _logger;
+    private QuickFilterCombineMode _combineMode = QuickFilterCombineMode.And;
 
     public QuickFilterBarViewModel(
         IQuickFilterService service,
@@ -54,6 +66,8 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
             }
         });
 
+        ToggleCombineModeCommand = new RelayCommand(_ => ToggleCombineMode());
+
         _service.Changed += OnServiceChanged;
     }
 
@@ -69,6 +83,32 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
 
     public ICommand SaveSearchTextCommand { get; }
 
+    public ICommand ToggleCombineModeCommand { get; }
+
+    public QuickFilterCombineMode CombineMode
+    {
+        get => _combineMode;
+        set
+        {
+            if (_combineMode == value)
+            {
+                return;
+            }
+
+            _combineMode = value;
+            PropertyChanged?.Invoke(this, _combineModeChangedArgs);
+            PropertyChanged?.Invoke(this, _combineModeLabelChangedArgs);
+            PropertyChanged?.Invoke(this, _combineModeToolTipChangedArgs);
+            FilterStateChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public string CombineModeLabel => _combineMode == QuickFilterCombineMode.And ? "AND" : "OR";
+
+    public string CombineModeToolTip => _combineMode == QuickFilterCombineMode.And
+        ? "Filters combined with AND (all must match). Click to switch to OR."
+        : "Filters combined with OR (any must match). Click to switch to AND.";
+
     public IQuery? GetCombinedActiveQuery()
     {
         var activeQueries = _service.GetAll()
@@ -80,8 +120,17 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
         {
             0 => null,
             1 => activeQueries[0],
-            _ => new AndQuery(activeQueries),
+            _ => _combineMode == QuickFilterCombineMode.Or
+                ? new OrQuery(activeQueries)
+                : new AndQuery(activeQueries),
         };
+    }
+
+    public void ToggleCombineMode()
+    {
+        CombineMode = _combineMode == QuickFilterCombineMode.And
+            ? QuickFilterCombineMode.Or
+            : QuickFilterCombineMode.And;
     }
 
     public void AddFromTag(string tag)
@@ -147,7 +196,7 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
             Items.Add(new QuickFilterViewModel(model, _service));
         }
 
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasItems)));
+        PropertyChanged?.Invoke(this, _hasItemsChangedArgs);
         FilterStateChanged?.Invoke(this, EventArgs.Empty);
     }
 

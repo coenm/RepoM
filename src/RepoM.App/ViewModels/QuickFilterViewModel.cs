@@ -7,6 +7,15 @@ using RepoM.Api.QuickFilter;
 
 public sealed class QuickFilterViewModel : INotifyPropertyChanged
 {
+    private static readonly PropertyChangedEventArgs _isActiveChangedArgs = new(nameof(IsActive));
+    private static readonly PropertyChangedEventArgs _isInverseChangedArgs = new(nameof(IsInverse));
+    private static readonly PropertyChangedEventArgs _orderChangedArgs = new(nameof(Order));
+    private static readonly PropertyChangedEventArgs _labelChangedArgs = new(nameof(Label));
+    private static readonly PropertyChangedEventArgs _displayLabelChangedArgs = new(nameof(DisplayLabel));
+    private static readonly PropertyChangedEventArgs _toolTipChangedArgs = new(nameof(ToolTip));
+    private static readonly PropertyChangedEventArgs _rawToolTipChangedArgs = new(nameof(RawToolTip));
+    private static readonly PropertyChangedEventArgs _hasToolTipChangedArgs = new(nameof(HasToolTip));
+
     private readonly QuickFilterModel _model;
     private readonly IQuickFilterService _service;
 
@@ -49,7 +58,7 @@ public sealed class QuickFilterViewModel : INotifyPropertyChanged
             }
 
             _service.SetActive(_model.Id, value);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsActive)));
+            PropertyChanged?.Invoke(this, _isActiveChangedArgs);
         }
     }
 
@@ -64,7 +73,7 @@ public sealed class QuickFilterViewModel : INotifyPropertyChanged
             }
 
             _service.SetInverse(_model.Id, value);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsInverse)));
+            PropertyChanged?.Invoke(this, _isInverseChangedArgs);
         }
     }
 
@@ -79,7 +88,7 @@ public sealed class QuickFilterViewModel : INotifyPropertyChanged
             }
 
             _service.UpdateOrder(_model.Id, value);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Order)));
+            PropertyChanged?.Invoke(this, _orderChangedArgs);
         }
     }
 
@@ -113,18 +122,18 @@ public sealed class QuickFilterViewModel : INotifyPropertyChanged
     public void UpdateLabel(string newLabel)
     {
         _service.UpdateLabel(_model.Id, newLabel);
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Label)));
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplayLabel)));
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ToolTip)));
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasToolTip)));
+        PropertyChanged?.Invoke(this, _labelChangedArgs);
+        PropertyChanged?.Invoke(this, _displayLabelChangedArgs);
+        PropertyChanged?.Invoke(this, _toolTipChangedArgs);
+        PropertyChanged?.Invoke(this, _hasToolTipChangedArgs);
     }
 
     public void UpdateToolTip(string newToolTip)
     {
         _service.UpdateToolTip(_model.Id, newToolTip);
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ToolTip)));
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RawToolTip)));
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasToolTip)));
+        PropertyChanged?.Invoke(this, _toolTipChangedArgs);
+        PropertyChanged?.Invoke(this, _rawToolTipChangedArgs);
+        PropertyChanged?.Invoke(this, _hasToolTipChangedArgs);
     }
 
     private sealed class RelayCommand : ICommand

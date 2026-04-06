@@ -46,6 +46,12 @@ public partial class QuickFilterBar : UserControl
         }
     }
 
+    private void CombineModeToggle_Click(object sender, MouseButtonEventArgs e)
+    {
+        _viewModel?.ToggleCombineMode();
+        e.Handled = true;
+    }
+
     private void HamburgerButton_MouseDown(object sender, MouseButtonEventArgs e)
     {
         if (sender is FrameworkElement fe)

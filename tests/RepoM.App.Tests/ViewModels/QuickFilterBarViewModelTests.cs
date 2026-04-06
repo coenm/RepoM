@@ -120,6 +120,189 @@ public class QuickFilterBarViewModelTests
     }
 
     [Fact]
+    public void GetCombinedActiveQuery_ShouldUseOrQuery_WhenCombineModeIsOr()
+    {
+        // arrange
+        var service = new TestQuickFilterService(
+        [
+            new QuickFilterModel { Id = Guid.NewGuid(), Label = "work", Query = new SimpleTerm("tag", "work"), IsActive = true },
+            new QuickFilterModel { Id = Guid.NewGuid(), Label = "personal", Query = new SimpleTerm("tag", "personal"), IsActive = true },
+        ]);
+        var sut = CreateSut(service);
+        sut.CombineMode = QuickFilterCombineMode.Or;
+
+        // act
+        IQuery? result = sut.GetCombinedActiveQuery();
+
+        // assert
+        result.Should().BeOfType<OrQuery>();
+        result!.ToString().Should().Be("Or(tag:work, tag:personal)");
+    }
+
+    [Fact]
+    public void ToggleCombineMode_ShouldSwitchBetweenAndAndOr()
+    {
+        // arrange
+        var sut = CreateSut(new TestQuickFilterService());
+
+        // act & assert
+        sut.CombineMode.Should().Be(QuickFilterCombineMode.And);
+        sut.CombineModeLabel.Should().Be("AND");
+
+        sut.ToggleCombineMode();
+        sut.CombineMode.Should().Be(QuickFilterCombineMode.Or);
+        sut.CombineModeLabel.Should().Be("OR");
+
+        sut.ToggleCombineMode();
+        sut.CombineMode.Should().Be(QuickFilterCombineMode.And);
+        sut.CombineModeLabel.Should().Be("AND");
+    }
+
+    [Fact]
+    public void ToggleCombineMode_ShouldRaiseFilterStateChanged()
+    {
+        // arrange
+        var sut = CreateSut(new TestQuickFilterService());
+        var filterStateChangedCount = 0;
+        var propertyNames = new List<string?>();
+        sut.FilterStateChanged += (_, _) => filterStateChangedCount++;
+        sut.PropertyChanged += (_, e) => propertyNames.Add(e.PropertyName);
+
+        // act
+        sut.ToggleCombineMode();
+
+        // assert
+        filterStateChangedCount.Should().Be(1);
+        propertyNames.Should().Contain(nameof(QuickFilterBarViewModel.CombineMode));
+        propertyNames.Should().Contain(nameof(QuickFilterBarViewModel.CombineModeLabel));
+        propertyNames.Should().Contain(nameof(QuickFilterBarViewModel.CombineModeToolTip));
+    }
+
+    [Fact]
+    public void CombineMode_ShouldDefaultToAnd()
+    {
+        // arrange & act
+        var sut = CreateSut(new TestQuickFilterService());
+
+        // assert
+        sut.CombineMode.Should().Be(QuickFilterCombineMode.And);
+        sut.CombineModeLabel.Should().Be("AND");
+    }
+
+    [Fact]
+    public void CombineMode_SetSameValue_ShouldNotRaiseEvents()
+    {
+        // arrange
+        var sut = CreateSut(new TestQuickFilterService());
+        var filterStateChangedCount = 0;
+        var propertyChangedCount = 0;
+        sut.FilterStateChanged += (_, _) => filterStateChangedCount++;
+        sut.PropertyChanged += (_, _) => propertyChangedCount++;
+
+        // act
+        sut.CombineMode = QuickFilterCombineMode.And; // same as default
+
+        // assert
+        filterStateChangedCount.Should().Be(0);
+        propertyChangedCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void CombineModeToolTip_ShouldDescribeAndMode_WhenAnd()
+    {
+        // arrange
+        var sut = CreateSut(new TestQuickFilterService());
+
+        // act & assert
+        sut.CombineModeToolTip.Should().Contain("AND");
+        sut.CombineModeToolTip.Should().Contain("all must match");
+    }
+
+    [Fact]
+    public void CombineModeToolTip_ShouldDescribeOrMode_WhenOr()
+    {
+        // arrange
+        var sut = CreateSut(new TestQuickFilterService());
+        sut.CombineMode = QuickFilterCombineMode.Or;
+
+        // act & assert
+        sut.CombineModeToolTip.Should().Contain("OR");
+        sut.CombineModeToolTip.Should().Contain("any must match");
+    }
+
+    [Fact]
+    public void GetCombinedActiveQuery_ShouldReturnNull_WhenNoActiveFilters_RegardlessOfMode()
+    {
+        // arrange
+        var service = new TestQuickFilterService(
+        [
+            new QuickFilterModel { Id = Guid.NewGuid(), Label = "work", Query = new SimpleTerm("tag", "work"), IsActive = false },
+        ]);
+        var sut = CreateSut(service);
+
+        // act & assert (AND)
+        sut.GetCombinedActiveQuery().Should().BeNull();
+
+        // act & assert (OR)
+        sut.CombineMode = QuickFilterCombineMode.Or;
+        sut.GetCombinedActiveQuery().Should().BeNull();
+    }
+
+    [Fact]
+    public void GetCombinedActiveQuery_SingleActive_ShouldReturnQueryDirectly_RegardlessOfMode()
+    {
+        // arrange
+        var service = new TestQuickFilterService(
+        [
+            new QuickFilterModel { Id = Guid.NewGuid(), Label = "work", Query = new SimpleTerm("tag", "work"), IsActive = true },
+        ]);
+        var sut = CreateSut(service);
+
+        // act & assert (AND mode - single filter returns raw query, not wrapped in AndQuery)
+        var resultAnd = sut.GetCombinedActiveQuery();
+        resultAnd.Should().BeOfType<SimpleTerm>();
+
+        // act & assert (OR mode - single filter returns raw query, not wrapped in OrQuery)
+        sut.CombineMode = QuickFilterCombineMode.Or;
+        var resultOr = sut.GetCombinedActiveQuery();
+        resultOr.Should().BeOfType<SimpleTerm>();
+    }
+
+    [Fact]
+    public void GetCombinedActiveQuery_OrMode_ShouldWrapInverseFiltersWithNotQuery()
+    {
+        // arrange
+        var service = new TestQuickFilterService(
+        [
+            new QuickFilterModel { Id = Guid.NewGuid(), Label = "work", Query = new SimpleTerm("tag", "work"), IsActive = true },
+            new QuickFilterModel { Id = Guid.NewGuid(), Label = "archived", Query = new SimpleTerm("tag", "archived"), IsActive = true, IsInverse = true },
+        ]);
+        var sut = CreateSut(service);
+        sut.CombineMode = QuickFilterCombineMode.Or;
+
+        // act
+        IQuery? result = sut.GetCombinedActiveQuery();
+
+        // assert
+        result.Should().BeOfType<OrQuery>();
+        result!.ToString().Should().Be("Or(tag:work, Not(tag:archived))");
+    }
+
+    [Fact]
+    public void ToggleCombineModeCommand_ShouldToggleMode()
+    {
+        // arrange
+        var sut = CreateSut(new TestQuickFilterService());
+        sut.CombineMode.Should().Be(QuickFilterCombineMode.And);
+
+        // act
+        sut.ToggleCombineModeCommand.Execute(null);
+
+        // assert
+        sut.CombineMode.Should().Be(QuickFilterCombineMode.Or);
+    }
+
+    [Fact]
     public void ServiceChanged_ShouldRefreshItems_AndRaiseNotifications()
     {
         // arrange

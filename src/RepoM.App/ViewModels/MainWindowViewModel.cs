@@ -9,6 +9,12 @@ using RepoM.Api.Git.AutoFetch;
 
 public class MainWindowViewModel : INotifyPropertyChanged
 {
+    private static readonly PropertyChangedEventArgs _autoFetchModeChangedArgs = new(nameof(AutoFetchMode));
+    private static readonly PropertyChangedEventArgs _autoFetchOffChangedArgs = new(nameof(AutoFetchOff));
+    private static readonly PropertyChangedEventArgs _autoFetchDiscretelyChangedArgs = new(nameof(AutoFetchDiscretely));
+    private static readonly PropertyChangedEventArgs _autoFetchAdequateChangedArgs = new(nameof(AutoFetchAdequate));
+    private static readonly PropertyChangedEventArgs _autoFetchAggressiveChangedArgs = new(nameof(AutoFetchAggressive));
+
     private readonly IAppSettingsService _appSettingsService;
     private static readonly ICommand _noOpCommand = new NoOpCommand();
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -59,11 +65,11 @@ public class MainWindowViewModel : INotifyPropertyChanged
         {
             _appSettingsService.AutoFetchMode = value;
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchMode)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchOff)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchDiscretely)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAdequate)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAggressive)));
+            PropertyChanged?.Invoke(this, _autoFetchModeChangedArgs);
+            PropertyChanged?.Invoke(this, _autoFetchOffChangedArgs);
+            PropertyChanged?.Invoke(this, _autoFetchDiscretelyChangedArgs);
+            PropertyChanged?.Invoke(this, _autoFetchAdequateChangedArgs);
+            PropertyChanged?.Invoke(this, _autoFetchAggressiveChangedArgs);
         }
     }
 
