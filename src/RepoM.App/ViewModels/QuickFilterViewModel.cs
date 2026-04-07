@@ -7,6 +7,8 @@ using RepoM.Api.QuickFilter;
 
 public sealed class QuickFilterViewModel : INotifyPropertyChanged
 {
+    private const string FavoriteLabel = "\u2605";
+
     private static readonly PropertyChangedEventArgs _isActiveChangedArgs = new(nameof(IsActive));
     private static readonly PropertyChangedEventArgs _isInverseChangedArgs = new(nameof(IsInverse));
     private static readonly PropertyChangedEventArgs _orderChangedArgs = new(nameof(Order));
@@ -26,7 +28,7 @@ public sealed class QuickFilterViewModel : INotifyPropertyChanged
 
         ToggleCommand = new RelayCommand(_ => Toggle());
         RemoveCommand = new RelayCommand(_ => _service.Remove(_model.Id));
-        EditLabelCommand = new RelayCommand(_ => { /* Handled in code-behind with input dialog */ });
+        EditLabelCommand = new RelayCommand(parameter => _ = parameter);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -37,9 +39,18 @@ public sealed class QuickFilterViewModel : INotifyPropertyChanged
 
     public string DisplayLabel => _model.Label.Length > 10 ? _model.Label[..10] + "..." : _model.Label;
 
-    public string ToolTip => _model.IsBuiltIn
-        ? _model.Label == "\u2605" ? "Favorites" : "Active"
-        : string.IsNullOrEmpty(_model.ToolTip) ? _model.Label : _model.ToolTip;
+    public string ToolTip
+    {
+        get
+        {
+            if (_model.IsBuiltIn)
+            {
+                return _model.Label == FavoriteLabel ? "Favorites" : "Active";
+            }
+
+            return string.IsNullOrEmpty(_model.ToolTip) ? _model.Label : _model.ToolTip;
+        }
+    }
 
     public string RawToolTip => _model.IsBuiltIn ? string.Empty : _model.ToolTip;
 
@@ -147,8 +158,8 @@ public sealed class QuickFilterViewModel : INotifyPropertyChanged
 
         public event EventHandler? CanExecuteChanged
         {
-            add { }
-            remove { }
+            add => _ = value;
+            remove => _ = value;
         }
 
         public bool CanExecute(object? parameter) => true;

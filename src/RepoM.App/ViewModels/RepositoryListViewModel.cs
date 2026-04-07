@@ -186,10 +186,10 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
             return null;
         }
 
-        return () => Task.FromResult(CreateMenuEntries(repositoryAction.SubActions, selectedRepository));
+        return () => Task.FromResult<IReadOnlyList<RepositoryMenuEntryViewModel>>(CreateMenuEntries(repositoryAction.SubActions, selectedRepository));
     }
 
-    private IReadOnlyList<RepositoryMenuEntryViewModel> CreateMenuEntries(
+    private List<RepositoryMenuEntryViewModel> CreateMenuEntries(
         IEnumerable<UserInterfaceRepositoryActionBase> actions,
         RepositoryViewModel selectedRepository)
     {

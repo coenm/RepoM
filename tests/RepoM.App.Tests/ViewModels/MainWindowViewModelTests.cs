@@ -92,8 +92,7 @@ public class MainWindowViewModelTests
             _filtersViewModel,
             _pluginsViewModel,
             _helpViewModel,
-            _saveQuickFilterCommand,
-            _addQuickFilterTagCommand);
+            new MainWindowQuickFilterCommands(_saveQuickFilterCommand, _addQuickFilterTagCommand));
 
         // assert
         sut.SaveQuickFilterCommand.Should().BeSameAs(_saveQuickFilterCommand);

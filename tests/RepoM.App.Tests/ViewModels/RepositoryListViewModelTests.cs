@@ -407,6 +407,7 @@ public class RepositoryListViewModelTests
 
     private sealed class TestRepositoryCommand : IRepositoryCommand
     {
+        public string Name { get; } = nameof(TestRepositoryCommand);
     }
 
     private sealed class TestRepositoryCommandExecutor : ICommandExecutor<TestRepositoryCommand>

@@ -17,6 +17,8 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     private readonly IAppSettingsService _appSettingsService;
     private static readonly ICommand _noOpCommand = new NoOpCommand();
+    private static readonly MainWindowQuickFilterCommands _noOpQuickFilterCommands = new(_noOpCommand, _noOpCommand);
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     internal MainWindowViewModel(
@@ -33,8 +35,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
             filtersViewModel,
             pluginsViewModel,
             helpViewModel,
-            _noOpCommand,
-            _noOpCommand)
+                _noOpQuickFilterCommands)
     {
     }
 
@@ -45,8 +46,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
         FiltersViewModel filtersViewModel,
         PluginCollectionViewModel pluginsViewModel,
         HelpViewModel helpViewModel,
-        ICommand saveQuickFilterCommand,
-        ICommand addQuickFilterTagCommand)
+        MainWindowQuickFilterCommands quickFilterCommands)
     {
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         Orderings = orderingsViewModel ?? throw new ArgumentNullException(nameof(orderingsViewModel));
@@ -54,8 +54,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
         Filters = filtersViewModel ?? throw new ArgumentNullException(nameof(filtersViewModel));
         Plugins = pluginsViewModel ?? throw new ArgumentNullException(nameof(pluginsViewModel));
         Help = helpViewModel ?? throw new ArgumentNullException(nameof(helpViewModel));
-        SaveQuickFilterCommand = saveQuickFilterCommand ?? throw new ArgumentNullException(nameof(saveQuickFilterCommand));
-        AddQuickFilterTagCommand = addQuickFilterTagCommand ?? throw new ArgumentNullException(nameof(addQuickFilterTagCommand));
+        ArgumentNullException.ThrowIfNull(quickFilterCommands);
+        SaveQuickFilterCommand = quickFilterCommands.SaveQuickFilterCommand;
+        AddQuickFilterTagCommand = quickFilterCommands.AddQuickFilterTagCommand;
     }
 
     private AutoFetchMode AutoFetchMode
@@ -137,14 +138,12 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         public event EventHandler? CanExecuteChanged
         {
-            add { }
-            remove { }
+            add => _ = value;
+            remove => _ = value;
         }
 
         public bool CanExecute(object? parameter) => true;
 
-        public void Execute(object? parameter)
-        {
-        }
+        public void Execute(object? parameter) => _ = parameter;
     }
 }

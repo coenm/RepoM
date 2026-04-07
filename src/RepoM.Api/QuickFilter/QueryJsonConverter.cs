@@ -9,6 +9,12 @@ using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 
 internal sealed class QueryJsonConverter : JsonConverter<IQuery>
 {
+    private const string TypePropertyName = "type";
+    private const string ItemsPropertyName = "items";
+    private const string ItemPropertyName = "item";
+    private const string TermPropertyName = "term";
+    private const string ValuePropertyName = "value";
+
     public override IQuery? ReadJson(JsonReader reader, Type objectType, IQuery? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
         var token = JToken.Load(reader);
@@ -34,7 +40,7 @@ internal sealed class QueryJsonConverter : JsonConverter<IQuery>
         }
 
         var obj = (JObject)token;
-        var type = obj.Value<string>("type") ?? throw new JsonSerializationException("Missing 'type' property.");
+        var type = obj.Value<string>(TypePropertyName) ?? throw new JsonSerializationException("Missing 'type' property.");
 
         return type switch
         {
@@ -43,33 +49,38 @@ internal sealed class QueryJsonConverter : JsonConverter<IQuery>
             "and" => ReadAndQuery(obj),
             "or" => ReadOrQuery(obj),
             "not" => ReadNotQuery(obj),
-            "freetext" => new FreeText(obj.Value<string>("value") ?? string.Empty),
+            "freetext" => new FreeText(ReadStringProperty(obj, ValuePropertyName)),
             "simpleterm" => new SimpleTerm(
-                obj.Value<string>("term") ?? string.Empty,
-                obj.Value<string>("value") ?? string.Empty),
+                ReadStringProperty(obj, TermPropertyName),
+                ReadStringProperty(obj, ValuePropertyName)),
             "startswithterm" => new StartsWithTerm(
-                obj.Value<string>("term") ?? string.Empty,
-                obj.Value<string>("value") ?? string.Empty),
+                ReadStringProperty(obj, TermPropertyName),
+                ReadStringProperty(obj, ValuePropertyName)),
             _ => throw new JsonSerializationException($"Unknown query type '{type}'."),
         };
     }
 
     private static AndQuery ReadAndQuery(JObject obj)
     {
-        var items = obj["items"] as JArray ?? [];
+        var items = obj[ItemsPropertyName] as JArray ?? [];
         return new AndQuery(items.Select(ReadQuery).ToArray());
     }
 
     private static OrQuery ReadOrQuery(JObject obj)
     {
-        var items = obj["items"] as JArray ?? [];
+        var items = obj[ItemsPropertyName] as JArray ?? [];
         return new OrQuery(items.Select(ReadQuery).ToArray());
     }
 
     private static NotQuery ReadNotQuery(JObject obj)
     {
-        var item = obj["item"] ?? throw new JsonSerializationException("Missing 'item' in NotQuery.");
+        var item = obj[ItemPropertyName] ?? throw new JsonSerializationException("Missing 'item' in NotQuery.");
         return new NotQuery(ReadQuery(item));
+    }
+
+    private static string ReadStringProperty(JObject obj, string propertyName)
+    {
+        return obj.Value<string>(propertyName) ?? string.Empty;
     }
 
     private static void WriteQuery(JsonWriter writer, IQuery query)
@@ -78,23 +89,23 @@ internal sealed class QueryJsonConverter : JsonConverter<IQuery>
         {
             case TrueQuery:
                 writer.WriteStartObject();
-                writer.WritePropertyName("type");
+                writer.WritePropertyName(TypePropertyName);
                 writer.WriteValue("true");
                 writer.WriteEndObject();
                 break;
 
             case FalseQuery:
                 writer.WriteStartObject();
-                writer.WritePropertyName("type");
+                writer.WritePropertyName(TypePropertyName);
                 writer.WriteValue("false");
                 writer.WriteEndObject();
                 break;
 
             case AndQuery and:
                 writer.WriteStartObject();
-                writer.WritePropertyName("type");
+                writer.WritePropertyName(TypePropertyName);
                 writer.WriteValue("and");
-                writer.WritePropertyName("items");
+                writer.WritePropertyName(ItemsPropertyName);
                 writer.WriteStartArray();
                 foreach (IQuery item in and.Items)
                 {
@@ -107,9 +118,9 @@ internal sealed class QueryJsonConverter : JsonConverter<IQuery>
 
             case OrQuery or:
                 writer.WriteStartObject();
-                writer.WritePropertyName("type");
+                writer.WritePropertyName(TypePropertyName);
                 writer.WriteValue("or");
-                writer.WritePropertyName("items");
+                writer.WritePropertyName(ItemsPropertyName);
                 writer.WriteStartArray();
                 foreach (IQuery item in or.Items)
                 {
@@ -122,40 +133,40 @@ internal sealed class QueryJsonConverter : JsonConverter<IQuery>
 
             case NotQuery not:
                 writer.WriteStartObject();
-                writer.WritePropertyName("type");
+                writer.WritePropertyName(TypePropertyName);
                 writer.WriteValue("not");
-                writer.WritePropertyName("item");
+                writer.WritePropertyName(ItemPropertyName);
                 WriteQuery(writer, not.Item);
                 writer.WriteEndObject();
                 break;
 
             case FreeText freeText:
                 writer.WriteStartObject();
-                writer.WritePropertyName("type");
+                writer.WritePropertyName(TypePropertyName);
                 writer.WriteValue("freetext");
-                writer.WritePropertyName("value");
+                writer.WritePropertyName(ValuePropertyName);
                 writer.WriteValue(freeText.Value);
                 writer.WriteEndObject();
                 break;
 
             case SimpleTerm simpleTerm:
                 writer.WriteStartObject();
-                writer.WritePropertyName("type");
+                writer.WritePropertyName(TypePropertyName);
                 writer.WriteValue("simpleterm");
-                writer.WritePropertyName("term");
+                writer.WritePropertyName(TermPropertyName);
                 writer.WriteValue(simpleTerm.Term);
-                writer.WritePropertyName("value");
+                writer.WritePropertyName(ValuePropertyName);
                 writer.WriteValue(simpleTerm.Value);
                 writer.WriteEndObject();
                 break;
 
             case StartsWithTerm startsWithTerm:
                 writer.WriteStartObject();
-                writer.WritePropertyName("type");
+                writer.WritePropertyName(TypePropertyName);
                 writer.WriteValue("startswithterm");
-                writer.WritePropertyName("term");
+                writer.WritePropertyName(TermPropertyName);
                 writer.WriteValue(startsWithTerm.Term);
-                writer.WritePropertyName("value");
+                writer.WritePropertyName(ValuePropertyName);
                 writer.WriteValue(startsWithTerm.Value);
                 writer.WriteEndObject();
                 break;

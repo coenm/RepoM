@@ -6,13 +6,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using RepoM.Api.QuickFilter;
 using RepoM.App.ViewModels;
-using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 
 public partial class QuickFilterBar : UserControl
 {
-    private const string QuickFilterDataFormat = "QuickFilterVM";
+    private const string QUICK_FILTER_DATA_FORMAT = "QuickFilterVM";
 
     private QuickFilterBarViewModel? _viewModel;
     private Point _hamburgerDragStart;
@@ -39,9 +37,9 @@ public partial class QuickFilterBar : UserControl
 
     private void QuickFilter_Click(object sender, MouseButtonEventArgs e)
     {
-        if (sender is FrameworkElement fe && fe.DataContext is QuickFilterViewModel qfVm)
+        if (sender is FrameworkElement { DataContext: QuickFilterViewModel quickFilterViewModel, })
         {
-            qfVm.Toggle();
+            quickFilterViewModel.Toggle();
             e.Handled = true;
         }
     }
@@ -66,75 +64,63 @@ public partial class QuickFilterBar : UserControl
 
     private void HamburgerButton_MouseMove(object sender, MouseEventArgs e)
     {
-        if (sender is FrameworkElement fe && e.LeftButton == MouseButtonState.Pressed && _draggingQfVm != null)
+        if (sender is not FrameworkElement fe || e.LeftButton != MouseButtonState.Pressed || _draggingQfVm == null)
         {
-            var currentPos = e.GetPosition(quickFilterItemsControl);
-            if (Math.Abs(currentPos.X - _hamburgerDragStart.X) > 8 && !_isDraggingQuickFilter)
+            return;
+        }
+
+        Point currentPos = e.GetPosition(quickFilterItemsControl);
+        if (Math.Abs(currentPos.X - _hamburgerDragStart.X) > 8 && !_isDraggingQuickFilter)
+        {
+            _isDraggingQuickFilter = true;
+
+            var sourceBorder = FindParentBorder(fe);
+            if (sourceBorder != null)
             {
-                _isDraggingQuickFilter = true;
-
-                var sourceBorder = FindParentBorder(fe);
-                if (sourceBorder != null)
-                {
-                    sourceBorder.Opacity = 0.25;
-                }
-
-                var data = new DataObject(QuickFilterDataFormat, _draggingQfVm);
-                fe.ReleaseMouseCapture();
-                DragDrop.DoDragDrop(fe, data, DragDropEffects.Move);
-
-                if (sourceBorder != null)
-                {
-                    sourceBorder.Opacity = 1.0;
-                }
-
-                _draggingQfVm = null;
+                sourceBorder.Opacity = 0.25;
             }
 
-            e.Handled = true;
+            var data = new DataObject(QUICK_FILTER_DATA_FORMAT, _draggingQfVm);
+            fe.ReleaseMouseCapture();
+            DragDrop.DoDragDrop(fe, data, DragDropEffects.Move);
+
+            if (sourceBorder != null)
+            {
+                sourceBorder.Opacity = 1.0;
+            }
+
+            _draggingQfVm = null;
         }
+
+        e.Handled = true;
     }
 
     private void HamburgerButton_MouseUp(object sender, MouseButtonEventArgs e)
     {
-        if (sender is FrameworkElement fe)
+        if (sender is not FrameworkElement fe)
         {
-            fe.ReleaseMouseCapture();
-
-            if (!_isDraggingQuickFilter && _draggingQfVm != null && !_draggingQfVm.IsBuiltIn)
-            {
-                OpenQuickFilterEditPopup(fe, _draggingQfVm);
-            }
-
-            _draggingQfVm = null;
-            _isDraggingQuickFilter = false;
-            e.Handled = true;
+            return;
         }
+
+        fe.ReleaseMouseCapture();
+
+        if (!_isDraggingQuickFilter && _draggingQfVm != null && !_draggingQfVm.IsBuiltIn)
+        {
+            OpenQuickFilterEditPopup(fe, _draggingQfVm);
+        }
+
+        _draggingQfVm = null;
+        _isDraggingQuickFilter = false;
+        e.Handled = true;
     }
 
     private void QuickFilter_Drop(object sender, DragEventArgs e)
     {
         HideAllDropIndicators();
 
-        if (sender is FrameworkElement fe
-            && e.Data.GetDataPresent(QuickFilterDataFormat)
-            && e.Data.GetData(QuickFilterDataFormat) is QuickFilterViewModel sourceVm
-            && !sourceVm.IsBuiltIn)
+        if (TryGetDropContext(sender, e, out DropContext dropContext) && ShouldSwapOrder(dropContext.Source, dropContext.Target))
         {
-            var wrapper = FindAncestor<StackPanel>(fe, "qfDropWrapper");
-            var targetBorder = FindChildByName<Border>(wrapper, "qfBorder");
-            if (targetBorder?.DataContext is QuickFilterViewModel targetVm
-                && sourceVm.Id != targetVm.Id
-                && !targetVm.IsBuiltIn)
-            {
-                var sourceBefore = sourceVm.Order < targetVm.Order;
-                if ((sourceBefore && !_dropOnLeftSide) || (!sourceBefore && _dropOnLeftSide))
-                {
-                    var sourceOrder = sourceVm.Order;
-                    sourceVm.Order = targetVm.Order;
-                    targetVm.Order = sourceOrder;
-                }
-            }
+            SwapOrder(dropContext.Source, dropContext.Target);
         }
 
         e.Handled = true;
@@ -142,53 +128,16 @@ public partial class QuickFilterBar : UserControl
 
     private void QuickFilter_DragOver(object sender, DragEventArgs e)
     {
-        if (e.Data.GetDataPresent(QuickFilterDataFormat)
-            && e.Data.GetData(QuickFilterDataFormat) is QuickFilterViewModel sourceVm
-            && sender is FrameworkElement fe)
+        if (!TryGetDropContext(sender, e, out DropContext dropContext))
         {
-            e.Effects = DragDropEffects.Move;
-
-            var wrapper = FindAncestor<StackPanel>(fe, "qfDropWrapper");
-            if (wrapper != null)
-            {
-                var targetBorder = FindChildByName<Border>(wrapper, "qfBorder");
-                if (targetBorder?.DataContext is QuickFilterViewModel targetVm
-                    && sourceVm.Id != targetVm.Id
-                    && !targetVm.IsBuiltIn)
-                {
-                    var pos = e.GetPosition(targetBorder);
-                    var isLeft = pos.X < targetBorder.ActualWidth / 2;
-
-                    HideAllDropIndicators();
-
-                    var leftPlaceholder = FindChildByName<Border>(wrapper, "dropPlaceholderLeft");
-                    var leftText = FindChildByName<TextBlock>(wrapper, "dropPlaceholderLeftText");
-                    var rightPlaceholder = FindChildByName<Border>(wrapper, "dropPlaceholderRight");
-                    var rightText = FindChildByName<TextBlock>(wrapper, "dropPlaceholderRightText");
-
-                    if (isLeft && leftPlaceholder != null && leftText != null)
-                    {
-                        leftText.Text = sourceVm.DisplayLabel;
-                        leftPlaceholder.Visibility = Visibility.Visible;
-                        _dropOnLeftSide = true;
-                    }
-                    else if (!isLeft && rightPlaceholder != null && rightText != null)
-                    {
-                        rightText.Text = sourceVm.DisplayLabel;
-                        rightPlaceholder.Visibility = Visibility.Visible;
-                        _dropOnLeftSide = false;
-                    }
-                }
-                else
-                {
-                    HideAllDropIndicators();
-                }
-            }
-        }
-        else
-        {
+            HideAllDropIndicators();
             e.Effects = DragDropEffects.None;
+            e.Handled = true;
+            return;
         }
+
+        e.Effects = DragDropEffects.Move;
+        UpdateDropIndicator(dropContext, e);
 
         e.Handled = true;
     }
@@ -197,6 +146,78 @@ public partial class QuickFilterBar : UserControl
     {
         HideAllDropIndicators();
         e.Handled = true;
+    }
+
+    private static bool TryGetDropContext(object sender, DragEventArgs e, out DropContext dropContext)
+    {
+        dropContext = null!;
+
+        if (sender is not FrameworkElement fe
+            || !TryGetDraggedQuickFilter(e, out QuickFilterViewModel sourceVm)
+            || sourceVm.IsBuiltIn)
+        {
+            return false;
+        }
+
+        StackPanel? wrapper = FindAncestor<StackPanel>(fe, "qfDropWrapper");
+        Border? targetBorder = FindChildByName<Border>(wrapper, "qfBorder");
+        if (targetBorder?.DataContext is not QuickFilterViewModel targetVm
+            || sourceVm.Id == targetVm.Id
+            || targetVm.IsBuiltIn)
+        {
+            return false;
+        }
+
+        dropContext = new DropContext(wrapper!, targetBorder, sourceVm, targetVm);
+        return true;
+    }
+
+    private static bool TryGetDraggedQuickFilter(DragEventArgs e, out QuickFilterViewModel sourceVm)
+    {
+        QuickFilterViewModel? draggedQuickFilter = e.Data.GetDataPresent(QUICK_FILTER_DATA_FORMAT)
+            ? e.Data.GetData(QUICK_FILTER_DATA_FORMAT) as QuickFilterViewModel
+            : null;
+
+        sourceVm = draggedQuickFilter!;
+
+        return sourceVm != null;
+    }
+
+    private bool ShouldSwapOrder(QuickFilterViewModel sourceVm, QuickFilterViewModel targetVm)
+    {
+        var sourceBefore = sourceVm.Order < targetVm.Order;
+        return (sourceBefore && !_dropOnLeftSide) || (!sourceBefore && _dropOnLeftSide);
+    }
+
+    private static void SwapOrder(QuickFilterViewModel sourceVm, QuickFilterViewModel targetVm)
+    {
+        (sourceVm.Order, targetVm.Order) = (targetVm.Order, sourceVm.Order);
+    }
+
+    private void UpdateDropIndicator(DropContext dropContext, DragEventArgs e)
+    {
+        Point pos = e.GetPosition(dropContext.TargetBorder);
+        var isLeft = pos.X < dropContext.TargetBorder.ActualWidth / 2;
+
+        HideAllDropIndicators();
+
+        var placeholderName = isLeft ? "dropPlaceholderLeft" : "dropPlaceholderRight";
+        var placeholderTextName = isLeft ? "dropPlaceholderLeftText" : "dropPlaceholderRightText";
+        Border? placeholder = FindChildByName<Border>(dropContext.Wrapper, placeholderName);
+        TextBlock? placeholderText = FindChildByName<TextBlock>(dropContext.Wrapper, placeholderTextName);
+        ShowDropIndicator(placeholder, placeholderText, dropContext.Source.DisplayLabel);
+        _dropOnLeftSide = isLeft;
+    }
+
+    private static void ShowDropIndicator(Border? placeholder, TextBlock? placeholderText, string displayLabel)
+    {
+        if (placeholder == null || placeholderText == null)
+        {
+            return;
+        }
+
+        placeholderText.Text = displayLabel;
+        placeholder.Visibility = Visibility.Visible;
     }
 
     private void HideAllDropIndicators()
@@ -214,8 +235,8 @@ public partial class QuickFilterBar : UserControl
                 continue;
             }
 
-            var left = FindChildByName<Border>(wrapper, "dropPlaceholderLeft");
-            var right = FindChildByName<Border>(wrapper, "dropPlaceholderRight");
+            Border? left = FindChildByName<Border>(wrapper, "dropPlaceholderLeft");
+            Border? right = FindChildByName<Border>(wrapper, "dropPlaceholderRight");
             if (left != null)
             {
                 left.Visibility = Visibility.Collapsed;
@@ -232,43 +253,7 @@ public partial class QuickFilterBar : UserControl
     {
         _editingQfVm = qfVm;
 
-        var border = FindParentBorder(source);
-        if (border?.Child is not Grid grid)
-        {
-            return;
-        }
-
-        Popup? popup = null;
-        TextBox? labelBox = null;
-        TextBox? toolTipBox = null;
-
-        foreach (var child in grid.Children)
-        {
-            if (child is Popup p)
-            {
-                popup = p;
-            }
-        }
-
-        if (popup?.Child is Border popupBorder && popupBorder.Child is StackPanel stackPanel)
-        {
-            foreach (var child in stackPanel.Children)
-            {
-                if (child is TextBox textBox)
-                {
-                    if (labelBox == null)
-                    {
-                        labelBox = textBox;
-                    }
-                    else
-                    {
-                        toolTipBox = textBox;
-                    }
-                }
-            }
-        }
-
-        if (popup == null || labelBox == null || toolTipBox == null)
+        if (!TryGetEditPopup(source, out Popup popup, out TextBox labelBox, out TextBox toolTipBox))
         {
             return;
         }
@@ -281,68 +266,105 @@ public partial class QuickFilterBar : UserControl
         labelBox.SelectAll();
     }
 
+    private static bool TryGetEditPopup(FrameworkElement source, out Popup popup, out TextBox labelBox, out TextBox toolTipBox)
+    {
+        popup = null!;
+        labelBox = null!;
+        toolTipBox = null!;
+
+        if (FindParentBorder(source)?.Child is not Grid grid)
+        {
+            return false;
+        }
+
+        Popup? popupElement = grid.Children.OfType<Popup>().FirstOrDefault();
+        popup = popupElement!;
+        if (popup.Child is not Border { Child: StackPanel stackPanel, })
+        {
+            popup = null!;
+            return false;
+        }
+
+        TextBox[] textBoxes = stackPanel.Children.OfType<TextBox>().Take(2).ToArray();
+        if (textBoxes.Length < 2)
+        {
+            popup = null!;
+            return false;
+        }
+
+        labelBox = textBoxes[0];
+        toolTipBox = textBoxes[1];
+        return true;
+    }
+
     private void QuickFilterPopupOk_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement fe && _editingQfVm != null)
+        if (sender is not FrameworkElement fe || _editingQfVm == null)
         {
-            var popup = FindPopupFromButton(fe);
-            var (labelBox, toolTipBox) = FindEditBoxesFromButton(fe);
-
-            if (labelBox != null && !string.IsNullOrWhiteSpace(labelBox.Text))
-            {
-                _editingQfVm.UpdateLabel(labelBox.Text.Trim());
-            }
-
-            if (toolTipBox != null)
-            {
-                _editingQfVm.UpdateToolTip(toolTipBox.Text.Trim());
-            }
-
-            if (popup != null)
-            {
-                popup.IsOpen = false;
-            }
-
-            _editingQfVm = null;
+            return;
         }
+
+        Popup? popup = FindPopupFromButton(fe);
+        (TextBox? labelBox, TextBox? toolTipBox) = FindEditBoxesFromButton(fe);
+
+        if (labelBox != null && !string.IsNullOrWhiteSpace(labelBox.Text))
+        {
+            _editingQfVm.UpdateLabel(labelBox.Text.Trim());
+        }
+
+        if (toolTipBox != null)
+        {
+            _editingQfVm.UpdateToolTip(toolTipBox.Text.Trim());
+        }
+
+        if (popup != null)
+        {
+            popup.IsOpen = false;
+        }
+
+        _editingQfVm = null;
     }
 
     private void QuickFilterPopupCancel_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement fe)
+        if (sender is not FrameworkElement fe)
         {
-            var popup = FindPopupFromButton(fe);
-            if (popup != null)
-            {
-                popup.IsOpen = false;
-            }
-
-            _editingQfVm = null;
+            return;
         }
+
+        Popup? popup = FindPopupFromButton(fe);
+        if (popup != null)
+        {
+            popup.IsOpen = false;
+        }
+
+        _editingQfVm = null;
     }
 
     private void QuickFilterPopupDelete_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement fe && _editingQfVm != null)
+        if (sender is not FrameworkElement fe || _editingQfVm == null)
         {
-            var popup = FindPopupFromButton(fe);
-            if (popup != null)
-            {
-                popup.IsOpen = false;
-            }
-
-            if (!_editingQfVm.IsBuiltIn)
-            {
-                _viewModel?.Remove(_editingQfVm.Id);
-            }
-
-            _editingQfVm = null;
+            return;
         }
+
+        Popup? popup = FindPopupFromButton(fe);
+        if (popup != null)
+        {
+            popup.IsOpen = false;
+        }
+
+        if (!_editingQfVm.IsBuiltIn)
+        {
+            _viewModel?.Remove(_editingQfVm.Id);
+        }
+
+        _editingQfVm = null;
     }
 
     private static T? FindAncestor<T>(DependencyObject child, string? name = null) where T : FrameworkElement
     {
-        var current = child;
+        DependencyObject? current = child;
         while (current != null)
         {
             if (current is T element && (name == null || element.Name == name))
@@ -366,13 +388,13 @@ public partial class QuickFilterBar : UserControl
         var count = System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent);
         for (var i = 0; i < count; i++)
         {
-            var child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
+            DependencyObject child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
             if (child is T element && element.Name == name)
             {
                 return element;
             }
 
-            var result = FindChildByName<T>(child, name);
+            T? result = FindChildByName<T>(child, name);
             if (result != null)
             {
                 return result;
@@ -384,10 +406,10 @@ public partial class QuickFilterBar : UserControl
 
     private static Border? FindParentBorder(DependencyObject child)
     {
-        var current = child;
+        DependencyObject? current = child;
         while (current != null)
         {
-            if (current is Border border && border.Name == "qfBorder")
+            if (current is Border { Name: "qfBorder", } border)
             {
                 return border;
             }
@@ -400,7 +422,7 @@ public partial class QuickFilterBar : UserControl
 
     private static Popup? FindPopupFromButton(DependencyObject element)
     {
-        var current = element;
+        DependencyObject? current = element;
         while (current != null)
         {
             if (current is Popup popup)
@@ -408,7 +430,7 @@ public partial class QuickFilterBar : UserControl
                 return popup;
             }
 
-            var parent = System.Windows.Media.VisualTreeHelper.GetParent(current);
+            DependencyObject? parent = System.Windows.Media.VisualTreeHelper.GetParent(current);
             if (parent == null && current is FrameworkElement frameworkElement)
             {
                 parent = frameworkElement.Parent;
@@ -422,7 +444,7 @@ public partial class QuickFilterBar : UserControl
 
     private static (TextBox? labelBox, TextBox? toolTipBox) FindEditBoxesFromButton(DependencyObject element)
     {
-        var current = element;
+        DependencyObject? current = element;
         StackPanel? stackPanel = null;
         while (current != null)
         {
@@ -446,7 +468,9 @@ public partial class QuickFilterBar : UserControl
             return (null, null);
         }
 
-        var textBoxes = stackPanel.Children.OfType<TextBox>().ToArray();
+        TextBox[] textBoxes = stackPanel.Children.OfType<TextBox>().ToArray();
         return textBoxes.Length >= 2 ? (textBoxes[0], textBoxes[1]) : (null, null);
     }
+
+    private sealed record DropContext(StackPanel Wrapper, Border TargetBorder, QuickFilterViewModel Source, QuickFilterViewModel Target);
 }

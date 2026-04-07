@@ -204,8 +204,8 @@ public sealed class QuickFilterBarViewModel : INotifyPropertyChanged
 
         public event EventHandler? CanExecuteChanged
         {
-            add { }
-            remove { }
+            add => _ = value;
+            remove => _ = value;
         }
 
         public bool CanExecute(object? parameter) => true;

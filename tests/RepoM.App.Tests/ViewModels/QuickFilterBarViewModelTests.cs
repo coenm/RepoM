@@ -318,7 +318,7 @@ public class QuickFilterBarViewModelTests
         service.RaiseChanged();
 
         // assert
-        sut.Items.Should().HaveCount(1);
+        sut.Items.Should().ContainSingle();
         sut.HasItems.Should().BeTrue();
         propertyNames.Should().Contain(nameof(QuickFilterBarViewModel.HasItems));
         filterStateChangedCount.Should().Be(1);

@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -23,7 +22,6 @@ using DynamicData;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.App.Controls;
 using RepoM.App.Plugins;
 using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryFiltering;
@@ -276,6 +274,9 @@ public partial class MainWindow
             var queryParsersViewModel = new QueryParsersViewModel(_repositoryFilteringManager, _threadDispatcher);
             var filterViewModel = new FiltersViewModel(_repositoryFilteringManager, _threadDispatcher);
             var pluginsViewModel = new PluginCollectionViewModel(_moduleManager);
+            var quickFilterCommands = new MainWindowQuickFilterCommands(
+                _quickFilterBarViewModel.SaveSearchTextCommand,
+                _quickFilterBarViewModel.AddTagCommand);
 
             DataContext = new MainWindowViewModel(
                 _appSettingsService,
@@ -284,8 +285,7 @@ public partial class MainWindow
                 filterViewModel,
                 pluginsViewModel,
                 new HelpViewModel(_translationService),
-                _quickFilterBarViewModel.SaveSearchTextCommand,
-                _quickFilterBarViewModel.AddTagCommand);
+                quickFilterCommands);
             SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
             var uiScheduler = new SynchronizationContextScheduler(SynchronizationContext.Current!);
@@ -409,13 +409,15 @@ public partial class MainWindow
     {
         var directoryName = _appDataPathProvider.AppDataPath;
 
-        if (_fileSystem.Directory.Exists(directoryName))
+        if (!_fileSystem.Directory.Exists(directoryName))
         {
-            Process.Start(new ProcessStartInfo(directoryName)
-                {
-                    UseShellExecute = true,
-                });
+            return;
         }
+
+        Process.Start(new ProcessStartInfo(directoryName)
+            {
+                UseShellExecute = true,
+            });
     }
 
     private void UpdateButton_Click(object sender, RoutedEventArgs e)
@@ -554,5 +556,4 @@ public partial class MainWindow
             _ => AcrylicBehavior.Legacy,
         };
     }
-
 }

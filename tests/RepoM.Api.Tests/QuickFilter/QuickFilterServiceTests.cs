@@ -17,7 +17,7 @@ using Xunit;
 
 public class QuickFilterServiceTests
 {
-    private const string AppDataPath = @"C:\AppData\RepoM";
+    private const string APP_DATA_PATH = @"C:\AppData\RepoM";
 
     [Fact]
     public void Ctor_ShouldThrow_WhenArgumentNull()
@@ -73,16 +73,17 @@ public class QuickFilterServiceTests
         sut.GetAll().Should().HaveCount(3);
         changedCount.Should().Be(1);
 
-        fileSystem.FileExists($"{AppDataPath}\\quickfilters.json").Should().BeTrue();
-        var json = fileSystem.File.ReadAllText($"{AppDataPath}\\quickfilters.json");
+        fileSystem.FileExists($"{APP_DATA_PATH}\\quickfilters.json").Should().BeTrue();
+        var json = fileSystem.File.ReadAllText($"{APP_DATA_PATH}\\quickfilters.json");
         var envelope = JObject.Parse(json);
         var persisted = envelope["Filters"]!.ToObject<List<QuickFilterModel>>(JsonSerializer.Create(new JsonSerializerSettings
         {
             Converters = { new QueryJsonConverter(), },
         }));
-        persisted.Should().HaveCount(1);
-        persisted![0].Label.Should().Be("Work");
-        persisted[0].Query.ToString().Should().Be("tag:work");
+        persisted.Should().NotBeNull();
+        var persistedFilter = persisted!.Should().ContainSingle().Which;
+        persistedFilter.Label.Should().Be("Work");
+        persistedFilter.Query.ToString().Should().Be("tag:work");
     }
 
     [Fact]
@@ -359,7 +360,7 @@ public class QuickFilterServiceTests
         };
         var envelope = new { Filters = filters, CombineMode = "And" };
         var json = JsonConvert.SerializeObject(envelope, new JsonSerializerSettings { Converters = { new QueryJsonConverter(), }, });
-        fileSystem.AddFile($"{AppDataPath}\\quickfilters.json", new MockFileData(json));
+        fileSystem.AddFile($"{APP_DATA_PATH}\\quickfilters.json", new MockFileData(json));
 
         // act
         var sut = CreateSut(fileSystem: fileSystem);
@@ -418,7 +419,7 @@ public class QuickFilterServiceTests
     private static QuickFilterService CreateSut(MockFileSystem? fileSystem = null)
     {
         var appDataPathProvider = A.Fake<IAppDataPathProvider>();
-        A.CallTo(() => appDataPathProvider.AppDataPath).Returns(AppDataPath);
+        A.CallTo(() => appDataPathProvider.AppDataPath).Returns(APP_DATA_PATH);
         return new QuickFilterService(appDataPathProvider, fileSystem ?? new MockFileSystem(), NullLogger.Instance);
     }
 }
