@@ -143,7 +143,7 @@ public class RepositoryListViewModelTests
         result[2].Should().BeOfType<RepositoryMenuItemViewModel>();
         var deferredEntry = (RepositoryMenuItemViewModel)result[2];
         deferredEntry.HasSubItems.Should().BeTrue();
-        IReadOnlyList<RepositoryMenuEntryViewModel> childEntries = await deferredEntry.LoadChildrenAsync();
+        IReadOnlyList<IRepositoryMenuEntryViewModel> childEntries = await deferredEntry.LoadChildrenAsync();
         childEntries.Should().ContainSingle();
         childEntries[0].Should().BeOfType<RepositoryMenuItemViewModel>();
         ((RepositoryMenuItemViewModel)childEntries[0]).Header.Should().Be("SubAction");

@@ -120,9 +120,9 @@ public partial class RepositoryList : UserControl
         return true;
     }
 
-    private void PopulateMenuItems(ItemCollection items, System.Collections.Generic.IReadOnlyList<RepositoryMenuEntryViewModel> entries)
+    private void PopulateMenuItems(ItemCollection items, System.Collections.Generic.IReadOnlyList<IRepositoryMenuEntryViewModel> entries)
     {
-        foreach (RepositoryMenuEntryViewModel entry in entries)
+        foreach (IRepositoryMenuEntryViewModel entry in entries)
         {
             if (entry is RepositoryMenuSeparatorViewModel)
             {

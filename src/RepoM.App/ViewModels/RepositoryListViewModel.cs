@@ -77,7 +77,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
 
     public ICommand AddQuickFilterTagCommand { get; }
 
-    internal async Task<IReadOnlyList<RepositoryMenuEntryViewModel>> CreateContextMenuEntriesAsync(CancellationToken cancellationToken)
+    internal async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> CreateContextMenuEntriesAsync(CancellationToken cancellationToken)
     {
         if (SelectedRepository is not RepositoryViewModel selectedRepository)
         {
@@ -89,10 +89,10 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
         RepositoryInfo? updatedInfo = await _monitorService.RefreshRepositoryAsync(selectedRepository.Path, cancellationToken).ConfigureAwait(false);
         IRepository repositoryForMenu = updatedInfo != null ? new RepositoryInfoAdapter(updatedInfo) : selectedRepository.Repository;
 
-        var entries = new List<RepositoryMenuEntryViewModel>();
+        var entries = new List<IRepositoryMenuEntryViewModel>();
         await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionMenuFactory.CreateMenuAsync(repositoryForMenu).ConfigureAwait(false))
         {
-            RepositoryMenuEntryViewModel? entry = CreateMenuEntry(action, selectedRepository);
+            IRepositoryMenuEntryViewModel? entry = CreateMenuEntry(action, selectedRepository);
             if (entry != null)
             {
                 entries.Add(entry);
@@ -139,7 +139,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
         _logger.LogError(exception, "Could not invoke action on current repository.");
     }
 
-    private RepositoryMenuEntryViewModel? CreateMenuEntry(UserInterfaceRepositoryActionBase action, RepositoryViewModel selectedRepository)
+    private IRepositoryMenuEntryViewModel? CreateMenuEntry(UserInterfaceRepositoryActionBase action, RepositoryViewModel selectedRepository)
     {
         if (action is UserInterfaceSeparatorRepositoryAction)
         {
@@ -168,7 +168,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
         return () => ExecuteRepositoryAction(action, selectedRepository);
     }
 
-    private Func<Task<IReadOnlyList<RepositoryMenuEntryViewModel>>>? CreateSubMenuLoader(
+    private Func<Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>>? CreateSubMenuLoader(
         UserInterfaceRepositoryAction repositoryAction,
         RepositoryViewModel selectedRepository)
     {
@@ -186,17 +186,17 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
             return null;
         }
 
-        return () => Task.FromResult<IReadOnlyList<RepositoryMenuEntryViewModel>>(CreateMenuEntries(repositoryAction.SubActions, selectedRepository));
+        return () => Task.FromResult<IReadOnlyList<IRepositoryMenuEntryViewModel>>(CreateMenuEntries(repositoryAction.SubActions, selectedRepository));
     }
 
-    private List<RepositoryMenuEntryViewModel> CreateMenuEntries(
+    private List<IRepositoryMenuEntryViewModel> CreateMenuEntries(
         IEnumerable<UserInterfaceRepositoryActionBase> actions,
         RepositoryViewModel selectedRepository)
     {
-        var entries = new List<RepositoryMenuEntryViewModel>();
+        var entries = new List<IRepositoryMenuEntryViewModel>();
         foreach (UserInterfaceRepositoryActionBase action in actions)
         {
-            RepositoryMenuEntryViewModel? entry = CreateMenuEntry(action, selectedRepository);
+            IRepositoryMenuEntryViewModel? entry = CreateMenuEntry(action, selectedRepository);
             if (entry != null)
             {
                 entries.Add(entry);
@@ -247,9 +247,9 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
     }
 }
 
-internal abstract class RepositoryMenuEntryViewModel;
+internal interface IRepositoryMenuEntryViewModel;
 
-internal sealed class RepositoryMenuSeparatorViewModel : RepositoryMenuEntryViewModel
+internal sealed class RepositoryMenuSeparatorViewModel : IRepositoryMenuEntryViewModel
 {
     public static RepositoryMenuSeparatorViewModel Instance { get; } = new();
 
@@ -258,16 +258,16 @@ internal sealed class RepositoryMenuSeparatorViewModel : RepositoryMenuEntryView
     }
 }
 
-internal sealed class RepositoryMenuItemViewModel : RepositoryMenuEntryViewModel
+internal sealed class RepositoryMenuItemViewModel : IRepositoryMenuEntryViewModel
 {
     private readonly Action? _execute;
-    private readonly Func<Task<IReadOnlyList<RepositoryMenuEntryViewModel>>>? _loadChildrenAsync;
+    private readonly Func<Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>>? _loadChildrenAsync;
 
     public RepositoryMenuItemViewModel(
         string header,
         bool isEnabled,
         Action? execute,
-        Func<Task<IReadOnlyList<RepositoryMenuEntryViewModel>>>? loadChildrenAsync)
+        Func<Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>>? loadChildrenAsync)
     {
         Header = header ?? throw new ArgumentNullException(nameof(header));
         IsEnabled = isEnabled;
@@ -286,8 +286,8 @@ internal sealed class RepositoryMenuItemViewModel : RepositoryMenuEntryViewModel
         _execute?.Invoke();
     }
 
-    public Task<IReadOnlyList<RepositoryMenuEntryViewModel>> LoadChildrenAsync()
+    public Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> LoadChildrenAsync()
     {
-        return _loadChildrenAsync?.Invoke() ?? Task.FromResult<IReadOnlyList<RepositoryMenuEntryViewModel>>([]);
+        return _loadChildrenAsync?.Invoke() ?? Task.FromResult<IReadOnlyList<IRepositoryMenuEntryViewModel>>([]);
     }
 }
