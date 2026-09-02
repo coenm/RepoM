@@ -21,11 +21,11 @@ steps:
     if ($LASTEXITCODE -ne 0) {
       throw "Chocolatey failed to install NSIS (exit code $LASTEXITCODE)."
     }
-    $nsis = Get-Command makensis.exe -ErrorAction SilentlyContinue
-    if (-not $nsis) {
-      throw "makensis.exe was not found on PATH after installing NSIS."
+    $nsis = Join-Path ${env:ProgramFiles(x86)} "NSIS\makensis.exe"
+    if (-not (Test-Path -LiteralPath $nsis -PathType Leaf)) {
+      throw "makensis.exe was not found at '$nsis' after installing NSIS."
     }
-    & $nsis.Source /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 setup/RepoM.nsi
+    & $nsis /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 setup/RepoM.nsi
   displayName: ⚙️ Create installer
 
 - task: DeleteFiles@1
