@@ -17,12 +17,15 @@ steps:
   displayName: Remove empty directories
 
 - pwsh: |
-    nuget install NSIS-Package -Version 3.11.0.2 -OutputDirectory ./packages
-    $nsis = Get-ChildItem -Path "./packages" -Filter "makensis.exe" -Recurse | Select-Object -First 1
-    if (-not $nsis) {
-      Write-Error "makensis.exe not found in ./packages after nuget install NSIS-Package"
+    choco install nsis --version 3.12.0 --yes --no-progress --limit-output
+    if ($LASTEXITCODE -ne 0) {
+      throw "Chocolatey failed to install NSIS (exit code $LASTEXITCODE)."
     }
-    & $nsis.FullName /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 setup/RepoM.nsi
+    $nsis = Get-Command makensis.exe -ErrorAction SilentlyContinue
+    if (-not $nsis) {
+      throw "makensis.exe was not found on PATH after installing NSIS."
+    }
+    & $nsis.Source /DPRODUCT_VERSION=$Env:NBGV_SEMVER2 setup/RepoM.nsi
   displayName: ⚙️ Create installer
 
 - task: DeleteFiles@1
