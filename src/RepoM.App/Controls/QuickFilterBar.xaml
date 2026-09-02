@@ -1,0 +1,311 @@
+<UserControl x:Class="RepoM.App.Controls.QuickFilterBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:RepoM.App.ViewModels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DataContext="{d:DesignInstance viewModels:QuickFilterBarViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasItems}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+
+    <StackPanel Orientation="Horizontal">
+        <Border x:Name="combineModeToggle"
+                Margin="0,0,8,4"
+                Padding="6,2,6,2"
+                CornerRadius="5"
+                Cursor="Hand"
+                MouseLeftButtonUp="CombineModeToggle_Click"
+                ToolTip="{Binding CombineModeToolTip}">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Setter Property="Background" Value="#28FFFFFF" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasItems}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CombineModeLabel}" Value="OR">
+                            <Setter Property="Background" Value="#FF7E57C2" />
+                        </DataTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#3CFFFFFF" />
+                        </Trigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding CombineModeLabel}" Value="OR" />
+                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="#FF9575CD" />
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <TextBlock Text="{Binding CombineModeLabel}"
+                       FontFamily="Consolas"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       VerticalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="#80FFFFFF" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CombineModeLabel}" Value="OR">
+                                <Setter Property="Foreground" Value="#FFFFFFFF" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Border>
+
+        <ItemsControl x:Name="quickFilterItemsControl"
+                      ItemsSource="{Binding Items}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <StackPanel x:Name="qfDropWrapper"
+                            Orientation="Horizontal"
+                            Margin="0,0,6,0"
+                            d:DataContext="{d:DesignInstance viewModels:QuickFilterViewModel, IsDesignTimeCreatable=False}"
+                            AllowDrop="True"
+                            Drop="QuickFilter_Drop"
+                            DragOver="QuickFilter_DragOver"
+                            DragLeave="QuickFilter_DragLeave">
+                    <Border x:Name="dropPlaceholderLeft"
+                            Margin="0,0,6,4"
+                            Padding="6,2,6,2"
+                            BorderThickness="1"
+                            BorderBrush="#40FFFFFF"
+                            CornerRadius="5"
+                            Background="#10FFFFFF"
+                            IsHitTestVisible="False"
+                            Visibility="Collapsed">
+                        <TextBlock x:Name="dropPlaceholderLeftText"
+                                   FontFamily="Consolas"
+                                   FontSize="13.5"
+                                   Foreground="#40FFFFFF"
+                                   VerticalAlignment="Center" />
+                    </Border>
+                    <Border x:Name="qfBorder"
+                            Margin="0,0,0,4"
+                            Padding="6,2,6,2"
+                            BorderThickness="0"
+                            CornerRadius="5"
+                            Cursor="Hand"
+                            MouseLeftButtonUp="QuickFilter_Click">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="#14FFFFFF" />
+                                <Setter Property="ToolTip" Value="{Binding ToolTip}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                        <Setter Property="Background" Value="#FF4FC3F7" />
+                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding IsActive}" Value="True" />
+                                            <Condition Binding="{Binding IsInverse}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Background" Value="#FFEF9A9A" />
+                                    </MultiDataTrigger>
+                                    <DataTrigger Binding="{Binding HasToolTip}" Value="False">
+                                        <Setter Property="ToolTip" Value="{x:Null}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid>
+                            <TextBlock Text="{Binding DisplayLabel}"
+                                       FontSize="13.5"
+                                       VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontFamily" Value="Consolas" />
+                                        <Setter Property="Foreground" Value="#80FFFFFF" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                <Setter Property="Foreground" Value="#FF212121" />
+                                            </DataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsBuiltIn}" Value="True" />
+                                                    <Condition Binding="{Binding Label}" Value="&#x2605;" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+                                                <Setter Property="FontSize" Value="16" />
+                                                <Setter Property="TextAlignment" Value="Center" />
+                                                <Setter Property="Foreground" Value="#80FFD700" />
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsBuiltIn}" Value="True" />
+                                                    <Condition Binding="{Binding Label}" Value="&#x2605;" />
+                                                    <Condition Binding="{Binding IsActive}" Value="True" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Foreground" Value="#FFD700" />
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsBuiltIn}" Value="True" />
+                                                    <Condition Binding="{Binding Label}" Value="&#x1F441;" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="FontFamily" Value="Segoe UI Emoji" />
+                                                <Setter Property="Foreground" Value="#80FFFFFF" />
+                                            </MultiDataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsBuiltIn}" Value="True" />
+                                                    <Condition Binding="{Binding Label}" Value="&#x1F441;" />
+                                                    <Condition Binding="{Binding IsActive}" Value="True" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Foreground" Value="#FFFFFFFF" />
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <Border x:Name="hamburgerButton"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Stretch"
+                                    Padding="4,0,0,0"
+                                    Margin="-2,-2,-6,-2"
+                                    CornerRadius="0,5,5,0"
+                                    Cursor="Hand"
+                                    MouseLeftButtonDown="HamburgerButton_MouseDown"
+                                    MouseLeftButtonUp="HamburgerButton_MouseUp"
+                                    MouseMove="HamburgerButton_MouseMove">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Setter Property="Background" Value="#40000000" />
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="&#x2630;"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"
+                                           Foreground="#AAFFFFFF"
+                                           Margin="0,0,2,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Foreground" Value="#FFFFFFFF" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Border>
+
+                            <Popup x:Name="qfEditPopup"
+                                   PlacementTarget="{Binding ElementName=qfBorder}"
+                                   Placement="Bottom"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True"
+                                   PopupAnimation="Fade">
+                                <Border Background="#FF383838"
+                                        BorderBrush="#FF555555"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="12"
+                                        MinWidth="220">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="12" Opacity="0.5" ShadowDepth="3" />
+                                    </Border.Effect>
+                                    <StackPanel>
+                                        <TextBlock Text="Label" Foreground="#CCFFFFFF" FontSize="11" Margin="0,0,0,3" />
+                                        <TextBox x:Name="qfEditLabel"
+                                                 FontSize="13"
+                                                 Padding="4,3"
+                                                 Background="#FF2A2A2A"
+                                                 Foreground="White"
+                                                 BorderBrush="#FF666666"
+                                                 CaretBrush="White" />
+
+                                        <TextBlock Text="Tooltip" Foreground="#CCFFFFFF" FontSize="11" Margin="0,10,0,3" />
+                                        <TextBox x:Name="qfEditToolTip"
+                                                 FontSize="13"
+                                                 Padding="4,3"
+                                                 Background="#FF2A2A2A"
+                                                 Foreground="White"
+                                                 BorderBrush="#FF666666"
+                                                 CaretBrush="White" />
+
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                                            <Button Content="Delete"
+                                                    Foreground="#FFEF5350"
+                                                    FontSize="12"
+                                                    Padding="8,3"
+                                                    Margin="0,0,8,0"
+                                                    Cursor="Hand"
+                                                    Click="QuickFilterPopupDelete_Click"
+                                                    Style="{DynamicResource MaterialDesignFlatButton}" />
+                                            <Button Content="Cancel"
+                                                    Foreground="#AAFFFFFF"
+                                                    FontSize="12"
+                                                    Padding="8,3"
+                                                    Margin="0,0,6,0"
+                                                    Cursor="Hand"
+                                                    Click="QuickFilterPopupCancel_Click"
+                                                    Style="{DynamicResource MaterialDesignFlatButton}" />
+                                            <Button Content="OK"
+                                                    Foreground="#FF4FC3F7"
+                                                    FontSize="12"
+                                                    Padding="8,3"
+                                                    Cursor="Hand"
+                                                    Click="QuickFilterPopupOk_Click"
+                                                    Style="{DynamicResource MaterialDesignFlatButton}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+                    <Border x:Name="dropPlaceholderRight"
+                            Margin="6,0,0,4"
+                            Padding="6,2,6,2"
+                            BorderThickness="1"
+                            BorderBrush="#40FFFFFF"
+                            CornerRadius="5"
+                            Background="#10FFFFFF"
+                            IsHitTestVisible="False"
+                            Visibility="Collapsed">
+                        <TextBlock x:Name="dropPlaceholderRightText"
+                                   FontFamily="Consolas"
+                                   FontSize="13.5"
+                                   Foreground="#40FFFFFF"
+                                   VerticalAlignment="Center" />
+                    </Border>
+                </StackPanel>
+
+                <DataTemplate.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsBuiltIn}" Value="False" />
+                            <Condition Binding="{Binding IsMouseOver, ElementName=qfBorder}" Value="True" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter TargetName="hamburgerButton" Property="Visibility" Value="Visible" />
+                    </MultiDataTrigger>
+                    <Trigger SourceName="hamburgerButton" Property="IsMouseOver" Value="True">
+                        <Setter TargetName="hamburgerButton" Property="Background" Value="#60000000" />
+                    </Trigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+    </StackPanel>
+</UserControl>

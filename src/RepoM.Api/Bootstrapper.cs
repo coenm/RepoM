@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System;
 using RepoM.Api.Plugins.SimpleInjector;
+using RepoM.Api.QuickFilter;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
@@ -46,6 +47,12 @@ public class CoreBootstrapper
         {
             container.RegisterComparerConfigurationForType(type);
         }
+    }
+
+    public static void RegisterQuickFilterServices(Container container)
+    {
+        ArgumentNullException.ThrowIfNull(container);
+        container.Register<IQuickFilterService, QuickFilterService>(Lifestyle.Singleton);
     }
 
     public async Task LoadAndRegisterPluginsAsync(Container container, string baseDirectory)

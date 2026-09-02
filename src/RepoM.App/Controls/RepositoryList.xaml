@@ -1,0 +1,39 @@
+<UserControl x:Class="RepoM.App.Controls.RepositoryList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:RepoM.App.Controls"
+             xmlns:viewModels="clr-namespace:RepoM.App.ViewModels"
+             d:DataContext="{d:DesignInstance viewModels:RepositoryListViewModel, IsDesignTimeCreatable=False}"
+             mc:Ignorable="d">
+    <ListBox x:Name="lstRepositories"
+             DockPanel.Dock="Top"
+             ItemsSource="{Binding ItemsSource}"
+             SelectedItem="{Binding SelectedRepository, Mode=TwoWay}"
+             HorizontalContentAlignment="Stretch"
+             MouseDoubleClick="LstRepositories_MouseDoubleClick"
+             KeyDown="LstRepositories_KeyDown"
+             ContextMenuOpening="LstRepositories_ContextMenuOpening"
+             VerticalAlignment="Top"
+             VerticalContentAlignment="Top"
+             SelectionMode="Single"
+             Margin="0,10,0,0"
+             VirtualizingPanel.IsVirtualizing="True"
+             VirtualizingPanel.VirtualizationMode="Recycling"
+             VirtualizingPanel.ScrollUnit="Pixel">
+        <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <VirtualizingStackPanel />
+            </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <controls:RepositoryComponent />
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+        <ListBox.ContextMenu>
+            <controls:AcrylicContextMenu x:Name="mnuRepositoryContext" />
+        </ListBox.ContextMenu>
+    </ListBox>
+</UserControl>
