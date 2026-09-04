@@ -1,4 +1,4 @@
-namespace RepoM.Core.Repositories.Tests.Persistence;
+namespace RepoM.Api.Tests.Repositories.Persistence;
 
 using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
+using RepoM.Api.Repositories.Persistence;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Persistence;
@@ -13,7 +14,7 @@ using Xunit;
 
 public class RepositorySnapshotStoreTests
 {
-    private const string FILE_PATH = @"c:\appdata\repositories.snapshot.json";
+    private const string FILE_PATH = @"c:\appdata\repositories.snapshot.yaml";
 
     private readonly MockFileSystem _fileSystem = new();
     private readonly RepositorySnapshotStore _sut;
@@ -100,10 +101,32 @@ public class RepositorySnapshotStoreTests
     }
 
     [Fact]
+    public async Task SaveAsync_ShouldWriteYaml()
+    {
+        // Arrange
+        var repo = new RepositoryInfo
+        {
+            Path = @"c:\repos\myrepo",
+            SafePath = "c:/repos/myrepo",
+            Name = "myrepo",
+        };
+
+        // Act
+        await _sut.SaveAsync([repo,]);
+
+        // Assert
+        string yaml = _fileSystem.File.ReadAllText(FILE_PATH);
+        yaml.Should().StartWith("version: 1");
+        yaml.Should().Contain("repositories:");
+        yaml.Should().Contain("path:");
+        yaml.Should().NotContain("{");
+    }
+
+    [Fact]
     public async Task LoadAsync_ShouldReturnEmpty_WhenFileIsCorrupt()
     {
         // Arrange
-        _fileSystem.AddFile(FILE_PATH, new MockFileData("this is not valid json"));
+        _fileSystem.AddFile(FILE_PATH, new MockFileData("this is not valid yaml"));
 
         // Act
         IReadOnlyList<RepositoryInfo> result = await _sut.LoadAsync();

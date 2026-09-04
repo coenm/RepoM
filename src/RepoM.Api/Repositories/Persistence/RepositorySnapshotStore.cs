@@ -1,25 +1,31 @@
-namespace RepoM.Core.Repositories.Persistence;
+namespace RepoM.Api.Repositories.Persistence;
 
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Repositories.Model;
+using RepoM.Core.Repositories.Persistence;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 public sealed class RepositorySnapshotStore : IRepositorySnapshotStore
 {
     private const int CURRENT_VERSION = 1;
 
-    private static readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        WriteIndented = false,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-    };
+    private static readonly ISerializer _serializer = new SerializerBuilder()
+        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+        .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
+        .Build();
+
+    private static readonly IDeserializer _deserializer = new DeserializerBuilder()
+        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+        .IgnoreUnmatchedProperties()
+        .Build();
 
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
@@ -42,14 +48,14 @@ public sealed class RepositorySnapshotStore : IRepositorySnapshotStore
 
         try
         {
-            var json = await _fileSystem.File.ReadAllTextAsync(_filePath, ct).ConfigureAwait(false);
-            if (string.IsNullOrWhiteSpace(json))
+            var yaml = await _fileSystem.File.ReadAllTextAsync(_filePath, ct).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(yaml))
             {
                 return [];
             }
 
-            SnapshotDocument? document = JsonSerializer.Deserialize<SnapshotDocument>(json, _jsonOptions);
-            if (document?.Repositories is null || document.Version != CURRENT_VERSION)
+            SnapshotDocument document = _deserializer.Deserialize<SnapshotDocument>(yaml);
+            if (document.Version != CURRENT_VERSION)
             {
                 return [];
             }
@@ -81,11 +87,11 @@ public sealed class RepositorySnapshotStore : IRepositorySnapshotStore
                 Repositories = [.. repositories.Select(Map),],
             };
 
-            var json = JsonSerializer.Serialize(document, _jsonOptions);
+            var yaml = _serializer.Serialize(document);
 
             // Write to a temporary file first, then replace, to avoid a corrupted snapshot on crash.
             var tempFile = _filePath + ".tmp";
-            await _fileSystem.File.WriteAllTextAsync(tempFile, json, ct).ConfigureAwait(false);
+            await _fileSystem.File.WriteAllTextAsync(tempFile, yaml, ct).ConfigureAwait(false);
             _fileSystem.File.Move(tempFile, _filePath, overwrite: true);
         }
         catch (Exception ex)
