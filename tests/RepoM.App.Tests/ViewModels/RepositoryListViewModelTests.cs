@@ -22,6 +22,7 @@ using RepoM.Core.Repositories;
 using RepoM.Core.Repositories.Favorite;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
+using RepoM.Core.Repositories.Persistence;
 using RepoM.Core.Repositories.Reading;
 using RepoM.Core.Repositories.Scanning;
 using RepoM.Core.Repositories.Store;
@@ -340,6 +341,9 @@ public class RepositoryListViewModelTests
         var fileSystem = new MockFileSystem();
         var monitoringState = A.Fake<IRepositoryMonitoringService>();
         var monitoringEvents = A.Fake<IRepositoryMonitoringEvents>();
+        var snapshotStore = A.Fake<IRepositorySnapshotStore>();
+        A.CallTo(() => snapshotStore.LoadAsync(default)).Returns([]);
+        A.CallTo(() => snapshotStore.SaveAsync(A<IEnumerable<RepositoryInfo>>._, default)).Returns(Task.CompletedTask);
 
         if (updatedInfo != null)
         {
@@ -355,6 +359,7 @@ public class RepositoryListViewModelTests
             () => [],
             monitoringState,
             monitoringEvents,
+            snapshotStore,
             NullLogger.Instance);
     }
 
