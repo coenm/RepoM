@@ -72,11 +72,12 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
 
     public async Task StartAsync()
     {
+        var ctNone = CancellationToken.None; // this method does not support cancellation
         _logger.LogInformation("RepositoryMonitorService starting");
 
         _subscriptions = new CompositeDisposable();
 
-        IReadOnlyList<RepositoryInfo> snapshot = await _snapshotStore.LoadAsync().ConfigureAwait(false);
+        IReadOnlyList<RepositoryInfo> snapshot = await _snapshotStore.LoadAsync(ctNone).ConfigureAwait(false);
         _store.AddOrUpdateRange(snapshot);
 
         var saveSnapshotSubscription = _store
