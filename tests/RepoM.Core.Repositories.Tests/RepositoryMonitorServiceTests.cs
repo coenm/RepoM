@@ -12,6 +12,7 @@ using FakeItEasy;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
+using RepoM.Core.Repositories.Persistence;
 using RepoM.Core.Repositories.Reading;
 using RepoM.Core.Repositories.Scanning;
 using RepoM.Core.Repositories.Store;
@@ -26,6 +27,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     private readonly IFileSystem _fileSystem;
     private readonly RepositoryStore _store;
     private readonly RepositoryMonitoringStateService _monitoringState;
+    private readonly IRepositorySnapshotStore _snapshotStore;
     private readonly RepositoryMonitorService _sut;
 
     public RepositoryMonitorServiceTests()
@@ -36,10 +38,13 @@ public class RepositoryMonitorServiceTests : IDisposable
         _fileSystem = A.Fake<IFileSystem>();
         _store = new RepositoryStore();
         _monitoringState = new RepositoryMonitoringStateService();
+        _snapshotStore = A.Fake<IRepositorySnapshotStore>();
 
         A.CallTo(() => _scanner.IsScanning).Returns(Observable.Return(false));
         A.CallTo(() => _watcher.Watch(A<IEnumerable<string>>._)).Returns(Observable.Empty<RepositoryChangeEvent>());
         A.CallTo(() => _scanner.Scan(A<IEnumerable<string>>._, A<CancellationToken>._)).Returns(Observable.Empty<string>());
+        A.CallTo(() => _snapshotStore.LoadAsync(A<CancellationToken>._)).Returns([]);
+        A.CallTo(() => _snapshotStore.SaveAsync(A<IEnumerable<RepositoryInfo>>._, A<CancellationToken>._)).Returns(Task.CompletedTask);
 
         _sut = new RepositoryMonitorService(
             _scanner,
@@ -50,6 +55,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             () => ["/repos",],
             _monitoringState,
             _monitoringState,
+            _snapshotStore,
             NullLogger.Instance);
     }
 
@@ -77,6 +83,64 @@ public class RepositoryMonitorServiceTests : IDisposable
 
         // Assert
         A.CallTo(() => _scanner.Scan(A<IEnumerable<string>>._, A<CancellationToken>._)).MustHaveHappened();
+    }
+
+    [Fact]
+    public async Task StartAsync_ShouldLoadRepositoriesFromSnapshot()
+    {
+        // Arrange
+        var snapshotStore = A.Fake<IRepositorySnapshotStore>();
+        var repository = new RepositoryInfo { Path = @"c:\repos\cached", SafePath = "c:/repos/cached", Name = "cached", };
+        A.CallTo(() => snapshotStore.LoadAsync(A<CancellationToken>._)).Returns([repository,]);
+        using var sut = new RepositoryMonitorService(
+            _scanner,
+            _watcher,
+            _reader,
+            _store,
+            _fileSystem,
+            () => ["/repos",],
+            _monitoringState,
+            _monitoringState,
+            snapshotStore,
+            NullLogger.Instance);
+
+        // Act
+        await sut.StartAsync();
+
+        // Assert
+        _store.Lookup("c:/repos/cached").HasValue.Should().BeTrue();
+        A.CallTo(() => snapshotStore.LoadAsync(A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task StartAsync_ShouldSaveSnapshot_WhenRepositoryStoreChanges()
+    {
+        // Arrange
+        var snapshotStore = A.Fake<IRepositorySnapshotStore>();
+        var saveCompleted = new TaskCompletionSource();
+        A.CallTo(() => snapshotStore.LoadAsync(A<CancellationToken>._)).Returns([]);
+        A.CallTo(() => snapshotStore.SaveAsync(A<IEnumerable<RepositoryInfo>>._, A<CancellationToken>._))
+            .Invokes(() => saveCompleted.TrySetResult())
+            .Returns(Task.CompletedTask);
+        using var sut = new RepositoryMonitorService(
+            _scanner,
+            _watcher,
+            _reader,
+            _store,
+            _fileSystem,
+            () => ["/repos",],
+            _monitoringState,
+            _monitoringState,
+            snapshotStore,
+            NullLogger.Instance);
+        await sut.StartAsync();
+
+        // Act
+        _store.AddOrUpdate(new RepositoryInfo { Path = @"c:\repos\saved", SafePath = "c:/repos/saved", Name = "saved", });
+        await saveCompleted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        // Assert
+        A.CallTo(() => snapshotStore.SaveAsync(A<IEnumerable<RepositoryInfo>>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -124,7 +188,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenScannerIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            null!, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, NullLogger.Instance);
+            null!, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -132,7 +196,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenWatcherIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, null!, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, NullLogger.Instance);
+            _scanner, null!, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -140,7 +204,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenReaderIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, null!, _store, _fileSystem, () => [], _monitoringState, _monitoringState, NullLogger.Instance);
+            _scanner, _watcher, null!, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -148,7 +212,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenStoreIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, null!, _fileSystem, () => [], _monitoringState, _monitoringState, NullLogger.Instance);
+            _scanner, _watcher, _reader, null!, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -156,7 +220,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenFileSystemIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, null!, () => [], _monitoringState, _monitoringState, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, null!, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -164,7 +228,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenPathProviderIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, null!, _monitoringState, _monitoringState, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, _fileSystem, null!, _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -172,7 +236,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenLoggerIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, null!);
+            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, null!);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -291,7 +355,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             });
 
         using var sut = new RepositoryMonitorService(
-            _scanner, _watcher, _reader, fakeStore, _fileSystem, () => ["/repos",], _monitoringState, _monitoringState, NullLogger.Instance);
+            _scanner, _watcher, _reader, fakeStore, _fileSystem, () => ["/repos",], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
 
         // act
         // Start the first (blocking) call on a background thread
@@ -328,7 +392,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         A.CallTo(() => _scanner.IsScanning).Returns(subject.AsObservable());
 
         var sut = new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, () => ["/repos",], _monitoringState, _monitoringState, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, _fileSystem, () => ["/repos",], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
 
         // Act
         var isScanning = await sut.IsScanning.FirstAsync();
@@ -690,7 +754,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenMonitoringStateIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, () => [], null!, _monitoringState, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, _fileSystem, () => [], null!, _monitoringState, _snapshotStore, NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -698,7 +762,15 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenMonitoringEventsIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, null!, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, null!, _snapshotStore, NullLogger.Instance);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Constructor_ShouldThrow_WhenSnapshotStoreIsNull()
+    {
+        var act = () => new RepositoryMonitorService(
+            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, null!, NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -1096,7 +1168,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             });
 
         using var sut = new RepositoryMonitorService(
-            _scanner, _watcher, _reader, fakeStore, _fileSystem, () => ["/repos"], _monitoringState, _monitoringState, NullLogger.Instance);
+            _scanner, _watcher, _reader, fakeStore, _fileSystem, () => ["/repos"], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
 
         // Act
         var firstCall = Task.Run(() => sut.RefreshAllAsync(CancellationToken.None));

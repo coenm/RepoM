@@ -12,6 +12,7 @@ using RepoM.Api.Ordering.IsFavorite;
 using RepoM.Api.Ordering.Label;
 using RepoM.Api.Ordering.Score;
 using RepoM.Api.Ordering.Sum;
+using RepoM.Api.Repositories.Persistence;
 using RepoM.Api.RepositoryActions.Decorators;
 using RepoM.App.i18n;
 using RepoM.App.RepositoryActions;
@@ -27,6 +28,7 @@ using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Favorite;
+using RepoM.Core.Repositories.Persistence;
 using RepoM.Core.Repositories.Reading;
 using RepoM.Core.Repositories.Scanning;
 using RepoM.Core.Repositories.Store;
@@ -61,6 +63,12 @@ internal static class Bootstrapper
         Container.Register<IRepositoryScanner, GitRepositoryScanner>(Lifestyle.Singleton);
         Container.Register<IRepositoryWatcher, FileSystemRepositoryWatcher>(Lifestyle.Singleton);
         Container.Register<IRepositoryInfoReader, LibGit2SharpRepositoryInfoReader>(Lifestyle.Singleton);
+        Container.Register<IRepositorySnapshotStore>(
+            () => new RepositorySnapshotStore(
+                fileSystem,
+                new RepositorySnapshotStoreSettings(fileSystem.Path.Combine(appDataProvider.AppDataPath, "repositories.snapshot.yaml")),
+                Container.GetInstance<ILogger<RepositorySnapshotStore>>()),
+            Lifestyle.Singleton);
         Container.Register<IFavoriteService>(() => Container.GetInstance<FavoriteService>(), Lifestyle.Singleton);
         Container.Register<FavoriteService>(() => new FavoriteService(Container.GetInstance<IFavoriteStore>()), Lifestyle.Singleton);
         Container.Register<IFavoriteStore, RepoM.Api.Favorite.FavoriteYamlStore>(Lifestyle.Singleton);

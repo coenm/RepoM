@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
+using RepoM.Core.Repositories.Persistence;
 using RepoM.Core.Repositories.Reading;
 using RepoM.Core.Repositories.Scanning;
 using RepoM.Core.Repositories.Store;
@@ -30,6 +31,7 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
     private readonly Func<IEnumerable<string>> _pathProvider;
     private readonly IRepositoryMonitoringService _monitoringState;
     private readonly IRepositoryMonitoringEvents _monitoringEvents;
+    private readonly IRepositorySnapshotStore _snapshotStore;
     private readonly TimeSpan _scanInterval;
     private readonly Lock _scanLock = new();
     private CompositeDisposable? _subscriptions;
@@ -48,6 +50,7 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
         Func<IEnumerable<string>> pathProvider,
         IRepositoryMonitoringService monitoringState,
         IRepositoryMonitoringEvents monitoringEvents,
+        IRepositorySnapshotStore snapshotStore,
         ILogger logger)
     {
         _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
@@ -58,6 +61,7 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
         _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
         _monitoringState = monitoringState ?? throw new ArgumentNullException(nameof(monitoringState));
         _monitoringEvents = monitoringEvents ?? throw new ArgumentNullException(nameof(monitoringEvents));
+        _snapshotStore = snapshotStore ?? throw new ArgumentNullException(nameof(snapshotStore));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _scanInterval = TimeSpan.FromMinutes(30);
     }
@@ -66,11 +70,23 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
 
     public IObservable<bool> IsScanning => _scanner.IsScanning;
 
-    public Task StartAsync()
+    public async Task StartAsync()
     {
         _logger.LogInformation("RepositoryMonitorService starting");
 
         _subscriptions = new CompositeDisposable();
+
+        IReadOnlyList<RepositoryInfo> snapshot = await _snapshotStore.LoadAsync().ConfigureAwait(false);
+        _store.AddOrUpdateRange(snapshot);
+
+        var saveSnapshotSubscription = _store
+            .Connect()
+            .Throttle(TimeSpan.FromSeconds(1))
+            .SelectMany(_ => Observable.FromAsync(token => _snapshotStore.SaveAsync(_store.Items, token)))
+            .Subscribe(
+                _ => { },
+                ex => _logger.LogError(ex, "Could not save repository snapshot"));
+        _subscriptions.Add(saveSnapshotSubscription);
 
         // Root-level watching is used for detecting newly created / changed repositories.
         // It also keeps our behavior consistent with the previous contract where the
@@ -148,7 +164,6 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
         _subscriptions.Add(stalenessSubscription);
 
         _logger.LogInformation("RepositoryMonitorService started");
-        return Task.CompletedTask;
     }
 
     /// <summary>
