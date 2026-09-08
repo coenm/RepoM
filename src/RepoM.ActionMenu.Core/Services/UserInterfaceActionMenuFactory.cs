@@ -87,6 +87,13 @@ internal class UserInterfaceActionMenuFactory : IUserInterfaceActionMenuFactory
         return await context.GetTagsAsync(actions.Tags).ConfigureAwait(false);
     }
 
+    public async Task WarmupAsync(string filename)
+    {
+        // Deserializing the menu file also parses and caches its Scriban templates, so this single
+        // read warms the biggest one-time cost of the first context-menu open.
+        _ = await _fileReader.DeserializeRoot(filename).ConfigureAwait(false);
+    }
+
     private async Task<ActionMenuGenerationContext> CreateActionMenuGenerationContext(IRepository repository)
     {
         // force offloading to background thread (or use Task.Run(), or TaskFactory.....

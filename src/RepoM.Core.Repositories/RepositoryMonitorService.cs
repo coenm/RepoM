@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using DynamicData;
-using DynamicData.Kernel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
@@ -33,6 +32,7 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
     private readonly IRepositoryMonitoringEvents _monitoringEvents;
     private readonly IRepositorySnapshotStore _snapshotStore;
     private readonly TimeSpan _scanInterval;
+    private readonly TimeSpan _snapshotSaveDebounce;
     private readonly Lock _scanLock = new();
     private CompositeDisposable? _subscriptions;
     private CancellationTokenSource _scanCts = new();
@@ -64,6 +64,7 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
         _snapshotStore = snapshotStore ?? throw new ArgumentNullException(nameof(snapshotStore));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _scanInterval = TimeSpan.FromMinutes(30);
+        _snapshotSaveDebounce = TimeSpan.FromSeconds(5);
     }
 
     public IRepositoryStore Store => _store;
@@ -80,14 +81,14 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
         IReadOnlyList<RepositoryInfo> snapshot = await _snapshotStore.LoadAsync(ctNone).ConfigureAwait(false);
         _store.AddOrUpdateRange(snapshot);
 
-        var saveSnapshotSubscription = _store
+        var snapshotSaveSubscription = _store
             .Connect()
-            .Throttle(TimeSpan.FromSeconds(1))
+            .Throttle(_snapshotSaveDebounce)
             .SelectMany(_ => Observable.FromAsync(token => _snapshotStore.SaveAsync(_store.Items, token)))
             .Subscribe(
                 _ => { },
                 ex => _logger.LogError(ex, "Could not save repository snapshot"));
-        _subscriptions.Add(saveSnapshotSubscription);
+        _subscriptions.Add(snapshotSaveSubscription);
 
         // Root-level watching is used for detecting newly created / changed repositories.
         // It also keeps our behavior consistent with the previous contract where the
@@ -325,6 +326,9 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
         _subscriptions?.Dispose();
         _subscriptions = null;
 
+        // Persist the current set of repositories so the next startup can show them instantly.
+        SaveSnapshotAsync().GetAwaiter().GetResult();
+
         _logger.LogInformation("RepositoryMonitorService stopped");
         return Task.CompletedTask;
     }
@@ -381,14 +385,81 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
     {
         return _scanner
             .Scan(_pathProvider(), ct)
-            .SelectMany(path => Observable.FromAsync(token => _reader.ReadAsync(path, token)))
+            .SelectMany(path => Observable.FromAsync(async token =>
+            {
+                // Publish a lightweight entry immediately so newly discovered repositories show up
+                // in the list right away, before the expensive git status read completes.
+                var safePath = NormalizeToSafePath(path);
+                var addedStub = TryPublishDiscoveredStub(path, safePath);
+
+                RepositoryInfo? repo = await _reader.ReadAsync(path, token).ConfigureAwait(false);
+                if (repo == null)
+                {
+                    // The read failed; drop the stub we optimistically added to avoid a phantom entry.
+                    if (addedStub)
+                    {
+                        _store.Remove(safePath);
+                    }
+
+                    return null;
+                }
+
+                repo.LastSeen = DateTimeOffset.UtcNow;
+                return repo;
+            }))
             .Where(repo => repo != null)
             .Select(repo => repo!)
-            .Do(repo => repo.LastSeen = DateTimeOffset.UtcNow)
-            .Buffer(TimeSpan.FromMilliseconds(500))
+            .Buffer(TimeSpan.FromMilliseconds(250), 25)
             .Where(batch => batch.Count > 0)
             .Do(batch => _store.AddOrUpdateRange(batch))
             .SelectMany(batch => batch);
+    }
+
+    /// <summary>
+    /// Adds a minimal, status-less repository entry to the store so it becomes visible immediately.
+    /// Returns <c>true</c> when a new stub was added; <c>false</c> when the repository was already known
+    /// (e.g. loaded from the snapshot or a previous scan) and must not be downgraded.
+    /// </summary>
+    private bool TryPublishDiscoveredStub(string discoveredPath, string safePath)
+    {
+        if (_store.Lookup(safePath).HasValue)
+        {
+            return false;
+        }
+
+        var repoRoot = GetRepositoryRoot(discoveredPath);
+        var now = DateTimeOffset.UtcNow;
+        var stub = new RepositoryInfo
+        {
+            Path = repoRoot,
+            SafePath = safePath,
+            Name = _fileSystem.Path.GetFileName(repoRoot),
+            LastSeen = now,
+            LastUpdated = DateTimeOffset.MinValue,
+        };
+
+        _store.AddOrUpdate(stub);
+        return true;
+    }
+
+    private static string GetRepositoryRoot(string path)
+    {
+        var gitIndex = path.IndexOf(".git", StringComparison.OrdinalIgnoreCase);
+        return gitIndex > 0
+            ? path[..gitIndex].TrimEnd('\\', '/')
+            : path;
+    }
+
+    private async Task SaveSnapshotAsync()
+    {
+        try
+        {
+            await _snapshotStore.SaveAsync(_store.Items.ToList()).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Failed to save repository snapshot");
+        }
     }
 
     /// <summary>

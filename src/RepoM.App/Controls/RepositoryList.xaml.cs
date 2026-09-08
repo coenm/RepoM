@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using RepoM.Api.Git;
 using RepoM.App.ViewModels;
 using WpfContextMenu = System.Windows.Controls.ContextMenu;
 
@@ -20,6 +21,15 @@ public partial class RepositoryList : UserControl
     {
         DataContext = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
     }
+
+    // Triggered after the user hovers a repository; builds its context menu in the background.
+    internal void PrefetchContextMenu(RepositoryViewModel repository)
+    {
+        ViewModel.StartContextMenuPrefetch(repository);
+    }
+
+    // Hover delay before prefetching; TimeSpan.Zero (or less) disables hover prefetching.
+    internal TimeSpan MenuPrefetchHoverDelay => ViewModel.MenuPrefetchHoverDelay;
 
     internal void FocusList()
     {
