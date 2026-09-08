@@ -61,4 +61,14 @@ internal class UserMenuActionMenuFactory : IUserMenuActionMenuFactory
             yield return item;
         }
     }
+
+    public Task WarmupAsync()
+    {
+        if (!_fileSystem.File.Exists(_fullFilename))
+        {
+            return Task.CompletedTask;
+        }
+
+        return _factory.WarmupAsync(_fullFilename);
+    }
 }

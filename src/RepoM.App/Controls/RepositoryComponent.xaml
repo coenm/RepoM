@@ -7,7 +7,9 @@
              xmlns:git="clr-namespace:RepoM.Api.Git;assembly=RepoM.Api"
              d:DataContext="{d:DesignInstance git:RepositoryViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
-    <StackPanel>
+    <StackPanel Background="Transparent"
+                MouseEnter="Root_MouseEnter"
+                MouseLeave="Root_MouseLeave">
         <DockPanel>
             <TextBlock DockPanel.Dock="Right"
                        Margin="4,0,8,3"

@@ -60,15 +60,14 @@ internal static class Bootstrapper
         // New repository infrastructure
         Container.Register<IRepositoryStore, RepositoryStore>(Lifestyle.Singleton);
         Container.RegisterInstance(new GitRepositoryScannerSettings(Math.Max(1, Environment.ProcessorCount / 2)));
+        Container.Register(
+            () => new RepositorySnapshotStoreSettings(
+                fileSystem.Path.Combine(appDataProvider.AppDataPath, "repositories.snapshot.json")),
+            Lifestyle.Singleton);
+        Container.Register<IRepositorySnapshotStore, RepositorySnapshotStore>(Lifestyle.Singleton);
         Container.Register<IRepositoryScanner, GitRepositoryScanner>(Lifestyle.Singleton);
         Container.Register<IRepositoryWatcher, FileSystemRepositoryWatcher>(Lifestyle.Singleton);
         Container.Register<IRepositoryInfoReader, LibGit2SharpRepositoryInfoReader>(Lifestyle.Singleton);
-        Container.Register<IRepositorySnapshotStore>(
-            () => new RepositorySnapshotStore(
-                fileSystem,
-                new RepositorySnapshotStoreSettings(fileSystem.Path.Combine(appDataProvider.AppDataPath, "repositories.snapshot.yaml")),
-                Container.GetInstance<ILogger<RepositorySnapshotStore>>()),
-            Lifestyle.Singleton);
         Container.Register<IFavoriteService>(() => Container.GetInstance<FavoriteService>(), Lifestyle.Singleton);
         Container.Register<FavoriteService>(() => new FavoriteService(Container.GetInstance<IFavoriteStore>()), Lifestyle.Singleton);
         Container.Register<IFavoriteStore, RepoM.Api.Favorite.FavoriteYamlStore>(Lifestyle.Singleton);

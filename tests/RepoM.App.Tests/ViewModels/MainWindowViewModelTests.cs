@@ -152,6 +152,8 @@ public class MainWindowViewModelTests
 
         public List<string> ReposRootDirectories { get; set; } = [];
 
+        public int MenuPrefetchHoverDelayMilliseconds => 2000;
+
         public string SortKey { get; set; } = string.Empty;
 
         public string QueryParserKey { get; set; } = string.Empty;
