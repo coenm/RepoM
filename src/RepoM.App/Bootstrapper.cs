@@ -43,6 +43,7 @@ using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using RepoM.App.Services.HotKey;
 using RepoM.Api;
+using RepoM.Core.Repositories;
 using System.Runtime.Caching;
 using System.Windows;
 using RepoM.App.ActionMenuCore;
@@ -65,6 +66,7 @@ internal static class Bootstrapper
                 fileSystem.Path.Combine(appDataProvider.AppDataPath, "repositories.snapshot.json")),
             Lifestyle.Singleton);
         Container.Register<IRepositorySnapshotStore, RepositorySnapshotStore>(Lifestyle.Singleton);
+        Container.RegisterInstance(new RepositoryMonitorServiceConfiguration(TimeSpan.FromSeconds(5)));
         Container.Register<IRepositoryScanner, GitRepositoryScanner>(Lifestyle.Singleton);
         Container.Register<IRepositoryWatcher, FileSystemRepositoryWatcher>(Lifestyle.Singleton);
         Container.Register<IRepositoryInfoReader, LibGit2SharpRepositoryInfoReader>(Lifestyle.Singleton);

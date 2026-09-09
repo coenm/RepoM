@@ -31,6 +31,7 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
     private readonly IRepositoryMonitoringService _monitoringState;
     private readonly IRepositoryMonitoringEvents _monitoringEvents;
     private readonly IRepositorySnapshotStore _snapshotStore;
+    private readonly RepositoryMonitorServiceConfiguration _configuration;
     private readonly TimeSpan _scanInterval;
     private readonly TimeSpan _snapshotSaveDebounce;
     private readonly Lock _scanLock = new();
@@ -51,6 +52,7 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
         IRepositoryMonitoringService monitoringState,
         IRepositoryMonitoringEvents monitoringEvents,
         IRepositorySnapshotStore snapshotStore,
+        RepositoryMonitorServiceConfiguration configuration,
         ILogger logger)
     {
         _scanner = scanner ?? throw new ArgumentNullException(nameof(scanner));
@@ -62,9 +64,10 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
         _monitoringState = monitoringState ?? throw new ArgumentNullException(nameof(monitoringState));
         _monitoringEvents = monitoringEvents ?? throw new ArgumentNullException(nameof(monitoringEvents));
         _snapshotStore = snapshotStore ?? throw new ArgumentNullException(nameof(snapshotStore));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _scanInterval = TimeSpan.FromMinutes(30);
-        _snapshotSaveDebounce = TimeSpan.FromSeconds(5);
+        _snapshotSaveDebounce = _configuration.SnapshotSaveDebounceInterval;
     }
 
     public IRepositoryStore Store => _store;
