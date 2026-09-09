@@ -17,6 +17,17 @@ public class StartProcessCommandExecutor : ICommandExecutor<StartProcessReposito
         _logger = logger;
     }
 
+    /*
+     * The purpose of this function is to execute a process specified by the
+     * Executable property of the repositoryCommand object, along with
+     * any additional arguments passed in the Arguments property.
+     * The ProcessHelper.StartProcess method is responsible for starting
+     * the process with the specified executable and arguments.
+     * Overall, this function takes care of executing a process based on
+     * the provided repository command, handling different scenarios
+     * for the number of arguments,
+     * and logging any relevant information using the _logger object.
+     */
     public void Execute(IRepository repository, StartProcessRepositoryCommand repositoryCommand)
     {
         var args = string.Empty;
