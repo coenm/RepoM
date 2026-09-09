@@ -20,11 +20,28 @@ public class EnsureStartup
 
     public async Task EnsureFilesAsync()
     {
+        TryDeleteLegacyFile("Repositories.cache");
         await CheckOrCreateAsync("RepositoryActionsV2.yaml", EmbeddedResources.GetRepositoryActionsV2Yaml).ConfigureAwait(false);
         await CheckOrCreateAsync("TagsV2.yaml", EmbeddedResources.GetTagsV2Yaml).ConfigureAwait(false);
         await CheckOrCreateAsync("RepoM.Filtering.yaml", EmbeddedResources.GetFilteringYaml).ConfigureAwait(false);
         await CheckOrCreateAsync("RepoM.Ordering.yaml", EmbeddedResources.GetSortingYaml).ConfigureAwait(false);
         await CheckOrCreateAsync("appsettings.serilog.json", EmbeddedResources.GetSerilogAppSettings).ConfigureAwait(false);
+    }
+
+    private void TryDeleteLegacyFile(string filename)
+    {
+        try
+        {
+            var fullFilename = Path.Combine(_appDataProvider.AppDataPath, filename);
+            if (_fileSystem.File.Exists(fullFilename))
+            {
+                _fileSystem.File.Delete(fullFilename);
+            }
+        }
+        catch (Exception)
+        {
+            // Ignore any failure (file locked, access denied, ...); it is a non-critical cleanup.
+        }
     }
 
     private async Task CheckOrCreateAsync(string filename, Func<Stream> func)

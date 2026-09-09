@@ -114,6 +114,12 @@ public partial class App : Application
         _ = _moduleService.StartAsync().ContinueWith(
             t => logger.LogError(t.Exception, "Could not start all modules."),
             TaskContinuationOptions.OnlyOnFaulted);
+
+        // Warm up the action-menu pipeline in the background so the first context-menu open is fast.
+        IUserMenuActionMenuFactory userMenuActionMenuFactory = Bootstrapper.Container.GetInstance<IUserMenuActionMenuFactory>();
+        _ = Task.Run(userMenuActionMenuFactory.WarmupAsync).ContinueWith(
+            t => logger.LogError(t.Exception, "Could not warm up the action menu."),
+            TaskContinuationOptions.OnlyOnFaulted);
     }
 
     protected override void OnExit(ExitEventArgs e)

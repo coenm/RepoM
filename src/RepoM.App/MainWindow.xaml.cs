@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Abstractions;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -32,6 +33,8 @@ using RepoM.Api.QuickFilter;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Repositories;
+using RepoM.Core.Repositories.Adapters;
+using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Favorite;
 using RepoM.Core.Repositories.Store;
@@ -84,6 +87,7 @@ public partial class MainWindow
     private readonly IModuleManager _moduleManager;
     private readonly QuickFilterBarViewModel _quickFilterBarViewModel;
     private readonly RepositoryListViewModel _repositoryListViewModel;
+    private readonly IUserMenuActionMenuFactory _userMenuActionFactory;
     private ReadOnlyObservableCollection<RepositoryViewModel> _repositories = null!;
     private readonly CompositeDisposable _disposables = new();
     private bool _isScanning;
@@ -118,6 +122,7 @@ public partial class MainWindow
         ArgumentNullException.ThrowIfNull(quickFilterService);
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         ArgumentNullException.ThrowIfNull(userMenuActionFactory);
+        _userMenuActionFactory = userMenuActionFactory;
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
@@ -128,7 +133,10 @@ public partial class MainWindow
         _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         _moduleManager = moduleManager ?? throw new ArgumentNullException(nameof(moduleManager));
         _quickFilterBarViewModel = new QuickFilterBarViewModel(quickFilterService, repositoryFilteringManager, namedQueryParsers, logger);
-        _repositoryListViewModel = new RepositoryListViewModel(_monitorService, executor, userMenuActionFactory, _logger, _quickFilterBarViewModel.AddTagCommand);
+        _repositoryListViewModel = new RepositoryListViewModel(_monitorService, executor, userMenuActionFactory, _logger, _quickFilterBarViewModel.AddTagCommand)
+            {
+                MenuPrefetchHoverDelay = TimeSpan.FromMilliseconds(_appSettingsService.MenuPrefetchHoverDelayMilliseconds),
+            };
 
         InitializeComponent();
         quickFilterBar.Initialize(_quickFilterBarViewModel);
@@ -197,6 +205,35 @@ public partial class MainWindow
         var hasRepositories = _store.Count > 0;
         Dispatcher.InvokeAsync(() =>
             tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible);
+    }
+
+    // Generates the context menu once for a real repository so the first user-triggered open
+    // does not pay the one-time JIT/initialization cost of the Scriban evaluation pipeline.
+    private void WarmupContextMenu()
+    {
+        RepositoryInfo? info = _store.Items.FirstOrDefault();
+        if (info == null)
+        {
+            return;
+        }
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var repository = new RepositoryInfoAdapter(info);
+                await foreach (var _ in _userMenuActionFactory.CreateMenuAsync(repository).ConfigureAwait(false))
+                {
+                    // Enumerate fully to warm the evaluation path; results are intentionally discarded.
+                }
+
+                _logger.LogDebug("Context menu warmup completed");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex, "Context menu warmup failed");
+            }
+        });
     }
 
     protected override async void OnActivated(EventArgs e)
@@ -342,6 +379,15 @@ public partial class MainWindow
             var countSubscription = _store.Connect()
                 .Subscribe(_ => UpdateNoRepositoriesVisibility());
             _disposables.Add(countSubscription);
+
+            // Warm up the context-menu evaluation path once, in the background, using the first
+            // discovered repository so the first real menu open is fast (JITs the Scriban evaluation).
+            var menuWarmupSubscription = _store.Connect()
+                .Where(_ => _store.Count > 0)
+                .Take(1)
+                .ObserveOn(Scheduler.Default)
+                .Subscribe(_ => WarmupContextMenu());
+            _disposables.Add(menuWarmupSubscription);
 
             PlaceFormByTaskBarLocation();
 

@@ -92,4 +92,33 @@ public class EnsureStartupTests
         // assert
         A.CallTo(() => _fileSystem.File.WriteAllBytesAsync(A<string>.That.EndsWith(filename), A<byte[]>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
+
+    [Fact]
+    public async Task EnsureFilesAsync_ShouldDeleteLegacyRepositoriesCache_WhenItExists()
+    {
+        // arrange
+        var legacyFile = Path.Combine("C:", "my-dummy", "path", "Repositories.cache");
+        A.CallTo(() => _fileSystem.File.Exists(A<string?>._)).Returns(true);
+
+        // act
+        await _sut.EnsureFilesAsync();
+
+        // assert
+        A.CallTo(() => _fileSystem.File.Delete(legacyFile)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task EnsureFilesAsync_ShouldNotThrow_WhenDeletingLegacyRepositoriesCacheFails()
+    {
+        // arrange
+        var legacyFile = Path.Combine("C:", "my-dummy", "path", "Repositories.cache");
+        A.CallTo(() => _fileSystem.File.Exists(A<string?>._)).Returns(true);
+        A.CallTo(() => _fileSystem.File.Delete(legacyFile)).Throws(new IOException("locked"));
+
+        // act
+        Func<Task> act = _sut.EnsureFilesAsync;
+
+        // assert
+        await act.Should().NotThrowAsync<IOException>();
+    }
 }
