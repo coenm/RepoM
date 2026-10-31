@@ -100,7 +100,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
                 Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> prefetched = _prefetchTask;
                 CancellationTokenSource prefetchCts = _prefetchCts;
                 ClearPrefetch();
-                return AwaitPrefetchAsync(prefetched, prefetchCts, cancellationToken);
+                return AwaitPrefetchAsync(prefetched, prefetchCts, selectedRepository, cancellationToken);
             }
         }
 
@@ -108,16 +108,26 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
     }
 
     // Takes ownership of the prefetch CTS so the caller's cancellation also stops the prefetch.
-    private static async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> AwaitPrefetchAsync(
+    private async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> AwaitPrefetchAsync(
         Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> prefetched,
         CancellationTokenSource prefetchCts,
+        RepositoryViewModel repository,
         CancellationToken cancellationToken)
     {
         using (prefetchCts)
         using (cancellationToken.Register(static state => ((CancellationTokenSource)state!).Cancel(), prefetchCts))
         {
-            return await prefetched.ConfigureAwait(false);
+            try
+            {
+                return await prefetched.ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                _logger.LogDebug(exception, "Context menu prefetch failed; building the menu again.");
+            }
         }
+
+        return await BuildContextMenuEntriesAsync(repository, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -145,26 +155,15 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
         }
     }
 
+    // Failures propagate so the consumer can rebuild instead of showing an empty or stale menu.
     private async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> PrefetchAsync(RepositoryViewModel repository, CancellationToken cancellationToken)
     {
-        try
-        {
-            IReadOnlyList<IRepositoryMenuEntryViewModel> entries = await BuildContextMenuEntriesAsync(repository, cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<IRepositoryMenuEntryViewModel> entries = await BuildContextMenuEntriesAsync(repository, cancellationToken).ConfigureAwait(false);
 
-            // Also load submenus ahead of time so they open instantly too.
-            await PreloadSubMenusAsync(entries, cancellationToken).ConfigureAwait(false);
+        // Also load submenus ahead of time so they open instantly too.
+        await PreloadSubMenusAsync(entries, cancellationToken).ConfigureAwait(false);
 
-            return entries;
-        }
-        catch (OperationCanceledException)
-        {
-            return [];
-        }
-        catch (Exception exception)
-        {
-            _logger.LogDebug(exception, "Context menu prefetch failed.");
-            return [];
-        }
+        return entries;
     }
 
     private async Task PreloadSubMenusAsync(IReadOnlyList<IRepositoryMenuEntryViewModel> entries, CancellationToken cancellationToken)

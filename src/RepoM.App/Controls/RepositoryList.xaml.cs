@@ -123,11 +123,26 @@ public partial class RepositoryList : UserControl
         var cts = new CancellationTokenSource();
         _contextMenuCts = cts;
 
+        // WPF opens the menu as soon as the handler yields, so never leave the previous repository's items in it.
+        ctxMenu.Items.Clear();
+        ctxMenu.Items.Add(new AcrylicMenuItem
+        {
+            Header = "Loading...",
+            IsEnabled = false,
+        });
+
         try
         {
             var entries = await ViewModel.CreateContextMenuEntriesAsync(cts.Token).ConfigureAwait(true);
-            if (cts.IsCancellationRequested || entries.Count == 0)
+            if (cts.IsCancellationRequested)
             {
+                return false;
+            }
+
+            if (entries.Count == 0)
+            {
+                ctxMenu.Items.Clear();
+                ctxMenu.IsOpen = false;
                 return false;
             }
 
