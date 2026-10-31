@@ -360,6 +360,7 @@ public class RepositoryListViewModelTests
             monitoringState,
             monitoringEvents,
             snapshotStore,
+            new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)),
             NullLogger.Instance);
     }
 

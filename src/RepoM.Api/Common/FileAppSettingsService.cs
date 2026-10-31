@@ -182,6 +182,8 @@ public class FileAppSettingsService : IAppSettingsService
         }
     }
 
+    public int MenuPrefetchHoverDelayMilliseconds => Settings.MenuPrefetchHoverDelayMilliseconds;
+
     public List<PluginSettings> Plugins
     {
         get => _plugins ??= Convert(Settings.Plugins);

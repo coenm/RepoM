@@ -7,4 +7,6 @@
 - `PruneOnFetch`: This option determines if RepoM should prune branches when fetching from git. (optional, UI configured)
 - `PreferredMenuSizes`: Preferred menu sizes of the RepoM. Will be set when window is resized. (optional, UI configured)
 - `ReposRootDirectories`: List of root directories where RepoM will search for git repositories. If null or empty, all fixed drives will be searched from the root. (optional, Manual configured)
+- `MenuPrefetchHoverDelayMilliseconds`: Delay in milliseconds the mouse must hover over a repository before its context menu is prefetched
+in the background. Set to 0 or a negative value to disable hover prefetching. (optional, Manual configured)
 - `Plugins`: List of plugins. (optional, UI configured)

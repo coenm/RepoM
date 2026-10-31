@@ -43,6 +43,7 @@ using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using RepoM.App.Services.HotKey;
 using RepoM.Api;
+using RepoM.Core.Repositories;
 using System.Runtime.Caching;
 using System.Windows;
 using RepoM.App.ActionMenuCore;
@@ -60,15 +61,15 @@ internal static class Bootstrapper
         // New repository infrastructure
         Container.Register<IRepositoryStore, RepositoryStore>(Lifestyle.Singleton);
         Container.RegisterInstance(new GitRepositoryScannerSettings(Math.Max(1, Environment.ProcessorCount / 2)));
+        Container.Register(
+            () => new RepositorySnapshotStoreSettings(
+                fileSystem.Path.Combine(appDataProvider.AppDataPath, "repositories.snapshot.json")),
+            Lifestyle.Singleton);
+        Container.Register<IRepositorySnapshotStore, RepositorySnapshotStore>(Lifestyle.Singleton);
+        Container.RegisterInstance(new RepositoryMonitorServiceConfiguration(TimeSpan.FromSeconds(5)));
         Container.Register<IRepositoryScanner, GitRepositoryScanner>(Lifestyle.Singleton);
         Container.Register<IRepositoryWatcher, FileSystemRepositoryWatcher>(Lifestyle.Singleton);
         Container.Register<IRepositoryInfoReader, LibGit2SharpRepositoryInfoReader>(Lifestyle.Singleton);
-        Container.Register<IRepositorySnapshotStore>(
-            () => new RepositorySnapshotStore(
-                fileSystem,
-                new RepositorySnapshotStoreSettings(fileSystem.Path.Combine(appDataProvider.AppDataPath, "repositories.snapshot.yaml")),
-                Container.GetInstance<ILogger<RepositorySnapshotStore>>()),
-            Lifestyle.Singleton);
         Container.Register<IFavoriteService>(() => Container.GetInstance<FavoriteService>(), Lifestyle.Singleton);
         Container.Register<FavoriteService>(() => new FavoriteService(Container.GetInstance<IFavoriteStore>()), Lifestyle.Singleton);
         Container.Register<IFavoriteStore, RepoM.Api.Favorite.FavoriteYamlStore>(Lifestyle.Singleton);

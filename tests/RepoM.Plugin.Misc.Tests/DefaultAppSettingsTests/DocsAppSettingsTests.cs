@@ -1,5 +1,6 @@
 namespace RepoM.Plugin.Misc.Tests.DefaultAppSettingsTests;
 
+using System;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 using System.Threading.Tasks;
@@ -87,14 +88,20 @@ public class DocsAppSettingsTests
 
     private static string CreateConfigWithSnippetDocumentationMarkdown(string? snippet)
     {
-        return new StringBuilder()
-           .AppendLine("## Configuration")
-           .AppendLine(string.Empty)
-           .AppendLine("This is the default configuration.")
-           .AppendLine(string.Empty)
-           .AppendLine("```json")
-           .AppendLine(snippet)
-           .AppendLine("```")
-           .ToString();
+        var normalizedSnippet = snippet?
+            .Replace("\r\n", "\n", StringComparison.Ordinal)
+            .Replace("\r", "\n", StringComparison.Ordinal)
+            .TrimEnd('\n');
+
+        return string.Join(
+            "\n",
+            "## Configuration",
+            string.Empty,
+            "This is the default configuration.",
+            string.Empty,
+            "```json",
+            normalizedSnippet ?? string.Empty,
+            "```"
+        );
     }
 }

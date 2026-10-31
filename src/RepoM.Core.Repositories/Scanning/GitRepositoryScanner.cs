@@ -11,22 +11,25 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using RepoM.Core.Plugin.RepositoryFinder;
 
 public sealed class GitRepositoryScanner : IRepositoryScanner
 {
     private readonly IFileSystem _fileSystem;
     private readonly ILogger _logger;
+    private readonly IPathSkipper? _pathSkipper;
     private readonly BehaviorSubject<bool> _isScanning = new(false);
     private readonly int _degreeOfParallelism;
     private int _activeScanCount;
     private bool _disposed;
 
-    public GitRepositoryScanner(IFileSystem fileSystem, ILogger logger, GitRepositoryScannerSettings settings)
+    public GitRepositoryScanner(IFileSystem fileSystem, ILogger logger, GitRepositoryScannerSettings settings, IPathSkipper? pathSkipper = null)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         ArgumentNullException.ThrowIfNull(settings);
         _degreeOfParallelism = settings.DegreeOfParallelism;
+        _pathSkipper = pathSkipper;
     }
 
     public IObservable<bool> IsScanning => _isScanning.AsObservable().DistinctUntilChanged();
@@ -232,6 +235,11 @@ public sealed class GitRepositoryScanner : IRepositoryScanner
             var dirName = _fileSystem.Path.GetFileName(subdir);
 
             if (ShouldSkipDirectory(dirName))
+            {
+                continue;
+            }
+
+            if (_pathSkipper?.ShouldSkip(subdir) == true)
             {
                 continue;
             }
