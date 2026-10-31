@@ -95,15 +95,29 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
         // Reuse the background prefetch (started on hover) when it targets the repository being opened.
         lock (_prefetchLock)
         {
-            if (_prefetchTask is not null && ReferenceEquals(_prefetchRepository, selectedRepository))
+            if (_prefetchTask is not null && _prefetchCts is not null && ReferenceEquals(_prefetchRepository, selectedRepository))
             {
                 Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> prefetched = _prefetchTask;
+                CancellationTokenSource prefetchCts = _prefetchCts;
                 ClearPrefetch();
-                return prefetched;
+                return AwaitPrefetchAsync(prefetched, prefetchCts, cancellationToken);
             }
         }
 
         return BuildContextMenuEntriesAsync(selectedRepository, cancellationToken);
+    }
+
+    // Takes ownership of the prefetch CTS so the caller's cancellation also stops the prefetch.
+    private static async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> AwaitPrefetchAsync(
+        Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> prefetched,
+        CancellationTokenSource prefetchCts,
+        CancellationToken cancellationToken)
+    {
+        using (prefetchCts)
+        using (cancellationToken.Register(static state => ((CancellationTokenSource)state!).Cancel(), prefetchCts))
+        {
+            return await prefetched.ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -202,7 +216,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
         _prefetchRepository = null;
     }
 
-    // Forgets a prefetch that is being consumed by an actual menu open, without cancelling it.
+    // Forgets a prefetch that is being consumed by an actual menu open; the consumer owns its CTS.
     private void ClearPrefetch()
     {
         _prefetchCts = null;
