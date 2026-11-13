@@ -28,6 +28,7 @@
     <ProjectReference Include="..\RepoM.Plugin.Clipboard\RepoM.Plugin.Clipboard.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.Heidi\RepoM.Plugin.Heidi.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.LuceneQueryParser\RepoM.Plugin.LuceneQueryParser.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.Mcp\RepoM.Plugin.Mcp.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.SonarCloud\RepoM.Plugin.SonarCloud.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.Statistics\RepoM.Plugin.Statistics.csproj" />
     <ProjectReference Include="..\RepoM.Plugin.WebBrowser\RepoM.Plugin.WebBrowser.csproj" />
@@ -42,7 +43,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.7" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
