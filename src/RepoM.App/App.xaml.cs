@@ -78,6 +78,7 @@ public partial class App : Application
         ILoggerFactory loggerFactory = LoggingFactory.CreateLoggerFactory(config);
 
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
+        RegisterGlobalExceptionHandlers(logger);
         logger.LogInformation("Started");
         Bootstrapper.RegisterLogging(loggerFactory);
         Bootstrapper.RegisterServices(fileSystem, appDataProvider);
@@ -114,6 +115,32 @@ public partial class App : Application
         _ = _moduleService.StartAsync().ContinueWith(
             t => logger.LogError(t.Exception, "Could not start all modules."),
             TaskContinuationOptions.OnlyOnFaulted);
+
+        // Warm up the action-menu pipeline in the background so the first context-menu open is fast.
+        IUserMenuActionMenuFactory userMenuActionMenuFactory = Bootstrapper.Container.GetInstance<IUserMenuActionMenuFactory>();
+        _ = Task.Run(userMenuActionMenuFactory.WarmupAsync).ContinueWith(
+            t => logger.LogError(t.Exception, "Could not warm up the action menu."),
+            TaskContinuationOptions.OnlyOnFaulted);
+    }
+
+    private void RegisterGlobalExceptionHandlers(ILogger logger)
+    {
+        // Keeps the tray app alive when a UI handler (e.g. an async void event handler) throws.
+        DispatcherUnhandledException += (_, args) =>
+        {
+            logger.LogError(args.Exception, "Unhandled exception on the UI thread.");
+            args.Handled = true;
+        };
+
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+            logger.LogCritical(args.ExceptionObject as Exception, "Unhandled exception (terminating: {IsTerminating}).", args.IsTerminating);
+
+        // Only raised when a faulted, never-awaited task is garbage collected.
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            logger.LogError(args.Exception, "Unobserved task exception.");
+            args.SetObserved();
+        };
     }
 
     protected override void OnExit(ExitEventArgs e)

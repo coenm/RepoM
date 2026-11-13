@@ -29,6 +29,11 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
     private IEnumerable? _itemsSource;
     private RepositoryViewModel? _selectedRepository;
 
+    private readonly object _prefetchLock = new();
+    private RepositoryViewModel? _prefetchRepository;
+    private CancellationTokenSource? _prefetchCts;
+    private Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>? _prefetchTask;
+
     public RepositoryListViewModel(
         RepositoryMonitorService monitorService,
         ActionExecutor executor,
@@ -77,21 +82,115 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
 
     public ICommand AddQuickFilterTagCommand { get; }
 
-    internal async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> CreateContextMenuEntriesAsync(CancellationToken cancellationToken)
+    // Configurable via app settings; how long the mouse must hover before the menu is prefetched.
+    public TimeSpan MenuPrefetchHoverDelay { get; set; } = TimeSpan.FromSeconds(2);
+
+    internal Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> CreateContextMenuEntriesAsync(CancellationToken cancellationToken)
     {
         if (SelectedRepository is not RepositoryViewModel selectedRepository)
         {
-            return [];
+            return Task.FromResult<IReadOnlyList<IRepositoryMenuEntryViewModel>>([]);
         }
 
+        // Reuse the background prefetch (started on hover) when it targets the repository being opened.
+        lock (_prefetchLock)
+        {
+            if (_prefetchTask is not null && _prefetchCts is not null && ReferenceEquals(_prefetchRepository, selectedRepository))
+            {
+                Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> prefetched = _prefetchTask;
+                CancellationTokenSource prefetchCts = _prefetchCts;
+                ClearPrefetch();
+                return AwaitPrefetchAsync(prefetched, prefetchCts, selectedRepository, cancellationToken);
+            }
+        }
+
+        return BuildContextMenuEntriesAsync(selectedRepository, cancellationToken);
+    }
+
+    // Takes ownership of the prefetch CTS so the caller's cancellation also stops the prefetch.
+    private async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> AwaitPrefetchAsync(
+        Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> prefetched,
+        CancellationTokenSource prefetchCts,
+        RepositoryViewModel repository,
+        CancellationToken cancellationToken)
+    {
+        using (prefetchCts)
+        using (cancellationToken.Register(static state => ((CancellationTokenSource)state!).Cancel(), prefetchCts))
+        {
+            try
+            {
+                return await prefetched.ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                _logger.LogDebug(exception, "Context menu prefetch failed; building the menu again.");
+            }
+        }
+
+        return await BuildContextMenuEntriesAsync(repository, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Starts building the context menu for <paramref name="repository"/> in the background (triggered
+    /// after the user hovers a repository). Any prefetch for a different repository is cancelled first,
+    /// so switching from one repository to another stops the previous background build.
+    /// </summary>
+    internal void StartContextMenuPrefetch(RepositoryViewModel repository)
+    {
+        ArgumentNullException.ThrowIfNull(repository);
+
+        lock (_prefetchLock)
+        {
+            if (_prefetchTask is not null && ReferenceEquals(_prefetchRepository, repository))
+            {
+                return;
+            }
+
+            CancelPrefetch();
+
+            var cts = new CancellationTokenSource();
+            _prefetchCts = cts;
+            _prefetchRepository = repository;
+            _prefetchTask = PrefetchAsync(repository, cts.Token);
+        }
+    }
+
+    // Failures propagate so the consumer can rebuild instead of showing an empty or stale menu.
+    private async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> PrefetchAsync(RepositoryViewModel repository, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<IRepositoryMenuEntryViewModel> entries = await BuildContextMenuEntriesAsync(repository, cancellationToken).ConfigureAwait(false);
+
+        // Also load submenus ahead of time so they open instantly too.
+        await PreloadSubMenusAsync(entries, cancellationToken).ConfigureAwait(false);
+
+        return entries;
+    }
+
+    private async Task PreloadSubMenusAsync(IReadOnlyList<IRepositoryMenuEntryViewModel> entries, CancellationToken cancellationToken)
+    {
+        foreach (IRepositoryMenuEntryViewModel entry in entries)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (entry is RepositoryMenuItemViewModel { HasSubItems: true } item)
+            {
+                IReadOnlyList<IRepositoryMenuEntryViewModel> children = await item.LoadChildrenAsync().ConfigureAwait(false);
+                await PreloadSubMenusAsync(children, cancellationToken).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> BuildContextMenuEntriesAsync(RepositoryViewModel selectedRepository, CancellationToken cancellationToken)
+    {
         selectedRepository.EnableMonitoring();
 
         RepositoryInfo? updatedInfo = await _monitorService.RefreshRepositoryAsync(selectedRepository.Path, cancellationToken).ConfigureAwait(false);
         IRepository repositoryForMenu = updatedInfo != null ? new RepositoryInfoAdapter(updatedInfo) : selectedRepository.Repository;
 
         var entries = new List<IRepositoryMenuEntryViewModel>();
-        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionMenuFactory.CreateMenuAsync(repositoryForMenu).ConfigureAwait(false))
+        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionMenuFactory.CreateMenuAsync(repositoryForMenu).WithCancellation(cancellationToken).ConfigureAwait(false))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             IRepositoryMenuEntryViewModel? entry = CreateMenuEntry(action, selectedRepository);
             if (entry != null)
             {
@@ -100,6 +199,28 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
         }
 
         return entries;
+    }
+
+    // Cancels and forgets any in-flight prefetch.
+    private void CancelPrefetch()
+    {
+        if (_prefetchCts is not null)
+        {
+            _prefetchCts.Cancel();
+            _prefetchCts.Dispose();
+            _prefetchCts = null;
+        }
+
+        _prefetchTask = null;
+        _prefetchRepository = null;
+    }
+
+    // Forgets a prefetch that is being consumed by an actual menu open; the consumer owns its CTS.
+    private void ClearPrefetch()
+    {
+        _prefetchCts = null;
+        _prefetchTask = null;
+        _prefetchRepository = null;
     }
 
     internal async Task InvokeDefaultActionOnSelectionAsync()
@@ -262,6 +383,7 @@ internal sealed class RepositoryMenuItemViewModel : IRepositoryMenuEntryViewMode
 {
     private readonly Action? _execute;
     private readonly Func<Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>>? _loadChildrenAsync;
+    private Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>? _childrenTask;
 
     public RepositoryMenuItemViewModel(
         string header,
@@ -286,8 +408,9 @@ internal sealed class RepositoryMenuItemViewModel : IRepositoryMenuEntryViewMode
         _execute?.Invoke();
     }
 
+    // Memoized so a prefetch and the subsequent real open share the same (single) load.
     public Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> LoadChildrenAsync()
     {
-        return _loadChildrenAsync?.Invoke() ?? Task.FromResult<IReadOnlyList<IRepositoryMenuEntryViewModel>>([]);
+        return _childrenTask ??= _loadChildrenAsync?.Invoke() ?? Task.FromResult<IReadOnlyList<IRepositoryMenuEntryViewModel>>([]);
     }
 }

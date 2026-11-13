@@ -1,4 +1,4 @@
-namespace RepoM.Core.Repositories.Tests;
+﻿namespace RepoM.Core.Repositories.Tests;
 
 using System;
 using System.Collections.Generic;
@@ -56,6 +56,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             _monitoringState,
             _monitoringState,
             _snapshotStore,
+            new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)),
             NullLogger.Instance);
     }
 
@@ -102,6 +103,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             _monitoringState,
             _monitoringState,
             snapshotStore,
+            new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)),
             NullLogger.Instance);
 
         // Act
@@ -132,6 +134,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             _monitoringState,
             _monitoringState,
             snapshotStore,
+            new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)),
             NullLogger.Instance);
         await sut.StartAsync();
 
@@ -188,7 +191,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenScannerIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            null!, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
+            null!, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -196,7 +199,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenWatcherIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, null!, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
+            _scanner, null!, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -204,7 +207,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenReaderIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, null!, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
+            _scanner, _watcher, null!, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -212,7 +215,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenStoreIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, null!, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
+            _scanner, _watcher, _reader, null!, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -220,7 +223,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenFileSystemIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, null!, () => [], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, null!, () => [], _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -228,7 +231,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenPathProviderIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, null!, _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, _fileSystem, null!, _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -236,7 +239,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenLoggerIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, null!);
+            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), null!);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -355,7 +358,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             });
 
         using var sut = new RepositoryMonitorService(
-            _scanner, _watcher, _reader, fakeStore, _fileSystem, () => ["/repos",], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
+            _scanner, _watcher, _reader, fakeStore, _fileSystem, () => ["/repos",], _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
 
         // act
         // Start the first (blocking) call on a background thread
@@ -392,7 +395,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         A.CallTo(() => _scanner.IsScanning).Returns(subject.AsObservable());
 
         var sut = new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, () => ["/repos",], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, _fileSystem, () => ["/repos",], _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
 
         // Act
         var isScanning = await sut.IsScanning.FirstAsync();
@@ -754,7 +757,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenMonitoringStateIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, () => [], null!, _monitoringState, _snapshotStore, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, _fileSystem, () => [], null!, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -762,7 +765,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenMonitoringEventsIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, null!, _snapshotStore, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, null!, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -770,7 +773,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     public void Constructor_ShouldThrow_WhenSnapshotStoreIsNull()
     {
         var act = () => new RepositoryMonitorService(
-            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, null!, NullLogger.Instance);
+            _scanner, _watcher, _reader, _store, _fileSystem, () => [], _monitoringState, _monitoringState, null!, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -818,10 +821,10 @@ public class RepositoryMonitorServiceTests : IDisposable
 
         await _sut.StartAsync();
 
-        // Act — trigger the event handler
+        // Act â€” trigger the event handler
         _sut.ActivateMonitoring("c:/repos/watched");
 
-        // Assert — watcher.Watch should have been called for the repo's .git dir
+        // Assert â€” watcher.Watch should have been called for the repo's .git dir
         A.CallTo(() => _watcher.Watch(A<IEnumerable<string>>.That.Contains(@"c:\repos\watched\.git")))
             .MustHaveHappened();
     }
@@ -832,7 +835,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         // Arrange
         await _sut.StartAsync();
 
-        // Act — activate monitoring for a repo that doesn't exist in the store
+        // Act â€” activate monitoring for a repo that doesn't exist in the store
         Action act = () => _sut.ActivateMonitoring("c:/repos/nonexistent");
 
         // Assert
@@ -889,12 +892,12 @@ public class RepositoryMonitorServiceTests : IDisposable
 
         await _sut.StartAsync();
 
-        // Act — activate twice
+        // Act â€” activate twice
         _sut.ActivateMonitoring("c:/repos/dup");
         _sut.DeactivateMonitoring("c:/repos/dup");
         _sut.ActivateMonitoring("c:/repos/dup");
 
-        // Assert — should not throw
+        // Assert â€” should not throw
         _store.Count.Should().Be(1);
     }
 
@@ -932,7 +935,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     [Fact]
     public async Task TryResolveGitDir_ShouldResolveWorktreeGitFile()
     {
-        // Arrange — .git is a file with gitdir pointing elsewhere
+        // Arrange â€” .git is a file with gitdir pointing elsewhere
         var repoInfo = new RepositoryInfo
         {
             Path = @"c:\repos\worktree",
@@ -959,7 +962,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         // Act
         _sut.ActivateMonitoring("c:/repos/worktree");
 
-        // Assert — watcher should be set up for the resolved gitdir
+        // Assert â€” watcher should be set up for the resolved gitdir
         A.CallTo(() => _watcher.Watch(A<IEnumerable<string>>.That.Contains(@"c:\repos\main\.git\worktrees\worktree")))
             .MustHaveHappened();
     }
@@ -1121,7 +1124,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     [Fact]
     public async Task RefreshRepositoryAsync_ShouldReturnCachedRepo_WhenRecentlyUpdated()
     {
-        // Arrange — put a recently-updated repo in the store
+        // Arrange â€” put a recently-updated repo in the store
         var repoInfo = new RepositoryInfo
         {
             Path = @"c:\repos\cached",
@@ -1134,7 +1137,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         // Act
         var result = await _sut.RefreshRepositoryAsync(@"c:\repos\cached", CancellationToken.None);
 
-        // Assert — should return cached version without calling reader
+        // Assert â€” should return cached version without calling reader
         result.Should().BeSameAs(repoInfo);
         A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
@@ -1168,7 +1171,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             });
 
         using var sut = new RepositoryMonitorService(
-            _scanner, _watcher, _reader, fakeStore, _fileSystem, () => ["/repos"], _monitoringState, _monitoringState, _snapshotStore, NullLogger.Instance);
+            _scanner, _watcher, _reader, fakeStore, _fileSystem, () => ["/repos"], _monitoringState, _monitoringState, _snapshotStore, new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), NullLogger.Instance);
 
         // Act
         var firstCall = Task.Run(() => sut.RefreshAllAsync(CancellationToken.None));
@@ -1181,7 +1184,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         gate.Release();
         await firstCall;
 
-        // Assert — reader should only have been called once (from first call)
+        // Assert â€” reader should only have been called once (from first call)
         A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
     }
 
@@ -1222,7 +1225,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         // Act
         await _sut.RefreshAllAsync(CancellationToken.None);
 
-        // Assert — reader should only be called for the monitored repo
+        // Assert â€” reader should only be called for the monitored repo
         A.CallTo(() => _reader.ReadAsync(@"c:\repos\monitored\.git\HEAD", A<CancellationToken>._)).MustHaveHappened();
         A.CallTo(() => _reader.ReadAsync(A<string>.That.Contains("unmonitored"), A<CancellationToken>._)).MustNotHaveHappened();
     }
@@ -1256,10 +1259,10 @@ public class RepositoryMonitorServiceTests : IDisposable
 
         await _sut.StartAsync();
 
-        // Act — trigger change detection which calls ReadAndUpdateRepositoryAsync
+        // Act â€” trigger change detection which calls ReadAndUpdateRepositoryAsync
         watchSubject.OnNext(new RepositoryChangeEvent(@"c:\repos\retry\.git\HEAD", RepositoryChangeType.Added));
 
-        // Assert — give async pipeline time to complete retries
+        // Assert â€” give async pipeline time to complete retries
         await Task.Delay(1000);
         callCount.Should().Be(3);
         _store.Count.Should().Be(1);
@@ -1340,7 +1343,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     [Fact]
     public async Task StartAsync_ShouldSetupRepoWatchers_ForMonitoredReposInStore()
     {
-        // Arrange — add a monitored repo to the store before starting
+        // Arrange â€” add a monitored repo to the store before starting
         var repoInfo = new RepositoryInfo
         {
             Path = @"c:\repos\premonitored",
@@ -1363,7 +1366,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         // Allow time for the store subscription to process
         await Task.Delay(200);
 
-        // Assert — watcher should have been set up for the repo's .git dir
+        // Assert â€” watcher should have been set up for the repo's .git dir
         A.CallTo(() => _watcher.Watch(A<IEnumerable<string>>.That.Contains(@"c:\repos\premonitored\.git")))
             .MustHaveHappened();
     }
@@ -1385,7 +1388,7 @@ public class RepositoryMonitorServiceTests : IDisposable
 
         await _sut.StartAsync();
 
-        // Act — send a removal event with backslash path and .git suffix
+        // Act â€” send a removal event with backslash path and .git suffix
         watchSubject.OnNext(new RepositoryChangeEvent(@"c:\repos\removeme\.git\HEAD", RepositoryChangeType.Removed));
 
         await Task.Delay(100);
@@ -1424,3 +1427,4 @@ public class RepositoryMonitorServiceTests : IDisposable
         _store.Dispose();
     }
 }
+

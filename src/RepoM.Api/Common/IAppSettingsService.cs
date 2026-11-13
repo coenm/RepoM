@@ -29,6 +29,8 @@ public interface IAppSettingsService
 
     List<string> ReposRootDirectories { get; set; }
 
+    int MenuPrefetchHoverDelayMilliseconds { get; }
+
     string SortKey { get; set; }
 
     string QueryParserKey { get; set; }

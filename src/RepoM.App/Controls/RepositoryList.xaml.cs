@@ -1,16 +1,20 @@
 namespace RepoM.App.Controls;
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using RepoM.Api.Git;
 using RepoM.App.ViewModels;
 using WpfContextMenu = System.Windows.Controls.ContextMenu;
 
 public partial class RepositoryList : UserControl
 {
+    private CancellationTokenSource? _contextMenuCts;
+
     public RepositoryList()
     {
         InitializeComponent();
@@ -20,6 +24,15 @@ public partial class RepositoryList : UserControl
     {
         DataContext = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
     }
+
+    // Triggered after the user hovers a repository; builds its context menu in the background.
+    internal void PrefetchContextMenu(RepositoryViewModel repository)
+    {
+        ViewModel.StartContextMenuPrefetch(repository);
+    }
+
+    // Hover delay before prefetching; TimeSpan.Zero (or less) disables hover prefetching.
+    internal TimeSpan MenuPrefetchHoverDelay => ViewModel.MenuPrefetchHoverDelay;
 
     internal void FocusList()
     {
@@ -105,19 +118,51 @@ public partial class RepositoryList : UserControl
 
     private async Task<bool> LstRepositoriesContextMenuOpeningAsync(WpfContextMenu ctxMenu)
     {
-        var entries = await ViewModel.CreateContextMenuEntriesAsync(default).ConfigureAwait(false);
-        if (entries.Count == 0)
+        // A newer open request supersedes this one, so a slow older build cannot overwrite a newer menu.
+        _contextMenuCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _contextMenuCts = cts;
+
+        // WPF opens the menu as soon as the handler yields, so never leave the previous repository's items in it.
+        ctxMenu.Items.Clear();
+        ctxMenu.Items.Add(new AcrylicMenuItem
+        {
+            Header = "Loading...",
+            IsEnabled = false,
+        });
+
+        try
+        {
+            var entries = await ViewModel.CreateContextMenuEntriesAsync(cts.Token).ConfigureAwait(true);
+            if (cts.IsCancellationRequested)
+            {
+                return false;
+            }
+
+            if (entries.Count == 0)
+            {
+                ctxMenu.Items.Clear();
+                ctxMenu.IsOpen = false;
+                return false;
+            }
+
+            ctxMenu.Items.Clear();
+            PopulateMenuItems(ctxMenu.Items, entries);
+            return true;
+        }
+        catch (OperationCanceledException) when (cts.IsCancellationRequested)
         {
             return false;
         }
-
-        await Dispatcher.InvokeAsync(() =>
+        finally
         {
-            ctxMenu.Items.Clear();
-            PopulateMenuItems(ctxMenu.Items, entries);
-        });
+            if (ReferenceEquals(_contextMenuCts, cts))
+            {
+                _contextMenuCts = null;
+            }
 
-        return true;
+            cts.Dispose();
+        }
     }
 
     private void PopulateMenuItems(ItemCollection items, System.Collections.Generic.IReadOnlyList<IRepositoryMenuEntryViewModel> entries)
