@@ -67,12 +67,12 @@ internal class McpModule : IModule
 
             _app.UseHostFiltering();
 
-            if (!string.IsNullOrWhiteSpace(_configuration.ApiKey))
-            {
-                _app.UseMiddleware<ApiKeyMiddleware>(_configuration.ApiKey);
-            }
+            // if (!string.IsNullOrWhiteSpace(_configuration.ApiKey))
+            // {
+            //     _app.UseMiddleware<ApiKeyMiddleware>(_configuration.ApiKey);
+            // }
 
-            _app.MapMcp();
+            _app.MapMcp("/mcp");
 
             _ = Task.Run(async () =>
             {
