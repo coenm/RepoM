@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
@@ -29,6 +30,7 @@ using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
 using RepoM.App.Tests.ViewModels;
 using RepoM.App.Themes;
+using RepoM.App.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
@@ -94,6 +96,9 @@ public class RepositoryFrontendTests
             var repository = (RepositoryViewModel)list.Items[0];
             var row = (ListBoxItem)list.ItemContainerGenerator.ContainerFromIndex(0);
             var component = FindChild<RepositoryComponent>(row);
+            // Consume any prefetch caused by the real mouse position when the window appeared.
+            list.SelectedItem = repository;
+            await ((RepositoryListViewModel)repositories.DataContext).CreateContextMenuEntriesAsync(CancellationToken.None);
             int menuCallsBeforeHover = Fake.GetCalls(menuFactory).Count(call => call.Method.Name == nameof(IUserMenuActionMenuFactory.CreateMenuAsync));
             ((Border)component.Content).RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, 0) { RoutedEvent = Mouse.MouseEnterEvent });
             await Task.Delay(400);

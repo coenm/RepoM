@@ -41,6 +41,8 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
 
     private readonly Lock _repoWatcherLock = new();
     private readonly Dictionary<string, IDisposable> _repoWatcherSubscriptions = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Lock _refreshLock = new();
+    private readonly Dictionary<string, PendingRefresh> _pendingRefreshes = new(StringComparer.OrdinalIgnoreCase);
 
     public RepositoryMonitorService(
         IRepositoryScanner scanner,
@@ -484,9 +486,9 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
             .ToObservable()
             .SelectMany(repo => Observable.FromAsync(async token =>
             {
-                var headPath = _fileSystem.Path.Combine(repo.Path, ".git", "HEAD");
-                RepositoryInfo? updated = await _reader.ReadAsync(headPath, token).ConfigureAwait(false);
-                updated ??= await _reader.ReadAsync(repo.Path, token).ConfigureAwait(false);
+                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, token);
+                RepositoryInfo? updated = await ReadSharedRefreshAsync(repo.Path, true, linkedCts.Token).ConfigureAwait(false);
+                linkedCts.Token.ThrowIfCancellationRequested();
                 if (updated != null)
                 {
                     updated.LastSeen = DateTimeOffset.UtcNow;
@@ -612,14 +614,8 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
                 {
                     try
                     {
-                        // Primary: legacy behavior read ".git/HEAD".
-                        // This keeps the existing contract stable and avoids breaking tests.
-                        var headPath = _fileSystem.Path.Combine(repo.Path, ".git", "HEAD");
-                        RepositoryInfo? updated = await _reader.ReadAsync(headPath, token).ConfigureAwait(false);
-
-                        // Fallback: for worktrees / bare repos, reading ".git/HEAD" may fail
-                        // (e.g. when ".git" is a file pointing to a gitdir elsewhere).
-                        updated ??= await _reader.ReadAsync(repo.Path, token).ConfigureAwait(false);
+                        RepositoryInfo? updated = await ReadSharedRefreshAsync(repo.Path, true, token).ConfigureAwait(false);
+                        token.ThrowIfCancellationRequested();
                         if (updated == null)
                         {
                             return;
@@ -629,12 +625,17 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
                         updated.LastUpdated = DateTimeOffset.UtcNow;
                         bag.Add(updated);
                     }
+                    catch (OperationCanceledException) when (token.IsCancellationRequested)
+                    {
+                        throw;
+                    }
                     catch (Exception ex)
                     {
                         _logger.LogDebug(ex, "Failed to refresh repository {Path}", repo.Path);
                     }
                 }).ConfigureAwait(false);
 
+            ct.ThrowIfCancellationRequested();
             if (!bag.IsEmpty)
             {
                 _store.AddOrUpdateRange(bag);
@@ -653,6 +654,7 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
     public async Task<RepositoryInfo?> RefreshRepositoryAsync(string repositoryPath, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(repositoryPath);
+        ct.ThrowIfCancellationRequested();
 
         try
         {
@@ -662,12 +664,15 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
             // is safe and avoids RetrieveStatus() on every context-menu open.
             var safePath = NormalizeToSafePath(repositoryPath);
             var existing = _store.Lookup(safePath);
-            if (existing.HasValue && (DateTimeOffset.UtcNow - existing.Value.LastUpdated) < _refreshThreshold)
+            if (existing.HasValue && (DateTimeOffset.UtcNow - existing.Value.LastUpdated) < _refreshThreshold
+                && !HasPendingRefresh(safePath))
             {
+                _logger.LogDebug("Repository refresh cache hit for {Path}", repositoryPath);
                 return existing.Value;
             }
 
-            RepositoryInfo? updated = await _reader.ReadAsync(repositoryPath, ct).ConfigureAwait(false);
+            RepositoryInfo? updated = await ReadSharedRefreshAsync(repositoryPath, false, ct).ConfigureAwait(false);
+            ct.ThrowIfCancellationRequested();
             if (updated == null)
             {
                 return null;
@@ -678,6 +683,10 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
             _store.AddOrUpdate(updated);
             return updated;
         }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             _logger.LogDebug(ex, "Failed to refresh repository {Path}", repositoryPath);
@@ -685,24 +694,147 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
         }
     }
 
+    private bool HasPendingRefresh(string safePath)
+    {
+        lock (_refreshLock)
+        {
+            return _pendingRefreshes.ContainsKey(safePath);
+        }
+    }
+
+    private async Task<RepositoryInfo?> ReadSharedRefreshAsync(string path, bool readHeadFirst, CancellationToken ct)
+    {
+        var safePath = NormalizeToSafePath(path);
+        while (true)
+        {
+            ct.ThrowIfCancellationRequested();
+            PendingRefresh pending;
+            bool draining;
+            lock (_refreshLock)
+            {
+                ObjectDisposedException.ThrowIf(_disposed, this);
+                if (!_pendingRefreshes.TryGetValue(safePath, out pending!))
+                {
+                    pending = new PendingRefresh();
+                    _pendingRefreshes.Add(safePath, pending);
+                    _logger.LogDebug("Repository refresh {RefreshId} started for {Path}", pending.Id, safePath);
+                    _ = Task.Run(() => RunSharedRefreshAsync(path, safePath, readHeadFirst, pending));
+                }
+                else
+                {
+                    _logger.LogDebug("Repository refresh {RefreshId} joined for {Path}", pending.Id, safePath);
+                }
+
+                draining = pending.Cancellation.IsCancellationRequested;
+                if (!draining)
+                {
+                    pending.Waiters++;
+                }
+            }
+
+            if (draining)
+            {
+                // A native read cannot be interrupted. Let it exit before starting another
+                // read for this repository, even if a new hover arrives meanwhile.
+                try
+                {
+                    await pending.Completion.Task.WaitAsync(ct).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+                {
+                    _logger.LogDebug("Repository refresh {RefreshId} drained after cancellation", pending.Id);
+                }
+
+                continue;
+            }
+
+            try
+            {
+                return await pending.Completion.Task.WaitAsync(ct).ConfigureAwait(false);
+            }
+            finally
+            {
+                lock (_refreshLock)
+                {
+                    pending.Waiters--;
+                    if (pending.Waiters == 0 && !pending.Completion.Task.IsCompleted)
+                    {
+                        _logger.LogDebug("Repository refresh {RefreshId} cancelled: no remaining callers", pending.Id);
+                        pending.Cancellation.Cancel();
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task RunSharedRefreshAsync(string path, string safePath, bool readHeadFirst, PendingRefresh pending)
+    {
+        RepositoryInfo? result = null;
+        var ct = pending.Cancellation.Token;
+        try
+        {
+            ct.ThrowIfCancellationRequested();
+            if (readHeadFirst)
+            {
+                var headPath = _fileSystem.Path.Combine(path, ".git", "HEAD");
+                result = await _reader.ReadAsync(headPath, ct).ConfigureAwait(false);
+                ct.ThrowIfCancellationRequested();
+            }
+
+            result ??= await _reader.ReadAsync(path, ct).ConfigureAwait(false);
+            ct.ThrowIfCancellationRequested();
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            _logger.LogDebug("Repository refresh {RefreshId} cancelled for {Path}", pending.Id, safePath);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Repository refresh {RefreshId} failed for {Path}", pending.Id, safePath);
+        }
+        finally
+        {
+            lock (_refreshLock)
+            {
+                _pendingRefreshes.Remove(safePath);
+                if (ct.IsCancellationRequested)
+                {
+                    pending.Completion.TrySetCanceled(ct);
+                }
+                else
+                {
+                    pending.Completion.TrySetResult(result);
+                }
+
+                pending.Cancellation.Dispose();
+            }
+        }
+    }
+
+    private sealed class PendingRefresh
+    {
+        public Guid Id { get; } = Guid.NewGuid();
+
+        public CancellationTokenSource Cancellation { get; } = new();
+
+        public TaskCompletionSource<RepositoryInfo?> Completion { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public int Waiters { get; set; }
+    }
+
     private static string NormalizeToSafePath(string path)
     {
-        // Extract repo root from paths like C:\repos\MyRepo\.git\HEAD
-        var gitIndex = path.IndexOf(".git", StringComparison.OrdinalIgnoreCase);
-        if (gitIndex > 0)
+        var normalized = path.Replace('\\', '/').TrimEnd('/');
+        // Only the .git path component denotes metadata; names such as .github do not.
+        var gitIndex = normalized.IndexOf("/.git/", StringComparison.OrdinalIgnoreCase);
+        if (gitIndex >= 0)
         {
-            path = path[..gitIndex].TrimEnd('\\', '/');
+            return normalized[..gitIndex];
         }
 
-        // Single allocation: replace backslashes and trim trailing slash in one pass
-        ReadOnlySpan<char> span = path.AsSpan().TrimEnd('/');
-        return string.Create(span.Length, span, static (dest, src) =>
-        {
-            for (var i = 0; i < src.Length; i++)
-            {
-                dest[i] = src[i] == '\\' ? '/' : src[i];
-            }
-        });
+        return normalized.EndsWith("/.git", StringComparison.OrdinalIgnoreCase)
+            ? normalized[..^5]
+            : normalized;
     }
 
     public void Dispose()
@@ -712,7 +844,14 @@ public sealed class RepositoryMonitorService : IModule, IDisposable
             return;
         }
 
-        _disposed = true;
+        lock (_refreshLock)
+        {
+            _disposed = true;
+            foreach (var pending in _pendingRefreshes.Values.ToArray())
+            {
+                pending.Cancellation.Cancel();
+            }
+        }
         _subscriptions?.Dispose();
     }
 }

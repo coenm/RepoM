@@ -7,7 +7,7 @@
         "type": "freetext",
         "value": "psa"
       },
-      "IsActive": false,
+      "IsActive": true,
       "IsInverse": false,
       "Order": 0,
       "ToolTip": ""

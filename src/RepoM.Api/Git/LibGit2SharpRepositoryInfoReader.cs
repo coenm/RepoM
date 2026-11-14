@@ -2,6 +2,7 @@ namespace RepoM.Api.Git;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -27,35 +28,60 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
 
     public async Task<RepositoryInfo?> ReadAsync(string path, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         if (string.IsNullOrEmpty(path))
         {
             return null;
         }
 
-        var repoPath = LibGit2Sharp.Repository.Discover(path);
-        if (string.IsNullOrEmpty(repoPath))
+        var readId = Guid.NewGuid();
+        var timer = Stopwatch.StartNew();
+        var outcome = "failed";
+        try
         {
-            _logger.LogWarning("Could not Discover git repo in path {Path}", path);
-            return null;
-        }
+            var repoPath = ReadStage(() => LibGit2Sharp.Repository.Discover(path), readId, path, "discover", 0, ct);
+            ct.ThrowIfCancellationRequested();
+            if (string.IsNullOrEmpty(repoPath))
+            {
+                _logger.LogWarning("Could not Discover git repo in path {Path}", path);
+                return null;
+            }
 
-        RepositoryInfo? result = await ReadWithRetries(repoPath, 3).ConfigureAwait(false);
-        if (result != null)
-        {
-            // Create a temporary adapter to pass to the tags resolver
-            var tempAdapter = new RepoM.Core.Repositories.Adapters.RepositoryInfoAdapter(result);
-            var tags = (await _resolver.GetTagsAsync(tempAdapter).ConfigureAwait(false)).ToArray();
-            result.Tags = tags;
-        }
-        else
-        {
-            _logger.LogWarning("Could not read git repo in path {Path}", repoPath);
-        }
+            RepositoryInfo? result = await ReadWithRetries(repoPath, 3, readId, path, ct).ConfigureAwait(false);
+            ct.ThrowIfCancellationRequested();
+            if (result != null)
+            {
+                var tagsTimer = Stopwatch.StartNew();
+                var tagsOutcome = "failed";
+                try
+                {
+                    var tempAdapter = new RepoM.Core.Repositories.Adapters.RepositoryInfoAdapter(result);
+                    result.Tags = (await _resolver.GetTagsAsync(tempAdapter).ConfigureAwait(false)).ToArray();
+                    ct.ThrowIfCancellationRequested();
+                    tagsOutcome = "completed";
+                }
+                finally
+                {
+                    LogReadStage(readId, path, "repom-tags", 0, tagsTimer,
+                        ct.IsCancellationRequested ? "cancelled" : tagsOutcome);
+                }
 
-        return result;
+                outcome = "completed";
+            }
+            else
+            {
+                _logger.LogWarning("Could not read git repo in path {Path}", repoPath);
+            }
+
+            return result;
+        }
+        finally
+        {
+            LogReadStage(readId, path, "total", 0, timer, ct.IsCancellationRequested ? "cancelled" : outcome);
+        }
     }
 
-    private async Task<RepositoryInfo?> ReadWithRetries(string repoPath, int maxRetries)
+    private async Task<RepositoryInfo?> ReadWithRetries(string repoPath, int maxRetries, Guid readId, string path, CancellationToken ct)
     {
         RepositoryInfo? info = null;
         var currentTry = 1;
@@ -64,7 +90,8 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
         {
             try
             {
-                info = ReadInternal(repoPath);
+                ct.ThrowIfCancellationRequested();
+                info = ReadInternal(repoPath, readId, path, currentTry, ct);
             }
             catch (LockedFileException e)
             {
@@ -75,7 +102,20 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
                     throw;
                 }
 
-                await Task.Delay(500).ConfigureAwait(false);
+                var timer = Stopwatch.StartNew();
+                try
+                {
+                    await Task.Delay(500, ct).ConfigureAwait(false);
+                }
+                finally
+                {
+                    LogReadStage(readId, path, "retry-delay", currentTry, timer,
+                        ct.IsCancellationRequested ? "cancelled" : "completed");
+                }
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            {
+                throw;
             }
             catch (Exception e)
             {
@@ -89,23 +129,25 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
         return info;
     }
 
-    private RepositoryInfo? ReadInternal(string repoPath)
+    private RepositoryInfo? ReadInternal(string repoPath, Guid readId, string path, int attempt, CancellationToken ct)
     {
         try
         {
-            using var repo = new LibGit2Sharp.Repository(repoPath);
+            using var repo = ReadStage(() => new LibGit2Sharp.Repository(repoPath), readId, path, "open", attempt, ct);
+            ct.ThrowIfCancellationRequested();
 
             RepositoryStatus? status = null;
             var workingDirectory = new DirectoryInfo(repoPath);
 
             if (!repo.Info.IsBare)
             {
-                status = repo.RetrieveStatus(new StatusOptions
-                    {
-                        IncludeIgnored = false,
-                        DetectRenamesInIndex = false,
-                        DetectRenamesInWorkDir = false,
-                    });
+                status = ReadStage(() => repo.RetrieveStatus(new StatusOptions
+                {
+                    IncludeIgnored = false,
+                    DetectRenamesInIndex = false,
+                    DetectRenamesInWorkDir = false,
+                }), readId, path, "status", attempt, ct);
+                ct.ThrowIfCancellationRequested();
                 workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
             }
 
@@ -115,84 +157,129 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
                 return null;
             }
 
-            HeadDetails headDetails = GetHeadDetails(repo);
-            var fullPath = workingDirectory.FullName;
+            HeadDetails headDetails = ReadStage(() => GetHeadDetails(repo), readId, path, "head", attempt, ct);
 
-            var allBranchList = new List<string>();
-            var localBranchList = new List<string>();
-            foreach (Branch branch in repo.Branches)
+            var (allBranchNames, localBranchNames) = ReadStage(() =>
             {
-                allBranchList.Add(branch.FriendlyName);
-                if (!branch.IsRemote)
+                var allBranchList = new List<string>();
+                var localBranchList = new List<string>();
+                foreach (Branch branch in repo.Branches)
                 {
-                    localBranchList.Add(branch.FriendlyName);
+                    ct.ThrowIfCancellationRequested();
+                    allBranchList.Add(branch.FriendlyName);
+                    if (!branch.IsRemote)
+                    {
+                        localBranchList.Add(branch.FriendlyName);
+                    }
                 }
-            }
 
-            var allBranchNames = allBranchList.ToArray();
-            var localBranchNames = localBranchList.ToArray();
+                return (allBranchList.ToArray(), localBranchList.ToArray());
+            }, readId, path, "branches", attempt, ct);
 
-            int? localUntracked = null;
-            int? localModified = null;
-            int? localMissing = null;
-            int? localAdded = null;
-            int? localStaged = null;
-            int? localRemoved = null;
-
-            if (status is not null)
-            {
-                localUntracked = status.Untracked.Count();
-                localModified = status.Modified.Count();
-                localMissing = status.Missing.Count();
-                localAdded = status.Added.Count();
-                localStaged = status.Staged.Count();
-                localRemoved = status.Removed.Count();
-            }
-
-            var info = new RepositoryInfo
-                {
-                    Path = fullPath,
-                    SafePath = GetSafePath(fullPath),
-                    WindowsPath = GetWindowsPath(fullPath),
-                    LinuxPath = GetSafePath(fullPath),
-                    Name = workingDirectory.Name,
-                    Location = workingDirectory.Parent!.FullName,
-                    IsBare = repo.Info.IsBare,
-                    Branches = allBranchNames,
-                    LocalBranches = localBranchNames,
-                    AllBranchesReader = () => ReadAllBranches(repoPath),
-                    CurrentBranch = headDetails.Name,
-                    CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
-                    CurrentBranchIsDetached = headDetails.IsDetached,
-                    CurrentBranchIsOnTag = headDetails.IsOnTag,
-                    AheadBy = repo.Head.TrackingDetails?.AheadBy,
-                    BehindBy = repo.Head.TrackingDetails?.BehindBy,
-                    LocalUntracked = localUntracked,
-                    LocalModified = localModified,
-                    LocalMissing = localMissing,
-                    LocalAdded = localAdded,
-                    LocalStaged = localStaged,
-                    LocalRemoved = localRemoved,
-                    StashCount = repo.Stashes?.Count() ?? 0,
-                    Tags = [],
-                };
-
-            RemoteCollection? remoteCollection = repo.Network?.Remotes;
-            if (remoteCollection != null)
-            {
-                foreach (LibGit2Sharp.Remote r in remoteCollection.Where(r => !string.IsNullOrWhiteSpace(r.Name) && !string.IsNullOrWhiteSpace(r.Url)))
-                {
-                    info.Remotes.Add(new Core.Plugin.Repository.Remote(r.Name.Trim(), r.Url.Trim()));
-                }
-            }
-
-            return info;
+            return ReadStage(() => ReadMetadata(repo, repoPath, status, workingDirectory, headDetails,
+                allBranchNames, localBranchNames, ct), readId, path, "metadata", attempt, ct);
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (LockedFileException)
+        {
+            // Leave lock retries (and their cancellation/delay) to ReadWithRetries.
+            throw;
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Could not read (LibGit2Sharp) repo in {Path}.", repoPath);
             return null;
         }
+    }
+
+    private static RepositoryInfo ReadMetadata(LibGit2Sharp.Repository repo, string repoPath, RepositoryStatus? status,
+        DirectoryInfo workingDirectory, HeadDetails headDetails, string[] allBranchNames, string[] localBranchNames, CancellationToken ct)
+    {
+        var fullPath = workingDirectory.FullName;
+        int? localUntracked = null;
+        int? localModified = null;
+        int? localMissing = null;
+        int? localAdded = null;
+        int? localStaged = null;
+        int? localRemoved = null;
+
+        if (status is not null)
+        {
+            localUntracked = status.Untracked.Count();
+            localModified = status.Modified.Count();
+            localMissing = status.Missing.Count();
+            localAdded = status.Added.Count();
+            localStaged = status.Staged.Count();
+            localRemoved = status.Removed.Count();
+        }
+
+        var info = new RepositoryInfo
+        {
+            Path = fullPath,
+            SafePath = GetSafePath(fullPath),
+            WindowsPath = GetWindowsPath(fullPath),
+            LinuxPath = GetSafePath(fullPath),
+            Name = workingDirectory.Name,
+            Location = workingDirectory.Parent!.FullName,
+            IsBare = repo.Info.IsBare,
+            Branches = allBranchNames,
+            LocalBranches = localBranchNames,
+            AllBranchesReader = () => ReadAllBranches(repoPath),
+            CurrentBranch = headDetails.Name,
+            CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
+            CurrentBranchIsDetached = headDetails.IsDetached,
+            CurrentBranchIsOnTag = headDetails.IsOnTag,
+            AheadBy = repo.Head.TrackingDetails?.AheadBy,
+            BehindBy = repo.Head.TrackingDetails?.BehindBy,
+            LocalUntracked = localUntracked,
+            LocalModified = localModified,
+            LocalMissing = localMissing,
+            LocalAdded = localAdded,
+            LocalStaged = localStaged,
+            LocalRemoved = localRemoved,
+            StashCount = repo.Stashes?.Count() ?? 0,
+            Tags = [],
+        };
+
+        RemoteCollection? remoteCollection = repo.Network?.Remotes;
+        ct.ThrowIfCancellationRequested();
+        if (remoteCollection != null)
+        {
+            foreach (LibGit2Sharp.Remote r in remoteCollection.Where(r => !string.IsNullOrWhiteSpace(r.Name) && !string.IsNullOrWhiteSpace(r.Url)))
+            {
+                ct.ThrowIfCancellationRequested();
+                info.Remotes.Add(new Core.Plugin.Repository.Remote(r.Name.Trim(), r.Url.Trim()));
+            }
+        }
+
+        return info;
+    }
+
+    private T ReadStage<T>(Func<T> read, Guid readId, string path, string stage, int attempt, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        var timer = Stopwatch.StartNew();
+        var outcome = "failed";
+        try
+        {
+            var result = read();
+            outcome = "completed";
+            return result;
+        }
+        finally
+        {
+            LogReadStage(readId, path, stage, attempt, timer, ct.IsCancellationRequested ? "cancelled" : outcome);
+        }
+    }
+
+    private void LogReadStage(Guid readId, string path, string stage, int attempt, Stopwatch timer, string outcome)
+    {
+        _logger.LogInformation(
+            "Repository read {ReadId} for {Path}: stage={Stage}; attempt={Attempt}; elapsed={ElapsedMs:F1} ms; outcome={Outcome}",
+            readId, path, stage, attempt, timer.Elapsed.TotalMilliseconds, outcome);
     }
 
     private static string[] ReadAllBranches(string repoPath)
@@ -231,13 +318,13 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
         }
 
         return new HeadDetails
-            {
-                Name = isDetached
+        {
+            Name = isDetached
                     ? tag?.FriendlyName ?? headTipSha ?? repo.Head.FriendlyName
                     : repo.Head.FriendlyName,
-                IsDetached = isDetached,
-                IsOnTag = tag != null,
-            };
+            IsDetached = isDetached,
+            IsOnTag = tag != null,
+        };
     }
 
     private static string GetSafePath(string input)

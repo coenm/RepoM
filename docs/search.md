@@ -44,7 +44,8 @@ Git reads and menu evaluation run off the UI thread.
 Search the configured Serilog file for `Context menu`. Information-level entries include:
 
 - `prefetch hit/miss` and `ready`: whether hover work was reused and already complete.
-- `Git refresh`: elapsed time spent obtaining a repository snapshot.
+- `Git refresh`: elapsed time spent obtaining a repository snapshot, including RepoM tag
+  calculation and any wait for a shared refresh (not just native Git calls).
 - `evaluation` and `build`: root-menu evaluation and total build time, with a `MenuBuildId`.
 - `deferred submenu`: submenu name, elapsed time and outcome, linked to that build ID.
 - `presentation`: the user's wait for data and UI item-population time, separately.
@@ -56,6 +57,34 @@ individual script timings. UI population does not include the subsequent rendere
 Root, submenu and presentation times can overlap and should not be summed.
 Logs include repository paths and menu labels, but not script bodies or variable values.
 With the checked-in logging configuration, files are written under `%APPDATA%\RepoM\Logs`.
+
+Repository refreshes requested by hover/context menus, window activation (`RefreshAllAsync`)
+and the periodic monitored refresh share an in-flight read per normalized repository path.
+Different repositories can still refresh concurrently. Cancelling one caller only stops its
+wait; the read is cancelled when no callers remain. A subsequent request waits for an
+abandoned native read to exit before starting another. Discovery scans and filesystem-change
+reads remain separate; a new change event must not simply reuse a read begun before that change.
+The existing two-second snapshot cache is unchanged, and general refreshes still force a read
+unless they join one already running.
+
+Search for `Repository read` for Information-level reader timings. Each invocation has a
+`ReadId`, input path, `Stage`, `Attempt`, `ElapsedMs` and `Outcome`:
+
+- `discover`, `open`: locate and open the Git repository.
+- `status`: retrieve working-tree/index status.
+- `head`, `branches`: resolve HEAD and enumerate branch names.
+- `metadata`: remaining status counts, upstream/ahead/behind, stashes and remotes.
+- `repom-tags`: evaluate the configured RepoM tags, including materializing the results.
+- `retry-delay`: wait after a locked-file failure.
+- `total`: the complete reader invocation, including all attempts and tags.
+
+These read IDs are separate from menu build IDs; correlate them by path and timestamp.
+At Debug level, `Repository refresh` logs a refresh ID for starts, joins and cancellations,
+and reports snapshot cache hits. A cache hit produces no reader timings. Total and individual
+stage times overlap; do not add totals to their constituent stages.
+Cancellation is checked between read stages, during branch/remote enumeration and retry waits.
+Native Git calls and the tag factory do not support interruption mid-call; cancellation is
+honored after those calls return, and cancelled results are not published.
 
 ### Worktree UI preview
 

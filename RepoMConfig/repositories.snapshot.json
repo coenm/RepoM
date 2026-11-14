@@ -12,8 +12,8 @@ repositories:
   currentBranchIsDetached: false
   currentBranchIsOnTag: false
   branches:
-  - feature/support-worktrees
   - origin/HEAD
+  - feature/support-worktrees
   - main
   - origin/agents/repom-mcp-server-plugin
   - origin/feature/automation-poc
@@ -26,7 +26,7 @@ repositories:
   localBranches:
   - feature/support-worktrees
   - main
-  tags: &o1 []
+  tags: []
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -36,7 +36,28 @@ repositories:
   localStaged: 0
   localRemoved: 0
   stashCount: 0
-  lastSeen: &o0
+  lastSeen:
+    dateTime: 2026-11-14T21:05:26.6911680
+    utcDateTime: 2026-11-14T21:05:26.6911680Z
+    localDateTime: 2026-11-14T22:05:26.6911680+01:00
+    date: 2026-11-14T00:00:00.0000000
+    day: 14
+    dayOfWeek: Saturday
+    dayOfYear: 318
+    hour: 21
+    millisecond: 691
+    microsecond: 168
+    nanosecond: 0
+    minute: 5
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 26
+    ticks: 639302871266911680
+    utcTicks: 639302871266911680
+    timeOfDay: 21:05:26.6911680
+    year: 2026
+  lastUpdated: &o0
     dateTime: 0001-01-01T00:00:00.0000000
     utcDateTime: 0001-01-01T00:00:00.0000000Z
     localDateTime: 0001-01-01T01:00:00.0000000+01:00
@@ -57,7 +78,6 @@ repositories:
     utcTicks: 0
     timeOfDay: 00:00:00
     year: 1
-  lastUpdated: *o0
   remotes:
   - key: origin
     url: https://github.com/coenm/RepoM
@@ -79,7 +99,7 @@ repositories:
   - origin/wip
   localBranches:
   - master
-  tags: *o1
+  tags: &o1 []
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -2253,32 +2273,12 @@ repositories:
   - main
   tags: []
   localUntracked: 0
-  localModified: 16
+  localModified: 0
   localMissing: 0
   localAdded: 0
   localStaged: 0
   localRemoved: 0
   stashCount: 0
-  lastSeen: &o4
-    dateTime: 2026-11-14T20:34:33.9181079
-    utcDateTime: 2026-11-14T20:34:33.9181079Z
-    localDateTime: 2026-11-14T21:34:33.9181079+01:00
-    date: 2026-11-14T00:00:00.0000000
-    day: 14
-    dayOfWeek: Saturday
-    dayOfYear: 318
-    hour: 20
-    millisecond: 918
-    microsecond: 107
-    nanosecond: 900
-    minute: 34
-    month: 11
-    offset: 00:00:00
-    totalOffsetMinutes: 0
-    second: 33
-    ticks: 639302852739181079
-    utcTicks: 639302852739181079
-    timeOfDay: 20:34:33.9181079
-    year: 2026
-  lastUpdated: *o4
+  lastSeen: *o0
+  lastUpdated: *o0
   remotes: []

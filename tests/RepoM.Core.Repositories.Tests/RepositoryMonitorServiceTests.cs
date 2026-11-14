@@ -3,12 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
 using FakeItEasy;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
@@ -29,6 +31,7 @@ public class RepositoryMonitorServiceTests : IDisposable
     private readonly RepositoryMonitoringStateService _monitoringState;
     private readonly IRepositorySnapshotStore _snapshotStore;
     private readonly RepositoryMonitorService _sut;
+    private readonly ILogger _logger = A.Fake<ILogger>();
 
     public RepositoryMonitorServiceTests()
     {
@@ -57,7 +60,7 @@ public class RepositoryMonitorServiceTests : IDisposable
             _monitoringState,
             _snapshotStore,
             new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)),
-            NullLogger.Instance);
+            _logger);
     }
 
     [Fact]
@@ -1121,8 +1124,11 @@ public class RepositoryMonitorServiceTests : IDisposable
         await act.Should().ThrowAsync<ArgumentNullException>();
     }
 
-    [Fact]
-    public async Task RefreshRepositoryAsync_ShouldReturnCachedRepo_WhenRecentlyUpdated()
+    [Theory]
+    [InlineData(@"c:\repos\cached")]
+    [InlineData(@"c:\repos\cached\")]
+    [InlineData("c:/repos/cached/")]
+    public async Task RefreshRepositoryAsync_ShouldReturnCachedRepo_WhenRecentlyUpdated(string path)
     {
         // Arrange â€” put a recently-updated repo in the store
         var repoInfo = new RepositoryInfo
@@ -1135,7 +1141,7 @@ public class RepositoryMonitorServiceTests : IDisposable
         _store.AddOrUpdate(repoInfo);
 
         // Act
-        var result = await _sut.RefreshRepositoryAsync(@"c:\repos\cached", CancellationToken.None);
+        var result = await _sut.RefreshRepositoryAsync(path, CancellationToken.None);
 
         // Assert â€” should return cached version without calling reader
         result.Should().BeSameAs(repoInfo);
@@ -1419,6 +1425,158 @@ public class RepositoryMonitorServiceTests : IDisposable
         // Assert
         Func<Task> act = () => scanTask;
         await act.Should().ThrowAsync<TaskCanceledException>();
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Refresh_ShouldShareBetweenHoverAndGeneralRefresh_WhenHoverIsCancelled(bool hoverFirst)
+    {
+        var repo = new RepositoryInfo { Path = @"c:\repos\shared", SafePath = "c:/repos/shared", Name = "shared" };
+        _store.AddOrUpdate(repo);
+        _monitoringState.SetMonitored(repo.SafePath, true);
+        var entered = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource<RepositoryInfo?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var joined = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        A.CallTo(_logger).Where(call => call.Method.Name == nameof(ILogger.Log)
+                && call.Arguments[2]!.ToString()!.Contains("joined", StringComparison.Ordinal))
+            .Invokes(() => joined.TrySetResult());
+        A.CallTo(() => _fileSystem.Path.Combine(repo.Path, ".git", "HEAD")).Returns(repo.Path + @"\.git\HEAD");
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._))
+            .ReturnsLazily(call =>
+            {
+                entered.TrySetResult(call.GetArgument<CancellationToken>(1));
+                return release.Task;
+            });
+        using var hoverCts = new CancellationTokenSource();
+
+        var first = hoverFirst
+            ? _sut.RefreshRepositoryAsync(repo.Path + @"\", hoverCts.Token)
+            : (Task)_sut.RefreshAllAsync();
+        var readerToken = await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var second = hoverFirst
+            ? _sut.RefreshAllAsync()
+            : _sut.RefreshRepositoryAsync(repo.Path + @"\", hoverCts.Token);
+        await joined.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        hoverCts.Cancel();
+        var hover = hoverFirst ? first : second;
+        var general = hoverFirst ? second : first;
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => hover.WaitAsync(TimeSpan.FromSeconds(5)));
+        readerToken.IsCancellationRequested.Should().BeFalse();
+        release.SetResult(repo);
+        await general.WaitAsync(TimeSpan.FromSeconds(5));
+
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+        _store.Lookup(repo.SafePath).Value.Should().BeSameAs(repo);
+    }
+
+    [Fact]
+    public async Task Refresh_ShouldDrainAbandonedReadBeforeRetrying()
+    {
+        var repo = new RepositoryInfo { Path = @"c:\repos\shared", SafePath = "c:/repos/shared", Name = "shared" };
+        var entered = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource<RepositoryInfo?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var calls = 0;
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._))
+            .ReturnsLazily(call =>
+            {
+                if (Interlocked.Increment(ref calls) == 1)
+                {
+                    entered.TrySetResult(call.GetArgument<CancellationToken>(1));
+                    return release.Task;
+                }
+
+                return Task.FromResult<RepositoryInfo?>(repo);
+            });
+        using var cts = new CancellationTokenSource();
+        var abandoned = _sut.RefreshRepositoryAsync(repo.Path, cts.Token);
+        var token = await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        cts.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => abandoned.WaitAsync(TimeSpan.FromSeconds(5)));
+        token.IsCancellationRequested.Should().BeTrue();
+
+        var retry = _sut.RefreshRepositoryAsync(@"C:/repos/shared/");
+        retry.IsCompleted.Should().BeFalse();
+        calls.Should().Be(1);
+        release.SetResult(repo);
+        (await retry.WaitAsync(TimeSpan.FromSeconds(5))).Should().BeSameAs(repo);
+        calls.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Refresh_ShouldReadDifferentRepositoriesConcurrently()
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource<RepositoryInfo?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var count = 0;
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._)).ReturnsLazily(() =>
+        {
+            if (Interlocked.Increment(ref count) == 2)
+            {
+                entered.TrySetResult();
+            }
+
+            return release.Task;
+        });
+
+        var first = _sut.RefreshRepositoryAsync(@"c:\repos\.github-first");
+        var second = _sut.RefreshRepositoryAsync(@"c:\repos\.github-second");
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        release.SetResult(null);
+        await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task Refresh_ShouldAllowRetryAfterFailure()
+    {
+        var repo = new RepositoryInfo { Path = @"c:\repos\retry", SafePath = "c:/repos/retry", Name = "retry" };
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._)).ReturnsNextFromSequence(
+            Task.FromException<RepositoryInfo?>(new InvalidOperationException("read failed")),
+            Task.FromResult<RepositoryInfo?>(repo));
+
+        (await _sut.RefreshRepositoryAsync(repo.Path)).Should().BeNull();
+        (await _sut.RefreshRepositoryAsync(repo.Path)).Should().BeSameAs(repo);
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._)).MustHaveHappenedTwiceExactly();
+    }
+
+    [Fact]
+    public async Task Refresh_ShouldShareConcurrentCallers()
+    {
+        var repo = new RepositoryInfo { Path = @"c:\repos\shared", SafePath = "c:/repos/shared", Name = "shared" };
+        var release = new TaskCompletionSource<RepositoryInfo?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var allJoined = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var joins = 0;
+        A.CallTo(_logger).Where(call => call.Method.Name == nameof(ILogger.Log)
+                && call.Arguments[2]!.ToString()!.Contains("joined", StringComparison.Ordinal))
+            .Invokes(() =>
+            {
+                if (Interlocked.Increment(ref joins) == 31)
+                {
+                    allJoined.TrySetResult();
+                }
+            });
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._)).Returns(release.Task);
+
+        var tasks = Enumerable.Range(0, 32)
+            .Select(i => Task.Run(() => _sut.RefreshRepositoryAsync(i % 2 == 0 ? repo.Path : @"C:/repos/shared/")))
+            .ToArray();
+        await allJoined.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        release.SetResult(repo);
+        var results = await Task.WhenAll(tasks).WaitAsync(TimeSpan.FromSeconds(5));
+
+        results.Should().OnlyContain(result => ReferenceEquals(result, repo));
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public async Task Refresh_ShouldNotStartWhenAlreadyCancelled()
+    {
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => _sut.RefreshRepositoryAsync(@"c:\repos\cancelled", cts.Token));
+
+        A.CallTo(() => _reader.ReadAsync(A<string>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
 
     public void Dispose()
