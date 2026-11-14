@@ -1,6 +1,7 @@
 namespace RepoM.App.Controls;
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,7 +33,7 @@ public partial class RepositoryList : UserControl
         ViewModel.StartContextMenuPrefetch(repository);
     }
 
-    // Hover delay before prefetching; TimeSpan.Zero (or less) disables hover prefetching.
+    // Zero starts immediately; a negative delay disables hover prefetching.
     internal TimeSpan MenuPrefetchHoverDelay => ViewModel.MenuPrefetchHoverDelay;
 
     internal void FocusList()
@@ -142,7 +143,10 @@ public partial class RepositoryList : UserControl
 
         try
         {
+            string repositoryPath = ViewModel.SelectedRepository?.Path ?? string.Empty;
+            var timer = Stopwatch.StartNew();
             var entries = await ViewModel.CreateContextMenuEntriesAsync(cts.Token).ConfigureAwait(true);
+            TimeSpan wait = timer.Elapsed;
             if (cts.IsCancellationRequested)
             {
                 return false;
@@ -156,7 +160,9 @@ public partial class RepositoryList : UserControl
             }
 
             ctxMenu.Items.Clear();
+            timer.Restart();
             PopulateMenuItems(ctxMenu.Items, entries);
+            ViewModel.LogMenuPresentation(repositoryPath, "root", wait, timer.Elapsed);
             return true;
         }
         catch (OperationCanceledException) when (cts.IsCancellationRequested)
@@ -209,15 +215,20 @@ public partial class RepositoryList : UserControl
 
         if (itemViewModel.HasSubItems)
         {
-            item.Items.Add(new Separator());
+            item.Items.Add(new AcrylicMenuItem { Header = "Loading...", IsEnabled = false });
+            string repositoryPath = ViewModel.SelectedRepository?.Path ?? string.Empty;
             item.SetSubMenuOpened(async (_, _) =>
             {
                 item.ClearSubMenuOpened();
                 try
                 {
+                    var timer = Stopwatch.StartNew();
                     var childEntries = await itemViewModel.LoadChildrenAsync().ConfigureAwait(true);
+                    TimeSpan wait = timer.Elapsed;
                     item.ClearItems();
+                    timer.Restart();
                     PopulateMenuItems(item.Items, childEntries);
+                    ViewModel.LogMenuPresentation(repositoryPath, itemViewModel.Header, wait, timer.Elapsed);
                 }
                 catch (Exception exception)
                 {

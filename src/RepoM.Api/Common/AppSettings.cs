@@ -68,10 +68,10 @@ public sealed class AppSettings
 
     /// <summary>
     /// Delay in milliseconds the mouse must hover over a repository before its context menu is prefetched
-    /// in the background. Set to 0 or a negative value to disable hover prefetching.
+    /// in the background. Set to 0 to start immediately or a negative value to disable hover prefetching.
     /// </summary>
     [ManualConfigured]
-    public int MenuPrefetchHoverDelayMilliseconds { get; set; } = 2000;
+    public int MenuPrefetchHoverDelayMilliseconds { get; set; } = 0;
 
     /// <summary>
     /// List of plugins.
@@ -84,7 +84,7 @@ public sealed class AppSettings
             AutoFetchMode = AutoFetchMode.Off,
             PruneOnFetch = false,
             ReposRootDirectories = new(),
-            MenuPrefetchHoverDelayMilliseconds = 2000,
+            MenuPrefetchHoverDelayMilliseconds = 0,
             Plugins = [],
             PreferredMenuSizes = new(),
         };

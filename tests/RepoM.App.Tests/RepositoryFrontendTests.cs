@@ -3,6 +3,7 @@ namespace RepoM.App.Tests;
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions.TestingHelpers;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Windows.Input;
 using AwesomeAssertions;
 using FakeItEasy;
 using Meziantou.Xunit;
@@ -57,12 +59,13 @@ public class RepositoryFrontendTests
         var monitoring = A.Fake<IRepositoryMonitoringService>();
         var quickFilters = A.Fake<IQuickFilterService>();
         A.CallTo(() => quickFilters.FindByQuery(A<IQuery>._)).Returns(null);
+        var menuFactory = A.Fake<IUserMenuActionMenuFactory>();
         var window = new MainWindow(RepositoryListViewModelTests.CreateMonitorService(), store, favorites, monitoring,
             A.Fake<IRepositoryMonitoringEvents>(), A.Fake<IRepositoryIgnoreStore>(), settings,
             A.Fake<ITranslationService>(), A.Fake<IAppDataPathProvider>(), new MockFileSystem(),
             new ActionExecutor(new SimpleInjector.Container(), NullLogger.Instance), CreateOrdering(), A.Fake<IThreadDispatcher>(),
             CreateFiltering(), quickFilters, [A.Fake<INamedQueryParser>()], A.Fake<IModuleManager>(),
-            NullLogger.Instance, A.Fake<IUserMenuActionMenuFactory>());
+            NullLogger.Instance, menuFactory);
         window.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
             Source = new Uri("/RepoM;component/i18n/en-us.xaml", UriKind.Relative),
@@ -91,6 +94,11 @@ public class RepositoryFrontendTests
             var repository = (RepositoryViewModel)list.Items[0];
             var row = (ListBoxItem)list.ItemContainerGenerator.ContainerFromIndex(0);
             var component = FindChild<RepositoryComponent>(row);
+            int menuCallsBeforeHover = Fake.GetCalls(menuFactory).Count(call => call.Method.Name == nameof(IUserMenuActionMenuFactory.CreateMenuAsync));
+            ((Border)component.Content).RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, 0) { RoutedEvent = Mouse.MouseEnterEvent });
+            await Task.Delay(400);
+            Fake.GetCalls(menuFactory).Count(call => call.Method.Name == nameof(IUserMenuActionMenuFactory.CreateMenuAsync))
+                .Should().BeGreaterThan(menuCallsBeforeHover);
             var title = (TextBlock)component.FindName("EntryName");
             title.Text.Should().Be("Real repository");
             var card = (Border)row.Template.FindName("card", row);

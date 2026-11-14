@@ -12,7 +12,7 @@ using RepoM.App.Themes;
 public partial class RepositoryComponent : UserControl
 {
     // Delay before the context menu is prefetched in the background while hovering a repository.
-    private static readonly TimeSpan _defaultHoverPrefetchDelay = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan _defaultHoverPrefetchDelay = TimeSpan.Zero;
     private readonly DispatcherTimer _hoverTimer;
     private RepositoryList? _ownerList;
     private readonly RowAnimationController _animations = new();
@@ -46,9 +46,15 @@ public partial class RepositoryComponent : UserControl
 
         _hoverTimer.Stop();
 
-        if (delay <= TimeSpan.Zero)
+        if (delay < TimeSpan.Zero)
         {
             // Prefetching disabled via configuration.
+            return;
+        }
+
+        if (delay == TimeSpan.Zero)
+        {
+            HoverTimer_Tick(this, EventArgs.Empty);
             return;
         }
 

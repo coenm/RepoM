@@ -1,6 +1,14 @@
 context:
 - type: evaluate-script@1
   content: |-
+    # func is_null(input)
+    #   ret input == null
+    # end
+
+    func get_filename(path)
+      ret path | string.split("\\") | array.last
+    end
+
     func remotes_contain_inner(remotes, url_part)
       urls = remotes | array.map "url"
       filtered = array.filter(urls, do 
@@ -32,15 +40,64 @@ context:
     end
 
     remote_name_origin = get_remote_origin_name();
-    is_work_repository = remotes_contain("My-Work");
-    
+    is_bdo_nl_repository = remotes_contain("tfs-bdonl");
+    is_bdo_tis_repository = is_bdo_nl_repository && file.file_exists(repository.linux_path + "/.azuredevops/Pipelines/gated.yml")
+    is_github_repository = remotes_contain("github.com");
+    is_integration_test_framework = remotes_contain("IntegrationServices.IntegrationTestFramework");
+    is_end_to_end_api_test_framework = remotes_contain("EndToEndApiTestFramework");
+
+    # wcf_client_repositories_remote_names = ["DataRotondeCore.AptIntegrations", "E-Accounting"];
+    # is_wcf_client_repository = array.contains(wcf_client_repositories_remote_names, remote_name_origin);
+
+
+- type: load-file@1
+  filename: '{{ env.REPOZ_CONFIG_PATH }}\{{ remote_name_origin }}\RepoM.env'
+  enabled: is_bdo_nl_repository
+
+- type: load-file@1
+  filename: '{{ env.REPOZ_CONFIG_PATH }}\BDO.env'
+  enabled: is_bdo_nl_repository
+
+- type: load-file@1
+  filename: '{{ env.REPOZ_CONFIG_PATH }}\{{ remote_name_origin }}\RepoMV2.yaml'
+  enabled: is_bdo_nl_repository
+
 tags:
+# - type: tags-file@1
+#   tags-file: '{{ env.REPOZ_CONFIG_PATH }}\TagsV2.yaml'
+#   when: is_bdo_nl_repository
+- tag: DSAI
+  when: 'repository_path_contains "/dev/bdo/dsai/"'
+- tag: wiki
+  when: 'repository_path_contains "/dev/bdo/dsai/Wiki/"'
+- tag: services
+  when: 'repository_path_contains "/dev/bdo/dsai/Services"'
+- tag: platform
+  when: 'repository_path_contains "/dev/bdo/dsai/Platform"'
+- tag: frontend
+  when: 'repository_path_contains "/dev/bdo/dsai/Frontend"'
 
-- tag: work
-  when: is_work_repository
 
-- tag: private
-  when: '!is_work_repository && repository_path_contains("Projects/Private")'
+- tag: AINet
+  when: 'repository_path_contains "Projects/Bdo/ds/AINet"'
+- tag: AICore
+  when: 'repository_path_contains "Projects/Bdo/ds/AICore"'
+- tag: AIProjects
+  when: 'repository_path_contains "Projects/Bdo/ds/AIProjects"'
 
+- tag: '1'
+  when: 'repository_path_contains "C:/Users/Munckhof CJJ/AppData/Roaming/RepoM"'
+- tag: config
+  when: 'repository_path_contains "C:/Users/Munckhof CJJ/AppData/Roaming/RepoM"'
+- tag: wiki
+  when: 'repository_path_contains("Wiki")'
+- tag: BDO
+  when: is_bdo_nl_repository
+- tag: TIS
+  when: is_bdo_tis_repository
+- tag: Test
+  when: 'is_integration_test_framework || is_end_to_end_api_test_framework'
 - tag: github
-  when: 'remotes_contain("github.com")'
+  when: 'repository_path_contains "Projects/Github"'
+- tag: Prive
+  when: '!is_bdo_nl_repository && ( repository_path_contains("Projects/Private") || repository_path_contains("Projects/Bdo-prive") )'

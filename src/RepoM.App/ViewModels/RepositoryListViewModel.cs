@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -83,7 +84,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
     public ICommand AddQuickFilterTagCommand { get; }
 
     // Configurable via app settings; how long the mouse must hover before the menu is prefetched.
-    public TimeSpan MenuPrefetchHoverDelay { get; set; } = TimeSpan.FromSeconds(2);
+    public TimeSpan MenuPrefetchHoverDelay { get; set; } = TimeSpan.Zero;
 
     internal Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> CreateContextMenuEntriesAsync(CancellationToken cancellationToken)
     {
@@ -99,12 +100,14 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
             {
                 Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> prefetched = _prefetchTask;
                 CancellationTokenSource prefetchCts = _prefetchCts;
+                _logger.LogInformation("Context menu prefetch hit for {RepositoryPath}; ready={Ready}", selectedRepository.Path, prefetched.IsCompletedSuccessfully);
                 ClearPrefetch();
                 return AwaitPrefetchAsync(prefetched, prefetchCts, selectedRepository, cancellationToken);
             }
         }
 
-        return BuildContextMenuEntriesAsync(selectedRepository, cancellationToken);
+        _logger.LogInformation("Context menu prefetch miss for {RepositoryPath}", selectedRepository.Path);
+        return Task.Run(() => BuildContextMenuEntriesAsync(selectedRepository, cancellationToken), cancellationToken);
     }
 
     // Takes ownership of the prefetch CTS so the caller's cancellation also stops the prefetch.
@@ -119,7 +122,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
         {
             try
             {
-                return await prefetched.ConfigureAwait(false);
+                return await prefetched.WaitAsync(cancellationToken).ConfigureAwait(false);
             }
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
@@ -127,7 +130,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
             }
         }
 
-        return await BuildContextMenuEntriesAsync(repository, cancellationToken).ConfigureAwait(false);
+        return await Task.Run(() => BuildContextMenuEntriesAsync(repository, cancellationToken), cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -151,54 +154,82 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
             var cts = new CancellationTokenSource();
             _prefetchCts = cts;
             _prefetchRepository = repository;
-            _prefetchTask = PrefetchAsync(repository, cts.Token);
+            CancellationToken token = cts.Token;
+            _logger.LogDebug("Context menu hover prefetch started for {RepositoryPath}", repository.Path);
+            _prefetchTask = Task.Run(() => BuildContextMenuEntriesAsync(repository, token), token);
+            _ = ObservePrefetchAsync(_prefetchTask, repository.Path);
         }
     }
 
-    // Failures propagate so the consumer can rebuild instead of showing an empty or stale menu.
-    private async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> PrefetchAsync(RepositoryViewModel repository, CancellationToken cancellationToken)
+    private async Task ObservePrefetchAsync(Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> task, string repositoryPath)
     {
-        IReadOnlyList<IRepositoryMenuEntryViewModel> entries = await BuildContextMenuEntriesAsync(repository, cancellationToken).ConfigureAwait(false);
-
-        // Also load submenus ahead of time so they open instantly too.
-        await PreloadSubMenusAsync(entries, cancellationToken).ConfigureAwait(false);
-
-        return entries;
-    }
-
-    private async Task PreloadSubMenusAsync(IReadOnlyList<IRepositoryMenuEntryViewModel> entries, CancellationToken cancellationToken)
-    {
-        foreach (IRepositoryMenuEntryViewModel entry in entries)
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (entry is RepositoryMenuItemViewModel { HasSubItems: true } item)
-            {
-                IReadOnlyList<IRepositoryMenuEntryViewModel> children = await item.LoadChildrenAsync().ConfigureAwait(false);
-                await PreloadSubMenusAsync(children, cancellationToken).ConfigureAwait(false);
-            }
+            await task.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (task.IsCanceled)
+        {
+            _logger.LogDebug("Context menu hover prefetch cancelled for {RepositoryPath}", repositoryPath);
+        }
+        catch (Exception exception)
+        {
+            // Observe abandoned hover tasks; the original task still faults so opening can retry.
+            _logger.LogWarning(exception, "Context menu hover prefetch failed for {RepositoryPath}", repositoryPath);
         }
     }
 
     private async Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> BuildContextMenuEntriesAsync(RepositoryViewModel selectedRepository, CancellationToken cancellationToken)
     {
-        selectedRepository.EnableMonitoring();
-
-        RepositoryInfo? updatedInfo = await _monitorService.RefreshRepositoryAsync(selectedRepository.Path, cancellationToken).ConfigureAwait(false);
-        IRepository repositoryForMenu = updatedInfo != null ? new RepositoryInfoAdapter(updatedInfo) : selectedRepository.Repository;
-
-        var entries = new List<IRepositoryMenuEntryViewModel>();
-        await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionMenuFactory.CreateMenuAsync(repositoryForMenu).WithCancellation(cancellationToken).ConfigureAwait(false))
+        var buildId = Guid.NewGuid();
+        var timer = Stopwatch.StartNew();
+        var stage = "monitoring";
+        var outcome = "failed";
+        try
         {
             cancellationToken.ThrowIfCancellationRequested();
-            IRepositoryMenuEntryViewModel? entry = CreateMenuEntry(action, selectedRepository);
-            if (entry != null)
-            {
-                entries.Add(entry);
-            }
-        }
+            selectedRepository.EnableMonitoring();
 
-        return entries;
+            stage = "git-refresh";
+            var refreshTimer = Stopwatch.StartNew();
+            RepositoryInfo? updatedInfo = await _monitorService.RefreshRepositoryAsync(selectedRepository.Path, cancellationToken).ConfigureAwait(false);
+            _logger.LogInformation("Context menu {MenuBuildId} Git refresh for {RepositoryPath}: {ElapsedMs:F1} ms; snapshotAvailable={SnapshotAvailable}",
+                buildId, selectedRepository.Path, refreshTimer.Elapsed.TotalMilliseconds, updatedInfo != null);
+            cancellationToken.ThrowIfCancellationRequested();
+            IRepository repositoryForMenu = updatedInfo != null ? new RepositoryInfoAdapter(updatedInfo) : selectedRepository.Repository;
+
+            stage = "menu-evaluation";
+            var evaluationTimer = Stopwatch.StartNew();
+            var itemTimer = Stopwatch.StartNew();
+            var entries = new List<IRepositoryMenuEntryViewModel>();
+            await foreach (UserInterfaceRepositoryActionBase action in _userMenuActionMenuFactory.CreateMenuAsync(repositoryForMenu).WithCancellation(cancellationToken).ConfigureAwait(false))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                _logger.LogDebug("Context menu {MenuBuildId} yielded {MenuItem} after {ElapsedMs:F1} ms",
+                    buildId, action is UserInterfaceRepositoryAction named ? named.Name : action.GetType().Name, itemTimer.Elapsed.TotalMilliseconds);
+                IRepositoryMenuEntryViewModel? entry = CreateMenuEntry(action, selectedRepository, buildId);
+                if (entry != null)
+                {
+                    entries.Add(entry);
+                }
+
+                itemTimer.Restart();
+            }
+
+            _logger.LogInformation("Context menu {MenuBuildId} evaluation for {RepositoryPath}: {ElapsedMs:F1} ms; entries={EntryCount}",
+                buildId, selectedRepository.Path, evaluationTimer.Elapsed.TotalMilliseconds, entries.Count);
+            outcome = "completed";
+            return entries;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            outcome = "cancelled";
+            throw;
+        }
+        finally
+        {
+            _logger.LogInformation("Context menu {MenuBuildId} build for {RepositoryPath}: {ElapsedMs:F1} ms; outcome={Outcome}; stage={Stage}",
+                buildId, selectedRepository.Path, timer.Elapsed.TotalMilliseconds, outcome, stage);
+        }
     }
 
     // Cancels and forgets any in-flight prefetch.
@@ -260,7 +291,13 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
         _logger.LogError(exception, "Could not invoke action on current repository.");
     }
 
-    private IRepositoryMenuEntryViewModel? CreateMenuEntry(UserInterfaceRepositoryActionBase action, RepositoryViewModel selectedRepository)
+    internal void LogMenuPresentation(string repositoryPath, string menu, TimeSpan wait, TimeSpan populate)
+    {
+        _logger.LogInformation("Context menu presentation for {RepositoryPath}, {Menu}: wait={WaitMs:F1} ms; UI population={PopulateMs:F1} ms",
+            repositoryPath, menu, wait.TotalMilliseconds, populate.TotalMilliseconds);
+    }
+
+    private IRepositoryMenuEntryViewModel? CreateMenuEntry(UserInterfaceRepositoryActionBase action, RepositoryViewModel selectedRepository, Guid buildId)
     {
         if (action is UserInterfaceSeparatorRepositoryAction)
         {
@@ -276,7 +313,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
             repositoryAction.Name,
             repositoryAction.CanExecute,
             CreateExecuteAction(repositoryAction, selectedRepository),
-            CreateSubMenuLoader(repositoryAction, selectedRepository));
+            CreateSubMenuLoader(repositoryAction, selectedRepository, buildId));
     }
 
     private Action? CreateExecuteAction(UserInterfaceRepositoryAction action, RepositoryViewModel selectedRepository)
@@ -291,14 +328,27 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
 
     private Func<Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>>? CreateSubMenuLoader(
         UserInterfaceRepositoryAction repositoryAction,
-        RepositoryViewModel selectedRepository)
+        RepositoryViewModel selectedRepository,
+        Guid buildId)
     {
         if (repositoryAction is DeferredSubActionsUserInterfaceRepositoryAction deferredRepositoryAction)
         {
             return async () =>
             {
-                UserInterfaceRepositoryActionBase[] deferredSubActions = await deferredRepositoryAction.GetAsync().ConfigureAwait(false);
-                return CreateMenuEntries(deferredSubActions, selectedRepository);
+                var timer = Stopwatch.StartNew();
+                var outcome = "failed";
+                try
+                {
+                    UserInterfaceRepositoryActionBase[] deferredSubActions = await deferredRepositoryAction.GetAsync().ConfigureAwait(false);
+                    var entries = CreateMenuEntries(deferredSubActions, selectedRepository, buildId);
+                    outcome = "completed";
+                    return entries;
+                }
+                finally
+                {
+                    _logger.LogInformation("Context menu {MenuBuildId} deferred submenu {MenuItem} for {RepositoryPath}: {ElapsedMs:F1} ms; outcome={Outcome}",
+                        buildId, repositoryAction.Name, selectedRepository.Path, timer.Elapsed.TotalMilliseconds, outcome);
+                }
             };
         }
 
@@ -307,17 +357,18 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
             return null;
         }
 
-        return () => Task.FromResult<IReadOnlyList<IRepositoryMenuEntryViewModel>>(CreateMenuEntries(repositoryAction.SubActions, selectedRepository));
+        return () => Task.FromResult<IReadOnlyList<IRepositoryMenuEntryViewModel>>(CreateMenuEntries(repositoryAction.SubActions, selectedRepository, buildId));
     }
 
     private List<IRepositoryMenuEntryViewModel> CreateMenuEntries(
         IEnumerable<UserInterfaceRepositoryActionBase> actions,
-        RepositoryViewModel selectedRepository)
+        RepositoryViewModel selectedRepository,
+        Guid buildId)
     {
         var entries = new List<IRepositoryMenuEntryViewModel>();
         foreach (UserInterfaceRepositoryActionBase action in actions)
         {
-            IRepositoryMenuEntryViewModel? entry = CreateMenuEntry(action, selectedRepository);
+            IRepositoryMenuEntryViewModel? entry = CreateMenuEntry(action, selectedRepository, buildId);
             if (entry != null)
             {
                 entries.Add(entry);
@@ -382,8 +433,7 @@ internal sealed class RepositoryMenuSeparatorViewModel : IRepositoryMenuEntryVie
 internal sealed class RepositoryMenuItemViewModel : IRepositoryMenuEntryViewModel
 {
     private readonly Action? _execute;
-    private readonly Func<Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>>? _loadChildrenAsync;
-    private Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>? _childrenTask;
+    private readonly Lazy<Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>>? _childrenTask;
 
     public RepositoryMenuItemViewModel(
         string header,
@@ -394,14 +444,18 @@ internal sealed class RepositoryMenuItemViewModel : IRepositoryMenuEntryViewMode
         Header = header ?? throw new ArgumentNullException(nameof(header));
         IsEnabled = isEnabled;
         _execute = execute;
-        _loadChildrenAsync = loadChildrenAsync;
+        if (loadChildrenAsync != null)
+        {
+            _childrenTask = new Lazy<Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>>(
+                () => Task.Run(loadChildrenAsync), LazyThreadSafetyMode.ExecutionAndPublication);
+        }
     }
 
     public string Header { get; }
 
     public bool IsEnabled { get; }
 
-    public bool HasSubItems => _loadChildrenAsync != null;
+    public bool HasSubItems => _childrenTask != null;
 
     public void Execute()
     {
@@ -411,6 +465,6 @@ internal sealed class RepositoryMenuItemViewModel : IRepositoryMenuEntryViewMode
     // Memoized so a prefetch and the subsequent real open share the same (single) load.
     public Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> LoadChildrenAsync()
     {
-        return _childrenTask ??= _loadChildrenAsync?.Invoke() ?? Task.FromResult<IReadOnlyList<IRepositoryMenuEntryViewModel>>([]);
+        return _childrenTask?.Value ?? Task.FromResult<IReadOnlyList<IRepositoryMenuEntryViewModel>>([]);
     }
 }

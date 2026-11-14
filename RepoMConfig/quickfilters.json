@@ -11,6 +11,19 @@
       "IsInverse": false,
       "Order": 0,
       "ToolTip": ""
+    },
+    {
+      "Id": "22e2c14f-a38a-43b0-9713-2112340420cb",
+      "Label": "BDO",
+      "Query": {
+        "type": "simpleterm",
+        "term": "tag",
+        "value": "BDO"
+      },
+      "IsActive": false,
+      "IsInverse": false,
+      "Order": 1,
+      "ToolTip": ""
     }
   ],
   "CombineMode": 0

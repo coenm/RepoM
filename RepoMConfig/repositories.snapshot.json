@@ -26,8 +26,7 @@ repositories:
   localBranches:
   - feature/support-worktrees
   - main
-  tags:
-  - github
+  tags: &o1 []
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -80,8 +79,7 @@ repositories:
   - origin/wip
   localBranches:
   - master
-  tags:
-  - github
+  tags: *o1
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -113,8 +111,7 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags:
-  - github
+  tags: *o1
   aheadBy: 0
   behindBy: 0
   localUntracked: 1
@@ -140,9 +137,9 @@ repositories:
   currentBranchHasUpstream: false
   currentBranchIsDetached: false
   currentBranchIsOnTag: false
-  branches: &o1 []
-  localBranches: *o1
-  tags: &o2 []
+  branches: &o2 []
+  localBranches: *o2
+  tags: &o3 []
   localUntracked: 21
   localModified: 20
   localMissing: 1145
@@ -168,7 +165,7 @@ repositories:
   - master
   localBranches:
   - master
-  tags: *o2
+  tags: *o3
   localUntracked: 22
   localModified: 7
   localMissing: 0
@@ -196,8 +193,7 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags:
-  - github
+  tags: *o1
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -229,7 +225,7 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags: *o2
+  tags: *o3
   aheadBy: 0
   behindBy: 0
   localUntracked: 16
@@ -264,8 +260,7 @@ repositories:
   localBranches:
   - main
   tags:
-  - private
-  - github
+  - Prive
   aheadBy: 0
   behindBy: 5
   localUntracked: 2
@@ -297,8 +292,7 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags:
-  - github
+  tags: *o1
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -330,7 +324,8 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -356,9 +351,9 @@ repositories:
   currentBranchHasUpstream: false
   currentBranchIsDetached: false
   currentBranchIsOnTag: false
-  branches: *o1
-  localBranches: *o1
-  tags: *o2
+  branches: *o2
+  localBranches: *o2
+  tags: *o3
   localUntracked: 15
   localModified: 0
   localMissing: 0
@@ -392,7 +387,8 @@ repositories:
   - feature/fixed
   - feature/init
   - main
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 5
@@ -418,9 +414,9 @@ repositories:
   currentBranchHasUpstream: false
   currentBranchIsDetached: false
   currentBranchIsOnTag: false
-  branches: *o1
-  localBranches: *o1
-  tags: *o2
+  branches: *o2
+  localBranches: *o2
+  tags: *o3
   localUntracked: 0
   localModified: 1
   localMissing: 0
@@ -446,7 +442,7 @@ repositories:
   - main
   localBranches:
   - main
-  tags: *o2
+  tags: *o3
   localUntracked: 0
   localModified: 1
   localMissing: 0
@@ -506,7 +502,9 @@ repositories:
   - dev/pes-ALZ-v3
   - feature/removeinnovationportal
   - main
-  tags: *o2
+  tags:
+  - AIProjects
+  - BDO
   aheadBy: 0
   behindBy: 6
   localUntracked: 0
@@ -585,7 +583,9 @@ repositories:
   - feature/257980-fiscal-properties
   - feature/remove-supplement-PSA
   - main
-  tags: *o2
+  tags:
+  - AIProjects
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -655,7 +655,9 @@ repositories:
   - feature/239039-PSA-manual-upload-excel
   - feature/remove-supplement-PSA
   - main
-  tags: *o2
+  tags:
+  - AIProjects
+  - BDO
   localUntracked: 0
   localModified: 1
   localMissing: 0
@@ -690,7 +692,9 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags: *o2
+  tags:
+  - AIProjects
+  - BDO
   aheadBy: 0
   behindBy: 2
   localUntracked: 0
@@ -723,7 +727,9 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags: *o2
+  tags:
+  - AIProjects
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -758,7 +764,8 @@ repositories:
   localBranches:
   - main
   - v2
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -804,7 +811,8 @@ repositories:
   - feature/remove-fallback-url
   - main
   - v2
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -839,7 +847,8 @@ repositories:
   localBranches:
   - feature/auth
   - main
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 1
   behindBy: 0
   localUntracked: 2
@@ -874,7 +883,8 @@ repositories:
   localBranches:
   - feature/auth
   - main
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 1
   behindBy: 0
   localUntracked: 5
@@ -900,9 +910,9 @@ repositories:
   currentBranchHasUpstream: false
   currentBranchIsDetached: false
   currentBranchIsOnTag: false
-  branches: *o1
-  localBranches: *o1
-  tags: *o2
+  branches: *o2
+  localBranches: *o2
+  tags: *o3
   localUntracked: 2
   localModified: 6
   localMissing: 0
@@ -963,7 +973,8 @@ repositories:
   - feature/249911-304
   - feature/252645-SepaBackend
   - feature/loket
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 14
   behindBy: 0
   localUntracked: 0
@@ -1035,7 +1046,8 @@ repositories:
   - feature/multiple-excel-files
   - feature/tests
   - poc/cosmos
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1105,7 +1117,8 @@ repositories:
   - coen/logging-issue
   - feature/multiple-excel-files
   - poc/cosmos
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1175,7 +1188,8 @@ repositories:
   - main
   - coen/logging-issue
   - poc/cosmos
-  tags: *o2
+  tags:
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 27
@@ -1268,7 +1282,9 @@ repositories:
   - main
   - v2
   - v2-functionapp
-  tags: *o2
+  tags:
+  - AICore
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1307,7 +1323,9 @@ repositories:
   - feature/179957-AzureWebApp
   - feature/195519-T-Deployment
   - main
-  tags: *o2
+  tags:
+  - AINet
+  - BDO
   aheadBy: 0
   behindBy: 2
   localUntracked: 0
@@ -1375,7 +1393,9 @@ repositories:
   - v2
   - feature/coen/v2-apim-webapp-broken
   - main
-  tags: *o2
+  tags:
+  - AICore
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1440,7 +1460,9 @@ repositories:
   - feature/service-bus
   - v2
   - main
-  tags: *o2
+  tags:
+  - AICore
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1503,7 +1525,9 @@ repositories:
   localBranches:
   - v2
   - main
-  tags: *o2
+  tags:
+  - AICore
+  - BDO
   aheadBy: 0
   behindBy: 7
   localUntracked: 0
@@ -1556,7 +1580,9 @@ repositories:
   - origin/tempSignalR
   localBranches:
   - main
-  tags: *o2
+  tags:
+  - AICore
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1592,7 +1618,9 @@ repositories:
   localBranches:
   - feature/cosmos-partials
   - main
-  tags: *o2
+  tags:
+  - AICore
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1624,7 +1652,7 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags: &o3 []
+  tags: []
   aheadBy: 0
   behindBy: 0
   localUntracked: 3
@@ -1657,7 +1685,8 @@ repositories:
   localBranches:
   - main
   tags:
-  - github
+  - 1
+  - config
   aheadBy: 0
   behindBy: 0
   localUntracked: 4
@@ -1715,7 +1744,10 @@ repositories:
   - origin/v2-wnt-poc
   localBranches:
   - main
-  tags: *o3
+  tags:
+  - DSAI
+  - frontend
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1747,7 +1779,10 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags: *o3
+  tags:
+  - DSAI
+  - frontend
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1805,7 +1840,10 @@ repositories:
   - origin/windowswebapp-20260617-win
   localBranches:
   - main
-  tags: *o3
+  tags:
+  - DSAI
+  - platform
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1843,7 +1881,10 @@ repositories:
   - origin/v2
   localBranches:
   - main
-  tags: *o3
+  tags:
+  - DSAI
+  - services
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1876,7 +1917,10 @@ repositories:
   - origin/v2
   localBranches:
   - main
-  tags: *o3
+  tags:
+  - DSAI
+  - services
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1912,7 +1956,10 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags: *o3
+  tags:
+  - DSAI
+  - services
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -1972,7 +2019,10 @@ repositories:
   - feature/cosmos-idempotent
   - main
   - v2
-  tags: *o3
+  tags:
+  - DSAI
+  - services
+  - BDO
   aheadBy: 0
   behindBy: 5
   localUntracked: 0
@@ -2010,7 +2060,10 @@ repositories:
   - origin/v2-redesign-faseringen
   localBranches:
   - main
-  tags: *o3
+  tags:
+  - DSAI
+  - services
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -2050,7 +2103,10 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags: *o3
+  tags:
+  - DSAI
+  - services
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -2086,7 +2142,10 @@ repositories:
   - origin/main
   localBranches:
   - main
-  tags: *o3
+  tags:
+  - DSAI
+  - services
+  - BDO
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -2101,3 +2160,125 @@ repositories:
   remotes:
   - key: origin
     url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AINet-OrchestrationService
+- path: G:\My Drive\MyGitConfig\
+  safePath: G:/My Drive/MyGitConfig
+  name: MyGitConfig
+  windowsPath: G:\My Drive\MyGitConfig
+  linuxPath: G:/My Drive/MyGitConfig
+  location: G:\My Drive
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags: *o1
+  aheadBy: 0
+  behindBy: 1
+  localUntracked: 2
+  localModified: 1
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/MyGitConfig.git
+- path: G:\My Drive\git\Synology\
+  safePath: G:/My Drive/git/Synology
+  name: Synology
+  windowsPath: G:\My Drive\git\Synology
+  linuxPath: G:/My Drive/git/Synology
+  location: G:\My Drive\git
+  isBare: false
+  currentBranch: master
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - master
+  - origin/docker
+  - origin/HEAD
+  - origin/master
+  localBranches:
+  - master
+  tags: *o1
+  aheadBy: 0
+  behindBy: 16
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/Synology.git
+- path: C:\dev\private\RepoM.worktrees\main feature_support-worktrees\
+  safePath: C:/dev/private/RepoM.worktrees/main feature_support-worktrees
+  name: main feature_support-worktrees
+  windowsPath: C:\dev\private\RepoM.worktrees\main feature_support-worktrees
+  linuxPath: C:/dev/private/RepoM.worktrees/main feature_support-worktrees
+  location: C:\dev\private\RepoM.worktrees
+  isBare: false
+  currentBranch: feature/support-worktrees
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/support-worktrees
+  - origin/HEAD
+  - main
+  - origin/agents/repom-mcp-server-plugin
+  - origin/feature/automation-poc
+  - origin/feature/azure-devops-upgrade
+  - origin/feature/improve-search-and-filtering
+  - origin/feature/sonar-fixes
+  - origin/main
+  - origin/release/v1.0
+  - origin/release/v1.1
+  localBranches:
+  - feature/support-worktrees
+  - main
+  tags: []
+  localUntracked: 0
+  localModified: 16
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: &o4
+    dateTime: 2026-11-14T20:34:33.9181079
+    utcDateTime: 2026-11-14T20:34:33.9181079Z
+    localDateTime: 2026-11-14T21:34:33.9181079+01:00
+    date: 2026-11-14T00:00:00.0000000
+    day: 14
+    dayOfWeek: Saturday
+    dayOfYear: 318
+    hour: 20
+    millisecond: 918
+    microsecond: 107
+    nanosecond: 900
+    minute: 34
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 33
+    ticks: 639302852739181079
+    utcTicks: 639302852739181079
+    timeOfDay: 20:34:33.9181079
+    year: 2026
+  lastUpdated: *o4
+  remotes: []

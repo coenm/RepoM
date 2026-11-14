@@ -28,6 +28,35 @@ finishes active row transitions and disables the main-window fade-in.
 
 Run `dotnet run --project src\RepoM.App` for the regular application.
 
+#### Context-menu loading and timings
+
+Hover now starts preparing the root menu immediately by default. Set
+`MenuPrefetchHoverDelayMilliseconds` to `0` for immediate prefetch, a positive value
+for a delay, or a negative value to disable prefetch. Previously `0` disabled it;
+use `-1` to preserve that behavior. Existing explicit positive delays remain respected.
+
+The root becomes available without waiting for deferred submenus. Deferred submenus
+load only when opened, using their existing captured Scriban scopes, and show
+`Loading...` while pending. Concurrent opens share one task (including failures).
+Non-deferred menus retain their original evaluation order during root generation.
+Git reads and menu evaluation run off the UI thread.
+
+Search the configured Serilog file for `Context menu`. Information-level entries include:
+
+- `prefetch hit/miss` and `ready`: whether hover work was reused and already complete.
+- `Git refresh`: elapsed time spent obtaining a repository snapshot.
+- `evaluation` and `build`: root-menu evaluation and total build time, with a `MenuBuildId`.
+- `deferred submenu`: submenu name, elapsed time and outcome, linked to that build ID.
+- `presentation`: the user's wait for data and UI item-population time, separately.
+
+At Debug level, `yielded` records the interval until each root item is produced.
+The first interval includes configuration loading and root-context scripts; subsequent
+intervals can include skipped actions and whole non-deferred folders. They are not
+individual script timings. UI population does not include the subsequent rendered frame.
+Root, submenu and presentation times can overlap and should not be summed.
+Logs include repository paths and menu labels, but not script bodies or variable values.
+With the checked-in logging configuration, files are written under `%APPDATA%\RepoM\Logs`.
+
 ### Worktree UI preview
 
 Run `dotnet run --project src\RepoM.App -- --worktree-preview` from the repository root

@@ -13,7 +13,7 @@ This is the default configuration.
   "PruneOnFetch": false,
   "PreferredMenuSizes": {},
   "ReposRootDirectories": [],
-  "MenuPrefetchHoverDelayMilliseconds": 2000,
+  "MenuPrefetchHoverDelayMilliseconds": 0,
   "Plugins": []
 }
 ```

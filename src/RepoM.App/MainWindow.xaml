@@ -68,8 +68,6 @@
 
 				<DockPanel x:Name="dockMain"
 						   Focusable="False">
-                    <TextBlock DockPanel.Dock="Top" Text="RepoM" FontSize="24" FontWeight="SemiBold"
-                               Foreground="{DynamicResource PreviewForeground}" Margin="0,0,0,12" />
 					<Grid
 						Focusable="False"
 						DockPanel.Dock="Top">
