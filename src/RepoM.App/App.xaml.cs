@@ -26,6 +26,7 @@ using RepoM.Api.IO;
 /// </summary>
 public partial class App : Application
 {
+    private const string WORKTREE_PREVIEW_ARGUMENT = "--worktree-preview";
     private static Mutex? _mutex;
     private TaskbarIcon? _notifyIcon;
     private ModuleService? _moduleService;
@@ -38,9 +39,9 @@ public partial class App : Application
 #endif
 
     [STAThread]
-    public static void Main()
+    public static void Main(string[] args)
     {
-        if (IsAlreadyRunning())
+        if (!Array.Exists(args, arg => arg == WORKTREE_PREVIEW_ARGUMENT) && IsAlreadyRunning())
         {
             return;
         }
@@ -61,6 +62,15 @@ public partial class App : Application
         FrameworkElement.LanguageProperty.OverrideMetadata(
             typeof(FrameworkElement),
             new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
+
+        if (Array.Exists(e.Args, arg => arg == WORKTREE_PREVIEW_ARGUMENT))
+        {
+            Resources.MergedDictionaries.Add(ResourceDictionaryTranslationService.ResourceDictionary);
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            MainWindow = new WorktreePreviewWindow();
+            MainWindow.Show();
+            return;
+        }
 
         Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
         _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;

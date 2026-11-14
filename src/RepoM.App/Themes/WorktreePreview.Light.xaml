@@ -1,0 +1,31 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <SolidColorBrush x:Key="PreviewBackground" Color="#F3F5F8" />
+    <SolidColorBrush x:Key="PreviewForeground" Color="#202B36" />
+    <SolidColorBrush x:Key="PreviewMutedForeground" Color="#586573" />
+    <SolidColorBrush x:Key="PreviewSecondaryForeground" Color="#4C5C6B" />
+    <SolidColorBrush x:Key="PreviewIconForeground" Color="#576573" />
+    <SolidColorBrush x:Key="PreviewAccent" Color="#00649C" />
+    <SolidColorBrush x:Key="PreviewPrimarySurface" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="PreviewWorktreeSurface" Color="#E9EFF4" />
+    <SolidColorBrush x:Key="PreviewWorktreeTitle" Color="#263A49" />
+    <SolidColorBrush x:Key="PreviewHoverSurface" Color="#E1E7ED" />
+    <SolidColorBrush x:Key="PreviewSelectedSurface" Color="#D1DCE6" />
+    <SolidColorBrush x:Key="PreviewFocusedSurface" Color="#C2D0DC" />
+    <SolidColorBrush x:Key="PreviewHierarchy" Color="#6F98AE" />
+    <SolidColorBrush x:Key="PreviewBadge" Color="#1400649C" />
+    <SolidColorBrush x:Key="PreviewBadgeForeground" Color="#41576A" />
+    <SolidColorBrush x:Key="PreviewTagBackground" Color="#10000000" />
+    <SolidColorBrush x:Key="PreviewTagForeground" Color="#9F3244" />
+    <SolidColorBrush x:Key="PreviewTagHoverBackground" Color="#209F3244" />
+    <SolidColorBrush x:Key="PreviewTagHoverForeground" Color="#722236" />
+    <SolidColorBrush x:Key="PreviewIconHover" Color="#10000000" />
+    <SolidColorBrush x:Key="PreviewIconFocus" Color="#1C000000" />
+    <SolidColorBrush x:Key="PreviewIconFocusForeground" Color="#132638" />
+    <SolidColorBrush x:Key="PreviewFavorite" Color="#916300" />
+    <SolidColorBrush x:Key="PreviewMenuBackground" Color="#F5FAFBFC" />
+    <SolidColorBrush x:Key="PreviewMenuBorder" Color="#B9C5D1" />
+</ResourceDictionary>

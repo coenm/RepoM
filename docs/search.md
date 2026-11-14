@@ -9,6 +9,60 @@ The search box is good for ad-hoc filtering. Quick filters are useful when you w
 
 ## Search box
 
+### Worktree UI preview
+
+Run `dotnet run --project src\RepoM.App -- --worktree-preview` from the repository root
+to open the isolated worktree UI prototype. It uses dummy data only: repository discovery,
+Git actions, plugins and persisted settings are not started or changed.
+
+The theme selector offers **Dark**, **Light** and **Follow Windows**. Dark is the initial
+preview theme. Follow Windows uses the Windows **app** mode and updates when it changes,
+without restarting. An unset Windows preference defaults to light; read errors are shown
+in the preview and leave its current theme intact. Themes apply to rows, tags, controls
+and every context-menu level. An open context menu closes on a theme change so its acrylic
+frames are refreshed when reopened. Filtering, favorites, selection and display modes
+are preserved. The choice lasts only for this preview session and does not affect the
+regular RepoM interface or Windows settings.
+
+The arrow beside a primary repository cycles through three views:
+
+1. Minimal: only the name and favorite star, with branch, status, tags and worktrees hidden.
+   Padding, margins and title size stay unchanged so the title does not shift when switching views.
+2. Extended: details and tags visible, worktrees hidden.
+3. Extended with worktrees: details and child worktrees visible.
+
+**Animations** toggles a short (180 ms) eased height transition when using an item's arrow.
+Newly revealed worktrees expand and fade in; text is not scaled. Animations are enabled
+by default. Turning them off, filtering or resizing immediately finishes any transition.
+Initial loading and scrolling do not animate, and recycled rows retain no animation state.
+The toggle is session-only for now; `EnableAnimations` is the preview setting intended
+to be connected to persisted configuration when worktree support is integrated.
+
+Worktrees have their own arrow with two views (minimal and extended), starting extended.
+Repositories without worktrees also have two views. The arrow's direction indicates the
+current view and its tooltip describes the next view. Choices are kept for the preview session.
+Selection and keyboard focus use neutral background highlights instead of outlines;
+the blue left accent remains reserved for the worktree hierarchy.
+Worktrees remain indented and have a connecting accent line in either view. Favorites can be
+toggled for the current preview session. Search matches names, branches, paths and tags
+(plain text, not the configured query parser). Try `login`: the matching worktree
+and its primary repository stay visible, even if the family was collapsed.
+Unmatched siblings are hidden. While filtering, matching entries and their parents show
+details and view switching is disabled; clearing the search restores each entry's chosen view.
+
+Tags use RepoM's rounded, pink monospace chips, with sample labels on both primary
+repositories and worktrees. Clicking a tag filters the preview by that text.
+
+Right-click a row (or use the keyboard context-menu key) to see an acrylic context menu
+with editor, terminal, Explorer and Git actions, including a checkout submenu.
+All submenu levels use the same background and thin, muted border as the root context menu,
+without the theme's outer shadow gutter. This flat popup treatment is enabled only in the preview.
+External actions only display a demo notification; they do not start programs or run Git.
+The menu's favorite toggle and navigation to the primary repository or another worktree
+work within the preview. Navigating clears the search and expands the target family.
+
+### Normal repository search
+
 By default, the search box uses the currently selected query parser.
 
 The default parser is intentionally simple and is mainly suited for free-text matching on repository names and tags. If you need field-based queries such as `tag:work` or `is:favorite`, select a more capable parser such as the Lucene query parser.

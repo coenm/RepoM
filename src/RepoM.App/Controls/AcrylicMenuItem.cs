@@ -133,6 +133,22 @@ public class AcrylicMenuItem : MenuItem
 
         DependencyObject? parent = container;
         var borderIndex = 0;
+        ItemsControl? owner = this;
+        while (owner is MenuItem menuItem)
+        {
+            owner = ItemsControl.ItemsControlFromItemContainer(menuItem);
+        }
+
+        if (owner is AcrylicContextMenu { UseFlatPopupStyle: true } acrylicMenu)
+        {
+            acrylicMenu.ApplyFlatPopupStyle(container);
+            AcrylicHelper.EnableBlur(container);
+            return;
+        }
+
+        var background = owner is ContextMenu contextMenu
+            ? contextMenu.Background
+            : _solidColorBrush;
 
         while (parent != null)
         {
@@ -140,7 +156,7 @@ public class AcrylicMenuItem : MenuItem
             {
                 // only put color on the first border (transparent colors will add up otherwise)
                 b.Background = borderIndex == 0
-                    ? _solidColorBrush
+                    ? background
                     : Brushes.Transparent;
 
                 borderIndex++;

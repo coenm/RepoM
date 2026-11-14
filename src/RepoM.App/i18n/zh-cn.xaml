@@ -1,6 +1,37 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <system:String x:Key="WorktreePreviewTitle">RepoM - Worktree 预览</system:String>
+    <system:String x:Key="WorktreePreviewNotice">仅使用示例数据，不执行 Git 操作或更改设置。</system:String>
+    <system:String x:Key="WorktreePreviewTheme">预览主题</system:String>
+    <system:String x:Key="WorktreePreviewAnimations">动画</system:String>
+    <system:String x:Key="WorktreePreviewAnimationsHint">为条目大小变化和工作树显示添加动画。仅适用于本次预览，以后将作为配置选项。</system:String>
+    <system:String x:Key="WorktreePreviewThemeDark">深色</system:String>
+    <system:String x:Key="WorktreePreviewThemeLight">浅色</system:String>
+    <system:String x:Key="WorktreePreviewThemeSystem">跟随 Windows</system:String>
+    <system:String x:Key="WorktreePreviewThemeError">无法读取 Windows 应用主题。当前主题保持不变。{0}</system:String>
+    <system:String x:Key="WorktreePreviewSearch">搜索名称、分支、路径或标签</system:String>
+    <system:String x:Key="WorktreePreviewTagHint">按此标签筛选</system:String>
+    <system:String x:Key="WorktreePreviewMenuHint">右键单击仓库或工作树以打开预览菜单。单击标签进行筛选。</system:String>
+    <system:String x:Key="WorktreePreviewEditor">在 Visual Studio Code 中打开</system:String>
+    <system:String x:Key="WorktreePreviewTerminal">在此处打开终端</system:String>
+    <system:String x:Key="WorktreePreviewExplorer">在资源管理器中打开</system:String>
+    <system:String x:Key="WorktreePreviewGit">Git</system:String>
+    <system:String x:Key="WorktreePreviewGoToPrimary">转到主仓库</system:String>
+    <system:String x:Key="WorktreePreviewOtherWorktrees">工作树</system:String>
+    <system:String x:Key="WorktreePreviewBranchInUse">{0}（正在使用：{1}）</system:String>
+    <system:String x:Key="WorktreePreviewMenuNotice">仅预览，不执行外部操作</system:String>
+    <system:String x:Key="WorktreePreviewActionFeedback">演示：{0} - {1}。未执行任何操作。</system:String>
+    <system:String x:Key="WorktreePreviewClear">清除搜索</system:String>
+    <system:String x:Key="WorktreePreviewToggle">切换视图：精简、详细、详细和工作树。没有工作树的条目只有两种视图。</system:String>
+    <system:String x:Key="WorktreePreviewShowDetails">显示详情</system:String>
+    <system:String x:Key="WorktreePreviewShowWorktrees">显示详情和工作树</system:String>
+    <system:String x:Key="WorktreePreviewShowMinimal">仅显示名称和收藏</system:String>
+    <system:String x:Key="WorktreePreviewFilterDisplay">搜索结果保持展开。清除搜索以恢复所选视图。</system:String>
+    <system:String x:Key="WorktreePreviewContext">主仓库上下文</system:String>
+    <system:String x:Key="WorktreePreviewFavorite">切换收藏（仅预览）</system:String>
+    <system:String x:Key="WorktreePreviewEmpty">没有匹配的仓库或工作树。</system:String>
+    <system:String x:Key="WorktreePreviewFilterHint">试试搜索 "login"：主仓库仍然可见。清除搜索以恢复所选视图。</system:String>
     <system:String x:Key="Search">搜索</system:String>
     <system:String x:Key="SearchWin">🔍 搜索</system:String>
     <system:String x:Key="EmptyHint" xml:space="preserve">还没有任何仓库记录😐

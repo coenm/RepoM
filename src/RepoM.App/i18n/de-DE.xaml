@@ -1,6 +1,37 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <system:String x:Key="WorktreePreviewTitle">RepoM - Worktree-Vorschau</system:String>
+    <system:String x:Key="WorktreePreviewNotice">Nur Beispieldaten. Keine Git-Aktionen oder Änderungen an Einstellungen.</system:String>
+    <system:String x:Key="WorktreePreviewTheme">Vorschaudesign</system:String>
+    <system:String x:Key="WorktreePreviewAnimations">Animationen</system:String>
+    <system:String x:Key="WorktreePreviewAnimationsHint">Größenänderungen und das Einblenden von Worktrees animieren. Nur für diese Vorschau; später als Konfigurationsoption vorgesehen.</system:String>
+    <system:String x:Key="WorktreePreviewThemeDark">Dunkel</system:String>
+    <system:String x:Key="WorktreePreviewThemeLight">Hell</system:String>
+    <system:String x:Key="WorktreePreviewThemeSystem">Wie Windows</system:String>
+    <system:String x:Key="WorktreePreviewThemeError">Das Windows-App-Design konnte nicht gelesen werden. Das aktuelle Design bleibt unverändert. {0}</system:String>
+    <system:String x:Key="WorktreePreviewSearch">Name, Branch, Pfad oder Tag suchen</system:String>
+    <system:String x:Key="WorktreePreviewTagHint">Nach diesem Tag filtern</system:String>
+    <system:String x:Key="WorktreePreviewMenuHint">Rechtsklick auf ein Repository oder einen Worktree öffnet das Vorschaumenü. Tags filtern per Klick.</system:String>
+    <system:String x:Key="WorktreePreviewEditor">In Visual Studio Code öffnen</system:String>
+    <system:String x:Key="WorktreePreviewTerminal">Terminal hier öffnen</system:String>
+    <system:String x:Key="WorktreePreviewExplorer">Im Explorer öffnen</system:String>
+    <system:String x:Key="WorktreePreviewGit">Git</system:String>
+    <system:String x:Key="WorktreePreviewGoToPrimary">Zum Hauptrepository</system:String>
+    <system:String x:Key="WorktreePreviewOtherWorktrees">Worktrees</system:String>
+    <system:String x:Key="WorktreePreviewBranchInUse">{0} (in Verwendung: {1})</system:String>
+    <system:String x:Key="WorktreePreviewMenuNotice">Nur Vorschau - keine externen Aktionen</system:String>
+    <system:String x:Key="WorktreePreviewActionFeedback">Demo: {0} - {1}. Es wurde keine Aktion ausgeführt.</system:String>
+    <system:String x:Key="WorktreePreviewClear">Suche löschen</system:String>
+    <system:String x:Key="WorktreePreviewToggle">Ansicht wechseln: minimal, Details, Details mit Worktrees. Einträge ohne Worktrees haben zwei Ansichten.</system:String>
+    <system:String x:Key="WorktreePreviewShowDetails">Details anzeigen</system:String>
+    <system:String x:Key="WorktreePreviewShowWorktrees">Details und Worktrees anzeigen</system:String>
+    <system:String x:Key="WorktreePreviewShowMinimal">Nur Name und Favorit anzeigen</system:String>
+    <system:String x:Key="WorktreePreviewFilterDisplay">Suchergebnisse bleiben ausgeklappt. Leeren Sie die Suche, um Ihre Ansichten wiederherzustellen.</system:String>
+    <system:String x:Key="WorktreePreviewContext">Hauptrepository als Kontext</system:String>
+    <system:String x:Key="WorktreePreviewFavorite">Favorit umschalten (nur Vorschau)</system:String>
+    <system:String x:Key="WorktreePreviewEmpty">Keine passenden Repositories oder Worktrees.</system:String>
+    <system:String x:Key="WorktreePreviewFilterHint">Suchen Sie nach "login": Das Hauptrepository bleibt sichtbar. Leeren Sie die Suche, um den vorherigen Zustand wiederherzustellen.</system:String>
     <system:String x:Key="Search">Suche</system:String>
     <system:String x:Key="SearchWin">🔍 Suche</system:String>
 	<system:String x:Key="EmptyHint" xml:space="preserve">Hier gibt es noch keine Repositories 😐
