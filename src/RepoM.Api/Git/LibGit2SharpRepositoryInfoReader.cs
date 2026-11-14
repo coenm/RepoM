@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using LibGit2Sharp;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
+using CliCommandException = RepoM.Api.Git.ProcessExecution.GitCommandException;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Reading;
 
@@ -19,11 +21,13 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
 {
     private readonly IRepositoryTagsFactory _resolver;
     private readonly ILogger _logger;
+    private readonly IGitCommander _gitCommander;
 
-    public LibGit2SharpRepositoryInfoReader(IRepositoryTagsFactory resolver, ILogger logger)
+    public LibGit2SharpRepositoryInfoReader(IRepositoryTagsFactory resolver, IGitCommander gitCommander, ILogger logger)
     {
         _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _gitCommander = gitCommander ?? throw new ArgumentNullException(nameof(gitCommander));
     }
 
     public async Task<RepositoryInfo?> ReadAsync(string path, CancellationToken ct = default)
@@ -91,7 +95,7 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
             try
             {
                 ct.ThrowIfCancellationRequested();
-                info = ReadInternal(repoPath, readId, path, currentTry, ct);
+                info = await ReadInternalAsync(repoPath, readId, path, currentTry, ct).ConfigureAwait(false);
             }
             catch (LockedFileException e)
             {
@@ -129,26 +133,36 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
         return info;
     }
 
-    private RepositoryInfo? ReadInternal(string repoPath, Guid readId, string path, int attempt, CancellationToken ct)
+    private async Task<RepositoryInfo?> ReadInternalAsync(string repoPath, Guid readId, string path, int attempt, CancellationToken ct)
     {
         try
         {
             using var repo = ReadStage(() => new LibGit2Sharp.Repository(repoPath), readId, path, "open", attempt, ct);
             ct.ThrowIfCancellationRequested();
 
-            RepositoryStatus? status = null;
+            WorkingTreeStatus? status = null;
             var workingDirectory = new DirectoryInfo(repoPath);
 
             if (!repo.Info.IsBare)
             {
-                status = ReadStage(() => repo.RetrieveStatus(new StatusOptions
-                {
-                    IncludeIgnored = false,
-                    DetectRenamesInIndex = false,
-                    DetectRenamesInWorkDir = false,
-                }), readId, path, "status", attempt, ct);
-                ct.ThrowIfCancellationRequested();
                 workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
+                var statusTimer = Stopwatch.StartNew();
+                var statusOutcome = "failed";
+                try
+                {
+                    var output = await _gitCommander.CommandAsync(workingDirectory.FullName, ct,
+                        "status", "--porcelain=v2", "--branch", "--ahead-behind", "-z", "--untracked-files=all", "--ignored=no",
+                        "--no-renames", "--ignore-submodules=none").ConfigureAwait(false);
+                    status = WorkingTreeStatus.Parse(output, ct);
+                    statusOutcome = "completed";
+                }
+                finally
+                {
+                    LogReadStage(readId, path, "status", attempt, statusTimer,
+                        ct.IsCancellationRequested ? "cancelled" : statusOutcome);
+                }
+
+                ct.ThrowIfCancellationRequested();
             }
 
             if (string.IsNullOrWhiteSpace(workingDirectory.Parent?.FullName))
@@ -157,7 +171,9 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
                 return null;
             }
 
-            HeadDetails headDetails = ReadStage(() => GetHeadDetails(repo), readId, path, "head", attempt, ct);
+            HeadDetails headDetails = status is { BranchName: not "(detached)" } headStatus
+                ? new HeadDetails { Name = headStatus.BranchName, IsDetached = false, IsOnTag = false }
+                : ReadStage(() => GetHeadDetails(repo, status), readId, path, "head", attempt, ct);
 
             var (allBranchNames, localBranchNames) = ReadStage(() =>
             {
@@ -188,6 +204,11 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
             // Leave lock retries (and their cancellation/delay) to ReadWithRetries.
             throw;
         }
+        catch (CliCommandException)
+        {
+            // Do not retry a failed CLI invocation or report an empty/clean status.
+            throw;
+        }
         catch (Exception e)
         {
             _logger.LogError(e, "Could not read (LibGit2Sharp) repo in {Path}.", repoPath);
@@ -195,27 +216,10 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
         }
     }
 
-    private static RepositoryInfo ReadMetadata(LibGit2Sharp.Repository repo, string repoPath, RepositoryStatus? status,
+    private static RepositoryInfo ReadMetadata(LibGit2Sharp.Repository repo, string repoPath, WorkingTreeStatus? status,
         DirectoryInfo workingDirectory, HeadDetails headDetails, string[] allBranchNames, string[] localBranchNames, CancellationToken ct)
     {
         var fullPath = workingDirectory.FullName;
-        int? localUntracked = null;
-        int? localModified = null;
-        int? localMissing = null;
-        int? localAdded = null;
-        int? localStaged = null;
-        int? localRemoved = null;
-
-        if (status is not null)
-        {
-            localUntracked = status.Untracked.Count();
-            localModified = status.Modified.Count();
-            localMissing = status.Missing.Count();
-            localAdded = status.Added.Count();
-            localStaged = status.Staged.Count();
-            localRemoved = status.Removed.Count();
-        }
-
         var info = new RepositoryInfo
         {
             Path = fullPath,
@@ -229,17 +233,19 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
             LocalBranches = localBranchNames,
             AllBranchesReader = () => ReadAllBranches(repoPath),
             CurrentBranch = headDetails.Name,
-            CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
+            CurrentBranchHasUpstream = status is { } branchStatus
+                ? branchStatus.Upstream != null
+                : !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
             CurrentBranchIsDetached = headDetails.IsDetached,
             CurrentBranchIsOnTag = headDetails.IsOnTag,
-            AheadBy = repo.Head.TrackingDetails?.AheadBy,
-            BehindBy = repo.Head.TrackingDetails?.BehindBy,
-            LocalUntracked = localUntracked,
-            LocalModified = localModified,
-            LocalMissing = localMissing,
-            LocalAdded = localAdded,
-            LocalStaged = localStaged,
-            LocalRemoved = localRemoved,
+            AheadBy = status is { } aheadStatus ? aheadStatus.AheadBy : repo.Head.TrackingDetails?.AheadBy,
+            BehindBy = status is { } behindStatus ? behindStatus.BehindBy : repo.Head.TrackingDetails?.BehindBy,
+            LocalUntracked = status?.Untracked,
+            LocalModified = status?.Modified,
+            LocalMissing = status?.Missing,
+            LocalAdded = status?.Added,
+            LocalStaged = status?.Staged,
+            LocalRemoved = status?.Removed,
             StashCount = repo.Stashes?.Count() ?? 0,
             Tags = [],
         };
@@ -278,8 +284,141 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
     private void LogReadStage(Guid readId, string path, string stage, int attempt, Stopwatch timer, string outcome)
     {
         _logger.LogInformation(
-            "Repository read {ReadId} for {Path}: stage={Stage}; attempt={Attempt}; elapsed={ElapsedMs:F1} ms; outcome={Outcome}",
-            readId, path, stage, attempt, timer.Elapsed.TotalMilliseconds, outcome);
+            "Repository read {ReadId} for {Path}: stage={Stage}; attempt={Attempt}; elapsed={ElapsedMs:F1} ms; outcome={Outcome}; backend={Backend}",
+            readId, path, stage, attempt, timer.Elapsed.TotalMilliseconds, outcome,
+            stage == "status" ? "git-cli" : stage is "discover" or "open" or "head" or "branches" or "metadata" ? "libgit2sharp" : "repom");
+    }
+
+    private readonly record struct WorkingTreeStatus(int Untracked, int Modified, int Missing, int Added, int Staged, int Removed)
+    {
+        public string BranchName { get; init; } = string.Empty;
+
+        public string CommitId { get; init; } = string.Empty;
+
+        public string? Upstream { get; init; }
+
+        public int? AheadBy { get; init; }
+
+        public int? BehindBy { get; init; }
+
+        public static WorkingTreeStatus Parse(string output, CancellationToken ct)
+        {
+            var counts = new WorkingTreeStatus();
+            string? branch = null;
+            string? oid = null;
+            string? upstream = null;
+            int? ahead = null;
+            int? behind = null;
+            var remaining = output.AsSpan();
+            while (!remaining.IsEmpty)
+            {
+                ct.ThrowIfCancellationRequested();
+                var end = remaining.IndexOf('\0');
+                if (end < 3 || remaining[1] != ' ')
+                {
+                    throw new CliCommandException("Invalid NUL-delimited Git porcelain v2 status output.");
+                }
+
+                var record = remaining[..end];
+                remaining = remaining[(end + 1)..];
+                if (record[0] == '#')
+                {
+                    if (record.StartsWith("# branch.head "))
+                    {
+                        if (branch != null)
+                        {
+                            throw new CliCommandException("Duplicate Git branch header.");
+                        }
+
+                        branch = record[14..].ToString();
+                    }
+                    else if (record.StartsWith("# branch.oid "))
+                    {
+                        if (oid != null)
+                        {
+                            throw new CliCommandException("Duplicate Git commit header.");
+                        }
+
+                        oid = record[13..].ToString();
+                    }
+                    else if (record.StartsWith("# branch.upstream "))
+                    {
+                        if (upstream != null)
+                        {
+                            throw new CliCommandException("Duplicate Git upstream header.");
+                        }
+
+                        upstream = record[18..].ToString();
+                        if (upstream.Length == 0)
+                        {
+                            throw new CliCommandException("Empty Git upstream header.");
+                        }
+                    }
+                    else if (record.StartsWith("# branch.ab "))
+                    {
+                        var values = record[12..];
+                        var separator = values.IndexOf(' ');
+                        if (ahead != null || separator < 2 || separator + 2 >= values.Length
+                            || values[0] != '+' || values[separator + 1] != '-'
+                            || !int.TryParse(values[1..separator], NumberStyles.None, CultureInfo.InvariantCulture, out var aheadValue)
+                            || !int.TryParse(values[(separator + 2)..], NumberStyles.None, CultureInfo.InvariantCulture, out var behindValue))
+                        {
+                            throw new CliCommandException("Invalid Git ahead/behind header.");
+                        }
+
+                        ahead = aheadValue;
+                        behind = behindValue;
+                    }
+
+                    // Porcelain v2 permits additional headers; ignore unknown header names.
+                    continue;
+                }
+
+                if (record[0] == '?')
+                {
+                    counts = counts with { Untracked = counts.Untracked + 1 };
+                    continue;
+                }
+
+                var fields = record.ToString().Split(' ', record[0] == 'u' ? 11 : 9);
+                if (record[0] == 'u' && fields.Length == 11 && fields[10].Length > 0
+                    && fields[1] is "DD" or "AU" or "UD" or "UA" or "DU" or "AA" or "UU")
+                {
+                    // LibGit2Sharp's six existing counters do not include conflicted entries.
+                    continue;
+                }
+
+                if (record[0] != '1' || fields.Length != 9 || fields[8].Length == 0 || fields[1].Length != 2)
+                {
+                    throw new CliCommandException("Unexpected Git porcelain v2 record (rename detection must be disabled).");
+                }
+
+                var code = fields[1];
+                if (!".MADT".Contains(code[0]) || !".MDT".Contains(code[1]) || code == "..")
+                {
+                    throw new CliCommandException("Unexpected Git status code.");
+                }
+
+                counts = counts with
+                {
+                    Added = counts.Added + (code[0] == 'A' ? 1 : 0),
+                    Staged = counts.Staged + (code[0] == 'M' ? 1 : 0),
+                    Removed = counts.Removed + (code[0] == 'D' ? 1 : 0),
+                    Modified = counts.Modified + (code[1] == 'M' ? 1 : 0),
+                    Missing = counts.Missing + (code[1] == 'D' ? 1 : 0),
+                };
+            }
+
+            if (string.IsNullOrEmpty(branch) || string.IsNullOrEmpty(oid)
+                || (oid != "(initial)" && (oid.Length is not (40 or 64) || oid.Any(c => !Uri.IsHexDigit(c))))
+                || (branch == "(detached)" && (oid == "(initial)" || upstream != null))
+                || (ahead != null && (upstream == null || oid == "(initial)")))
+            {
+                throw new CliCommandException("Missing or inconsistent Git branch headers.");
+            }
+
+            return counts with { BranchName = branch, CommitId = oid, Upstream = upstream, AheadBy = ahead, BehindBy = behind };
+        }
     }
 
     private static string[] ReadAllBranches(string repoPath)
@@ -305,23 +444,25 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
         }
     }
 
-    private static HeadDetails GetHeadDetails(LibGit2Sharp.Repository repo)
+    private static HeadDetails GetHeadDetails(LibGit2Sharp.Repository repo, WorkingTreeStatus? status)
     {
-        var isDetached = repo.Head.GetType().Name.EndsWith("DetachedHead", StringComparison.OrdinalIgnoreCase);
+        var isDetached = status is { } branchStatus
+            ? branchStatus.BranchName == "(detached)"
+            : repo.Head.GetType().Name.EndsWith("DetachedHead", StringComparison.OrdinalIgnoreCase);
 
         Tag? tag = null;
 
-        var headTipSha = repo.Head.Tip?.Sha;
+        var headTipSha = status is { } commitStatus ? commitStatus.CommitId : repo.Head.Tip?.Sha;
         if (isDetached && headTipSha != null)
         {
-            tag = repo.Tags.FirstOrDefault(t => t.Target?.Sha?.Equals(repo.Head.Tip?.Sha) ?? false);
+            tag = repo.Tags.FirstOrDefault(t => t.Target?.Sha?.Equals(headTipSha) ?? false);
         }
 
         return new HeadDetails
         {
             Name = isDetached
                     ? tag?.FriendlyName ?? headTipSha ?? repo.Head.FriendlyName
-                    : repo.Head.FriendlyName,
+                    : status is { } nameStatus ? nameStatus.BranchName : repo.Head.FriendlyName,
             IsDetached = isDetached,
             IsOnTag = tag != null,
         };

@@ -12,8 +12,8 @@ repositories:
   currentBranchIsDetached: false
   currentBranchIsOnTag: false
   branches:
-  - origin/HEAD
   - feature/support-worktrees
+  - origin/HEAD
   - main
   - origin/agents/repom-mcp-server-plugin
   - origin/feature/automation-poc
@@ -36,28 +36,7 @@ repositories:
   localStaged: 0
   localRemoved: 0
   stashCount: 0
-  lastSeen:
-    dateTime: 2026-11-14T21:05:26.6911680
-    utcDateTime: 2026-11-14T21:05:26.6911680Z
-    localDateTime: 2026-11-14T22:05:26.6911680+01:00
-    date: 2026-11-14T00:00:00.0000000
-    day: 14
-    dayOfWeek: Saturday
-    dayOfYear: 318
-    hour: 21
-    millisecond: 691
-    microsecond: 168
-    nanosecond: 0
-    minute: 5
-    month: 11
-    offset: 00:00:00
-    totalOffsetMinutes: 0
-    second: 26
-    ticks: 639302871266911680
-    utcTicks: 639302871266911680
-    timeOfDay: 21:05:26.6911680
-    year: 2026
-  lastUpdated: &o0
+  lastSeen: &o0
     dateTime: 0001-01-01T00:00:00.0000000
     utcDateTime: 0001-01-01T00:00:00.0000000Z
     localDateTime: 0001-01-01T01:00:00.0000000+01:00
@@ -78,6 +57,7 @@ repositories:
     utcTicks: 0
     timeOfDay: 00:00:00
     year: 1
+  lastUpdated: *o0
   remotes:
   - key: origin
     url: https://github.com/coenm/RepoM

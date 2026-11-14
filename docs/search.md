@@ -71,9 +71,13 @@ Search for `Repository read` for Information-level reader timings. Each invocati
 `ReadId`, input path, `Stage`, `Attempt`, `ElapsedMs` and `Outcome`:
 
 - `discover`, `open`: locate and open the Git repository.
-- `status`: retrieve working-tree/index status.
-- `head`, `branches`: resolve HEAD and enumerate branch names.
-- `metadata`: remaining status counts, upstream/ahead/behind, stashes and remotes.
+- `status`: retrieve working-tree/index status, current branch, upstream presence and
+  ahead/behind counts through one Git CLI call (`backend=git-cli`), including process
+  startup, output reading and parsing.
+- `head`: resolve a tag display name for detached HEAD, or read HEAD for a bare repository,
+  using LibGit2Sharp. Normal working-tree branches no longer need this separate stage.
+- `branches`: enumerate all branch names using LibGit2Sharp (`backend=libgit2sharp`).
+- `metadata`: assemble repository data, including stashes and remotes from LibGit2Sharp.
 - `repom-tags`: evaluate the configured RepoM tags, including materializing the results.
 - `retry-delay`: wait after a locked-file failure.
 - `total`: the complete reader invocation, including all attempts and tags.
@@ -82,9 +86,27 @@ These read IDs are separate from menu build IDs; correlate them by path and time
 At Debug level, `Repository refresh` logs a refresh ID for starts, joins and cancellations,
 and reports snapshot cache hits. A cache hit produces no reader timings. Total and individual
 stage times overlap; do not add totals to their constituent stages.
+
+Status uses the installed `git` from PATH with
+`status --porcelain=v2 --branch --ahead-behind -z --untracked-files=all --ignored=no --no-renames --ignore-submodules=none`.
+Ignored files remain excluded, untracked files remain included, and staged additions,
+modifications and deletions retain separate counters. NUL delimiters make filenames with
+spaces or newlines safe to parse. `GIT_OPTIONAL_LOCKS=0` prevents status from rewriting the
+index just to refresh its stat cache. There is no fallback to LibGit2Sharp status on failure:
+missing Git, nonzero exits, timeouts and malformed output are reported as read failures.
+
+Branch headers also handle repositories with no commits and detached HEAD. Missing
+ahead/behind information remains `null`, not zero; a configured but missing upstream still
+counts as an upstream when Git reports its name. A detached HEAD retains the existing tag
+name (when found) or full commit-ID display. Bare repositories have no working-tree status
+and retain their existing LibGit2Sharp metadata path.
+
 Cancellation is checked between read stages, during branch/remote enumeration and retry waits.
-Native Git calls and the tag factory do not support interruption mid-call; cancellation is
-honored after those calls return, and cancelled results are not published.
+The CLI status process is terminated on cancellation or after the existing ten-second Git
+command timeout. Remaining native LibGit2Sharp calls and the tag factory do not support
+interruption mid-call; cancellation is honored after those calls return, and cancelled
+results are not published. Compare `status` and `total` timings with earlier logs to assess
+the CLI's performance on the same repositories.
 
 ### Worktree UI preview
 
