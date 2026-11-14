@@ -1,0 +1,46 @@
+context:
+- type: evaluate-script@1
+  content: |-
+    func remotes_contain_inner(remotes, url_part)
+      urls = remotes | array.map "url"
+      filtered = array.filter(urls, do 
+        ret string.contains($0, url_part) 
+      end)
+      ret array.size(filtered) > 0;
+    end
+
+    func remotes_contain(url_part)
+      ret remotes_contain_inner(repository.remotes, url_part)
+    end
+
+    func get_remote_origin()
+      remotes = repository.remotes;
+      filtered = array.filter(remotes, do 
+        remote = $0;
+        ret remote.key == "origin"
+      end)
+      ret array.first(filtered);
+    end
+
+    func get_remote_origin_name()
+      remote = get_remote_origin();
+      ret remote?.name;
+    end
+
+    func repository_path_contains(path)
+      ret repository.linux_path | string.contains path
+    end
+
+    remote_name_origin = get_remote_origin_name();
+    is_work_repository = remotes_contain("My-Work");
+    
+tags:
+
+- tag: work
+  when: is_work_repository
+
+- tag: private
+  when: '!is_work_repository && repository_path_contains("Projects/Private")'
+
+- tag: github
+  when: 'remotes_contain("github.com")'

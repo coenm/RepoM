@@ -41,6 +41,7 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
     private string? _cachedRepositoryStatus;
     private string? _cachedRepositoryStatusWithBranch;
     private bool _isSynchronizing;
+    private bool _isExpanded = true;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -155,6 +156,21 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
     }
 
     public bool IsFavorite => _favoriteService.IsFavorite(_info.SafePath);
+
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set
+        {
+            if (_isExpanded == value)
+            {
+                return;
+            }
+
+            _isExpanded = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsExpanded)));
+        }
+    }
 
     public void ToggleFavorite()
     {

@@ -9,6 +9,25 @@ The search box is good for ad-hoc filtering. Quick filters are useful when you w
 
 ## Search box
 
+### Repository interface
+
+The regular RepoM window now uses the card layout from the worktree preview with real
+repositories, branches, status and tags. The arrow switches between minimal (name and
+favorite) and extended views. Monitoring is available in the details; favorites, tag
+quick filters, configured context menus and default actions keep their existing behavior.
+Display modes last for the current session and survive repository refreshes and filtering.
+Worktree discovery and family grouping are not integrated yet; real repositories remain
+a flat list until that follow-up.
+
+The existing hamburger menu remains available. Under **Appearance** choose
+**Theme > Dark / Light / Follow Windows** or toggle **Animations**. Both settings are
+saved in the existing application configuration as `Theme` (`Dark`, `Light`, `System`)
+and `EnableAnimations` (boolean). Existing configurations default to Dark with animations
+enabled. Follow Windows tracks the Windows app theme live. Disabling animations also
+finishes active row transitions and disables the main-window fade-in.
+
+Run `dotnet run --project src\RepoM.App` for the regular application.
+
 ### Worktree UI preview
 
 Run `dotnet run --project src\RepoM.App -- --worktree-preview` from the repository root
@@ -35,8 +54,8 @@ The arrow beside a primary repository cycles through three views:
 Newly revealed worktrees expand and fade in; text is not scaled. Animations are enabled
 by default. Turning them off, filtering or resizing immediately finishes any transition.
 Initial loading and scrolling do not animate, and recycled rows retain no animation state.
-The toggle is session-only for now; `EnableAnimations` is the preview setting intended
-to be connected to persisted configuration when worktree support is integrated.
+The preview toggle remains session-only; the regular application's hamburger menu
+uses the persisted `EnableAnimations` setting.
 
 Worktrees have their own arrow with two views (minimal and extended), starting extended.
 Repositories without worktrees also have two views. The arrow's direction indicates the
@@ -56,7 +75,7 @@ repositories and worktrees. Clicking a tag filters the preview by that text.
 Right-click a row (or use the keyboard context-menu key) to see an acrylic context menu
 with editor, terminal, Explorer and Git actions, including a checkout submenu.
 All submenu levels use the same background and thin, muted border as the root context menu,
-without the theme's outer shadow gutter. This flat popup treatment is enabled only in the preview.
+without the theme's outer shadow gutter. The regular interface uses the same popup treatment.
 External actions only display a demo notification; they do not start programs or run Git.
 The menu's favorite toggle and navigation to the primary repository or another worktree
 work within the preview. Navigating clears the search and expands the target family.

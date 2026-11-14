@@ -1,17 +1,13 @@
 namespace RepoM.App;
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Security;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media.Animation;
-using Microsoft.Win32;
+using RepoM.Api.Common;
 using RepoM.App.Controls;
 using RepoM.App.Themes;
 using RepoM.App.ViewModels;
@@ -19,14 +15,11 @@ using RepoM.App.ViewModels;
 public partial class WorktreePreviewWindow : Window
 {
     private readonly WorktreePreviewViewModel _viewModel = new();
-    private readonly HashSet<ListBoxItem> _animatedRows = [];
-    private readonly IPreviewSystemTheme _systemTheme;
+    private readonly RowAnimationController _rowAnimations = new();
+    private readonly WindowThemeController _themeController;
     private readonly ResourceDictionary _themeResources;
-    private WorktreePreviewTheme _effectiveTheme = WorktreePreviewTheme.Dark;
     private AcrylicContextMenu? _openMenu;
     private string? _themeError;
-    private bool _isListening;
-    private bool _isClosed;
 
     public WorktreePreviewWindow()
         : this(new WindowsPreviewSystemTheme())
@@ -36,9 +29,15 @@ public partial class WorktreePreviewWindow : Window
     public WorktreePreviewWindow(IPreviewSystemTheme systemTheme)
     {
         ArgumentNullException.ThrowIfNull(systemTheme);
-        _systemTheme = systemTheme;
         InitializeComponent();
         _themeResources = Resources.MergedDictionaries[1];
+        _themeController = new WindowThemeController(this, _themeResources, systemTheme, () =>
+        {
+            if (_openMenu != null)
+            {
+                _openMenu.IsOpen = false;
+            }
+        }, ReportThemeError);
         DataContext = _viewModel;
         _viewModel.PropertyChanged += PreviewSettings_Changed;
         ThemeSelector.SelectionChanged += (_, _) => ApplySelectedTheme();
@@ -48,14 +47,9 @@ public partial class WorktreePreviewWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
-        _isClosed = true;
         FinishRowAnimations();
         _viewModel.PropertyChanged -= PreviewSettings_Changed;
-        if (_isListening)
-        {
-            _systemTheme.Changed -= WindowsTheme_Changed;
-            _isListening = false;
-        }
+        _themeController.Dispose();
 
         if (_openMenu != null)
         {
@@ -67,41 +61,24 @@ public partial class WorktreePreviewWindow : Window
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        if (!_isListening)
-        {
-            _systemTheme.Changed += WindowsTheme_Changed;
-            _isListening = true;
-        }
-
         ApplySelectedTheme();
         SearchBox.Focus();
     }
 
-    private void WindowsTheme_Changed(object sender, UserPreferenceChangedEventArgs e)
+    private void ApplySelectedTheme()
     {
-        _ = Dispatcher.InvokeAsync(() =>
+        _themeController.SetTheme(ThemeSelector.SelectedValue switch
         {
-            if (!_isClosed && Equals(ThemeSelector.SelectedValue, WorktreePreviewTheme.System))
-            {
-                ApplySelectedTheme();
-            }
+            WorktreePreviewTheme.Dark => AppTheme.Dark,
+            WorktreePreviewTheme.Light => AppTheme.Light,
+            WorktreePreviewTheme.System => AppTheme.System,
+            _ => throw new InvalidOperationException("Unknown preview theme."),
         });
     }
 
-    private void ApplySelectedTheme()
+    private void ReportThemeError(Exception? exception)
     {
-        bool isLight;
-        try
-        {
-            isLight = ThemeSelector.SelectedValue switch
-            {
-                WorktreePreviewTheme.Dark => false,
-                WorktreePreviewTheme.Light => true,
-                WorktreePreviewTheme.System => _systemTheme.IsLight,
-                _ => throw new InvalidOperationException("Unknown preview theme."),
-            };
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or SecurityException)
+        if (exception != null)
         {
             Trace.TraceError("Cannot read the Windows app theme: {0}", exception);
             _themeError = string.Format(Text("WorktreePreviewThemeError"), exception.Message);
@@ -120,20 +97,6 @@ public partial class WorktreePreviewWindow : Window
             _themeError = null;
         }
 
-        var theme = isLight ? WorktreePreviewTheme.Light : WorktreePreviewTheme.Dark;
-        if (theme == _effectiveTheme)
-        {
-            return;
-        }
-
-        // Acrylic popup frames hold brush references; recreate them on the next opening.
-        if (_openMenu != null)
-        {
-            _openMenu.IsOpen = false;
-        }
-
-        _themeResources.Source = new Uri($"/RepoM;component/Themes/WorktreePreview.{theme}.xaml", UriKind.Relative);
-        _effectiveTheme = theme;
     }
 
     private void ClearFilter_Click(object sender, RoutedEventArgs e)
@@ -164,12 +127,12 @@ public partial class WorktreePreviewWindow : Window
         entry.CycleDisplayMode();
         Repositories.UpdateLayout();
 
-        AnimateRow(row, previousHeight, false);
+        _rowAnimations.Animate(row, previousHeight);
         foreach (WorktreePreviewEntry added in _viewModel.VisibleEntries.Where(item => !previousEntries.Contains(item)))
         {
             if (Repositories.ItemContainerGenerator.ContainerFromItem(added) is ListBoxItem child)
             {
-                AnimateRow(child, 0, true);
+                _rowAnimations.Animate(child, 0, true);
             }
         }
     }
@@ -183,59 +146,7 @@ public partial class WorktreePreviewWindow : Window
         }
     }
 
-    private void AnimateRow(ListBoxItem row, double fromHeight, bool fadeIn)
-    {
-        double targetHeight = row.ActualHeight;
-        if (Math.Abs(fromHeight - targetHeight) < 0.1)
-        {
-            return;
-        }
-
-        var duration = TimeSpan.FromMilliseconds(180);
-        var height = new DoubleAnimation(fromHeight, targetHeight, duration)
-        {
-            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
-        };
-        height.Completed += (_, _) => FinishRowAnimation(row);
-        _animatedRows.Add(row);
-        row.Unloaded += AnimatedRow_Unloaded;
-        row.DataContextChanged += AnimatedRow_DataContextChanged;
-        row.Height = fromHeight;
-        row.BeginAnimation(HeightProperty, height);
-        if (fadeIn)
-        {
-            row.Opacity = 0;
-            row.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, duration));
-        }
-    }
-
-    private void AnimatedRow_Unloaded(object sender, RoutedEventArgs e) => FinishRowAnimation((ListBoxItem)sender);
-
-    private void AnimatedRow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) => FinishRowAnimation((ListBoxItem)sender);
-
-    private void FinishRowAnimations()
-    {
-        foreach (ListBoxItem row in _animatedRows.ToArray())
-        {
-            FinishRowAnimation(row);
-        }
-    }
-
-    private void FinishRowAnimation(ListBoxItem row)
-    {
-        if (!_animatedRows.Remove(row))
-        {
-            return;
-        }
-
-        row.Unloaded -= AnimatedRow_Unloaded;
-        row.DataContextChanged -= AnimatedRow_DataContextChanged;
-        // Return to automatic sizing, including after filtering or container recycling.
-        row.BeginAnimation(HeightProperty, null);
-        row.BeginAnimation(OpacityProperty, null);
-        row.ClearValue(HeightProperty);
-        row.ClearValue(OpacityProperty);
-    }
+    private void FinishRowAnimations() => _rowAnimations.FinishAll();
 
     private void RepositoryMenu_Opened(object sender, RoutedEventArgs e)
     {

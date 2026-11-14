@@ -28,6 +28,7 @@ using RepoM.App.RepositoryActions;
 using RepoM.App.RepositoryFiltering;
 using RepoM.App.RepositoryOrdering;
 using RepoM.App.Services;
+using RepoM.App.Themes;
 using RepoM.App.ViewModels;
 using RepoM.Api.QuickFilter;
 using RepoM.Core.Plugin.Common;
@@ -91,6 +92,8 @@ public partial class MainWindow
     private ReadOnlyObservableCollection<RepositoryViewModel> _repositories = null!;
     private readonly CompositeDisposable _disposables = new();
     private bool _isScanning;
+    private bool _isShuttingDown;
+    private readonly WindowThemeController _themeController;
 
     public MainWindow(
         RepositoryMonitorService monitorService,
@@ -139,6 +142,14 @@ public partial class MainWindow
             };
 
         InitializeComponent();
+        _themeController = new WindowThemeController(this, Resources.MergedDictionaries[1],
+            new WindowsPreviewSystemTheme(), () =>
+            {
+                SettingsMenu.IsOpen = false;
+                repositoryList.CloseContextMenu();
+            }, ReportThemeError);
+        SettingsMenu.Resources.MergedDictionaries.Add(Resources);
+        _themeController.SetTheme(_appSettingsService.Theme);
         quickFilterBar.Initialize(_quickFilterBarViewModel);
         repositoryList.Initialize(_repositoryListViewModel);
 
@@ -265,8 +276,33 @@ public partial class MainWindow
 
     protected override void OnClosing(CancelEventArgs e)
     {
+        if (_isShuttingDown)
+        {
+            base.OnClosing(e);
+            return;
+        }
+
         e.Cancel = true;
         HideWindow();
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        _isShuttingDown = true;
+        _themeController.Dispose();
+        _disposables.Dispose();
+        base.OnClosed(e);
+    }
+
+    internal void Shutdown()
+    {
+        if (_isShuttingDown)
+        {
+            return;
+        }
+
+        _isShuttingDown = true;
+        Close();
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -324,6 +360,7 @@ public partial class MainWindow
                 new HelpViewModel(_translationService),
                 quickFilterCommands);
             SettingsMenu.DataContext = DataContext; // this is out of the visual tree
+            ((MainWindowViewModel)DataContext).PropertyChanged += AppearanceSettings_Changed;
 
             var uiScheduler = new SynchronizationContextScheduler(SynchronizationContext.Current!);
 
@@ -392,7 +429,7 @@ public partial class MainWindow
             PlaceFormByTaskBarLocation();
 
             loadingOverlay.Visibility = Visibility.Collapsed;
-            BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150)));
+            AnimateWindowAppearance();
         });
     }
 
@@ -408,8 +445,44 @@ public partial class MainWindow
                 Activate();
                 txtFilter.Focus();
                 txtFilter.SelectAll();
-                BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150)));
+                AnimateWindowAppearance();
             });
+    }
+
+    private void ReportThemeError(Exception? exception)
+    {
+        if (exception == null)
+        {
+            AppearanceFeedback.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        _logger.LogError(exception, "Cannot read the Windows app theme");
+        AppearanceFeedback.Text = string.Format(_translationService.Translate("WorktreePreviewThemeError"), exception.Message);
+        AppearanceFeedback.Visibility = Visibility.Visible;
+    }
+
+    private void AppearanceSettings_Changed(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainWindowViewModel.Theme))
+        {
+            _themeController.SetTheme(_appSettingsService.Theme);
+        }
+        else if (e.PropertyName == nameof(MainWindowViewModel.EnableAnimations) && !_appSettingsService.EnableAnimations)
+        {
+            BeginAnimation(OpacityProperty, null);
+            Opacity = 1;
+        }
+    }
+
+    private void AnimateWindowAppearance()
+    {
+        BeginAnimation(OpacityProperty, null);
+        Opacity = 1;
+        if (_appSettingsService.EnableAnimations)
+        {
+            BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150)));
+        }
     }
 
     private void HelpButton_Click(object sender, RoutedEventArgs e)

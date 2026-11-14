@@ -1,0 +1,17 @@
+{
+  "Filters": [
+    {
+      "Id": "281c864e-e37d-48a0-9fe5-6d80f86bf75c",
+      "Label": "psa",
+      "Query": {
+        "type": "freetext",
+        "value": "psa"
+      },
+      "IsActive": false,
+      "IsInverse": false,
+      "Order": 0,
+      "ToolTip": ""
+    }
+  ],
+  "CombineMode": 0
+}

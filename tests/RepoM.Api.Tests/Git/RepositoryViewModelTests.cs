@@ -57,6 +57,17 @@ public class RepositoryViewModelTests
     public class Properties : RepositoryViewModelTests
     {
         [Fact]
+        public void CollapsedDetails_ShouldSurviveRepositoryRefresh()
+        {
+            using RepositoryViewModel sut = CreateSut();
+            sut.IsExpanded = false;
+
+            sut.Update(_builder.WithCurrentBranch("updated").BuildFullFeatured());
+
+            sut.IsExpanded.Should().BeFalse();
+        }
+
+        [Fact]
         public void Name_Returns_Name_From_Info()
         {
             RepositoryInfo info = _builder.WithName("MyRepo").WithCurrentBranch("main").Build();

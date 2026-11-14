@@ -19,6 +19,10 @@ public interface IFilterSettingsService
 
 public interface IAppSettingsService
 {
+    AppTheme Theme { get; set; }
+
+    bool EnableAnimations { get; set; }
+
     AutoFetchMode AutoFetchMode { get; set; }
 
     bool PruneOnFetch { get; set; }

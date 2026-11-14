@@ -136,6 +136,10 @@ public class MainWindowViewModelTests
 
     private sealed class TestAppSettingsService : IAppSettingsService
     {
+        public AppTheme Theme { get; set; }
+
+        public bool EnableAnimations { get; set; } = true;
+
         public AutoFetchMode AutoFetchMode { get; set; }
 
         public bool PruneOnFetch { get; set; }

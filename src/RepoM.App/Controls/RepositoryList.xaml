@@ -12,6 +12,10 @@
              ItemsSource="{Binding ItemsSource}"
              SelectedItem="{Binding SelectedRepository, Mode=TwoWay}"
              HorizontalContentAlignment="Stretch"
+             ItemContainerStyle="{DynamicResource RepositoryRow}"
+             Background="Transparent" BorderThickness="0"
+             Foreground="{DynamicResource PreviewForeground}"
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
              MouseDoubleClick="LstRepositories_MouseDoubleClick"
              KeyDown="LstRepositories_KeyDown"
              ContextMenuOpening="LstRepositories_ContextMenuOpening"
@@ -33,7 +37,11 @@
             </DataTemplate>
         </ListBox.ItemTemplate>
         <ListBox.ContextMenu>
-            <controls:AcrylicContextMenu x:Name="mnuRepositoryContext" />
+            <controls:AcrylicContextMenu x:Name="mnuRepositoryContext" UseFlatPopupStyle="True"
+                                        HasDropShadow="False"
+                                        Background="{DynamicResource PreviewMenuBackground}"
+                                        Foreground="{DynamicResource PreviewForeground}"
+                                        BorderBrush="{DynamicResource PreviewMenuBorder}" BorderThickness="1" />
         </ListBox.ContextMenu>
     </ListBox>
 </UserControl>

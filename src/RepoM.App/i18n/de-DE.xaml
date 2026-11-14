@@ -4,6 +4,14 @@
     <system:String x:Key="WorktreePreviewTitle">RepoM - Worktree-Vorschau</system:String>
     <system:String x:Key="WorktreePreviewNotice">Nur Beispieldaten. Keine Git-Aktionen oder Änderungen an Einstellungen.</system:String>
     <system:String x:Key="WorktreePreviewTheme">Vorschaudesign</system:String>
+    <system:String x:Key="AppearanceMenu">Darstellung</system:String>
+    <system:String x:Key="ThemeMenu">Design</system:String>
+    <system:String x:Key="RepositoryShowDetails">Details anzeigen</system:String>
+    <system:String x:Key="RepositoryToggleDetails">Repositorydetails ein- oder ausblenden</system:String>
+    <system:String x:Key="RepositoryShowMinimal">Nur Namen und Favoriten anzeigen</system:String>
+    <system:String x:Key="RepositoryToggleFavorite">Favorit umschalten</system:String>
+    <system:String x:Key="RepositoryToggleMonitoring">Aktive Überwachung umschalten</system:String>
+    <system:String x:Key="RepositoryFilterTag">Tag zu Schnellfiltern hinzufügen</system:String>
     <system:String x:Key="WorktreePreviewAnimations">Animationen</system:String>
     <system:String x:Key="WorktreePreviewAnimationsHint">Größenänderungen und das Einblenden von Worktrees animieren. Nur für diese Vorschau; später als Konfigurationsoption vorgesehen.</system:String>
     <system:String x:Key="WorktreePreviewThemeDark">Dunkel</system:String>

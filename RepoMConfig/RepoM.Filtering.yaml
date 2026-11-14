@@ -1,0 +1,18 @@
+Work:
+  name: Work
+  description: Work filtering
+  always-visible:
+    kind: query@1
+    query: is:pinned
+  filter:
+    kind: query@1
+    query: tag:work
+Private:
+  name: Private
+  description: Private repositories
+  always-visible:
+    kind: query@1
+    query: RepoM OR is:pinned
+  filter:
+    kind: query@1
+    query: (-tag:work OR tag:private)

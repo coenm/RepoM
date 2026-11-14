@@ -1,0 +1,93 @@
+Work: 
+  type: composition-comparer@1
+  comparers:
+  - type: score-comparer@1
+    score-provider: 
+      type: is-pinned-scorer@1
+      weight: 1
+  - type: score-comparer@1
+    score-provider: 
+      type: tag-scorer@1
+      weight: 1
+      tag: Team1
+  - type: score-comparer@1
+    score-provider: 
+      type: tag-scorer@1
+      weight: 1
+      tag: Work
+  - type: az-comparer@1
+    property: Name
+    weight: 1
+Work Dynamic: 
+  type: composition-comparer@1
+  comparers:
+  - type: score-comparer@1
+    score-provider:
+      type: is-pinned-scorer@1
+      weight: 1
+  - type: score-comparer@1
+    score-provider:
+      type: tag-scorer@1
+      weight: 1
+      tag: Team1
+  - type: score-comparer@1
+    score-provider:
+      type: usage-scorer@1
+      max-score: 20
+      windows:
+      - until: 00:15:00
+        weight: 4
+        max-items: 10
+      - until: 01:00:00
+        weight: 3
+        max-items: 5
+      - until: 24:00:00
+        weight: 2
+        max-items: 5
+      - until: 168:00:00
+        weight: 1
+        max-items: 10
+  - type: last-opened-comparer@1
+    weight: 1
+  - type: score-comparer@1
+    score-provider:
+      type: tag-scorer@1
+      weight: 1
+      tag: Work
+  - type: az-comparer@1
+    property: Name
+    weight: 1
+Prive: 
+  type: composition-comparer@1
+  comparers:
+  - type: score-comparer@1
+    score-provider:
+      type: is-pinned-scorer@1
+      weight: 1
+  - type: score-comparer@1
+    score-provider:
+      type: tag-scorer@1
+      weight: 1
+      tag: Prive
+  - type: score-comparer@1
+    score-provider:
+      type: usage-scorer@1
+      max-score: 20
+      windows:
+      - until: 00:15:00
+        weight: 4
+        max-items: 10
+      - until: 01:00:00
+        weight: 3
+        max-items: 5
+      - until: 24:00:00
+        weight: 2
+        max-items: 5
+      - until: 168:00:00
+        weight: 1
+        max-items: 10
+  - type: last-opened-comparer@1
+    weight: 1
+  - type: az-comparer@1
+    property: Name
+    weight: 1

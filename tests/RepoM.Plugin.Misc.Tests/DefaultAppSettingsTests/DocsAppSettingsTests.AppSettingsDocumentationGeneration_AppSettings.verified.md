@@ -1,5 +1,7 @@
 ﻿Properties:
 
+- `Theme`: Color theme: Dark, Light, or System to follow the Windows app theme. (optional, UI configured)
+- `EnableAnimations`: Enables repository expansion and window appearance animations. (optional, UI configured)
 - `SortKey`: The selected sorting strategy. Sorting strategies can be configured manually in `RepoM.Ordering.yaml`. (optional, UI configured)
 - `SelectedQueryParser`: The selected query parser. Query parsers can be added by plugins. (optional, UI configured)
 - `SelectedFilter`: The selected filtering strategy. Filtering strategies can be configured manually in `RepoM.Filtering.yaml`. (optional, UI configured)

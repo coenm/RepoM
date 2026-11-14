@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using RepoM.Api.Git;
+using RepoM.App.Themes;
 
 public partial class RepositoryComponent : UserControl
 {
@@ -14,6 +15,7 @@ public partial class RepositoryComponent : UserControl
     private static readonly TimeSpan _defaultHoverPrefetchDelay = TimeSpan.FromSeconds(2);
     private readonly DispatcherTimer _hoverTimer;
     private RepositoryList? _ownerList;
+    private readonly RowAnimationController _animations = new();
 
     public RepositoryComponent()
     {
@@ -23,7 +25,18 @@ public partial class RepositoryComponent : UserControl
         _hoverTimer.Tick += HoverTimer_Tick;
 
         Unloaded += (_, _) => _hoverTimer.Stop();
-        DataContextChanged += (_, _) => _hoverTimer.Stop();
+        DataContextChanged += (_, _) =>
+        {
+            _hoverTimer.Stop();
+            _animations.FinishAll();
+        };
+        SizeChanged += (_, e) =>
+        {
+            if (e.WidthChanged)
+            {
+                _animations.FinishAll();
+            }
+        };
     }
 
     private void Root_MouseEnter(object sender, MouseEventArgs e)
@@ -73,7 +86,31 @@ public partial class RepositoryComponent : UserControl
         return null;
     }
 
-    private void MonitoringToggle_Click(object sender, MouseButtonEventArgs e)
+    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+        if (e.Property == Appearance.EnableAnimationsProperty && e.NewValue is false)
+        {
+            _animations.FinishAll();
+        }
+    }
+
+    private void DisplayMode_Click(object sender, RoutedEventArgs e)
+    {
+        var vm = (RepositoryViewModel)DataContext;
+        double previousHeight = ActualHeight;
+        _animations.FinishAll();
+        vm.IsExpanded = !vm.IsExpanded;
+        UpdateLayout();
+        if (Appearance.GetEnableAnimations(this))
+        {
+            _animations.Animate(this, previousHeight);
+        }
+
+        e.Handled = true;
+    }
+
+    private void MonitoringToggle_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement fe && fe.DataContext is RepositoryViewModel vm)
         {
@@ -82,7 +119,7 @@ public partial class RepositoryComponent : UserControl
         }
     }
 
-    private void FavoriteToggle_Click(object sender, MouseButtonEventArgs e)
+    private void FavoriteToggle_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement fe && fe.DataContext is RepositoryViewModel vm)
         {

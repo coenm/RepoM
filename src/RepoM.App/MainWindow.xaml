@@ -10,6 +10,8 @@
           xmlns:controls="clr-namespace:RepoM.App.Controls"
           xmlns:app="clr-namespace:RepoM.App"
           xmlns:viewModels="clr-namespace:RepoM.App.ViewModels"
+          xmlns:themes="clr-namespace:RepoM.App.Themes"
+          themes:Appearance.EnableAnimations="{Binding EnableAnimations}"
           TextElement.Foreground="{DynamicResource MaterialDesignBody}"
           TextElement.FontWeight="Regular"
           TextElement.FontSize="12"
@@ -17,17 +19,33 @@
           TextOptions.TextRenderingMode="Auto"
           BorderThickness="0"
           Title="RepoM"
-          Height="540"
-          Width="350"
+          Height="740"
+          Width="460"
+          MinHeight="400"
+          MinWidth="350"
           ShowInTaskbar="False"
           Opacity="0"
-          Background="#FF303030"
-          fw:AcrylicWindow.TintColor="#101010"
-          fw:AcrylicWindow.FallbackColor="#303030"
+          Background="{DynamicResource PreviewBackground}"
+          Foreground="{DynamicResource PreviewForeground}"
+          FontFamily="Segoe UI"
+          fw:AcrylicWindow.TintColor="{DynamicResource RepositoryWindowColor}"
+          fw:AcrylicWindow.FallbackColor="{DynamicResource RepositoryWindowColor}"
           fw:AcrylicWindow.TintOpacity="0.7"
           fw:AcrylicWindow.Enabled="True"
 		  d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}">
-	<Grid Margin="12"
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="Themes/WorktreePreview.Dark.xaml" />
+                <ResourceDictionary Source="Themes/RepositoryStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="controls:ZTextBox" BasedOn="{StaticResource {x:Type TextBox}}" />
+            <Style TargetType="controls:AcrylicContextMenu" BasedOn="{StaticResource MaterialDesignContextMenu}" />
+            <Style TargetType="controls:AcrylicMenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}" />
+        </ResourceDictionary>
+    </Window.Resources>
+	<Grid Margin="16"
 		  Focusable="False">
 
 		<materialDesign:Transitioner Name="transitionerMain"
@@ -45,11 +63,13 @@
 						   VerticalAlignment="Center"
 						   TextAlignment="Center"
 						   Focusable="False"
-						   Foreground="Gray">
+						   Foreground="{DynamicResource PreviewMutedForeground}">
 				</TextBlock>
 
 				<DockPanel x:Name="dockMain"
 						   Focusable="False">
+                    <TextBlock DockPanel.Dock="Top" Text="RepoM" FontSize="24" FontWeight="SemiBold"
+                               Foreground="{DynamicResource PreviewForeground}" Margin="0,0,0,12" />
 					<Grid
 						Focusable="False"
 						DockPanel.Dock="Top">
@@ -70,6 +90,7 @@
 							<controls:ZTextBox x:Name="txtFilter"
 										   TextChanged="OnTxtFilterTextChanged"
 										   FontSize="17"
+                                           Foreground="{DynamicResource PreviewForeground}"
 										   VerticalAlignment="Top"
 										   Finish="TxtFilter_Finish">
 							</controls:ZTextBox>
@@ -80,7 +101,7 @@
 								   FontSize="15"
 								   HorizontalAlignment="Left"
 								   Focusable="False"
-								   Foreground="Gray">
+								   Foreground="{DynamicResource PreviewMutedForeground}">
 								<TextBlock.Style>
 									<Style TargetType="{x:Type TextBlock}">
 										<Setter Property="Visibility"
@@ -141,6 +162,11 @@
 							Style="{DynamicResource MaterialDesignFlatButton}">
                             <Button.ContextMenu>
 								<controls:AcrylicContextMenu x:Name="SettingsMenu"
+                                                             UseFlatPopupStyle="True" HasDropShadow="False"
+                                                             Background="{DynamicResource PreviewMenuBackground}"
+                                                             Foreground="{DynamicResource PreviewForeground}"
+                                                             BorderBrush="{DynamicResource PreviewMenuBorder}" BorderThickness="1"
+                                                             FontSize="13.5"
 															 d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}">
                                     <controls:AcrylicMenuItem Header="{DynamicResource ManageRepos}"  >
 										<controls:AcrylicMenuItem Header="{DynamicResource ScanComputer}" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
@@ -236,6 +262,15 @@
                                         </controls:AcrylicMenuItem.ItemContainerStyle>
                                     </controls:AcrylicMenuItem>
 
+                                    <controls:AcrylicMenuItem x:Name="AppearanceMenuItem" Header="{DynamicResource AppearanceMenu}">
+                                        <controls:AcrylicMenuItem Header="{DynamicResource ThemeMenu}">
+                                            <controls:AcrylicMenuItem x:Name="ThemeDarkMenuItem" Header="{DynamicResource WorktreePreviewThemeDark}" IsCheckable="True" IsChecked="{Binding ThemeDark}" />
+                                            <controls:AcrylicMenuItem x:Name="ThemeLightMenuItem" Header="{DynamicResource WorktreePreviewThemeLight}" IsCheckable="True" IsChecked="{Binding ThemeLight}" />
+                                            <controls:AcrylicMenuItem x:Name="ThemeSystemMenuItem" Header="{DynamicResource WorktreePreviewThemeSystem}" IsCheckable="True" IsChecked="{Binding ThemeSystem}" />
+                                        </controls:AcrylicMenuItem>
+                                        <controls:AcrylicMenuItem x:Name="AnimationsMenuItem" Header="{DynamicResource WorktreePreviewAnimations}" IsCheckable="True" IsChecked="{Binding EnableAnimations}" />
+                                    </controls:AcrylicMenuItem>
+
                                     <controls:AcrylicMenuItem Header="{DynamicResource AutoFetch}" x:Name="AutoFetchMenuItem" >
 										<controls:AcrylicMenuItem Header="{DynamicResource Off}" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
 										<Separator/>
@@ -271,7 +306,7 @@
 
 									<Separator/>
 
-									<controls:AcrylicMenuItem Header="{DynamicResource PingBack}" Foreground="#FFED8888">
+									<controls:AcrylicMenuItem Header="{DynamicResource PingBack}" Foreground="{DynamicResource PreviewTagForeground}">
 										<controls:AcrylicMenuItem Header="{DynamicResource Donate}" Click="SponsorButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
 										<Separator/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Follow}" Click="FollowButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
@@ -307,6 +342,14 @@
 									 DockPanel.Dock="Top"
 									 Margin="0,6,0,0" />
 
+                    <TextBlock x:Name="AppearanceFeedback" DockPanel.Dock="Bottom"
+                               Foreground="{DynamicResource PreviewTagForeground}" TextWrapping="Wrap"
+                               Visibility="Collapsed" Margin="0,8,0,0"
+                               AutomationProperties.LiveSetting="Polite" />
+                    <TextBlock DockPanel.Dock="Bottom"
+                               Text="{Binding DataContext.SelectedRepository.Path, ElementName=repositoryList}"
+                               Foreground="{DynamicResource PreviewAccent}" FontSize="11"
+                               TextTrimming="CharacterEllipsis" Margin="0,8,0,0" MinHeight="16" />
 					<controls:RepositoryList x:Name="repositoryList"
 									  DockPanel.Dock="Top" />
 				</DockPanel>
@@ -328,14 +371,14 @@
 		</materialDesign:Transitioner>
 
 		<Border x:Name="loadingOverlay"
-				Background="#FF303030"
+				Background="{DynamicResource PreviewBackground}"
 				Visibility="Visible">
 			<TextBlock Text="Loading..."
 					   FontSize="15"
 					   HorizontalAlignment="Center"
 					   VerticalAlignment="Center"
 					   Focusable="False"
-					   Foreground="Gray" />
+					   Foreground="{DynamicResource PreviewMutedForeground}" />
 		</Border>
 
 	</Grid>

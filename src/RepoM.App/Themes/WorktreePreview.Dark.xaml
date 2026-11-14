@@ -3,6 +3,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />
     </ResourceDictionary.MergedDictionaries>
+    <Color x:Key="RepositoryWindowColor">#20252B</Color>
     <SolidColorBrush x:Key="PreviewBackground" Color="#20252B" />
     <SolidColorBrush x:Key="PreviewForeground" Color="#E8EDF2" />
     <SolidColorBrush x:Key="PreviewMutedForeground" Color="#AAB8C6" />

@@ -88,6 +88,47 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     public ICommand AddQuickFilterTagCommand { [UsedImplicitly] get; }
 
+    public AppTheme Theme
+    {
+        get => _appSettingsService.Theme;
+        private set
+        {
+            _appSettingsService.Theme = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Theme)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ThemeDark)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ThemeLight)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ThemeSystem)));
+        }
+    }
+
+    public bool ThemeDark
+    {
+        get => Theme == AppTheme.Dark;
+        set => Theme = value ? AppTheme.Dark : Theme;
+    }
+
+    public bool ThemeLight
+    {
+        get => Theme == AppTheme.Light;
+        set => Theme = value ? AppTheme.Light : Theme;
+    }
+
+    public bool ThemeSystem
+    {
+        get => Theme == AppTheme.System;
+        set => Theme = value ? AppTheme.System : Theme;
+    }
+
+    public bool EnableAnimations
+    {
+        get => _appSettingsService.EnableAnimations;
+        set
+        {
+            _appSettingsService.EnableAnimations = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnableAnimations)));
+        }
+    }
+
     public bool AutoFetchOff
     {
         get => AutoFetchMode == AutoFetchMode.Off;

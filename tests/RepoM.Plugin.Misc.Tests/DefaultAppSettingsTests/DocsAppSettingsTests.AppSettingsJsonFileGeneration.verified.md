@@ -4,6 +4,8 @@ This is the default configuration.
 
 ```json
 {
+  "Theme": "Dark",
+  "EnableAnimations": true,
   "SortKey": "",
   "SelectedQueryParser": "",
   "SelectedFilter": "",

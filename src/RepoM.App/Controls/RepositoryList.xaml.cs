@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using RepoM.Api.Git;
 using RepoM.App.ViewModels;
 using WpfContextMenu = System.Windows.Controls.ContextMenu;
@@ -39,6 +40,8 @@ public partial class RepositoryList : UserControl
         lstRepositories.Focus();
     }
 
+    internal void CloseContextMenu() => mnuRepositoryContext.IsOpen = false;
+
     internal void FocusFirstItem()
     {
         lstRepositories.Focus();
@@ -59,7 +62,7 @@ public partial class RepositoryList : UserControl
 
     private async void LstRepositories_MouseDoubleClick(object? sender, MouseButtonEventArgs e)
     {
-        if (e.OriginalSource is not (Grid or TextBlock))
+        if (e.OriginalSource is not (Grid or TextBlock) || IsInsideButton(e.OriginalSource))
         {
             return;
         }
@@ -118,6 +121,12 @@ public partial class RepositoryList : UserControl
 
     private async Task<bool> LstRepositoriesContextMenuOpeningAsync(WpfContextMenu ctxMenu)
     {
+        Window window = Window.GetWindow(this);
+        if (!ctxMenu.Resources.MergedDictionaries.Contains(window.Resources))
+        {
+            ctxMenu.Resources.MergedDictionaries.Add(window.Resources);
+        }
+
         // A newer open request supersedes this one, so a slow older build cannot overwrite a newer menu.
         _contextMenuCts?.Cancel();
         var cts = new CancellationTokenSource();
@@ -237,6 +246,11 @@ public partial class RepositoryList : UserControl
 
     private async void LstRepositories_KeyDown(object? sender, KeyEventArgs e)
     {
+        if (IsInsideButton(e.OriginalSource))
+        {
+            return;
+        }
+
         if (e.Key is Key.Return or Key.Enter)
         {
             try
@@ -273,6 +287,20 @@ public partial class RepositoryList : UserControl
                 ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
                 ctxMenu.IsOpen = true;
             }
+
         }
+    }
+
+    private static bool IsInsideButton(object source)
+    {
+        for (DependencyObject? element = source as DependencyObject; element is Visual; element = VisualTreeHelper.GetParent(element))
+        {
+            if (element is ButtonBase)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -4,6 +4,14 @@
     <system:String x:Key="WorktreePreviewTitle">RepoM - Worktree-preview</system:String>
     <system:String x:Key="WorktreePreviewNotice">Alleen dummydata. Geen Git-acties of wijzigingen aan instellingen.</system:String>
     <system:String x:Key="WorktreePreviewTheme">Previewthema</system:String>
+    <system:String x:Key="AppearanceMenu">Weergave</system:String>
+    <system:String x:Key="ThemeMenu">Thema</system:String>
+    <system:String x:Key="RepositoryShowDetails">Details tonen</system:String>
+    <system:String x:Key="RepositoryToggleDetails">Repositorydetails tonen of verbergen</system:String>
+    <system:String x:Key="RepositoryShowMinimal">Alleen naam en favoriet tonen</system:String>
+    <system:String x:Key="RepositoryToggleFavorite">Favoriet aan/uit</system:String>
+    <system:String x:Key="RepositoryToggleMonitoring">Actieve monitoring aan/uit</system:String>
+    <system:String x:Key="RepositoryFilterTag">Tag aan snelfilters toevoegen</system:String>
     <system:String x:Key="WorktreePreviewAnimations">Animaties</system:String>
     <system:String x:Key="WorktreePreviewAnimationsHint">Animeer het vergroten en verkleinen van items en het tonen van worktrees. Alleen voor deze preview; later een configuratieoptie.</system:String>
     <system:String x:Key="WorktreePreviewThemeDark">Donker</system:String>

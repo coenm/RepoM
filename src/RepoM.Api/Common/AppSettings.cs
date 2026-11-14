@@ -2,6 +2,8 @@ namespace RepoM.Api.Common;
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using RepoM.Api.Git.AutoFetch;
 
 /// <summary>
@@ -9,6 +11,19 @@ using RepoM.Api.Git.AutoFetch;
 /// </summary>
 public sealed class AppSettings
 {
+    /// <summary>
+    /// Color theme: Dark, Light, or System to follow the Windows app theme.
+    /// </summary>
+    [UiConfigured]
+    [JsonConverter(typeof(StringEnumConverter))]
+    public AppTheme Theme { get; set; } = AppTheme.Dark;
+
+    /// <summary>
+    /// Enables repository expansion and window appearance animations.
+    /// </summary>
+    [UiConfigured]
+    public bool EnableAnimations { get; set; } = true;
+
     /// <summary>
     /// The selected sorting strategy. Sorting strategies can be configured manually in `RepoM.Ordering.yaml`.
     /// </summary>
@@ -73,6 +88,13 @@ public sealed class AppSettings
             Plugins = [],
             PreferredMenuSizes = new(),
         };
+}
+
+public enum AppTheme
+{
+    Dark,
+    Light,
+    System,
 }
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]

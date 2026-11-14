@@ -155,6 +155,11 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        if (MainWindow is MainWindow mainWindow)
+        {
+            mainWindow.Shutdown();
+        }
+
         _windowSizeService?.Unregister();
 
         _moduleService?.StopAsync().GetAwaiter().GetResult();

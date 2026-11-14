@@ -4,6 +4,14 @@
     <system:String x:Key="WorktreePreviewTitle">RepoM - Worktree 预览</system:String>
     <system:String x:Key="WorktreePreviewNotice">仅使用示例数据，不执行 Git 操作或更改设置。</system:String>
     <system:String x:Key="WorktreePreviewTheme">预览主题</system:String>
+    <system:String x:Key="AppearanceMenu">外观</system:String>
+    <system:String x:Key="ThemeMenu">主题</system:String>
+    <system:String x:Key="RepositoryShowDetails">显示详情</system:String>
+    <system:String x:Key="RepositoryToggleDetails">显示或隐藏仓库详情</system:String>
+    <system:String x:Key="RepositoryShowMinimal">仅显示名称和收藏</system:String>
+    <system:String x:Key="RepositoryToggleFavorite">切换收藏</system:String>
+    <system:String x:Key="RepositoryToggleMonitoring">切换主动监控</system:String>
+    <system:String x:Key="RepositoryFilterTag">将标签添加到快速筛选</system:String>
     <system:String x:Key="WorktreePreviewAnimations">动画</system:String>
     <system:String x:Key="WorktreePreviewAnimationsHint">为条目大小变化和工作树显示添加动画。仅适用于本次预览，以后将作为配置选项。</system:String>
     <system:String x:Key="WorktreePreviewThemeDark">深色</system:String>

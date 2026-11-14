@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:RepoM.App.ViewModels"
+             xmlns:themes="clr-namespace:RepoM.App.Themes"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              d:DataContext="{d:DesignInstance viewModels:QuickFilterBarViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d">
@@ -28,7 +29,7 @@
             <Border.Style>
                 <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Collapsed" />
-                    <Setter Property="Background" Value="#28FFFFFF" />
+                    <Setter Property="Background" Value="{DynamicResource PreviewTagBackground}" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding HasItems}" Value="True">
                             <Setter Property="Visibility" Value="Visible" />
@@ -37,7 +38,7 @@
                             <Setter Property="Background" Value="#FF7E57C2" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#3CFFFFFF" />
+                            <Setter Property="Background" Value="{DynamicResource PreviewTagHoverBackground}" />
                         </Trigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -56,7 +57,7 @@
                        VerticalAlignment="Center">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="#80FFFFFF" />
+                        <Setter Property="Foreground" Value="{DynamicResource PreviewMutedForeground}" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding CombineModeLabel}" Value="OR">
                                 <Setter Property="Foreground" Value="#FFFFFFFF" />
@@ -88,15 +89,15 @@
                             Margin="0,0,6,4"
                             Padding="6,2,6,2"
                             BorderThickness="1"
-                            BorderBrush="#40FFFFFF"
+                            BorderBrush="{DynamicResource PreviewMenuBorder}"
                             CornerRadius="5"
-                            Background="#10FFFFFF"
+                            Background="{DynamicResource PreviewTagBackground}"
                             IsHitTestVisible="False"
                             Visibility="Collapsed">
                         <TextBlock x:Name="dropPlaceholderLeftText"
                                    FontFamily="Consolas"
                                    FontSize="13.5"
-                                   Foreground="#40FFFFFF"
+                                   Foreground="{DynamicResource PreviewMutedForeground}"
                                    VerticalAlignment="Center" />
                     </Border>
                     <Border x:Name="qfBorder"
@@ -108,7 +109,7 @@
                             MouseLeftButtonUp="QuickFilter_Click">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="#14FFFFFF" />
+                                <Setter Property="Background" Value="{DynamicResource PreviewTagBackground}" />
                                 <Setter Property="ToolTip" Value="{Binding ToolTip}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsActive}" Value="True">
@@ -134,7 +135,7 @@
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="FontFamily" Value="Consolas" />
-                                        <Setter Property="Foreground" Value="#80FFFFFF" />
+                                        <Setter Property="Foreground" Value="{DynamicResource PreviewMutedForeground}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsActive}" Value="True">
                                                 <Setter Property="Foreground" Value="#FF212121" />
@@ -147,7 +148,7 @@
                                                 <Setter Property="FontFamily" Value="Segoe UI Symbol" />
                                                 <Setter Property="FontSize" Value="16" />
                                                 <Setter Property="TextAlignment" Value="Center" />
-                                                <Setter Property="Foreground" Value="#80FFD700" />
+                                                <Setter Property="Foreground" Value="{DynamicResource PreviewFavorite}" />
                                             </MultiDataTrigger>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
@@ -155,7 +156,7 @@
                                                     <Condition Binding="{Binding Label}" Value="&#x2605;" />
                                                     <Condition Binding="{Binding IsActive}" Value="True" />
                                                 </MultiDataTrigger.Conditions>
-                                                <Setter Property="Foreground" Value="#FFD700" />
+                                                <Setter Property="Foreground" Value="#FF212121" />
                                             </MultiDataTrigger>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
@@ -163,7 +164,7 @@
                                                     <Condition Binding="{Binding Label}" Value="&#x1F441;" />
                                                 </MultiDataTrigger.Conditions>
                                                 <Setter Property="FontFamily" Value="Segoe UI Emoji" />
-                                                <Setter Property="Foreground" Value="#80FFFFFF" />
+                                                <Setter Property="Foreground" Value="{DynamicResource PreviewMutedForeground}" />
                                             </MultiDataTrigger>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
@@ -171,7 +172,7 @@
                                                     <Condition Binding="{Binding Label}" Value="&#x1F441;" />
                                                     <Condition Binding="{Binding IsActive}" Value="True" />
                                                 </MultiDataTrigger.Conditions>
-                                                <Setter Property="Foreground" Value="#FFFFFFFF" />
+                                                <Setter Property="Foreground" Value="#FF212121" />
                                             </MultiDataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -215,10 +216,19 @@
                                    PlacementTarget="{Binding ElementName=qfBorder}"
                                    Placement="Bottom"
                                    StaysOpen="False"
-                                   AllowsTransparency="True"
-                                   PopupAnimation="Fade">
-                                <Border Background="#FF383838"
-                                        BorderBrush="#FF555555"
+                                   AllowsTransparency="True">
+                                <Popup.Style>
+                                    <Style TargetType="Popup">
+                                        <Setter Property="PopupAnimation" Value="None" />
+                                        <Style.Triggers>
+                                            <Trigger Property="themes:Appearance.EnableAnimations" Value="True">
+                                                <Setter Property="PopupAnimation" Value="Fade" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Popup.Style>
+                                <Border Background="{DynamicResource PreviewPrimarySurface}"
+                                        BorderBrush="{DynamicResource PreviewMenuBorder}"
                                         BorderThickness="1"
                                         CornerRadius="6"
                                         Padding="12"
@@ -227,27 +237,27 @@
                                         <DropShadowEffect BlurRadius="12" Opacity="0.5" ShadowDepth="3" />
                                     </Border.Effect>
                                     <StackPanel>
-                                        <TextBlock Text="Label" Foreground="#CCFFFFFF" FontSize="11" Margin="0,0,0,3" />
+                                        <TextBlock Text="Label" Foreground="{DynamicResource PreviewSecondaryForeground}" FontSize="11" Margin="0,0,0,3" />
                                         <TextBox x:Name="qfEditLabel"
                                                  FontSize="13"
                                                  Padding="4,3"
-                                                 Background="#FF2A2A2A"
-                                                 Foreground="White"
-                                                 BorderBrush="#FF666666"
-                                                 CaretBrush="White" />
+                                                 Background="{DynamicResource PreviewBackground}"
+                                                 Foreground="{DynamicResource PreviewForeground}"
+                                                 BorderBrush="{DynamicResource PreviewMenuBorder}"
+                                                 CaretBrush="{DynamicResource PreviewForeground}" />
 
-                                        <TextBlock Text="Tooltip" Foreground="#CCFFFFFF" FontSize="11" Margin="0,10,0,3" />
+                                        <TextBlock Text="Tooltip" Foreground="{DynamicResource PreviewSecondaryForeground}" FontSize="11" Margin="0,10,0,3" />
                                         <TextBox x:Name="qfEditToolTip"
                                                  FontSize="13"
                                                  Padding="4,3"
-                                                 Background="#FF2A2A2A"
-                                                 Foreground="White"
-                                                 BorderBrush="#FF666666"
-                                                 CaretBrush="White" />
+                                                 Background="{DynamicResource PreviewBackground}"
+                                                 Foreground="{DynamicResource PreviewForeground}"
+                                                 BorderBrush="{DynamicResource PreviewMenuBorder}"
+                                                 CaretBrush="{DynamicResource PreviewForeground}" />
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
                                             <Button Content="Delete"
-                                                    Foreground="#FFEF5350"
+                                                    Foreground="{DynamicResource PreviewTagForeground}"
                                                     FontSize="12"
                                                     Padding="8,3"
                                                     Margin="0,0,8,0"
@@ -255,7 +265,7 @@
                                                     Click="QuickFilterPopupDelete_Click"
                                                     Style="{DynamicResource MaterialDesignFlatButton}" />
                                             <Button Content="Cancel"
-                                                    Foreground="#AAFFFFFF"
+                                                    Foreground="{DynamicResource PreviewSecondaryForeground}"
                                                     FontSize="12"
                                                     Padding="8,3"
                                                     Margin="0,0,6,0"
@@ -263,7 +273,7 @@
                                                     Click="QuickFilterPopupCancel_Click"
                                                     Style="{DynamicResource MaterialDesignFlatButton}" />
                                             <Button Content="OK"
-                                                    Foreground="#FF4FC3F7"
+                                                    Foreground="{DynamicResource PreviewAccent}"
                                                     FontSize="12"
                                                     Padding="8,3"
                                                     Cursor="Hand"
@@ -279,15 +289,15 @@
                             Margin="6,0,0,4"
                             Padding="6,2,6,2"
                             BorderThickness="1"
-                            BorderBrush="#40FFFFFF"
+                            BorderBrush="{DynamicResource PreviewMenuBorder}"
                             CornerRadius="5"
-                            Background="#10FFFFFF"
+                            Background="{DynamicResource PreviewTagBackground}"
                             IsHitTestVisible="False"
                             Visibility="Collapsed">
                         <TextBlock x:Name="dropPlaceholderRightText"
                                    FontFamily="Consolas"
                                    FontSize="13.5"
-                                   Foreground="#40FFFFFF"
+                                   Foreground="{DynamicResource PreviewMutedForeground}"
                                    VerticalAlignment="Center" />
                     </Border>
                 </StackPanel>

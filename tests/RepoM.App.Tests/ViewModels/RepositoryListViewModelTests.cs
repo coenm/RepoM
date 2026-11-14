@@ -332,7 +332,7 @@ public class RepositoryListViewModelTests
             A.Dummy<System.Windows.Input.ICommand>());
     }
 
-    private static RepositoryMonitorService CreateMonitorService(RepositoryInfo? updatedInfo = null)
+    internal static RepositoryMonitorService CreateMonitorService(RepositoryInfo? updatedInfo = null)
     {
         var scanner = A.Fake<IRepositoryScanner>();
         var watcher = A.Fake<IRepositoryWatcher>();

@@ -15,73 +15,10 @@
         <ResourceDictionary.MergedDictionaries>
             <ResourceDictionary Source="/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             <ResourceDictionary Source="Themes/WorktreePreview.Dark.xaml" />
+            <ResourceDictionary Source="Themes/RepositoryStyles.xaml" />
         </ResourceDictionary.MergedDictionaries>
         <Style TargetType="controls:AcrylicContextMenu" BasedOn="{StaticResource MaterialDesignContextMenu}" />
         <Style TargetType="controls:AcrylicMenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}" />
-        <BooleanToVisibilityConverter x:Key="PreviewVisibility" />
-        <Style x:Key="IconButton" TargetType="primitives:ButtonBase">
-            <Setter Property="Width" Value="28" />
-            <Setter Property="Height" Value="28" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{DynamicResource PreviewIconForeground}" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="primitives:ButtonBase">
-                        <Border x:Name="surface" Background="{TemplateBinding Background}" CornerRadius="5">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="surface" Property="Background" Value="{DynamicResource PreviewIconHover}" />
-                            </Trigger>
-                            <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="surface" Property="Background" Value="{DynamicResource PreviewIconFocus}" />
-                                <Setter Property="Foreground" Value="{DynamicResource PreviewIconFocusForeground}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="Badge" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource PreviewBadge}" />
-            <Setter Property="CornerRadius" Value="4" />
-            <Setter Property="Padding" Value="6,2" />
-            <Setter Property="Margin" Value="0,0,6,0" />
-        </Style>
-        <Style x:Key="TagChip" TargetType="Button">
-            <Setter Property="Background" Value="{DynamicResource PreviewTagBackground}" />
-            <Setter Property="Foreground" Value="{DynamicResource PreviewTagForeground}" />
-            <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="FontSize" Value="13.5" />
-            <Setter Property="Padding" Value="6,2" />
-            <Setter Property="Margin" Value="0,5,6,0" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="ToolTip" Value="{DynamicResource WorktreePreviewTagHint}" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="5"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource PreviewTagHoverBackground}" />
-                    <Setter Property="Foreground" Value="{DynamicResource PreviewTagHoverForeground}" />
-                </Trigger>
-                <Trigger Property="IsKeyboardFocused" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource PreviewTagHoverBackground}" />
-                    <Setter Property="Foreground" Value="{DynamicResource PreviewTagHoverForeground}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
         </ResourceDictionary>
     </Window.Resources>
     <Grid Margin="16">
@@ -257,6 +194,7 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Button Content="{Binding}" Style="{StaticResource TagChip}"
+                                                    ToolTip="{DynamicResource WorktreePreviewTagHint}"
                                                     Click="Tag_Click" />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
