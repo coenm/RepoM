@@ -8,8 +8,9 @@ using AwesomeAssertions;
 using RepoM.ActionMenu.Core.ActionMenu.Context;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using Scriban.Parsing;
+using Xunit;
 
-public class FileFunctionsTests
+public sealed class FileFunctionsTests : IDisposable
 {
     private readonly IFileSystem _fileSystem = new FileSystem();
     private readonly IMenuContext _context;
@@ -24,10 +25,10 @@ public class FileFunctionsTests
         _span =  new SourceSpan("fileName", new TextPosition(1, 1, 1), new TextPosition(1, 1, 1));
         _rootPath = Path.Combine(Path.GetTempPath(), $"RepoM_Test_Repositories_{Guid.NewGuid()}");
         _rootPathSubDir = Path.Combine(_rootPath, "subDir");
+        Setup();
     }
 
-    [Before(Test)]
-    public void Setup()
+    private void Setup()
     {
         _fileSystem.Directory.CreateDirectory(_rootPath);
         using var _ = _fileSystem.File.Create(Path.Combine(_rootPath, "root.sln"));
@@ -35,13 +36,12 @@ public class FileFunctionsTests
         using var __ = _fileSystem.File.Create(Path.Combine(_rootPathSubDir, "sub.sln"));
     }
 
-    [After(Test)]
-    public void Cleanup()
+    public void Dispose()
     {
         _fileSystem.Directory.Delete(_rootPath, true);
     }
 
-    [Test]
+    [Fact]
     public void FindFiles_ShouldReturnRootAndSubDirFile()
     {
         // arrange
