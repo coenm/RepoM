@@ -19,7 +19,7 @@ public class FileAppSettingsServiceTests
 
         settings.Theme.Should().Be(AppTheme.Dark);
         settings.EnableAnimations.Should().BeTrue();
-        settings.ContextMenuLoadingIndicatorDelayMilliseconds.Should().Be(200);
+        settings.ContextMenuLoadingIndicatorDelayMilliseconds.Should().Be(500);
         settings.SortKey.Should().Be("existing");
         settings.PruneOnFetch.Should().BeTrue();
     }
