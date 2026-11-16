@@ -74,6 +74,13 @@ public sealed class AppSettings
     public int MenuPrefetchHoverDelayMilliseconds { get; set; } = 0;
 
     /// <summary>
+    /// Delay in milliseconds before showing the loading indicator while the root context menu is prepared.
+    /// Set to a negative value to keep the menu closed until it is ready without showing a loading indicator.
+    /// </summary>
+    [ManualConfigured]
+    public int ContextMenuLoadingIndicatorDelayMilliseconds { get; set; } = 500;
+
+    /// <summary>
     /// List of plugins.
     /// </summary>
     [UiConfigured]
@@ -85,6 +92,7 @@ public sealed class AppSettings
             PruneOnFetch = false,
             ReposRootDirectories = new(),
             MenuPrefetchHoverDelayMilliseconds = 0,
+            ContextMenuLoadingIndicatorDelayMilliseconds = 500,
             Plugins = [],
             PreferredMenuSizes = new(),
         };

@@ -35,6 +35,11 @@ Hover now starts preparing the root menu immediately by default. Set
 for a delay, or a negative value to disable prefetch. Previously `0` disabled it;
 use `-1` to preserve that behavior. Existing explicit positive delays remain respected.
 
+`ContextMenuLoadingIndicatorDelayMilliseconds` controls how long the root context menu waits
+before showing `Loading...`. It defaults to `200`; set it to `0` to show the indicator
+immediately, or a negative value to keep the menu closed until its entries are ready without
+showing a loading indicator.
+
 The root becomes available without waiting for deferred submenus. Deferred submenus
 load only when opened, using their existing captured Scriban scopes, and show
 `Loading...` while pending. Concurrent opens share one task (including failures).

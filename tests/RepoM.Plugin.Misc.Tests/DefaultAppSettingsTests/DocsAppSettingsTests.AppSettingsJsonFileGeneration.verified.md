@@ -14,6 +14,7 @@ This is the default configuration.
   "PreferredMenuSizes": {},
   "ReposRootDirectories": [],
   "MenuPrefetchHoverDelayMilliseconds": 0,
+  "ContextMenuLoadingIndicatorDelayMilliseconds": 200,
   "Plugins": []
 }
 ```

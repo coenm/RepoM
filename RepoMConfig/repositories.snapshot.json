@@ -13,14 +13,15 @@ repositories:
   currentBranchIsOnTag: false
   branches:
   - feature/support-worktrees
+  - origin/feature/support-worktrees
   - origin/HEAD
+  - origin/main
   - main
   - origin/agents/repom-mcp-server-plugin
   - origin/feature/automation-poc
   - origin/feature/azure-devops-upgrade
   - origin/feature/improve-search-and-filtering
   - origin/feature/sonar-fixes
-  - origin/main
   - origin/release/v1.0
   - origin/release/v1.1
   localBranches:
@@ -36,7 +37,28 @@ repositories:
   localStaged: 0
   localRemoved: 0
   stashCount: 0
-  lastSeen: &o0
+  lastSeen:
+    dateTime: 2026-11-16T10:09:07.6955766
+    utcDateTime: 2026-11-16T10:09:07.6955766Z
+    localDateTime: 2026-11-16T11:09:07.6955766+01:00
+    date: 2026-11-16T00:00:00.0000000
+    day: 16
+    dayOfWeek: Monday
+    dayOfYear: 320
+    hour: 10
+    millisecond: 695
+    microsecond: 576
+    nanosecond: 600
+    minute: 9
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 7
+    ticks: 639304205476955766
+    utcTicks: 639304205476955766
+    timeOfDay: 10:09:07.6955766
+    year: 2026
+  lastUpdated: &o0
     dateTime: 0001-01-01T00:00:00.0000000
     utcDateTime: 0001-01-01T00:00:00.0000000Z
     localDateTime: 0001-01-01T01:00:00.0000000+01:00
@@ -57,7 +79,6 @@ repositories:
     utcTicks: 0
     timeOfDay: 00:00:00
     year: 1
-  lastUpdated: *o0
   remotes:
   - key: origin
     url: https://github.com/coenm/RepoM
@@ -1986,13 +2007,11 @@ repositories:
   currentBranchIsDetached: false
   currentBranchIsOnTag: false
   branches:
+  - main
   - origin/HEAD
   - origin/main
   - feature/cosmos-idempotent
-  - main
   - v2
-  - origin/debug/parsing-error-test-a
-  - origin/dev/parsing-error-test-a
   - origin/feature/221767-dsworker
   - origin/feature/256235-PoisionQueueHandling
   - origin/feature/5.6
@@ -2002,37 +2021,54 @@ repositories:
   - origin/feature/administrationendpoint2
   - origin/feature/all-parallel
   - origin/feature/code-strict
-  - origin/feature/excel-process-feedback
   - origin/feature/innovation-deepeval
   - origin/feature/logging-deepdive
   - origin/feature/multiple-excel-files
-  - origin/feature/mutliple-models-ab-testing
   - origin/feature/notupdatesvoorThijs
   - origin/feature/parsing-error
   - origin/feature/trigger-sql-update-loket-notes
   - origin/feature/v2-test
   - origin/feature/v2-test-leon
   - origin/feature/worker-queue-scale-rules
-  - origin/hotfix/parsing-error-test-a
   - origin/v2
   localBranches:
-  - feature/cosmos-idempotent
   - main
+  - feature/cosmos-idempotent
   - v2
   tags:
   - DSAI
   - services
   - BDO
   aheadBy: 0
-  behindBy: 5
+  behindBy: 0
   localUntracked: 0
   localModified: 0
   localMissing: 0
   localAdded: 0
-  localStaged: 0
+  localStaged: 22
   localRemoved: 0
   stashCount: 0
-  lastSeen: *o0
+  lastSeen:
+    dateTime: 2026-11-16T10:09:10.7416751
+    utcDateTime: 2026-11-16T10:09:10.7416751Z
+    localDateTime: 2026-11-16T11:09:10.7416751+01:00
+    date: 2026-11-16T00:00:00.0000000
+    day: 16
+    dayOfWeek: Monday
+    dayOfYear: 320
+    hour: 10
+    millisecond: 741
+    microsecond: 675
+    nanosecond: 100
+    minute: 9
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 10
+    ticks: 639304205507416751
+    utcTicks: 639304205507416751
+    timeOfDay: 10:09:10.7416751
+    year: 2026
   lastUpdated: *o0
   remotes:
   - key: origin
@@ -2262,3 +2298,57 @@ repositories:
   lastSeen: *o0
   lastUpdated: *o0
   remotes: []
+- path: C:\Users\Munckhof CJJ\AppData\Roaming\RepoM - Copy\
+  safePath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoM - Copy
+  name: RepoM - Copy
+  windowsPath: C:\Users\Munckhof CJJ\AppData\Roaming\RepoM - Copy
+  linuxPath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoM - Copy
+  location: C:\Users\Munckhof CJJ\AppData\Roaming
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - 1
+  - config
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 4
+  localModified: 5
+  localMissing: 0
+  localAdded: 0
+  localStaged: 5
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: &o4
+    dateTime: 2026-11-16T10:10:46.1964444
+    utcDateTime: 2026-11-16T10:10:46.1964444Z
+    localDateTime: 2026-11-16T11:10:46.1964444+01:00
+    date: 2026-11-16T00:00:00.0000000
+    day: 16
+    dayOfWeek: Monday
+    dayOfYear: 320
+    hour: 10
+    millisecond: 196
+    microsecond: 444
+    nanosecond: 400
+    minute: 10
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 46
+    ticks: 639304206461964444
+    utcTicks: 639304206461964444
+    timeOfDay: 10:10:46.1964444
+    year: 2026
+  lastUpdated: *o4
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/MyRepoOneConfig.git

@@ -158,6 +158,8 @@ public class MainWindowViewModelTests
 
         public int MenuPrefetchHoverDelayMilliseconds => 2000;
 
+        public int ContextMenuLoadingIndicatorDelayMilliseconds => 200;
+
         public string SortKey { get; set; } = string.Empty;
 
         public string QueryParserKey { get; set; } = string.Empty;

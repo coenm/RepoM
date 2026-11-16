@@ -227,6 +227,8 @@ public class FileAppSettingsService : IAppSettingsService
 
     public int MenuPrefetchHoverDelayMilliseconds => Settings.MenuPrefetchHoverDelayMilliseconds;
 
+    public int ContextMenuLoadingIndicatorDelayMilliseconds => Settings.ContextMenuLoadingIndicatorDelayMilliseconds;
+
     public List<PluginSettings> Plugins
     {
         get => _plugins ??= Convert(Settings.Plugins);

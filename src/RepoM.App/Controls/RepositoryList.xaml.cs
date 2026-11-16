@@ -17,6 +17,8 @@ public partial class RepositoryList : UserControl
 {
     private CancellationTokenSource? _contextMenuCts;
 
+    internal int ContextMenuLoadingIndicatorDelayMilliseconds { get; set; } = 200;
+
     public RepositoryList()
     {
         InitializeComponent();
@@ -78,49 +80,19 @@ public partial class RepositoryList : UserControl
         }
     }
 
-    private async void LstRepositories_ContextMenuOpening(object? sender, ContextMenuEventArgs e)
+    private void LstRepositories_ContextMenuOpening(object? sender, ContextMenuEventArgs e)
     {
-        if (sender == null)
+        if (sender == null || e.Source is not FrameworkElement target || target.ContextMenu is not WpfContextMenu ctxMenu)
         {
             e.Handled = true;
             return;
         }
 
-        WpfContextMenu ctxMenu = ((FrameworkElement)e.Source).ContextMenu!;
-        var listContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(ctxMenu).ConfigureAwait(true);
-        if (!listContextMenuOpening)
-        {
-            e.Handled = true;
-        }
+        e.Handled = true;
+        _ = OpenContextMenuAsync(ctxMenu, target, PlacementMode.MousePoint);
     }
 
-    private async Task<bool> LstRepositoriesContextMenuOpeningWrapperAsync(WpfContextMenu ctxMenu)
-    {
-        try
-        {
-            return await LstRepositoriesContextMenuOpeningAsync(ctxMenu).ConfigureAwait(true);
-        }
-        catch (Exception e)
-        {
-            ViewModel.LogContextMenuError(e);
-
-            ctxMenu.Items.Clear();
-            ctxMenu.Items.Add(new AcrylicMenuItem
-            {
-                Header = "Error",
-                IsEnabled = false,
-            });
-            ctxMenu.Items.Add(new AcrylicMenuItem
-            {
-                Header = e.Message,
-                IsEnabled = false,
-            });
-
-            return false;
-        }
-    }
-
-    private async Task<bool> LstRepositoriesContextMenuOpeningAsync(WpfContextMenu ctxMenu)
+    private async Task<bool> OpenContextMenuAsync(WpfContextMenu ctxMenu, UIElement placementTarget, PlacementMode placement)
     {
         Window window = Window.GetWindow(this);
         if (!ctxMenu.Resources.MergedDictionaries.Contains(window.Resources))
@@ -128,30 +100,32 @@ public partial class RepositoryList : UserControl
             ctxMenu.Resources.MergedDictionaries.Add(window.Resources);
         }
 
-        // A newer open request supersedes this one, so a slow older build cannot overwrite a newer menu.
         _contextMenuCts?.Cancel();
+        ctxMenu.IsOpen = false;
         var cts = new CancellationTokenSource();
         _contextMenuCts = cts;
-
-        // WPF opens the menu as soon as the handler yields, so never leave the previous repository's items in it.
-        ctxMenu.Items.Clear();
-        ctxMenu.Items.Add(new AcrylicMenuItem
-        {
-            Header = "Loading...",
-            IsEnabled = false,
-        });
 
         try
         {
             string repositoryPath = ViewModel.SelectedRepository?.Path ?? string.Empty;
             var timer = Stopwatch.StartNew();
-            var entries = await ViewModel.CreateContextMenuEntriesAsync(cts.Token).ConfigureAwait(true);
-            TimeSpan wait = timer.Elapsed;
-            if (cts.IsCancellationRequested)
+            ctxMenu.Items.Clear();
+            ctxMenu.Placement = placement;
+            ctxMenu.PlacementTarget = placementTarget;
+
+            var entriesTask = ViewModel.CreateContextMenuEntriesAsync(cts.Token);
+            var menuOpenedForLoading = await WaitForContextMenuLoadingIndicatorAsync(
+                entriesTask, ContextMenuLoadingIndicatorDelayMilliseconds, cts.Token).ConfigureAwait(true);
+            if (menuOpenedForLoading)
             {
-                return false;
+                cts.Token.ThrowIfCancellationRequested();
+                ctxMenu.Items.Add(new AcrylicMenuItem { Header = "Loading...", IsEnabled = false });
+                ctxMenu.IsOpen = true;
             }
 
+            var entries = await entriesTask.ConfigureAwait(true);
+            TimeSpan wait = timer.Elapsed;
+            cts.Token.ThrowIfCancellationRequested();
             if (entries.Count == 0)
             {
                 ctxMenu.Items.Clear();
@@ -163,10 +137,29 @@ public partial class RepositoryList : UserControl
             timer.Restart();
             PopulateMenuItems(ctxMenu.Items, entries);
             ViewModel.LogMenuPresentation(repositoryPath, "root", wait, timer.Elapsed);
+            if (!menuOpenedForLoading)
+            {
+                ctxMenu.IsOpen = true;
+            }
+
             return true;
         }
         catch (OperationCanceledException) when (cts.IsCancellationRequested)
         {
+            return false;
+        }
+        catch (Exception exception)
+        {
+            if (cts.IsCancellationRequested || !ReferenceEquals(_contextMenuCts, cts))
+            {
+                return false;
+            }
+
+            ViewModel.LogContextMenuError(exception);
+            ctxMenu.Items.Clear();
+            ctxMenu.Items.Add(new AcrylicMenuItem { Header = "Error", IsEnabled = false });
+            ctxMenu.Items.Add(new AcrylicMenuItem { Header = exception.Message, IsEnabled = false });
+            ctxMenu.IsOpen = true;
             return false;
         }
         finally
@@ -178,6 +171,29 @@ public partial class RepositoryList : UserControl
 
             cts.Dispose();
         }
+    }
+
+    internal static async Task<bool> WaitForContextMenuLoadingIndicatorAsync(
+        Task entriesTask, int delayMilliseconds, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(entriesTask);
+        cancellationToken.ThrowIfCancellationRequested();
+        if (delayMilliseconds < 0)
+        {
+            return false;
+        }
+
+        using var delayCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        var delayTask = Task.Delay(delayMilliseconds, delayCts.Token);
+        Task first = await Task.WhenAny(entriesTask, delayTask).ConfigureAwait(true);
+        if (first == delayTask)
+        {
+            await delayTask.ConfigureAwait(true);
+            return true;
+        }
+
+        delayCts.Cancel();
+        return false;
     }
 
     private void PopulateMenuItems(ItemCollection items, System.Collections.Generic.IReadOnlyList<IRepositoryMenuEntryViewModel> entries)
@@ -291,13 +307,8 @@ public partial class RepositoryList : UserControl
                 return;
             }
 
-            var listContextMenuOpening = await LstRepositoriesContextMenuOpeningWrapperAsync(ctxMenu).ConfigureAwait(true);
-            if (listContextMenuOpening)
-            {
-                ctxMenu.Placement = PlacementMode.Left;
-                ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
-                ctxMenu.IsOpen = true;
-            }
+            e.Handled = true;
+            await OpenContextMenuAsync(ctxMenu, (UIElement)e.OriginalSource, PlacementMode.Left).ConfigureAwait(true);
 
         }
     }

@@ -152,6 +152,7 @@ public partial class MainWindow
         _themeController.SetTheme(_appSettingsService.Theme);
         quickFilterBar.Initialize(_quickFilterBarViewModel);
         repositoryList.Initialize(_repositoryListViewModel);
+        repositoryList.ContextMenuLoadingIndicatorDelayMilliseconds = _appSettingsService.ContextMenuLoadingIndicatorDelayMilliseconds;
 
         SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 

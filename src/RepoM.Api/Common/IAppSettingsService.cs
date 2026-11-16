@@ -35,6 +35,8 @@ public interface IAppSettingsService
 
     int MenuPrefetchHoverDelayMilliseconds { get; }
 
+    int ContextMenuLoadingIndicatorDelayMilliseconds { get; }
+
     string SortKey { get; set; }
 
     string QueryParserKey { get; set; }
