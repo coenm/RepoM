@@ -39,5 +39,6 @@ Properties:<!-- include: DocsAppSettingsTests.AppSettingsDocumentationGeneration
 - `ReposRootDirectories`: List of root directories where RepoM will search for git repositories. If null or empty, all fixed drives will be searched from the root. (optional, Manual configured)
 - `MenuPrefetchHoverDelayMilliseconds`: Delay in milliseconds the mouse must hover over a repository before its context menu is prefetched
 in the background. Set to 0 to start immediately or a negative value to disable hover prefetching. (optional, Manual configured)
-- `ContextMenuLoadingIndicatorDelayMilliseconds`: Delay in milliseconds before showing the root context menu loading indicator. Set to 0 to show it immediately or a negative value to suppress it. (optional, Manual configured)
+- `ContextMenuLoadingIndicatorDelayMilliseconds`: Delay in milliseconds before showing the loading indicator while the root context menu is prepared.
+Set to a negative value to keep the menu closed until it is ready without showing a loading indicator. (optional, Manual configured)
 - `Plugins`: List of plugins. (optional, UI configured)<!-- endInclude -->
