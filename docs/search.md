@@ -34,6 +34,11 @@ transparent and the triangle is invisible at rest but remains clickable. Hover
 reveals it through a fill-color change. The corner button cannot receive focus and
 is skipped during keyboard tab navigation.
 Hover and selection retain their normal background colors.
+The Active quick filter uses the same blue-green border and top-right triangle
+instead of an eye icon. Selected quick filters use a muted green background and a
+matching thin border; inverse filters use muted rose tones. Hover slightly lightens each
+state. The favorite star stays gold, and the Active filter keeps its blue-green
+border and triangle. Both themes use matching palettes.
 Hover/menu preparation automatically enables monitoring for repositories without an
 explicit choice. Manually disabling monitoring prevents that automatic activation
 until it is explicitly enabled again. This choice lasts for the current application session.

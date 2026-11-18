@@ -28,6 +28,14 @@
     <SolidColorBrush x:Key="PreviewTagForeground" Color="#ED8888" />
     <SolidColorBrush x:Key="PreviewTagHoverBackground" Color="#40FFFFFF" />
     <SolidColorBrush x:Key="PreviewTagHoverForeground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="QuickFilterSelectedBackground" Color="#35564B" />
+    <SolidColorBrush x:Key="QuickFilterSelectedBorder" Color="#729F8C" />
+    <SolidColorBrush x:Key="QuickFilterInverseBackground" Color="#49383D" />
+    <SolidColorBrush x:Key="QuickFilterInverseBorder" Color="#A87983" />
+    <SolidColorBrush x:Key="QuickFilterInverseForeground" Color="#E9B2BC" />
+    <SolidColorBrush x:Key="QuickFilterHoverBackground" Color="#38414A" />
+    <SolidColorBrush x:Key="QuickFilterSelectedHoverBackground" Color="#406557" />
+    <SolidColorBrush x:Key="QuickFilterInverseHoverBackground" Color="#57434A" />
     <SolidColorBrush x:Key="PreviewIconHover" Color="#14FFFFFF" />
     <SolidColorBrush x:Key="PreviewIconFocus" Color="#24FFFFFF" />
     <SolidColorBrush x:Key="PreviewIconFocusForeground" Color="#FFFFFF" />

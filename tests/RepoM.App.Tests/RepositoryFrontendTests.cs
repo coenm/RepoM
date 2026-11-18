@@ -45,6 +45,87 @@ using Xunit;
 public class RepositoryFrontendTests
 {
     [WpfTheory]
+    [InlineData("Dark", "\U0001F441", false, false)]
+    [InlineData("Dark", "\U0001F441", true, false)]
+    [InlineData("Dark", "\U0001F441", true, true)]
+    [InlineData("Light", "\U0001F441", false, false)]
+    [InlineData("Light", "\U0001F441", true, false)]
+    [InlineData("Light", "\U0001F441", true, true)]
+    [InlineData("Dark", "\u2605", false, false)]
+    [InlineData("Dark", "\u2605", true, false)]
+    [InlineData("Dark", "\u2605", true, true)]
+    [InlineData("Light", "\u2605", false, false)]
+    [InlineData("Light", "\u2605", true, false)]
+    [InlineData("Light", "\u2605", true, true)]
+    [InlineData("Dark", "services", false, false)]
+    [InlineData("Dark", "services", true, false)]
+    [InlineData("Dark", "services", true, true)]
+    [InlineData("Light", "services", false, false)]
+    [InlineData("Light", "services", true, false)]
+    [InlineData("Light", "services", true, true)]
+    public void QuickFilter_ShouldUseThemeColorsAndPreserveBuiltInSymbols(string theme, string filterLabel, bool active, bool inverse)
+    {
+        var bar = new QuickFilterBar();
+        var items = (ItemsControl)bar.FindName("quickFilterItemsControl");
+        var presenter = new ContentPresenter
+        {
+            ContentTemplate = items.ItemTemplate,
+            Content = new QuickFilterViewModel(new QuickFilterModel
+            {
+                Label = filterLabel, IsBuiltIn = filterLabel != "services", IsActive = active, IsInverse = inverse,
+            }, A.Fake<IQuickFilterService>()),
+        };
+        presenter.Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
+            Source = new Uri($"/RepoM;component/Themes/WorktreePreview.{theme}.xaml", UriKind.Relative),
+        });
+        presenter.Measure(new System.Windows.Size(100, 100));
+        presenter.Arrange(new Rect(presenter.DesiredSize));
+        presenter.UpdateLayout();
+
+        var border = (Border)items.ItemTemplate.FindName("qfBorder", presenter);
+        var symbol = (Grid)items.ItemTemplate.FindName("monitoringSymbol", presenter);
+        var label = (TextBlock)items.ItemTemplate.FindName("filterLabel", presenter);
+        if (filterLabel == "\U0001F441")
+        {
+            label.Visibility.Should().Be(Visibility.Collapsed);
+            symbol.Visibility.Should().Be(Visibility.Visible);
+            border.BorderThickness.Should().Be(new Thickness(2));
+            border.BorderBrush.Should().BeSameAs(presenter.FindResource("RepositoryMonitoringBorder"));
+            var corner = FindChild<System.Windows.Shapes.Path>(symbol);
+            corner.Fill.Should().BeSameAs(presenter.FindResource("RepositoryMonitoringActive"));
+            corner.TranslatePoint(new Point(corner.ActualWidth, 0), border)
+                .Should().Be(new Point(border.ActualWidth - 2, 2));
+            border.ToolTip.Should().Be("Active");
+        }
+        else
+        {
+            label.Visibility.Should().Be(Visibility.Visible);
+            symbol.Visibility.Should().Be(Visibility.Collapsed);
+            border.BorderThickness.Should().Be(new Thickness(1));
+            if (active)
+            {
+                border.BorderBrush.Should().BeSameAs(presenter.FindResource(
+                    inverse ? "QuickFilterInverseBorder" : "QuickFilterSelectedBorder"));
+            }
+            else
+            {
+                ((SolidColorBrush)border.BorderBrush).Color.A.Should().Be(0);
+            }
+
+            var foreground = filterLabel == "\u2605" ? "PreviewFavorite"
+                : !active ? "PreviewMutedForeground"
+                : inverse ? "QuickFilterInverseForeground" : "PreviewForeground";
+            label.Foreground.Should().BeSameAs(presenter.FindResource(foreground));
+        }
+
+        var expectedBackground = active
+            ? inverse ? "QuickFilterInverseBackground" : "QuickFilterSelectedBackground"
+            : "PreviewTagBackground";
+        border.Background.Should().BeSameAs(presenter.FindResource(expectedBackground));
+    }
+
+    [WpfTheory]
     [InlineData(true)]
     [InlineData(false)]
     public void FocusingRowButton_ShouldMoveSelectionFromPreviousRepository(bool initiallyExpanded)

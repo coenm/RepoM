@@ -21,7 +21,8 @@
     <StackPanel Orientation="Horizontal">
         <Border x:Name="combineModeToggle"
                 Margin="0,0,8,4"
-                Padding="6,2,6,2"
+                Padding="5,1,5,1"
+                BorderThickness="1"
                 CornerRadius="5"
                 Cursor="Hand"
                 MouseLeftButtonUp="CombineModeToggle_Click"
@@ -30,22 +31,24 @@
                 <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Setter Property="Background" Value="{DynamicResource PreviewTagBackground}" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding HasItems}" Value="True">
                             <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding CombineModeLabel}" Value="OR">
-                            <Setter Property="Background" Value="#FF7E57C2" />
+                            <Setter Property="Background" Value="{DynamicResource QuickFilterSelectedBackground}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource QuickFilterSelectedBorder}" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource PreviewTagHoverBackground}" />
+                            <Setter Property="Background" Value="{DynamicResource QuickFilterHoverBackground}" />
                         </Trigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding CombineModeLabel}" Value="OR" />
                                 <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Background" Value="#FF9575CD" />
+                            <Setter Property="Background" Value="{DynamicResource QuickFilterSelectedHoverBackground}" />
                         </MultiDataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -60,7 +63,7 @@
                         <Setter Property="Foreground" Value="{DynamicResource PreviewMutedForeground}" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding CombineModeLabel}" Value="OR">
-                                <Setter Property="Foreground" Value="#FFFFFFFF" />
+                                <Setter Property="Foreground" Value="{DynamicResource PreviewForeground}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -102,25 +105,46 @@
                     </Border>
                     <Border x:Name="qfBorder"
                             Margin="0,0,0,4"
-                            Padding="6,2,6,2"
-                            BorderThickness="0"
+                            Padding="5,1,5,1"
+                            BorderThickness="1"
                             CornerRadius="5"
                             Cursor="Hand"
                             MouseLeftButtonUp="QuickFilter_Click">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Background" Value="{DynamicResource PreviewTagBackground}" />
+                                <Setter Property="BorderBrush" Value="Transparent" />
                                 <Setter Property="ToolTip" Value="{Binding ToolTip}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                        <Setter Property="Background" Value="#FF4FC3F7" />
+                                        <Setter Property="Background" Value="{DynamicResource QuickFilterSelectedBackground}" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource QuickFilterSelectedBorder}" />
                                     </DataTrigger>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding IsActive}" Value="True" />
                                             <Condition Binding="{Binding IsInverse}" Value="True" />
                                         </MultiDataTrigger.Conditions>
-                                        <Setter Property="Background" Value="#FFEF9A9A" />
+                                        <Setter Property="Background" Value="{DynamicResource QuickFilterInverseBackground}" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource QuickFilterInverseBorder}" />
+                                    </MultiDataTrigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource QuickFilterHoverBackground}" />
+                                    </Trigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding IsActive}" Value="True" />
+                                            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Background" Value="{DynamicResource QuickFilterSelectedHoverBackground}" />
+                                    </MultiDataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding IsActive}" Value="True" />
+                                            <Condition Binding="{Binding IsInverse}" Value="True" />
+                                            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Background" Value="{DynamicResource QuickFilterInverseHoverBackground}" />
                                     </MultiDataTrigger>
                                     <DataTrigger Binding="{Binding HasToolTip}" Value="False">
                                         <Setter Property="ToolTip" Value="{x:Null}" />
@@ -129,7 +153,7 @@
                             </Style>
                         </Border.Style>
                         <Grid>
-                            <TextBlock Text="{Binding DisplayLabel}"
+                            <TextBlock x:Name="filterLabel" Text="{Binding DisplayLabel}"
                                        FontSize="13.5"
                                        VerticalAlignment="Center">
                                 <TextBlock.Style>
@@ -138,8 +162,15 @@
                                         <Setter Property="Foreground" Value="{DynamicResource PreviewMutedForeground}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                <Setter Property="Foreground" Value="#FF212121" />
+                                                <Setter Property="Foreground" Value="{DynamicResource PreviewForeground}" />
                                             </DataTrigger>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsActive}" Value="True" />
+                                                    <Condition Binding="{Binding IsInverse}" Value="True" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Foreground" Value="{DynamicResource QuickFilterInverseForeground}" />
+                                            </MultiDataTrigger>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding IsBuiltIn}" Value="True" />
@@ -150,40 +181,24 @@
                                                 <Setter Property="TextAlignment" Value="Center" />
                                                 <Setter Property="Foreground" Value="{DynamicResource PreviewFavorite}" />
                                             </MultiDataTrigger>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding IsBuiltIn}" Value="True" />
-                                                    <Condition Binding="{Binding Label}" Value="&#x2605;" />
-                                                    <Condition Binding="{Binding IsActive}" Value="True" />
-                                                </MultiDataTrigger.Conditions>
-                                                <Setter Property="Foreground" Value="#FF212121" />
-                                            </MultiDataTrigger>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding IsBuiltIn}" Value="True" />
-                                                    <Condition Binding="{Binding Label}" Value="&#x1F441;" />
-                                                </MultiDataTrigger.Conditions>
-                                                <Setter Property="FontFamily" Value="Segoe UI Emoji" />
-                                                <Setter Property="Foreground" Value="{DynamicResource PreviewMutedForeground}" />
-                                            </MultiDataTrigger>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding IsBuiltIn}" Value="True" />
-                                                    <Condition Binding="{Binding Label}" Value="&#x1F441;" />
-                                                    <Condition Binding="{Binding IsActive}" Value="True" />
-                                                </MultiDataTrigger.Conditions>
-                                                <Setter Property="Foreground" Value="#FF212121" />
-                                            </MultiDataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
 
+                            <Grid x:Name="monitoringSymbol" Width="28" Height="20"
+                                  Visibility="Collapsed" IsHitTestVisible="False">
+                                <Path HorizontalAlignment="Right" VerticalAlignment="Top"
+                                      Width="14" Height="14"
+                                      Data="M 0,0 L 9,0 A 5,5 0 0 1 14,5 L 14,14 Z"
+                                      Fill="{DynamicResource RepositoryMonitoringActive}" />
+                            </Grid>
+
                             <Border x:Name="hamburgerButton"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Stretch"
                                     Padding="4,0,0,0"
-                                    Margin="-2,-2,-6,-2"
+                                    Margin="-2,-1,-5,-1"
                                     CornerRadius="0,5,5,0"
                                     Cursor="Hand"
                                     MouseLeftButtonDown="HamburgerButton_MouseDown"
@@ -303,6 +318,18 @@
                 </StackPanel>
 
                 <DataTemplate.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsBuiltIn}" Value="True" />
+                            <Condition Binding="{Binding Label}" Value="&#x1F441;" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter TargetName="filterLabel" Property="Visibility" Value="Collapsed" />
+                        <Setter TargetName="monitoringSymbol" Property="Visibility" Value="Visible" />
+                        <Setter TargetName="qfBorder" Property="Padding" Value="0" />
+                        <Setter TargetName="qfBorder" Property="CornerRadius" Value="6" />
+                        <Setter TargetName="qfBorder" Property="BorderThickness" Value="2" />
+                        <Setter TargetName="qfBorder" Property="BorderBrush" Value="{DynamicResource RepositoryMonitoringBorder}" />
+                    </MultiDataTrigger>
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                             <Condition Binding="{Binding IsBuiltIn}" Value="False" />
