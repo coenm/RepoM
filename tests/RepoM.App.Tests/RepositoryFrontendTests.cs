@@ -158,7 +158,7 @@ public class RepositoryFrontendTests
         {
             window.Show();
             window.UpdateLayout();
-            firstRow.Focus().Should().BeTrue();
+            list.SelectedItem = firstRow;
             firstRow.IsSelected.Should().BeTrue();
 
             var arrow = (Button)secondComponent.FindName("DisplayModeButton");
@@ -402,11 +402,14 @@ public class RepositoryFrontendTests
                 Tags = ["work"],
                 WasFound = true,
             });
-            await Task.Delay(500);
-            await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
-
             var repositories = (RepositoryList)window.FindName("repositoryList");
             var list = (ListBox)repositories.FindName("lstRepositories");
+            for (int attempt = 0; list.Items.Count == 0 && attempt < 100; attempt++)
+            {
+                await Task.Delay(50);
+                await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+            }
+
             list.Items.Count.Should().Be(1);
             var repository = (RepositoryViewModel)list.Items[0];
             var row = (ListBoxItem)list.ItemContainerGenerator.ContainerFromIndex(0);

@@ -74,12 +74,12 @@ public class WorktreePreviewWindowTests
             }
 
             Color menuBackground = ((SolidColorBrush)openMenu.Background).Color;
-            GetSubmenuBackground(git).Should().Be(menuBackground);
+            (await GetSubmenuBackgroundAsync(git)).Should().Be(menuBackground);
             await AssertFlatPopupFrameAsync(git, openMenu);
             var checkout = git.Items.OfType<MenuItem>().Single(item => item.Name == "Checkout");
             checkout.IsSubmenuOpen = true;
             await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
-            GetSubmenuBackground(checkout).Should().Be(menuBackground);
+            (await GetSubmenuBackgroundAsync(checkout)).Should().Be(menuBackground);
             await AssertFlatPopupFrameAsync(checkout, openMenu);
             checkout.IsSubmenuOpen = false;
             var fetch = git.Items.OfType<MenuItem>().Single(item => item.Name == "Fetch");
@@ -103,7 +103,7 @@ public class WorktreePreviewWindowTests
             var worktrees = openMenu.Items.OfType<MenuItem>().Single(item => item.Name == "WorktreePreviewOtherWorktrees");
             worktrees.IsSubmenuOpen = true;
             await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
-            GetSubmenuBackground(worktrees).Should().Be(((SolidColorBrush)openMenu.Background).Color);
+            (await GetSubmenuBackgroundAsync(worktrees)).Should().Be(((SolidColorBrush)openMenu.Background).Color);
             await AssertFlatPopupFrameAsync(worktrees, openMenu);
             worktrees.Items.OfType<MenuItem>().Single(item => Equals(item.Header, worktree.Name))
                 .RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
@@ -329,7 +329,7 @@ public class WorktreePreviewWindowTests
             var git = menu.Items.OfType<MenuItem>().Single(item => item.Name == "WorktreePreviewGit");
             git.IsSubmenuOpen = true;
             await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
-            GetSubmenuBackground(git).Should().Be(lightMenu);
+            (await GetSubmenuBackgroundAsync(git)).Should().Be(lightMenu);
 
             selector.SelectedValue = WorktreePreviewTheme.System;
             await Task.Run(() => systemTheme.Change(false));
@@ -343,7 +343,7 @@ public class WorktreePreviewWindowTests
             git = menu.Items.OfType<MenuItem>().Single(item => item.Name == "WorktreePreviewGit");
             git.IsSubmenuOpen = true;
             await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
-            GetSubmenuBackground(git).Should().Be(((SolidColorBrush)menu.Background).Color);
+            (await GetSubmenuBackgroundAsync(git)).Should().Be(((SolidColorBrush)menu.Background).Color);
 
             await Task.Run(() => systemTheme.Change(true));
             await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
@@ -637,9 +637,18 @@ public class WorktreePreviewWindowTests
         surface.ActualHeight.Should().BeApproximately(popupRoot.ActualHeight, 0.1);
     }
 
-    private static Color GetSubmenuBackground(MenuItem menu)
+    private static async Task<Color> GetSubmenuBackgroundAsync(MenuItem menu)
     {
-        DependencyObject? parent = VisualTreeHelper.GetParent(menu.ItemContainerGenerator.ContainerFromIndex(0));
+        DependencyObject? container = menu.ItemContainerGenerator.ContainerFromIndex(0);
+        for (int attempt = 0; container is null && attempt < 40; attempt++)
+        {
+            await Task.Delay(25);
+            await menu.Dispatcher.InvokeAsync(menu.UpdateLayout, DispatcherPriority.ApplicationIdle);
+            container = menu.ItemContainerGenerator.ContainerFromIndex(0);
+        }
+
+        container.Should().NotBeNull($"submenu items for '{menu.Header}' should be generated when it is open");
+        DependencyObject? parent = VisualTreeHelper.GetParent(container!);
         while (parent != null)
         {
             if (parent is Border { Background: SolidColorBrush brush } && brush.Color.A > 0)
