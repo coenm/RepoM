@@ -39,6 +39,8 @@ instead of an eye icon. Selected quick filters use a muted green background and 
 matching thin border; inverse filters use muted rose tones. Hover slightly lightens each
 state. The favorite star stays gold, and the Active filter keeps its blue-green
 border and triangle. Both themes use matching palettes.
+Repository lists use a narrow rounded scrollbar thumb without arrow buttons; its
+muted blue-gray color brightens on hover and adapts to the selected theme.
 Hover/menu preparation automatically enables monitoring for repositories without an
 explicit choice. Manually disabling monitoring prevents that automatic activation
 until it is explicitly enabled again. This choice lasts for the current application session.

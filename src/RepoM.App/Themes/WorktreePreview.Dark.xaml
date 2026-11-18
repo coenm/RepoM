@@ -40,6 +40,8 @@
     <SolidColorBrush x:Key="PreviewIconFocus" Color="#24FFFFFF" />
     <SolidColorBrush x:Key="PreviewIconFocusForeground" Color="#FFFFFF" />
     <SolidColorBrush x:Key="PreviewFavorite" Color="#F2CF72" />
+    <SolidColorBrush x:Key="RepositoryScrollBarThumb" Color="#65727D" />
+    <SolidColorBrush x:Key="RepositoryScrollBarThumbHover" Color="#8B9AA7" />
     <SolidColorBrush x:Key="PreviewMenuBackground" Color="#E620252B" />
     <SolidColorBrush x:Key="PreviewMenuBorder" Color="#46515C" />
 </ResourceDictionary>

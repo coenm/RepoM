@@ -45,6 +45,38 @@ using Xunit;
 public class RepositoryFrontendTests
 {
     [WpfTheory]
+    [InlineData("Dark")]
+    [InlineData("Light")]
+    public void RepositoryScrollBar_ShouldUseCompactThemeAwareThumb(string theme)
+    {
+        var scrollbar = new ScrollBar { Orientation = Orientation.Vertical };
+        scrollbar.Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
+            Source = new Uri($"/RepoM;component/Themes/WorktreePreview.{theme}.xaml", UriKind.Relative),
+        });
+        scrollbar.Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
+            Source = new Uri("/RepoM;component/Themes/RepositoryStyles.xaml", UriKind.Relative),
+        });
+        scrollbar.Style = (Style)scrollbar.FindResource("RepositoryScrollBar");
+        scrollbar.Measure(new System.Windows.Size(12, 100));
+        scrollbar.Arrange(new Rect(0, 0, 12, 100));
+        scrollbar.UpdateLayout();
+        scrollbar.ApplyTemplate();
+
+        scrollbar.Width.Should().Be(12);
+        var track = (Track)scrollbar.Template.FindName("PART_Track", scrollbar);
+        track.DecreaseRepeatButton.Opacity.Should().Be(0);
+        track.IncreaseRepeatButton.Opacity.Should().Be(0);
+        var thumb = (Thumb)track.Thumb;
+        thumb.ApplyTemplate();
+        var surface = (Border)thumb.Template.FindName("thumbSurface", thumb);
+        surface.CornerRadius.Should().Be(new CornerRadius(4));
+        surface.Margin.Should().Be(new Thickness(3));
+        surface.Background.Should().BeSameAs(scrollbar.FindResource("RepositoryScrollBarThumb"));
+    }
+
+    [WpfTheory]
     [InlineData("Dark", "\U0001F441", false, false)]
     [InlineData("Dark", "\U0001F441", true, false)]
     [InlineData("Dark", "\U0001F441", true, true)]
