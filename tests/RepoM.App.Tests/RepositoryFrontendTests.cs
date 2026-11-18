@@ -12,6 +12,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Windows.Input;
@@ -43,6 +44,239 @@ using Xunit;
 [DisableParallelization]
 public class RepositoryFrontendTests
 {
+    [WpfTheory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void FocusingRowButton_ShouldMoveSelectionFromPreviousRepository(bool initiallyExpanded)
+    {
+        _ = Application.Current ?? new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+        var monitoring = new RepositoryMonitoringStateService();
+        using var first = new RepositoryViewModel(CompactRepositoryInfo(0, 0, 0),
+            A.Fake<IFavoriteService>(), monitoring, monitoring);
+        using var second = new RepositoryViewModel(CompactRepositoryInfo(0, 0, 0),
+            A.Fake<IFavoriteService>(), monitoring, monitoring) { IsExpanded = initiallyExpanded };
+        var firstComponent = new RepositoryComponent();
+        var secondComponent = new RepositoryComponent();
+        var firstRow = new ListBoxItem { DataContext = first, Content = firstComponent };
+        var secondRow = new ListBoxItem { DataContext = second, Content = secondComponent };
+        var list = new ListBox { SelectionMode = SelectionMode.Single };
+        foreach (var resource in new[] { "Themes/WorktreePreview.Dark.xaml", "Themes/RepositoryStyles.xaml", "i18n/en-us.xaml" })
+        {
+            list.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/RepoM;component/{resource}", UriKind.Relative),
+            });
+        }
+
+        list.ItemContainerStyle = (Style)list.FindResource("RepositoryRow");
+        list.Items.Add(firstRow);
+        list.Items.Add(secondRow);
+        var window = new Window { Content = list, Width = 400, Height = 400 };
+        Appearance.SetEnableAnimations(window, false);
+        try
+        {
+            window.Show();
+            window.UpdateLayout();
+            firstRow.Focus().Should().BeTrue();
+            firstRow.IsSelected.Should().BeTrue();
+
+            var arrow = (Button)secondComponent.FindName("DisplayModeButton");
+            arrow.Focus().Should().BeTrue();
+            arrow.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            second.IsExpanded.Should().Be(!initiallyExpanded);
+            firstRow.IsKeyboardFocusWithin.Should().BeFalse();
+            firstRow.IsSelected.Should().BeFalse();
+            secondRow.IsKeyboardFocusWithin.Should().BeTrue();
+            list.SelectedItem.Should().BeSameAs(secondRow);
+            list.SelectedItems.Count.Should().Be(1);
+
+            var favorite = (ToggleButton)firstComponent.FindName("FavoriteButton");
+            favorite.Focus().Should().BeTrue();
+            secondRow.IsSelected.Should().BeFalse();
+            secondRow.IsKeyboardFocusWithin.Should().BeFalse();
+            list.SelectedItem.Should().BeSameAs(firstRow);
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    [WpfTheory]
+    [InlineData("Dark")]
+    [InlineData("Light")]
+    public void MonitoringBorder_ShouldFollowStateWithoutReplacingSelectionBackground(string theme)
+    {
+        var monitoring = new RepositoryMonitoringStateService();
+        using var repository = new RepositoryViewModel(CompactRepositoryInfo(0, 0, 0),
+            A.Fake<IFavoriteService>(), monitoring, monitoring);
+        var component = new RepositoryComponent();
+        var row = new ListBoxItem { DataContext = repository, Content = component };
+        foreach (var resource in new[] { $"Themes/WorktreePreview.{theme}.xaml", "Themes/RepositoryStyles.xaml" })
+        {
+            row.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/RepoM;component/{resource}", UriKind.Relative),
+            });
+        }
+        row.Style = (Style)row.FindResource("RepositoryRow");
+        row.ApplyTemplate();
+        row.Measure(new System.Windows.Size(320, double.PositiveInfinity));
+        row.Arrange(new Rect(0, 0, 320, row.DesiredSize.Height));
+        row.UpdateLayout();
+        var card = (Border)row.Template.FindName("card", row);
+        var cornerButton = (ToggleButton)component.FindName("MonitoringButton");
+        cornerButton.TranslatePoint(new Point(cornerButton.ActualWidth, 0), card)
+            .Should().Be(new Point(card.ActualWidth, 0));
+        var corner = (System.Windows.Shapes.Path)cornerButton.Template.FindName("corner", cornerButton);
+        corner.Data.FillContains(new Point(13.9, 0.1)).Should().BeFalse("the inner corner must remain rounded");
+        corner.Data.FillContains(new Point(11, 4)).Should().BeTrue();
+        corner.TranslatePoint(new Point(corner.ActualWidth, 0), card)
+            .Should().Be(new Point(card.ActualWidth - card.BorderThickness.Right, card.BorderThickness.Top));
+        corner.ActualWidth.Should().Be(14);
+        corner.ActualHeight.Should().Be(14);
+        ((SolidColorBrush)corner.Fill).Color.A.Should().Be(0);
+        corner.IsHitTestVisible.Should().BeTrue();
+        ((SolidColorBrush)card.BorderBrush).Color.A.Should().Be(0);
+        repository.ToggleMonitoring();
+        card.BorderBrush.Should().BeSameAs(row.FindResource("RepositoryMonitoringBorder"));
+        corner.Fill.Should().BeSameAs(cornerButton.Foreground);
+        ((SolidColorBrush)corner.Fill).Color.Should().Be(((SolidColorBrush)card.BorderBrush).Color);
+        card.BorderThickness.Should().Be(new Thickness(2));
+
+        row.IsSelected = true;
+        card.Background.Should().BeSameAs(row.FindResource("PreviewSelectedSurface"));
+        repository.ToggleMonitoring();
+        ((SolidColorBrush)card.BorderBrush).Color.A.Should().Be(0);
+        ((SolidColorBrush)corner.Fill).Color.A.Should().Be(0);
+        card.Background.Should().BeSameAs(row.FindResource("PreviewSelectedSurface"));
+    }
+
+    [WpfTheory]
+    [InlineData("Dark")]
+    [InlineData("Light")]
+    public void CompactRow_ShouldKeepStatusVisibleAtNarrowWidthsAndRefreshInPlace(string theme)
+    {
+        var monitoring = new RepositoryMonitoringStateService();
+        using var repository = new RepositoryViewModel(
+            CompactRepositoryInfo(2, 3, 1), A.Fake<IFavoriteService>(),
+            monitoring, monitoring)
+        {
+            IsExpanded = false,
+        };
+        var component = new RepositoryComponent { DataContext = repository };
+        foreach (var resource in new[] { $"Themes/WorktreePreview.{theme}.xaml", "Themes/RepositoryStyles.xaml", "i18n/en-us.xaml" })
+        {
+            component.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/RepoM;component/{resource}", UriKind.Relative),
+            });
+        }
+
+        void Layout()
+        {
+            component.Measure(new System.Windows.Size(320, double.PositiveInfinity));
+            component.Arrange(new Rect(0, 0, 320, component.DesiredSize.Height));
+            component.UpdateLayout();
+        }
+
+        Layout();
+        var branch = (Run)component.FindName("CompactBranch");
+        var heading = (TextBlock)component.FindName("CompactHeading");
+        var ahead = (TextBlock)component.FindName("CompactAhead");
+        var behind = (TextBlock)component.FindName("CompactBehind");
+        var dirty = (TextBlock)component.FindName("CompactDirty");
+        var indicators = (StackPanel)component.FindName("CompactStatus");
+        var favorite = (ToggleButton)component.FindName("FavoriteButton");
+        var radar = (ToggleButton)component.FindName("MonitoringButton");
+        radar.Visibility.Should().Be(Visibility.Visible);
+        radar.IsChecked.Should().BeFalse();
+        radar.TranslatePoint(new Point(radar.ActualWidth, 0), component).X.Should()
+            .BeApproximately(component.ActualWidth, 0.1);
+        radar.TranslatePoint(new Point(), component).Y.Should().BeApproximately(0, 0.1);
+        var offColor = ((SolidColorBrush)radar.Foreground).Color;
+        radar.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        Layout();
+        radar.IsChecked.Should().BeTrue();
+        ((SolidColorBrush)radar.Foreground).Color.Should().NotBe(offColor);
+        branch.Text.Should().Be("   feature/a-very-long-branch-name-that-must-be-truncated");
+        heading.ActualWidth.Should().BeGreaterThan(0);
+        var name = (Run)heading.Inlines.FirstInline;
+        name.NextInline.Should().BeSameAs(branch);
+        name.FontSize.Should().Be(17);
+        name.FontWeight.Should().Be(FontWeights.SemiBold);
+        branch.FontSize.Should().Be(heading.FontSize);
+        branch.FontWeight.Should().Be(heading.FontWeight);
+        branch.Foreground.Should().Be(heading.Foreground);
+        heading.TranslatePoint(new Point(heading.ActualWidth, 0), component).X
+            .Should().BeLessThanOrEqualTo(indicators.TranslatePoint(new Point(), component).X);
+        ahead.Text.Should().Be("\u21912");
+        behind.Text.Should().Be("\u21933");
+        dirty.Visibility.Should().Be(Visibility.Visible);
+        ((SolidColorBrush)dirty.Foreground).Color.Should().NotBe(((SolidColorBrush)ahead.Foreground).Color);
+        indicators.ActualWidth.Should().BeApproximately(indicators.DesiredSize.Width, 0.1);
+        var rightEdge = indicators.TranslatePoint(new Point(indicators.ActualWidth, 0), component).X;
+        rightEdge.Should().BeLessThanOrEqualTo(favorite.TranslatePoint(new Point(), component).X);
+        ((StackPanel)component.FindName("EntryDetails")).Visibility.Should().Be(Visibility.Collapsed);
+        double compactHeight = component.ActualHeight;
+
+        repository.Update(CompactRepositoryInfo(0, 0, 0));
+        Layout();
+        ahead.Visibility.Should().Be(Visibility.Collapsed);
+        behind.Visibility.Should().Be(Visibility.Collapsed);
+        dirty.Visibility.Should().Be(Visibility.Collapsed);
+        ((TextBlock)component.FindName("CompactUnknown")).Visibility.Should().Be(Visibility.Collapsed);
+        ((TextBlock)component.FindName("CompactNoUpstream")).Visibility.Should().Be(Visibility.Collapsed);
+
+        RepositoryInfo unknown = CompactRepositoryInfo(0, 0, 0);
+        unknown.LocalModified = null;
+        repository.Update(unknown);
+        Layout();
+        ((TextBlock)component.FindName("CompactUnknown")).Visibility.Should().Be(Visibility.Visible);
+        RepositoryInfo noUpstream = CompactRepositoryInfo(0, 0, 0);
+        noUpstream.CurrentBranchHasUpstream = false;
+        repository.Update(noUpstream);
+        Layout();
+        ((TextBlock)component.FindName("CompactNoUpstream")).Visibility.Should().Be(Visibility.Visible);
+
+        repository.IsExpanded = true;
+        repository.Update(CompactRepositoryInfo(2, 3, 1));
+        Layout();
+        radar.Visibility.Should().Be(Visibility.Visible);
+        radar.IsChecked.Should().BeTrue();
+        radar.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        repository.EnableMonitoring();
+        Layout();
+        radar.IsChecked.Should().BeFalse("automatic menu preparation must respect manual opt-out");
+        ((SolidColorBrush)radar.Foreground).Color.Should().Be(offColor);
+        indicators.Visibility.Should().Be(Visibility.Visible);
+        ahead.Visibility.Should().Be(Visibility.Visible);
+        behind.Visibility.Should().Be(Visibility.Visible);
+        dirty.Visibility.Should().Be(Visibility.Visible);
+        indicators.ActualWidth.Should().BeApproximately(indicators.DesiredSize.Width, 0.1);
+        indicators.TranslatePoint(new Point(indicators.ActualWidth, 0), component).X
+            .Should().BeLessThanOrEqualTo(favorite.TranslatePoint(new Point(), component).X);
+        heading.Visibility.Should().Be(Visibility.Collapsed);
+        ((StackPanel)component.FindName("EntryDetails")).Visibility.Should().Be(Visibility.Visible);
+        component.ActualHeight.Should().BeGreaterThan(compactHeight);
+
+        repository.Update(CompactRepositoryInfo(0, 0, 0));
+        Layout();
+        ahead.Visibility.Should().Be(Visibility.Collapsed);
+        behind.Visibility.Should().Be(Visibility.Collapsed);
+        dirty.Visibility.Should().Be(Visibility.Collapsed);
+    }
+
+    private static RepositoryInfo CompactRepositoryInfo(int ahead, int behind, int modified) => new()
+    {
+        Name = "A very long repository name that must be truncated",
+        Path = @"C:\Repos\Real", SafePath = "C:/Repos/Real",
+        CurrentBranch = "feature/a-very-long-branch-name-that-must-be-truncated",
+        CurrentBranchHasUpstream = true, AheadBy = ahead, BehindBy = behind,
+        LocalAdded = 0, LocalStaged = 0, LocalRemoved = 0,
+        LocalModified = modified, LocalMissing = 0, LocalUntracked = 0,
+    };
+
     [WpfFact]
     public async Task MainWindow_ShouldRenderRealRepositoryCardsAndPersistHamburgerAppearanceChoices()
     {
@@ -116,7 +350,7 @@ public class RepositoryFrontendTests
             repository.IsExpanded.Should().BeFalse();
             component.HasAnimatedProperties.Should().BeFalse();
             ((StackPanel)component.FindName("EntryDetails")).Visibility.Should().Be(Visibility.Collapsed);
-            Point titlePosition = title.TranslatePoint(new Point(), row);
+            double titleLeft = ((TextBlock)component.FindName("CompactHeading")).TranslatePoint(new Point(), row).X;
             double minimalHeight = component.ActualHeight;
 
             var animations = (MenuItem)window.FindName("AnimationsMenuItem");
@@ -125,7 +359,7 @@ public class RepositoryFrontendTests
             button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             window.UpdateLayout();
             component.HasAnimatedProperties.Should().BeTrue();
-            title.TranslatePoint(new Point(), row).Should().Be(titlePosition);
+            title.TranslatePoint(new Point(), row).X.Should().Be(titleLeft);
             await Task.Delay(300);
             window.UpdateLayout();
             component.ActualHeight.Should().BeGreaterThan(minimalHeight);
@@ -134,8 +368,15 @@ public class RepositoryFrontendTests
 
             ((ToggleButton)component.FindName("FavoriteButton")).RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
             A.CallTo(() => favorites.SetFavorite("C:/Repos/Real", true)).MustHaveHappenedOnceExactly();
-            ((ToggleButton)component.FindName("MonitoringButton")).RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-            A.CallTo(() => monitoring.SetMonitored("C:/Repos/Real", true)).MustHaveHappenedOnceExactly();
+            var monitoringButton = (ToggleButton)component.FindName("MonitoringButton");
+            Keyboard.Focus(button);
+            var previousFocus = Keyboard.FocusedElement;
+            Keyboard.Focus(monitoringButton);
+            monitoringButton.IsKeyboardFocused.Should().BeFalse();
+            Keyboard.FocusedElement.Should().BeSameAs(previousFocus);
+            monitoringButton.IsTabStop.Should().BeFalse();
+            var monitoringCorner = (System.Windows.Shapes.Path)monitoringButton.Template.FindName("corner", monitoringButton);
+            monitoringCorner.Stroke.Should().BeNull("focus must not draw an outline around the triangle");
             var tags = (ItemsControl)component.FindName("Tags");
             var tag = FindChild<Button>(tags.ItemContainerGenerator.ContainerFromIndex(0));
             ((IInvokeProvider)new ButtonAutomationPeer(tag).GetPattern(PatternInterface.Invoke)).Invoke();

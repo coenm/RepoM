@@ -9,9 +9,19 @@
              mc:Ignorable="d" ClipToBounds="True">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="RepositoryVisibility" />
+        <Style x:Key="CompactOnly" TargetType="FrameworkElement">
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
-    <Border Padding="8,10" Background="Transparent" ToolTip="{Binding Path}"
+    <Border Background="Transparent" ToolTip="{Binding Path}"
             MouseEnter="Root_MouseEnter" MouseLeave="Root_MouseLeave">
+        <Grid>
+        <Border Padding="10,12">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="28" />
@@ -50,27 +60,79 @@
                 </TextBlock>
             </Button>
             <StackPanel Grid.Column="1">
-                <Border Height="28">
+                <Grid Height="28">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
                     <TextBlock x:Name="EntryName" Text="{Binding Name}" FontSize="17" FontWeight="SemiBold"
                                Foreground="{DynamicResource PreviewAccent}" VerticalAlignment="Center"
+                               Visibility="{Binding IsExpanded, Converter={StaticResource RepositoryVisibility}}"
                                TextTrimming="CharacterEllipsis" />
-                </Border>
+                    <TextBlock x:Name="CompactHeading" VerticalAlignment="Center" Margin="0,0,8,0"
+                               Style="{StaticResource CompactOnly}" TextTrimming="CharacterEllipsis"
+                               Foreground="{DynamicResource PreviewSecondaryForeground}">
+                        <Run Text="{Binding Name, Mode=OneWay}" FontSize="17" FontWeight="SemiBold"
+                             Foreground="{DynamicResource PreviewAccent}" /><Run x:Name="CompactBranch" ToolTip="{Binding CurrentBranch}">
+                            <Run.Style>
+                                <Style TargetType="Run">
+                                    <Setter Property="Text" Value="{Binding CurrentBranch, Mode=OneWay, StringFormat='   {0}'}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsNotBare}" Value="False">
+                                            <Setter Property="Text" Value="" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding CurrentBranch}" Value="">
+                                            <Setter Property="Text" Value="" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Run.Style>
+                        </Run>
+                    </TextBlock>
+                    <StackPanel x:Name="CompactStatus" Grid.Column="1" Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <TextBlock x:Name="CompactDirty" Text="&#x25CF;" Margin="4,0"
+                                   Foreground="{DynamicResource RepositoryDirtyForeground}"
+                                   AutomationProperties.Name="{DynamicResource RepositoryLocalChanges}"
+                                   Visibility="{Binding HasLocalChanges, Converter={StaticResource RepositoryVisibility}}">
+                            <TextBlock.ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="{DynamicResource RepositoryLocalChanges}" FontWeight="SemiBold" />
+                                    <TextBlock><Run Text="{DynamicResource RepositoryStagedAdded}" /><Run Text=": " /><Run Text="{Binding LocalAdded, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock><Run Text="{DynamicResource RepositoryStagedModified}" /><Run Text=": " /><Run Text="{Binding LocalStaged, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock><Run Text="{DynamicResource RepositoryStagedRemoved}" /><Run Text=": " /><Run Text="{Binding LocalRemoved, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock><Run Text="{DynamicResource RepositoryUnstagedModified}" /><Run Text=": " /><Run Text="{Binding LocalModified, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock><Run Text="{DynamicResource RepositoryUnstagedRemoved}" /><Run Text=": " /><Run Text="{Binding LocalMissing, Mode=OneWay}" /></TextBlock>
+                                    <TextBlock><Run Text="{DynamicResource RepositoryUntracked}" /><Run Text=": " /><Run Text="{Binding LocalUntracked, Mode=OneWay}" /></TextBlock>
+                                </StackPanel>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <TextBlock x:Name="CompactAhead" Text="{Binding AheadBy, StringFormat=&#x2191;{0}}" Margin="4,0"
+                                   Foreground="{DynamicResource PreviewAccent}"
+                                   ToolTip="{DynamicResource RepositoryAheadHint}"
+                                   AutomationProperties.Name="{DynamicResource RepositoryAheadHint}"
+                                   Visibility="{Binding HasAheadCommits, Converter={StaticResource RepositoryVisibility}}" />
+                        <TextBlock x:Name="CompactBehind" Text="{Binding BehindBy, StringFormat=&#x2193;{0}}" Margin="4,0"
+                                   Foreground="{DynamicResource PreviewAccent}"
+                                   ToolTip="{DynamicResource RepositoryBehindHint}"
+                                   AutomationProperties.Name="{DynamicResource RepositoryBehindHint}"
+                                   Visibility="{Binding HasBehindCommits, Converter={StaticResource RepositoryVisibility}}" />
+                        <TextBlock x:Name="CompactUnknown" Text="?" Margin="4,0"
+                                   Foreground="{DynamicResource PreviewMutedForeground}"
+                                   ToolTip="{DynamicResource RepositoryUnknownStatus}"
+                                   AutomationProperties.Name="{DynamicResource RepositoryUnknownStatus}"
+                                   Visibility="{Binding HasUnknownStatus, Converter={StaticResource RepositoryVisibility}}" />
+                        <TextBlock x:Name="CompactNoUpstream" Text="&#x2205;" Margin="4,0"
+                                   Foreground="{DynamicResource PreviewMutedForeground}"
+                                   ToolTip="{DynamicResource RepositoryNoUpstream}"
+                                   AutomationProperties.Name="{DynamicResource RepositoryNoUpstream}"
+                                   Visibility="{Binding IsUpstreamMissing, Converter={StaticResource RepositoryVisibility}}" />
+                    </StackPanel>
+                </Grid>
                 <StackPanel x:Name="EntryDetails" Visibility="{Binding IsExpanded, Converter={StaticResource RepositoryVisibility}}">
                     <TextBlock Text="{Binding CurrentBranch}" Foreground="{DynamicResource PreviewSecondaryForeground}"
                                TextTrimming="CharacterEllipsis" Margin="0,4,0,0"
                                Visibility="{Binding IsNotBare, Converter={StaticResource RepositoryVisibility}}" />
-                    <WrapPanel Margin="0,7,0,0">
-                        <Border Style="{DynamicResource Badge}" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Status}" FontFamily="Consolas" FontSize="12"
-                                       Foreground="{DynamicResource PreviewForeground}" />
-                        </Border>
-                        <ToggleButton x:Name="MonitoringButton" IsChecked="{Binding IsMonitored, Mode=OneWay}"
-                                      Click="MonitoringToggle_Click" Content="&#x1F441;" FontSize="14"
-                                      Style="{DynamicResource RepositoryMonitoringButton}"
-                                      ToolTip="{DynamicResource RepositoryToggleMonitoring}"
-                                      AutomationProperties.Name="{DynamicResource RepositoryToggleMonitoring}">
-                        </ToggleButton>
-                    </WrapPanel>
                     <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
@@ -91,6 +153,27 @@
                           IsChecked="{Binding IsFavorite, Mode=OneWay}" Click="FavoriteToggle_Click"
                           ToolTip="{DynamicResource RepositoryToggleFavorite}"
                           AutomationProperties.Name="{DynamicResource RepositoryToggleFavorite}">
+            </ToggleButton>
+        </Grid>
+        </Border>
+            <ToggleButton x:Name="MonitoringButton" HorizontalAlignment="Right" VerticalAlignment="Top"
+                          IsChecked="{Binding IsMonitored, Mode=OneWay}" Click="MonitoringToggle_Click"
+                          Style="{DynamicResource RepositoryMonitoringButton}"
+                          AutomationProperties.Name="{DynamicResource RepositoryToggleMonitoring}">
+                <ToggleButton.ToolTip>
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="{DynamicResource RepositoryMonitoringOff}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMonitored}" Value="True">
+                                        <Setter Property="Text" Value="{DynamicResource RepositoryMonitoringOn}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </ToggleButton.ToolTip>
             </ToggleButton>
         </Grid>
     </Border>

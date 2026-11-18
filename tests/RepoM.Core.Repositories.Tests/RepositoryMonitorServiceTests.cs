@@ -69,6 +69,32 @@ public class RepositoryMonitorServiceTests : IDisposable
         _sut.Store.Should().BeSameAs(_store);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void AutomaticMonitoring_ShouldRespectExplicitOptOut(bool initiallyEnabled)
+    {
+        const string path = "C:/Repos/Example";
+        if (initiallyEnabled)
+        {
+            _monitoringState.EnableMonitoring(path);
+        }
+
+        _monitoringState.SetMonitored(path, false);
+        List<bool> changes = [];
+        _monitoringState.MonitoringChanged += (_, monitored) => changes.Add(monitored);
+
+        _monitoringState.EnableMonitoring(path.ToLowerInvariant());
+        _monitoringState.IsMonitored(path).Should().BeFalse();
+        changes.Should().BeEmpty();
+
+        _monitoringState.SetMonitored(path, true);
+        _monitoringState.IsMonitored(path).Should().BeTrue();
+        changes.Should().Equal(true);
+        _monitoringState.EnableMonitoring(path);
+        changes.Should().Equal(true);
+    }
+
     [Fact]
     public async Task StartAsync_ShouldStartWatching()
     {

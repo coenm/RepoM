@@ -12,8 +12,32 @@ The search box is good for ad-hoc filtering. Quick filters are useful when you w
 ### Repository interface
 
 The regular RepoM window now uses the card layout from the worktree preview with real
-repositories, branches, status and tags. The arrow switches between minimal (name and
-favorite) and extended views. Monitoring is available in the details; favorites, tag
+repositories, branches, status and tags. Focusing a control within a repository card
+also selects that repository, removing selection from the previous card.
+The arrow switches between compact and
+extended views. Compact rows show `name   branch` as one continuous text line,
+with the branch in the smaller branch font, followed by the favorite and Git indicators:
+an amber dot for local changes (hover for staged/unstaged/untracked counts),
+an up arrow for commits ahead of upstream and a down arrow for commits behind it.
+Both arrows mean the branches have diverged; pushing may require synchronization first.
+These counts reflect the last fetched remote state, not a live server check.
+Zero counts are hidden, `?` indicates incomplete or unavailable status, and `∅` indicates
+no upstream. Stashes alone do not mark a repository dirty. Name and branch are truncated
+when space is limited, leaving room for the indicators.
+Extended rows show the same Git indicators next to the favorite in the header,
+with branch and tags underneath. The old status-text row and monitoring-eye button
+are no longer shown. A small triangle in the top-right corner toggles active monitoring
+in both compact and extended views. When active, a blue-green two-pixel border
+and a matching triangle indicate monitoring. The 14-pixel triangle sits inside the
+two-pixel border and follows its inner corner rounding; when inactive, the border is
+transparent and the triangle is invisible at rest but remains clickable. Hover
+reveals it through a fill-color change. The corner button cannot receive focus and
+is skipped during keyboard tab navigation.
+Hover and selection retain their normal background colors.
+Hover/menu preparation automatically enables monitoring for repositories without an
+explicit choice. Manually disabling monitoring prevents that automatic activation
+until it is explicitly enabled again. This choice lasts for the current application session.
+Favorites, tag
 quick filters, configured context menus and default actions keep their existing behavior.
 Display modes last for the current session and survive repository refreshes and filtering.
 Worktree discovery and family grouping are not integrated yet; real repositories remain

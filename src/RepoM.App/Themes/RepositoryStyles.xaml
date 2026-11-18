@@ -65,11 +65,31 @@
         </Style.Triggers>
     </Style>
     <Style x:Key="RepositoryMonitoringButton" TargetType="ToggleButton" BasedOn="{StaticResource IconButton}">
-        <Setter Property="Opacity" Value="0.5" />
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Foreground" Value="{DynamicResource RepositoryMonitoringInactive}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid>
+                        <Path x:Name="corner" HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Width="14" Height="14" Margin="0,2,2,0"
+                              Data="M 0,0 L 9,0 A 5,5 0 0 1 14,5 L 14,14 Z"
+                              Fill="{TemplateBinding Foreground}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="corner" Property="Fill" Value="{DynamicResource RepositoryMonitoringHighlight}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource PreviewAccent}" />
-                <Setter Property="Opacity" Value="1" />
+                <Setter Property="Foreground" Value="{DynamicResource RepositoryMonitoringActive}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -93,11 +113,15 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
-                    <Border x:Name="card" Background="{DynamicResource PreviewPrimarySurface}" CornerRadius="7"
-                            BorderBrush="Transparent" BorderThickness="1">
+                    <Grid>
+                        <Border x:Name="card" Background="{DynamicResource PreviewPrimarySurface}" CornerRadius="6"
+                                BorderBrush="Transparent" BorderThickness="2" />
                         <ContentPresenter />
-                    </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsMonitored}" Value="True">
+                            <Setter TargetName="card" Property="BorderBrush" Value="{DynamicResource RepositoryMonitoringBorder}" />
+                        </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="card" Property="Background" Value="{DynamicResource PreviewHoverSurface}" />
                         </Trigger>

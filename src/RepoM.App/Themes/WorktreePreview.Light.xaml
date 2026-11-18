@@ -10,6 +10,11 @@
     <SolidColorBrush x:Key="PreviewSecondaryForeground" Color="#4C5C6B" />
     <SolidColorBrush x:Key="PreviewIconForeground" Color="#576573" />
     <SolidColorBrush x:Key="PreviewAccent" Color="#00649C" />
+    <SolidColorBrush x:Key="RepositoryDirtyForeground" Color="#8A5900" />
+    <SolidColorBrush x:Key="RepositoryMonitoringBorder" Color="#729B8F" />
+    <SolidColorBrush x:Key="RepositoryMonitoringActive" Color="#729B8F" />
+    <SolidColorBrush x:Key="RepositoryMonitoringInactive" Color="Transparent" />
+    <SolidColorBrush x:Key="RepositoryMonitoringHighlight" Color="#35665A" />
     <SolidColorBrush x:Key="PreviewPrimarySurface" Color="#FFFFFF" />
     <SolidColorBrush x:Key="PreviewWorktreeSurface" Color="#E9EFF4" />
     <SolidColorBrush x:Key="PreviewWorktreeTitle" Color="#263A49" />

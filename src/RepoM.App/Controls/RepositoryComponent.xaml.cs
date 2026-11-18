@@ -101,6 +101,12 @@ public partial class RepositoryComponent : UserControl
         }
     }
 
+    protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+    {
+        base.OnGotKeyboardFocus(e);
+        FindAncestor<ListBoxItem>(this)?.SetCurrentValue(ListBoxItem.IsSelectedProperty, true);
+    }
+
     private void DisplayMode_Click(object sender, RoutedEventArgs e)
     {
         var vm = (RepositoryViewModel)DataContext;
@@ -116,20 +122,20 @@ public partial class RepositoryComponent : UserControl
         e.Handled = true;
     }
 
-    private void MonitoringToggle_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is FrameworkElement fe && fe.DataContext is RepositoryViewModel vm)
-        {
-            vm.ToggleMonitoring();
-            e.Handled = true;
-        }
-    }
-
     private void FavoriteToggle_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement fe && fe.DataContext is RepositoryViewModel vm)
         {
             vm.ToggleFavorite();
+            e.Handled = true;
+        }
+    }
+
+    private void MonitoringToggle_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: RepositoryViewModel vm })
+        {
+            vm.ToggleMonitoring();
             e.Handled = true;
         }
     }
