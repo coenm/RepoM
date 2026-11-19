@@ -32,6 +32,13 @@ internal static class OrderInsensitiveXmlComparer
 
     private static void Sort(XElement element)
     {
+        if (element.Document?.Root == element && element.Name.LocalName == "WorktreePreviewWindow")
+        {
+            // WPF calculates these from the current display, so they vary across machines.
+            element.Attribute("Top")?.SetValue("{WindowPosition}");
+            element.Attribute("Left")?.SetValue("{WindowPosition}");
+        }
+
         foreach (var child in element.Elements().ToArray())
         {
             Sort(child);

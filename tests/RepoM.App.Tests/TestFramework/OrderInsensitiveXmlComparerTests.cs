@@ -32,6 +32,17 @@ public class OrderInsensitiveXmlComparerTests
     }
 
     [Fact]
+    public async Task CompareAsync_ShouldIgnoreWindowPositionAcrossDisplays()
+    {
+        var result = await OrderInsensitiveXmlComparer.CompareAsync(
+            "<WorktreePreviewWindow Top=\"-10\" Left=\"282\" xmlns:materialDesign=\"http://materialdesigninxaml.net/winfx/xaml/themes\" xmlns:swb=\"clr-namespace:System.Windows.Baml2006;assembly=PresentationFramework\"><Second /><First /></WorktreePreviewWindow>",
+            "<WorktreePreviewWindow xmlns:swb=\"clr-namespace:System.Windows.Baml2006;assembly=PresentationFramework\" Left=\"1490\" Top=\"326\" xmlns:materialDesign=\"http://materialdesigninxaml.net/winfx/xaml/themes\"><First /><Second /></WorktreePreviewWindow>",
+            new Dictionary<string, object>());
+
+        result.IsEqual.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task CompareAsync_ShouldStillDetectDifferentValues()
     {
         var result = await OrderInsensitiveXmlComparer.CompareAsync(
