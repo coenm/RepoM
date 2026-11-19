@@ -2,7 +2,7 @@
   ThemeMode="None"
   Title="{av:DynamicResource WorktreePreviewTitle}"
   Top="326"
-  Left="1050"
+  Left="1490"
   WindowStartupLocation="CenterScreen"
   Background="{av:DynamicResource PreviewBackground}"
   Foreground="{av:DynamicResource PreviewForeground}"
@@ -19,8 +19,8 @@
   xmlns:rmavm="clr-namespace:RepoM.App.ViewModels;assembly=RepoM"
   xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib"
   xmlns:rmac="clr-namespace:RepoM.App.Controls;assembly=RepoM"
-  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-  xmlns:swb="clr-namespace:System.Windows.Baml2006;assembly=PresentationFramework">
+  xmlns:swb="clr-namespace:System.Windows.Baml2006;assembly=PresentationFramework"
+  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
   <WorktreePreviewWindow.Resources>
     <av:Style
       TargetType="rmac:AcrylicContextMenu"
