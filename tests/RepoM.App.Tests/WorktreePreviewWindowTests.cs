@@ -3,25 +3,68 @@ namespace RepoM.App.Tests;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
 using AwesomeAssertions;
 using Meziantou.Xunit;
 using Microsoft.Win32;
-using RepoM.App.Controls;
 using RepoM.App.Themes;
 using RepoM.App.ViewModels;
+using VerifyTests;
 using Xunit;
 
 [DisableParallelization]
 public class WorktreePreviewWindowTests
 {
+    [WpfFact]
+    public void PreviewTags_ShouldRoundTripThroughXamlSerialization()
+    {
+        var model = new WorktreePreviewViewModel();
+        foreach (var entry in model.Families.SelectMany(family => new[] { family.Primary }.Concat(family.Worktrees)))
+        {
+            var tags = new ItemsControl { ItemsSource = entry.Tags };
+            string xaml = XamlWriter.Save(tags);
+            var restored = (ItemsControl)XamlReader.Parse(xaml);
+
+            restored.Items.Cast<string>().Should().Equal(entry.Tags);
+        }
+    }
+
+    [WpfTheory]
+    [InlineData(WorktreePreviewTheme.Dark)]
+    [InlineData(WorktreePreviewTheme.Light)]
+    public async Task Preview_ShouldMatchThemeSnapshots(WorktreePreviewTheme theme)
+    {
+        var window = new WorktreePreviewWindow();
+        window.Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
+            Source = new Uri("/RepoM;component/i18n/en-us.xaml", UriKind.Relative),
+        });
+
+        ((ComboBox)window.FindName("ThemeSelector")).SelectedValue = theme;
+        await VerifyPreviewAsync(window, theme);
+    }
+
+    private static async Task VerifyPreviewAsync(
+        Window window,
+        WorktreePreviewTheme theme,
+        [CallerFilePath] string sourceFile = "")
+    {
+        // StaFact 1.x does not propagate Verify.Xunit's AsyncLocal test context from its Before hook.
+        using var verifier = new InnerVerifier(
+            Path.GetDirectoryName(sourceFile)!,
+            $"{nameof(WorktreePreviewWindowTests)}.{nameof(Preview_ShouldMatchThemeSnapshots)}.{theme}");
+        await verifier.Verify(window);
+    }
+
     [WpfTheory]
     [InlineData(WorktreePreviewTheme.Dark)]
     [InlineData(WorktreePreviewTheme.Light)]
@@ -62,8 +105,7 @@ public class WorktreePreviewWindowTests
             worktree.IsFavorite.Should().BeTrue();
 
             var git = openMenu.Items.OfType<MenuItem>().Single(item => item.Name == "WorktreePreviewGit");
-            git.IsSubmenuOpen = true;
-            await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+            await OpenSubmenuAsync(git);
             if (theme == WorktreePreviewTheme.Light)
             {
                 ((SolidColorBrush)git.Foreground).Color.R.Should().BeLessThan(128);
@@ -77,8 +119,7 @@ public class WorktreePreviewWindowTests
             (await GetSubmenuBackgroundAsync(git)).Should().Be(menuBackground);
             await AssertFlatPopupFrameAsync(git, openMenu);
             var checkout = git.Items.OfType<MenuItem>().Single(item => item.Name == "Checkout");
-            checkout.IsSubmenuOpen = true;
-            await window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+            await OpenSubmenuAsync(checkout);
             (await GetSubmenuBackgroundAsync(checkout)).Should().Be(menuBackground);
             await AssertFlatPopupFrameAsync(checkout, openMenu);
             checkout.IsSubmenuOpen = false;
@@ -643,7 +684,7 @@ public class WorktreePreviewWindowTests
         for (int attempt = 0; container is null && attempt < 40; attempt++)
         {
             await Task.Delay(25);
-            await menu.Dispatcher.InvokeAsync(menu.UpdateLayout, DispatcherPriority.ApplicationIdle);
+            await menu.Dispatcher.InvokeAsync(menu.UpdateLayout, DispatcherPriority.Render);
             container = menu.ItemContainerGenerator.ContainerFromIndex(0);
         }
 
@@ -660,6 +701,28 @@ public class WorktreePreviewWindowTests
         }
 
         throw new InvalidOperationException("No visible submenu background found.");
+    }
+
+    private static async Task OpenSubmenuAsync(MenuItem menu)
+    {
+        if (menu.IsSubmenuOpen)
+        {
+            return;
+        }
+
+        var opened = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        RoutedEventHandler handler = (_, _) => opened.TrySetResult();
+        menu.SubmenuOpened += handler;
+        try
+        {
+            menu.IsSubmenuOpen = true;
+            await opened.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            await menu.Dispatcher.InvokeAsync(menu.UpdateLayout, DispatcherPriority.Render);
+        }
+        finally
+        {
+            menu.SubmenuOpened -= handler;
+        }
     }
 
     private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject

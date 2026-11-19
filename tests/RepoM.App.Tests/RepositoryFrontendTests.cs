@@ -2,6 +2,7 @@ namespace RepoM.App.Tests;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Reactive.Linq;
@@ -14,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Windows.Input;
 using AwesomeAssertions;
@@ -39,11 +41,39 @@ using RepoM.Core.Repositories.Favorite;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Store;
+using RepoM.App.Tests.TestFramework;
 using Xunit;
 
 [DisableParallelization]
 public class RepositoryFrontendTests
 {
+    [WpfFact]
+    public async Task XamlPngComparer_ShouldAllowSmallRenderingNoiseButRejectVisibleChanges()
+    {
+        byte[] referencePixels = Enumerable.Repeat((byte)128, 100 * 100 * 4).ToArray();
+        for (int offset = 3; offset < referencePixels.Length; offset += 4)
+        {
+            referencePixels[offset] = 255;
+        }
+
+        byte[] slightlyDifferentPixels = (byte[])referencePixels.Clone();
+        slightlyDifferentPixels[0] = 130;
+        var reference = CreatePng(100, 100, referencePixels);
+        var slightlyDifferent = CreatePng(100, 100, slightlyDifferentPixels);
+        (await XamlPngComparer.CompareAsync(slightlyDifferent, reference, new Dictionary<string, object>()))
+            .IsEqual.Should().BeTrue();
+
+        byte[] visiblyDifferentPixels = (byte[])referencePixels.Clone();
+        for (int offset = 0; offset < visiblyDifferentPixels.Length / 2; offset += 4)
+        {
+            visiblyDifferentPixels[offset] = 0;
+        }
+
+        var visiblyDifferent = CreatePng(100, 100, visiblyDifferentPixels);
+        (await XamlPngComparer.CompareAsync(visiblyDifferent, reference, new Dictionary<string, object>()))
+            .IsEqual.Should().BeFalse();
+    }
+
     [WpfTheory]
     [InlineData("Dark")]
     [InlineData("Light")]
@@ -389,6 +419,17 @@ public class RepositoryFrontendTests
         LocalAdded = 0, LocalStaged = 0, LocalRemoved = 0,
         LocalModified = modified, LocalMissing = 0, LocalUntracked = 0,
     };
+
+    private static MemoryStream CreatePng(int width, int height, byte[] pixels)
+    {
+        var bitmap = BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgra32, null, pixels, width * 4);
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(bitmap));
+        var stream = new MemoryStream();
+        encoder.Save(stream);
+        stream.Position = 0;
+        return stream;
+    }
 
     [WpfFact]
     public async Task MainWindow_ShouldRenderRealRepositoryCardsAndPersistHamburgerAppearanceChoices()

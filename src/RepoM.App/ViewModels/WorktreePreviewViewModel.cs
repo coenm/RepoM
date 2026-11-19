@@ -14,19 +14,20 @@ public sealed class WorktreePreviewViewModel : INotifyPropertyChanged
 
     public WorktreePreviewViewModel()
     {
+        // XamlWriter needs public collection types for bound tag lists, not compiler-generated read-only arrays.
         Families =
         [
-            new(new("RepoM", "main", @"C:\dev\RepoM", "\u21910 \u21930  |  ~2", isFavorite: true) { Tags = ["github", "csharp", "work"] },
+            new(new("RepoM", "main", @"C:\dev\RepoM", "\u21910 \u21930  |  ~2", isFavorite: true) { Tags = new[] { "github", "csharp", "work" } },
             [
-                new("feature-login", "feature/login", @"C:\dev\RepoM.worktrees\feature-login", "\u21912 \u21930  |  +1 ~3", isWorktree: true) { Tags = ["csharp", "authentication"] },
-                new("hotfix", "hotfix/crash", @"C:\dev\RepoM.worktrees\hotfix", "\u21910 \u21931", isWorktree: true, isFavorite: true) { Tags = ["csharp", "urgent"] },
+                new("feature-login", "feature/login", @"C:\dev\RepoM.worktrees\feature-login", "\u21912 \u21930  |  +1 ~3", isWorktree: true) { Tags = new[] { "csharp", "authentication" } },
+                new("hotfix", "hotfix/crash", @"C:\dev\RepoM.worktrees\hotfix", "\u21910 \u21931", isWorktree: true, isFavorite: true) { Tags = new[] { "csharp", "urgent" } },
             ]),
-            new(new("Payments.Api", "develop", @"C:\dev\Payments.Api", "\u21910 \u21930") { Tags = ["work", "backend"] },
+            new(new("Payments.Api", "develop", @"C:\dev\Payments.Api", "\u21910 \u21930") { Tags = new[] { "work", "backend" } },
             [
-                new("retry-policy", "feature/retry-policy", @"C:\dev\Payments.worktrees\retry-policy", "\u21911 \u21930  |  ~4", isWorktree: true) { Tags = ["backend", "resilience"] },
-                new("release", "release/2.4", @"C:\dev\Payments.worktrees\release", "\u21910 \u21930", isWorktree: true) { Tags = ["backend", "release"] },
+                new("retry-policy", "feature/retry-policy", @"C:\dev\Payments.worktrees\retry-policy", "\u21911 \u21930  |  ~4", isWorktree: true) { Tags = new[] { "backend", "resilience" } },
+                new("release", "release/2.4", @"C:\dev\Payments.worktrees\release", "\u21910 \u21930", isWorktree: true) { Tags = new[] { "backend", "release" } },
             ]),
-            new(new("Toolbox", "main", @"C:\dev\Toolbox", "\u21910 \u21930") { Tags = ["personal", "tools"] }, []),
+            new(new("Toolbox", "main", @"C:\dev\Toolbox", "\u21910 \u21930") { Tags = new[] { "personal", "tools" } }, []),
         ];
 
         foreach (WorktreePreviewFamily family in Families)

@@ -150,6 +150,24 @@ Run `dotnet run --project src\RepoM.App -- --worktree-preview` from the reposito
 to open the isolated worktree UI prototype. It uses dummy data only: repository discovery,
 Git actions, plugins and persisted settings are not started or changed.
 
+The dark and light preview screenshots are Verify.Xaml snapshots from
+[`WorktreePreviewWindowTests`](../tests/RepoM.App.Tests/WorktreePreviewWindowTests.cs):
+
+| Theme | Preview |
+|---|---|
+| Dark | ![Worktree UI preview, dark theme](../tests/RepoM.App.Tests/WorktreePreviewWindowTests.Preview_ShouldMatchThemeSnapshots.Dark.verified.png) |
+| Light | ![Worktree UI preview, light theme](../tests/RepoM.App.Tests/WorktreePreviewWindowTests.Preview_ShouldMatchThemeSnapshots.Light.verified.png) |
+
+To refresh them after an intentional UI change, run
+`dotnet test tests\RepoM.App.Tests --filter FullyQualifiedName~Preview_ShouldMatchThemeSnapshots`,
+review the generated `.received.png` and `.received.xml` files, then accept the snapshots.
+The WPF snapshot test uses Verify's explicit-directory/name API because the StaFact 1.x
+runner does not propagate Verify.Xunit's test context into the WPF test invocation.
+Verify.Xaml still supplies the PNG and XAML conversions. On the first run, missing
+baselines are expected failures: review and accept both themes before rerunning.
+PNG comparison allows only a small bounded rendering difference; the XAML snapshot
+remains an exact comparison.
+
 The theme selector offers **Dark**, **Light** and **Follow Windows**. Dark is the initial
 preview theme. Follow Windows uses the Windows **app** mode and updates when it changes,
 without restarting. An unset Windows preference defaults to light; read errors are shown
