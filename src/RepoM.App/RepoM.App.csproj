@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
@@ -19,9 +19,9 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\RepoM.UI\RepoM.UI.csproj" />
-    <ProjectReference Include="..\RepoM.Plugin.WorktreePreview\RepoM.Plugin.WorktreePreview.csproj"
+    <ProjectReference Include="..\RepoM.StartupPlugin.WorktreePreview\RepoM.StarPlugin.WorktreePreview.csproj"
                       ReferenceOutputAssembly="false" OutputItemType="StartupPluginAssembly" />
-    <ProjectReference Include="..\RepoM.Plugin.Demo\RepoM.Plugin.Demo.csproj"
+    <ProjectReference Include="..\RepoM.StartupPlugin.Demo\RepoM.StartupPlugin.Demo.csproj"
                       ReferenceOutputAssembly="false" OutputItemType="StartupPluginAssembly" />
     <AppDesigner Include="Properties\" />
   </ItemGroup>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
   </PropertyGroup>
@@ -39,8 +39,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RepoM.App\RepoM.App.csproj" />
-    <ProjectReference Include="..\..\src\RepoM.Plugin.Demo\RepoM.Plugin.Demo.csproj" />
-    <ProjectReference Include="..\..\src\RepoM.Plugin.WorktreePreview\RepoM.Plugin.WorktreePreview.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.StartupPlugin.Demo\RepoM.StartupPlugin.Demo.csproj" />
+    <ProjectReference Include="..\..\src\RepoM.StartupPlugin.WorktreePreview\RepoM.StartupPlugin.WorktreePreview.csproj" />
   </ItemGroup>
 
 </Project>

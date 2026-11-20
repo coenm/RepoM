@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.Demo;
+namespace RepoM.StartupPlugin.Demo;
 
 using System;
 using System.IO.Abstractions;
@@ -22,7 +22,7 @@ public static class DemoProfile
         foreach (string filename in new[] { "RepositoryActionsV2.yaml", "RepoM.Filtering.yaml", "RepoM.Ordering.yaml" })
         {
             using var source = typeof(DemoProfile).Assembly.GetManifestResourceStream(
-                $"RepoM.Plugin.Demo.Resources.{filename}")
+                $"RepoM.StartupPlugin.Demo.Resources.{filename}")
                 ?? throw new InvalidOperationException($"The demo resource '{filename}' is missing.");
             await using var destination = fileSystem.File.Create(fileSystem.Path.Combine(paths.AppDataPath, filename));
             await source.CopyToAsync(destination).ConfigureAwait(false);

@@ -1,8 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <AssemblyName>RepoM.StartupPlugin.Demo</AssemblyName>
-    <RootNamespace>RepoM.Plugin.Demo</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />

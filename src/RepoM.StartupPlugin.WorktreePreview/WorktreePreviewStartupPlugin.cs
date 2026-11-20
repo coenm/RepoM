@@ -1,11 +1,11 @@
-namespace RepoM.Plugin.WorktreePreview;
+namespace RepoM.StartupPlugin.WorktreePreview;
 
 using System.IO.Abstractions;
 using System.Reflection;
 using System.Threading.Tasks;
 using RepoM.Api.Plugins;
 using RepoM.Core.StartupPlugin;
-using RepoM.Plugin.Demo;
+using RepoM.StartupPlugin.Demo;
 using SimpleInjector;
 
 /// <summary>Uses the isolated demo infrastructure with the separate worktree preview window.</summary>

@@ -29,14 +29,39 @@ using RepoM.Core.Repositories.Adapters;
 using RepoM.Core.Repositories.Favorite;
 using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Store;
-using RepoM.Plugin.Demo;
-using RepoM.Plugin.WorktreePreview;
+using RepoM.StartupPlugin.Demo;
+using RepoM.StartupPlugin.WorktreePreview;
 using RepoM.UI;
 using SimpleInjector;
 using Xunit;
 
 public class DemoPackageTests
 {
+    [Fact]
+    public async Task DemoProfile_ShouldInstallAndResetAllSampleFiles()
+    {
+        var files = new MockFileSystem();
+        var paths = new AppDataPathProvider(new AppDataPathConfig { AppSettingsPath = @"C:\DemoSettings", }, files);
+        var filenames = new[] { "RepositoryActionsV2.yaml", "RepoM.Filtering.yaml", "RepoM.Ordering.yaml", };
+
+        await DemoProfile.PrepareAsync(files, paths);
+        var contents = filenames.ToDictionary(
+            filename => filename,
+            filename => files.File.ReadAllText(files.Path.Combine(paths.AppDataPath, filename)));
+        foreach (var filename in filenames)
+        {
+            contents[filename].Should().NotBeNullOrWhiteSpace();
+            await files.File.WriteAllTextAsync(files.Path.Combine(paths.AppDataPath, filename), "modified");
+        }
+
+        await DemoProfile.PrepareAsync(files, paths);
+
+        foreach (var filename in filenames)
+        {
+            (await files.File.ReadAllTextAsync(files.Path.Combine(paths.AppDataPath, filename))).Should().Be(contents[filename]);
+        }
+    }
+
     [WpfFact]
     public async Task PreviewPackage_ShouldReplaceOnlyTheApplicationWindow_AndUseDemoServices()
     {

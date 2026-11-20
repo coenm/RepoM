@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.WorktreePreview;
+namespace RepoM.StartupPlugin.WorktreePreview;
 
 using System;
 using System.Collections.Generic;

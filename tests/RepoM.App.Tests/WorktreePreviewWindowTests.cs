@@ -16,9 +16,9 @@ using System.Windows.Threading;
 using AwesomeAssertions;
 using Meziantou.Xunit;
 using Microsoft.Win32;
+using RepoM.StartupPlugin.WorktreePreview;
 using RepoM.UI.Controls;
 using RepoM.UI.Themes;
-using RepoM.Plugin.WorktreePreview;
 using VerifyTests;
 using Xunit;
 

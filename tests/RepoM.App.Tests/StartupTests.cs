@@ -11,8 +11,8 @@ using RepoM.Api.IO;
 using RepoM.Api.Plugins;
 using RepoM.App.Startup;
 using RepoM.Core.StartupPlugin;
-using RepoM.Plugin.Demo;
-using RepoM.Plugin.WorktreePreview;
+using RepoM.StartupPlugin.Demo;
+using RepoM.StartupPlugin.WorktreePreview;
 using SimpleInjector;
 using Xunit;
 

@@ -1,4 +1,4 @@
-namespace RepoM.Plugin.WorktreePreview;
+namespace RepoM.StartupPlugin.WorktreePreview;
 
 using System;
 using System.ComponentModel;
@@ -10,7 +10,6 @@ using System.Windows.Data;
 using RepoM.Api.Common;
 using RepoM.UI.Controls;
 using RepoM.UI.Themes;
-using RepoM.UI;
 
 public partial class WorktreePreviewWindow : Window
 {

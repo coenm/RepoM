@@ -1,9 +1,8 @@
-namespace RepoM.Plugin.WorktreePreview;
+namespace RepoM.StartupPlugin.WorktreePreview;
 
 using System.Threading.Tasks;
-using System.Windows;
 using RepoM.Core.Plugin;
-using RepoM.Plugin.Demo;
+using RepoM.StartupPlugin.Demo;
 using RepoM.UI;
 using SimpleInjector;
 
@@ -25,21 +24,4 @@ public sealed class WorktreePreviewPackage : IPackage
             container.Options.AllowOverridingRegistrations = allowOverriding;
         }
     }
-}
-
-public sealed class PreviewApplicationWindow : IApplicationWindow
-{
-    public Window Window { get; } = new WorktreePreviewWindow();
-
-    public void SetReady()
-    {
-    }
-
-    public void ShowAndActivate()
-    {
-        Window.Show();
-        Window.Activate();
-    }
-
-    public void Shutdown() => Window.Close();
 }
