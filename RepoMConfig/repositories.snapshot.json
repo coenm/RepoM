@@ -12,22 +12,22 @@ repositories:
   currentBranchIsDetached: false
   currentBranchIsOnTag: false
   branches:
-  - feature/support-worktrees
-  - origin/feature/support-worktrees
   - origin/HEAD
-  - origin/main
+  - feature/support-worktrees
   - main
   - origin/agents/repom-mcp-server-plugin
   - origin/feature/automation-poc
   - origin/feature/azure-devops-upgrade
   - origin/feature/improve-search-and-filtering
   - origin/feature/sonar-fixes
+  - origin/feature/support-worktrees
+  - origin/main
   - origin/release/v1.0
   - origin/release/v1.1
   localBranches:
   - feature/support-worktrees
   - main
-  tags: []
+  tags: &o5 []
   aheadBy: 0
   behindBy: 0
   localUntracked: 0
@@ -38,25 +38,25 @@ repositories:
   localRemoved: 0
   stashCount: 0
   lastSeen:
-    dateTime: 2026-11-16T10:09:07.6955766
-    utcDateTime: 2026-11-16T10:09:07.6955766Z
-    localDateTime: 2026-11-16T11:09:07.6955766+01:00
-    date: 2026-11-16T00:00:00.0000000
-    day: 16
-    dayOfWeek: Monday
-    dayOfYear: 320
-    hour: 10
-    millisecond: 695
-    microsecond: 576
-    nanosecond: 600
-    minute: 9
+    dateTime: 2026-11-20T18:23:46.9395341
+    utcDateTime: 2026-11-20T18:23:46.9395341Z
+    localDateTime: 2026-11-20T19:23:46.9395341+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 939
+    microsecond: 534
+    nanosecond: 100
+    minute: 23
     month: 11
     offset: 00:00:00
     totalOffsetMinutes: 0
-    second: 7
-    ticks: 639304205476955766
-    utcTicks: 639304205476955766
-    timeOfDay: 10:09:07.6955766
+    second: 46
+    ticks: 639307958269395341
+    utcTicks: 639307958269395341
+    timeOfDay: 18:23:46.9395341
     year: 2026
   lastUpdated: &o0
     dateTime: 0001-01-01T00:00:00.0000000
@@ -1825,13 +1825,16 @@ repositories:
   linuxPath: C:/dev/bdo/dsai/Platform/AI Core Platform/AICore Platform
   location: C:\dev\bdo\dsai\Platform\AI Core Platform
   isBare: false
-  currentBranch: main
+  currentBranch: v2
   currentBranchHasUpstream: true
   currentBranchIsDetached: false
   currentBranchIsOnTag: false
   branches:
   - main
+  - v2
+  - origin/feature/shared-application-insights
   - origin/HEAD
+  - origin/v2
   - origin/v2-appreg-fix
   - origin/cleanuprule
   - origin/docker-secrets
@@ -1843,7 +1846,6 @@ repositories:
   - origin/feature/log-ingestion-alerts
   - origin/feature/move-library-vars-to-repo
   - origin/feature/service-bus
-  - origin/feature/shared-application-insights
   - origin/feature/v1-worker-queue-scale-rules
   - origin/feature/v2/windows-app-service-plan
   - origin/feature/worker-queue-scale-rules
@@ -1854,13 +1856,13 @@ repositories:
   - origin/main
   - origin/office-addin-test
   - origin/test-on-a-temp
-  - origin/v2
   - origin/v2-cosmos-private-endpoint
   - origin/v2-namematching
   - origin/windowswebapp
   - origin/windowswebapp-20260617-win
   localBranches:
   - main
+  - v2
   tags:
   - DSAI
   - platform
@@ -1874,7 +1876,27 @@ repositories:
   localStaged: 0
   localRemoved: 0
   stashCount: 0
-  lastSeen: *o0
+  lastSeen:
+    dateTime: 2026-11-20T18:23:49.6106190
+    utcDateTime: 2026-11-20T18:23:49.6106190Z
+    localDateTime: 2026-11-20T19:23:49.6106190+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 610
+    microsecond: 619
+    nanosecond: 0
+    minute: 23
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 49
+    ticks: 639307958296106190
+    utcTicks: 639307958296106190
+    timeOfDay: 18:23:49.6106190
+    year: 2026
   lastUpdated: *o0
   remotes:
   - key: origin
@@ -2008,10 +2030,11 @@ repositories:
   currentBranchIsOnTag: false
   branches:
   - main
+  - v2
   - origin/HEAD
   - origin/main
+  - origin/v2
   - feature/cosmos-idempotent
-  - v2
   - origin/feature/221767-dsworker
   - origin/feature/256235-PoisionQueueHandling
   - origin/feature/5.6
@@ -2030,44 +2053,43 @@ repositories:
   - origin/feature/v2-test
   - origin/feature/v2-test-leon
   - origin/feature/worker-queue-scale-rules
-  - origin/v2
   localBranches:
   - main
-  - feature/cosmos-idempotent
   - v2
+  - feature/cosmos-idempotent
   tags:
   - DSAI
   - services
   - BDO
   aheadBy: 0
   behindBy: 0
-  localUntracked: 0
+  localUntracked: 2
   localModified: 0
   localMissing: 0
   localAdded: 0
-  localStaged: 22
+  localStaged: 0
   localRemoved: 0
   stashCount: 0
   lastSeen:
-    dateTime: 2026-11-16T10:09:10.7416751
-    utcDateTime: 2026-11-16T10:09:10.7416751Z
-    localDateTime: 2026-11-16T11:09:10.7416751+01:00
-    date: 2026-11-16T00:00:00.0000000
-    day: 16
-    dayOfWeek: Monday
-    dayOfYear: 320
-    hour: 10
-    millisecond: 741
-    microsecond: 675
-    nanosecond: 100
-    minute: 9
+    dateTime: 2026-11-20T18:23:49.4674632
+    utcDateTime: 2026-11-20T18:23:49.4674632Z
+    localDateTime: 2026-11-20T19:23:49.4674632+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 467
+    microsecond: 463
+    nanosecond: 200
+    minute: 23
     month: 11
     offset: 00:00:00
     totalOffsetMinutes: 0
-    second: 10
-    ticks: 639304205507416751
-    utcTicks: 639304205507416751
-    timeOfDay: 10:09:10.7416751
+    second: 49
+    ticks: 639307958294674632
+    utcTicks: 639307958294674632
+    timeOfDay: 18:23:49.4674632
     year: 2026
   lastUpdated: *o0
   remotes:
@@ -2298,11 +2320,55 @@ repositories:
   lastSeen: *o0
   lastUpdated: *o0
   remotes: []
-- path: C:\Users\Munckhof CJJ\AppData\Roaming\RepoM - Copy\
-  safePath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoM - Copy
-  name: RepoM - Copy
-  windowsPath: C:\Users\Munckhof CJJ\AppData\Roaming\RepoM - Copy
-  linuxPath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoM - Copy
+- path: C:\dev\private\Pa\
+  safePath: C:/dev/private/Pa
+  name: Pa
+  windowsPath: C:\dev\private\Pa
+  linuxPath: C:/dev/private/Pa
+  location: C:\dev\private
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches: &o4 []
+  localBranches: *o4
+  tags: *o5
+  localUntracked: 105
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen:
+    dateTime: 2026-11-20T18:23:46.6896504
+    utcDateTime: 2026-11-20T18:23:46.6896504Z
+    localDateTime: 2026-11-20T19:23:46.6896504+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 689
+    microsecond: 650
+    nanosecond: 400
+    minute: 23
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 46
+    ticks: 639307958266896504
+    utcTicks: 639307958266896504
+    timeOfDay: 18:23:46.6896504
+    year: 2026
+  lastUpdated: *o0
+  remotes: []
+- path: C:\Users\Munckhof CJJ\AppData\Roaming\RepoMFeature\
+  safePath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoMFeature
+  name: RepoMFeature
+  windowsPath: C:\Users\Munckhof CJJ\AppData\Roaming\RepoMFeature
+  linuxPath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoMFeature
   location: C:\Users\Munckhof CJJ\AppData\Roaming
   isBare: false
   currentBranch: main
@@ -2327,28 +2393,28 @@ repositories:
   localStaged: 5
   localRemoved: 0
   stashCount: 0
-  lastSeen: &o4
-    dateTime: 2026-11-16T10:10:46.1964444
-    utcDateTime: 2026-11-16T10:10:46.1964444Z
-    localDateTime: 2026-11-16T11:10:46.1964444+01:00
-    date: 2026-11-16T00:00:00.0000000
-    day: 16
-    dayOfWeek: Monday
-    dayOfYear: 320
-    hour: 10
-    millisecond: 196
-    microsecond: 444
-    nanosecond: 400
-    minute: 10
+  lastSeen:
+    dateTime: 2026-11-20T18:23:49.2579608
+    utcDateTime: 2026-11-20T18:23:49.2579608Z
+    localDateTime: 2026-11-20T19:23:49.2579608+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 257
+    microsecond: 960
+    nanosecond: 800
+    minute: 23
     month: 11
     offset: 00:00:00
     totalOffsetMinutes: 0
-    second: 46
-    ticks: 639304206461964444
-    utcTicks: 639304206461964444
-    timeOfDay: 10:10:46.1964444
+    second: 49
+    ticks: 639307958292579608
+    utcTicks: 639307958292579608
+    timeOfDay: 18:23:49.2579608
     year: 2026
-  lastUpdated: *o4
+  lastUpdated: *o0
   remotes:
   - key: origin
     url: https://github.com/coenm/MyRepoOneConfig.git

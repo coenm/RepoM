@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>RepoM.StartupPlugin.WorktreePreview</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RepoM.UI\RepoM.UI.csproj" />
+    <ProjectReference Include="..\RepoM.Plugin.Demo\RepoM.Plugin.Demo.csproj" />
+    <Page Include="..\RepoM.UI\Themes\RepositoryStyles.xaml" Link="Themes\RepositoryStyles.xaml" />
+  </ItemGroup>
+</Project>

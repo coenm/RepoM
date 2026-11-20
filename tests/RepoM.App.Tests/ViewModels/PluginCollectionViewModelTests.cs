@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using FakeItEasy;
 using AwesomeAssertions;
-using RepoM.App.Plugins;
-using RepoM.App.ViewModels;
+using RepoM.UI.Plugins;
+using RepoM.UI.ViewModels;
 using Xunit;
 
 public class PluginCollectionViewModelTests

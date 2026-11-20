@@ -2,7 +2,7 @@ namespace RepoM.App.Tests.ViewModels;
 
 using System.Linq;
 using AwesomeAssertions;
-using RepoM.App.ViewModels;
+using RepoM.Plugin.WorktreePreview;
 using Xunit;
 
 public class WorktreePreviewViewModelTests

@@ -1,7 +1,7 @@
 namespace RepoM.App.Tests.RepositoryFiltering;
 
 using AwesomeAssertions;
-using RepoM.App.RepositoryFiltering;
+using RepoM.UI.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using Xunit;

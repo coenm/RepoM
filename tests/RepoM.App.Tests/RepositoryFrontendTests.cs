@@ -1,5 +1,6 @@
 namespace RepoM.App.Tests;
 
+using RepoM.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,15 +26,15 @@ using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
 using RepoM.Api.QuickFilter;
-using RepoM.App.Controls;
-using RepoM.App.Plugins;
-using RepoM.App.RepositoryActions;
-using RepoM.App.RepositoryFiltering;
-using RepoM.App.RepositoryOrdering;
-using RepoM.App.Services;
+using RepoM.UI.Controls;
+using RepoM.UI.Plugins;
+using RepoM.UI.RepositoryActions;
+using RepoM.UI.RepositoryFiltering;
+using RepoM.UI.RepositoryOrdering;
+using RepoM.UI.Services;
 using RepoM.App.Tests.ViewModels;
-using RepoM.App.Themes;
-using RepoM.App.ViewModels;
+using RepoM.UI.Themes;
+using RepoM.UI.ViewModels;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
@@ -47,6 +48,18 @@ using Xunit;
 [DisableParallelization]
 public class RepositoryFrontendTests
 {
+    [WpfFact]
+    public void ApplicationResources_ShouldLoadFromUiAssembly()
+    {
+        var resources = new ResourceDictionary
+        {
+            Source = new Uri("/RepoM.UI;component/UIResources.xaml", UriKind.Relative),
+        };
+
+        resources[typeof(AcrylicContextMenu)].Should().BeOfType<Style>();
+        resources[typeof(AcrylicMenuItem)].Should().BeOfType<Style>();
+    }
+
     [WpfFact]
     public async Task XamlPngComparer_ShouldAllowSmallRenderingNoiseButRejectVisibleChanges()
     {
@@ -82,11 +95,11 @@ public class RepositoryFrontendTests
         var scrollbar = new ScrollBar { Orientation = Orientation.Vertical };
         scrollbar.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri($"/RepoM;component/Themes/WorktreePreview.{theme}.xaml", UriKind.Relative),
+            Source = new Uri($"/RepoM.UI;component/Themes/Theme.{theme}.xaml", UriKind.Relative),
         });
         scrollbar.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri("/RepoM;component/Themes/RepositoryStyles.xaml", UriKind.Relative),
+            Source = new Uri("/RepoM.UI;component/Themes/RepositoryStyles.xaml", UriKind.Relative),
         });
         scrollbar.Style = (Style)scrollbar.FindResource("RepositoryScrollBar");
         scrollbar.Measure(new System.Windows.Size(12, 100));
@@ -139,7 +152,7 @@ public class RepositoryFrontendTests
         };
         presenter.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri($"/RepoM;component/Themes/WorktreePreview.{theme}.xaml", UriKind.Relative),
+            Source = new Uri($"/RepoM.UI;component/Themes/Theme.{theme}.xaml", UriKind.Relative),
         });
         presenter.Measure(new System.Windows.Size(100, 100));
         presenter.Arrange(new Rect(presenter.DesiredSize));
@@ -203,11 +216,11 @@ public class RepositoryFrontendTests
         var firstRow = new ListBoxItem { DataContext = first, Content = firstComponent };
         var secondRow = new ListBoxItem { DataContext = second, Content = secondComponent };
         var list = new ListBox { SelectionMode = SelectionMode.Single };
-        foreach (var resource in new[] { "Themes/WorktreePreview.Dark.xaml", "Themes/RepositoryStyles.xaml", "i18n/en-us.xaml" })
+        foreach (var resource in new[] { "Themes/Theme.Dark.xaml", "Themes/RepositoryStyles.xaml", "i18n/en-us.xaml" })
         {
             list.Resources.MergedDictionaries.Add(new ResourceDictionary
             {
-                Source = new Uri($"/RepoM;component/{resource}", UriKind.Relative),
+                Source = new Uri($"/RepoM.UI;component/{resource}", UriKind.Relative),
             });
         }
 
@@ -255,11 +268,11 @@ public class RepositoryFrontendTests
             A.Fake<IFavoriteService>(), monitoring, monitoring);
         var component = new RepositoryComponent();
         var row = new ListBoxItem { DataContext = repository, Content = component };
-        foreach (var resource in new[] { $"Themes/WorktreePreview.{theme}.xaml", "Themes/RepositoryStyles.xaml" })
+        foreach (var resource in new[] { $"Themes/Theme.{theme}.xaml", "Themes/RepositoryStyles.xaml" })
         {
             row.Resources.MergedDictionaries.Add(new ResourceDictionary
             {
-                Source = new Uri($"/RepoM;component/{resource}", UriKind.Relative),
+                Source = new Uri($"/RepoM.UI;component/{resource}", UriKind.Relative),
             });
         }
         row.Style = (Style)row.FindResource("RepositoryRow");
@@ -308,11 +321,11 @@ public class RepositoryFrontendTests
             IsExpanded = false,
         };
         var component = new RepositoryComponent { DataContext = repository };
-        foreach (var resource in new[] { $"Themes/WorktreePreview.{theme}.xaml", "Themes/RepositoryStyles.xaml", "i18n/en-us.xaml" })
+        foreach (var resource in new[] { $"Themes/Theme.{theme}.xaml", "Themes/RepositoryStyles.xaml", "i18n/en-us.xaml" })
         {
             component.Resources.MergedDictionaries.Add(new ResourceDictionary
             {
-                Source = new Uri($"/RepoM;component/{resource}", UriKind.Relative),
+                Source = new Uri($"/RepoM.UI;component/{resource}", UriKind.Relative),
             });
         }
 
@@ -455,10 +468,10 @@ public class RepositoryFrontendTests
             A.Fake<ITranslationService>(), A.Fake<IAppDataPathProvider>(), new MockFileSystem(),
             new ActionExecutor(new SimpleInjector.Container(), NullLogger.Instance), CreateOrdering(), A.Fake<IThreadDispatcher>(),
             CreateFiltering(), quickFilters, [A.Fake<INamedQueryParser>()], A.Fake<IModuleManager>(),
-            NullLogger.Instance, menuFactory);
+            NullLogger.Instance, menuFactory, new ApplicationPresentation(), A.Fake<IRepositoryMatcher>(), new ApplicationUpdate());
         window.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri("/RepoM;component/i18n/en-us.xaml", UriKind.Relative),
+            Source = new Uri("/RepoM.UI;component/i18n/en-us.xaml", UriKind.Relative),
         });
 
         try

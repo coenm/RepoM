@@ -16,8 +16,8 @@ using System.Windows.Threading;
 using AwesomeAssertions;
 using Meziantou.Xunit;
 using Microsoft.Win32;
-using RepoM.App.Themes;
-using RepoM.App.ViewModels;
+using RepoM.UI.Themes;
+using RepoM.Plugin.WorktreePreview;
 using VerifyTests;
 using Xunit;
 
@@ -46,7 +46,7 @@ public class WorktreePreviewWindowTests
         var window = new WorktreePreviewWindow();
         window.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri("/RepoM;component/i18n/en-us.xaml", UriKind.Relative),
+            Source = new Uri("/RepoM.UI;component/i18n/en-us.xaml", UriKind.Relative),
         });
 
         ((ComboBox)window.FindName("ThemeSelector")).SelectedValue = theme;
@@ -73,7 +73,7 @@ public class WorktreePreviewWindowTests
         var window = new WorktreePreviewWindow();
         window.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri("/RepoM;component/i18n/en-us.xaml", UriKind.Relative),
+            Source = new Uri("/RepoM.UI;component/i18n/en-us.xaml", UriKind.Relative),
         });
         ContextMenu? openMenu = null;
 
@@ -180,7 +180,7 @@ public class WorktreePreviewWindowTests
         var window = new WorktreePreviewWindow();
         window.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri("/RepoM;component/i18n/en-us.xaml", UriKind.Relative),
+            Source = new Uri("/RepoM.UI;component/i18n/en-us.xaml", UriKind.Relative),
         });
 
         try
@@ -315,7 +315,7 @@ public class WorktreePreviewWindowTests
         var otherWindow = new WorktreePreviewWindow(new TestSystemTheme());
         window.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri("/RepoM;component/i18n/en-us.xaml", UriKind.Relative),
+            Source = new Uri("/RepoM.UI;component/i18n/en-us.xaml", UriKind.Relative),
         });
         ContextMenu? menu = null;
 
@@ -425,7 +425,7 @@ public class WorktreePreviewWindowTests
         var window = new WorktreePreviewWindow(systemTheme);
         window.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-            Source = new Uri("/RepoM;component/i18n/en-us.xaml", UriKind.Relative),
+            Source = new Uri("/RepoM.UI;component/i18n/en-us.xaml", UriKind.Relative),
         });
 
         try

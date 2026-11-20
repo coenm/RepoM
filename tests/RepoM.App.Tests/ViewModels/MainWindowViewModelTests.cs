@@ -2,14 +2,14 @@ namespace RepoM.App.Tests.ViewModels;
 
 using AwesomeAssertions;
 using RepoM.Api.Common;
-using RepoM.App.Plugins;
+using RepoM.UI.Plugins;
 using System;
 using System.Collections.Generic;
 using FakeItEasy;
-using RepoM.App.RepositoryFiltering;
-using RepoM.App.ViewModels;
+using RepoM.UI.RepositoryFiltering;
+using RepoM.UI.ViewModels;
 using Xunit;
-using RepoM.App.RepositoryOrdering;
+using RepoM.UI.RepositoryOrdering;
 using RepoM.Api.Git.AutoFetch;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Input;

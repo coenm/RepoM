@@ -1,7 +1,7 @@
 namespace RepoM.App.Tests.Services;
 
 using AwesomeAssertions;
-using RepoM.App.Services;
+using RepoM.UI.Services;
 using Xunit;
 
 public class TaskBarLocatorTests

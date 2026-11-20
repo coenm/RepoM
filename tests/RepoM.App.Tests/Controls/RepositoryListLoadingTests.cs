@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
-using RepoM.App.Controls;
+using RepoM.UI.Controls;
 using Xunit;
 
 public class RepositoryListLoadingTests

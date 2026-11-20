@@ -3,6 +3,7 @@ namespace RepoM.App;
 using System.Windows;
 using System.Windows.Input;
 using RepoM.App.Services;
+using RepoM.UI;
 
 /// <summary>
 /// Provides bindable properties and commands for the NotifyIcon. In this sample, the

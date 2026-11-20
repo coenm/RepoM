@@ -146,9 +146,11 @@ the CLI's performance on the same repositories.
 
 ### Worktree UI preview
 
-Run `dotnet run --project src\RepoM.App -- --worktree-preview` from the repository root
+Run `dotnet run --project src\RepoM.App -- --startup-plugin "src\RepoM.App\bin\Debug\net10.0-windows\RepoM.StartupPlugin.WorktreePreview.dll"` from the repository root
 to open the isolated worktree UI prototype. It uses dummy data only: repository discovery,
-Git actions, plugins and persisted settings are not started or changed.
+Git actions and production plugins are not started. It uses the isolated demo
+profile and demo service decorators, never the normal user's settings or repositories.
+See [startup and demo mode](demo-mode.md) for the generic plugin contract.
 
 The dark and light preview screenshots are Verify.Xaml snapshots from
 [`WorktreePreviewWindowTests`](../tests/RepoM.App.Tests/WorktreePreviewWindowTests.cs):

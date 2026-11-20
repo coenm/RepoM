@@ -76,11 +76,12 @@ public class BootstrapperTests
     [Fact]
     public void Container_ShouldAlwaysBeSameInstance()
     {
+        var sut = new Sut();
         // arrange
 
         // act
-        var result1 = Sut.Container;
-        var result2 = Sut.Container;
+        var result1 = sut.Container;
+        var result2 = sut.Container;
 
         // assert
         result1.Should().NotBeNull().And.Subject.Should().BeSameAs(result2);
@@ -89,10 +90,11 @@ public class BootstrapperTests
     [Fact]
     public void RegisterServices_ShouldNotThrow()
     {
+        var sut = new Sut();
         // arrange
 
         // act
-        Action act = () => Sut.RegisterServices(A.Dummy<IFileSystem>(), A.Dummy<IAppDataPathProvider>());
+        Action act = () => sut.RegisterServices(A.Dummy<IFileSystem>(), A.Dummy<IAppDataPathProvider>());
 
         // assert
         act.Should().NotThrow();
@@ -102,10 +104,11 @@ public class BootstrapperTests
     [Fact]
     public void RegisterLogging_ShouldNotThrow()
     {
+        var sut = new Sut();
         // arrange
 
         // act
-        Action act = () => Sut.RegisterLogging(A.Dummy<ILoggerFactory>());
+        Action act = () => sut.RegisterLogging(A.Dummy<ILoggerFactory>());
 
         // assert
         act.Should().NotThrow();
@@ -114,14 +117,15 @@ public class BootstrapperTests
     [Fact(Skip = "Fails")]
     public void RegisterServices_ShouldResultInValidContainer()
     {
+        var sut = new Sut();
         // arrange
         
         // act
-        Sut.RegisterServices(A.Dummy<IFileSystem>(), A.Dummy<IAppDataPathProvider>());
-        Sut.RegisterLogging(A.Fake<ILoggerFactory>());
+        sut.RegisterServices(A.Dummy<IFileSystem>(), A.Dummy<IAppDataPathProvider>());
+        sut.RegisterLogging(A.Fake<ILoggerFactory>());
     
         // assert
-        Sut.Container.Verify(VerificationOption.VerifyOnly);
+        sut.Container.Verify(VerificationOption.VerifyOnly);
     }
 
     public sealed class TestMonitorDecorator(IRepositoryMonitorService decoratee) : IRepositoryMonitorService

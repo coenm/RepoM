@@ -8,7 +8,7 @@ using FakeItEasy;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
-using RepoM.App.Services;
+using RepoM.UI.Services;
 using Xunit;
 
 public class WindowSizeServiceTests : IDisposable

@@ -3,7 +3,7 @@ namespace RepoM.App.Tests.ViewModels;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using AwesomeAssertions;
-using RepoM.App.ViewModels;
+using RepoM.UI.ViewModels;
 using Xunit;
 
 [SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer", Justification = "Test AAA readability.")]

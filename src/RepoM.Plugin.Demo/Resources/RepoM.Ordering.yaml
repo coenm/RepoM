@@ -1,0 +1,10 @@
+Default:
+  type: composition-comparer@1
+  comparers:
+  - type: score-comparer@1
+    score-provider:
+      type: is-pinned-scorer@1
+      weight: 1
+  - type: az-comparer@1
+    property: Name
+    weight: 1
