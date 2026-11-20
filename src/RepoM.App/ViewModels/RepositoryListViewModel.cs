@@ -23,7 +23,7 @@ using RepoM.Core.Repositories.Model;
 
 public sealed class RepositoryListViewModel : INotifyPropertyChanged
 {
-    private readonly RepositoryMonitorService _monitorService;
+    private readonly IRepositoryMonitorService _monitorService;
     private readonly ActionExecutor _executor;
     private readonly IUserMenuActionMenuFactory _userMenuActionMenuFactory;
     private readonly ILogger _logger;
@@ -36,7 +36,7 @@ public sealed class RepositoryListViewModel : INotifyPropertyChanged
     private Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>? _prefetchTask;
 
     public RepositoryListViewModel(
-        RepositoryMonitorService monitorService,
+        IRepositoryMonitorService monitorService,
         ActionExecutor executor,
         IUserMenuActionMenuFactory userMenuActionMenuFactory,
         ILogger logger,

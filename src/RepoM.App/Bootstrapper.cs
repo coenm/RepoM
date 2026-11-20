@@ -76,10 +76,7 @@ internal static class Bootstrapper
         Container.Register<RepositoryMonitoringStateService>(Lifestyle.Singleton);
         Container.Register<IRepositoryMonitoringService>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);
         Container.Register<IRepositoryMonitoringEvents>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);
-        Container.Register<RepoM.Core.Repositories.RepositoryMonitorService>(Lifestyle.Singleton);
-
-        // Register RepositoryMonitorService as IModule
-        Container.Collection.Append<IModule, RepoM.Core.Repositories.RepositoryMonitorService>(Lifestyle.Singleton);
+        RegisterRepositoryMonitorServices(Container);
 
         Container.RegisterInstance(appDataProvider);
         Container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);
@@ -145,6 +142,14 @@ internal static class Bootstrapper
 
         Container.RegisterSingleton<HotKeyService>();
         Container.RegisterSingleton<WindowSizeService>();
+    }
+
+    internal static void RegisterRepositoryMonitorServices(Container container)
+    {
+        container.Register<IRepositoryMonitorService, RepositoryMonitorService>(Lifestyle.Singleton);
+        // Resolve after plugin registration so module lifecycle uses the same decorators as UI calls.
+        container.Collection.Append<IModule>(
+            () => container.GetInstance<IRepositoryMonitorService>(), Lifestyle.Singleton);
     }
 
     public static async Task RegisterPlugins(

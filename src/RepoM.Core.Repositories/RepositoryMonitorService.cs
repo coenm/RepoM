@@ -10,7 +10,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using RepoM.Core.Plugin;
 using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Persistence;
@@ -19,7 +18,7 @@ using RepoM.Core.Repositories.Scanning;
 using RepoM.Core.Repositories.Store;
 using RepoM.Core.Repositories.Watching;
 
-public sealed class RepositoryMonitorService : IModule, IDisposable
+public sealed class RepositoryMonitorService : IRepositoryMonitorService
 {
     private readonly IRepositoryScanner _scanner;
     private readonly IRepositoryWatcher _watcher;

@@ -72,7 +72,7 @@ public partial class MainWindow
     private static readonly AcrylicBehavior _acrylicBehavior = GetAcrylicBehavior();
 
     private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
-    private readonly RepositoryMonitorService _monitorService;
+    private readonly IRepositoryMonitorService _monitorService;
     private readonly IRepositoryStore _store;
     private readonly IFavoriteService _favoriteService;
     private readonly IRepositoryMonitoringService _monitoringService;
@@ -96,7 +96,7 @@ public partial class MainWindow
     private readonly WindowThemeController _themeController;
 
     public MainWindow(
-        RepositoryMonitorService monitorService,
+        IRepositoryMonitorService monitorService,
         IRepositoryStore store,
         IFavoriteService favoriteService,
         IRepositoryMonitoringService monitoringService,

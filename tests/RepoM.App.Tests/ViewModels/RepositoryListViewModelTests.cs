@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
-using DynamicData.Kernel;
 using FakeItEasy;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -471,7 +470,7 @@ public class RepositoryListViewModelTests
     }
 
     private static RepositoryListViewModel CreateSut(
-        RepositoryMonitorService? monitorService = null,
+        IRepositoryMonitorService? monitorService = null,
         IUserMenuActionMenuFactory? menuFactory = null,
         ActionExecutor? executor = null,
         ILogger? logger = null)
