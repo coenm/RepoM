@@ -254,8 +254,8 @@ public partial class WorktreePreviewWindow : Window
 
     private static void ContextMenu_Opened(object sender, RoutedEventArgs e)
     {
-        if (sender is AcrylicContextMenu menu
-            && Window.GetWindow(menu.PlacementTarget) is WorktreePreviewWindow window)
+        if (sender is AcrylicContextMenu { PlacementTarget: { } target }
+            && Window.GetWindow(target) is WorktreePreviewWindow window)
         {
             window.RepositoryMenu_Opened(sender, e);
         }
@@ -263,8 +263,8 @@ public partial class WorktreePreviewWindow : Window
 
     private static void ContextMenu_Closed(object sender, RoutedEventArgs e)
     {
-        if (sender is AcrylicContextMenu menu
-            && Window.GetWindow(menu.PlacementTarget) is WorktreePreviewWindow window)
+        if (sender is AcrylicContextMenu { PlacementTarget: { } target }
+            && Window.GetWindow(target) is WorktreePreviewWindow window)
         {
             window.RepositoryMenu_Closed(sender, e);
         }

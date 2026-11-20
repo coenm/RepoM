@@ -1,6 +1,7 @@
 namespace RepoM.App.Tests.Plugins;
 
 using System;
+using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
@@ -146,33 +147,42 @@ public class DemoPackageTests
     [Fact]
     public async Task DemoMenu_ShouldUseRealTemplatesAndDeferredBranchMenus()
     {
-        using var store = new RepositoryStore();
-        using var container = CreateContainer(store);
-        var files = new MockFileSystem();
-        var paths = new AppDataPathProvider(new AppDataPathConfig { AppSettingsPath = @"C:\DemoSettings" }, files);
-        await DemoProfile.PrepareAsync(files, paths);
-        container.RegisterInstance<IFileSystem>(files);
-        RepoM.ActionMenu.Core.Bootstrapper.RegisterServices(container);
-        await new DemoPackage().RegisterServicesAsync(container, A.Fake<IPackageConfiguration>());
-        var monitor = container.GetInstance<IRepositoryMonitorService>();
-        await monitor.StartAsync();
-        var info = store.Items.Single(repository => repository.Name == "RepoM");
-        var repository = new RepositoryInfoAdapter(info);
-        var factory = new UserMenuActionMenuFactory(files, paths, container.GetInstance<IUserInterfaceActionMenuFactory>());
+        var directory = Directory.CreateTempSubdirectory("RepoM-demo-tests-");
+        try
+        {
+            using var store = new RepositoryStore();
+            using var container = CreateContainer(store);
+            // The action-menu cache watches profile files through HostFileChangeMonitor.
+            var files = new FileSystem();
+            var paths = new AppDataPathProvider(new AppDataPathConfig { AppSettingsPath = directory.FullName }, files);
+            await DemoProfile.PrepareAsync(files, paths);
+            container.RegisterInstance<IFileSystem>(files);
+            RepoM.ActionMenu.Core.Bootstrapper.RegisterServices(container);
+            await new DemoPackage().RegisterServicesAsync(container, A.Fake<IPackageConfiguration>());
+            var monitor = container.GetInstance<IRepositoryMonitorService>();
+            await monitor.StartAsync();
+            var info = store.Items.Single(repository => repository.Name == "RepoM");
+            var repository = new RepositoryInfoAdapter(info);
+            var factory = new UserMenuActionMenuFactory(files, paths, container.GetInstance<IUserInterfaceActionMenuFactory>());
 
-        var actions = await factory.CreateMenuAsync(repository).ToListAsync();
+            var actions = await factory.CreateMenuAsync(repository).ToListAsync();
 
-        actions.OfType<UserInterfaceRepositoryAction>().First().Name.Should().Be("RepoM - feature/demo");
-        var git = actions.OfType<UserInterfaceRepositoryAction>().Single(action => action.Name == "Git");
-        var checkout = git.SubActions!.OfType<DeferredSubActionsUserInterfaceRepositoryAction>().Single();
-        var branches = await checkout.GetAsync();
-        branches.OfType<UserInterfaceRepositoryAction>().Should().Contain(action => action.Name == "main" && action.CanExecute);
-        branches.OfType<UserInterfaceRepositoryAction>().Should().Contain(action => action.Name == "feature/demo" && !action.CanExecute);
+            actions.OfType<UserInterfaceRepositoryAction>().First().Name.Should().Be("RepoM - feature/demo");
+            var git = actions.OfType<UserInterfaceRepositoryAction>().Single(action => action.Name == "Git");
+            var checkout = git.SubActions!.OfType<DeferredSubActionsUserInterfaceRepositoryAction>().Single();
+            var branches = await checkout.GetAsync();
+            branches.OfType<UserInterfaceRepositoryAction>().Should().Contain(action => action.Name == "main" && action.CanExecute);
+            branches.OfType<UserInterfaceRepositoryAction>().Should().Contain(action => action.Name == "feature/demo" && !action.CanExecute);
 
-        var command = actions.OfType<UserInterfaceRepositoryAction>()
-            .First(action => action.RepositoryCommand is StartProcessRepositoryCommand).RepositoryCommand;
-        new ActionExecutor(container, NullLogger.Instance).Execute(repository, command).Should().BeTrue();
-        Fake.GetCalls(container.GetInstance<ProductionServices>().ProcessExecutor).Should().BeEmpty();
+            var command = actions.OfType<UserInterfaceRepositoryAction>()
+                .First(action => action.RepositoryCommand is StartProcessRepositoryCommand).RepositoryCommand;
+            new ActionExecutor(container, NullLogger.Instance).Execute(repository, command).Should().BeTrue();
+            Fake.GetCalls(container.GetInstance<ProductionServices>().ProcessExecutor).Should().BeEmpty();
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
+        }
     }
 
     [Fact]

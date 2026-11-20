@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using AwesomeAssertions;
 using Meziantou.Xunit;
 using Microsoft.Win32;
+using RepoM.UI.Controls;
 using RepoM.UI.Themes;
 using RepoM.Plugin.WorktreePreview;
 using VerifyTests;
@@ -24,6 +25,35 @@ using Xunit;
 [DisableParallelization]
 public class WorktreePreviewWindowTests
 {
+    [WpfTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Preview_ShouldIgnoreContextMenuEventsOutsidePreview(bool hasPlacementTarget)
+    {
+        var preview = new WorktreePreviewWindow();
+        var target = new Button();
+        var otherWindow = new Window { Content = target };
+        var item = new MenuItem { Header = "Production action" };
+        var menu = new AcrylicContextMenu
+        {
+            PlacementTarget = hasPlacementTarget ? target : null,
+        };
+        menu.Items.Add(item);
+
+        try
+        {
+            menu.RaiseEvent(new RoutedEventArgs(ContextMenu.OpenedEvent));
+            menu.RaiseEvent(new RoutedEventArgs(ContextMenu.ClosedEvent));
+
+            menu.Items.Cast<object>().Should().ContainSingle().Which.Should().BeSameAs(item);
+        }
+        finally
+        {
+            otherWindow.Close();
+            preview.Close();
+        }
+    }
+
     [WpfFact]
     public void PreviewTags_ShouldRoundTripThroughXamlSerialization()
     {
