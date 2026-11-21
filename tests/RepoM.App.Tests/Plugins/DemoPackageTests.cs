@@ -30,7 +30,6 @@ using RepoM.Core.Repositories.Favorite;
 using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Store;
 using RepoM.StartupPlugin.Demo;
-using RepoM.StartupPlugin.WorktreePreview;
 using RepoM.UI;
 using SimpleInjector;
 using Xunit;
@@ -59,29 +58,6 @@ public class DemoPackageTests
         foreach (var filename in filenames)
         {
             (await files.File.ReadAllTextAsync(files.Path.Combine(paths.AppDataPath, filename))).Should().Be(contents[filename]);
-        }
-    }
-
-    [WpfFact]
-    public async Task PreviewPackage_ShouldReplaceOnlyTheApplicationWindow_AndUseDemoServices()
-    {
-        using var store = new RepositoryStore();
-        using var container = CreateContainer(store);
-        container.RegisterInstance(A.Fake<IApplicationWindow>());
-
-        await new WorktreePreviewPackage().RegisterServicesAsync(container, A.Fake<IPackageConfiguration>());
-        var window = container.GetInstance<IApplicationWindow>();
-        try
-        {
-            window.Window.Should().BeOfType<WorktreePreviewWindow>();
-            container.GetInstance<IApplicationPresentation>().UseTray.Should().BeFalse();
-            await container.GetInstance<IRepositoryMonitorService>().StartAsync();
-            store.Count.Should().Be(5);
-            Fake.GetCalls(container.GetInstance<ProductionServices>().Monitor).Should().BeEmpty();
-        }
-        finally
-        {
-            window.Shutdown();
         }
     }
 

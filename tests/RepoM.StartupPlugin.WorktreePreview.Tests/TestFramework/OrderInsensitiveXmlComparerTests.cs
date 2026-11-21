@@ -1,4 +1,4 @@
-namespace RepoM.App.Tests.TestFramework;
+namespace RepoM.StartupPlugin.WorktreePreview.Tests.TestFramework;
 
 using System.Collections.Generic;
 using System.Linq;

@@ -18,8 +18,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib"
   xmlns:rmuic="clr-namespace:RepoM.UI.Controls;assembly=RepoM.UI"
-  xmlns:swb="clr-namespace:System.Windows.Baml2006;assembly=PresentationFramework"
-  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+  xmlns:swb="clr-namespace:System.Windows.Baml2006;assembly=PresentationFramework">
   <WorktreePreviewWindow.Resources>
     <av:Style
       TargetType="rmuic:AcrylicContextMenu"

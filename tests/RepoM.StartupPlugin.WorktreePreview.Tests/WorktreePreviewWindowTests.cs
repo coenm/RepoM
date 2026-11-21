@@ -1,4 +1,4 @@
-namespace RepoM.App.Tests;
+namespace RepoM.StartupPlugin.WorktreePreview.Tests;
 
 using System;
 using System.IO;

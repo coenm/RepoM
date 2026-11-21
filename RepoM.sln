@@ -81,6 +81,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoM.StartupPlugin.Worktre
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoM.StartupPlugin.Demo", "src\RepoM.StartupPlugin.Demo\RepoM.StartupPlugin.Demo.csproj", "{BB197B6C-AC8C-C669-9156-645506CE1FC6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoM.StartupPlugin.WorktreePreview.Tests", "tests\RepoM.StartupPlugin.WorktreePreview.Tests\RepoM.StartupPlugin.WorktreePreview.Tests.csproj", "{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -815,6 +817,26 @@ Global
 		{BB197B6C-AC8C-C669-9156-645506CE1FC6}.Release|x64.Build.0 = Release|Any CPU
 		{BB197B6C-AC8C-C669-9156-645506CE1FC6}.Release|x86.ActiveCfg = Release|Any CPU
 		{BB197B6C-AC8C-C669-9156-645506CE1FC6}.Release|x86.Build.0 = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|ARM.Build.0 = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|x64.Build.0 = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Debug|x86.Build.0 = Debug|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|ARM.ActiveCfg = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|ARM.Build.0 = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|ARM64.Build.0 = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|x64.ActiveCfg = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|x64.Build.0 = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|x86.ActiveCfg = Release|Any CPU
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -846,6 +868,7 @@ Global
 		{998B5CA0-158D-4B01-A343-07ED534D02B0} = {D44E8C7C-76D4-4677-AB2C-4E4F32E93413}
 		{212D2A15-FC0A-9C8E-2951-C1FAEED67C97} = {3136053F-1DC1-4C2A-9BA9-D85478942226}
 		{BB197B6C-AC8C-C669-9156-645506CE1FC6} = {3136053F-1DC1-4C2A-9BA9-D85478942226}
+		{FDB1BD22-F1A1-4C87-B68F-978C60AA2E96} = {3136053F-1DC1-4C2A-9BA9-D85478942226}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1765ABAA-0652-4DA5-ABBF-05396F2957D7}

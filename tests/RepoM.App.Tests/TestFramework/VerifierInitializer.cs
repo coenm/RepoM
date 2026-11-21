@@ -10,7 +10,6 @@ public static class VerifierInitializer
     public static void Initialize()
     {
         VerifyXaml.Initialize();
-        VerifierSettings.RegisterStringComparer("xml", OrderInsensitiveXmlComparer.CompareAsync);
         VerifierSettings.RegisterStreamComparer(
             extension: "png",
             compare: XamlPngComparer.CompareAsync);

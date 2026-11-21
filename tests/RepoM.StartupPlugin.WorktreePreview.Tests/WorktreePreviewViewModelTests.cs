@@ -1,4 +1,4 @@
-namespace RepoM.App.Tests.ViewModels;
+namespace RepoM.StartupPlugin.WorktreePreview.Tests;
 
 using System.Linq;
 using AwesomeAssertions;
