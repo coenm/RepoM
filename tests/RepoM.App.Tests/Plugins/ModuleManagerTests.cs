@@ -8,7 +8,7 @@ using FakeItEasy;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Common;
-using RepoM.App.Plugins;
+using RepoM.UI.Plugins;
 using VerifyXunit;
 using Xunit;
 

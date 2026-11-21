@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RepoM.StartupPlugin.Demo\RepoM.StartupPlugin.Demo.csproj" />
+    <ProjectReference Include="..\RepoM.UI\RepoM.UI.csproj" />
+    <Page Include="..\RepoM.UI\Themes\RepositoryStyles.xaml" Link="Themes\RepositoryStyles.xaml" />
+  </ItemGroup>
+</Project>

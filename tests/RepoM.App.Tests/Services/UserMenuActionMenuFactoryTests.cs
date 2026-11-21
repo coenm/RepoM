@@ -9,7 +9,7 @@ using FakeItEasy;
 using AwesomeAssertions;
 using RepoM.ActionMenu.Core;
 using RepoM.ActionMenu.Interface.UserInterface;
-using RepoM.App.Services;
+using RepoM.UI.Services;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.Repository;
 using Xunit;

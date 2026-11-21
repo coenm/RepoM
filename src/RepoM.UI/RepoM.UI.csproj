@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
+    <ProjectReference Include="..\RepoM.Api\RepoM.Api.csproj" />
+    <ProjectReference Include="..\RepoM.Core.Repositories\RepoM.Core.Repositories.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.5" />
+    <PackageReference Include="SimpleInjector" Version="5.5.0" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="10.0.5" />
+    <PackageReference Include="FluentWPF" Version="0.10.2" />
+    <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.3.0" />
+  </ItemGroup>
+</Project>

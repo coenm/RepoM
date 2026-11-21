@@ -4,7 +4,7 @@ using System;
 using FakeItEasy;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
-using RepoM.App.RepositoryActions;
+using RepoM.UI.RepositoryActions;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 using SimpleInjector;

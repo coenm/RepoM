@@ -4,6 +4,7 @@
     Name: RepoM.Plugin.Abc.dll,
     ToolTip: ,
     Description: ,
-    Hash: AQI=
+    Hash: AQI=,
+    IsRequired: false
   }
 ]

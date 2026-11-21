@@ -1,12 +1,14 @@
 namespace RepoM.Api.Git.ProcessExecution;
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RepoM.Core.Plugin.Repository;
 
@@ -27,6 +29,80 @@ public partial class ProcessExecutingGitCommander : IGitCommander
     public ProcessExecutingGitCommander(ILogger logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    /// <summary>
+    /// Runs a read-only Git command, preserving raw output (including NUL delimiters).
+    /// </summary>
+    public async Task<string> CommandAsync(string workingDirectory, CancellationToken cancellationToken, params string[] command)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        AssertValidCommand(command);
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = GIT_EXE,
+            WorkingDirectory = workingDirectory,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            StandardOutputEncoding = _encoding,
+            StandardErrorEncoding = _encoding,
+        };
+        foreach (var argument in command)
+        {
+            startInfo.ArgumentList.Add(argument);
+        }
+
+        startInfo.Environment["GIT_PAGER"] = "cat";
+        startInfo.Environment["GIT_TERMINAL_PROMPT"] = "0";
+        startInfo.Environment["GIT_OPTIONAL_LOCKS"] = "0";
+
+        using var timeout = new CancellationTokenSource(GIT_PROCESS_TIMEOUT_MS);
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeout.Token);
+        using var process = new Process { StartInfo = startInfo };
+        try
+        {
+            process.Start();
+        }
+        catch (Win32Exception exception)
+        {
+            throw new GitCommandException("Could not start Git. Ensure git is installed and available on PATH.", exception);
+        }
+        // Drain both streams concurrently; line-based reading would corrupt porcelain -z.
+        var stdout = process.StandardOutput.ReadToEndAsync();
+        var stderr = process.StandardError.ReadToEndAsync();
+        try
+        {
+            await process.WaitForExitAsync(linked.Token).ConfigureAwait(false);
+            await Task.WhenAll(stdout, stderr).WaitAsync(linked.Token).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (process.ExitCode != 0)
+            {
+                throw new GitCommandException($"Git {command[0]} exited with error code {process.ExitCode}: {await stderr.ConfigureAwait(false)}");
+            }
+
+            return await stdout.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (linked.IsCancellationRequested)
+        {
+            if (!process.HasExited)
+            {
+                try
+                {
+                    process.Kill(entireProcessTree: true);
+                }
+                catch (InvalidOperationException) when (process.HasExited)
+                {
+                    // The process exited between the check and the kill.
+                }
+            }
+
+            await process.WaitForExitAsync().ConfigureAwait(false);
+            await Task.WhenAll(stdout, stderr).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            throw new GitCommandException($"Git {command[0]} timed out after {GIT_PROCESS_TIMEOUT_MS} ms.");
+        }
     }
 
     /// <summary>

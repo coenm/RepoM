@@ -2,7 +2,7 @@ namespace RepoM.App.Tests.RepositoryFiltering.QueryMatchers;
 
 using FakeItEasy;
 using AwesomeAssertions;
-using RepoM.App.RepositoryFiltering.QueryMatchers;
+using RepoM.UI.RepositoryFiltering.QueryMatchers;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using Xunit;

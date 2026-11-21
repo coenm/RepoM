@@ -46,16 +46,59 @@ public class FileAppSettingsService : IAppSettingsService
         {
             var json = _fileSystem.File.ReadAllText(file);
             AppSettings? result = JsonConvert.DeserializeObject<AppSettings>(json);
+            if (result != null && !Enum.IsDefined(result.Theme))
+            {
+                _logger.LogWarning("Unknown theme '{Theme}' in configuration; using Dark", result.Theme);
+                result.Theme = AppTheme.Dark;
+            }
+
             return result ?? AppSettings.Default;
         }
-        catch
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
-            /* Our app settings are not critical. For our purposes, we want to ignore IO exceptions */
+            _logger.LogError(exception, "Could not read application settings from '{File}'; using defaults", file);
         }
 
         return AppSettings.Default;
     }
     
+    public AppTheme Theme
+    {
+        get => Settings.Theme;
+        set
+        {
+            if (!Enum.IsDefined(value))
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown application theme.");
+            }
+
+            if (Settings.Theme == value)
+            {
+                return;
+            }
+
+            Settings.Theme = value;
+            NotifyChange();
+            Save();
+        }
+    }
+
+    public bool EnableAnimations
+    {
+        get => Settings.EnableAnimations;
+        set
+        {
+            if (Settings.EnableAnimations == value)
+            {
+                return;
+            }
+
+            Settings.EnableAnimations = value;
+            NotifyChange();
+            Save();
+        }
+    }
+
     public string SortKey
     {
         get => Settings.SortKey;
@@ -183,6 +226,8 @@ public class FileAppSettingsService : IAppSettingsService
     }
 
     public int MenuPrefetchHoverDelayMilliseconds => Settings.MenuPrefetchHoverDelayMilliseconds;
+
+    public int ContextMenuLoadingIndicatorDelayMilliseconds => Settings.ContextMenuLoadingIndicatorDelayMilliseconds;
 
     public List<PluginSettings> Plugins
     {

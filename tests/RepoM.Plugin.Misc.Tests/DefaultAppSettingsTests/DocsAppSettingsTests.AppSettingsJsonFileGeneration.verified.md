@@ -4,6 +4,8 @@ This is the default configuration.
 
 ```json
 {
+  "Theme": "Dark",
+  "EnableAnimations": true,
   "SortKey": "",
   "SelectedQueryParser": "",
   "SelectedFilter": "",
@@ -11,7 +13,8 @@ This is the default configuration.
   "PruneOnFetch": false,
   "PreferredMenuSizes": {},
   "ReposRootDirectories": [],
-  "MenuPrefetchHoverDelayMilliseconds": 2000,
+  "MenuPrefetchHoverDelayMilliseconds": 0,
+  "ContextMenuLoadingIndicatorDelayMilliseconds": 500,
   "Plugins": []
 }
 ```

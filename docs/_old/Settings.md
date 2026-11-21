@@ -10,6 +10,8 @@ This is the default configuration.
 
 ```json
 {
+  "Theme": "Dark",
+  "EnableAnimations": true,
   "SortKey": "",
   "SelectedQueryParser": "",
   "SelectedFilter": "",
@@ -17,7 +19,8 @@ This is the default configuration.
   "PruneOnFetch": false,
   "PreferredMenuSizes": {},
   "ReposRootDirectories": [],
-  "MenuPrefetchHoverDelayMilliseconds": 2000,
+  "MenuPrefetchHoverDelayMilliseconds": 0,
+  "ContextMenuLoadingIndicatorDelayMilliseconds": 500,
   "Plugins": []
 }
 ```
@@ -25,6 +28,8 @@ This is the default configuration.
 
 Properties:<!-- include: DocsAppSettingsTests.AppSettingsDocumentationGeneration_AppSettings.verified.md -->
 
+- `Theme`: Color theme: Dark, Light, or System to follow the Windows app theme. (optional, UI configured)
+- `EnableAnimations`: Enables repository expansion and window appearance animations. (optional, UI configured)
 - `SortKey`: The selected sorting strategy. Sorting strategies can be configured manually in `RepoM.Ordering.yaml`. (optional, UI configured)
 - `SelectedQueryParser`: The selected query parser. Query parsers can be added by plugins. (optional, UI configured)
 - `SelectedFilter`: The selected filtering strategy. Filtering strategies can be configured manually in `RepoM.Filtering.yaml`. (optional, UI configured)
@@ -33,5 +38,7 @@ Properties:<!-- include: DocsAppSettingsTests.AppSettingsDocumentationGeneration
 - `PreferredMenuSizes`: Preferred menu sizes of the RepoM. Will be set when window is resized. (optional, UI configured)
 - `ReposRootDirectories`: List of root directories where RepoM will search for git repositories. If null or empty, all fixed drives will be searched from the root. (optional, Manual configured)
 - `MenuPrefetchHoverDelayMilliseconds`: Delay in milliseconds the mouse must hover over a repository before its context menu is prefetched
-in the background. Set to 0 or a negative value to disable hover prefetching. (optional, Manual configured)
+in the background. Set to 0 to start immediately or a negative value to disable hover prefetching. (optional, Manual configured)
+- `ContextMenuLoadingIndicatorDelayMilliseconds`: Delay in milliseconds before showing the loading indicator while the root context menu is prepared.
+Set to a negative value to keep the menu closed until it is ready without showing a loading indicator. (optional, Manual configured)
 - `Plugins`: List of plugins. (optional, UI configured)<!-- endInclude -->

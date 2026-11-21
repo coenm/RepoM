@@ -6,8 +6,9 @@ using RepoM.Core.Plugin.AssemblyInformation;
 
 public readonly struct PluginInfo
 {
-    public PluginInfo(string assemblyPath, PackageAttribute? packageAttribute, byte[] hash)
+    public PluginInfo(string assemblyPath, PackageAttribute? packageAttribute, byte[] hash, bool isRequired = false)
     {
+        IsRequired = isRequired;
         AssemblyPath = assemblyPath ?? throw new ArgumentNullException(nameof(assemblyPath));
         Hash = hash ?? throw new ArgumentNullException(nameof(hash));
 
@@ -34,4 +35,7 @@ public readonly struct PluginInfo
     public string Description { get; }
 
     public byte[] Hash { get; }
+
+    /// <summary>Whether this package is required by the explicitly selected startup configuration.</summary>
+    public bool IsRequired { get; }
 }

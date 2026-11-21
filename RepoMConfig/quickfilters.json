@@ -1,0 +1,30 @@
+{
+  "Filters": [
+    {
+      "Id": "281c864e-e37d-48a0-9fe5-6d80f86bf75c",
+      "Label": "psa",
+      "Query": {
+        "type": "freetext",
+        "value": "psa"
+      },
+      "IsActive": true,
+      "IsInverse": false,
+      "Order": 0,
+      "ToolTip": ""
+    },
+    {
+      "Id": "22e2c14f-a38a-43b0-9713-2112340420cb",
+      "Label": "BDO",
+      "Query": {
+        "type": "simpleterm",
+        "term": "tag",
+        "value": "BDO"
+      },
+      "IsActive": false,
+      "IsInverse": false,
+      "Order": 1,
+      "ToolTip": ""
+    }
+  ],
+  "CombineMode": 0
+}

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using AwesomeAssertions;
 using FakeItEasy;
 using RepoM.Api.QuickFilter;
-using RepoM.App.ViewModels;
+using RepoM.UI.ViewModels;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause.Terms;
 using Xunit;
 

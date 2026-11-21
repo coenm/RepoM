@@ -10,7 +10,7 @@ using RepoM.Core.Plugin;
 internal class ModuleService : IAsyncDisposable
 {
     private readonly IModule[] _modules;
-    private static Task? _stopTask;
+    private Task? _stopTask;
 
     public ModuleService(IEnumerable<IModule> modules, IAppSettingsService appSettings)
     {
@@ -33,16 +33,6 @@ internal class ModuleService : IAsyncDisposable
             {
                 await module.StopAsync().ConfigureAwait(false);
 
-                // ReSharper disable once SuspiciousTypeConversion.Global
-                if (module is IAsyncDisposable asyncDisposable)
-                {
-                    await asyncDisposable.DisposeAsync().ConfigureAwait(false);
-                }
-                // ReSharper disable once SuspiciousTypeConversion.Global
-                else if (module is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
             })));
 
     public ValueTask DisposeAsync()

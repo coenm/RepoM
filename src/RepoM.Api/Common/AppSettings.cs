@@ -2,6 +2,8 @@ namespace RepoM.Api.Common;
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using RepoM.Api.Git.AutoFetch;
 
 /// <summary>
@@ -9,6 +11,19 @@ using RepoM.Api.Git.AutoFetch;
 /// </summary>
 public sealed class AppSettings
 {
+    /// <summary>
+    /// Color theme: Dark, Light, or System to follow the Windows app theme.
+    /// </summary>
+    [UiConfigured]
+    [JsonConverter(typeof(StringEnumConverter))]
+    public AppTheme Theme { get; set; } = AppTheme.Dark;
+
+    /// <summary>
+    /// Enables repository expansion and window appearance animations.
+    /// </summary>
+    [UiConfigured]
+    public bool EnableAnimations { get; set; } = true;
+
     /// <summary>
     /// The selected sorting strategy. Sorting strategies can be configured manually in `RepoM.Ordering.yaml`.
     /// </summary>
@@ -53,10 +68,17 @@ public sealed class AppSettings
 
     /// <summary>
     /// Delay in milliseconds the mouse must hover over a repository before its context menu is prefetched
-    /// in the background. Set to 0 or a negative value to disable hover prefetching.
+    /// in the background. Set to 0 to start immediately or a negative value to disable hover prefetching.
     /// </summary>
     [ManualConfigured]
-    public int MenuPrefetchHoverDelayMilliseconds { get; set; } = 2000;
+    public int MenuPrefetchHoverDelayMilliseconds { get; set; } = 0;
+
+    /// <summary>
+    /// Delay in milliseconds before showing the loading indicator while the root context menu is prepared.
+    /// Set to a negative value to keep the menu closed until it is ready without showing a loading indicator.
+    /// </summary>
+    [ManualConfigured]
+    public int ContextMenuLoadingIndicatorDelayMilliseconds { get; set; } = 500;
 
     /// <summary>
     /// List of plugins.
@@ -69,10 +91,18 @@ public sealed class AppSettings
             AutoFetchMode = AutoFetchMode.Off,
             PruneOnFetch = false,
             ReposRootDirectories = new(),
-            MenuPrefetchHoverDelayMilliseconds = 2000,
+            MenuPrefetchHoverDelayMilliseconds = 0,
+            ContextMenuLoadingIndicatorDelayMilliseconds = 500,
             Plugins = [],
             PreferredMenuSizes = new(),
         };
+}
+
+public enum AppTheme
+{
+    Dark,
+    Light,
+    System,
 }
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]

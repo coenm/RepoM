@@ -15,9 +15,25 @@ using RepoM.Api.QuickFilter;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
+using RepoM.Api.IO;
+using RepoM.Core.StartupPlugin;
 
 public class CoreBootstrapper
 {
+    /// <summary>Registers defaults in a dedicated startup container, without resolving them.</summary>
+    public static Task RegisterStartupDependenciesAsync(Container container, string[] args)
+    {
+        ArgumentNullException.ThrowIfNull(container);
+        ArgumentNullException.ThrowIfNull(args);
+        container.Register<IFileSystem, FileSystem>(Lifestyle.Singleton);
+        container.Register<IHmacService, HmacSha256Service>(Lifestyle.Singleton);
+        container.Register<IPluginFinder, PluginFinder>(Lifestyle.Singleton);
+        container.Register<IConfigBasedAppDataPathProviderFactory>(
+            () => new ConfigBasedAppDataPathProviderFactory(args, container.GetInstance<IFileSystem>()),
+            Lifestyle.Singleton);
+        return Task.CompletedTask;
+    }
+
     private readonly IPluginFinder _pluginFinder;
     private readonly IFileSystem _fileSystem;
     private readonly IAppDataPathProvider _appDataProvider;
@@ -83,8 +99,8 @@ public class CoreBootstrapper
             .Select(plugin => plugin.Name);
 
         Assembly[] assemblies = pluginInformation
-            .Where(plugin => enabledPlugins.Contains(plugin.Name))
-            .Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.AssemblyPath)))
+            .Where(plugin => plugin.IsRequired || enabledPlugins.Contains(plugin.Name))
+            .Select(plugin => Assembly.LoadFrom(plugin.AssemblyPath))
             .ToArray();
 
         if (assemblies.Length > 0)
@@ -99,6 +115,7 @@ public class CoreBootstrapper
                         filename))
                 .ConfigureAwait(false);
         }
+
     }
 
     private static PluginSettings ConvertToPluginSettings(PluginInfo pluginInfo, string baseDir, bool enabled)

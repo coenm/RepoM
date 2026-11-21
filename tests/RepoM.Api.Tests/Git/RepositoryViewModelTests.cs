@@ -56,6 +56,91 @@ public class RepositoryViewModelTests
 
     public class Properties : RepositoryViewModelTests
     {
+        [Theory]
+        [InlineData(1, 0, 0, 0, 0, 0)]
+        [InlineData(0, 1, 0, 0, 0, 0)]
+        [InlineData(0, 0, 1, 0, 0, 0)]
+        [InlineData(0, 0, 0, 1, 0, 0)]
+        [InlineData(0, 0, 0, 0, 1, 0)]
+        [InlineData(0, 0, 0, 0, 0, 1)]
+        public void CompactStatus_ShouldMarkAnyLocalChangeAsDirty(int added, int staged, int removed, int modified, int missing, int untracked)
+        {
+            RepositoryInfo info = _builder.WithCurrentBranch("main").WithUpstream()
+                .WithAheadBy(2).WithBehindBy(3)
+                .WithLocalAdded(added).WithLocalStaged(staged).WithLocalRemoved(removed)
+                .WithLocalModified(modified).WithLocalMissing(missing).WithLocalUntracked(untracked).Build();
+            using RepositoryViewModel sut = CreateSut(info);
+
+            sut.HasLocalChanges.Should().BeTrue();
+            sut.HasAheadCommits.Should().BeTrue();
+            sut.HasBehindCommits.Should().BeTrue();
+            sut.HasUnknownStatus.Should().BeFalse();
+            sut.IsUpstreamMissing.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CompactStatus_ShouldNotifyWhenUnknownBecomesCleanOrUpstreamChanges()
+        {
+            using RepositoryViewModel sut = CreateSut(_builder.WithCurrentBranch("main").WithUpstream().Build());
+            sut.HasUnknownStatus.Should().BeTrue();
+            List<string?> changed = [];
+            sut.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+
+            sut.Update(_builder.WithAheadBy(0).WithBehindBy(0)
+                .WithLocalAdded(0).WithLocalStaged(0).WithLocalRemoved(0)
+                .WithLocalModified(0).WithLocalMissing(0).WithLocalUntracked(0).WithStashCount(2).Build());
+
+            sut.HasUnknownStatus.Should().BeFalse();
+            sut.HasLocalChanges.Should().BeFalse("stashes are not working tree changes");
+            sut.HasAheadCommits.Should().BeFalse();
+            sut.HasBehindCommits.Should().BeFalse();
+            changed.Should().Contain(nameof(RepositoryViewModel.HasUnknownStatus));
+
+            changed.Clear();
+            sut.Update(_builder.WithoutUpstream().Build());
+            sut.IsUpstreamMissing.Should().BeTrue();
+            sut.HasUnknownStatus.Should().BeFalse();
+            changed.Should().Contain(nameof(RepositoryViewModel.IsUpstreamMissing));
+
+            changed.Clear();
+            sut.Update(_builder.WithUpstream().WithAheadBy(2).WithBehindBy(3).WithLocalModified(1).Build());
+            changed.Should().Contain([nameof(RepositoryViewModel.IsUpstreamMissing),
+                nameof(RepositoryViewModel.HasAheadCommits), nameof(RepositoryViewModel.HasBehindCommits),
+                nameof(RepositoryViewModel.HasLocalChanges)]);
+        }
+
+        [Fact]
+        public void CompactStatus_ShouldNotTreatDiscoveryStubAsMissingUpstream()
+        {
+            using RepositoryViewModel sut = CreateSut(_builder.Build());
+            sut.HasUnknownStatus.Should().BeTrue();
+            sut.IsUpstreamMissing.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CompactStatus_ShouldNotRequireWorkingTreeCountsForBareRepository()
+        {
+            using RepositoryViewModel sut = CreateSut(new RepositoryInfo
+            {
+                Name = "bare", Path = @"C:\Repos\bare", SafePath = "C:/Repos/bare",
+                IsBare = true, CurrentBranch = "main",
+            });
+            sut.HasUnknownStatus.Should().BeFalse();
+            sut.HasLocalChanges.Should().BeFalse();
+            sut.IsUpstreamMissing.Should().BeFalse();
+        }
+
+        [Fact]
+        public void CollapsedDetails_ShouldSurviveRepositoryRefresh()
+        {
+            using RepositoryViewModel sut = CreateSut();
+            sut.IsExpanded = false;
+
+            sut.Update(_builder.WithCurrentBranch("updated").BuildFullFeatured());
+
+            sut.IsExpanded.Should().BeFalse();
+        }
+
         [Fact]
         public void Name_Returns_Name_From_Info()
         {

@@ -1,0 +1,47 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <Color x:Key="RepositoryWindowColor">#20252B</Color>
+    <SolidColorBrush x:Key="PreviewBackground" Color="#20252B" />
+    <SolidColorBrush x:Key="PreviewForeground" Color="#E8EDF2" />
+    <SolidColorBrush x:Key="PreviewMutedForeground" Color="#AAB8C6" />
+    <SolidColorBrush x:Key="PreviewSecondaryForeground" Color="#C3CED9" />
+    <SolidColorBrush x:Key="PreviewIconForeground" Color="#B4C0CC" />
+    <SolidColorBrush x:Key="PreviewAccent" Color="#80CFFF" />
+    <SolidColorBrush x:Key="RepositoryDirtyForeground" Color="#E8B85A" />
+    <SolidColorBrush x:Key="RepositoryMonitoringBorder" Color="#608C82" />
+    <SolidColorBrush x:Key="RepositoryMonitoringActive" Color="#608C82" />
+    <SolidColorBrush x:Key="RepositoryMonitoringInactive" Color="Transparent" />
+    <SolidColorBrush x:Key="RepositoryMonitoringHighlight" Color="#A0C2B9" />
+    <SolidColorBrush x:Key="PreviewPrimarySurface" Color="#303943" />
+    <SolidColorBrush x:Key="PreviewWorktreeSurface" Color="#252F38" />
+    <SolidColorBrush x:Key="PreviewWorktreeTitle" Color="#DFE9F0" />
+    <SolidColorBrush x:Key="PreviewHoverSurface" Color="#38414A" />
+    <SolidColorBrush x:Key="PreviewSelectedSurface" Color="#414B55" />
+    <SolidColorBrush x:Key="PreviewFocusedSurface" Color="#4A545E" />
+    <SolidColorBrush x:Key="PreviewHierarchy" Color="#507F9C" />
+    <SolidColorBrush x:Key="PreviewBadge" Color="#244B667C" />
+    <SolidColorBrush x:Key="PreviewBadgeForeground" Color="#AEC6D8" />
+    <SolidColorBrush x:Key="PreviewTagBackground" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="PreviewTagForeground" Color="#ED8888" />
+    <SolidColorBrush x:Key="PreviewTagHoverBackground" Color="#40FFFFFF" />
+    <SolidColorBrush x:Key="PreviewTagHoverForeground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="QuickFilterSelectedBackground" Color="#35564B" />
+    <SolidColorBrush x:Key="QuickFilterSelectedBorder" Color="#729F8C" />
+    <SolidColorBrush x:Key="QuickFilterInverseBackground" Color="#49383D" />
+    <SolidColorBrush x:Key="QuickFilterInverseBorder" Color="#A87983" />
+    <SolidColorBrush x:Key="QuickFilterInverseForeground" Color="#E9B2BC" />
+    <SolidColorBrush x:Key="QuickFilterHoverBackground" Color="#38414A" />
+    <SolidColorBrush x:Key="QuickFilterSelectedHoverBackground" Color="#406557" />
+    <SolidColorBrush x:Key="QuickFilterInverseHoverBackground" Color="#57434A" />
+    <SolidColorBrush x:Key="PreviewIconHover" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="PreviewIconFocus" Color="#24FFFFFF" />
+    <SolidColorBrush x:Key="PreviewIconFocusForeground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="PreviewFavorite" Color="#F2CF72" />
+    <SolidColorBrush x:Key="RepositoryScrollBarThumb" Color="#65727D" />
+    <SolidColorBrush x:Key="RepositoryScrollBarThumbHover" Color="#8B9AA7" />
+    <SolidColorBrush x:Key="PreviewMenuBackground" Color="#E620252B" />
+    <SolidColorBrush x:Key="PreviewMenuBorder" Color="#46515C" />
+</ResourceDictionary>

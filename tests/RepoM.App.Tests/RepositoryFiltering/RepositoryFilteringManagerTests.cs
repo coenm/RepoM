@@ -8,7 +8,7 @@ using FakeItEasy;
 using AwesomeAssertions;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.App.RepositoryFiltering;
+using RepoM.UI.RepositoryFiltering;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
