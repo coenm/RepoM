@@ -196,7 +196,7 @@ public partial class RepositoryList : UserControl
         return false;
     }
 
-    private void PopulateMenuItems(ItemCollection items, System.Collections.Generic.IReadOnlyList<IRepositoryMenuEntryViewModel> entries)
+    internal void PopulateMenuItems(ItemCollection items, System.Collections.Generic.IReadOnlyList<IRepositoryMenuEntryViewModel> entries)
     {
         foreach (IRepositoryMenuEntryViewModel entry in entries)
         {
