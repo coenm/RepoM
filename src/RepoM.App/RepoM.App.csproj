@@ -19,7 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\RepoM.UI\RepoM.UI.csproj" />
-    <ProjectReference Include="..\RepoM.StartupPlugin.WorktreePreview\RepoM.StarPlugin.WorktreePreview.csproj"
+    <ProjectReference Include="..\RepoM.StartupPlugin.WorktreePreview\RepoM.StartupPlugin.WorktreePreview.csproj"
                       ReferenceOutputAssembly="false" OutputItemType="StartupPluginAssembly" />
     <ProjectReference Include="..\RepoM.StartupPlugin.Demo\RepoM.StartupPlugin.Demo.csproj"
                       ReferenceOutputAssembly="false" OutputItemType="StartupPluginAssembly" />
