@@ -3,7 +3,9 @@ namespace RepoM.Api.Tests.Git;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
@@ -13,6 +15,12 @@ using RepoM.Api.Git;
 using RepoM.Api.Git.ProcessExecution;
 using RepoM.Api.IO.ModuleBasedRepositoryActionProvider;
 using RepoM.Core.Plugin.Repository;
+using RepoM.Core.Repositories;
+using RepoM.Core.Repositories.Monitoring;
+using RepoM.Core.Repositories.Persistence;
+using RepoM.Core.Repositories.Scanning;
+using RepoM.Core.Repositories.Store;
+using RepoM.Core.Repositories.Watching;
 using Xunit;
 using GitCommandException = RepoM.Api.Git.ProcessExecution.GitCommandException;
 
@@ -209,11 +217,53 @@ public sealed class LibGit2SharpRepositoryInfoReaderTests : IDisposable
         A.CallTo(() => commander.CommandAsync(A<string>._, A<CancellationToken>._, A<string[]>._)).Returns(output);
         var sut = new LibGit2SharpRepositoryInfoReader(_tags, commander, _logger);
 
-        await Assert.ThrowsAsync<GitCommandException>(() => sut.ReadAsync(_directory.FullName));
+        var result = await sut.ReadAsync(_directory.FullName);
 
+        result.Should().BeNull();
         A.CallTo(() => _tags.GetTagsAsync(A<IRepository>._)).MustNotHaveHappened();
         LogMessages().Should().Contain(message => message.Contains("stage=status;", StringComparison.Ordinal)
             && message.Contains("outcome=failed", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task ScanAsync_ShouldKeepScanningAfterGitStatusFailsForOneRepository()
+    {
+        var failed = Directory.CreateDirectory(Path.Combine(_directory.FullName, "failed"));
+        var healthy = Directory.CreateDirectory(Path.Combine(_directory.FullName, "healthy"));
+        LibGit2Sharp.Repository.Init(failed.FullName);
+        LibGit2Sharp.Repository.Init(healthy.FullName);
+
+        var commander = A.Fake<IGitCommander>();
+        A.CallTo(() => commander.CommandAsync(
+                A<string>.That.Matches(path => Path.TrimEndingDirectorySeparator(path) == failed.FullName),
+                A<CancellationToken>._, A<string[]>._))
+            .ThrowsAsync(new GitCommandException("Git status timed out."));
+        A.CallTo(() => commander.CommandAsync(
+                A<string>.That.Matches(path => Path.TrimEndingDirectorySeparator(path) == healthy.FullName),
+                A<CancellationToken>._, A<string[]>._))
+            .Returns(InitialHeaders + "? untracked.txt\0");
+        var reader = new LibGit2SharpRepositoryInfoReader(_tags, commander, _logger);
+
+        using var paths = new Subject<string>();
+        var scanner = A.Fake<IRepositoryScanner>();
+        A.CallTo(() => scanner.Scan(A<IEnumerable<string>>._, A<CancellationToken>._)).Returns(paths);
+        var store = new RepositoryStore();
+        var monitoringState = new RepositoryMonitoringStateService();
+        using var monitor = new RepositoryMonitorService(
+            scanner, A.Fake<IRepositoryWatcher>(), reader, store, new FileSystem(), () => [_directory.FullName],
+            monitoringState, monitoringState, A.Fake<IRepositorySnapshotStore>(),
+            new RepositoryMonitorServiceConfiguration(TimeSpan.FromMilliseconds(10)), _logger);
+
+        var scan = monitor.ScanAsync();
+        paths.OnNext(failed.FullName);
+        paths.OnNext(healthy.FullName);
+        paths.OnCompleted();
+        await scan.WaitAsync(TimeSpan.FromSeconds(5));
+
+        store.Items.Should().ContainSingle(repo => repo.Name == "healthy" && repo.LocalUntracked == 1);
+        store.Count.Should().Be(1);
+        LogMessages().Should().Contain(message => message.Contains("Could not read Git status", StringComparison.Ordinal)
+            && message.Contains(failed.FullName, StringComparison.Ordinal));
     }
 
     [Fact]

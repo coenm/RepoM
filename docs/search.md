@@ -129,7 +129,9 @@ Ignored files remain excluded, untracked files remain included, and staged addit
 modifications and deletions retain separate counters. NUL delimiters make filenames with
 spaces or newlines safe to parse. `GIT_OPTIONAL_LOCKS=0` prevents status from rewriting the
 index just to refresh its stat cache. There is no fallback to LibGit2Sharp status on failure:
-missing Git, nonzero exits, timeouts and malformed output are reported as read failures.
+missing Git, nonzero exits, timeouts and malformed output are logged as read failures for
+the affected repository. The scan continues with other repositories and keeps any
+previously known status for the repository that failed.
 
 Branch headers also handle repositories with no commits and detached HEAD. Missing
 ahead/behind information remains `null`, not zero; a configured but missing upstream still

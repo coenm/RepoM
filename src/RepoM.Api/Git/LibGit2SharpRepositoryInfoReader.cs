@@ -204,10 +204,11 @@ public class LibGit2SharpRepositoryInfoReader : IRepositoryInfoReader
             // Leave lock retries (and their cancellation/delay) to ReadWithRetries.
             throw;
         }
-        catch (CliCommandException)
+        catch (CliCommandException e)
         {
-            // Do not retry a failed CLI invocation or report an empty/clean status.
-            throw;
+            ct.ThrowIfCancellationRequested();
+            _logger.LogWarning(e, "Could not read Git status for repository {Path}", repoPath);
+            return null;
         }
         catch (Exception e)
         {
