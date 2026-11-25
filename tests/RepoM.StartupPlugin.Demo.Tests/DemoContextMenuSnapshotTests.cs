@@ -66,7 +66,7 @@ public class DemoContextMenuSnapshotTests
         // WPF permits only one Application per test process; shutting it down also disables later resource loads.
         _ = Application.Current ?? new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
         using var alignment = new LeftOpeningMenus();
-        // Menus highlight the item under the real mouse pointer, so keep it away from RepoM (shown on the right).
+        // Menus highlight the item under the real mouse pointer, so keep it away from RepoM.
         Rect workArea = SystemParameters.WorkArea;
         SetCursorPos((int)workArea.Left, (int)workArea.Top);
         var failures = new List<Exception>();
@@ -364,8 +364,10 @@ public class DemoContextMenuSnapshotTests
 
         public AcrylicContextMenu ContextMenu { get; private set; } = null!;
 
+        private const double MenuAnchorX = 180;
+
         // A fixed spot inside the RepoM row, so screenshots and video are deterministic.
-        public Point ClickPoint => ToWindow(Row, new Point(180, Row.ActualHeight / 2));
+        public Point ClickPoint => ToWindow(Row, new Point(MenuAnchorX, Row.ActualHeight / 2));
 
         public static async Task<DemoSession> StartAsync(string theme)
         {
@@ -392,10 +394,14 @@ public class DemoContextMenuSnapshotTests
             ContextMenu.Items.Clear();
             _repositoryList.PopulateMenuItems(ContextMenu.Items, entries);
             ContextMenu.Resources.MergedDictionaries.Add(Window.Resources);
-            ContextMenu.Placement = PlacementMode.Relative;
+            ContextMenu.Placement = PlacementMode.Custom;
             ContextMenu.PlacementTarget = Row;
-            ContextMenu.HorizontalOffset = 180;
-            ContextMenu.VerticalOffset = Row.ActualHeight / 2;
+            ContextMenu.CustomPopupPlacementCallback = static (popupSize, targetSize, _) =>
+            [
+                new CustomPopupPlacement(
+                    new Point(MenuAnchorX - popupSize.Width, (targetSize.Height / 2) - popupSize.Height),
+                    PopupPrimaryAxis.None),
+            ];
             // These captures open the menu programmatically; don't let mouse input dismiss it.
             ContextMenu.StaysOpen = true;
             ContextMenu.IsOpen = true;
@@ -479,7 +485,7 @@ public class DemoContextMenuSnapshotTests
                 layers.AddRange(_openedSubmenus);
             }
 
-            return layers.Select(visual =>
+            var captures = layers.Select(visual =>
             {
                 var root = (FrameworkElement)(PresentationSource.FromVisual(visual)?.RootVisual
                     ?? throw new InvalidOperationException("The popup is not displayed."));
@@ -494,6 +500,18 @@ public class DemoContextMenuSnapshotTests
                 bitmap.Freeze();
                 return new Layer(bitmap, bounds);
             }).ToList();
+
+            if (expectContextMenu)
+            {
+                Rect menu = captures[1].Bounds;
+                Point anchor = ClickPoint;
+                if (menu.Right > anchor.X + 1 || menu.Bottom > anchor.Y + 1)
+                {
+                    throw new InvalidOperationException($"The context menu ({menu}) did not open above and left of the click point ({anchor}).");
+                }
+            }
+
+            return captures;
         }
 
         public Point CenterOf(FrameworkElement element) =>
@@ -538,9 +556,9 @@ public class DemoContextMenuSnapshotTests
 
             _window.SetReady();
             _window.Height = 560;
-            // Like the app, sit at the right edge so menus have room to open to the left.
-            _window.Left = SystemParameters.WorkArea.Right - _window.Width;
-            _window.Top = 40;
+            Rect workArea = SystemParameters.WorkArea;
+            _window.Left = workArea.Right - _window.Width;
+            _window.Top = workArea.Bottom - _window.Height;
             _window.Show();
 
             _repositoryList = (RepositoryList)_window.FindName("repositoryList");
