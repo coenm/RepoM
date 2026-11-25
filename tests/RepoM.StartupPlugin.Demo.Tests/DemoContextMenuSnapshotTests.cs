@@ -70,12 +70,37 @@ public class DemoContextMenuSnapshotTests
         Rect workArea = SystemParameters.WorkArea;
         SetCursorPos((int)workArea.Left, (int)workArea.Top);
         var failures = new List<Exception>();
+        var repositoryImages = new Dictionary<string, BitmapSource>();
         foreach (string menuView in new[] { "Repository", "Git", "Checkout" })
         {
             foreach (string theme in new[] { "Dark", "Light" })
             {
-                await CollectFailureAsync(failures, $"Snapshot {menuView}.{theme}", () => VerifyScreenshotAsync(theme, menuView));
+                await CollectFailureAsync(failures, $"Snapshot {menuView}.{theme}", async () =>
+                {
+                    BitmapSource image = await CaptureScreenshotAsync(theme, menuView);
+                    if (menuView == "Repository")
+                    {
+                        repositoryImages.Add(theme, image);
+                    }
+
+                    await VerifyImageAsync("png", EncodePng(image), $"{menuView}.{theme}");
+                });
             }
+        }
+
+        if (repositoryImages.TryGetValue("Dark", out BitmapSource? dark) &&
+            repositoryImages.TryGetValue("Light", out BitmapSource? light))
+        {
+            await CollectFailureAsync(failures, "Snapshot Repository.DarkLight", async () =>
+            {
+                var layers = new[]
+                {
+                    new Layer(dark, new Rect(0, 0, dark.PixelWidth, dark.PixelHeight)),
+                    new Layer(light, new Rect(dark.PixelWidth, 0, light.PixelWidth, light.PixelHeight)),
+                };
+                BitmapSource image = Compose(layers, GetBounds(layers), background: null, cursor: null);
+                await VerifyImageAsync("png", EncodePng(image), "Repository.DarkLight");
+            });
         }
 
         await CollectFailureAsync(failures, "Video.Dark", () => VerifyVideoAsync("Dark"));
@@ -101,7 +126,7 @@ public class DemoContextMenuSnapshotTests
         }
     }
 
-    private static async Task VerifyScreenshotAsync(string theme, string menuView)
+    private static async Task<BitmapSource> CaptureScreenshotAsync(string theme, string menuView)
     {
         await using var session = await DemoSession.StartAsync(theme);
         session.List.SelectedItem = session.Repository;
@@ -118,8 +143,7 @@ public class DemoContextMenuSnapshotTests
 
         await session.SettleAsync();
         IReadOnlyList<Layer> layers = await session.CaptureStableLayersAsync();
-        BitmapSource image = Compose(layers, GetBounds(layers), background: null, cursor: null);
-        await VerifyImageAsync("png", EncodePng(image), $"{menuView}.{theme}");
+        return Compose(layers, GetBounds(layers), background: null, cursor: null);
     }
 
     // Right click on RepoM, then walk through Git > Checkout, as a user would.

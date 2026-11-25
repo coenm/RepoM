@@ -7,7 +7,7 @@ dotnet run --project src\RepoM.App -- --startup-plugin "src\RepoM.App\bin\Debug\
 ```
 
 The separate worktree prototype is selected with `RepoM.StartupPlugin.WorktreePreview.dll`
-instead. The former `--demo` and `--worktree-preview` switches are no longer accepted.
+instead.
 For a published build, pass the startup DLL next to `RepoM.exe`.
 
 ## Behavior

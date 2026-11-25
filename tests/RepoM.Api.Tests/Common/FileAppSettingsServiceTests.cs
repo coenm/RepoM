@@ -3,6 +3,7 @@ namespace RepoM.Api.Tests.Common;
 using System.IO.Abstractions.TestingHelpers;
 using AwesomeAssertions;
 using FakeItEasy;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.Api.Common;
 using RepoM.Core.Plugin.Common;
@@ -25,6 +26,24 @@ public class FileAppSettingsServiceTests
     }
 
     [Theory]
+    [InlineData("999")]
+    [InlineData("\"999\"")]
+    public void UnknownNumericTheme_ShouldUseDarkAndPreserveOtherSettings(string theme)
+    {
+        var files = new MockFileSystem();
+        files.AddFile(@"C:\Settings\appsettings.json", new MockFileData($$"""{"Theme":{{theme}},"SortKey":"existing","PruneOnFetch":true}"""));
+        var logger = A.Fake<ILogger>();
+        FileAppSettingsService settings = Create(files, logger);
+
+        settings.Theme.Should().Be(AppTheme.Dark);
+        settings.SortKey.Should().Be("existing");
+        settings.PruneOnFetch.Should().BeTrue();
+        A.CallTo(logger)
+            .Where(call => call.Method.Name == "Log" && call.Arguments.Get<LogLevel>(0) == LogLevel.Warning)
+            .MustHaveHappenedOnceExactly();
+    }
+
+    [Theory]
     [InlineData(AppTheme.Dark)]
     [InlineData(AppTheme.Light)]
     [InlineData(AppTheme.System)]
@@ -43,10 +62,10 @@ public class FileAppSettingsServiceTests
         files.File.ReadAllText(@"C:\Settings\appsettings.json").Should().Contain($"\"Theme\": \"{theme}\"");
     }
 
-    private static FileAppSettingsService Create(MockFileSystem files)
+    private static FileAppSettingsService Create(MockFileSystem files, ILogger? logger = null)
     {
         var paths = A.Fake<IAppDataPathProvider>();
         A.CallTo(() => paths.AppDataPath).Returns(@"C:\Settings");
-        return new FileAppSettingsService(paths, files, NullLogger.Instance);
+        return new FileAppSettingsService(paths, files, logger ?? NullLogger.Instance);
     }
 }

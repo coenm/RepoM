@@ -20,9 +20,7 @@ If you recognise this introduction you might be right. RepoM is a fork of the po
 
 The hub provides a quick overview of your repositories including their current branch, a short status information, and optionally some provided tags. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer, opening a command line tool in a given repository, checking out git branches and lots of other predefined or customizable actions.
 
-| Dark | Light |
-| --- | --- |
-| ![RepoM with the repository context menu (dark theme)](tests/RepoM.StartupPlugin.Demo.Tests/DemoContextMenuSnapshotTests.Repository.Dark.verified.png) | ![RepoM with the repository context menu (light theme)](tests/RepoM.StartupPlugin.Demo.Tests/DemoContextMenuSnapshotTests.Repository.Light.verified.png) |
+![RepoM with the repository context menu in dark and light themes](tests/RepoM.StartupPlugin.Demo.Tests/DemoContextMenuSnapshotTests.Repository.DarkLight.verified.png)
 
 If you are working on different git repositories throughout the day, you might find yourself wasting time by permanently switching over from one repository to another. If you are like me, you tend to keep all those windows open to be reused later, ending up on a window list which has to be looped through all the time.
 
