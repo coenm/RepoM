@@ -14,5 +14,8 @@ public static class VerifierInitializer
         VerifierSettings.RegisterStreamComparer(
             extension: "png",
             compare: XamlPngComparer.CompareAsync);
+        VerifierSettings.RegisterStreamComparer(
+            extension: "gif",
+            compare: AnimatedGifComparer.CompareAsync);
     }
 }

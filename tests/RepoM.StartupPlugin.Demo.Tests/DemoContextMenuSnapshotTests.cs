@@ -142,7 +142,7 @@ public class DemoContextMenuSnapshotTests
         }
 
         await session.SettleAsync();
-        IReadOnlyList<Layer> layers = await session.CaptureStableLayersAsync();
+        IReadOnlyList<Layer> layers = await session.CaptureStableLayersAsync(expectContextMenu: true);
         return Compose(layers, GetBounds(layers), background: null, cursor: null);
     }
 
@@ -152,25 +152,25 @@ public class DemoContextMenuSnapshotTests
         await using var session = await DemoSession.StartAsync(theme);
         session.List.SelectedItem = null;
         await session.SettleAsync();
-        IReadOnlyList<Layer> idle = await session.CaptureStableLayersAsync();
+        IReadOnlyList<Layer> idle = await session.CaptureStableLayersAsync(expectContextMenu: false);
         Point click = session.ClickPoint;
         Point start = new(click.X + 120, click.Y - 220);
 
         session.List.SelectedItem = session.Repository;
         await session.OpenContextMenuAsync();
         await session.SettleAsync();
-        IReadOnlyList<Layer> menu = await session.CaptureStableLayersAsync();
+        IReadOnlyList<Layer> menu = await session.CaptureStableLayersAsync(expectContextMenu: true);
         AcrylicMenuItem gitItem = GetMenuItem(session.ContextMenu.Items, "Git");
         Point git = session.CenterOf(gitItem);
 
         await session.OpenSubmenuAsync(session.ContextMenu.Items, "Git", "Checkout");
         await session.SettleAsync();
-        IReadOnlyList<Layer> gitOpen = await session.CaptureStableLayersAsync();
+        IReadOnlyList<Layer> gitOpen = await session.CaptureStableLayersAsync(expectContextMenu: true);
         Point checkout = session.CenterOf(GetMenuItem(gitItem.Items, "Checkout"));
 
         AcrylicMenuItem checkoutItem = await session.OpenSubmenuAsync(gitItem.Items, "Checkout", "main");
         await session.SettleAsync();
-        IReadOnlyList<Layer> checkoutOpen = await session.CaptureStableLayersAsync();
+        IReadOnlyList<Layer> checkoutOpen = await session.CaptureStableLayersAsync(expectContextMenu: true);
         Point main = session.CenterOf(GetMenuItem(checkoutItem.Items, "main"));
 
         var frames = new List<(IReadOnlyList<Layer> Layers, Point Cursor, ushort Delay)> { (idle, start, 80) };
@@ -396,9 +396,12 @@ public class DemoContextMenuSnapshotTests
             ContextMenu.PlacementTarget = Row;
             ContextMenu.HorizontalOffset = 180;
             ContextMenu.VerticalOffset = Row.ActualHeight / 2;
+            // These captures open the menu programmatically; don't let mouse input dismiss it.
+            ContextMenu.StaysOpen = true;
             ContextMenu.IsOpen = true;
             await WaitUntilAsync(
-                () => ContextMenu.IsOpen && ContextMenu.Items.OfType<AcrylicMenuItem>().Any(),
+                () => ContextMenu.IsOpen && PresentationSource.FromVisual(ContextMenu) != null &&
+                    ContextMenu.Items.OfType<AcrylicMenuItem>().Any(),
                 "The repository context menu did not open.");
         }
 
@@ -426,14 +429,14 @@ public class DemoContextMenuSnapshotTests
         }
 
         // Transitions can still be running right after startup, so wait until two consecutive captures are identical.
-        public async Task<IReadOnlyList<Layer>> CaptureStableLayersAsync()
+        public async Task<IReadOnlyList<Layer>> CaptureStableLayersAsync(bool expectContextMenu)
         {
-            IReadOnlyList<Layer> previous = CaptureLayers();
+            IReadOnlyList<Layer> previous = CaptureLayers(expectContextMenu);
             for (var attempt = 0; attempt < 40; attempt++)
             {
                 await Task.Delay(100);
                 await Window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
-                IReadOnlyList<Layer> current = CaptureLayers();
+                IReadOnlyList<Layer> current = CaptureLayers(expectContextMenu);
                 if (current.Count == previous.Count && current.Zip(previous).All(pair => HasSamePixels(pair.First, pair.Second)))
                 {
                     return current;
@@ -460,10 +463,17 @@ public class DemoContextMenuSnapshotTests
             return leftPixels.AsSpan().SequenceEqual(rightPixels);
         }
 
-        public IReadOnlyList<Layer> CaptureLayers()
+        private IReadOnlyList<Layer> CaptureLayers(bool expectContextMenu)
         {
+            if (ContextMenu.IsOpen != expectContextMenu)
+            {
+                throw new InvalidOperationException(expectContextMenu
+                    ? "The repository context menu closed before the capture finished."
+                    : "The repository context menu was unexpectedly open during the idle capture.");
+            }
+
             var layers = new List<Visual> { Window };
-            if (ContextMenu.IsOpen)
+            if (expectContextMenu)
             {
                 layers.Add(ContextMenu);
                 layers.AddRange(_openedSubmenus);

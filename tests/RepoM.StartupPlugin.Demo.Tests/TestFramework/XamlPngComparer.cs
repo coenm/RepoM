@@ -21,14 +21,21 @@ internal static class XamlPngComparer
     {
         BitmapSource receivedBitmap = Decode(received);
         BitmapSource verifiedBitmap = Decode(verified);
+        return Task.FromResult(Compare(receivedBitmap, verifiedBitmap));
+    }
+
+    internal static CompareResult Compare(BitmapSource receivedBitmap, BitmapSource verifiedBitmap)
+    {
         if (receivedBitmap.PixelWidth != verifiedBitmap.PixelWidth ||
             receivedBitmap.PixelHeight != verifiedBitmap.PixelHeight)
         {
-            return Task.FromResult(CompareResult.NotEqual(
+            return CompareResult.NotEqual(
                 $"Image dimensions differ: received {receivedBitmap.PixelWidth}x{receivedBitmap.PixelHeight}, " +
-                $"verified {verifiedBitmap.PixelWidth}x{verifiedBitmap.PixelHeight}."));
+                $"verified {verifiedBitmap.PixelWidth}x{verifiedBitmap.PixelHeight}.");
         }
 
+        receivedBitmap = new FormatConvertedBitmap(receivedBitmap, PixelFormats.Bgra32, null, 0);
+        verifiedBitmap = new FormatConvertedBitmap(verifiedBitmap, PixelFormats.Bgra32, null, 0);
         int stride = receivedBitmap.PixelWidth * 4;
         int byteCount = stride * receivedBitmap.PixelHeight;
         var receivedPixels = new byte[byteCount];
@@ -59,12 +66,12 @@ internal static class XamlPngComparer
         double meanChannelError = (double)totalChannelError / byteCount;
         if (changedPixelRatio <= MaximumChangedPixelRatio && meanChannelError <= MaximumMeanChannelError)
         {
-            return Task.FromResult(CompareResult.Equal);
+            return CompareResult.Equal;
         }
 
-        return Task.FromResult(CompareResult.NotEqual(
+        return CompareResult.NotEqual(
             $"Image difference exceeds tolerance: {changedPixelRatio:P3} of pixels differ by more than " +
-            $"{ChannelTolerance} per channel; mean channel error is {meanChannelError:F3}."));
+            $"{ChannelTolerance} per channel; mean channel error is {meanChannelError:F3}.");
     }
 
     private static BitmapSource Decode(Stream stream)
@@ -76,8 +83,6 @@ internal static class XamlPngComparer
 
         BitmapFrame frame = BitmapFrame.Create(
             stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-        var converted = new FormatConvertedBitmap(frame, PixelFormats.Bgra32, null, 0);
-        converted.Freeze();
-        return converted;
+        return frame;
     }
 }
