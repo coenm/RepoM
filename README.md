@@ -30,7 +30,6 @@ With RepoM, you can instantly jump into a given repository with a file browser o
 
 ![Navigating the context menu](tests/RepoM.StartupPlugin.Demo.Tests/DemoContextMenuSnapshotTests.Video.Dark.verified.gif)
 
-
 For Windows, use the hotkeys <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> to show RepoM.
 
 <!--
