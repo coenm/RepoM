@@ -126,6 +126,36 @@ stages:
               /p:ExcludeByFile="**/*.xaml.cs"
             publishTestResults: true
 
+        - bash: |
+            echo "##vso[task.setvariable variable=testsfailed]True"
+
+            if find "$(Build.SourcesDirectory)" -type f -name '*.received.*' -print -quit | grep -q .; then
+              echo "##vso[task.setvariable variable=receivedfilesfound]True"
+            else
+              echo "##vso[task.setvariable variable=receivedfilesfound]False"
+              echo "No Verify *.received.* files found"
+            fi
+          displayName: 'Set failure flag and check for Verify *.received.* files'
+          condition: failed()
+
+        - task: CopyFiles@2
+          condition: and(eq(variables['testsfailed'], 'True'), eq(variables['receivedfilesfound'], 'True'))
+          displayName: 'Copy Verify *.received.* files to Artifact Staging'
+          inputs:
+            contents: '**/*.received.*' 
+            targetFolder: '$(Build.ArtifactStagingDirectory)/Verify'
+            cleanTargetFolder: true
+            overWrite: true
+
+        - task: PublishBuildArtifacts@1
+          displayName: 'Publish Verify *.received.* files as Artifacts'
+          name: 'publishverify'
+          condition: and(eq(variables['testsfailed'], 'True'), eq(variables['receivedfilesfound'], 'True'))
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)/Verify'
+            ArtifactName: 'VerifyResults'
+
+
         # - task: DotNetCoreCLI@2
         #   displayName: 🧪 Dotnet Test SystemTest
         #   inputs:

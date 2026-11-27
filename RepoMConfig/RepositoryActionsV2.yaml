@@ -1,0 +1,1048 @@
+context:
+- type: evaluate-script@1
+  content: |-
+
+    func and(a, b)
+      if ( a == false )
+        ret false;
+      else if ( b == false )
+        ret false;
+      else
+        ret true
+      end
+    end
+
+    func get_filename(path)
+      ret path | string.split("\\") | array.last
+    end
+    
+    func remotes_contain_inner(remotes, url_part)
+      urls = remotes | array.map "url"
+      filtered = array.filter(urls, do 
+        ret string.contains($0, url_part) 
+      end)
+      ret array.size(filtered) > 0;
+    end
+
+    func remotes_contain(url_part)
+      ret remotes_contain_inner(repository.remotes, url_part)
+    end
+
+    func get_remote_origin()
+      remotes = repository.remotes;
+      filtered = array.filter(remotes, do 
+        remote = $0;
+        ret remote.key == "origin"
+      end)
+      ret array.first(filtered);
+    end
+
+    func get_remote_origin_name()
+      remote = get_remote_origin();
+      ret remote?.name;
+    end
+
+    func repository_path_contains(path)
+      ret repository.linux_path | string.contains path
+    end
+
+    func is_feature_branch()
+      ret repository.branch | string.starts_with "feature/"
+    end
+
+    func is_develop_branch()
+      ret (env.GIT_COMPLETE_FEATURE_TO_BRANCH ?? "develop") == repository.branch
+    end
+
+    func sanitize_feature_branch_name()
+      ret repository.branch | string.replace "feature/" "" | string.replace "hotfix/" "" | string.strip
+    end
+
+    azure_items = []
+
+    remote_name_origin = get_remote_origin_name();
+
+    is_repom_repository = remotes_contain("RepoM");
+    is_bdo_nl_repository = remotes_contain("tfs-bdonl");
+    is_bdo_tis_repository = is_bdo_nl_repository && file.file_exists(repository.linux_path + "/.azuredevops/Pipelines/gated.yml")
+    # is_bdo_ds_respository = is_bdo_nl_repository && repository_path_contains("Projects/Bdo/ds/")
+    is_bdo_ds_respository = repository_path_contains("/dev/bdo/dsai/")
+    is_github_repository = remotes_contain("github.com");
+
+    is_integration_test_framework = remotes_contain("IntegrationServices.IntegrationTestFramework");
+    is_end_to_end_api_test_framework = remotes_contain("EndToEndApiTestFramework");
+
+    sln_files = file.find_files(repository.linux_path, "*.sln");
+    slnx_files = file.find_files(repository.linux_path, "*.slnx");
+    solution_files = array.concat(sln_files, slnx_files);
+    solution_file = array.first(solution_files);
+   
+    # exe_vs_code = env.LocalAppData + "/Programs/Microsoft VS Code/code.exe";
+    exe_vs_code = "C:/Program Files/Microsoft VS Code/code.exe";
+    
+    # exe_heidi_sql = "C:/StandAloneProgramFiles/HeidiSQL_12.3_64_Portable/heidisql.exe";
+    exe_ssms = "C:/Program Files (x86)/Microsoft SQL Server Management Studio 18/Common7/IDE/Ssms.exe";
+    exe_monitoring = "C:/Projects/Private/git/SimpleTestRunner/src/TestRunner.Application/bin/Release/net6.0-windows/TestRunner.Application.exe"
+    exe_vs2026 = "C:/Program Files/Microsoft Visual Studio/18/Enterprise/Common7/IDE/devenv.exe";
+
+    # path_bdo_repo_root = `C:\Projects\Bdo\git\`;
+
+     
+    # path_repo_repom_config
+    # path_repo_docs = 'C:/Users/Munckhof CJJ/OneDrive - BDO/Data Science Repositories/Docs/';
+
+    # to remove:
+    repo_environment_file_directory = env.REPOZ_CONFIG_PATH + `\` + remote_name_origin;
+    repo_environment_file = repo_environment_file_directory + `\RepoM.env`;
+    repo_yaml_file = repo_environment_file_directory + `\RepoMV2.yaml`;
+    repo_environment_template_file = env.REPOZ_CONFIG_PATH + `\RepoM.Template.env`;
+
+    runsettings_file_directory = env.REPOZ_CONFIG_PATH + `\` + remote_name_origin;
+    runsettings_file = runsettings_file_directory + `\local.runsettings`;
+    runsettings_template_file = env.REPOZ_CONFIG_PATH + `\Runsettings.Template.runsettings`;
+
+    path_repo_set = true;
+    repo_environment_file_yaml = 'x' # dummy value
+
+    if is_bdo_ds_respository
+      repo_docs_directory = `C:\Users\Munckhof CJJ\OneDrive - BDO\Data Science Repositories\Docs\` + remote_name_origin;
+      repo_environment_file_directory_base = `C:\Users\Munckhof CJJ\OneDrive - BDO\Documenten\_DATA\RepoM config`;
+      repo_environment_file_directory = repo_environment_file_directory_base + `\` + remote_name_origin;
+      repo_environment_file = repo_environment_file_directory + `\RepoM.env`;
+      repo_environment_file_yaml = repo_environment_file_directory + `\RepoM.yaml`;
+      repo_environment_template_file = `C:\Users\Munckhof CJJ\OneDrive - BDO\Data Science Repositories\Configs\RepoM.Template.env`;
+      url_devops = "https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/";
+      powershell_files = file.find_files(repository.linux_path, "*.ps1");
+    else if is_bdo_tis_repository
+      repo_docs_directory = `C:\Users\Munckhof CJJ\OneDrive - BDO\BDO\RepoDocs\` + remote_name_origin;
+      repo_environment_file_directory_base = env.REPOZ_CONFIG_PATH;
+      repo_environment_file_directory = repo_environment_file_directory_base + `\` + remote_name_origin;
+      repo_environment_file = repo_environment_file_directory + `\RepoM.env`;
+      repo_environment_template_file = env.REPOZ_CONFIG_PATH + `\RepoM.Template.env`;
+      url_devops = "https://dev.azure.com/tfs-bdonl/BDO-NL/";
+      powershell_files = [];
+    else if is_github_repository
+      repo_docs_directory = `G:\My Drive\RepoDocs\github.com\` + remote_name_origin;
+      url_devops = "";
+      powershell_files = [];
+    else
+      path_repo_set = false;
+      repo_environment_file_directory_base = "";
+      # to removed.
+      repo_docs_directory = `C:\Users\Munckhof CJJ\OneDrive - BDO\BDO\RepoDocs\` + remote_name_origin;
+      url_devops = "";
+      powershell_files = [];
+    end
+    repository.escaped_windows_path = string.escape repository.windows_path;
+   
+
+# - root_path_repom: C:\Users\Munckhof CJJ\OneDrive - BDO\BDO\RepoM\
+
+- type: set-variable@1
+  name: devops_environments
+  value: 
+  - name: Develop
+    url: '-d.bdodt.nl'
+  - name: Test
+    url: '-t.bdodt.nl'
+  - name: Acceptation
+    url: '-a.bdo.nl'
+  - name: Production
+    url: '.bdo.nl'
+
+# used for ApplicationInsight url generation.
+- type: set-variable@1
+  name: azure_environments
+  value: 
+  - name: Develop
+    resourcegroup_prefix: BDODT-D
+    resourcegroup_prefix2: bdodtd
+    tentant: bdodt.nl
+    subscription: a1b27385-451d-4015-b9f4-5d0d8f00054d
+    browser_profile: BDODT
+    index: 0
+  - name: Test
+    resourcegroup_prefix: BDODT-T
+    resourcegroup_prefix2: bdodtt
+    tentant: bdodt.nl
+    subscription: a1b27385-451d-4015-b9f4-5d0d8f00054d
+    browser_profile: BDODT
+    index: 1
+  - name: Acceptation
+    resourcegroup_prefix: BDONL-A
+    resourcegroup_prefix2: bdonla
+    tentant: bdo.nl
+    subscription: eb8955d5-740f-4ec8-aa45-28770dd5bfbe
+    browser_profile: BDONL
+    index: 2
+  - name: Production
+    resourcegroup_prefix: BDONL
+    resourcegroup_prefix2: bdonl
+    tentant: bdo.nl
+    subscription: eb8955d5-740f-4ec8-aa45-28770dd5bfbe
+    browser_profile: BDONL
+    index: 3
+
+- type: set-variable@1
+  name: runsettings_environments
+  value: 
+  - name: Local
+    filename: local.runsettings
+  - name: Develop
+    filename: d.runsettings
+  - name: Test
+    filename: t.runsettings
+  - name: Acceptation
+    filename: a.runsettings
+  - name: Production
+    filename: p.runsettings
+  
+- type: load-file@1
+  filename: '{{ repo_environment_file }}'
+  # enabled: is_bdo_nl_repository
+  enabled: 'file.file_exists(repo_environment_file)'
+
+- type: load-file@1
+  filename: '{{ env.REPOZ_CONFIG_PATH }}\BDO.env'
+  enabled: is_bdo_nl_repository
+
+- type: load-file@1
+  filename: '{{ repo_environment_file_directory_base }}\BDO.env'
+  enabled: is_bdo_ds_respository  
+
+- type: load-file@1
+  filename: '{{ repo_yaml_file }}'
+  enabled: is_bdo_nl_repository
+
+- type: load-file@1
+  filename: '{{ repo_environment_file_yaml }}'
+  enabled: 'file.file_exists(repo_environment_file_yaml)'
+
+action-menu:
+
+  # - type: command@1
+  #   name: Create feature 119054-UpdateComponents
+  #   command: cmd
+  #   arguments: /k cd "{{ repository.linux_path }}" & git pull & git checkout -b feature/119054-UpdateComponents & exit
+    
+  #   arguments: /k git add . & git commit -m "SonarCloud coverage" & git push & exit
+  #   mkdir "{var.runsettings_file_directory}" & copy "{var.runsettings_template_file}" "{{ runsettings_file }}" & "{{ runsettings_file }}" 
+
+  # - type: command@1
+  #   name: '{{ repository.path }}\.git\repoz.env   mkdir {var.CoenPath}'
+  #   command: cmd
+  #   arguments: /k mkdir "{var.CoenPath}" & copy "{{ repository.path }}\.git\repoz.env" "{var.CoenPath}\RepoM.env"
+
+# - type: command@1
+#   name: Create feature 129940-UpdateComponents
+#   command: cmd
+#   arguments: /k cd "{{ repository.linux_path }}" & git pull & git checkout -b feature/129940-UpdateComponents & exit
+
+# - type: command@1
+#   name: 1. Create and update 151297-FixNugetTaskDeprecated
+#   command: cmd
+#   arguments: /k cd "{{ repository.linux_path }}" & git checkout develop & git pull & git checkout -b feature/151297-FixNugetTaskDeprecated & "C:\\Projects\\Bdo-prive\\git\\TisWat\\src\\SingleCommandExecutable\\bin\\Debug\\net7.0\\SingleCommandExecutable.exe" & git diff
+#   active: 'file.dir_exists(repository.path + "\\.azuredevops\\Pipelines") && repository.branch != "feature/151297-FixNugetTaskDeprecated" '
+
+# # - type: command@1
+# #   name: 2 Run app
+# #   command: cmd
+# #   arguments: /k cd "{{ repository.linux_path }}" & C:\\Projects\\Bdo-prive\\git\\TisWat\\src\\SingleCommandExecutable\\bin\\Debug\\net7.0\\SingleCommandExecutable.exe"
+  
+# - type: command@1
+#   name: 3. Push 151297-FixNugetTaskDeprecated
+#   command: cmd
+#   arguments: /k cd "{{ repository.linux_path }}" & git add *.yaml & git add *.yml & git commit -m "Fix NuGetAuthenticate@0 issue" & git publish & exit
+#   active: 'repository.branch == "feature/151297-FixNugetTaskDeprecated"'
+
+# - type: clipboard-copy@1
+#   name: Copy name task (Update {{ repository.name }} NuGetAuthenticate@0 issue)
+#   text: 'Update {{ repository.name }} NuGetAuthenticate@0 issue'
+
+# - type: just-text@1
+#   name: 'ell: {{ array.size(csproj_files) }} XX'
+#   active: true
+
+# - type: folder@1
+#   is-deferred: true
+#   name: coen folder {{ repository.escaped_windows_path }} X
+#   # context:
+#   # - type: evaluate-script@1
+#   #   content: |-
+#   #     x = 1;
+#   #     func coen(x)
+#   #       ret COENTJE + x
+#   #     end
+#   actions:
+#   - type: command@1
+#     name: '📂 Open in Windows File Explorer {{ repository.escaped_windows_path }}'
+#     command: explorer
+#     arguments: '"{{ repository.path }}"'
+
+# - type: just-text@1
+#   name: '{{remote_name_origin}}'
+
+- type: command@1
+  name: 📂 Open in Windows File Explorer
+  command: explorer
+  arguments: '"{{ repository.path }}"'
+  active: menu_items?.explorer ?? true
+
+- type: command@1
+  name: 🧾 Open in Windows Terminal
+  command: wt
+  arguments: -d "{{ repository.linux_path }}"
+  active: menu_items?.wt ?? true
+
+- type: clipboard-copy@1
+  name: 📋 Copy directory path to clipboard
+  text: '{{ repository.path }}'
+
+# - type: command@1
+#   name: Create feature 147173-.NET8
+#   command: cmd
+#   arguments: '/k cd "{{ repository.linux_path }}" & git pull & git checkout -b feature/147173-.NET8 & exit'
+#   active: is_develop_branch
+
+# Open in visual studio has 2 flavors
+# 1. when only one sln file was found in the repo;
+- type: command@1
+  name: 📝 Open in Visual Studio
+  command: '"{{ exe_vs2026 }}" "{{ solution_file }}"'
+  active: (menu_items?.vs ?? true) && (array.size(solution_files) == 1)
+
+# 2. otherwise (with submenu)
+- type: folder@1
+  name: 📝 Open in Visual Studio
+  active: (menu_items?.vs ?? true) && (array.size(solution_files) > 1)
+  actions:
+  - type: foreach@1
+    enumerable: solution_files
+    variable: sln
+    actions:
+    - type: command@1
+      name: '{{ get_filename(sln) }}'
+      command: '"{{ exe_vs2026 }}" "{{ sln }}"'
+  
+- type: executable@1
+  name: 📝 Open in Visual Studio Code
+  executable: '{{ exe_vs_code }}'
+  arguments: '"{{ repository.linux_path }}"'
+  active: menu_items?.vsc ?? true
+
+- type: executable@1
+  name: 📊 Open in Sourcetree
+  # executable: '{{ env.LocalAppData }}/SourceTree/SourceTree.exe'
+  executable: 'C:/Program Files (x86)/Atlassian/Sourcetree Enterprise/SourceTree.exe'
+  arguments: -f "{{ repository.windows_path }}"
+  active: menu_items?.source_tree ?? true
+
+- type: executable@1
+  name: 🔍 Open in Everything
+  executable: '{{ env.ProgramW6432 }}/Everything/Everything.exe'
+  arguments: -s """"{{ repository.path }}\""" "
+  active: menu_items?.everything ?? true
+
+- type: executable@1
+  name: 📂 Open in TotalCommander
+  executable: '{{ env.ProgramW6432 }}/totalcmd/TOTALCMD64.EXE'
+  arguments: /O /T /L="{{ repository.linux_path }}"
+  active: menu_items?.total_commander ?? true
+
+# - type: folder@1
+#   name: 🗄️ Open in Heidi SQL
+#   active: (menu_items?.heidi ?? true) && (array.size(heidi.databases) > 0)
+#   is-deferred: true
+#   actions:
+#   - type: foreach@1
+#     enumerable: 'heidi.databases'
+#     variable: db
+#     actions:
+#     - type: executable@1
+#       name: '{{ db.metadata.name }}'
+#       executable: '{{ exe_heidi_sql }}'
+#       arguments: --description "{{ db.database.key }}"
+
+    # - type: folder@1
+    #   name: '{{ db.metadata.name }}'
+    #   is-deferred: true
+    #   actions:
+    #   - type: executable@1
+    #     name: Open in HeidiSQL
+    #     executable: '{{ exe_heidi_sql }}'
+    #     arguments: --description "{{ db.database.key }}"
+    #   - type: executable@1
+    #     name: Open in SQL Server Management Studio
+    #     executable: '{{ exe_ssms }}'
+    #     arguments: -S "{{ db.database.host }}" -d "{{ array.first db.database.databases }}" -U "{{ db.database.user }}"
+    #   - type: clipboard-copy@1
+    #     name: Copy pwd to clipboard
+    #     text: '{{ db.database.password }}'
+
+- type: separator@1
+  active: menu_items?.separator_below_apps ?? true
+
+- type: folder@1
+  name: 📝 Generation
+  active: array.size(powershell_files) > 1
+  actions:
+  - type: foreach@1
+    enumerable: powershell_files
+    variable: ps1
+    actions:
+    - type: command@1
+      name: '{{ get_filename(ps1) }}'
+      command: '{{ ps1 }}'
+    - type: command@1
+      name: 🧾 Open in Windows Terminal
+      command: wt
+      arguments: -d "{{ ps1 }}"
+
+# RepoM
+- type: folder@1
+  name: RepoM
+  active: repository_path_contains("RepoM") && !repository_path_contains("AppData/Roaming")
+  actions:
+  - type: browser@1
+    name: Pipeline Build
+    url: https://dev.azure.com/cmunckhof/Open%20Source/_build?definitionId=30
+    profile: BDO
+  - type: browser@1
+    name: Pipeline PR
+    url: https://dev.azure.com/cmunckhof/Open%20Source/_build?definitionId=32
+    profile: BDO
+  - type: executable@1
+    name: Open 'templates' in VSCode
+    executable: '{{ exe_vs_code }}'
+    arguments: '"{{ repository.path }}\src\RepoM.ActionMenu.CodeGen\Templates"'
+  - type: executable@1
+    name: Open 'docs_old' in VSCode
+    executable: '{{ exe_vs_code }}'
+    arguments: '"{{ repository.path }}\docs_old"'
+  - type: executable@1
+    name: Open 'docs' in VSCode
+    executable: '{{ exe_vs_code }}'
+    arguments: '"{{ repository.path }}\docs"'
+
+# Documentation per repository
+- type: folder@1
+  name: Docs
+  active: file.dir_exists(repo_docs_directory)
+  is-deferred: true
+  actions:
+  - type: executable@1
+    name: Open in Visual Studio Code
+    executable: '{{ exe_vs_code }}'
+    arguments: '"{{ repo_docs_directory }}"'
+  - type: command@1
+    name: 📂 Open in Windows File Explorer
+    command: explorer
+    arguments: '"{{ repo_docs_directory }}"'
+
+# # path_repo_tis_wat per repository
+# - type: folder@1
+#   name: TisWat
+#   is-deferred: true
+#   active: is_bdo_nl_repository
+#   actions:
+#   - type: executable@1
+#     name: Open in Visual Studio Code
+#     executable: '{{ exe_vs_code }}'
+#     arguments: '"{{ path_repo_tis_wat }}"'
+#     active: file.dir_exists(path_repo_tis_wat)
+#   - type: command@1
+#     name: Open in Windows File Explorer
+#     command: explorer
+#     arguments: '"{{ path_repo_tis_wat }}"'
+#     active: file.dir_exists(path_repo_tis_wat)
+#   - type: command@1
+#     name: Create config
+#     command: cmd
+#     arguments: /k mkdir "{{ path_repo_tis_wat }}" & exit
+#     active: '!file.dir_exists(path_repo_tis_wat)'
+#   - type: executable@1
+#     name: Everything Dockerfiles
+#     executable: '{{ env.ProgramW6432 }}/Everything/Everything.exe'
+#     arguments: -s """"{{ repository.path }}""" Dockerfile"
+#   - type: executable@1
+#     name: Everything editorconfig
+#     executable: '{{ env.ProgramW6432 }}/Everything/Everything.exe'
+#     arguments: '-s """"{{ repository.path }}""" .editorconfig"'   
+
+- type: folder@1
+  name: .azuredevops
+  is-deferred: true
+  context:
+  - type: render-variable@1
+    name: k8s_folder
+    value: '{{ repository.linux_path }}\\.azuredevops' 
+  active: 'file.dir_exists(repository.linux_path + "\\.azuredevops")'
+  actions:
+  - type: executable@1
+    name: Open in Visual Studio Code
+    executable: '{{ exe_vs_code }}'
+    arguments: '"{{ k8s_folder }}"'
+  - type: command@1
+    name: 📂 Open in Windows File Explorer
+    command: explorer
+    arguments: '"{{ k8s_folder }}"'      
+
+- type: folder@1
+  name: DevOps
+  is-deferred: true
+  active: is_bdo_nl_repository || repository.name == 'Data Science' || is_bdo_ds_respository
+  actions:
+  - type: browse-repository@1
+    active: menu_items?.browse_repository ?? true
+
+  # Single pipeline
+  - type: browser@1
+    name: Pipeline
+    url: '{{ url_devops }}_build?definitionId={{ env.DEVOPS_PIPELINE_SINGLE_ID }}'
+    active: '!string.empty(env.DEVOPS_PIPELINE_SINGLE_ID)'
+    profile: BDO
+
+  # Folder pipeline
+  - type: browser@1
+    name: Pipelines
+    # url: '{{ url_devops }}_build?definitionScope={{ web.url_encode(env.DEVOPS_PIPELINE_PATH_SUFFIX) }}'
+    url: '{{ url_devops }}_build?definitionScope={{ env.DEVOPS_PIPELINE_PATH_SUFFIX }}'
+    active: '!string.empty(env.DEVOPS_PIPELINE_PATH_SUFFIX)'
+    profile: BDO
+  
+  - type: folder@1
+    name: Pull Request
+    active: '!string.empty(env.DEVOPS_GIT_REPO_NAME)'
+    # is-deferred: '!string.empty(env.DEVOPS_REPOSITORY_ID)'
+    is-deferred: true
+    context:
+    - type: evaluate-script@1
+      content: |-
+        project_id = env.AZURE_DEVOPS_PROJECT_ID;
+        prs = azure_devops.get_pull_requests(env.AZURE_DEVOPS_PROJECT_ID);
+        now = date.now | date.to_string "%Y-%m-%d"
+        # devops_guid_sjoerd = "0374d7d2-8a84-60e9-99b3-e2121e58ecc4"; # sjoerd.heijligers@bdo.nl
+        # devops_guid_stan = "dadb3eaf-136c-6b87-bc0d-20e855341a25";  # stan.van.den.berg@bdo.nl
+        # devops_guid_coen = "5d084100-0024-67e1-b735-8b369ca9397e";
+        devops_guid_luc = "f827afda-8904-68ec-b1a3-256f62dc48ed"; #https://vssps.dev.azure.com/tfs-bdonl/_apis/identities?searchFilter=General&filterValue=luc.hondshorst@bdo.nl&queryMembership=None&api-version=7.0
+        devops_guid_pr = devops_guid_luc;
+        branch_name = sanitize_feature_branch_name();
+
+    actions:
+
+    # - type: command@1
+    #   name: Create local release branch
+    #   command: cmd
+    #   arguments: /k cd "{{ repository.linux_path }}" & git pull & git checkout -b release/{{ date.now | date.to_string "%Y.%m.%d" }} & exit
+    #   active: repository.branch == "develop"
+
+    # - type: azure-devops-create-pr@2
+    #   project-id: "{{ project_id }}"
+    #   name: Create release to master {{ now }}
+    #   pr-title: 'Release {{ now }}'
+    #   to-branch: master
+    #   reviewer-ids:
+    #   - "{{ devops_guid_sjoerd }}"
+    #   draft-pr: true
+    #   include-work-items: true
+    #   open-in-browser: true
+    #   auto-complete:
+    #     merge-strategy: NoFastForward
+    #     delete-source-branch: true
+    #     transition-work-items: true
+    #   active: repository.branch | string.starts_with "release/"
+    
+    # - type: azure-devops-create-pr@2
+    #   project-id: "{{ project_id }}"
+    #   name: Create hotfix to master ({{ branch_name | string.truncate 20 ".." }})
+    #   pr-title: 'Hotfix {{ branch_name }}' 
+    #   to-branch: master
+    #   reviewer-ids:
+    #   - "{{ devops_guid_sjoerd }}"
+    #   draft-pr: true
+    #   include-work-items: true
+    #   open-in-browser: true
+    #   auto-complete:
+    #     merge-strategy: Squash
+    #     delete-source-branch: true
+    #     transition-work-items: true
+    #   active: repository.branch | string.starts_with "hotfix/"    
+
+    # - type: azure-devops-create-pr@2
+    #   project-id: "{{ project_id }}"
+    #   name: Create release to main {{ now }}
+    #   pr-title: 'Release {{ now }}'
+    #   to-branch: main
+    #   reviewer-ids:
+    #   - "{{ devops_guid_sjoerd }}"
+    #   draft-pr: true
+    #   include-work-items: true
+    #   open-in-browser: true
+    #   auto-complete:
+    #     merge-strategy: NoFastForward
+    #     delete-source-branch: true
+    #     transition-work-items: true
+    #   active: repository.branch | string.starts_with "release/"
+
+    # - type: azure-devops-create-pr@2
+    #   project-id: "{{ project_id }}"
+    #   name: Create {{ branch_name }} to develop
+    #   to-branch: develop
+    #   pr-title: '{{ branch_name }} to develop'
+    #   reviewer-ids:
+    #   - "{{ devops_guid_sjoerd }}"
+    #   draft-pr: true
+    #   include-work-items: false
+    #   open-in-browser: true
+    #   auto-complete:
+    #     merge-strategy: NoFastForward
+    #     delete-source-branch: true
+    #     transition-work-items: true
+    #   active: repository.branch == "master" || repository.branch == "main"
+
+    # - type: azure-devops-create-pr@2
+    #   project-id: "{{ project_id }}"
+    #   name: Create feature to develop ({{ branch_name | string.truncate 20 ".." }})
+    #   pr-title: '{{ branch_name }}' 
+    #   to-branch: develop
+    #   reviewer-ids:
+    #   - "{{ devops_guid_sjoerd }}"
+    #   draft-pr: true
+    #   include-work-items: true
+    #   open-in-browser: true
+    #   auto-complete:
+    #     merge-strategy: Squash
+    #     delete-source-branch: true
+    #     transition-work-items: true
+    #   active: is_feature_branch()
+
+    - type: azure-devops-create-pr@2
+      project-id: "{{ project_id }}"
+      name: Create feature to main ({{ branch_name | string.truncate 20 ".." }})
+      pr-title: '{{ branch_name }}' 
+      to-branch: main
+      reviewer-ids:
+      - "{{ devops_guid_pr }}"
+      draft-pr: true
+      include-work-items: true
+      open-in-browser: true
+      auto-complete:
+        merge-strategy: Squash
+        delete-source-branch: true
+        transition-work-items: true
+      active: is_feature_branch()
+
+    # - type: azure-devops-create-pr@2
+    #   project-id: "{{ project_id }}"
+    #   name: Create feature to master ({{ branch_name | string.truncate 20 ".." }})
+    #   pr-title: '{{ branch_name }}' 
+    #   to-branch: master
+    #   reviewer-ids:
+    #   - "{{ devops_guid_sjoerd }}"
+    #   draft-pr: true
+    #   include-work-items: true
+    #   open-in-browser: true
+    #   auto-complete:
+    #     merge-strategy: Squash
+    #     delete-source-branch: true
+    #     transition-work-items: true
+    #   active: is_feature_branch()
+
+    - type: separator@1
+    
+    - type: browser@1
+      active: array.size(prs) == 0
+      name: Browse
+      url: '{{ url_devops }}_git/{{ env.DEVOPS_GIT_REPO_NAME }}/pullrequests?_a=active'
+      profile: BDO
+
+    - type: foreach@1
+      active: array.size(prs) > 0
+      enumerable: prs
+      variable: pr
+      actions:
+      - type: browser@1
+        name: '{{ pr.name | string.truncate 40 "..." }}'
+        url: '{{ pr.url }}'
+        profile: BDO
+
+  - type: browser@1
+    name: Wiki
+    url: '{{ env.WIKI_URL_PREFIX ?? url_devops }}_wiki/wikis/{{ env.WIKI_URL_SUFFIX }}'
+    active: '!string.empty(env.WIKI_URL_SUFFIX)'
+    profile: BDO
+
+- type: folder@1
+  name: '{{ if string.contains(env.URL_SERVICE, ".svc") }}Wcf Service{{ else }}Swagger{{ end }}'
+  active: is_bdo_nl_repository && !string.empty(env.URL_SERVICE) && !applications
+  is-deferred: true
+  actions:
+  - type: foreach@1
+    enumerable: devops_environments
+    variable: environment
+    actions:
+    - type: browser@1
+      name: '{{ environment.name }}'
+      url: '{{ string.replace(env.URL_SERVICE, ".bdo.nl", environment.url) }}'
+      profile: BDO
+  
+- type: folder@1
+  name: 'Swagger/Wcf'
+  active: is_bdo_nl_repository && applications
+  is-deferred: true
+  actions:
+  - type: foreach@1
+    enumerable: applications.environments ?? devops_environments
+    variable: 'environment'
+    actions: 
+    - type: folder@1
+      name: '{{ environment.name }}'
+      is-deferred: true
+      actions:
+      - type: foreach@1
+        enumerable: applications.apps
+        variable: application
+        actions:
+        - type: browser@1
+          name: '{{ application.name }}'
+          url: '{{ string.replace(application.url, ".bdo.nl", environment.url) }}'
+          active: array.size(application.sub) == 0
+          profile: BDO
+        - type: folder@1
+          name: '{{ application.name }}'
+          active: array.size(application.sub) > 0
+          is-deferred: true
+          actions:
+          - type: foreach@1
+            enumerable: application.sub
+            variable: sub
+            actions:
+            - type: browser@1
+              name: '{{ sub.name }}'
+              url: '{{ string.replace(application.url, ".bdo.nl", environment.url) }}{{ sub.url }}'
+              profile: BDO
+
+- type: folder@1
+  name: Analysis
+  is-deferred: true
+  active: 'is_bdo_nl_repository && (!string.empty(env.WHITESOURCE_PROJECT_ID) || !string.empty(env.SONARCLOUD_PROJECT_ID) || !string.empty(env.APPLICATION_INSIGHTS) )'
+  actions:
+  # - type: sonarcloud-set-favorite@1
+  #   name: Star project in SonarCloud
+  #   project: '{{ env.SONARCLOUD_PROJECT_ID }}'
+  #   active: '(!string.empty(env.SONARCLOUD_PROJECT_ID) && !sonarcloud.is_favorite(env.SONARCLOUD_PROJECT_ID) )' #todo function sonarcloud.is_favorite
+  #   profile: BDO
+  - type: browser@1
+    name: SonarCloud
+    url: https://sonarcloud.io/project/overview?id={{ env.SONARCLOUD_PROJECT_ID }}
+    profile: BDO
+    active: '!string.empty(env.SONARCLOUD_PROJECT_ID)'    
+  - type: browser@1
+    name: Whitesource
+    url: https://saas-eu.whitesourcesoftware.com/Wss/WSS.html#!project;id={{ env.WHITESOURCE_PROJECT_ID }}
+    profile: BDO
+    active: '!string.empty(env.WHITESOURCE_PROJECT_ID)'
+  - type: browser@1
+    name: LogicMonitor
+    url: https://bdonl.logicmonitor.com/santaba/uiv3/website/index.jsp#tree/{{ env.LOGICMONITOR_ID }}
+    profile: BDO
+    active: '!string.empty(env.LOGICMONITOR_ID)'
+
+  - type: folder@1
+    name: ApplicationInsights
+    is-deferred: true
+    active: 'is_bdo_nl_repository && !string.empty(env.RESOURCE_GROUP) && !string.empty(env.APPLICATION_INSIGHTS)'
+    actions:
+    - type: foreach@1
+      enumerable: azure_environments
+      variable: environment
+      actions:
+      - type: browser@1
+        name: '{{ environment.name }}'
+        url: 'https://portal.azure.com/#@{{ environment.tentant }}/resource/subscriptions/{{ environment.subscription }}/resourceGroups/{{ string.replace(env.RESOURCE_GROUP, "BDONL", environment.resourcegroup_prefix) }}/providers/microsoft.insights/components/{{ string.replace(env.APPLICATION_INSIGHTS, "bdonl", environment.resourcegroup_prefix) }}/overview'
+        profile: '{{ environment.browser_profile }}'
+
+- type: foreach@1
+  enumerable: azure_items
+  variable: azure
+  actions:
+  - type: folder@1
+    name: '{{ azure.name }}'
+    # is-deferred: true
+    actions:
+    - type: foreach@1
+      enumerable: azure_environments
+      variable: environment
+      actions: 
+      - type: folder@1
+        name: '{{ environment.name }}'
+        # is-deferred: true
+        context:
+        - type: render-variable@1
+          name: azure_url_base
+          value: 'https://portal.azure.com/#@{{ environment.tentant }}/resource/subscriptions/{{ environment.subscription }}'
+        actions:
+        - type: foreach@1
+          enumerable: azure.value
+          variable: az
+          iteration-context:
+          - type: render-variable@1
+            name: azure_url_rg
+            value: '{{ azure_url_base }}/resourceGroups/{{ string.replace(az.resourcegroup, "BDONL", environment.resourcegroup_prefix) }}' 
+          actions:
+          - type: browser@1
+            name: '{{ az.name }}'
+            url: '{{ az.url }}'
+            profile: '{{ environment.browser_profile }}'
+            active: 'az.type == "link"'
+          
+          - type: browser@1
+            name: '{{ az.name | object.eval_template }}'
+            url: '{{ az.url | object.eval_template }}'
+            profile: '{{ environment.browser_profile }}'
+            active: '(az.type == "eval-link") && object.eval(az.active)'
+
+          - type: browser@1
+            name: '{{ az.name }}'
+            url: '{{ azure_url_rg }}/{{ az.section }}'
+            profile: '{{ environment.browser_profile }}'
+            active: 'string.empty(az.provider) && string.empty(az.url)'
+# {{ "This is a template text {{ 1 + 2 }}" | object.eval_template }}
+          
+          - type: browser@1
+            name: '{{ az.name }}'
+            url: '{{ azure_url_rg }}/providers/{{ az.provider }}/{{ string.replace(az.resource, "bdonl", environment.resourcegroup_prefix) }}{{ string.replace(az.resource2, "bdonl", environment.resourcegroup_prefix2) }}/{{ az.section }}'
+            profile: '{{ environment.browser_profile }}'
+            active: '!string.empty(az.provider) && string.empty(az.url)'
+
+# - type: folder@1
+#   name: Tests
+#   is-deferred: true
+#   active: 'array.size(tests_csproj_files) > 0'
+#   context:
+#   - type: render-variable@1
+#     name: runsettings_path
+#     value: '{{ repo_environment_file_directory }}'
+#   # SystemTests
+#   - type: render-variable@1
+#     name: system_tests_filename
+#     value: '{{ array.first(system_test_csproj_files) }}'
+#     enabled: 'array.size(system_test_csproj_files) > 0'
+#   - type: set-variable@1
+#     name: system_tests_filter
+#     value: --filter "TestCategory=SystemTests&TestCategory!=PipelineIgnore"
+#   - type: set-variable@1
+#     name: smoke_tests_filter
+#     value: --filter "TestCategory!=SystemTests&TestCategory!=PipelineIgnore"      
+#   - type: evaluate-variable@1
+#     name: system_tests_filename_exists
+#     value: 'array.size(system_test_csproj_files) > 0'
+#   # SmokeTests
+#   - type: render-variable@1
+#     name: smoke_tests_filename
+#     value: '{{ array.first(smoke_tests_csproj_files) }}'
+#     enabled: 'array.size(smoke_tests_csproj_files) > 0'
+#   - type: evaluate-variable@1
+#     name: smoke_tests_filename_exists
+#     value: 'array.size(smoke_tests_csproj_files) > 0'
+#   actions:
+  # - type: folder@1
+  #   name: Monitor
+  #   is-deferred: true
+  #   actions:
+  #   - type: executable@1
+  #     context:
+  #     - type: render-variable@1
+  #       name: datalake_dump_system_tests_csproj
+  #       value: '{{ repository.path }}\\tests\\DataLakeDump\\BDO.EAccounting.DataLakeDump.SystemTests\\BDO.EAccounting.DataLakeDump.SystemTests.csproj'
+  #     name: 'System test T DataLakeDump {{ datalake_dump_system_tests_csproj }}'
+  #     executable: '{{ exe_monitoring }}'
+  #     arguments: dotnet test -c release --no-restore --no-build "{{ datalake_dump_system_tests_csproj }}" {{ system_tests_filter }} --settings:"{{ runsettings_path }}/t.runsettings" ---- "--title={{ repository.name }} - SystemTests DataLakeDump T"
+  #     active: 'repository_path_contains("Projects/Bdo/tis/E-Accounting") && system_tests_filename_exists && file.file_exists(runsettings_path + "/t.runsettings")'
+
+  #   - type: executable@1
+  #     name: 'Unittests sln'
+  #     executable: '{{ exe_monitoring }}'
+  #     arguments: dotnet test "{{ solution_file }}" -c release --filter "FullyQualifiedName!=TestAutomation&TestCategory!=SystemTests" --verbosity n ---- "--title={{ repository.name }} - UnitTests" 
+  #     #--verbosity q
+
+  #   - type: executable@1
+  #     name: 'System test T'
+  #     executable: '{{ exe_monitoring }}'
+  #     arguments: dotnet test -c release --no-restore --no-build "{{ system_tests_filename }}" {{ system_tests_filter }} --settings:"{{ runsettings_path }}/t.runsettings" ---- "--title={{ repository.name }} - SystemTests T"
+  #     active: 'system_tests_filename_exists && file.file_exists(runsettings_path + "/t.runsettings")'
+
+  #   - type: executable@1
+  #     name: 'SmokeTests T'
+  #     executable: '{{ exe_monitoring }}'
+  #     arguments: dotnet test -c release --no-restore --no-build "{{ smoke_tests_filename }}" {{ smoke_tests_filter }} --settings:"{{ runsettings_path }}/t.runsettings" ---- "--title={{ repository.name }} - SmokeTests T"
+  #     active: 'smoke_tests_filename_exists && file.file_exists(runsettings_path + "/t.runsettings")'
+
+  #   - type: executable@1
+  #     name: 'System test A'
+  #     executable: '{{ exe_monitoring }}'
+  #     arguments: dotnet test -c release --no-restore --no-build "{{ system_tests_filename }}" {{ system_tests_filter }} --settings:"{{ runsettings_path }}/a.runsettings" ---- "--title={{ repository.name }} - SystemTests A"
+  #     active: 'system_tests_filename_exists && file.file_exists(runsettings_path + "/a.runsettings")'
+
+  #   - type: executable@1
+  #     name: 'SmokeTests A'
+  #     executable: '{{ exe_monitoring }}'
+  #     arguments: dotnet test -c release --no-restore --no-build "{{ smoke_tests_filename }}" {{ smoke_tests_filter }} --settings:"{{ runsettings_path }}/a.runsettings" ---- "--title={{ repository.name }} - SmokeTests A"
+  #     active: 'smoke_tests_filename_exists && file.file_exists(runsettings_path + "/a.runsettings")'
+
+  #   - type: executable@1
+  #     name: 'System test P'
+  #     executable: '{{ exe_monitoring }}'
+  #     arguments: dotnet test -c release --no-restore --no-build "{{ system_tests_filename }}" {{ system_tests_filter }} --settings:"{{ runsettings_path }}/p.runsettings" ---- "--title={{ repository.name }} - SystemTests P"
+  #     active: 'system_tests_filename_exists && file.file_exists(runsettings_path + "/p.runsettings")'
+
+  #   - type: executable@1
+  #     name: 'SmokeTests P'
+  #     executable: '{{ exe_monitoring }}'
+  #     arguments: dotnet test -c release --no-restore --no-build "{{ smoke_tests_filename }}" {{ smoke_tests_filter }} --settings:"{{ runsettings_path }}/p.runsettings" ---- "--title={{ repository.name }} - SmokeTests P"
+  #     active: 'smoke_tests_filename_exists && file.file_exists(runsettings_path + "/p.runsettings")'
+
+  # - type: folder@1
+  #   name: dotnet test
+  #   is-deferred: true
+  #   actions:
+  #   - type: command@1
+  #     name: Unittests sln
+  #     command: cmd
+  #     arguments: /k dotnet test -c release "{{ solution_file }}" --filter "FullyQualifiedName!=TestAutomation&TestCategory!=SystemTests" --verbosity q
+    
+  #   - type: foreach@1
+  #     enumerable: 'runsettings_environments'
+  #     variable: environment
+  #     iteration-context:
+  #     - type: render-variable@1
+  #       name: runsettings_file
+  #       value: '{{ repo_environment_file_directory }}\{{ environment.filename }}'
+  #     - type: evaluate-variable@1
+  #       name: runsettings_file_exists
+  #       value: 'file.file_exists(repo_environment_file_directory + "\\" + environment.filename)'
+  #     actions:
+  #     - type: command@1
+  #       name: TA Systeem {{ environment.name }}
+  #       command: cmd
+  #       arguments: /k dotnet test -c release "{{ system_tests_filename }}" {{ system_tests_filter }} --settings:"{{ runsettings_file }}"
+  #       active: 'system_tests_filename_exists && runsettings_file_exists'
+  #     - type: command@1
+  #       name: TA Smoke {{ environment.name }}
+  #       command: cmd
+  #       arguments: /k dotnet test -c release "{{ smoke_tests_filename }}" {{ smoke_tests_filter }} --settings:"{{ runsettings_file }}"
+  #       active: 'smoke_tests_filename_exists && runsettings_file_exists'
+
+- type: separator@1
+
+- type: browse-repository@1
+  active: menu_items?.browse_repository ?? true
+
+- type: folder@1
+  name: 📦 Git
+  is-deferred: true
+  active: 'and(repository.is_bare == false, (menu_items?.vs ?? true))' #workaround for && issue
+  actions:
+  - type: git-fetch@1
+  - type: git-pull@1
+  - type: git-push@1
+  - type: git-checkout@1
+
+- type: separator@1
+
+- type: folder@1
+  name: '-- RepoM --'
+  is-deferred: true
+  actions:
+  # - type: clipboard-copy@1
+  #   name: Copy current branch name
+  #   text: '{{ repository.branch }}'
+
+  # - type: clipboard-copy@1
+  #   name: Copy command 'git checkout -b {{ repository.branch | string.truncate 15 "..." }}'
+  #   text: '{{ repository.branch }}'
+  #   active: 'repository.branch | string.starts_with "feature/"'
+
+  - type: command@1
+    name: 'Create Directory {{ repo_docs_directory }}'
+    command: cmd
+    arguments: /k mkdir "{{ repo_docs_directory }}"
+    # arguments: /k mkdir "{{ CustomRepomDirectory }}" & copy "{{ repo_environment_template_file }}" "{{ repo_environment_file }}"
+    active: '!file.dir_exists(repo_docs_directory)'
+
+  # - type: just-text@1
+  #   name: 'Usage counter: {{ statistics.count }}'
+  #   active: true
+  - type: command@1
+    name: 'Open folder in Windows File Explorer'
+    command: '"{{ repo_environment_file_directory }}"'
+    active: is_bdo_nl_repository
+  - type: command@1
+    name: Edit repo specific env file
+    command: '{{ repo_environment_file }}'
+    active: 'file.file_exists(repo_environment_file)'
+  - type: command@1
+    name: 'Create repo specific env file'
+    command: cmd
+    arguments: /k mkdir "{{ repo_environment_file_directory }}" & copy "{{ repo_environment_template_file }}" "{{ repo_environment_file }}"
+    active: '!file.file_exists(repo_environment_file) && file.file_exists(repo_environment_template_file)'
+
+  # Runsettigs
+  - type: folder@1
+    name: Runsettings 
+    active: is_bdo_tis_repository
+    is-deferred: true
+    context:
+    - type: evaluate-variable@1
+      name: runsettings_template_file_exists
+      value: file.file_exists(runsettings_template_file)
+    actions:
+    - type: foreach@1
+      enumerable: runsettings_environments
+      variable: environment
+      iteration-context:
+      - type: render-variable@1
+        name: runsettings_file
+        value: '{{ repo_environment_file_directory }}\{{ environment.filename }}'
+      - type: evaluate-variable@1
+        name: runsettings_file_exists
+        value: 'file.file_exists(repo_environment_file_directory + "\\" + environment.filename)'
+      actions:
+      - type: command@1
+        name: Edit {{ environment.name }}
+        command: '{{ runsettings_file }}'
+        active: runsettings_file_exists
+      - type: command@1
+        name: Create {{ environment.name }}
+        command: cmd
+        arguments: /k mkdir "{{ runsettings_file_directory }}" & copy "{{ runsettings_template_file }}" "{{ runsettings_file }}" & "{{ runsettings_file }}" & exit
+        active: '!runsettings_file_exists && runsettings_template_file_exists'
+    - type: foreach@1
+      enumerable: runsettings_environments
+      variable: environment
+      iteration-context:
+      - type: render-variable@1
+        name: runsettings_file
+        value: '{{ repo_environment_file_directory }}\{{ environment.filename }}'
+      - type: evaluate-variable@1
+        name: runsettings_file_exists
+        value: 'file.file_exists(repo_environment_file_directory + "\\" + environment.filename)'
+      actions:
+      - type: clipboard-copy@1
+        name: Copy path {{ environment.name }} to clipboard {{ runsettings_file }}
+        text: '{{ runsettings_file }}'
+        active: runsettings_file_exists 
+
+  # - type: separator@1
+  # - type: pin-repository@1
+  #   name: '📌 {{ if repository.pinned }}Unpin{{ else }}Pin{{ end }} repository'
+  #   mode: toggle
+
+  - type: ignore-repository@1
+    name: ❌ Ignore repository
+
+#   # - type: command@1
+#   #   name: 'coen'
+#   #   command: cmd
+#   #   arguments: '/k echo. >> "{{ repo_environment_file }}" & echo. >> "{{ repo_environment_file }}" & echo # GENERATED BY REPOM, UPDATE IF NECESSARY >> "{{ repo_environment_file }}" & echo #DEVOPS_REPOSITORY_ID={{ repo_environment_template_file }} >> "{{ repo_environment_file }}"'
+#   #   active: '{and({FileExists({{ repo_environment_file }})}, {IsNullOrEmpty({env.DEVOPS_REPOSITORY_ID})}, true)}' 

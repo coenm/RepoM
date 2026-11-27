@@ -19,30 +19,42 @@ public sealed class RepositoryMonitoringStateService : IRepositoryMonitoringServ
     {
         ArgumentException.ThrowIfNullOrEmpty(safePath);
 
-        if (monitored)
+        while (true)
         {
-            if (_monitoredRepositories.TryGetValue(safePath, out var existing) && existing)
+            if (_monitoredRepositories.TryGetValue(safePath, out var existing))
             {
-                return;
+                if (existing == monitored)
+                {
+                    return;
+                }
+
+                if (!_monitoredRepositories.TryUpdate(safePath, monitored, existing))
+                {
+                    continue;
+                }
+            }
+            else if (!_monitoredRepositories.TryAdd(safePath, monitored))
+            {
+                continue;
             }
 
-            _monitoredRepositories[safePath] = true;
-        }
-        else
-        {
-            if (!_monitoredRepositories.TryGetValue(safePath, out var existing) || !existing)
+            if (existing != monitored)
             {
-                return;
+                MonitoringChanged?.Invoke(safePath, monitored);
             }
 
-            _monitoredRepositories.TryRemove(safePath, out _);
+            return;
         }
-
-        MonitoringChanged?.Invoke(safePath, monitored);
     }
 
     public void EnableMonitoring(string safePath)
     {
-        SetMonitored(safePath, true);
+        ArgumentException.ThrowIfNullOrEmpty(safePath);
+
+        // A stored false is an explicit opt-out; automatic activation must preserve it.
+        if (_monitoredRepositories.TryAdd(safePath, true))
+        {
+            MonitoringChanged?.Invoke(safePath, true);
+        }
     }
 }

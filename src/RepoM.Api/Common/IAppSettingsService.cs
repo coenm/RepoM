@@ -19,6 +19,10 @@ public interface IFilterSettingsService
 
 public interface IAppSettingsService
 {
+    AppTheme Theme { get; set; }
+
+    bool EnableAnimations { get; set; }
+
     AutoFetchMode AutoFetchMode { get; set; }
 
     bool PruneOnFetch { get; set; }
@@ -30,6 +34,8 @@ public interface IAppSettingsService
     List<string> ReposRootDirectories { get; set; }
 
     int MenuPrefetchHoverDelayMilliseconds { get; }
+
+    int ContextMenuLoadingIndicatorDelayMilliseconds { get; }
 
     string SortKey { get; set; }
 

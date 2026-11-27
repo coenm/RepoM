@@ -14,12 +14,12 @@ using RepoM.Api.Ordering.Score;
 using RepoM.Api.Ordering.Sum;
 using RepoM.Api.Repositories.Persistence;
 using RepoM.Api.RepositoryActions.Decorators;
-using RepoM.App.i18n;
-using RepoM.App.RepositoryActions;
-using RepoM.App.RepositoryFiltering.QueryMatchers;
-using RepoM.App.RepositoryFiltering;
-using RepoM.App.RepositoryOrdering;
-using RepoM.App.Services;
+using RepoM.UI.i18n;
+using RepoM.UI.RepositoryActions;
+using RepoM.UI.RepositoryFiltering.QueryMatchers;
+using RepoM.UI.RepositoryFiltering;
+using RepoM.UI.RepositoryOrdering;
+using RepoM.UI.Services;
 using RepoM.Core.Plugin;
 using RepoM.Core.Plugin.Common;
 using RepoM.Core.Plugin.RepositoryActions;
@@ -40,22 +40,27 @@ using System.Threading.Tasks;
 using SimpleInjector;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Plugins;
+using RepoM.UI.Plugins;
 using RepoM.App.Plugins;
-using RepoM.App.Services.HotKey;
+using RepoM.UI.Services.HotKey;
 using RepoM.Api;
 using RepoM.Core.Repositories;
 using System.Runtime.Caching;
 using System.Windows;
-using RepoM.App.ActionMenuCore;
+using RepoM.UI.ActionMenuCore;
+using RepoM.UI;
 
-internal static class Bootstrapper
+internal sealed class Bootstrapper
 {
-    public static readonly Container Container = new();
+    public Container Container { get; } = new();
 
-    public static void RegisterServices(IFileSystem fileSystem, IAppDataPathProvider appDataProvider)
+    public void RegisterServices(IFileSystem fileSystem, IAppDataPathProvider appDataProvider)
     {
+        Container.Register<IApplicationPresentation, ApplicationPresentation>(Lifestyle.Singleton);
+        Container.Register<IApplicationUpdate, ApplicationUpdate>(Lifestyle.Singleton);
         Container.RegisterInstance<ObjectCache>(MemoryCache.Default);
-        Container.RegisterSingleton<Window>(() => Container.GetInstance<MainWindow>());
+        Container.RegisterSingleton<IApplicationWindow>(() => Container.GetInstance<MainWindow>());
+        Container.RegisterSingleton<Window>(() => Container.GetInstance<IApplicationWindow>().Window);
         Container.Register<MainWindow>(Lifestyle.Singleton);
 
         // New repository infrastructure
@@ -76,10 +81,7 @@ internal static class Bootstrapper
         Container.Register<RepositoryMonitoringStateService>(Lifestyle.Singleton);
         Container.Register<IRepositoryMonitoringService>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);
         Container.Register<IRepositoryMonitoringEvents>(() => Container.GetInstance<RepositoryMonitoringStateService>(), Lifestyle.Singleton);
-        Container.Register<RepoM.Core.Repositories.RepositoryMonitorService>(Lifestyle.Singleton);
-
-        // Register RepositoryMonitorService as IModule
-        Container.Collection.Append<IModule, RepoM.Core.Repositories.RepositoryMonitorService>(Lifestyle.Singleton);
+        RegisterRepositoryMonitorServices(Container);
 
         Container.RegisterInstance(appDataProvider);
         Container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);
@@ -116,8 +118,6 @@ internal static class Bootstrapper
 
         Container.Register<IModuleManager, ModuleManager>(Lifestyle.Singleton);
 
-        Container.RegisterInstance<IFileSystem>(fileSystem);
-
         // Register path provider function for RepositoryMonitorService
         Container.RegisterInstance<Func<IEnumerable<string>>>(() => Container.GetInstance<IPathProvider>().GetPaths());
 
@@ -147,21 +147,28 @@ internal static class Bootstrapper
         Container.RegisterSingleton<WindowSizeService>();
     }
 
-    public static async Task RegisterPlugins(
+    internal static void RegisterRepositoryMonitorServices(Container container)
+    {
+        container.Register<IRepositoryMonitorService, RepositoryMonitorService>(Lifestyle.Singleton);
+        // Resolve after plugin registration so module lifecycle uses the same decorators as UI calls.
+        container.Collection.Append<IModule>(
+            () => container.GetInstance<IRepositoryMonitorService>(), Lifestyle.Singleton);
+    }
+
+    public async Task RegisterPlugins(
         IPluginFinder pluginFinder,
         IFileSystem fileSystem,
         ILoggerFactory loggerFactory,
         IAppDataPathProvider appDataPathProvider)
     {
         Container.Register<ModuleService>(Lifestyle.Singleton);
-        Container.RegisterInstance(pluginFinder);
 
         var coreBootstrapper = new CoreBootstrapper(pluginFinder, fileSystem, appDataPathProvider, loggerFactory);
         var baseDirectory = fileSystem.Path.Combine(AppDomain.CurrentDomain.BaseDirectory);
         await coreBootstrapper.LoadAndRegisterPluginsAsync(Container, baseDirectory).ConfigureAwait(false);
     }
 
-    public static void RegisterLogging(ILoggerFactory loggerFactory)
+    public void RegisterLogging(ILoggerFactory loggerFactory)
     {
         // https://stackoverflow.com/questions/41243485/simple-injector-register-iloggert-by-using-iloggerfactory-createloggert
 

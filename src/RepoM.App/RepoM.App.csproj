@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
@@ -18,6 +18,11 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RepoM.UI\RepoM.UI.csproj" />
+    <ProjectReference Include="..\RepoM.StartupPlugin.WorktreePreview\RepoM.StartupPlugin.WorktreePreview.csproj"
+                      ReferenceOutputAssembly="false" OutputItemType="StartupPluginAssembly" />
+    <ProjectReference Include="..\RepoM.StartupPlugin.Demo\RepoM.StartupPlugin.Demo.csproj"
+                      ReferenceOutputAssembly="false" OutputItemType="StartupPluginAssembly" />
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
@@ -52,17 +57,8 @@
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="10.0.5" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
-    <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
-    <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.Development.json">
@@ -75,9 +71,13 @@
     <None Update="appsettings.serilog.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
+  <Target Name="IncludeStartupPluginAssemblies" AfterTargets="ResolveProjectReferences">
+    <ItemGroup>
+      <ContentWithTargetPath Include="@(StartupPluginAssembly)"
+                             TargetPath="%(Filename)%(Extension)"
+                             CopyToOutputDirectory="PreserveNewest"
+                             CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
 </Project>

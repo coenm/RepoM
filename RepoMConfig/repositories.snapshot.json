@@ -1,0 +1,2420 @@
+version: 1
+repositories:
+- path: C:\dev\private\RepoM\
+  safePath: C:/dev/private/RepoM
+  name: RepoM
+  windowsPath: C:\dev\private\RepoM
+  linuxPath: C:/dev/private/RepoM
+  location: C:\dev\private
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - origin/HEAD
+  - feature/support-worktrees
+  - main
+  - origin/agents/repom-mcp-server-plugin
+  - origin/feature/automation-poc
+  - origin/feature/azure-devops-upgrade
+  - origin/feature/improve-search-and-filtering
+  - origin/feature/sonar-fixes
+  - origin/feature/support-worktrees
+  - origin/main
+  - origin/release/v1.0
+  - origin/release/v1.1
+  localBranches:
+  - feature/support-worktrees
+  - main
+  tags: &o5 []
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen:
+    dateTime: 2026-11-20T18:23:46.9395341
+    utcDateTime: 2026-11-20T18:23:46.9395341Z
+    localDateTime: 2026-11-20T19:23:46.9395341+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 939
+    microsecond: 534
+    nanosecond: 100
+    minute: 23
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 46
+    ticks: 639307958269395341
+    utcTicks: 639307958269395341
+    timeOfDay: 18:23:46.9395341
+    year: 2026
+  lastUpdated: &o0
+    dateTime: 0001-01-01T00:00:00.0000000
+    utcDateTime: 0001-01-01T00:00:00.0000000Z
+    localDateTime: 0001-01-01T01:00:00.0000000+01:00
+    date: 0001-01-01T00:00:00.0000000
+    day: 1
+    dayOfWeek: Monday
+    dayOfYear: 1
+    hour: 0
+    millisecond: 0
+    microsecond: 0
+    nanosecond: 0
+    minute: 0
+    month: 1
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 0
+    ticks: 0
+    utcTicks: 0
+    timeOfDay: 00:00:00
+    year: 1
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/RepoM
+- path: C:\dev\private\MyConfig\
+  safePath: C:/dev/private/MyConfig
+  name: MyConfig
+  windowsPath: C:\dev\private\MyConfig
+  linuxPath: C:/dev/private/MyConfig
+  location: C:\dev\private
+  isBare: false
+  currentBranch: master
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - master
+  - origin/HEAD
+  - origin/master
+  - origin/wip
+  localBranches:
+  - master
+  tags: &o1 []
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/MyConfig.git
+- path: C:\Projects\coenm\easy-azure-queue\
+  safePath: C:/Projects/coenm/easy-azure-queue
+  name: easy-azure-queue
+  windowsPath: C:\Projects\coenm\easy-azure-queue
+  linuxPath: C:/Projects/coenm/easy-azure-queue
+  location: C:\Projects\coenm
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags: *o1
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 1
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/easy-azure-queue
+- path: C:\Projects\coenm\easy-application-insights\
+  safePath: C:/Projects/coenm/easy-application-insights
+  name: easy-application-insights
+  windowsPath: C:\Projects\coenm\easy-application-insights
+  linuxPath: C:/Projects/coenm/easy-application-insights
+  location: C:\Projects\coenm
+  isBare: false
+  currentBranch: master
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches: &o2 []
+  localBranches: *o2
+  tags: &o3 []
+  localUntracked: 21
+  localModified: 20
+  localMissing: 1145
+  localAdded: 1182
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes: []
+- path: C:\Projects\coenm\temperature-web\
+  safePath: C:/Projects/coenm/temperature-web
+  name: temperature-web
+  windowsPath: C:\Projects\coenm\temperature-web
+  linuxPath: C:/Projects/coenm/temperature-web
+  location: C:\Projects\coenm
+  isBare: false
+  currentBranch: master
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - master
+  localBranches:
+  - master
+  tags: *o3
+  localUntracked: 22
+  localModified: 7
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes: []
+- path: C:\Projects\coenm\easy-cosmos\
+  safePath: C:/Projects/coenm/easy-cosmos
+  name: easy-cosmos
+  windowsPath: C:\Projects\coenm\easy-cosmos
+  linuxPath: C:/Projects/coenm/easy-cosmos
+  location: C:\Projects\coenm
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags: *o1
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/easy-cosmos
+- path: C:\Projects\Bdo\ds\Data Science Bruno\
+  safePath: C:/Projects/Bdo/ds/Data Science Bruno
+  name: Data Science Bruno
+  windowsPath: C:\Projects\Bdo\ds\Data Science Bruno
+  linuxPath: C:/Projects/Bdo/ds/Data Science Bruno
+  location: C:\Projects\Bdo\ds
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags: *o3
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 16
+  localModified: 9
+  localMissing: 1
+  localAdded: 28
+  localStaged: 1
+  localRemoved: 22
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/cmunckhof/Work/_git/DataScienceBrunoCollection
+- path: C:\Projects\Private\git\Home-Assistant-on-Kubernetes\
+  safePath: C:/Projects/Private/git/Home-Assistant-on-Kubernetes
+  name: Home-Assistant-on-Kubernetes
+  windowsPath: C:\Projects\Private\git\Home-Assistant-on-Kubernetes
+  linuxPath: C:/Projects/Private/git/Home-Assistant-on-Kubernetes
+  location: C:\Projects\Private\git
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  - origin/scheduled-chore
+  - origin/update-ha
+  localBranches:
+  - main
+  tags:
+  - Prive
+  aheadBy: 0
+  behindBy: 5
+  localUntracked: 2
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/abalage/Home-Assistant-on-Kubernetes
+- path: C:\Users\Munckhof CJJ\OneDrive - BDO\MyGitConfig\
+  safePath: C:/Users/Munckhof CJJ/OneDrive - BDO/MyGitConfig
+  name: MyGitConfig
+  windowsPath: C:\Users\Munckhof CJJ\OneDrive - BDO\MyGitConfig
+  linuxPath: C:/Users/Munckhof CJJ/OneDrive - BDO/MyGitConfig
+  location: C:\Users\Munckhof CJJ\OneDrive - BDO
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags: *o1
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/MyGitConfig.git
+- path: C:\dev\bdo\coen\Bruno Secret Service Script\BrunoSecretService.Script\
+  safePath: C:/dev/bdo/coen/Bruno Secret Service Script/BrunoSecretService.Script
+  name: BrunoSecretService.Script
+  windowsPath: C:\dev\bdo\coen\Bruno Secret Service Script\BrunoSecretService.Script
+  linuxPath: C:/dev/bdo/coen/Bruno Secret Service Script/BrunoSecretService.Script
+  location: C:\dev\bdo\coen\Bruno Secret Service Script
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/BrunoSecretService.Script
+- path: C:\dev\bdo\coen\Bruno Collection Template\Bruno Collection Template\
+  safePath: C:/dev/bdo/coen/Bruno Collection Template/Bruno Collection Template
+  name: Bruno Collection Template
+  windowsPath: C:\dev\bdo\coen\Bruno Collection Template\Bruno Collection Template
+  linuxPath: C:/dev/bdo/coen/Bruno Collection Template/Bruno Collection Template
+  location: C:\dev\bdo\coen\Bruno Collection Template
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches: *o2
+  localBranches: *o2
+  tags: *o3
+  localUntracked: 15
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes: []
+- path: C:\dev\bdo\coen\Bruno Secret Service API\Bruno Secret Service\
+  safePath: C:/dev/bdo/coen/Bruno Secret Service API/Bruno Secret Service
+  name: Bruno Secret Service
+  windowsPath: C:\dev\bdo\coen\Bruno Secret Service API\Bruno Secret Service
+  linuxPath: C:/dev/bdo/coen/Bruno Secret Service API/Bruno Secret Service
+  location: C:\dev\bdo\coen\Bruno Secret Service API
+  isBare: false
+  currentBranch: feature/fixed
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/fixed
+  - feature/init
+  - main
+  - origin/feature/fixed
+  - origin/feature/init
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - feature/fixed
+  - feature/init
+  - main
+  tags:
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 5
+  localModified: 2
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/BrunoSecretService
+- path: C:\dev\bdo\coen\Bruno Secret Service Script\Probeersel\
+  safePath: C:/dev/bdo/coen/Bruno Secret Service Script/Probeersel
+  name: Probeersel
+  windowsPath: C:\dev\bdo\coen\Bruno Secret Service Script\Probeersel
+  linuxPath: C:/dev/bdo/coen/Bruno Secret Service Script/Probeersel
+  location: C:\dev\bdo\coen\Bruno Secret Service Script
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches: *o2
+  localBranches: *o2
+  tags: *o3
+  localUntracked: 0
+  localModified: 1
+  localMissing: 0
+  localAdded: 6
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes: []
+- path: C:\dev\bdo\coen\Bruno Secret Service Script\Probeersel 2\
+  safePath: C:/dev/bdo/coen/Bruno Secret Service Script/Probeersel 2
+  name: Probeersel 2
+  windowsPath: C:\dev\bdo\coen\Bruno Secret Service Script\Probeersel 2
+  linuxPath: C:/dev/bdo/coen/Bruno Secret Service Script/Probeersel 2
+  location: C:\dev\bdo\coen\Bruno Secret Service Script
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  localBranches:
+  - main
+  tags: *o3
+  localUntracked: 0
+  localModified: 1
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes: []
+- path: C:\Projects\Bdo\ds\AIProjects\AIProjects-ChatProSite\
+  safePath: C:/Projects/Bdo/ds/AIProjects/AIProjects-ChatProSite
+  name: AIProjects-ChatProSite
+  windowsPath: C:\Projects\Bdo\ds\AIProjects\AIProjects-ChatProSite
+  linuxPath: C:/Projects/Bdo/ds/AIProjects/AIProjects-ChatProSite
+  location: C:\Projects\Bdo\ds\AIProjects
+  isBare: false
+  currentBranch: v2-wnt-poc
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - v2
+  - v2-wnt-poc
+  - origin/dev/pes-ALZ-v3
+  - origin/dev/thomas-test
+  - origin/HEAD
+  - origin/main
+  - origin/v2
+  - origin/v2-wnt-poc
+  - dev/pes-ALZ-v3
+  - feature/removeinnovationportal
+  - main
+  - origin/dev/dev-patrick
+  - origin/feature/234034-user-only-reports
+  - origin/feature/235121-additional-company-info
+  - origin/feature/248511-bdo-fields-transcription
+  - origin/feature/248511-bdo-fields-transcription-v2
+  - origin/feature/249217-backwards-compatible
+  - origin/feature/256905-demo-feedback-pdf
+  - origin/feature/256905-demo-feedback-pdf-v2
+  - origin/feature/263410-poc-aia-application
+  - origin/feature/AI-Portfolio
+  - origin/feature/AI-Portfoliov2
+  - origin/feature/Graphify
+  - origin/feature/PE-scraper-front-end
+  - origin/feature/initiele-pdf-editbaar-na-check-frontend
+  - origin/feature/knowledgepoc
+  - origin/feature/knowledgesearch
+  - origin/feature/psa-payrollAdministration-custom-var
+  - origin/feature/removeinnovationportal
+  - origin/feature/renaming-keywords
+  - origin/v2-pes
+  localBranches:
+  - v2
+  - v2-wnt-poc
+  - dev/pes-ALZ-v3
+  - feature/removeinnovationportal
+  - main
+  tags:
+  - AIProjects
+  - BDO
+  aheadBy: 0
+  behindBy: 6
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 3
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AIProjects-ChatProSite
+- path: C:\Projects\Bdo\ds\AIProjects\AIProjects-ChatProSite - B\
+  safePath: C:/Projects/Bdo/ds/AIProjects/AIProjects-ChatProSite - B
+  name: AIProjects-ChatProSite - B
+  windowsPath: C:\Projects\Bdo\ds\AIProjects\AIProjects-ChatProSite - B
+  linuxPath: C:/Projects/Bdo/ds/AIProjects/AIProjects-ChatProSite - B
+  location: C:\Projects\Bdo\ds\AIProjects
+  isBare: false
+  currentBranch: feature/auto-refresh
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/auto-refresh
+  - v2
+  - origin/dev/pes-ALZ-v3
+  - origin/dev/thomas-test
+  - origin/feature/auto-refresh
+  - origin/feature/coding-agent
+  - origin/feature/Coding-UI
+  - origin/HEAD
+  - origin/main
+  - origin/v2
+  - origin/v2-wnt-poc
+  - feature/239039-PSA-manual-upload-excel
+  - feature/257980-fiscal-properties
+  - feature/remove-supplement-PSA
+  - main
+  - origin/dev/dev-patrick
+  - origin/feature-252342-frontend-translation
+  - origin/feature/234034-user-only-reports
+  - origin/feature/235121-additional-company-info
+  - origin/feature/239039-PSA-manual-upload-excel
+  - origin/feature/243003-gap-analysis
+  - origin/feature/248511-bdo-fields-transcription
+  - origin/feature/248511-bdo-fields-transcription-v2
+  - origin/feature/249217-backwards-compatible
+  - origin/feature/254004-retrigger-agents
+  - origin/feature/256905-demo-feedback-pdf
+  - origin/feature/256905-demo-feedback-pdf-v2
+  - origin/feature/257980-fiscal-properties
+  - origin/feature/263410-poc-aia-application
+  - origin/feature/272011-apim-url-generation-webapp
+  - origin/feature/AI-Portfolio
+  - origin/feature/AI-Portfoliov2
+  - origin/feature/Graphify
+  - origin/feature/PE-scraper-front-end
+  - origin/feature/dev_thomas
+  - origin/feature/initiele-pdf-editbaar-na-check-frontend
+  - origin/feature/knowledgepoc
+  - origin/feature/knowledgesearch
+  - origin/feature/psa-payrollAdministration-custom-var
+  - origin/feature/redirectfix2
+  - origin/feature/remove-supplement-PSA
+  - origin/feature/removeinnovationportal
+  - origin/feature/renaming-keywords
+  - origin/pbi-256394-text-document-as-input-frontend
+  - origin/v2-pes
+  localBranches:
+  - feature/auto-refresh
+  - v2
+  - feature/239039-PSA-manual-upload-excel
+  - feature/257980-fiscal-properties
+  - feature/remove-supplement-PSA
+  - main
+  tags:
+  - AIProjects
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 3
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AIProjects-ChatProSite
+- path: C:\Projects\Bdo\ds\AIProjects\AIProjects-ChatProSite - B - Copy\
+  safePath: C:/Projects/Bdo/ds/AIProjects/AIProjects-ChatProSite - B - Copy
+  name: AIProjects-ChatProSite - B - Copy
+  windowsPath: C:\Projects\Bdo\ds\AIProjects\AIProjects-ChatProSite - B - Copy
+  linuxPath: C:/Projects/Bdo/ds/AIProjects/AIProjects-ChatProSite - B - Copy
+  location: C:\Projects\Bdo\ds\AIProjects
+  isBare: false
+  currentBranch: feature/bruno
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/bruno
+  - v2
+  - origin/dev/pes-ALZ-v3
+  - origin/HEAD
+  - feature/239039-PSA-manual-upload-excel
+  - feature/remove-supplement-PSA
+  - main
+  - origin/dev/dev-patrick
+  - origin/dev/thomas-test
+  - origin/feature/234034-user-only-reports
+  - origin/feature/235121-additional-company-info
+  - origin/feature/239039-PSA-manual-upload-excel
+  - origin/feature/243003-gap-analysis
+  - origin/feature/248511-bdo-fields-transcription
+  - origin/feature/248511-bdo-fields-transcription-v2
+  - origin/feature/248511-bdo-fields-transcription-v3
+  - origin/feature/249217-backwards-compatible
+  - origin/feature/252645-SEPA
+  - origin/feature/256905-demo-feedback-pdf
+  - origin/feature/256905-demo-feedback-pdf-v2
+  - origin/feature/263410-poc-aia-application
+  - origin/feature/AI-Portfolio
+  - origin/feature/AI-Portfoliov2
+  - origin/feature/Graphify
+  - origin/feature/PE-scraper-front-end
+  - origin/feature/auto-refresh
+  - origin/feature/initiele-pdf-editbaar-na-check-frontend
+  - origin/feature/knowledgepoc
+  - origin/feature/knowledgesearch
+  - origin/feature/psa-payrollAdministration-custom-var
+  - origin/feature/remove-supplement-PSA
+  - origin/feature/removeinnovationportal
+  - origin/feature/renaming-keywords
+  - origin/main
+  - origin/v2
+  - origin/v2-pes
+  - origin/v2-wnt-poc
+  localBranches:
+  - feature/bruno
+  - v2
+  - feature/239039-PSA-manual-upload-excel
+  - feature/remove-supplement-PSA
+  - main
+  tags:
+  - AIProjects
+  - BDO
+  localUntracked: 0
+  localModified: 1
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 3
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AIProjects-ChatProSite
+- path: C:\Projects\Bdo\ds\AIProjects\AIProjects-ChatProService\
+  safePath: C:/Projects/Bdo/ds/AIProjects/AIProjects-ChatProService
+  name: AIProjects-ChatProService
+  windowsPath: C:\Projects\Bdo\ds\AIProjects\AIProjects-ChatProService
+  linuxPath: C:/Projects/Bdo/ds/AIProjects/AIProjects-ChatProService
+  location: C:\Projects\Bdo\ds\AIProjects
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/feature/201445-service-dependencies
+  - origin/feature/205425-conversation-analytics
+  - origin/feature/211285-document-references
+  - origin/feature/214510-delete-old-chats
+  - origin/feature/PE-add-back-end
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - AIProjects
+  - BDO
+  aheadBy: 0
+  behindBy: 2
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 1
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AIProjects-ChatProService
+- path: C:\Projects\Bdo\ds\AIProjects\AIProjects-Platform\
+  safePath: C:/Projects/Bdo/ds/AIProjects/AIProjects-Platform
+  name: AIProjects-Platform
+  windowsPath: C:\Projects\Bdo\ds\AIProjects\AIProjects-Platform
+  linuxPath: C:/Projects/Bdo/ds/AIProjects/AIProjects-Platform
+  location: C:\Projects\Bdo\ds\AIProjects
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/feature/206773-advisor-recommedations
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - AIProjects
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AIProjects-Platform
+- path: C:\Projects\Bdo\ds\Misc\AINet-SpeechService\
+  safePath: C:/Projects/Bdo/ds/Misc/AINet-SpeechService
+  name: AINet-SpeechService
+  windowsPath: C:\Projects\Bdo\ds\Misc\AINet-SpeechService
+  linuxPath: C:/Projects/Bdo/ds/Misc/AINet-SpeechService
+  location: C:\Projects\Bdo\ds\Misc
+  isBare: false
+  currentBranch: v2
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - v2
+  - origin/HEAD
+  - origin/v2
+  - origin/main
+  localBranches:
+  - main
+  - v2
+  tags:
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AINet-SpeechService
+- path: C:\Projects\Bdo\ds\Misc\AIProjects-SBRMapper\
+  safePath: C:/Projects/Bdo/ds/Misc/AIProjects-SBRMapper
+  name: AIProjects-SBRMapper
+  windowsPath: C:\Projects\Bdo\ds\Misc\AIProjects-SBRMapper
+  linuxPath: C:/Projects/Bdo/ds/Misc/AIProjects-SBRMapper
+  location: C:\Projects\Bdo\ds\Misc
+  isBare: false
+  currentBranch: feature/remove-fallback-url
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/fix-pipeline
+  - feature/remove-fallback-url
+  - main
+  - v2
+  - origin/feature/add-auth
+  - origin/feature/fix-pipeline
+  - origin/feature/remove-fallback-url
+  - origin/HEAD
+  - origin/main
+  - origin/v2
+  - origin/feature/add_confidence
+  - origin/feature/dependency-fixes
+  - origin/feature/mend
+  - origin/refactor-docker
+  localBranches:
+  - feature/fix-pipeline
+  - feature/remove-fallback-url
+  - main
+  - v2
+  tags:
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AIProjects-SBRMapper
+- path: C:\Projects\Bdo\ds\Misc\Bruno Secret Service Bruno\
+  safePath: C:/Projects/Bdo/ds/Misc/Bruno Secret Service Bruno
+  name: Bruno Secret Service Bruno
+  windowsPath: C:\Projects\Bdo\ds\Misc\Bruno Secret Service Bruno
+  linuxPath: C:/Projects/Bdo/ds/Misc/Bruno Secret Service Bruno
+  location: C:\Projects\Bdo\ds\Misc
+  isBare: false
+  currentBranch: feature/auth
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/auth
+  - main
+  - origin/feature/auth
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - feature/auth
+  - main
+  tags:
+  - BDO
+  aheadBy: 1
+  behindBy: 0
+  localUntracked: 2
+  localModified: 7
+  localMissing: 7
+  localAdded: 8
+  localStaged: 6
+  localRemoved: 165
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/DSAI-ApiCollection
+- path: C:\Projects\Bdo\ds\Misc\API Collection Bruno\
+  safePath: C:/Projects/Bdo/ds/Misc/API Collection Bruno
+  name: API Collection Bruno
+  windowsPath: C:\Projects\Bdo\ds\Misc\API Collection Bruno
+  linuxPath: C:/Projects/Bdo/ds/Misc/API Collection Bruno
+  location: C:\Projects\Bdo\ds\Misc
+  isBare: false
+  currentBranch: feature/auth
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/auth
+  - main
+  - origin/feature/auth
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - feature/auth
+  - main
+  tags:
+  - BDO
+  aheadBy: 1
+  behindBy: 0
+  localUntracked: 5
+  localModified: 6
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/DSAI-ApiCollection
+- path: C:\Projects\Bdo\ds\Misc\game\
+  safePath: C:/Projects/Bdo/ds/Misc/game
+  name: game
+  windowsPath: C:\Projects\Bdo\ds\Misc\game
+  linuxPath: C:/Projects/Bdo/ds/Misc/game
+  location: C:\Projects\Bdo\ds\Misc
+  isBare: false
+  currentBranch: master
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches: *o2
+  localBranches: *o2
+  tags: *o3
+  localUntracked: 2
+  localModified: 6
+  localMissing: 0
+  localAdded: 11
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes: []
+- path: C:\Projects\Bdo\ds\Misc\PSA-AI-Automation - A\
+  safePath: C:/Projects/Bdo/ds/Misc/PSA-AI-Automation - A
+  name: PSA-AI-Automation - A
+  windowsPath: C:\Projects\Bdo\ds\Misc\PSA-AI-Automation - A
+  linuxPath: C:/Projects/Bdo/ds/Misc/PSA-AI-Automation - A
+  location: C:\Projects\Bdo\ds\Misc
+  isBare: false
+  currentBranch: feature/256235-PoisionQueueHandling
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/256235-PoisionQueueHandling
+  - main
+  - origin/feature/249911-304
+  - origin/feature/252645-SepaBackend
+  - origin/feature/256235-PoisionQueueHandling
+  - origin/feature/add_text_translation
+  - origin/feature/agentic-format-finding
+  - origin/feature/delete-strings-and-communicate
+  - origin/feature/fix_bug
+  - origin/feature/notupdatesvoorThijs
+  - origin/HEAD
+  - origin/main
+  - coen/logging-issue
+  - feature/249911-304
+  - feature/252645-SepaBackend
+  - feature/loket
+  - origin/LoketcompanymatcherAPI
+  - origin/feature/219997-keyvault
+  - origin/feature/221767-dsworker
+  - origin/feature/243055-nested-directories-build-fix
+  - origin/feature/Fix_datamodel_id_none
+  - origin/feature/GetLoketAdministrations
+  - origin/feature/MappingTables
+  - origin/feature/companymatcher
+  - origin/feature/deploy
+  - origin/feature/dev1-acc
+  - origin/feature/fix_data_model
+  - origin/feature/llm-as-a-judge
+  - origin/feature/merging_workinghours_fixedmutations
+  - origin/feature/resource-freshness-error
+  - origin/feature/v2fix
+  localBranches:
+  - feature/256235-PoisionQueueHandling
+  - main
+  - coen/logging-issue
+  - feature/249911-304
+  - feature/252645-SepaBackend
+  - feature/loket
+  tags:
+  - BDO
+  aheadBy: 14
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 6
+  localStaged: 2
+  localRemoved: 0
+  stashCount: 4
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/PSA-AI-Automation
+- path: C:\Projects\Bdo\ds\Misc\PSA-AI-Automation - B\
+  safePath: C:/Projects/Bdo/ds/Misc/PSA-AI-Automation - B
+  name: PSA-AI-Automation - B
+  windowsPath: C:\Projects\Bdo\ds\Misc\PSA-AI-Automation - B
+  linuxPath: C:/Projects/Bdo/ds/Misc/PSA-AI-Automation - B
+  location: C:\Projects\Bdo\ds\Misc
+  isBare: false
+  currentBranch: v2
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - v2
+  - v2-abtest
+  - origin/feature/274110-fix-unknown-component
+  - origin/feature/all-parallel
+  - origin/feature/excel-substitute-columns
+  - origin/feature/excel-yolo-mode-v2
+  - origin/feature/parsing-error
+  - origin/feature/v2-test-leon
+  - origin/HEAD
+  - origin/main
+  - origin/v2-abtest
+  - coen/logging-issue
+  - feature/221767-dsworker
+  - feature/multiple-excel-files
+  - feature/tests
+  - poc/cosmos
+  - origin/feature/221767-dsworker
+  - origin/feature/256235-PoisionQueueHandling
+  - origin/feature/5.6
+  - origin/feature/ClaudeSdV
+  - origin/feature/GetLoketAdministrations
+  - origin/feature/administrationendpoint
+  - origin/feature/administrationendpoint2
+  - origin/feature/code-strict
+  - origin/feature/fix-administration-run-timer-trigger
+  - origin/feature/innovation-deepeval
+  - origin/feature/logging-deepdive
+  - origin/feature/model-upgrade
+  - origin/feature/multiple-excel-files
+  - origin/feature/mutliple-models-ab-testing
+  - origin/feature/notupdatesvoorThijs
+  - origin/feature/trigger-sql-update-loket-notes
+  - origin/feature/v2-test
+  - origin/feature/worker-queue-scale-rules
+  - origin/v2
+  localBranches:
+  - main
+  - v2
+  - v2-abtest
+  - coen/logging-issue
+  - feature/221767-dsworker
+  - feature/multiple-excel-files
+  - feature/tests
+  - poc/cosmos
+  tags:
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 4
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 6
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/PSA-AI-Automation
+- path: C:\Projects\Bdo\ds\Misc\PSA-AI-Automation - D\
+  safePath: C:/Projects/Bdo/ds/Misc/PSA-AI-Automation - D
+  name: PSA-AI-Automation - D
+  windowsPath: C:\Projects\Bdo\ds\Misc\PSA-AI-Automation - D
+  linuxPath: C:/Projects/Bdo/ds/Misc/PSA-AI-Automation - D
+  location: C:\Projects\Bdo\ds\Misc
+  isBare: false
+  currentBranch: feature/274110-fix-unknown-component
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/274110-fix-unknown-component
+  - feature/code-strict
+  - main
+  - v2
+  - origin/feature/274110-fix-unknown-component
+  - origin/feature/all-parallel
+  - origin/feature/code-strict
+  - origin/feature/excel-yolo-mode-v2
+  - origin/feature/logging-deepdive
+  - origin/feature/mutliple-models-ab-testing
+  - origin/feature/python-bugfix-v42-final-v5
+  - origin/feature/v2-test
+  - origin/feature/v2-test-leon
+  - origin/feature/weekly-trigger-fill-administration-mutations
+  - origin/HEAD
+  - origin/main
+  - origin/v2
+  - origin/v2-abtest
+  - coen/logging-issue
+  - feature/multiple-excel-files
+  - poc/cosmos
+  - origin/feature/221767-dsworker
+  - origin/feature/256235-PoisionQueueHandling
+  - origin/feature/5.6
+  - origin/feature/ClaudeSdV
+  - origin/feature/GetLoketAdministrations
+  - origin/feature/administrationendpoint
+  - origin/feature/administrationendpoint2
+  - origin/feature/fix-administration-run-timer-trigger
+  - origin/feature/innovation-deepeval
+  - origin/feature/model-upgrade
+  - origin/feature/multiple-excel-files
+  - origin/feature/notupdatesvoorThijs
+  - origin/feature/trigger-sql-update-loket-notes
+  - origin/feature/worker-queue-scale-rules
+  localBranches:
+  - feature/274110-fix-unknown-component
+  - feature/code-strict
+  - main
+  - v2
+  - coen/logging-issue
+  - feature/multiple-excel-files
+  - poc/cosmos
+  tags:
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 9
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/PSA-AI-Automation
+- path: C:\Projects\Bdo\ds\Misc\PSA-AI-Automation - C\
+  safePath: C:/Projects/Bdo/ds/Misc/PSA-AI-Automation - C
+  name: PSA-AI-Automation - C
+  windowsPath: C:\Projects\Bdo\ds\Misc\PSA-AI-Automation - C
+  linuxPath: C:/Projects/Bdo/ds/Misc/PSA-AI-Automation - C
+  location: C:\Projects\Bdo\ds\Misc
+  isBare: false
+  currentBranch: feature/multiple-excel-files
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/265492-additional-properties
+  - feature/multiple-excel-files
+  - feature/update-loket-notes
+  - main
+  - origin/feature/265492-additional-properties
+  - origin/feature/ClaudeSdV
+  - origin/feature/excel-bugfix-empty-return
+  - origin/feature/lower-acceptance-criteria
+  - origin/feature/multiple-excel-files
+  - origin/feature/mutliple-models-ab-testing
+  - origin/feature/sql-add-history
+  - origin/feature/update-loket-notes
+  - origin/feature/worker-queue-scale-rules
+  - origin/HEAD
+  - origin/main
+  - coen/logging-issue
+  - poc/cosmos
+  - origin/LoketcompanymatcherAPI
+  - origin/feature/219997-keyvault
+  - origin/feature/221767-dsworker
+  - origin/feature/243055-nested-directories-build-fix
+  - origin/feature/256235-PoisionQueueHandling
+  - origin/feature/5.6
+  - origin/feature/GetLoketAdministrations
+  - origin/feature/MappingTables
+  - origin/feature/companymatcher
+  - origin/feature/innovation-deepeval
+  - origin/feature/key-users-feedback
+  - origin/feature/llm-as-a-judge
+  - origin/feature/merging_workinghours_fixedmutations
+  - origin/feature/model-upgrade
+  - origin/feature/notupdatesvoorThijs
+  - origin/feature/sql-add-sql-endpoints
+  - origin/feature/sql_table_name_adjustment
+  - origin/feature/v2fix
+  - origin/v2
+  localBranches:
+  - feature/265492-additional-properties
+  - feature/multiple-excel-files
+  - feature/update-loket-notes
+  - main
+  - coen/logging-issue
+  - poc/cosmos
+  tags:
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 27
+  localModified: 43
+  localMissing: 2
+  localAdded: 1
+  localStaged: 7
+  localRemoved: 0
+  stashCount: 8
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/PSA-AI-Automation
+- path: C:\Projects\Bdo\ds\AICore\AICore-Platform - Main\
+  safePath: C:/Projects/Bdo/ds/AICore/AICore-Platform - Main
+  name: AICore-Platform - Main
+  windowsPath: C:\Projects\Bdo\ds\AICore\AICore-Platform - Main
+  linuxPath: C:/Projects/Bdo/ds/AICore/AICore-Platform - Main
+  location: C:\Projects\Bdo\ds\AICore
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - origin/feature/272009-apim-url-generation-webapp
+  - origin/feature/custom-apim-api-path
+  - origin/feature/dynamic-vars
+  - origin/feature/fidoc_keyvault
+  - origin/feature/split
+  - origin/fix/application-insights-policy
+  - origin/HEAD
+  - origin/v2
+  - feature/efcore-working-dir
+  - feature/fix-build
+  - feature/v2-functionapp-stripped
+  - main
+  - v2
+  - v2-functionapp
+  - origin/cleanuprule
+  - origin/docker-secrets
+  - origin/feature/172925-cosmosdb-primarykey
+  - origin/feature/179965-scaling
+  - origin/feature/183743-custom-deployment-options
+  - origin/feature/190606-cosmosdb-support
+  - origin/feature/193391-scopes-fix
+  - origin/feature/197144-cognitive-service-storage-access
+  - origin/feature/197724-msi-storage-trust
+  - origin/feature/198683-docker-login
+  - origin/feature/219160-multiple-apis
+  - origin/feature/222543-customsecretvariables
+  - origin/feature/225656-ai-services-roles
+  - origin/feature/SBR-ALZ
+  - origin/feature/add-disable-api-check
+  - origin/feature/add-logicapp-support
+  - origin/feature/app-registration-naming
+  - origin/feature/coen/v2-apim
+  - origin/feature/coen/v2-webapp
+  - origin/feature/failed-verified
+  - origin/feature/log-ingestion-alerts
+  - origin/feature/teamsbot
+  - origin/feature/upgrade-function-app
+  - origin/feature/v1-worker-queue-scale-rules
+  - origin/feature/v2-functionapp-stripped
+  - origin/feature/v2/cors
+  - origin/feature/v2/fix-cors
+  - origin/feature/v2/restructure
+  - origin/feature/v2/win-webapp
+  - origin/feature/v2/windows-app-service-plan
+  - origin/feature/worker-queue-scale-rules
+  - origin/fix-application-insights-policy-2
+  - origin/fix/application-insights-policy-pvk
+  - origin/fix/office-addin
+  - origin/fix/v1-dev-hotfix-production-deploy
+  - origin/landing-zone-complaince
+  - origin/main
+  - origin/office-addin-test
+  - origin/revert
+  - origin/test-on-a-temp
+  - origin/v2-cosmos-private-endpoint
+  - origin/v2-functionapp
+  - origin/v2-namematching
+  - origin/windowswebapp
+  - origin/windowswebapp-20260617-win
+  localBranches:
+  - feature/efcore-working-dir
+  - feature/fix-build
+  - feature/v2-functionapp-stripped
+  - main
+  - v2
+  - v2-functionapp
+  tags:
+  - AICore
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 1
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AICore-Platform
+- path: C:\Projects\Bdo\ds\AINet\AINet-Platform\
+  safePath: C:/Projects/Bdo/ds/AINet/AINet-Platform
+  name: AINet-Platform
+  windowsPath: C:\Projects\Bdo\ds\AINet\AINet-Platform
+  linuxPath: C:/Projects/Bdo/ds/AINet/AINet-Platform
+  location: C:\Projects\Bdo\ds\AINet
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/179957-AzureWebApp
+  - feature/195519-T-Deployment
+  - main
+  - origin/feature/179957-AzureWebApp
+  - origin/feature/206281-content-filter
+  - origin/feature/temp-fc-support
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - feature/179957-AzureWebApp
+  - feature/195519-T-Deployment
+  - main
+  tags:
+  - AINet
+  - BDO
+  aheadBy: 0
+  behindBy: 2
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AINet-Platform
+- path: C:\Projects\Bdo\ds\AICore\AICore-Platform\
+  safePath: C:/Projects/Bdo/ds/AICore/AICore-Platform
+  name: AICore-Platform
+  windowsPath: C:\Projects\Bdo\ds\AICore\AICore-Platform
+  linuxPath: C:/Projects/Bdo/ds/AICore/AICore-Platform
+  location: C:\Projects\Bdo\ds\AICore
+  isBare: false
+  currentBranch: feature/bruno
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - cleanuprule
+  - feature/bruno
+  - fix/application-insights-policy
+  - v2
+  - origin/feature/bruno
+  - origin/feature/move-library-vars-to-repo
+  - origin/feature/service-bus
+  - origin/feature/shared-application-insights
+  - origin/HEAD
+  - origin/v2
+  - feature/coen/v2-apim-webapp-broken
+  - main
+  - origin/cleanuprule
+  - origin/docker-secrets
+  - origin/feature/225656-ai-services-roles
+  - origin/feature/SBR-ALZ
+  - origin/feature/add-disable-api-check
+  - origin/feature/add-logicapp-support
+  - origin/feature/app-registration-naming
+  - origin/feature/log-ingestion-alerts
+  - origin/feature/v1-worker-queue-scale-rules
+  - origin/feature/v2/windows-app-service-plan
+  - origin/feature/worker-queue-scale-rules
+  - origin/fix/application-insights-policy
+  - origin/fix/office-addin
+  - origin/fix/v1-dev-hotfix-production-deploy
+  - origin/landing-zone-complaince
+  - origin/main
+  - origin/office-addin-test
+  - origin/test-on-a-temp
+  - origin/v2-cosmos-private-endpoint
+  - origin/v2-namematching
+  - origin/windowswebapp
+  - origin/windowswebapp-20260617-win
+  localBranches:
+  - cleanuprule
+  - feature/bruno
+  - fix/application-insights-policy
+  - v2
+  - feature/coen/v2-apim-webapp-broken
+  - main
+  tags:
+  - AICore
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 3
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AICore-Platform
+- path: C:\Projects\Bdo\ds\AICore\AICore-Platform - Apim\
+  safePath: C:/Projects/Bdo/ds/AICore/AICore-Platform - Apim
+  name: AICore-Platform - Apim
+  windowsPath: C:\Projects\Bdo\ds\AICore\AICore-Platform - Apim
+  linuxPath: C:/Projects/Bdo/ds/AICore/AICore-Platform - Apim
+  location: C:\Projects\Bdo\ds\AICore
+  isBare: false
+  currentBranch: feature/service-bus
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/service-bus
+  - v2
+  - origin/feature/azure-monitor
+  - origin/feature/improve-dependecy-resolver
+  - origin/feature/move-library-vars-to-repo
+  - origin/feature/service-bus
+  - origin/feature/shared-application-insights
+  - origin/HEAD
+  - origin/v2
+  - main
+  - origin/cleanuprule
+  - origin/docker-secrets
+  - origin/feature/225656-ai-services-roles
+  - origin/feature/SBR-ALZ
+  - origin/feature/add-disable-api-check
+  - origin/feature/add-logicapp-support
+  - origin/feature/app-registration-naming
+  - origin/feature/dynamic-vars
+  - origin/feature/log-ingestion-alerts
+  - origin/feature/upgrade-function-app
+  - origin/feature/v1-worker-queue-scale-rules
+  - origin/feature/v2/windows-app-service-plan
+  - origin/feature/worker-queue-scale-rules
+  - origin/fix/application-insights-policy
+  - origin/fix/office-addin
+  - origin/fix/v1-dev-hotfix-production-deploy
+  - origin/landing-zone-complaince
+  - origin/main
+  - origin/office-addin-test
+  - origin/test-on-a-temp
+  - origin/v2-cosmos-private-endpoint
+  - origin/v2-namematching
+  - origin/windowswebapp
+  - origin/windowswebapp-20260617-win
+  localBranches:
+  - feature/service-bus
+  - v2
+  - main
+  tags:
+  - AICore
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 1
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AICore-Platform
+- path: C:\Projects\Bdo\ds\AICore\AICore-Platform - WebApp\
+  safePath: C:/Projects/Bdo/ds/AICore/AICore-Platform - WebApp
+  name: AICore-Platform - WebApp
+  windowsPath: C:\Projects\Bdo\ds\AICore\AICore-Platform - WebApp
+  linuxPath: C:/Projects/Bdo/ds/AICore/AICore-Platform - WebApp
+  location: C:\Projects\Bdo\ds\AICore
+  isBare: false
+  currentBranch: v2
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - v2
+  - origin/feature/azure-monitor
+  - origin/feature/fallbackUrlInApim
+  - origin/feature/improve-dependecy-resolver
+  - origin/feature/shared-application-insights
+  - origin/feature/update-thumbprint-cert
+  - origin/HEAD
+  - origin/v2
+  - main
+  - origin/cleanuprule
+  - origin/docker-secrets
+  - origin/feature/225656-ai-services-roles
+  - origin/feature/SBR-ALZ
+  - origin/feature/add-disable-api-check
+  - origin/feature/add-logicapp-support
+  - origin/feature/app-registration-naming
+  - origin/feature/dynamic-vars
+  - origin/feature/log-ingestion-alerts
+  - origin/feature/upgrade-function-app
+  - origin/feature/v1-worker-queue-scale-rules
+  - origin/feature/v2/windows-app-service-plan
+  - origin/feature/worker-queue-scale-rules
+  - origin/fix/application-insights-policy
+  - origin/fix/office-addin
+  - origin/fix/v1-dev-hotfix-production-deploy
+  - origin/landing-zone-complaince
+  - origin/main
+  - origin/office-addin-test
+  - origin/test-on-a-temp
+  - origin/v2-cosmos-private-endpoint
+  - origin/v2-namematching
+  - origin/windowswebapp
+  - origin/windowswebapp-20260617-win
+  localBranches:
+  - v2
+  - main
+  tags:
+  - AICore
+  - BDO
+  aheadBy: 0
+  behindBy: 7
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 1
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Datascience%20and%20AI%20Fusion%20Teams/_git/AICore-Platform
+- path: C:\Projects\Bdo\ds\AICore\CloudEngineers-Templates\
+  safePath: C:/Projects/Bdo/ds/AICore/CloudEngineers-Templates
+  name: CloudEngineers-Templates
+  windowsPath: C:\Projects\Bdo\ds\AICore\CloudEngineers-Templates
+  linuxPath: C:/Projects/Bdo/ds/AICore/CloudEngineers-Templates
+  location: C:\Projects\Bdo\ds\AICore
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/arno
+  - origin/budgets
+  - origin/fixBuildBoyd
+  - origin/HEAD
+  - origin/main
+  - origin/pim-buildconditionfixes
+  - origin/pim-containerAppsV2
+  - origin/pim-logicAppNamingEdits
+  - origin/removeModuleName
+  - origin/sonarcloudFix21092026
+  - origin/AppRegBetterJsonHandlingRedirectUris
+  - origin/apiManagement_wsdl
+  - origin/checkIfRoleExist
+  - origin/eventGridPartnerFix
+  - origin/feature/255114-255115-APIM-Cookies
+  - origin/feature/255114-UseForwardHeaders
+  - origin/feature/259217-apimInstrumentationKey
+  - origin/feature/header-testing
+  - origin/pb-dockerhotfix
+  - origin/pim-postAppregTinkering
+  - origin/pim-seperateparamresolution
+  - origin/playwrightTests
+  - origin/tempSignalR
+  localBranches:
+  - main
+  tags:
+  - AICore
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/Cloud%20Automation%20Engineers/_git/Templates
+- path: C:\Projects\Bdo\ds\AICore\General Cloud Automation Stuff\
+  safePath: C:/Projects/Bdo/ds/AICore/General Cloud Automation Stuff
+  name: General Cloud Automation Stuff
+  windowsPath: C:\Projects\Bdo\ds\AICore\General Cloud Automation Stuff
+  linuxPath: C:/Projects/Bdo/ds/AICore/General Cloud Automation Stuff
+  location: C:\Projects\Bdo\ds\AICore
+  isBare: false
+  currentBranch: feature/cosmos-partials
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/cosmos-partials
+  - main
+  - origin/feature/cosmos-partials
+  - origin/HEAD
+  - origin/main
+  - origin/feature/cosmos-db-migration-psa
+  localBranches:
+  - feature/cosmos-partials
+  - main
+  tags:
+  - AICore
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/General%20Cloud%20Automation%20Stuff
+- path: C:\Projects\Bdo\ds\Poc\DataScienceTestAutomation\
+  safePath: C:/Projects/Bdo/ds/Poc/DataScienceTestAutomation
+  name: DataScienceTestAutomation
+  windowsPath: C:\Projects\Bdo\ds\Poc\DataScienceTestAutomation
+  linuxPath: C:/Projects/Bdo/ds/Poc/DataScienceTestAutomation
+  location: C:\Projects\Bdo\ds\Poc
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags: []
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 3
+  localModified: 7
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/cmunckhof/Work/_git/DataScienceTestAutomation
+- path: C:\Users\Munckhof CJJ\AppData\Roaming\RepoM\
+  safePath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoM
+  name: RepoM
+  windowsPath: C:\Users\Munckhof CJJ\AppData\Roaming\RepoM
+  linuxPath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoM
+  location: C:\Users\Munckhof CJJ\AppData\Roaming
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - 1
+  - config
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 4
+  localModified: 5
+  localMissing: 0
+  localAdded: 0
+  localStaged: 5
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/MyRepoOneConfig.git
+- path: C:\dev\bdo\dsai\Frontend\ChatPro Site\ChatPro Site\
+  safePath: C:/dev/bdo/dsai/Frontend/ChatPro Site/ChatPro Site
+  name: ChatPro Site
+  windowsPath: C:\dev\bdo\dsai\Frontend\ChatPro Site\ChatPro Site
+  linuxPath: C:/dev/bdo/dsai/Frontend/ChatPro Site/ChatPro Site
+  location: C:\dev\bdo\dsai\Frontend\ChatPro Site
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/dev/dev-patrick
+  - origin/dev/pes-ALZ-v3
+  - origin/dev/thomas-test
+  - origin/feature/234034-user-only-reports
+  - origin/feature/235121-additional-company-info
+  - origin/feature/248511-bdo-fields-transcription
+  - origin/feature/248511-bdo-fields-transcription-v2
+  - origin/feature/249217-backwards-compatible
+  - origin/feature/256905-demo-feedback-pdf
+  - origin/feature/256905-demo-feedback-pdf-v2
+  - origin/feature/263410-poc-aia-application
+  - origin/feature/AI-Portfolio
+  - origin/feature/AI-Portfoliov2
+  - origin/feature/Coding-UI
+  - origin/feature/Graphify
+  - origin/feature/PE-scraper-front-end
+  - origin/feature/auto-refresh
+  - origin/feature/coding-agent
+  - origin/feature/initiele-pdf-editbaar-na-check-frontend
+  - origin/feature/knowledgepoc
+  - origin/feature/knowledgesearch
+  - origin/feature/psa-payrollAdministration-custom-var
+  - origin/feature/removeinnovationportal
+  - origin/main
+  - origin/v2
+  - origin/v2-pes
+  - origin/v2-wnt-poc
+  localBranches:
+  - main
+  tags:
+  - DSAI
+  - frontend
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AIProjects-ChatProSite
+- path: C:\dev\bdo\dsai\Frontend\AI Portal\AI-Portal\
+  safePath: C:/dev/bdo/dsai/Frontend/AI Portal/AI-Portal
+  name: AI-Portal
+  windowsPath: C:\dev\bdo\dsai\Frontend\AI Portal\AI-Portal
+  linuxPath: C:/dev/bdo/dsai/Frontend/AI Portal/AI-Portal
+  location: C:\dev\bdo\dsai\Frontend\AI Portal
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - DSAI
+  - frontend
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AI-Portal
+- path: C:\dev\bdo\dsai\Platform\AI Core Platform\AICore Platform\
+  safePath: C:/dev/bdo/dsai/Platform/AI Core Platform/AICore Platform
+  name: AICore Platform
+  windowsPath: C:\dev\bdo\dsai\Platform\AI Core Platform\AICore Platform
+  linuxPath: C:/dev/bdo/dsai/Platform/AI Core Platform/AICore Platform
+  location: C:\dev\bdo\dsai\Platform\AI Core Platform
+  isBare: false
+  currentBranch: v2
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - v2
+  - origin/feature/shared-application-insights
+  - origin/HEAD
+  - origin/v2
+  - origin/v2-appreg-fix
+  - origin/cleanuprule
+  - origin/docker-secrets
+  - origin/feature/225656-ai-services-roles
+  - origin/feature/SBR-ALZ
+  - origin/feature/add-disable-api-check
+  - origin/feature/add-logicapp-support
+  - origin/feature/app-registration-naming
+  - origin/feature/log-ingestion-alerts
+  - origin/feature/move-library-vars-to-repo
+  - origin/feature/service-bus
+  - origin/feature/v1-worker-queue-scale-rules
+  - origin/feature/v2/windows-app-service-plan
+  - origin/feature/worker-queue-scale-rules
+  - origin/fix/application-insights-policy
+  - origin/fix/office-addin
+  - origin/fix/v1-dev-hotfix-production-deploy
+  - origin/landing-zone-complaince
+  - origin/main
+  - origin/office-addin-test
+  - origin/test-on-a-temp
+  - origin/v2-cosmos-private-endpoint
+  - origin/v2-namematching
+  - origin/windowswebapp
+  - origin/windowswebapp-20260617-win
+  localBranches:
+  - main
+  - v2
+  tags:
+  - DSAI
+  - platform
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen:
+    dateTime: 2026-11-20T18:23:49.6106190
+    utcDateTime: 2026-11-20T18:23:49.6106190Z
+    localDateTime: 2026-11-20T19:23:49.6106190+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 610
+    microsecond: 619
+    nanosecond: 0
+    minute: 23
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 49
+    ticks: 639307958296106190
+    utcTicks: 639307958296106190
+    timeOfDay: 18:23:49.6106190
+    year: 2026
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AICore-Platform
+- path: C:\dev\bdo\dsai\Services\Blob Service\AINet-BlobService\
+  safePath: C:/dev/bdo/dsai/Services/Blob Service/AINet-BlobService
+  name: AINet-BlobService
+  windowsPath: C:\dev\bdo\dsai\Services\Blob Service\AINet-BlobService
+  linuxPath: C:/dev/bdo/dsai/Services/Blob Service/AINet-BlobService
+  location: C:\dev\bdo\dsai\Services\Blob Service
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/feature/196431-servicebus-premium
+  - origin/feature/198427-deployment-fix
+  - origin/feature/198683-docker-login
+  - origin/feature/200531-resource-allocation
+  - origin/feature/ReleaseAPTest
+  - origin/main
+  - origin/v2
+  localBranches:
+  - main
+  tags:
+  - DSAI
+  - services
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AINet-BlobService
+- path: C:\dev\bdo\dsai\Services\Translation Service\AINet-TranslationService\
+  safePath: C:/dev/bdo/dsai/Services/Translation Service/AINet-TranslationService
+  name: AINet-TranslationService
+  windowsPath: C:\dev\bdo\dsai\Services\Translation Service\AINet-TranslationService
+  linuxPath: C:/dev/bdo/dsai/Services/Translation Service/AINet-TranslationService
+  location: C:\dev\bdo\dsai\Services\Translation Service
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  - origin/v2
+  localBranches:
+  - main
+  tags:
+  - DSAI
+  - services
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AINet-TranslationService
+- path: C:\dev\bdo\dsai\Services\LLM Service\AINet-LLMService\
+  safePath: C:/dev/bdo/dsai/Services/LLM Service/AINet-LLMService
+  name: AINet-LLMService
+  windowsPath: C:\dev\bdo\dsai\Services\LLM Service\AINet-LLMService
+  linuxPath: C:/dev/bdo/dsai/Services/LLM Service/AINet-LLMService
+  location: C:\dev\bdo\dsai\Services\LLM Service
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/dev
+  - origin/feature/201975-sonar-qube
+  - origin/feature/init-176032
+  - origin/feature/test-multilanguage-backwards-compatible
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - DSAI
+  - services
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AINet-LLMService
+- path: C:\dev\bdo\dsai\Services\PSA\PSA-AI-Automation\
+  safePath: C:/dev/bdo/dsai/Services/PSA/PSA-AI-Automation
+  name: PSA-AI-Automation
+  windowsPath: C:\dev\bdo\dsai\Services\PSA\PSA-AI-Automation
+  linuxPath: C:/dev/bdo/dsai/Services/PSA/PSA-AI-Automation
+  location: C:\dev\bdo\dsai\Services\PSA
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - v2
+  - origin/HEAD
+  - origin/main
+  - origin/v2
+  - feature/cosmos-idempotent
+  - origin/feature/221767-dsworker
+  - origin/feature/256235-PoisionQueueHandling
+  - origin/feature/5.6
+  - origin/feature/ClaudeSdV
+  - origin/feature/GetLoketAdministrations
+  - origin/feature/administrationendpoint
+  - origin/feature/administrationendpoint2
+  - origin/feature/all-parallel
+  - origin/feature/code-strict
+  - origin/feature/innovation-deepeval
+  - origin/feature/logging-deepdive
+  - origin/feature/multiple-excel-files
+  - origin/feature/notupdatesvoorThijs
+  - origin/feature/parsing-error
+  - origin/feature/trigger-sql-update-loket-notes
+  - origin/feature/v2-test
+  - origin/feature/v2-test-leon
+  - origin/feature/worker-queue-scale-rules
+  localBranches:
+  - main
+  - v2
+  - feature/cosmos-idempotent
+  tags:
+  - DSAI
+  - services
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 2
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen:
+    dateTime: 2026-11-20T18:23:49.4674632
+    utcDateTime: 2026-11-20T18:23:49.4674632Z
+    localDateTime: 2026-11-20T19:23:49.4674632+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 467
+    microsecond: 463
+    nanosecond: 200
+    minute: 23
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 49
+    ticks: 639307958294674632
+    utcTicks: 639307958294674632
+    timeOfDay: 18:23:49.4674632
+    year: 2026
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/PSA-AI-Automation
+- path: C:\dev\bdo\dsai\Services\WBSO\AIProjects-WBSOService\
+  safePath: C:/dev/bdo/dsai/Services/WBSO/AIProjects-WBSOService
+  name: AIProjects-WBSOService
+  windowsPath: C:\dev\bdo\dsai\Services\WBSO\AIProjects-WBSOService
+  linuxPath: C:/dev/bdo/dsai/Services/WBSO/AIProjects-WBSOService
+  location: C:\dev\bdo\dsai\Services\WBSO
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/dev/dev-latest
+  - origin/feature/246799-export-csv
+  - origin/feature/248511-bdo-fields-transcription
+  - origin/feature/248511-bdo-fields-transcription-v2
+  - origin/main
+  - origin/v2
+  - origin/v2-redesign-faseringen
+  localBranches:
+  - main
+  tags:
+  - DSAI
+  - services
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AIProjects-WBSOService
+- path: C:\dev\bdo\dsai\Services\Persona Service\AINet-PersonaService\
+  safePath: C:/dev/bdo/dsai/Services/Persona Service/AINet-PersonaService
+  name: AINet-PersonaService
+  windowsPath: C:\dev\bdo\dsai\Services\Persona Service\AINet-PersonaService
+  linuxPath: C:/dev/bdo/dsai/Services/Persona Service/AINet-PersonaService
+  location: C:\dev\bdo\dsai\Services\Persona Service
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/feature/191017-MultiplePersonaTypes
+  - origin/feature/198686-pipeline-errors
+  - origin/feature/210477-improve
+  - origin/feature/268421-add-persona-last-name-personaservice
+  - origin/feature/268421-extend-personaservice-persona-model-and-api
+  - origin/feature/268500-persist-persona-last-name-in-personaservice-ainet-personaservice
+  - origin/feature/268717-add-last-name-to-personas-ainet-personaservice
+  - origin/feature/hack-for-demo-without-auth
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - DSAI
+  - services
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AINet-PersonaService
+- path: C:\dev\bdo\dsai\Services\Orchestration Service\AINet-OrchestrationService\
+  safePath: C:/dev/bdo/dsai/Services/Orchestration Service/AINet-OrchestrationService
+  name: AINet-OrchestrationService
+  windowsPath: C:\dev\bdo\dsai\Services\Orchestration Service\AINet-OrchestrationService
+  linuxPath: C:/dev/bdo/dsai/Services/Orchestration Service/AINet-OrchestrationService
+  location: C:\dev\bdo\dsai\Services\Orchestration Service
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/feature/193391-scopes-fix
+  - origin/feature/206810-speech-service
+  - origin/feature/222542-audience
+  - origin/feature/demo-time
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - DSAI
+  - services
+  - BDO
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://dev.azure.com/tfs-bdonl/DataScience%20and%20AI%20Fusion%20Teams/_git/AINet-OrchestrationService
+- path: G:\My Drive\MyGitConfig\
+  safePath: G:/My Drive/MyGitConfig
+  name: MyGitConfig
+  windowsPath: G:\My Drive\MyGitConfig
+  linuxPath: G:/My Drive/MyGitConfig
+  location: G:\My Drive
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags: *o1
+  aheadBy: 0
+  behindBy: 1
+  localUntracked: 2
+  localModified: 1
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/MyGitConfig.git
+- path: G:\My Drive\git\Synology\
+  safePath: G:/My Drive/git/Synology
+  name: Synology
+  windowsPath: G:\My Drive\git\Synology
+  linuxPath: G:/My Drive/git/Synology
+  location: G:\My Drive\git
+  isBare: false
+  currentBranch: master
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - master
+  - origin/docker
+  - origin/HEAD
+  - origin/master
+  localBranches:
+  - master
+  tags: *o1
+  aheadBy: 0
+  behindBy: 16
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/Synology.git
+- path: C:\dev\private\RepoM.worktrees\main feature_support-worktrees\
+  safePath: C:/dev/private/RepoM.worktrees/main feature_support-worktrees
+  name: main feature_support-worktrees
+  windowsPath: C:\dev\private\RepoM.worktrees\main feature_support-worktrees
+  linuxPath: C:/dev/private/RepoM.worktrees/main feature_support-worktrees
+  location: C:\dev\private\RepoM.worktrees
+  isBare: false
+  currentBranch: feature/support-worktrees
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - feature/support-worktrees
+  - origin/HEAD
+  - main
+  - origin/agents/repom-mcp-server-plugin
+  - origin/feature/automation-poc
+  - origin/feature/azure-devops-upgrade
+  - origin/feature/improve-search-and-filtering
+  - origin/feature/sonar-fixes
+  - origin/main
+  - origin/release/v1.0
+  - origin/release/v1.1
+  localBranches:
+  - feature/support-worktrees
+  - main
+  tags: []
+  localUntracked: 0
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen: *o0
+  lastUpdated: *o0
+  remotes: []
+- path: C:\dev\private\Pa\
+  safePath: C:/dev/private/Pa
+  name: Pa
+  windowsPath: C:\dev\private\Pa
+  linuxPath: C:/dev/private/Pa
+  location: C:\dev\private
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: false
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches: &o4 []
+  localBranches: *o4
+  tags: *o5
+  localUntracked: 105
+  localModified: 0
+  localMissing: 0
+  localAdded: 0
+  localStaged: 0
+  localRemoved: 0
+  stashCount: 0
+  lastSeen:
+    dateTime: 2026-11-20T18:23:46.6896504
+    utcDateTime: 2026-11-20T18:23:46.6896504Z
+    localDateTime: 2026-11-20T19:23:46.6896504+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 689
+    microsecond: 650
+    nanosecond: 400
+    minute: 23
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 46
+    ticks: 639307958266896504
+    utcTicks: 639307958266896504
+    timeOfDay: 18:23:46.6896504
+    year: 2026
+  lastUpdated: *o0
+  remotes: []
+- path: C:\Users\Munckhof CJJ\AppData\Roaming\RepoMFeature\
+  safePath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoMFeature
+  name: RepoMFeature
+  windowsPath: C:\Users\Munckhof CJJ\AppData\Roaming\RepoMFeature
+  linuxPath: C:/Users/Munckhof CJJ/AppData/Roaming/RepoMFeature
+  location: C:\Users\Munckhof CJJ\AppData\Roaming
+  isBare: false
+  currentBranch: main
+  currentBranchHasUpstream: true
+  currentBranchIsDetached: false
+  currentBranchIsOnTag: false
+  branches:
+  - main
+  - origin/HEAD
+  - origin/main
+  localBranches:
+  - main
+  tags:
+  - 1
+  - config
+  aheadBy: 0
+  behindBy: 0
+  localUntracked: 4
+  localModified: 5
+  localMissing: 0
+  localAdded: 0
+  localStaged: 5
+  localRemoved: 0
+  stashCount: 0
+  lastSeen:
+    dateTime: 2026-11-20T18:23:49.2579608
+    utcDateTime: 2026-11-20T18:23:49.2579608Z
+    localDateTime: 2026-11-20T19:23:49.2579608+01:00
+    date: 2026-11-20T00:00:00.0000000
+    day: 20
+    dayOfWeek: Friday
+    dayOfYear: 324
+    hour: 18
+    millisecond: 257
+    microsecond: 960
+    nanosecond: 800
+    minute: 23
+    month: 11
+    offset: 00:00:00
+    totalOffsetMinutes: 0
+    second: 49
+    ticks: 639307958292579608
+    utcTicks: 639307958292579608
+    timeOfDay: 18:23:49.2579608
+    year: 2026
+  lastUpdated: *o0
+  remotes:
+  - key: origin
+    url: https://github.com/coenm/MyRepoOneConfig.git

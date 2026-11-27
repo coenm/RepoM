@@ -8,7 +8,6 @@ using AwesomeAssertions;
 using Meziantou.Xunit;
 using Microsoft.Extensions.FileProviders;
 using RepoM.Api.IO;
-using RepoM.App.Services;
 using Xunit;
 using IFileInfo = Microsoft.Extensions.FileProviders.IFileInfo;
 

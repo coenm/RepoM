@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "RepoM: Demo",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build RepoM.App",
+      "program": "${workspaceFolder}\\src\\RepoM.App\\bin\\Debug\\net10.0-windows\\RepoM.dll",
+      "args": [
+        "--startup-plugin=src\\RepoM.App\\bin\\Debug\\net10.0-windows\\RepoM.StartupPlugin.Demo.dll"
+      ],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false
+    },
+    {
+      "name": "RepoM: Worktree Preview",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build RepoM.App",
+      "program": "${workspaceFolder}\\src\\RepoM.App\\bin\\Debug\\net10.0-windows\\RepoM.dll",
+      "args": [
+        "--startup-plugin=src\\RepoM.App\\bin\\Debug\\net10.0-windows\\RepoM.StartupPlugin.WorktreePreview.dll"
+      ],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false
+    }
+  ]
+}

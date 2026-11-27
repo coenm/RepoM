@@ -9,23 +9,31 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Hardcodet.Wpf.TaskbarNotification;
-using RepoM.App.i18n;
+using RepoM.UI.i18n;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Plugins;
 using RepoM.App.Plugins;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using RepoM.App.Services;
-using Container = SimpleInjector.Container;
-using RepoM.App.Services.HotKey;
+using RepoM.UI.Services;
+using RepoM.UI.Services.HotKey;
 using RepoM.Api;
 using RepoM.Api.IO;
+using RepoM.Core.Plugin.Common;
+using RepoM.App.Startup;
+using RepoM.UI;
 
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
 public partial class App : Application
 {
+    private readonly Bootstrapper _bootstrapper = new();
+    private StartupDependencies? _startupDependencies;
+    private ILoggerFactory? _loggerFactory;
+    private IApplicationWindow? _applicationWindow;
+    private StartupArguments _arguments = new(null, []);
     private static Mutex? _mutex;
     private TaskbarIcon? _notifyIcon;
     private ModuleService? _moduleService;
@@ -38,17 +46,29 @@ public partial class App : Application
 #endif
 
     [STAThread]
-    public static void Main()
+    public static void Main(string[] args)
     {
-        if (IsAlreadyRunning())
+        StartupArguments arguments;
+        try
+        {
+            arguments = StartupArguments.Parse(args);
+        }
+        catch (ArgumentException exception)
+        {
+            MessageBox.Show(exception.Message, "RepoM startup", MessageBoxButton.OK, MessageBoxImage.Error);
+            Environment.ExitCode = 1;
+            return;
+        }
+
+        if (arguments.PluginPath == null && IsAlreadyRunning())
         {
             return;
         }
 
         Thread.CurrentThread.Name ??= "UI";
-        var app = new App();
+        var app = new App { _arguments = arguments };
         app.InitializeComponent();
-        app.Run();
+        Environment.ExitCode = app.Run();
     }
 
     protected override async void OnStartup(StartupEventArgs e)
@@ -62,54 +82,78 @@ public partial class App : Application
             typeof(FrameworkElement),
             new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
-        Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
-        _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
+        try
+        {
+            await StartApplicationAsync();
+        }
+        catch (Exception exception)
+        {
+            _loggerFactory?.CreateLogger(nameof(App)).LogCritical(exception, "Application startup failed.");
+            System.Diagnostics.Trace.TraceError("Application startup failed: {0}", exception);
+            MessageBox.Show(exception.Message, "RepoM startup failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
+        }
+    }
 
-        var fileSystem = new FileSystem();
-
-        // Create instance without DI, because we need it before the last registration of services.
-        IHmacService hmacService = new HmacSha256Service();
-        IPluginFinder pluginFinder = new PluginFinder(fileSystem, hmacService);
-
-        var factory = new ConfigBasedAppDataPathProviderFactory(e.Args, fileSystem);
-        AppDataPathProvider appDataProvider = factory.Create();
+    private async Task StartApplicationAsync()
+    {
+        Resources.MergedDictionaries.Add(ResourceDictionaryTranslationService.ResourceDictionary);
+        _startupDependencies = await StartupDependencies.CreateAsync(_arguments);
+        IFileSystem fileSystem = _startupDependencies.FileSystem;
+        IPluginFinder pluginFinder = _startupDependencies.PluginFinder;
+        IAppDataPathProvider appDataProvider = await _startupDependencies.PathProviderFactory.CreateAsync();
 
         IConfiguration config = LoggingFactory.CreateLoggerConfiguration(appDataProvider.AppDataPath);
         ILoggerFactory loggerFactory = LoggingFactory.CreateLoggerFactory(config);
+        _loggerFactory = loggerFactory;
 
         ILogger logger = loggerFactory.CreateLogger(nameof(App));
         RegisterGlobalExceptionHandlers(logger);
         logger.LogInformation("Started");
-        Bootstrapper.RegisterLogging(loggerFactory);
-        Bootstrapper.RegisterServices(fileSystem, appDataProvider);
+        _bootstrapper.RegisterLogging(loggerFactory);
+        _bootstrapper.RegisterServices(fileSystem, appDataProvider);
+        _startupDependencies.RegisterInstances(_bootstrapper.Container);
 
         // Move heavy I/O work (plugin discovery, assembly loading, file ensures) off the UI thread
         // so the message pump stays responsive during startup.
         await Task.Run(async () =>
         {
-            await Bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory, appDataProvider).ConfigureAwait(false);
+            await _bootstrapper.RegisterPlugins(pluginFinder, fileSystem, loggerFactory, appDataProvider).ConfigureAwait(false);
 
             var ensureStartup = new EnsureStartup(fileSystem, appDataProvider);
             await ensureStartup.EnsureFilesAsync().ConfigureAwait(false);
         }).ConfigureAwait(true);
 
 #if DEBUG
-        Bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
+        _bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyAndDiagnose);
 #else
-        Bootstrapper.Container.Options.EnableAutoVerification = false;
+        _bootstrapper.Container.Verify(SimpleInjector.VerificationOption.VerifyOnly);
 #endif
 
-        _moduleService = Bootstrapper.Container.GetInstance<ModuleService>();
-        _hotKeyService = Bootstrapper.Container.GetInstance<HotKeyService>();
-        _windowSizeService = Bootstrapper.Container.GetInstance<WindowSizeService>();
+        _moduleService = _bootstrapper.Container.GetInstance<ModuleService>();
+        var presentation = _bootstrapper.Container.GetInstance<IApplicationPresentation>();
+        if (presentation.UseTray)
+        {
+            _notifyIcon = FindResource("NotifyIcon") as TaskbarIcon;
+            _hotKeyService = _bootstrapper.Container.GetInstance<HotKeyService>();
+            _windowSizeService = _bootstrapper.Container.GetInstance<WindowSizeService>();
+            _hotKeyService.Register();
+            _windowSizeService.Register();
+        }
+        else
+        {
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+        }
 
-        _hotKeyService.Register();
-        _windowSizeService.Register();
-
-        MainWindow mainWindow = Bootstrapper.Container.GetInstance<MainWindow>();
+        _applicationWindow = _bootstrapper.Container.GetInstance<IApplicationWindow>();
+        MainWindow = _applicationWindow.Window;
 
         // Make the UI interactive immediately — don't wait for modules to finish loading.
-        mainWindow.SetReady();
+        _applicationWindow.SetReady();
+        if (!presentation.UseTray)
+        {
+            _applicationWindow.ShowAndActivate();
+        }
 
         // Start modules in the background; repository data will stream in via DynamicData subscriptions.
         _ = _moduleService.StartAsync().ContinueWith(
@@ -117,7 +161,7 @@ public partial class App : Application
             TaskContinuationOptions.OnlyOnFaulted);
 
         // Warm up the action-menu pipeline in the background so the first context-menu open is fast.
-        IUserMenuActionMenuFactory userMenuActionMenuFactory = Bootstrapper.Container.GetInstance<IUserMenuActionMenuFactory>();
+        IUserMenuActionMenuFactory userMenuActionMenuFactory = _bootstrapper.Container.GetInstance<IUserMenuActionMenuFactory>();
         _ = Task.Run(userMenuActionMenuFactory.WarmupAsync).ContinueWith(
             t => logger.LogError(t.Exception, "Could not warm up the action menu."),
             TaskContinuationOptions.OnlyOnFaulted);
@@ -145,6 +189,8 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _applicationWindow?.Shutdown();
+
         _windowSizeService?.Unregister();
 
         _moduleService?.StopAsync().GetAwaiter().GetResult();
@@ -152,6 +198,10 @@ public partial class App : Application
         _hotKeyService?.Unregister();
 
         _notifyIcon?.Dispose();
+
+        _bootstrapper.Container.DisposeContainerAsync().GetAwaiter().GetResult();
+        _startupDependencies?.Dispose();
+        _loggerFactory?.Dispose();
 
         ReleaseAndDisposeMutex();
 
@@ -209,5 +259,4 @@ public partial class App : Application
         }
     }
 
-    public static string? AvailableUpdate { get; private set; } = null;
 }

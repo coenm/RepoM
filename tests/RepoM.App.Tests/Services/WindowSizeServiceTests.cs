@@ -1,17 +1,18 @@
 namespace RepoM.App.Tests.Services;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Windows;
 using FakeItEasy;
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
-using RepoM.App.Services;
+using RepoM.UI.Services;
+using RepoM.Tests.TestFramework;
 using Xunit;
 
+[WpfDesktop]
 public class WindowSizeServiceTests : IDisposable
 {
     private readonly IThreadDispatcher _threadDispatcher;
@@ -102,12 +103,17 @@ public class WindowSizeServiceTests : IDisposable
     public void Register_ShouldSubscribeAndHandleSizeChangedEvents()
     {
         // arrange
-        List<int> callingThreadIds = [];
+        var callingThreadIds = new ConcurrentQueue<int>(); 
         var currentThreadId = Environment.CurrentManagedThreadId;
-        var signal = new ManualResetEventSlim();
+        using var signal = new ManualResetEventSlim();
 
         _window = new Window { Width = 1, Height = 1, };
-        
+
+        var expectedMenuSize = new MenuSize
+        {
+            MenuHeight = 40,
+            MenuWidth = 140,
+        };
         MenuSize? configuredMenuSize = new MenuSize
             {
                 MenuHeight = 12,
@@ -115,13 +121,18 @@ public class WindowSizeServiceTests : IDisposable
             };
         A.CallTo(() => _appSettingsService.TryGetMenuSize("1x2", out configuredMenuSize)).Returns(true);
 
-        List<MenuSize> updatedMenuSize = [];
+        var updatedMenuSizes = new ConcurrentQueue<MenuSize>();
         _ = A.CallTo(() => _appSettingsService.UpdateMenuSize("1x2", A<MenuSize>._))
          .Invokes(call =>
              {
-                 callingThreadIds.Add(Environment.CurrentManagedThreadId);
-                 updatedMenuSize.Add((MenuSize)call.Arguments[1]!);
-                 signal.Set();
+                 callingThreadIds.Enqueue(Environment.CurrentManagedThreadId);
+                 MenuSize updatedMenuSize = (MenuSize)call.Arguments[1]!;
+                 updatedMenuSizes.Enqueue(updatedMenuSize);
+                 if (updatedMenuSize.MenuHeight == expectedMenuSize.MenuHeight
+                     && updatedMenuSize.MenuWidth == expectedMenuSize.MenuWidth)
+                 {
+                     signal.Set();
+                 }
              });
 
         var sut = new TestableWindowSizeService(_window, _appSettingsService, _threadDispatcher, A.Dummy<ILogger>());
@@ -129,17 +140,12 @@ public class WindowSizeServiceTests : IDisposable
 
         // act
         ResizeWindow(_window, 40, 140);
-        sut.WaitForWindowSizeChanged(signal);
+        sut.WaitForWindowSizeChanged(signal).Should().BeTrue();
 
         // assert
-        updatedMenuSize.Single().Should().BeEquivalentTo(
-            new MenuSize
-            {
-                MenuHeight = 40,
-                MenuWidth = 140,
-            });
-        callingThreadIds.Should().HaveCountGreaterThanOrEqualTo(1);
-        callingThreadIds.Should().NotContain(currentThreadId);
+        updatedMenuSizes.ToArray().Should().Contain(expectedMenuSize);
+        callingThreadIds.ToArray().Should().NotBeEmpty()
+            .And.NotContain(currentThreadId);
 
     }
 

@@ -1,0 +1,22 @@
+action-menu:
+- type: just-text@1
+  name: '{{ repository.name }} - {{ repository.branch }}'
+- type: separator@1
+- type: command@1
+  name: Open in File Explorer (demo)
+  command: explorer.exe
+  arguments: '"{{ repository.path }}"'
+- type: command@1
+  name: Open in Terminal (demo)
+  command: wt.exe
+  arguments: '-d "{{ repository.path }}"'
+- type: folder@1
+  name: Git
+  actions:
+  - type: git-fetch@1
+  - type: git-pull@1
+  - type: git-push@1
+  - type: git-checkout@1
+- type: separator@1
+- type: just-text@1
+  name: 'Demo: external actions are simulated'

@@ -2,14 +2,14 @@ namespace RepoM.App.Tests.ViewModels;
 
 using AwesomeAssertions;
 using RepoM.Api.Common;
-using RepoM.App.Plugins;
+using RepoM.UI.Plugins;
 using System;
 using System.Collections.Generic;
 using FakeItEasy;
-using RepoM.App.RepositoryFiltering;
-using RepoM.App.ViewModels;
+using RepoM.UI.RepositoryFiltering;
+using RepoM.UI.ViewModels;
 using Xunit;
-using RepoM.App.RepositoryOrdering;
+using RepoM.UI.RepositoryOrdering;
 using RepoM.Api.Git.AutoFetch;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Input;
@@ -136,6 +136,10 @@ public class MainWindowViewModelTests
 
     private sealed class TestAppSettingsService : IAppSettingsService
     {
+        public AppTheme Theme { get; set; }
+
+        public bool EnableAnimations { get; set; } = true;
+
         public AutoFetchMode AutoFetchMode { get; set; }
 
         public bool PruneOnFetch { get; set; }
@@ -153,6 +157,8 @@ public class MainWindowViewModelTests
         public List<string> ReposRootDirectories { get; set; } = [];
 
         public int MenuPrefetchHoverDelayMilliseconds => 2000;
+
+        public int ContextMenuLoadingIndicatorDelayMilliseconds => 200;
 
         public string SortKey { get; set; } = string.Empty;
 

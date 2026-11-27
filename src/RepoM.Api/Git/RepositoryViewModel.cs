@@ -41,6 +41,7 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
     private string? _cachedRepositoryStatus;
     private string? _cachedRepositoryStatusWithBranch;
     private bool _isSynchronizing;
+    private bool _isExpanded = true;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -114,6 +115,12 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
 
     private void NotifyDerivedProperties(RepositoryInfo oldInfo, RepositoryInfo newInfo)
     {
+        NotifyIfChanged(oldInfo.HasLocalChanges, newInfo.HasLocalChanges, new(nameof(HasLocalChanges)));
+        NotifyIfChanged(HasAhead(oldInfo), HasAhead(newInfo), new(nameof(HasAheadCommits)));
+        NotifyIfChanged(HasBehind(oldInfo), HasBehind(newInfo), new(nameof(HasBehindCommits)));
+        NotifyIfChanged(IsStatusUnknown(oldInfo), IsStatusUnknown(newInfo), new(nameof(HasUnknownStatus)));
+        NotifyIfChanged(HasNoUpstream(oldInfo), HasNoUpstream(newInfo), new(nameof(IsUpstreamMissing)));
+
         // Status depends on multiple fields; always notify when the status code changed.
         if (oldInfo.GetStatusCode() != newInfo.GetStatusCode())
         {
@@ -156,6 +163,21 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
 
     public bool IsFavorite => _favoriteService.IsFavorite(_info.SafePath);
 
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set
+        {
+            if (_isExpanded == value)
+            {
+                return;
+            }
+
+            _isExpanded = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsExpanded)));
+        }
+    }
+
     public void ToggleFavorite()
     {
         _favoriteService.SetFavorite(_info.SafePath, !IsFavorite);
@@ -186,6 +208,30 @@ public sealed class RepositoryViewModel : IRepositoryView, INotifyPropertyChange
     public string AheadBy => NullableIntToString(_info.AheadBy);
 
     public string BehindBy => NullableIntToString(_info.BehindBy);
+
+    public bool HasLocalChanges => _info.HasLocalChanges;
+
+    public bool HasAheadCommits => HasAhead(_info);
+
+    public bool HasBehindCommits => HasBehind(_info);
+
+    public bool HasUnknownStatus => IsStatusUnknown(_info);
+
+    public bool IsUpstreamMissing => HasNoUpstream(_info);
+
+    private static bool HasAhead(RepositoryInfo info) => info.CurrentBranchHasUpstream && info.AheadBy > 0;
+
+    private static bool HasBehind(RepositoryInfo info) => info.CurrentBranchHasUpstream && info.BehindBy > 0;
+
+    private static bool HasNoUpstream(RepositoryInfo info) =>
+        !info.IsBare && !string.IsNullOrEmpty(info.CurrentBranch) && !info.CurrentBranchHasUpstream;
+
+    private static bool IsStatusUnknown(RepositoryInfo info) =>
+        !info.WasFound
+        || string.IsNullOrEmpty(info.CurrentBranch)
+        || (!info.IsBare && (info.LocalUntracked is null || info.LocalModified is null || info.LocalMissing is null
+            || info.LocalAdded is null || info.LocalStaged is null || info.LocalRemoved is null))
+        || (info.CurrentBranchHasUpstream && (info.AheadBy is null || info.BehindBy is null));
 
     public string[] Branches => _info.Branches ?? [];
 

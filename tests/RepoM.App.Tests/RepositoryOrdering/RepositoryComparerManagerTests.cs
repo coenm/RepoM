@@ -7,7 +7,7 @@ using FakeItEasy;
 using AwesomeAssertions;
 using RepoM.Api.Common;
 using RepoM.Api.Git;
-using RepoM.App.RepositoryOrdering;
+using RepoM.UI.RepositoryOrdering;
 using RepoM.Core.Plugin.RepositoryOrdering;
 using RepoM.Core.Plugin.RepositoryOrdering.Configuration;
 using RepoM.Core.Repositories.Model;

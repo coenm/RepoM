@@ -2,20 +2,21 @@ namespace RepoM.App.Tests.ViewModels;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AwesomeAssertions;
-using DynamicData.Kernel;
 using FakeItEasy;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 using RepoM.ActionMenu.Interface.ActionMenuFactory;
 using RepoM.ActionMenu.Interface.UserInterface;
 using RepoM.Api.Git;
-using RepoM.App.RepositoryActions;
-using RepoM.App.Services;
-using RepoM.App.ViewModels;
+using RepoM.UI.RepositoryActions;
+using RepoM.UI.Services;
+using RepoM.UI.ViewModels;
 using RepoM.Core.Plugin.Repository;
 using RepoM.Core.Plugin.RepositoryActions;
 using RepoM.Core.Repositories;
@@ -29,9 +30,158 @@ using RepoM.Core.Repositories.Store;
 using RepoM.Core.Repositories.Watching;
 using SimpleInjector;
 using Xunit;
+using Xunit.Abstractions;
 
 public class RepositoryListViewModelTests
 {
+    private readonly ITestOutputHelper _output;
+
+    public RepositoryListViewModelTests(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [Fact]
+    public async Task HoverPrefetch_ShouldReturnRootWithoutEvaluatingBlockedDeferredSubmenu()
+    {
+        var repository = CreateRepositoryViewModel();
+        var factory = A.Fake<IUserMenuActionMenuFactory>();
+        var context = A.Fake<IActionMenuGenerationContext>();
+        var captured = A.Fake<IActionMenuGenerationContext>();
+        A.CallTo(() => context.Clone()).Returns(captured);
+        var childStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseChild = new TaskCompletionSource<UserInterfaceRepositoryActionBase[]>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var rootBuilt = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        IActionMenuGenerationContext? usedContext = null;
+        var deferred = new DeferredSubActionsUserInterfaceRepositoryAction("Slow submenu", repository.Repository, context, ctx =>
+        {
+            usedContext = ctx;
+            childStarted.TrySetResult();
+            return releaseChild.Task;
+        });
+        A.CallTo(() => factory.CreateMenuAsync(A<IRepository>._)).Returns(BuildRoot());
+        var logger = A.Fake<ILogger>();
+        var sut = CreateSut(menuFactory: factory, logger: logger);
+        sut.SelectedRepository = repository;
+        var timer = Stopwatch.StartNew();
+
+        try
+        {
+            sut.StartContextMenuPrefetch(repository);
+            await rootBuilt.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            var entries = await sut.CreateContextMenuEntriesAsync(default).WaitAsync(TimeSpan.FromSeconds(2));
+            _output.WriteLine("Hover-to-root ready: {0:F1} ms, with deferred work still blocked.", timer.Elapsed.TotalMilliseconds);
+            childStarted.Task.IsCompleted.Should().BeFalse();
+            var item = entries.Should().ContainSingle().Subject.Should().BeOfType<RepositoryMenuItemViewModel>().Subject;
+            Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> children = item.LoadChildrenAsync();
+            await childStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            children.IsCompleted.Should().BeFalse();
+            usedContext.Should().BeSameAs(captured);
+            releaseChild.SetResult([]);
+            (await children).Should().BeEmpty();
+            A.CallTo(() => factory.CreateMenuAsync(A<IRepository>._)).MustHaveHappenedOnceExactly();
+            string[] messages = Fake.GetCalls(logger)
+                .Where(call => call.Method.Name == nameof(ILogger.Log))
+                .Select(call => call.Arguments[2]!.ToString()!).ToArray();
+            messages.Should().Contain(message => message.Contains("Git refresh", StringComparison.Ordinal));
+            messages.Should().Contain(message => message.Contains("evaluation", StringComparison.Ordinal));
+            messages.Should().Contain(message => message.Contains("prefetch hit", StringComparison.Ordinal));
+            messages.Should().Contain(message => message.Contains("deferred submenu", StringComparison.Ordinal));
+            foreach (string message in messages)
+            {
+                _output.WriteLine(message);
+            }
+        }
+        finally
+        {
+            releaseChild.TrySetResult([]);
+        }
+
+        async IAsyncEnumerable<UserInterfaceRepositoryActionBase> BuildRoot()
+        {
+            await Task.Yield();
+            yield return deferred;
+            rootBuilt.TrySetResult();
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task LoadChildrenAsync_ShouldShareOneTaskAcrossConcurrentCallers(bool fail)
+    {
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource<IReadOnlyList<IRepositoryMenuEntryViewModel>>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var calls = 0;
+        var item = new RepositoryMenuItemViewModel("Submenu", true, null, () =>
+        {
+            Interlocked.Increment(ref calls);
+            started.TrySetResult();
+            return release.Task;
+        });
+        var tasks = new Task<IReadOnlyList<IRepositoryMenuEntryViewModel>>[32];
+        try
+        {
+            await Task.Run(() => Parallel.For(0, tasks.Length, i => tasks[i] = item.LoadChildrenAsync()));
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            calls.Should().Be(1);
+            tasks.Should().OnlyContain(task => ReferenceEquals(task, tasks[0]));
+            if (fail)
+            {
+                var error = new InvalidOperationException("Submenu failed");
+                release.SetException(error);
+                foreach (Task<IReadOnlyList<IRepositoryMenuEntryViewModel>> task in tasks)
+                {
+                    (await Assert.ThrowsAsync<InvalidOperationException>(async () => await task)).Should().BeSameAs(error);
+                }
+            }
+            else
+            {
+                release.SetResult([]);
+                await Task.WhenAll(tasks);
+            }
+
+            item.LoadChildrenAsync().Should().BeSameAs(tasks[0]);
+            calls.Should().Be(1);
+        }
+        finally
+        {
+            release.TrySetResult([]);
+        }
+    }
+
+    [Fact]
+    public async Task CancelledOpen_ShouldNotWaitForNonCancellablePrefetch()
+    {
+        var repository = CreateRepositoryViewModel();
+        var factory = A.Fake<IUserMenuActionMenuFactory>();
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        A.CallTo(() => factory.CreateMenuAsync(A<IRepository>._)).Returns(BuildRoot());
+        var sut = CreateSut(menuFactory: factory);
+        sut.SelectedRepository = repository;
+        using var cancellation = new CancellationTokenSource();
+        try
+        {
+            sut.StartContextMenuPrefetch(repository);
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            var opening = sut.CreateContextMenuEntriesAsync(cancellation.Token);
+            cancellation.Cancel();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await opening.WaitAsync(TimeSpan.FromSeconds(2)));
+        }
+        finally
+        {
+            release.TrySetResult();
+        }
+
+        async IAsyncEnumerable<UserInterfaceRepositoryActionBase> BuildRoot()
+        {
+            started.TrySetResult();
+            await release.Task;
+            yield return new UserInterfaceRepositoryAction("Open", repository.Repository);
+        }
+    }
+
     [Fact]
     public void Ctor_ShouldThrow_WhenArgumentNull()
     {
@@ -320,19 +470,20 @@ public class RepositoryListViewModelTests
     }
 
     private static RepositoryListViewModel CreateSut(
-        RepositoryMonitorService? monitorService = null,
+        IRepositoryMonitorService? monitorService = null,
         IUserMenuActionMenuFactory? menuFactory = null,
-        ActionExecutor? executor = null)
+        ActionExecutor? executor = null,
+        ILogger? logger = null)
     {
         return new RepositoryListViewModel(
             monitorService ?? CreateMonitorService(),
             executor ?? CreateActionExecutor(_ => { }),
             menuFactory ?? A.Fake<IUserMenuActionMenuFactory>(),
-            NullLogger.Instance,
+            logger ?? NullLogger.Instance,
             A.Dummy<System.Windows.Input.ICommand>());
     }
 
-    private static RepositoryMonitorService CreateMonitorService(RepositoryInfo? updatedInfo = null)
+    internal static RepositoryMonitorService CreateMonitorService(RepositoryInfo? updatedInfo = null)
     {
         var scanner = A.Fake<IRepositoryScanner>();
         var watcher = A.Fake<IRepositoryWatcher>();

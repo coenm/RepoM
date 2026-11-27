@@ -3,7 +3,7 @@ namespace RepoM.App.Tests.RepositoryFiltering;
 using System;
 using FakeItEasy;
 using AwesomeAssertions;
-using RepoM.App.RepositoryFiltering;
+using RepoM.UI.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering;
 using RepoM.Core.Plugin.RepositoryFiltering.Clause;
 using Xunit;
