@@ -10,10 +10,9 @@ public static class VerifierInitializer
     public static void Initialize()
     {
         VerifyXaml.Initialize();
+        VerifyPhash.Initialize();
+        VerifyPhash.RegisterComparer("png", threshold: 0.80f);
         VerifierSettings.RegisterStringComparer("xml", OrderInsensitiveXmlComparer.CompareAsync);
-        VerifierSettings.RegisterStreamComparer(
-            extension: "png",
-            compare: XamlPngComparer.CompareAsync);
         VerifierSettings.RegisterStreamComparer(
             extension: "gif",
             compare: AnimatedGifComparer.CompareAsync);
