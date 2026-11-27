@@ -1482,7 +1482,8 @@
       av:VirtualizingPanel.VirtualizationMode="Recycling"
       av:Grid.Row="2"
       av:ScrollViewer.CanContentScroll="True"
-      av:ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+      av:ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+      av:ScrollViewer.VerticalScrollBarVisibility="Visible">
       <av:ListBox.ItemTemplate>
         <av:DataTemplate>
           <av:Border

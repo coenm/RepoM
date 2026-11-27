@@ -14,11 +14,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using FakeItEasy;
-using Meziantou.Xunit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using RepoM.ActionMenu.Core;
@@ -52,23 +52,22 @@ using SimpleInjector;
 using VerifyTests;
 using Xunit;
 
-[DisableParallelization]
-public class DemoContextMenuSnapshotTests
+[Collection(DemoWpfStaCollection.Name)]
+public partial class DemoContextMenuSnapshotTests
 {
+    private readonly DemoWpfStaFixture _sta;
+
+    public DemoContextMenuSnapshotTests(DemoWpfStaFixture sta) => _sta = sta;
+
     private static readonly Brush _videoBackground = CreateFrozenBrush(Color.FromRgb(0x2D, 0x31, 0x38));
     private static readonly Geometry _cursor = CreateCursor();
 
-    // FluentWPF caches thread-bound chrome for AcrylicWindow, so every MainWindow must be created on the same STA thread.
-    // That is why the screenshots and the video are produced by a single test.
-    [WpfFact]
-    public async Task DemoMenu_ShouldMatchSnapshots()
+    [Fact]
+    public Task DemoMenu_ShouldMatchSnapshots() => _sta.RunAsync(DemoMenu_ShouldMatchSnapshotsOnStaAsync);
+
+    private async Task DemoMenu_ShouldMatchSnapshotsOnStaAsync()
     {
-        // WPF permits only one Application per test process; shutting it down also disables later resource loads.
-        _ = Application.Current ?? new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
         using var alignment = new LeftOpeningMenus();
-        // Menus highlight the item under the real mouse pointer, so keep it away from RepoM.
-        Rect workArea = SystemParameters.WorkArea;
-        SetCursorPos((int)workArea.Left, (int)workArea.Top);
         var failures = new List<Exception>();
         var repositoryImages = new Dictionary<string, BitmapSource>();
         foreach (string menuView in new[] { "Repository", "Git", "Checkout" })
@@ -77,7 +76,7 @@ public class DemoContextMenuSnapshotTests
             {
                 await CollectFailureAsync(failures, $"Snapshot {menuView}.{theme}", async () =>
                 {
-                    BitmapSource image = await CaptureScreenshotAsync(theme, menuView);
+                    BitmapSource image = await CaptureWithMenuRetryAsync(() => CaptureScreenshotAsync(theme, menuView));
                     if (menuView == "Repository")
                     {
                         repositoryImages.Add(theme, image);
@@ -103,7 +102,11 @@ public class DemoContextMenuSnapshotTests
             });
         }
 
-        await CollectFailureAsync(failures, "Video.Dark", () => VerifyVideoAsync("Dark"));
+        await CollectFailureAsync(failures, "Video.Dark", async () =>
+        {
+            byte[] gif = await CaptureWithMenuRetryAsync(() => CaptureMenuVideoAsync("Dark"));
+            await VerifyImageAsync("gif", gif, "Video.Dark");
+        });
 
         if (failures.Count > 0)
         {
@@ -111,7 +114,7 @@ public class DemoContextMenuSnapshotTests
         }
     }
 
-    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
     private static extern bool SetCursorPos(int x, int y);
 
     private static async Task CollectFailureAsync(List<Exception> failures, string name, Func<Task> action)
@@ -146,8 +149,25 @@ public class DemoContextMenuSnapshotTests
         return Compose(layers, GetBounds(layers), background: null, cursor: null);
     }
 
+    private static async Task<T> CaptureWithMenuRetryAsync<T>(Func<Task<T>> capture)
+    {
+        const int maxAttempts = 3;
+        // Native menu capture can be lost to other apps even with the test desktop lock.
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return await capture();
+            }
+            catch (MenuCaptureInterruptedException) when (attempt < maxAttempts)
+            {
+                // Replay the capture from a fresh session, not the snapshot comparison.
+            }
+        }
+    }
+
     // Right click on RepoM, then walk through Git > Checkout, as a user would.
-    private static async Task VerifyVideoAsync(string theme)
+    private static async Task<byte[]> CaptureMenuVideoAsync(string theme)
     {
         await using var session = await DemoSession.StartAsync(theme);
         session.List.SelectedItem = null;
@@ -173,22 +193,22 @@ public class DemoContextMenuSnapshotTests
         IReadOnlyList<Layer> checkoutOpen = await session.CaptureStableLayersAsync(expectContextMenu: true);
         Point main = session.CenterOf(GetMenuItem(checkoutItem.Items, "main"));
 
-        var frames = new List<(IReadOnlyList<Layer> Layers, Point Cursor, ushort Delay)> { (idle, start, 80) };
+        var frames = new List<VideoFrame> { new(idle, start, null, 80) };
         AddMove(frames, idle, start, click);
-        frames.Add((menu, click, 90));
+        frames.Add(new(menu, click, null, 90));
         AddMove(frames, menu, click, git);
-        frames.Add((gitOpen, git, 90));
+        frames.Add(new(gitOpen, git, null, 90));
         AddMove(frames, gitOpen, git, checkout);
-        frames.Add((checkoutOpen, checkout, 90));
+        frames.Add(new(checkoutOpen, checkout, null, 90));
         AddMove(frames, checkoutOpen, checkout, main);
-        frames.Add((checkoutOpen, main, 250));
+        frames.Add(new(checkoutOpen, main, null, 250));
 
         Rect canvas = GetBounds(frames.SelectMany(frame => frame.Layers).ToList());
         var gifFrames = new List<(BitmapSource Image, Int32Rect Region, ushort DelayCentiseconds)>();
         byte[]? previous = null;
-        foreach (var (layers, cursor, delay) in frames)
+        foreach (VideoFrame frame in frames)
         {
-            RenderTargetBitmap image = Compose(layers, canvas, _videoBackground, cursor);
+            RenderTargetBitmap image = Compose(frame.Layers, canvas, _videoBackground, frame.Cursor);
             int stride = image.PixelWidth * 4;
             byte[] pixels = new byte[stride * image.PixelHeight];
             image.CopyPixels(pixels, stride, 0);
@@ -196,11 +216,10 @@ public class DemoContextMenuSnapshotTests
                 ? new Int32Rect(0, 0, image.PixelWidth, image.PixelHeight)
                 : GetChangedRegion(previous, pixels, image.PixelWidth, image.PixelHeight);
             previous = pixels;
-            gifFrames.Add((image, changed, delay));
+            gifFrames.Add((image, changed, frame.Delay));
         }
 
-        byte[] gif = AnimatedGifWriter.Write((int)canvas.Width, (int)canvas.Height, gifFrames);
-        await VerifyImageAsync("gif", gif, $"Video.{theme}");
+        return AnimatedGifWriter.Write((int)canvas.Width, (int)canvas.Height, gifFrames);
     }
 
     private static Int32Rect GetChangedRegion(byte[] previous, byte[] current, int width, int height)
@@ -230,7 +249,7 @@ public class DemoContextMenuSnapshotTests
     }
 
     private static void AddMove(
-        List<(IReadOnlyList<Layer> Layers, Point Cursor, ushort Delay)> frames,
+        List<VideoFrame> frames,
         IReadOnlyList<Layer> layers,
         Point from,
         Point to)
@@ -240,7 +259,7 @@ public class DemoContextMenuSnapshotTests
         {
             double t = (double)step / steps;
             double eased = t * t * (3 - (2 * t));
-            frames.Add((layers, new Point(from.X + ((to.X - from.X) * eased), from.Y + ((to.Y - from.Y) * eased)), 4));
+            frames.Add(new(layers, new Point(from.X + ((to.X - from.X) * eased), from.Y + ((to.Y - from.Y) * eased)), null, 4));
         }
     }
 
@@ -337,13 +356,18 @@ public class DemoContextMenuSnapshotTests
 
     private readonly record struct Layer(BitmapSource Image, Rect Bounds);
 
+    private readonly record struct VideoFrame(IReadOnlyList<Layer> Layers, Point Cursor, string? KeyLabel, ushort Delay);
+
+    private sealed class MenuCaptureInterruptedException()
+        : InvalidOperationException("The repository context menu closed before the capture finished.");
+
     /// <summary>The real RepoM main window running the demo profile, plus the steps the screenshots and video share.</summary>
     private sealed class DemoSession : IAsyncDisposable
     {
         private readonly DirectoryInfo _directory;
         private readonly RepositoryStore _store;
         private readonly Container _container;
-        private readonly List<Visual> _openedSubmenus = [];
+        private readonly List<(AcrylicMenuItem Item, Popup Popup)> _openedSubmenus = [];
         private MainWindow? _window;
         private RepositoryList _repositoryList = null!;
 
@@ -358,6 +382,8 @@ public class DemoContextMenuSnapshotTests
 
         public ListBox List { get; private set; } = null!;
 
+        public TextBox FilterBox { get; private set; } = null!;
+
         public RepositoryViewModel Repository { get; private set; } = null!;
 
         public ListBoxItem Row { get; private set; } = null!;
@@ -368,6 +394,8 @@ public class DemoContextMenuSnapshotTests
 
         // A fixed spot inside the RepoM row, so screenshots and video are deterministic.
         public Point ClickPoint => ToWindow(Row, new Point(MenuAnchorX, Row.ActualHeight / 2));
+
+        public Point FilterPoint => ToWindow(FilterBox, new Point(FilterBox.ActualWidth / 2, FilterBox.ActualHeight / 2));
 
         public static async Task<DemoSession> StartAsync(string theme)
         {
@@ -404,24 +432,34 @@ public class DemoContextMenuSnapshotTests
             ];
             // These captures open the menu programmatically; don't let mouse input dismiss it.
             ContextMenu.StaysOpen = true;
+            ParkRealMouse();
             ContextMenu.IsOpen = true;
             await WaitUntilAsync(
-                () => ContextMenu.IsOpen && PresentationSource.FromVisual(ContextMenu) != null &&
-                    ContextMenu.Items.OfType<AcrylicMenuItem>().Any(),
+                () =>
+                {
+                    EnsureContextMenuOpen();
+                    return PresentationSource.FromVisual(ContextMenu) != null &&
+                        ContextMenu.Items.OfType<AcrylicMenuItem>().Any();
+                },
                 "The repository context menu did not open.");
         }
 
         public async Task<AcrylicMenuItem> OpenSubmenuAsync(ItemCollection items, string header, string expectedChild)
         {
+            EnsureContextMenuOpen();
             AcrylicMenuItem item = GetMenuItem(items, header);
             item.ApplyTemplate();
             var popup = (Popup)item.Template.FindName("PART_Popup", item);
             popup.PopupAnimation = PopupAnimation.None;
             item.IsSubmenuOpen = true;
             await WaitUntilAsync(
-                () => item.Items.OfType<AcrylicMenuItem>().Any(child => Equals(child.Header, expectedChild)),
+                () =>
+                {
+                    EnsureContextMenuOpen();
+                    return item.Items.OfType<AcrylicMenuItem>().Any(child => Equals(child.Header, expectedChild));
+                },
                 $"The {header} submenu did not load.");
-            _openedSubmenus.Add(popup.Child);
+            _openedSubmenus.Add((item, popup));
             return item;
         }
 
@@ -433,6 +471,29 @@ public class DemoContextMenuSnapshotTests
             await Task.Delay(500);
             await Window.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
         }
+
+        public void ClickFilter()
+        {
+            Window.Activate();
+            FilterBox.Focus();
+            Keyboard.Focus(FilterBox);
+        }
+
+        public void ParkRealMouse()
+        {
+            Rect workArea = SystemParameters.WorkArea;
+            if (!SetCursorPos((int)workArea.Left, (int)workArea.Top))
+            {
+                throw new System.ComponentModel.Win32Exception(System.Runtime.InteropServices.Marshal.GetLastWin32Error());
+            }
+        }
+
+        public void TypeText(string text)
+        {
+            FilterBox.AppendText(text);
+        }
+
+        public void ClearFilterFocus() => Keyboard.ClearFocus();
 
         // Transitions can still be running right after startup, so wait until two consecutive captures are identical.
         public async Task<IReadOnlyList<Layer>> CaptureStableLayersAsync(bool expectContextMenu)
@@ -471,18 +532,20 @@ public class DemoContextMenuSnapshotTests
 
         private IReadOnlyList<Layer> CaptureLayers(bool expectContextMenu)
         {
-            if (ContextMenu.IsOpen != expectContextMenu)
+            if (expectContextMenu)
             {
-                throw new InvalidOperationException(expectContextMenu
-                    ? "The repository context menu closed before the capture finished."
-                    : "The repository context menu was unexpectedly open during the idle capture.");
+                EnsureContextMenuOpen();
+            }
+            else if (ContextMenu.IsOpen)
+            {
+                throw new InvalidOperationException("The repository context menu was unexpectedly open during the idle capture.");
             }
 
             var layers = new List<Visual> { Window };
             if (expectContextMenu)
             {
                 layers.Add(ContextMenu);
-                layers.AddRange(_openedSubmenus);
+                layers.AddRange(_openedSubmenus.Select(submenu => submenu.Popup.Child));
             }
 
             var captures = layers.Select(visual =>
@@ -514,11 +577,24 @@ public class DemoContextMenuSnapshotTests
             return captures;
         }
 
+        private void EnsureContextMenuOpen()
+        {
+            if (!ContextMenu.IsOpen)
+            {
+                throw new MenuCaptureInterruptedException();
+            }
+        }
+
         public Point CenterOf(FrameworkElement element) =>
             ToWindow(element, new Point(element.ActualWidth * 0.4, element.ActualHeight / 2));
 
         public ValueTask DisposeAsync()
         {
+            for (int index = _openedSubmenus.Count - 1; index >= 0; index--)
+            {
+                _openedSubmenus[index].Item.IsSubmenuOpen = false;
+            }
+
             if (ContextMenu != null)
             {
                 ContextMenu.IsOpen = false;
@@ -563,6 +639,7 @@ public class DemoContextMenuSnapshotTests
 
             _repositoryList = (RepositoryList)_window.FindName("repositoryList");
             List = (ListBox)_repositoryList.FindName("lstRepositories");
+            FilterBox = (TextBox)_window.FindName("txtFilter");
             ContextMenu = (AcrylicContextMenu)_repositoryList.FindName("mnuRepositoryContext");
             await WaitUntilAsync(
                 () => List.Items.Count == _store.Count,
@@ -654,7 +731,10 @@ public class DemoContextMenuSnapshotTests
     {
         var manager = A.Fake<IRepositoryFilteringManager>();
         A.CallTo(() => manager.CreateFilterObservable(A<IObservable<string>>._))
-            .Returns(Observable.Return<Func<RepositoryViewModel, bool>>(_ => true));
+            .ReturnsLazily((IObservable<string> filterInput) => filterInput.Select(query =>
+                new Func<RepositoryViewModel, bool>(repository =>
+                    string.IsNullOrWhiteSpace(query) ||
+                    repository.Name.Contains(query, StringComparison.OrdinalIgnoreCase))));
         return manager;
     }
 

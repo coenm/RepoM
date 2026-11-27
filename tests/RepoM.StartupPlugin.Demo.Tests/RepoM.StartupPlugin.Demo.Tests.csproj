@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\TestFramework\WpfDesktopAttribute.cs" Link="TestFramework\WpfDesktopAttribute.cs" />
     <ProjectReference Include="..\..\src\RepoM.ActionMenu.Core\RepoM.ActionMenu.Core.csproj" />
     <ProjectReference Include="..\..\src\RepoM.StartupPlugin.Demo\RepoM.StartupPlugin.Demo.csproj" />
     <ProjectReference Include="..\..\src\RepoM.UI\RepoM.UI.csproj" />

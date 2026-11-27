@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\TestFramework\WpfDesktopAttribute.cs" Link="TestFramework\WpfDesktopAttribute.cs" />
     <ProjectReference Include="..\..\src\RepoM.App\RepoM.App.csproj" />
     <ProjectReference Include="..\..\src\RepoM.StartupPlugin.Demo\RepoM.StartupPlugin.Demo.csproj" />
     <ProjectReference Include="..\..\src\RepoM.StartupPlugin.WorktreePreview\RepoM.StartupPlugin.WorktreePreview.csproj" />

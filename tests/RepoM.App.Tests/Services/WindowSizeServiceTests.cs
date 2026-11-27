@@ -9,8 +9,10 @@ using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using RepoM.Api.Common;
 using RepoM.UI.Services;
+using RepoM.Tests.TestFramework;
 using Xunit;
 
+[WpfDesktop]
 public class WindowSizeServiceTests : IDisposable
 {
     private readonly IThreadDispatcher _threadDispatcher;

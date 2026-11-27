@@ -14,7 +14,11 @@ using System.Windows.Media.Imaging;
 /// </summary>
 internal static class AnimatedGifWriter
 {
-    public static byte[] Write(int width, int height, IEnumerable<(BitmapSource Image, Int32Rect Region, ushort DelayCentiseconds)> frames)
+    public static byte[] Write(
+        int width,
+        int height,
+        IEnumerable<(BitmapSource Image, Int32Rect Region, ushort DelayCentiseconds)> frames,
+        BitmapPalette? palette = null)
     {
         using var output = new MemoryStream();
         using var writer = new BinaryWriter(output);
@@ -29,7 +33,7 @@ internal static class AnimatedGifWriter
         foreach (var (image, region, delay) in frames)
         {
             BitmapSource cropped = new CroppedBitmap(image, region);
-            var indexed = new FormatConvertedBitmap(cropped, PixelFormats.Indexed8, new BitmapPalette(cropped, 256), 0);
+            var indexed = new FormatConvertedBitmap(cropped, PixelFormats.Indexed8, palette ?? new BitmapPalette(cropped, 256), 0);
             var (colorTable, colorTableSize, imageData) = EncodeSingleFrame(indexed);
 
             // Graphic control extension: keep the previous frame in place and wait before showing the next one.

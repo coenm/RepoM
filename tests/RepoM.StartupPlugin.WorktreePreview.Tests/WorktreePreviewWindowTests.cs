@@ -20,9 +20,11 @@ using RepoM.StartupPlugin.WorktreePreview;
 using RepoM.UI.Controls;
 using RepoM.UI.Themes;
 using VerifyTests;
+using RepoM.Tests.TestFramework;
 using Xunit;
 
 [DisableParallelization]
+[WpfDesktop]
 public class WorktreePreviewWindowTests
 {
     [WpfTheory]
@@ -80,6 +82,9 @@ public class WorktreePreviewWindowTests
         });
 
         ((ComboBox)window.FindName("ThemeSelector")).SelectedValue = theme;
+        // Verify.Xaml can render before the auto scrollbar has reserved its column.
+        ScrollViewer.SetVerticalScrollBarVisibility(
+            (ListBox)window.FindName("Repositories"), ScrollBarVisibility.Visible);
         await VerifyPreviewAsync(window, theme);
     }
 

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Shipwreck.Phash;
+using Shipwreck.Phash.Imaging;
 using VerifyTests;
 
 internal static class AnimatedGifComparer
@@ -17,10 +19,12 @@ internal static class AnimatedGifComparer
         Stream verified,
         IReadOnlyDictionary<string, object> context)
     {
-        return Task.FromResult(Compare(received, verified));
+        return Task.FromResult(CompareGif(received, verified));
     }
 
-    private static CompareResult Compare(Stream received, Stream verified)
+    private static CompareResult CompareGif(
+        Stream received,
+        Stream verified)
     {
         if (received.CanSeek)
         {
@@ -79,7 +83,7 @@ internal static class AnimatedGifComparer
 
             actualCanvas = DrawFrame(actualCanvas, actualFrame, actualFrameMetadata, width, height);
             expectedCanvas = DrawFrame(expectedCanvas, expectedFrame, expectedFrameMetadata, width, height);
-            CompareResult result = XamlPngComparer.Compare(actualCanvas, expectedCanvas);
+            CompareResult result = CompareFrames(actualCanvas, expectedCanvas);
             if (!result.IsEqual)
             {
                 return CompareResult.NotEqual($"GIF frame {index}: {result.Message}");
@@ -87,6 +91,40 @@ internal static class AnimatedGifComparer
         }
 
         return CompareResult.Equal;
+    }
+
+    private static CompareResult CompareFrames(BitmapSource actual, BitmapSource expected)
+    {
+        byte[] actualPixels = GetLuminancePixels(actual, out int width, out int height);
+        byte[] expectedPixels = GetLuminancePixels(expected, out _, out _);
+        // Uniform frames have no features for pHash to correlate, even when identical.
+        if (actualPixels.AsSpan().SequenceEqual(expectedPixels))
+        {
+            return CompareResult.Equal;
+        }
+
+        bool matches = ImagePhash.CompareImages(
+            new ByteImage(width, height, actualPixels),
+            new ByteImage(width, height, expectedPixels),
+            out float similarity,
+            sigma: 3.5f,
+            gamma: 1,
+            numberOfAngles: 180,
+            threshold: 0.80f);
+        return matches
+            ? CompareResult.Equal
+            : CompareResult.NotEqual($"Perceptual similarity {similarity:F3} is below 0.800.");
+    }
+
+    private static byte[] GetLuminancePixels(BitmapSource image, out int width, out int height)
+    {
+        var scaled = new TransformedBitmap(image, new ScaleTransform(0.25, 0.25));
+        var luminance = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, null, 0);
+        width = luminance.PixelWidth;
+        height = luminance.PixelHeight;
+        var pixels = new byte[width * height];
+        luminance.CopyPixels(pixels, width, 0);
+        return pixels;
     }
 
     private static bool SameBytes(object? left, object? right) =>

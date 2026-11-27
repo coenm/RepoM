@@ -43,9 +43,11 @@ using RepoM.Core.Repositories.Model;
 using RepoM.Core.Repositories.Monitoring;
 using RepoM.Core.Repositories.Store;
 using RepoM.App.Tests.TestFramework;
+using RepoM.Tests.TestFramework;
 using Xunit;
 
 [DisableParallelization]
+[WpfDesktop]
 public class RepositoryFrontendTests
 {
     [WpfFact]

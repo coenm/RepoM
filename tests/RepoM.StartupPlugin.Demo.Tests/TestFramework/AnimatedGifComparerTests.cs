@@ -1,5 +1,6 @@
 namespace RepoM.StartupPlugin.Demo.Tests.TestFramework;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -13,14 +14,14 @@ using Xunit;
 public class AnimatedGifComparerTests
 {
     [WpfFact]
-    public async Task Compare_ShouldApplyPixelToleranceToEveryCompositedFrame()
+    public async Task Compare_ShouldApplyPerceptualToleranceToEveryCompositedFrame()
     {
         byte[] expected = CreateGif(changedPixels: 0);
 
         CompareResult withinTolerance = await CompareAsync(CreateGif(changedPixels: 5), expected);
-        CompareResult outsideTolerance = await CompareAsync(CreateGif(changedPixels: 6), expected);
+        CompareResult outsideTolerance = await CompareAsync(CreateGif(changedPixels: 0, showPattern: false), expected);
 
-        withinTolerance.IsEqual.Should().BeTrue();
+        withinTolerance.IsEqual.Should().BeTrue(withinTolerance.Message ?? string.Empty);
         outsideTolerance.IsEqual.Should().BeFalse();
         outsideTolerance.Message.Should().Contain("frame 1");
     }
@@ -49,7 +50,7 @@ public class AnimatedGifComparerTests
     {
         byte[] expected = CreateGif(0);
 
-        CompareResult differentSize = await CompareAsync(CreateGif(0, size: 33), expected);
+        CompareResult differentSize = await CompareAsync(CreateGif(0, size: 65), expected);
         CompareResult differentCount = await CompareAsync(CreateGif(0, twoFrames: false), expected);
 
         differentSize.IsEqual.Should().BeFalse();
@@ -65,7 +66,9 @@ public class AnimatedGifComparerTests
         return await AnimatedGifComparer.CompareAsync(receivedStream, verifiedStream, new Dictionary<string, object>());
     }
 
-    private static byte[] CreateGif(int changedPixels, bool cropped = false, ushort delay = 4, int size = 32, bool twoFrames = true)
+    private static byte[] CreateGif(
+        int changedPixels, bool cropped = false, ushort delay = 4, int size = 64, bool twoFrames = true,
+        bool showPattern = true)
     {
         var pixels = new byte[size * size * 4];
         for (var offset = 0; offset < pixels.Length; offset += 4)
@@ -87,11 +90,23 @@ public class AnimatedGifComparerTests
             pixels[(((8 * size) + 8 + index) * 4) + 2] = 140;
         }
 
+        for (var y = 16; showPattern && y < 48; y++)
+        {
+            for (var x = 16; x < 48; x++)
+            {
+                if (x < 24 || x >= 40)
+                {
+                    pixels.AsSpan(((y * size) + x) * 4, 3).Fill(230);
+                }
+            }
+        }
+
         BitmapSource second = BitmapSource.Create(size, size, 96, 96, PixelFormats.Bgra32, null, pixels, size * 4);
+        // The cropped update must include all changes since the first frame.
         return AnimatedGifWriter.Write(size, size,
         [
             (first, new Int32Rect(0, 0, size, size), 4),
-            (second, cropped ? new Int32Rect(8, 8, 8, 8) : new Int32Rect(0, 0, size, size), delay),
+            (second, cropped ? new Int32Rect(8, 8, 40, 40) : new Int32Rect(0, 0, size, size), delay),
         ]);
     }
 }

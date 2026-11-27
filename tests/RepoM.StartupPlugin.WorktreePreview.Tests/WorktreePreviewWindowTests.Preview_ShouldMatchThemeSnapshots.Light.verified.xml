@@ -1,8 +1,8 @@
 ﻿<WorktreePreviewWindow
   ThemeMode="None"
   Title="{av:DynamicResource WorktreePreviewTitle}"
-  Top="86.4"
-  Left="538.4"
+  Top="326"
+  Left="1050"
   WindowStartupLocation="CenterScreen"
   Background="{av:DynamicResource PreviewBackground}"
   Foreground="{av:DynamicResource PreviewForeground}"
@@ -18,8 +18,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:s="clr-namespace:System;assembly=System.Private.CoreLib"
   xmlns:rmuic="clr-namespace:RepoM.UI.Controls;assembly=RepoM.UI"
-  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-  xmlns:swb="clr-namespace:System.Windows.Baml2006;assembly=PresentationFramework">
+  xmlns:swb="clr-namespace:System.Windows.Baml2006;assembly=PresentationFramework"
+  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
   <WorktreePreviewWindow.Resources>
     <av:Style
       TargetType="rmuic:AcrylicContextMenu"
@@ -1482,7 +1482,8 @@
       av:VirtualizingPanel.VirtualizationMode="Recycling"
       av:Grid.Row="2"
       av:ScrollViewer.CanContentScroll="True"
-      av:ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+      av:ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+      av:ScrollViewer.VerticalScrollBarVisibility="Visible">
       <av:ListBox.ItemTemplate>
         <av:DataTemplate>
           <av:Border

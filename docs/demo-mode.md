@@ -86,3 +86,11 @@ dotnet test tests\RepoM.App.Tests\RepoM.App.Tests.csproj --filter "FullyQualifie
 ```
 
 The tests cover lifecycle/refresh isolation, clearing and reloading the data, cancelled scans, command suppression, in-memory favorites, plugin discovery and the real YAML/Scriban menu pipeline including deferred branch menus.
+
+On Windows, run `dotnet test tests\RepoM.StartupPlugin.Demo.Tests\RepoM.StartupPlugin.Demo.Tests.csproj`
+to generate and verify the WPF screenshots and demo GIFs. The repository-filter GIF
+draws its own 1920×1080 desktop. The simulated `Ctrl + Alt + R` shortcut appears
+before RepoM opens in the bottom-right above the taskbar, followed by overlays for
+the click and typed keys. No wallpaper file or desktop recording is needed.
+Tests that open interactive WPF windows take turns across test processes because they share
+the foreground window and mouse capture.
